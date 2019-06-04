@@ -5,21 +5,21 @@ import static suite.util.Friends.fail;
 import java.util.Arrays;
 import java.util.Objects;
 
-import suite.primitive.FltFunUtil;
-import suite.primitive.FltPrimitives.Obj_Flt;
-import suite.primitive.Flt_Flt;
 import suite.primitive.IntFltSink;
 import suite.primitive.IntFltSource;
 import suite.primitive.IntPrimitives.IntObjSource;
 import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.Int_Flt;
+import suite.primitive.FltFunUtil;
+import suite.primitive.FltPrimitives.Obj_Flt;
+import suite.primitive.Flt_Flt;
 import suite.primitive.adt.pair.IntFltPair;
 import suite.primitive.adt.pair.IntObjPair;
-import suite.primitive.streamlet.IntObjOutlet;
+import suite.primitive.streamlet.IntObjPuller;
 import suite.primitive.streamlet.IntObjStreamlet;
 import suite.streamlet.As;
 import suite.streamlet.FunUtil.Fun;
-import suite.streamlet.Outlet;
+import suite.streamlet.Puller;
 
 /**
  * Map with primitive int key and primitive float value. Float.MIN_VALUE is
@@ -35,13 +35,13 @@ public class IntFltMap {
 	private int[] ks;
 	private float[] vs;
 
-	public static <T> Fun<Outlet<T>, IntFltMap> collect(Obj_Int<T> kf0, Obj_Flt<T> vf0) {
+	public static <T> Fun<Puller<T>, IntFltMap> collect(Obj_Int<T> kf0, Obj_Flt<T> vf0) {
 		var kf1 = kf0.rethrow();
 		var vf1 = vf0.rethrow();
-		return outlet -> {
+		return puller -> {
 			var map = new IntFltMap();
 			T t;
-			while ((t = outlet.source().g()) != null)
+			while ((t = puller.source().g()) != null)
 				map.put(kf1.apply(t), vf1.apply(t));
 			return map;
 		};
@@ -139,7 +139,7 @@ public class IntFltMap {
 	}
 
 	public IntObjStreamlet<Float> streamlet() {
-		return new IntObjStreamlet<>(() -> IntObjOutlet.of(new IntObjSource<Float>() {
+		return new IntObjStreamlet<>(() -> IntObjPuller.of(new IntObjSource<Float>() {
 			private IntFltSource source0 = source_();
 			private IntFltPair pair0 = IntFltPair.of((int) 0, (float) 0);
 

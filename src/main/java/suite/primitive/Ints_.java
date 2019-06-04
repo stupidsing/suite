@@ -4,20 +4,20 @@ import static suite.util.Friends.rethrow;
 
 import suite.primitive.Ints.IntsBuilder;
 import suite.primitive.Ints.WriteChar;
-import suite.primitive.streamlet.IntOutlet;
+import suite.primitive.streamlet.IntPuller;
 import suite.primitive.streamlet.IntStreamlet;
 import suite.streamlet.FunUtil;
 import suite.streamlet.FunUtil.Iterate;
 import suite.streamlet.FunUtil.Source;
-import suite.streamlet.Outlet;
+import suite.streamlet.Puller;
 import suite.streamlet.Read;
 
 public class Ints_ {
 
 	private static int bufferSize = 65536;
 
-	public static Outlet<Ints> buffer(Outlet<Ints> outlet) {
-		return Outlet.of(new BufferedSource(outlet) {
+	public static Puller<Ints> buffer(Puller<Ints> puller) {
+		return Puller.of(new BufferedSource(puller) {
 			protected boolean search() {
 				return bufferSize <= (p0 = p1 = buffer.size());
 			}
@@ -27,8 +27,8 @@ public class Ints_ {
 	@SafeVarargs
 	public static IntStreamlet concat(IntStreamlet... streamlets) {
 		return new IntStreamlet(() -> {
-			var source = Read.from(streamlets).outlet().source();
-			return IntOutlet.of(IntFunUtil.concat(FunUtil.map(IntStreamlet::source, source)));
+			var source = Read.from(streamlets).puller().source();
+			return IntPuller.of(IntFunUtil.concat(FunUtil.map(IntStreamlet::source, source)));
 		});
 	}
 
@@ -67,27 +67,27 @@ public class Ints_ {
 			throw new IndexOutOfBoundsException();
 	}
 
-	public static void copy(Outlet<Ints> outlet, WriteChar writer) {
+	public static void copy(Puller<Ints> puller, WriteChar writer) {
 		rethrow(() -> {
 			Ints ints;
-			while ((ints = outlet.next()) != null)
+			while ((ints = puller.pull()) != null)
 				writer.write(ints.cs, ints.start, ints.end - ints.start);
 			return ints;
 		});
 	}
 
 	public static IntStreamlet of(int... ts) {
-		return new IntStreamlet(() -> IntOutlet.of(ts));
+		return new IntStreamlet(() -> IntPuller.of(ts));
 	}
 
 	public static IntStreamlet of(int[] ts, int start, int end, int inc) {
-		return new IntStreamlet(() -> IntOutlet.of(ts, start, end, inc));
+		return new IntStreamlet(() -> IntPuller.of(ts, start, end, inc));
 	}
 
 	public static IntStreamlet for_(int s, int e) {
 		return new IntStreamlet(() -> {
 			var m = IntMutable.of(s);
-			return IntOutlet.of(() -> {
+			return IntPuller.of(() -> {
 				var c = m.increment();
 				return c < e ? c : IntFunUtil.EMPTYVALUE;
 			});
@@ -95,13 +95,13 @@ public class Ints_ {
 	}
 
 	public static IntStreamlet reverse(int[] ts, int start, int end) {
-		return new IntStreamlet(() -> IntOutlet.of(ts, end - 1, start - 1, -1));
+		return new IntStreamlet(() -> IntPuller.of(ts, end - 1, start - 1, -1));
 	}
 
-	public static Iterate<Outlet<Ints>> split(Ints delim) {
+	public static Iterate<Puller<Ints>> split(Ints delim) {
 		var ds = delim.size();
 
-		return outlet -> Outlet.of(new BufferedSource(outlet) {
+		return puller -> Puller.of(new BufferedSource(puller) {
 			protected boolean search() {
 				var size = buffer.size();
 				while ((p1 = p0 + ds) <= size)
@@ -125,13 +125,13 @@ public class Ints_ {
 	}
 
 	private static abstract class BufferedSource implements Source<Ints> {
-		protected Outlet<Ints> outlet;
+		protected Puller<Ints> puller;
 		protected Ints buffer = Ints.empty;
 		protected boolean cont = true;
 		protected int p0, p1;
 
-		public BufferedSource(Outlet<Ints> outlet) {
-			this.outlet = outlet;
+		public BufferedSource(Puller<Ints> puller) {
+			this.puller = puller;
 		}
 
 		public Ints g() {
@@ -141,7 +141,7 @@ public class Ints_ {
 
 			p0 = 0;
 
-			while (!search() && (cont &= (in = outlet.next()) != null)) {
+			while (!search() && (cont &= (in = puller.pull()) != null)) {
 				cb.append(in);
 				buffer = cb.toInts();
 			}

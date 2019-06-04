@@ -18,6 +18,8 @@ import suite.adt.Mutable;
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.Pair;
 import suite.object.Object_;
+import suite.primitive.Longs;
+import suite.primitive.Longs.LongsBuilder;
 import suite.primitive.LngFunUtil;
 import suite.primitive.LngOpt;
 import suite.primitive.LngPrimitives.LngComparator;
@@ -28,8 +30,6 @@ import suite.primitive.LngPrimitives.LngSource;
 import suite.primitive.LngPrimitives.LngTest;
 import suite.primitive.LngPrimitives.Lng_Obj;
 import suite.primitive.Lng_Lng;
-import suite.primitive.Longs;
-import suite.primitive.Longs.LongsBuilder;
 import suite.primitive.adt.map.LngObjMap;
 import suite.primitive.adt.map.ObjLngMap;
 import suite.primitive.adt.pair.LngObjPair;
@@ -39,37 +39,37 @@ import suite.streamlet.FunUtil;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil.Source;
 import suite.streamlet.FunUtil2;
-import suite.streamlet.Outlet;
-import suite.streamlet.Outlet2;
-import suite.streamlet.OutletDefaults;
+import suite.streamlet.Puller;
+import suite.streamlet.Puller2;
+import suite.streamlet.PullerDefaults;
 import suite.streamlet.Read;
 import suite.util.NullableSyncQueue;
 import suite.util.To;
 
-public class LngOutlet implements OutletDefaults<Long> {
+public class LngPuller implements PullerDefaults<Long> {
 
 	private static long empty = LngFunUtil.EMPTYVALUE;
 
 	private LngSource source;
 
 	@SafeVarargs
-	public static LngOutlet concat(LngOutlet... outlets) {
+	public static LngPuller concat(LngPuller... outlets) {
 		var sources = new ArrayList<LngSource>();
 		for (var outlet : outlets)
 			sources.add(outlet.source);
 		return of(LngFunUtil.concat(To.source(sources)));
 	}
 
-	public static LngOutlet empty() {
+	public static LngPuller empty() {
 		return of(LngFunUtil.nullSource());
 	}
 
 	@SafeVarargs
-	public static LngOutlet of(long... ts) {
+	public static LngPuller of(long... ts) {
 		return of(ts, 0, ts.length, 1);
 	}
 
-	public static LngOutlet of(long[] ts, int start, int end, int inc) {
+	public static LngPuller of(long[] ts, int start, int end, int inc) {
 		IntPredicate pred = 0 < inc ? i -> i < end : i -> end < i;
 
 		return of(new LngSource() {
@@ -83,115 +83,115 @@ public class LngOutlet implements OutletDefaults<Long> {
 		});
 	}
 
-	public static LngOutlet of(Enumeration<Long> en) {
+	public static LngPuller of(Enumeration<Long> en) {
 		return of(To.source(en));
 	}
 
-	public static LngOutlet of(Iterable<Long> col) {
+	public static LngPuller of(Iterable<Long> col) {
 		return of(To.source(col));
 	}
 
-	public static LngOutlet of(Source<Long> source) {
-		return LngOutlet.of(() -> {
+	public static LngPuller of(Source<Long> source) {
+		return LngPuller.of(() -> {
 			var c = source.g();
 			return c != null ? c : empty;
 		});
 	}
 
-	public static LngOutlet of(LngSource source) {
-		return new LngOutlet(source);
+	public static LngPuller of(LngSource source) {
+		return new LngPuller(source);
 	}
 
-	private LngOutlet(LngSource source) {
+	private LngPuller(LngSource source) {
 		this.source = source;
 	}
 
 	public long average() {
 		var count = 0;
 		long result = 0, c1;
-		while ((c1 = next()) != empty) {
+		while ((c1 = pull()) != empty) {
 			result += c1;
 			count++;
 		}
 		return (long) (result / count);
 	}
 
-	public Outlet<LngOutlet> chunk(int n) {
-		return Outlet.of(FunUtil.map(LngOutlet::new, LngFunUtil.chunk(n, source)));
+	public Puller<LngPuller> chunk(int n) {
+		return Puller.of(FunUtil.map(LngPuller::new, LngFunUtil.chunk(n, source)));
 	}
 
-	public LngOutlet closeAtEnd(Closeable c) {
+	public LngPuller closeAtEnd(Closeable c) {
 		return of(() -> {
-			var next = next();
+			var next = pull();
 			if (next == empty)
 				Object_.closeQuietly(c);
 			return next;
 		});
 	}
 
-	public <R> R collect(Fun<LngOutlet, R> fun) {
+	public <R> R collect(Fun<LngPuller, R> fun) {
 		return fun.apply(this);
 	}
 
-	public <O> Outlet<O> concatMap(Lng_Obj<Outlet<O>> fun) {
-		return Outlet.of(FunUtil.concat(LngFunUtil.map(t -> fun.apply(t).source(), source)));
+	public <O> Puller<O> concatMap(Lng_Obj<Puller<O>> fun) {
+		return Puller.of(FunUtil.concat(LngFunUtil.map(t -> fun.apply(t).source(), source)));
 	}
 
-	public <K, V> Outlet2<K, V> concatMap2(Lng_Obj<Outlet2<K, V>> fun) {
-		return Outlet2.of(FunUtil2.concat(LngFunUtil.map(t -> fun.apply(t).source(), source)));
+	public <K, V> Puller2<K, V> concatMap2(Lng_Obj<Puller2<K, V>> fun) {
+		return Puller2.of(FunUtil2.concat(LngFunUtil.map(t -> fun.apply(t).source(), source)));
 	}
 
-	public LngOutlet concatMapLng(Lng_Obj<LngOutlet> fun) {
+	public LngPuller concatMapLng(Lng_Obj<LngPuller> fun) {
 		return of(LngFunUtil.concat(LngFunUtil.map(t -> fun.apply(t).source, source)));
 	}
 
-	public LngOutlet cons(long c) {
+	public LngPuller cons(long c) {
 		return of(LngFunUtil.cons(c, source));
 	}
 
 	public int count() {
 		var i = 0;
-		while (next() != empty)
+		while (pull() != empty)
 			i++;
 		return i;
 	}
 
-	public <U, O> Outlet<O> cross(List<U> list, LngObj_Obj<U, O> fun) {
-		return Outlet.of(new Source<>() {
+	public <U, O> Puller<O> cross(List<U> list, LngObj_Obj<U, O> fun) {
+		return Puller.of(new Source<>() {
 			private long c;
 			private int index = list.size();
 
 			public O g() {
 				if (index == list.size()) {
 					index = 0;
-					c = next();
+					c = pull();
 				}
 				return fun.apply(c, list.get(index++));
 			}
 		});
 	}
 
-	public LngOutlet distinct() {
+	public LngPuller distinct() {
 		var set = new HashSet<>();
 		return of(() -> {
 			long c;
-			while ((c = next()) != empty && !set.add(c))
+			while ((c = pull()) != empty && !set.add(c))
 				;
 			return c;
 		});
 	}
 
-	public LngOutlet drop(int n) {
+	public LngPuller drop(int n) {
 		var isAvailable = true;
-		while (0 < n && (isAvailable &= next() != empty))
+		while (0 < n && (isAvailable &= pull() != empty))
 			n--;
 		return isAvailable ? this : empty();
 	}
 
 	@Override
 	public boolean equals(Object object) {
-		if (Object_.clazz(object) == LngOutlet.class) {
-			var source1 = ((LngOutlet) object).source;
+		if (Object_.clazz(object) == LngPuller.class) {
+			var source1 = ((LngPuller) object).source;
 			long o0, o1;
 			while (Objects.equals(o0 = source.g(), o1 = source1.g()))
 				if (o0 == empty && o1 == empty)
@@ -201,30 +201,30 @@ public class LngOutlet implements OutletDefaults<Long> {
 			return false;
 	}
 
-	public LngOutlet filter(LngTest fun) {
+	public LngPuller filter(LngTest fun) {
 		return of(LngFunUtil.filter(fun, source));
 	}
 
 	public long first() {
-		return next();
+		return pull();
 	}
 
-	public <O> Outlet<O> flatMap(Lng_Obj<Iterable<O>> fun) {
-		return Outlet.of(FunUtil.flatten(LngFunUtil.map(fun, source)));
+	public <O> Puller<O> flatMap(Lng_Obj<Iterable<O>> fun) {
+		return Puller.of(FunUtil.flatten(LngFunUtil.map(fun, source)));
 	}
 
 	public <R> R fold(R init, LngObj_Obj<R, R> fun) {
 		long c;
-		while ((c = next()) != empty)
+		while ((c = pull()) != empty)
 			init = fun.apply(c, init);
 		return init;
 	}
 
-	public <V> LngObjOutlet<LongsBuilder> groupBy() {
-		return LngObjOutlet.of(toListMap().source());
+	public <V> LngObjPuller<LongsBuilder> groupBy() {
+		return LngObjPuller.of(toListMap().source());
 	}
 
-	public <V> LngObjOutlet<V> groupBy(Fun<Longs, V> fun) {
+	public <V> LngObjPuller<V> groupBy(Fun<Longs, V> fun) {
 		return groupBy().mapValue(list -> fun.apply(list.toLongs()));
 	}
 
@@ -237,12 +237,12 @@ public class LngOutlet implements OutletDefaults<Long> {
 		return h;
 	}
 
-	public LngObjOutlet<Integer> index() {
-		return LngObjOutlet.of(new LngObjSource<>() {
+	public LngObjPuller<Integer> index() {
+		return LngObjPuller.of(new LngObjSource<>() {
 			private int i = 0;
 
 			public boolean source2(LngObjPair<Integer> pair) {
-				var c = next();
+				var c = pull();
 				if (c != empty) {
 					pair.update(c, i++);
 					return true;
@@ -267,25 +267,25 @@ public class LngOutlet implements OutletDefaults<Long> {
 
 	public long last() {
 		long c, c1 = empty;
-		while ((c = next()) != empty)
+		while ((c = pull()) != empty)
 			c1 = c;
 		return c1;
 	}
 
-	public <O> Outlet<O> map(Lng_Obj<O> fun) {
-		return Outlet.of(LngFunUtil.map(fun, source));
+	public <O> Puller<O> map(Lng_Obj<O> fun) {
+		return Puller.of(LngFunUtil.map(fun, source));
 	}
 
-	public <K, V> Outlet2<K, V> map2(Lng_Obj<K> kf0, Lng_Obj<V> vf0) {
+	public <K, V> Puller2<K, V> map2(Lng_Obj<K> kf0, Lng_Obj<V> vf0) {
 		return map2_(kf0, vf0);
 	}
 
-	public LngOutlet mapLng(Lng_Lng fun0) {
+	public LngPuller mapLng(Lng_Lng fun0) {
 		return of(LngFunUtil.mapLng(fun0, source));
 	}
 
-	public <V> LngObjOutlet<V> mapLngObj(Lng_Obj<V> fun0) {
-		return LngObjOutlet.of(LngFunUtil.mapLngObj(fun0, source));
+	public <V> LngObjPuller<V> mapLngObj(Lng_Obj<V> fun0) {
+		return LngObjPuller.of(LngFunUtil.mapLngObj(fun0, source));
 	}
 
 	public long max() {
@@ -305,9 +305,9 @@ public class LngOutlet implements OutletDefaults<Long> {
 	}
 
 	public long minOrEmpty(LngComparator comparator) {
-		long c = next(), c1;
+		long c = pull(), c1;
 		if (c != empty) {
-			while ((c1 = next()) != empty)
+			while ((c1 = pull()) != empty)
 				if (0 < comparator.compare(c, c1))
 					c = c1;
 			return c;
@@ -315,11 +315,7 @@ public class LngOutlet implements OutletDefaults<Long> {
 			return empty;
 	}
 
-	public long next() {
-		return source.g();
-	}
-
-	public LngOutlet nonBlock(long c0) {
+	public LngPuller nonBlock(long c0) {
 		var queue = new NullableSyncQueue<Long>();
 
 		new Thread(() -> {
@@ -329,7 +325,7 @@ public class LngOutlet implements OutletDefaults<Long> {
 			while (c != empty);
 		}).start();
 
-		return new LngOutlet(() -> {
+		return new LngPuller(() -> {
 			var mutable = Mutable.<Long> nil();
 			var c = queue.poll(mutable) ? mutable.value() : c0;
 			return c;
@@ -337,9 +333,9 @@ public class LngOutlet implements OutletDefaults<Long> {
 	}
 
 	public LngOpt opt() {
-		var c = next();
+		var c = pull();
 		if (c != empty)
-			if (next() == empty)
+			if (pull() == empty)
 				return LngOpt.of(c);
 			else
 				return fail("more than one result");
@@ -347,29 +343,33 @@ public class LngOutlet implements OutletDefaults<Long> {
 			return LngOpt.none();
 	}
 
-	public Pair<LngOutlet, LngOutlet> partition(LngTest pred) {
+	public Pair<LngPuller, LngPuller> partition(LngTest pred) {
 		return Pair.of(filter(pred), filter(c -> !pred.test(c)));
 	}
 
-	public LngOutlet reverse() {
+	public long pull() {
+		return source.g();
+	}
+
+	public LngPuller reverse() {
 		return of(toList().toLongs().reverse());
 	}
 
 	public void sink(LngSink sink0) {
 		var sink1 = sink0.rethrow();
 		long c;
-		while ((c = next()) != empty)
+		while ((c = pull()) != empty)
 			sink1.f(c);
 	}
 
-	public LngOutlet skip(int n) {
+	public LngPuller skip(int n) {
 		var end = false;
 		for (var i = 0; !end && i < n; i++)
-			end = next() == empty;
+			end = pull() == empty;
 		return !end ? of(source) : empty();
 	}
 
-	public LngOutlet snoc(long c) {
+	public LngPuller snoc(long c) {
 		return of(LngFunUtil.snoc(c, source));
 	}
 
@@ -377,27 +377,27 @@ public class LngOutlet implements OutletDefaults<Long> {
 		return source;
 	}
 
-	public LngOutlet sort() {
+	public LngPuller sort() {
 		return of(toList().toLongs().sort());
 	}
 
-	public Outlet<LngOutlet> split(LngTest fun) {
-		return Outlet.of(FunUtil.map(LngOutlet::new, LngFunUtil.split(fun, source)));
+	public Puller<LngPuller> split(LngTest fun) {
+		return Puller.of(FunUtil.map(LngPuller::new, LngFunUtil.split(fun, source)));
 	}
 
 	public long sum() {
 		long result = 0, c1;
-		while ((c1 = next()) != empty)
+		while ((c1 = pull()) != empty)
 			result += c1;
 		return result;
 	}
 
-	public LngOutlet take(int n) {
+	public LngPuller take(int n) {
 		return of(new LngSource() {
 			private int count = n;
 
 			public long g() {
-				return 0 < count-- ? next() : null;
+				return 0 < count-- ? pull() : null;
 			}
 		});
 	}
@@ -410,7 +410,7 @@ public class LngOutlet implements OutletDefaults<Long> {
 	public LongsBuilder toList() {
 		var list = new LongsBuilder();
 		long c;
-		while ((c = next()) != empty)
+		while ((c = pull()) != empty)
 			list.append(c);
 		return list;
 	}
@@ -422,7 +422,7 @@ public class LngOutlet implements OutletDefaults<Long> {
 	public <K> LngObjMap<LongsBuilder> toListMap(Lng_Lng valueFun) {
 		var map = new LngObjMap<LongsBuilder>();
 		long c;
-		while ((c = next()) != empty)
+		while ((c = pull()) != empty)
 			map.computeIfAbsent(c, k_ -> new LongsBuilder()).append(valueFun.apply(c));
 		return map;
 	}
@@ -431,7 +431,7 @@ public class LngOutlet implements OutletDefaults<Long> {
 		var kf1 = keyFun.rethrow();
 		var map = new ObjLngMap<K>();
 		long c;
-		while ((c = next()) != empty)
+		while ((c = pull()) != empty)
 			map.put(kf1.apply(c), c);
 		return map;
 	}
@@ -441,7 +441,7 @@ public class LngOutlet implements OutletDefaults<Long> {
 		var vf1 = vf0.rethrow();
 		var map = new HashMap<K, V>();
 		long c;
-		while ((c = next()) != empty) {
+		while ((c = pull()) != empty) {
 			var key = kf1.apply(c);
 			if (map.put(key, vf1.apply(c)) != null)
 				fail("duplicate key " + key);
@@ -460,7 +460,7 @@ public class LngOutlet implements OutletDefaults<Long> {
 	public LngSet toSet() {
 		var set = new LngSet();
 		long c;
-		while ((c = next()) != empty)
+		while ((c = pull()) != empty)
 			set.add(c);
 		return set;
 	}
@@ -469,16 +469,16 @@ public class LngOutlet implements OutletDefaults<Long> {
 		return map2_(keyFun, valueFun).groupBy().mapValue(values -> Read.from(values).toSet()).toMap();
 	}
 
-	public <U, R> Outlet<R> zip(Outlet<U> outlet1, LngObj_Obj<U, R> fun) {
-		return Outlet.of(() -> {
-			var t = next();
-			var u = outlet1.next();
+	public <U, R> Puller<R> zip(Puller<U> outlet1, LngObj_Obj<U, R> fun) {
+		return Puller.of(() -> {
+			var t = pull();
+			var u = outlet1.pull();
 			return t != empty && u != null ? fun.apply(t, u) : null;
 		});
 	}
 
-	private <K, V> Outlet2<K, V> map2_(Lng_Obj<K> kf0, Lng_Obj<V> vf0) {
-		return Outlet2.of(LngFunUtil.map2(kf0, vf0, source));
+	private <K, V> Puller2<K, V> map2_(Lng_Obj<K> kf0, Lng_Obj<V> vf0) {
+		return Puller2.of(LngFunUtil.map2(kf0, vf0, source));
 	}
 
 }

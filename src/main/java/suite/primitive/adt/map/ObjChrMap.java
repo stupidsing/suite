@@ -11,7 +11,7 @@ import suite.primitive.ChrPrimitives.ChrObjSource;
 import suite.primitive.ChrPrimitives.Obj_Chr;
 import suite.primitive.Chr_Chr;
 import suite.primitive.adt.pair.ChrObjPair;
-import suite.primitive.streamlet.ChrObjOutlet;
+import suite.primitive.streamlet.ChrObjPuller;
 import suite.primitive.streamlet.ChrObjStreamlet;
 import suite.streamlet.As;
 
@@ -29,10 +29,10 @@ public class ObjChrMap<K> {
 	private Object[] ks;
 	private char[] vs;
 
-	public static <K> ObjChrMap<K> collect(ChrObjOutlet<K> outlet) {
+	public static <K> ObjChrMap<K> collect(ChrObjPuller<K> puller) {
 		var map = new ObjChrMap<K>();
 		var pair = ChrObjPair.<K> of((char) 0, null);
-		while (outlet.source().source2(pair))
+		while (puller.source().source2(pair))
 			map.put(pair.t1, pair.t0);
 		return map;
 	}
@@ -126,7 +126,7 @@ public class ObjChrMap<K> {
 	}
 
 	public ChrObjStreamlet<K> streamlet() {
-		return new ChrObjStreamlet<>(() -> ChrObjOutlet.of(source_()));
+		return new ChrObjStreamlet<>(() -> ChrObjPuller.of(source_()));
 	}
 
 	@Override

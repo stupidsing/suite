@@ -13,10 +13,10 @@ import java.util.Iterator;
 import suite.cfg.Defaults;
 import suite.object.Object_;
 import suite.primitive.ChrPrimitives.ChrSource;
-import suite.primitive.streamlet.ChrOutlet;
+import suite.primitive.streamlet.ChrPuller;
 import suite.primitive.streamlet.ChrStreamlet;
 import suite.streamlet.FunUtil.Fun;
-import suite.streamlet.Outlet;
+import suite.streamlet.Puller;
 import suite.util.Compare;
 import suite.util.ParseUtil;
 
@@ -56,9 +56,9 @@ public class Chars implements Iterable<Character> {
 		return bb.toChars();
 	}
 
-	public static Chars of(Outlet<Chars> outlet) {
+	public static Chars of(Puller<Chars> puller) {
 		var cb = new CharsBuilder();
-		outlet.forEach(cb::append);
+		puller.forEach(cb::append);
 		return cb.toChars();
 	}
 
@@ -128,7 +128,7 @@ public class Chars implements Iterable<Character> {
 	}
 
 	public ChrStreamlet streamlet() {
-		return new ChrStreamlet(() -> ChrOutlet.of(new ChrSource() {
+		return new ChrStreamlet(() -> ChrPuller.of(new ChrSource() {
 			private int i = start;
 
 			public char g() {

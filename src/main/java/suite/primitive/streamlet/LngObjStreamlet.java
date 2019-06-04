@@ -27,30 +27,30 @@ import suite.streamlet.FunUtil;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil.Source;
 import suite.streamlet.FunUtil2.Sink2;
-import suite.streamlet.Outlet;
-import suite.streamlet.Outlet2;
+import suite.streamlet.Puller;
+import suite.streamlet.Puller2;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 import suite.streamlet.StreamletDefaults;
 
-public class LngObjStreamlet<V> implements StreamletDefaults<LngObjPair<V>, LngObjOutlet<V>> {
+public class LngObjStreamlet<V> implements StreamletDefaults<LngObjPair<V>, LngObjPuller<V>> {
 
-	private Source<LngObjOutlet<V>> in;
+	private Source<LngObjPuller<V>> in;
 
 	@SafeVarargs
 	public static <V> LngObjStreamlet<V> concat(LngObjStreamlet<V>... streamlets) {
 		return streamlet(() -> {
-			var source = Read.from(streamlets).outlet().source();
-			return LngObjOutlet.of(LngObjFunUtil.concat(FunUtil.map(st -> st.spawn().source(), source)));
+			var source = Read.from(streamlets).puller().source();
+			return LngObjPuller.of(LngObjFunUtil.concat(FunUtil.map(st -> st.spawn().source(), source)));
 		});
 	}
 
-	private static <V> LngObjStreamlet<V> streamlet(Source<LngObjOutlet<V>> in) {
+	private static <V> LngObjStreamlet<V> streamlet(Source<LngObjPuller<V>> in) {
 		return new LngObjStreamlet<>(in);
 	}
 
-	public LngObjStreamlet(Source<LngObjOutlet<V>> in) {
+	public LngObjStreamlet(Source<LngObjPuller<V>> in) {
 		this.in = in;
 	}
 
@@ -58,7 +58,7 @@ public class LngObjStreamlet<V> implements StreamletDefaults<LngObjPair<V>, LngO
 		return fun.apply(this);
 	}
 
-	public Streamlet<LngObjOutlet<V>> chunk(int n) {
+	public Streamlet<LngObjPuller<V>> chunk(int n) {
 		return new Streamlet<>(() -> spawn().chunk(n));
 	}
 
@@ -83,8 +83,8 @@ public class LngObjStreamlet<V> implements StreamletDefaults<LngObjPair<V>, LngO
 	}
 
 	public <V1> LngObjStreamlet<V1> concatMapValue(Fun<V, Streamlet<V1>> fun) {
-		Fun<V, Outlet<V1>> f = v -> fun.apply(v).outlet();
-		return streamlet(() -> LngObjOutlet.of(spawn().concatMapValue(f)));
+		Fun<V, Puller<V1>> f = v -> fun.apply(v).puller();
+		return streamlet(() -> LngObjPuller.of(spawn().concatMapValue(f)));
 	}
 
 	public LngObjStreamlet<V> cons(long key, V value) {
@@ -191,16 +191,16 @@ public class LngObjStreamlet<V> implements StreamletDefaults<LngObjPair<V>, LngO
 		return spawn().opt();
 	}
 
-	public LngObjOutlet<V> outlet() {
-		return spawn();
-	}
-
 	public Streamlet<LngObjPair<V>> pairs() {
 		return new Streamlet<>(() -> spawn().pairs());
 	}
 
 	public Pair<LngObjStreamlet<V>, LngObjStreamlet<V>> partition(LngObjPredicate<V> pred) {
 		return Pair.of(filter(pred), filter((k, v) -> !pred.test(k, v)));
+	}
+
+	public LngObjPuller<V> puller() {
+		return spawn();
 	}
 
 	public LngObjStreamlet<V> reverse() {
@@ -288,18 +288,18 @@ public class LngObjStreamlet<V> implements StreamletDefaults<LngObjPair<V>, LngO
 	}
 
 	private <T> Streamlet<T> concatMap_(LngObj_Obj<V, Streamlet<T>> fun) {
-		LngObj_Obj<V, Outlet<T>> bf = (k, v) -> fun.apply(k, v).outlet();
-		return new Streamlet<>(() -> Outlet.of(spawn().concatMap(bf)));
+		LngObj_Obj<V, Puller<T>> bf = (k, v) -> fun.apply(k, v).puller();
+		return new Streamlet<>(() -> Puller.of(spawn().concatMap(bf)));
 	}
 
 	private <V1, K1> Streamlet2<K1, V1> concatMap2_(LngObj_Obj<V, Streamlet2<K1, V1>> fun) {
-		LngObj_Obj<V, Outlet2<K1, V1>> bf = (k, v) -> fun.apply(k, v).outlet();
-		return new Streamlet2<>(() -> Outlet2.of(spawn().concatMap2(bf)));
+		LngObj_Obj<V, Puller2<K1, V1>> bf = (k, v) -> fun.apply(k, v).puller();
+		return new Streamlet2<>(() -> Puller2.of(spawn().concatMap2(bf)));
 	}
 
 	private <V1> LngObjStreamlet<V1> concatMapLngObj_(LngObj_Obj<V, LngObjStreamlet<V1>> fun) {
-		LngObj_Obj<V, LngObjOutlet<V1>> bf = (k, v) -> fun.apply(k, v).outlet();
-		return streamlet(() -> LngObjOutlet.of(spawn().concatMapLngObj(bf)));
+		LngObj_Obj<V, LngObjPuller<V1>> bf = (k, v) -> fun.apply(k, v).puller();
+		return streamlet(() -> LngObjPuller.of(spawn().concatMapLngObj(bf)));
 	}
 
 	private <T> Streamlet<T> map_(LngObj_Obj<V, T> fun) {
@@ -318,7 +318,7 @@ public class LngObjStreamlet<V> implements StreamletDefaults<LngObjPair<V>, LngO
 		return spawn().toList();
 	}
 
-	private LngObjOutlet<V> spawn() {
+	private LngObjPuller<V> spawn() {
 		return in.g();
 	}
 

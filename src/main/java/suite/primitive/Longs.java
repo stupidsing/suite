@@ -13,10 +13,10 @@ import java.util.Iterator;
 import suite.cfg.Defaults;
 import suite.object.Object_;
 import suite.primitive.LngPrimitives.LngSource;
-import suite.primitive.streamlet.LngOutlet;
+import suite.primitive.streamlet.LngPuller;
 import suite.primitive.streamlet.LngStreamlet;
 import suite.streamlet.FunUtil.Fun;
-import suite.streamlet.Outlet;
+import suite.streamlet.Puller;
 import suite.util.Compare;
 import suite.util.ParseUtil;
 
@@ -56,9 +56,9 @@ public class Longs implements Iterable<Long> {
 		return bb.toLongs();
 	}
 
-	public static Longs of(Outlet<Longs> outlet) {
+	public static Longs of(Puller<Longs> puller) {
 		var cb = new LongsBuilder();
-		outlet.forEach(cb::append);
+		puller.forEach(cb::append);
 		return cb.toLongs();
 	}
 
@@ -128,7 +128,7 @@ public class Longs implements Iterable<Long> {
 	}
 
 	public LngStreamlet streamlet() {
-		return new LngStreamlet(() -> LngOutlet.of(new LngSource() {
+		return new LngStreamlet(() -> LngPuller.of(new LngSource() {
 			private int i = start;
 
 			public long g() {

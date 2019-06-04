@@ -25,7 +25,7 @@ import suite.primitive.adt.pair.LngIntPair;
 import suite.streamlet.As;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil.Source;
-import suite.streamlet.Outlet;
+import suite.streamlet.Puller;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.trade.Account.Valuation;
@@ -57,10 +57,10 @@ public class Trade_ {
 		return expm1(logRiskFreeInterestRate * invTradeDaysPerYear * nDays);
 	}
 
-	public static Map<String, Float> collectAcquiredPrices(Outlet<Trade> outlet) {
+	public static Map<String, Float> collectAcquiredPrices(Puller<Trade> puller) {
 		var acquireBySymbol = new HashMap<String, List<IntFltPair>>();
 
-		for (var trade : outlet) {
+		for (var trade : puller) {
 			var symbol = trade.symbol;
 			var buySell = trade.buySell;
 			var price = trade.price;
@@ -93,8 +93,8 @@ public class Trade_ {
 				.toMap();
 	}
 
-	public static Streamlet<Trade> collectBrokeredTrades(Outlet<Trade> outlet) {
-		var trades0 = outlet.toArray(Trade.class);
+	public static Streamlet<Trade> collectBrokeredTrades(Puller<Trade> puller) {
+		var trades0 = puller.toArray(Trade.class);
 		var trades1 = new ArrayList<Trade>();
 		var length0 = trades0.length;
 		var i0 = 0;
@@ -138,11 +138,11 @@ public class Trade_ {
 
 		for (var pair : trades.toMultimap(trade -> trade.symbol).listEntries()) {
 			var dividends = fun.apply(pair.t0);
-			var outlet = Outlet.of(pair.t1);
+			var puller = Puller.of(pair.t1);
 			LngIntPair tn = LngIntPair.of(0l, 0);
 
 			Source<LngIntPair> tradeSource = () -> {
-				var trade = outlet.next();
+				var trade = puller.pull();
 				var t = trade != null ? Time.of(trade.date + " 12:00:00").epochSec(8) : Long.MAX_VALUE;
 				return LngIntPair.of(t, tn.t1 + (trade != null ? trade.buySell : 0));
 			};

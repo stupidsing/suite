@@ -2,7 +2,7 @@ package suite.http;
 
 import suite.primitive.Bytes;
 import suite.streamlet.FunUtil.Sink;
-import suite.streamlet.Outlet;
+import suite.streamlet.Puller;
 
 public class HttpResponse {
 
@@ -14,23 +14,23 @@ public class HttpResponse {
 
 	public final String status;
 	public final HttpHeader headers;
-	public final Outlet<Bytes> out;
+	public final Puller<Bytes> out;
 	public final Sink<Sink<Bytes>> write;
 
 	public static HttpResponse of(String status) {
-		return of(status, new HttpHeader(), Outlet.empty());
+		return of(status, new HttpHeader(), Puller.empty());
 	}
 
-	public static HttpResponse of(Outlet<Bytes> out) {
+	public static HttpResponse of(Puller<Bytes> out) {
 		return of(HTTP200, new HttpHeader(), out);
 	}
 
-	public static HttpResponse of(String status, Outlet<Bytes> out, long length) {
+	public static HttpResponse of(String status, Puller<Bytes> out, long length) {
 		var empty = new HttpHeader();
 		return of(status, empty.put("Content-Length", Long.toString(length)), out);
 	}
 
-	public static HttpResponse of(String status, HttpHeader headers, Outlet<Bytes> out) {
+	public static HttpResponse of(String status, HttpHeader headers, Puller<Bytes> out) {
 		return new HttpResponse(status, headers.put("Content-Type", "text/html; charset=UTF-8"), out);
 	}
 
@@ -38,11 +38,11 @@ public class HttpResponse {
 		return new HttpResponse(status, headers, null, write);
 	}
 
-	public HttpResponse(String status, HttpHeader headers, Outlet<Bytes> out) {
+	public HttpResponse(String status, HttpHeader headers, Puller<Bytes> out) {
 		this(status, headers, out, null);
 	}
 
-	private HttpResponse(String status, HttpHeader headers, Outlet<Bytes> out, Sink<Sink<Bytes>> write) {
+	private HttpResponse(String status, HttpHeader headers, Puller<Bytes> out, Sink<Sink<Bytes>> write) {
 		this.status = status;
 		this.headers = headers;
 		this.out = out;

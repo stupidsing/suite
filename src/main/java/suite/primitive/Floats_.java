@@ -4,20 +4,20 @@ import static suite.util.Friends.rethrow;
 
 import suite.primitive.Floats.FloatsBuilder;
 import suite.primitive.Floats.WriteChar;
-import suite.primitive.streamlet.FltOutlet;
+import suite.primitive.streamlet.FltPuller;
 import suite.primitive.streamlet.FltStreamlet;
 import suite.streamlet.FunUtil;
 import suite.streamlet.FunUtil.Iterate;
 import suite.streamlet.FunUtil.Source;
-import suite.streamlet.Outlet;
+import suite.streamlet.Puller;
 import suite.streamlet.Read;
 
 public class Floats_ {
 
 	private static int bufferSize = 65536;
 
-	public static Outlet<Floats> buffer(Outlet<Floats> outlet) {
-		return Outlet.of(new BufferedSource(outlet) {
+	public static Puller<Floats> buffer(Puller<Floats> puller) {
+		return Puller.of(new BufferedSource(puller) {
 			protected boolean search() {
 				return bufferSize <= (p0 = p1 = buffer.size());
 			}
@@ -27,8 +27,8 @@ public class Floats_ {
 	@SafeVarargs
 	public static FltStreamlet concat(FltStreamlet... streamlets) {
 		return new FltStreamlet(() -> {
-			var source = Read.from(streamlets).outlet().source();
-			return FltOutlet.of(FltFunUtil.concat(FunUtil.map(FltStreamlet::source, source)));
+			var source = Read.from(streamlets).puller().source();
+			return FltPuller.of(FltFunUtil.concat(FunUtil.map(FltStreamlet::source, source)));
 		});
 	}
 
@@ -67,27 +67,27 @@ public class Floats_ {
 			throw new IndexOutOfBoundsException();
 	}
 
-	public static void copy(Outlet<Floats> outlet, WriteChar writer) {
+	public static void copy(Puller<Floats> puller, WriteChar writer) {
 		rethrow(() -> {
 			Floats floats;
-			while ((floats = outlet.next()) != null)
+			while ((floats = puller.pull()) != null)
 				writer.write(floats.cs, floats.start, floats.end - floats.start);
 			return floats;
 		});
 	}
 
 	public static FltStreamlet of(float... ts) {
-		return new FltStreamlet(() -> FltOutlet.of(ts));
+		return new FltStreamlet(() -> FltPuller.of(ts));
 	}
 
 	public static FltStreamlet of(float[] ts, int start, int end, int inc) {
-		return new FltStreamlet(() -> FltOutlet.of(ts, start, end, inc));
+		return new FltStreamlet(() -> FltPuller.of(ts, start, end, inc));
 	}
 
 	public static FltStreamlet for_(float s, float e) {
 		return new FltStreamlet(() -> {
 			var m = FltMutable.of(s);
-			return FltOutlet.of(() -> {
+			return FltPuller.of(() -> {
 				var c = m.increment();
 				return c < e ? c : FltFunUtil.EMPTYVALUE;
 			});
@@ -95,13 +95,13 @@ public class Floats_ {
 	}
 
 	public static FltStreamlet reverse(float[] ts, int start, int end) {
-		return new FltStreamlet(() -> FltOutlet.of(ts, end - 1, start - 1, -1));
+		return new FltStreamlet(() -> FltPuller.of(ts, end - 1, start - 1, -1));
 	}
 
-	public static Iterate<Outlet<Floats>> split(Floats delim) {
+	public static Iterate<Puller<Floats>> split(Floats delim) {
 		var ds = delim.size();
 
-		return outlet -> Outlet.of(new BufferedSource(outlet) {
+		return puller -> Puller.of(new BufferedSource(puller) {
 			protected boolean search() {
 				var size = buffer.size();
 				while ((p1 = p0 + ds) <= size)
@@ -125,13 +125,13 @@ public class Floats_ {
 	}
 
 	private static abstract class BufferedSource implements Source<Floats> {
-		protected Outlet<Floats> outlet;
+		protected Puller<Floats> puller;
 		protected Floats buffer = Floats.empty;
 		protected boolean cont = true;
 		protected int p0, p1;
 
-		public BufferedSource(Outlet<Floats> outlet) {
-			this.outlet = outlet;
+		public BufferedSource(Puller<Floats> puller) {
+			this.puller = puller;
 		}
 
 		public Floats g() {
@@ -141,7 +141,7 @@ public class Floats_ {
 
 			p0 = 0;
 
-			while (!search() && (cont &= (in = outlet.next()) != null)) {
+			while (!search() && (cont &= (in = puller.pull()) != null)) {
 				cb.append(in);
 				buffer = cb.toFloats();
 			}

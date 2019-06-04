@@ -11,7 +11,7 @@ import suite.primitive.FltPrimitives.FltObjSource;
 import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.primitive.Flt_Flt;
 import suite.primitive.adt.pair.FltObjPair;
-import suite.primitive.streamlet.FltObjOutlet;
+import suite.primitive.streamlet.FltObjPuller;
 import suite.primitive.streamlet.FltObjStreamlet;
 import suite.streamlet.As;
 
@@ -29,10 +29,10 @@ public class ObjFltMap<K> {
 	private Object[] ks;
 	private float[] vs;
 
-	public static <K> ObjFltMap<K> collect(FltObjOutlet<K> outlet) {
+	public static <K> ObjFltMap<K> collect(FltObjPuller<K> puller) {
 		var map = new ObjFltMap<K>();
 		var pair = FltObjPair.<K> of((float) 0, null);
-		while (outlet.source().source2(pair))
+		while (puller.source().source2(pair))
 			map.put(pair.t1, pair.t0);
 		return map;
 	}
@@ -126,7 +126,7 @@ public class ObjFltMap<K> {
 	}
 
 	public FltObjStreamlet<K> streamlet() {
-		return new FltObjStreamlet<>(() -> FltObjOutlet.of(source_()));
+		return new FltObjStreamlet<>(() -> FltObjPuller.of(source_()));
 	}
 
 	@Override

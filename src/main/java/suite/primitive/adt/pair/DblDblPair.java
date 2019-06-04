@@ -6,6 +6,8 @@ import suite.object.Object_;
 import suite.primitive.DblDbl_Obj;
 import suite.primitive.DblFunUtil;
 import suite.primitive.Dbl_Dbl;
+import suite.primitive.DblFunUtil;
+import suite.primitive.Dbl_Dbl;
 import suite.streamlet.FunUtil.Iterate;
 
 public class DblDblPair {

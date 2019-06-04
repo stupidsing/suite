@@ -15,7 +15,7 @@ import suite.http.HttpUtil;
 import suite.primitive.Bytes;
 import suite.serialize.SerOutput;
 import suite.streamlet.FunUtil.Source;
-import suite.streamlet.Outlet;
+import suite.streamlet.Puller;
 import suite.streamlet.Streamlet;
 import suite.util.To;
 
@@ -74,21 +74,21 @@ public class StoreCache {
 		return new Piper("echo '" + in + "'");
 	}
 
-	public Outlet<Bytes> http(String url) {
-		return getOutlet(url, HttpUtil.get(url)::out);
+	public Puller<Bytes> http(String url) {
+		return getPuller(url, HttpUtil.get(url)::out);
 	}
 
 	public Bytes get(Bytes key, Source<Bytes> source) {
-		var outlet = getOutlet(key, () -> Outlet.<Bytes> of(source.g()));
-		return outlet.collect(Bytes::of);
+		var puller = getPuller(key, () -> Puller.<Bytes> of(source.g()));
+		return puller.collect(Bytes::of);
 	}
 
-	public Outlet<Bytes> getOutlet(String key, Source<Outlet<Bytes>> source) {
+	public Puller<Bytes> getPuller(String key, Source<Puller<Bytes>> source) {
 		var keyBytes = Bytes.of(key.getBytes(Defaults.charset));
-		return getOutlet(keyBytes, source);
+		return getPuller(keyBytes, source);
 	}
 
-	public Outlet<Bytes> getOutlet(Bytes key, Source<Outlet<Bytes>> source) {
+	public Puller<Bytes> getPuller(Bytes key, Source<Puller<Bytes>> source) {
 		return rethrow(() -> {
 			var current = System.currentTimeMillis();
 			Path path;
@@ -114,13 +114,13 @@ public class StoreCache {
 				var vdis = new DataInputStream(vis);
 				return read(vdis).closeAtEnd(vis);
 			} else {
-				var outlet = source.g();
+				var puller = source.g();
 				var vos = FileUtil.out(pair.t1);
 				var vdo = SerOutput.of(vos);
 
-				return Outlet //
+				return Puller //
 						.of(() -> rethrow(() -> {
-							var value = outlet.next();
+							var value = puller.pull();
 							if (value != null)
 								vdo.writeBytes(value);
 							return value;
@@ -173,8 +173,8 @@ public class StoreCache {
 		}
 	}
 
-	private Outlet<Bytes> read(DataInputStream dis) {
-		return Outlet.of(new Source<Bytes>() {
+	private Puller<Bytes> read(DataInputStream dis) {
+		return Puller.of(new Source<Bytes>() {
 			private boolean cont = true;
 
 			public Bytes g() {

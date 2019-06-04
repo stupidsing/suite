@@ -98,7 +98,7 @@ public class Yahoo {
 		if (Files.exists(path))
 			try {
 				var lines = rethrow(() -> Files.readAllLines(path));
-				stockHistory0 = StockHistory.of(Read.from(lines).outlet());
+				stockHistory0 = StockHistory.of(Read.from(lines).puller());
 			} catch (Exception ex) {
 				stockHistory0 = StockHistory.new_();
 			}

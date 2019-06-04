@@ -5,21 +5,21 @@ import static suite.util.Friends.fail;
 import java.util.Arrays;
 import java.util.Objects;
 
-import suite.primitive.IntFunUtil;
-import suite.primitive.IntPrimitives.Obj_Int;
-import suite.primitive.Int_Int;
 import suite.primitive.LngIntSink;
 import suite.primitive.LngIntSource;
 import suite.primitive.LngPrimitives.LngObjSource;
 import suite.primitive.LngPrimitives.Obj_Lng;
 import suite.primitive.Lng_Int;
+import suite.primitive.IntFunUtil;
+import suite.primitive.IntPrimitives.Obj_Int;
+import suite.primitive.Int_Int;
 import suite.primitive.adt.pair.LngIntPair;
 import suite.primitive.adt.pair.LngObjPair;
-import suite.primitive.streamlet.LngObjOutlet;
+import suite.primitive.streamlet.LngObjPuller;
 import suite.primitive.streamlet.LngObjStreamlet;
 import suite.streamlet.As;
 import suite.streamlet.FunUtil.Fun;
-import suite.streamlet.Outlet;
+import suite.streamlet.Puller;
 
 /**
  * Map with primitive long key and primitive int value. Integer.MIN_VALUE is
@@ -35,13 +35,13 @@ public class LngIntMap {
 	private long[] ks;
 	private int[] vs;
 
-	public static <T> Fun<Outlet<T>, LngIntMap> collect(Obj_Lng<T> kf0, Obj_Int<T> vf0) {
+	public static <T> Fun<Puller<T>, LngIntMap> collect(Obj_Lng<T> kf0, Obj_Int<T> vf0) {
 		var kf1 = kf0.rethrow();
 		var vf1 = vf0.rethrow();
-		return outlet -> {
+		return puller -> {
 			var map = new LngIntMap();
 			T t;
-			while ((t = outlet.source().g()) != null)
+			while ((t = puller.source().g()) != null)
 				map.put(kf1.apply(t), vf1.apply(t));
 			return map;
 		};
@@ -139,7 +139,7 @@ public class LngIntMap {
 	}
 
 	public LngObjStreamlet<Integer> streamlet() {
-		return new LngObjStreamlet<>(() -> LngObjOutlet.of(new LngObjSource<Integer>() {
+		return new LngObjStreamlet<>(() -> LngObjPuller.of(new LngObjSource<Integer>() {
 			private LngIntSource source0 = source_();
 			private LngIntPair pair0 = LngIntPair.of((long) 0, (int) 0);
 

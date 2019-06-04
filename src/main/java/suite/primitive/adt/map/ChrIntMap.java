@@ -15,11 +15,11 @@ import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.Int_Int;
 import suite.primitive.adt.pair.ChrIntPair;
 import suite.primitive.adt.pair.ChrObjPair;
-import suite.primitive.streamlet.ChrObjOutlet;
+import suite.primitive.streamlet.ChrObjPuller;
 import suite.primitive.streamlet.ChrObjStreamlet;
 import suite.streamlet.As;
 import suite.streamlet.FunUtil.Fun;
-import suite.streamlet.Outlet;
+import suite.streamlet.Puller;
 
 /**
  * Map with primitive char key and primitive int value. Integer.MIN_VALUE is
@@ -35,13 +35,13 @@ public class ChrIntMap {
 	private char[] ks;
 	private int[] vs;
 
-	public static <T> Fun<Outlet<T>, ChrIntMap> collect(Obj_Chr<T> kf0, Obj_Int<T> vf0) {
+	public static <T> Fun<Puller<T>, ChrIntMap> collect(Obj_Chr<T> kf0, Obj_Int<T> vf0) {
 		var kf1 = kf0.rethrow();
 		var vf1 = vf0.rethrow();
-		return outlet -> {
+		return puller -> {
 			var map = new ChrIntMap();
 			T t;
-			while ((t = outlet.source().g()) != null)
+			while ((t = puller.source().g()) != null)
 				map.put(kf1.apply(t), vf1.apply(t));
 			return map;
 		};
@@ -139,7 +139,7 @@ public class ChrIntMap {
 	}
 
 	public ChrObjStreamlet<Integer> streamlet() {
-		return new ChrObjStreamlet<>(() -> ChrObjOutlet.of(new ChrObjSource<Integer>() {
+		return new ChrObjStreamlet<>(() -> ChrObjPuller.of(new ChrObjSource<Integer>() {
 			private ChrIntSource source0 = source_();
 			private ChrIntPair pair0 = ChrIntPair.of((char) 0, (int) 0);
 

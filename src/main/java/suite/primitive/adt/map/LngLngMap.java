@@ -5,19 +5,21 @@ import static suite.util.Friends.fail;
 import java.util.Arrays;
 import java.util.Objects;
 
-import suite.primitive.LngFunUtil;
 import suite.primitive.LngLngSink;
 import suite.primitive.LngLngSource;
 import suite.primitive.LngPrimitives.LngObjSource;
 import suite.primitive.LngPrimitives.Obj_Lng;
 import suite.primitive.Lng_Lng;
+import suite.primitive.LngFunUtil;
+import suite.primitive.LngPrimitives.Obj_Lng;
+import suite.primitive.Lng_Lng;
 import suite.primitive.adt.pair.LngLngPair;
 import suite.primitive.adt.pair.LngObjPair;
-import suite.primitive.streamlet.LngObjOutlet;
+import suite.primitive.streamlet.LngObjPuller;
 import suite.primitive.streamlet.LngObjStreamlet;
 import suite.streamlet.As;
 import suite.streamlet.FunUtil.Fun;
-import suite.streamlet.Outlet;
+import suite.streamlet.Puller;
 
 /**
  * Map with primitive long key and primitive long value. Long.MIN_VALUE is
@@ -33,13 +35,13 @@ public class LngLngMap {
 	private long[] ks;
 	private long[] vs;
 
-	public static <T> Fun<Outlet<T>, LngLngMap> collect(Obj_Lng<T> kf0, Obj_Lng<T> vf0) {
+	public static <T> Fun<Puller<T>, LngLngMap> collect(Obj_Lng<T> kf0, Obj_Lng<T> vf0) {
 		var kf1 = kf0.rethrow();
 		var vf1 = vf0.rethrow();
-		return outlet -> {
+		return puller -> {
 			var map = new LngLngMap();
 			T t;
-			while ((t = outlet.source().g()) != null)
+			while ((t = puller.source().g()) != null)
 				map.put(kf1.apply(t), vf1.apply(t));
 			return map;
 		};
@@ -137,7 +139,7 @@ public class LngLngMap {
 	}
 
 	public LngObjStreamlet<Long> streamlet() {
-		return new LngObjStreamlet<>(() -> LngObjOutlet.of(new LngObjSource<Long>() {
+		return new LngObjStreamlet<>(() -> LngObjPuller.of(new LngObjSource<Long>() {
 			private LngLngSource source0 = source_();
 			private LngLngPair pair0 = LngLngPair.of((long) 0, (long) 0);
 

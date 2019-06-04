@@ -6,7 +6,7 @@ import suite.primitive.Chars_;
 import suite.primitive.ChrFunUtil;
 import suite.primitive.ChrPrimitives.ChrSink;
 import suite.primitive.ChrPrimitives.ChrSource;
-import suite.primitive.streamlet.ChrOutlet;
+import suite.primitive.streamlet.ChrPuller;
 import suite.primitive.streamlet.ChrStreamlet;
 
 /**
@@ -135,7 +135,7 @@ public class ChrSet {
 	}
 
 	public ChrStreamlet streamlet() {
-		return new ChrStreamlet(() -> ChrOutlet.of(source_()));
+		return new ChrStreamlet(() -> ChrPuller.of(source_()));
 	}
 
 	@Override

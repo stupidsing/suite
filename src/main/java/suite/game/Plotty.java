@@ -8,7 +8,7 @@ import suite.os.FileUtil;
 import suite.primitive.Floats_;
 import suite.primitive.adt.pair.FltFltPair;
 import suite.streamlet.As;
-import suite.streamlet.Outlet;
+import suite.streamlet.Puller;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.Util;
@@ -39,7 +39,7 @@ public class Plotty {
 		return true;
 	}
 
-	private String xyt(Outlet<FltFltPair> xys0) {
+	private String xyt(Puller<FltFltPair> xys0) {
 		var xys1 = Read.from(xys0.toList());
 		var xs = xys1.map(xy -> xy.t0 + ",").collect(As::joined);
 		var ys = xys1.map(xy -> xy.t1 + ",").collect(As::joined);

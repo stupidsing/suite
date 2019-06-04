@@ -2,11 +2,11 @@ package suite.primitive.adt.set;
 
 import java.util.Arrays;
 
+import suite.primitive.Longs_;
 import suite.primitive.LngFunUtil;
 import suite.primitive.LngPrimitives.LngSink;
 import suite.primitive.LngPrimitives.LngSource;
-import suite.primitive.Longs_;
-import suite.primitive.streamlet.LngOutlet;
+import suite.primitive.streamlet.LngPuller;
 import suite.primitive.streamlet.LngStreamlet;
 
 /**
@@ -135,7 +135,7 @@ public class LngSet {
 	}
 
 	public LngStreamlet streamlet() {
-		return new LngStreamlet(() -> LngOutlet.of(source_()));
+		return new LngStreamlet(() -> LngPuller.of(source_()));
 	}
 
 	@Override

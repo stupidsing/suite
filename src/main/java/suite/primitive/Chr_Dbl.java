@@ -4,7 +4,7 @@ import static suite.util.Friends.fail;
 
 import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Doubles.DoublesBuilder;
-import suite.primitive.streamlet.ChrOutlet;
+import suite.primitive.streamlet.ChrPuller;
 import suite.primitive.streamlet.DblStreamlet;
 import suite.streamlet.FunUtil.Fun;
 
@@ -12,21 +12,21 @@ public interface Chr_Dbl {
 
 	public double apply(char c);
 
-	public static Fun<ChrOutlet, DblStreamlet> lift(Chr_Dbl fun0) {
+	public static Fun<ChrPuller, DblStreamlet> lift(Chr_Dbl fun0) {
 		var fun1 = fun0.rethrow();
 		return ts -> {
 			var b = new DoublesBuilder();
 			char c;
-			while ((c = ts.next()) != ChrFunUtil.EMPTYVALUE)
+			while ((c = ts.pull()) != ChrFunUtil.EMPTYVALUE)
 				b.append(fun1.apply(c));
 			return b.toDoubles().streamlet();
 		};
 	}
 
-	public static Obj_Dbl<ChrOutlet> sum(Chr_Dbl fun0) {
+	public static Obj_Dbl<ChrPuller> sum(Chr_Dbl fun0) {
 		var fun1 = fun0.rethrow();
-		return outlet -> {
-			var source = outlet.source();
+		return puller -> {
+			var source = puller.source();
 			char c;
 			var result = (double) 0;
 			while ((c = source.g()) != ChrFunUtil.EMPTYVALUE)

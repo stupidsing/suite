@@ -15,11 +15,11 @@ import suite.primitive.LngPrimitives.Obj_Lng;
 import suite.primitive.Lng_Lng;
 import suite.primitive.adt.pair.IntLngPair;
 import suite.primitive.adt.pair.IntObjPair;
-import suite.primitive.streamlet.IntObjOutlet;
+import suite.primitive.streamlet.IntObjPuller;
 import suite.primitive.streamlet.IntObjStreamlet;
 import suite.streamlet.As;
 import suite.streamlet.FunUtil.Fun;
-import suite.streamlet.Outlet;
+import suite.streamlet.Puller;
 
 /**
  * Map with primitive int key and primitive long value. Long.MIN_VALUE is
@@ -35,13 +35,13 @@ public class IntLngMap {
 	private int[] ks;
 	private long[] vs;
 
-	public static <T> Fun<Outlet<T>, IntLngMap> collect(Obj_Int<T> kf0, Obj_Lng<T> vf0) {
+	public static <T> Fun<Puller<T>, IntLngMap> collect(Obj_Int<T> kf0, Obj_Lng<T> vf0) {
 		var kf1 = kf0.rethrow();
 		var vf1 = vf0.rethrow();
-		return outlet -> {
+		return puller -> {
 			var map = new IntLngMap();
 			T t;
-			while ((t = outlet.source().g()) != null)
+			while ((t = puller.source().g()) != null)
 				map.put(kf1.apply(t), vf1.apply(t));
 			return map;
 		};
@@ -139,7 +139,7 @@ public class IntLngMap {
 	}
 
 	public IntObjStreamlet<Long> streamlet() {
-		return new IntObjStreamlet<>(() -> IntObjOutlet.of(new IntObjSource<Long>() {
+		return new IntObjStreamlet<>(() -> IntObjPuller.of(new IntObjSource<Long>() {
 			private IntLngSource source0 = source_();
 			private IntLngPair pair0 = IntLngPair.of((int) 0, (long) 0);
 

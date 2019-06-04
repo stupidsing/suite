@@ -18,7 +18,7 @@ import suite.primitive.IntPrimitives.Int_Obj;
 import suite.primitive.Int_Dbl;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil.Iterate;
-import suite.streamlet.Outlet;
+import suite.streamlet.Puller;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.Array_;
@@ -422,7 +422,7 @@ public class NeuralNetwork {
 			Class<O> clazz, //
 			int n, //
 			Int_Obj<Layer<I, O>> fun, //
-			Fun<Outlet<I>, I> combineErrors) {
+			Fun<Puller<I>, I> combineErrors) {
 		var layers = forInt(n).map(fun::apply);
 		return spawnLayer(clazz, layers, inputs -> inputs, combineErrors);
 	}
@@ -431,7 +431,7 @@ public class NeuralNetwork {
 			Class<O> clazz, //
 			Streamlet<Layer<I, O>> layers, //
 			Iterate<I> cloneInputs, //
-			Fun<Outlet<I>, I> combineErrors) {
+			Fun<Puller<I>, I> combineErrors) {
 		return inputs -> {
 			var outs = layers.map(layer -> layer.feed(cloneInputs.apply(inputs))).collect();
 			var outputs = outs.map(out -> out.output).toArray(clazz);

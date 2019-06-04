@@ -3,11 +3,11 @@ package suite.primitive.adt.pair;
 import java.util.Comparator;
 
 import suite.object.Object_;
-import suite.primitive.ChrFunUtil;
-import suite.primitive.Chr_Chr;
 import suite.primitive.DblChr_Obj;
 import suite.primitive.DblFunUtil;
 import suite.primitive.Dbl_Dbl;
+import suite.primitive.ChrFunUtil;
+import suite.primitive.Chr_Chr;
 import suite.streamlet.FunUtil.Iterate;
 
 public class DblChrPair {

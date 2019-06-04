@@ -6,14 +6,14 @@ import suite.primitive.Bytes.BytesBuilder;
 import suite.primitive.Bytes.WriteByte;
 import suite.streamlet.FunUtil.Iterate;
 import suite.streamlet.FunUtil.Source;
-import suite.streamlet.Outlet;
+import suite.streamlet.Puller;
 
 public class Bytes_ {
 
 	private static int bufferSize = 65536;
 
-	public static Outlet<Bytes> buffer(Outlet<Bytes> outlet) {
-		return Outlet.of(new BufferedSource(outlet) {
+	public static Puller<Bytes> buffer(Puller<Bytes> puller) {
+		return Puller.of(new BufferedSource(puller) {
 			protected boolean search() {
 				return bufferSize <= (p0 = p1 = buffer.size());
 			}
@@ -27,19 +27,19 @@ public class Bytes_ {
 			throw new IndexOutOfBoundsException();
 	}
 
-	public static void copy(Outlet<Bytes> outlet, WriteByte writer) {
+	public static void copy(Puller<Bytes> puller, WriteByte writer) {
 		rethrow(() -> {
 			Bytes bytes;
-			while ((bytes = outlet.next()) != null)
+			while ((bytes = puller.pull()) != null)
 				writer.write(bytes.bs, bytes.start, bytes.end - bytes.start);
 			return bytes;
 		});
 	}
 
-	public static Iterate<Outlet<Bytes>> split(Bytes delim) {
+	public static Iterate<Puller<Bytes>> split(Bytes delim) {
 		var ds = delim.size();
 
-		return outlet -> Outlet.of(new BufferedSource(outlet) {
+		return puller -> Puller.of(new BufferedSource(puller) {
 			protected boolean search() {
 				var size = buffer.size();
 				while ((p1 = p0 + ds) <= size)
@@ -56,13 +56,13 @@ public class Bytes_ {
 	}
 
 	private static abstract class BufferedSource implements Source<Bytes> {
-		protected Outlet<Bytes> outlet;
+		protected Puller<Bytes> puller;
 		protected Bytes buffer = Bytes.empty;
 		protected boolean cont = true;
 		protected int p0, p1;
 
-		public BufferedSource(Outlet<Bytes> outlet) {
-			this.outlet = outlet;
+		public BufferedSource(Puller<Bytes> puller) {
+			this.puller = puller;
 		}
 
 		public Bytes g() {
@@ -72,7 +72,7 @@ public class Bytes_ {
 
 			p0 = 0;
 
-			while (!search() && (cont &= (in = outlet.next()) != null)) {
+			while (!search() && (cont &= (in = puller.pull()) != null)) {
 				bb.append(in);
 				buffer = bb.toBytes();
 			}

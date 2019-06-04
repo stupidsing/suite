@@ -13,10 +13,10 @@ import java.util.Iterator;
 import suite.cfg.Defaults;
 import suite.object.Object_;
 import suite.primitive.DblPrimitives.DblSource;
-import suite.primitive.streamlet.DblOutlet;
+import suite.primitive.streamlet.DblPuller;
 import suite.primitive.streamlet.DblStreamlet;
 import suite.streamlet.FunUtil.Fun;
-import suite.streamlet.Outlet;
+import suite.streamlet.Puller;
 import suite.util.Compare;
 import suite.util.ParseUtil;
 
@@ -56,9 +56,9 @@ public class Doubles implements Iterable<Double> {
 		return bb.toDoubles();
 	}
 
-	public static Doubles of(Outlet<Doubles> outlet) {
+	public static Doubles of(Puller<Doubles> puller) {
 		var cb = new DoublesBuilder();
-		outlet.forEach(cb::append);
+		puller.forEach(cb::append);
 		return cb.toDoubles();
 	}
 
@@ -128,7 +128,7 @@ public class Doubles implements Iterable<Double> {
 	}
 
 	public DblStreamlet streamlet() {
-		return new DblStreamlet(() -> DblOutlet.of(new DblSource() {
+		return new DblStreamlet(() -> DblPuller.of(new DblSource() {
 			private int i = start;
 
 			public double g() {

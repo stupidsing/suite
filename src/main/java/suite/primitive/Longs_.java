@@ -4,20 +4,20 @@ import static suite.util.Friends.rethrow;
 
 import suite.primitive.Longs.LongsBuilder;
 import suite.primitive.Longs.WriteChar;
-import suite.primitive.streamlet.LngOutlet;
+import suite.primitive.streamlet.LngPuller;
 import suite.primitive.streamlet.LngStreamlet;
 import suite.streamlet.FunUtil;
 import suite.streamlet.FunUtil.Iterate;
 import suite.streamlet.FunUtil.Source;
-import suite.streamlet.Outlet;
+import suite.streamlet.Puller;
 import suite.streamlet.Read;
 
 public class Longs_ {
 
 	private static int bufferSize = 65536;
 
-	public static Outlet<Longs> buffer(Outlet<Longs> outlet) {
-		return Outlet.of(new BufferedSource(outlet) {
+	public static Puller<Longs> buffer(Puller<Longs> puller) {
+		return Puller.of(new BufferedSource(puller) {
 			protected boolean search() {
 				return bufferSize <= (p0 = p1 = buffer.size());
 			}
@@ -27,8 +27,8 @@ public class Longs_ {
 	@SafeVarargs
 	public static LngStreamlet concat(LngStreamlet... streamlets) {
 		return new LngStreamlet(() -> {
-			var source = Read.from(streamlets).outlet().source();
-			return LngOutlet.of(LngFunUtil.concat(FunUtil.map(LngStreamlet::source, source)));
+			var source = Read.from(streamlets).puller().source();
+			return LngPuller.of(LngFunUtil.concat(FunUtil.map(LngStreamlet::source, source)));
 		});
 	}
 
@@ -67,27 +67,27 @@ public class Longs_ {
 			throw new IndexOutOfBoundsException();
 	}
 
-	public static void copy(Outlet<Longs> outlet, WriteChar writer) {
+	public static void copy(Puller<Longs> puller, WriteChar writer) {
 		rethrow(() -> {
 			Longs longs;
-			while ((longs = outlet.next()) != null)
+			while ((longs = puller.pull()) != null)
 				writer.write(longs.cs, longs.start, longs.end - longs.start);
 			return longs;
 		});
 	}
 
 	public static LngStreamlet of(long... ts) {
-		return new LngStreamlet(() -> LngOutlet.of(ts));
+		return new LngStreamlet(() -> LngPuller.of(ts));
 	}
 
 	public static LngStreamlet of(long[] ts, int start, int end, int inc) {
-		return new LngStreamlet(() -> LngOutlet.of(ts, start, end, inc));
+		return new LngStreamlet(() -> LngPuller.of(ts, start, end, inc));
 	}
 
 	public static LngStreamlet for_(long s, long e) {
 		return new LngStreamlet(() -> {
 			var m = LngMutable.of(s);
-			return LngOutlet.of(() -> {
+			return LngPuller.of(() -> {
 				var c = m.increment();
 				return c < e ? c : LngFunUtil.EMPTYVALUE;
 			});
@@ -95,13 +95,13 @@ public class Longs_ {
 	}
 
 	public static LngStreamlet reverse(long[] ts, int start, int end) {
-		return new LngStreamlet(() -> LngOutlet.of(ts, end - 1, start - 1, -1));
+		return new LngStreamlet(() -> LngPuller.of(ts, end - 1, start - 1, -1));
 	}
 
-	public static Iterate<Outlet<Longs>> split(Longs delim) {
+	public static Iterate<Puller<Longs>> split(Longs delim) {
 		var ds = delim.size();
 
-		return outlet -> Outlet.of(new BufferedSource(outlet) {
+		return puller -> Puller.of(new BufferedSource(puller) {
 			protected boolean search() {
 				var size = buffer.size();
 				while ((p1 = p0 + ds) <= size)
@@ -125,13 +125,13 @@ public class Longs_ {
 	}
 
 	private static abstract class BufferedSource implements Source<Longs> {
-		protected Outlet<Longs> outlet;
+		protected Puller<Longs> puller;
 		protected Longs buffer = Longs.empty;
 		protected boolean cont = true;
 		protected int p0, p1;
 
-		public BufferedSource(Outlet<Longs> outlet) {
-			this.outlet = outlet;
+		public BufferedSource(Puller<Longs> puller) {
+			this.puller = puller;
 		}
 
 		public Longs g() {
@@ -141,7 +141,7 @@ public class Longs_ {
 
 			p0 = 0;
 
-			while (!search() && (cont &= (in = outlet.next()) != null)) {
+			while (!search() && (cont &= (in = puller.pull()) != null)) {
 				cb.append(in);
 				buffer = cb.toLongs();
 			}

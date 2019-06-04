@@ -6,6 +6,8 @@ import suite.object.Object_;
 import suite.primitive.ChrChr_Obj;
 import suite.primitive.ChrFunUtil;
 import suite.primitive.Chr_Chr;
+import suite.primitive.ChrFunUtil;
+import suite.primitive.Chr_Chr;
 import suite.streamlet.FunUtil.Iterate;
 
 public class ChrChrPair {

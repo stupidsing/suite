@@ -13,7 +13,7 @@ import suite.primitive.adt.pair.LngFltPair;
 import suite.streamlet.As;
 import suite.streamlet.FunUtil.Iterate;
 import suite.streamlet.FunUtil2.BinOp;
-import suite.streamlet.Outlet;
+import suite.streamlet.Puller;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.trade.Time;
@@ -33,12 +33,12 @@ public class StockHistory {
 	public final LngFltPair[] dividends;
 	public final LngFltPair[] splits;
 
-	public static StockHistory of(Outlet<String> outlet) {
+	public static StockHistory of(Puller<String> puller) {
 		var properties = new HashMap<String, String>();
 		var data = new HashMap<String, LngFltPair[]>();
 		String line;
 
-		while ('9' < (line = outlet.next()).charAt(0)) {
+		while ('9' < (line = puller.pull()).charAt(0)) {
 			var array = line.split("=");
 			properties.put(array[0].trim(), array[1].trim());
 		}
@@ -48,12 +48,12 @@ public class StockHistory {
 		var isActive = properties.get("isActive");
 
 		var timeZone = timeZoneStr != null ? Integer.parseInt(timeZoneStr) : 0;
-		var dividends = readPairs(timeZone, outlet);
-		var splits = readPairs(timeZone, outlet);
+		var dividends = readPairs(timeZone, puller);
+		var splits = readPairs(timeZone, puller);
 		String tag;
 
-		while ((tag = outlet.next()) != null)
-			data.put(tag, readPairs(timeZone, outlet));
+		while ((tag = puller.pull()) != null)
+			data.put(tag, readPairs(timeZone, puller));
 
 		return of( //
 				exchange, //
@@ -64,12 +64,12 @@ public class StockHistory {
 				splits);
 	}
 
-	private static LngFltPair[] readPairs(int timeZone, Outlet<String> outlet) {
+	private static LngFltPair[] readPairs(int timeZone, Puller<String> puller) {
 		var pairs = new ArrayList<LngFltPair>();
 		String line;
 
-		if (String_.equals(line = outlet.next(), "{"))
-			while (!String_.equals(line = outlet.next(), "}")) {
+		if (String_.equals(line = puller.pull(), "{"))
+			while (!String_.equals(line = puller.pull(), "}")) {
 				var p = line.lastIndexOf(":");
 				var time = Time.of(line.substring(0, p));
 				var price = Float.parseFloat(line.substring(p + 1));

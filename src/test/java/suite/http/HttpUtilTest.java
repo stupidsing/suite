@@ -11,7 +11,7 @@ public class HttpUtilTest {
 	public void test() {
 		var result = HttpUtil //
 				.get("https://ywsing.onedse.com/") //
-				.in(To.outlet("{\"key\": \"value\"}")) //
+				.in(To.puller("{\"key\": \"value\"}")) //
 				.send();
 
 		System.out.println(result.responseCode);

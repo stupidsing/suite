@@ -4,7 +4,7 @@ import static suite.util.Friends.fail;
 
 import suite.primitive.LngPrimitives.Obj_Lng;
 import suite.primitive.Longs.LongsBuilder;
-import suite.primitive.streamlet.ChrOutlet;
+import suite.primitive.streamlet.ChrPuller;
 import suite.primitive.streamlet.LngStreamlet;
 import suite.streamlet.FunUtil.Fun;
 
@@ -12,21 +12,21 @@ public interface Chr_Lng {
 
 	public long apply(char c);
 
-	public static Fun<ChrOutlet, LngStreamlet> lift(Chr_Lng fun0) {
+	public static Fun<ChrPuller, LngStreamlet> lift(Chr_Lng fun0) {
 		var fun1 = fun0.rethrow();
 		return ts -> {
 			var b = new LongsBuilder();
 			char c;
-			while ((c = ts.next()) != ChrFunUtil.EMPTYVALUE)
+			while ((c = ts.pull()) != ChrFunUtil.EMPTYVALUE)
 				b.append(fun1.apply(c));
 			return b.toLongs().streamlet();
 		};
 	}
 
-	public static Obj_Lng<ChrOutlet> sum(Chr_Lng fun0) {
+	public static Obj_Lng<ChrPuller> sum(Chr_Lng fun0) {
 		var fun1 = fun0.rethrow();
-		return outlet -> {
-			var source = outlet.source();
+		return puller -> {
+			var source = puller.source();
 			char c;
 			var result = (long) 0;
 			while ((c = source.g()) != ChrFunUtil.EMPTYVALUE)

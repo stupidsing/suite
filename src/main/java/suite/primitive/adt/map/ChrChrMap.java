@@ -7,17 +7,19 @@ import java.util.Objects;
 
 import suite.primitive.ChrChrSink;
 import suite.primitive.ChrChrSource;
-import suite.primitive.ChrFunUtil;
 import suite.primitive.ChrPrimitives.ChrObjSource;
+import suite.primitive.ChrPrimitives.Obj_Chr;
+import suite.primitive.Chr_Chr;
+import suite.primitive.ChrFunUtil;
 import suite.primitive.ChrPrimitives.Obj_Chr;
 import suite.primitive.Chr_Chr;
 import suite.primitive.adt.pair.ChrChrPair;
 import suite.primitive.adt.pair.ChrObjPair;
-import suite.primitive.streamlet.ChrObjOutlet;
+import suite.primitive.streamlet.ChrObjPuller;
 import suite.primitive.streamlet.ChrObjStreamlet;
 import suite.streamlet.As;
 import suite.streamlet.FunUtil.Fun;
-import suite.streamlet.Outlet;
+import suite.streamlet.Puller;
 
 /**
  * Map with primitive char key and primitive char value. Character.MIN_VALUE is
@@ -33,13 +35,13 @@ public class ChrChrMap {
 	private char[] ks;
 	private char[] vs;
 
-	public static <T> Fun<Outlet<T>, ChrChrMap> collect(Obj_Chr<T> kf0, Obj_Chr<T> vf0) {
+	public static <T> Fun<Puller<T>, ChrChrMap> collect(Obj_Chr<T> kf0, Obj_Chr<T> vf0) {
 		var kf1 = kf0.rethrow();
 		var vf1 = vf0.rethrow();
-		return outlet -> {
+		return puller -> {
 			var map = new ChrChrMap();
 			T t;
-			while ((t = outlet.source().g()) != null)
+			while ((t = puller.source().g()) != null)
 				map.put(kf1.apply(t), vf1.apply(t));
 			return map;
 		};
@@ -137,7 +139,7 @@ public class ChrChrMap {
 	}
 
 	public ChrObjStreamlet<Character> streamlet() {
-		return new ChrObjStreamlet<>(() -> ChrObjOutlet.of(new ChrObjSource<Character>() {
+		return new ChrObjStreamlet<>(() -> ChrObjPuller.of(new ChrObjSource<Character>() {
 			private ChrChrSource source0 = source_();
 			private ChrChrPair pair0 = ChrChrPair.of((char) 0, (char) 0);
 

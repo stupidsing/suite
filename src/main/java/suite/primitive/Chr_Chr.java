@@ -2,9 +2,9 @@ package suite.primitive;
 
 import static suite.util.Friends.fail;
 
-import suite.primitive.Chars.CharsBuilder;
 import suite.primitive.ChrPrimitives.Obj_Chr;
-import suite.primitive.streamlet.ChrOutlet;
+import suite.primitive.Chars.CharsBuilder;
+import suite.primitive.streamlet.ChrPuller;
 import suite.primitive.streamlet.ChrStreamlet;
 import suite.streamlet.FunUtil.Fun;
 
@@ -12,21 +12,21 @@ public interface Chr_Chr {
 
 	public char apply(char c);
 
-	public static Fun<ChrOutlet, ChrStreamlet> lift(Chr_Chr fun0) {
+	public static Fun<ChrPuller, ChrStreamlet> lift(Chr_Chr fun0) {
 		var fun1 = fun0.rethrow();
 		return ts -> {
 			var b = new CharsBuilder();
 			char c;
-			while ((c = ts.next()) != ChrFunUtil.EMPTYVALUE)
+			while ((c = ts.pull()) != ChrFunUtil.EMPTYVALUE)
 				b.append(fun1.apply(c));
 			return b.toChars().streamlet();
 		};
 	}
 
-	public static Obj_Chr<ChrOutlet> sum(Chr_Chr fun0) {
+	public static Obj_Chr<ChrPuller> sum(Chr_Chr fun0) {
 		var fun1 = fun0.rethrow();
-		return outlet -> {
-			var source = outlet.source();
+		return puller -> {
+			var source = puller.source();
 			char c;
 			var result = (char) 0;
 			while ((c = source.g()) != ChrFunUtil.EMPTYVALUE)

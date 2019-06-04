@@ -52,7 +52,7 @@ public class ServerMain {
 				.put("Cache-Control", PerList.of("no-cache")) //
 				.put("Content-Type", PerList.of("text/event-stream")));
 
-		HttpHandler handlerSite = request -> HttpResponse.of(To.outlet("" //
+		HttpHandler handlerSite = request -> HttpResponse.of(To.puller("" //
 				+ "<html>" //
 				+ "<br/>method = " + request.method //
 				+ "<br/>server = " + request.server //

@@ -19,23 +19,23 @@ import suite.streamlet.FunUtil.Sink;
 import suite.streamlet.FunUtil.Source;
 import suite.streamlet.FunUtil2.Fun2;
 
-public class Streamlet<T> implements StreamletDefaults<T, Outlet<T>> {
+public class Streamlet<T> implements StreamletDefaults<T, Puller<T>> {
 
-	private Source<Outlet<T>> in;
+	private Source<Puller<T>> in;
 
 	@SafeVarargs
 	public static <T> Streamlet<T> concat(Streamlet<T>... streamlets) {
 		return streamlet(() -> {
-			var source = Read.from(streamlets).outlet().source();
-			return Outlet.of(FunUtil.concat(FunUtil.map(st -> st.spawn().source(), source)));
+			var source = Read.from(streamlets).puller().source();
+			return Puller.of(FunUtil.concat(FunUtil.map(st -> st.spawn().source(), source)));
 		});
 	}
 
-	private static <T> Streamlet<T> streamlet(Source<Outlet<T>> in) {
+	private static <T> Streamlet<T> streamlet(Source<Puller<T>> in) {
 		return new Streamlet<>(in);
 	}
 
-	public Streamlet(Source<Outlet<T>> in) {
+	public Streamlet(Source<Puller<T>> in) {
 		this.in = in;
 	}
 
@@ -43,7 +43,7 @@ public class Streamlet<T> implements StreamletDefaults<T, Outlet<T>> {
 		return fun.apply(this);
 	}
 
-	public Streamlet<Outlet<T>> chunk(int n) {
+	public Streamlet<Puller<T>> chunk(int n) {
 		return streamlet(() -> spawn().chunk(n));
 	}
 
@@ -170,12 +170,12 @@ public class Streamlet<T> implements StreamletDefaults<T, Outlet<T>> {
 		return spawn().opt();
 	}
 
-	public Outlet<T> outlet() {
-		return spawn();
-	}
-
 	public Pair<Streamlet<T>, Streamlet<T>> partition(Predicate<T> pred) {
 		return Pair.of(filter(pred), filter(pred.negate()));
+	}
+
+	public Puller<T> puller() {
+		return spawn();
 	}
 
 	public Streamlet<T> reverse() {
@@ -264,7 +264,7 @@ public class Streamlet<T> implements StreamletDefaults<T, Outlet<T>> {
 	}
 
 	public <U, V> Streamlet<V> zip(Iterable<U> list1, Fun2<T, U, V> fun) {
-		return streamlet(() -> spawn().zip(Outlet.of(list1), fun));
+		return streamlet(() -> spawn().zip(Puller.of(list1), fun));
 	}
 
 	private <O> Streamlet<O> concatMap_(Fun<T, Streamlet<O>> fun) {
@@ -272,7 +272,7 @@ public class Streamlet<T> implements StreamletDefaults<T, Outlet<T>> {
 	}
 
 	private <K, V> Streamlet2<K, V> concatMap2_(Fun<T, Streamlet2<K, V>> fun) {
-		return new Streamlet2<>(() -> spawn().concatMap2(t -> fun.apply(t).outlet()));
+		return new Streamlet2<>(() -> spawn().concatMap2(t -> fun.apply(t).puller()));
 	}
 
 	private <O> Streamlet<O> map_(Fun<T, O> fun) {
@@ -287,7 +287,7 @@ public class Streamlet<T> implements StreamletDefaults<T, Outlet<T>> {
 		return spawn().toList();
 	}
 
-	private Outlet<T> spawn() {
+	private Puller<T> spawn() {
 		return in.g();
 	}
 

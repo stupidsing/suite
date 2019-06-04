@@ -30,9 +30,9 @@ import suite.streamlet.FunUtil;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil2;
 import suite.streamlet.FunUtil2.Sink2;
-import suite.streamlet.Outlet;
-import suite.streamlet.Outlet2;
-import suite.streamlet.OutletDefaults;
+import suite.streamlet.Puller;
+import suite.streamlet.Puller2;
+import suite.streamlet.PullerDefaults;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.Array_;
@@ -40,25 +40,25 @@ import suite.util.List_;
 import suite.util.NullableSyncQueue;
 import suite.util.To;
 
-public class DblObjOutlet<V> implements OutletDefaults<DblObjPair<V>> {
+public class DblObjPuller<V> implements PullerDefaults<DblObjPair<V>> {
 
 	private static double empty = DblFunUtil.EMPTYVALUE;
 
 	private DblObjSource<V> source;
 
 	@SafeVarargs
-	public static <V> DblObjOutlet<V> concat(DblObjOutlet<V>... outlets) {
+	public static <V> DblObjPuller<V> concat(DblObjPuller<V>... outlets) {
 		var sources = new ArrayList<DblObjSource<V>>();
 		for (var outlet : outlets)
 			sources.add(outlet.source);
 		return of(DblObjFunUtil.concat(To.source(sources)));
 	}
 
-	public static <V> DblObjOutlet<V> empty() {
+	public static <V> DblObjPuller<V> empty() {
 		return of(DblObjFunUtil.nullSource());
 	}
 
-	public static <V> DblObjOutlet<List<V>> of(ListMultimap<Double, V> multimap) {
+	public static <V> DblObjPuller<List<V>> of(ListMultimap<Double, V> multimap) {
 		var iter = multimap.listEntries().iterator();
 		return of(pair -> {
 			var b = iter.hasNext();
@@ -70,12 +70,12 @@ public class DblObjOutlet<V> implements OutletDefaults<DblObjPair<V>> {
 		});
 	}
 
-	public static <V> DblObjOutlet<V> of(DblObjMap<V> map) {
+	public static <V> DblObjPuller<V> of(DblObjMap<V> map) {
 		return of(map.source());
 	}
 
 	@SafeVarargs
-	public static <V> DblObjOutlet<V> of(DblObjPair<V>... kvs) {
+	public static <V> DblObjPuller<V> of(DblObjPair<V>... kvs) {
 		return of(new DblObjSource<>() {
 			private int i;
 
@@ -91,7 +91,7 @@ public class DblObjOutlet<V> implements OutletDefaults<DblObjPair<V>> {
 		});
 	}
 
-	public static <V> DblObjOutlet<V> of(Iterable<DblObjPair<V>> col) {
+	public static <V> DblObjPuller<V> of(Iterable<DblObjPair<V>> col) {
 		var iter = col.iterator();
 		return of(new DblObjSource<>() {
 			public boolean source2(DblObjPair<V> pair) {
@@ -105,44 +105,44 @@ public class DblObjOutlet<V> implements OutletDefaults<DblObjPair<V>> {
 		});
 	}
 
-	public static <V> DblObjOutlet<V> of(DblObjSource<V> source) {
-		return new DblObjOutlet<>(source);
+	public static <V> DblObjPuller<V> of(DblObjSource<V> source) {
+		return new DblObjPuller<>(source);
 	}
 
-	private DblObjOutlet(DblObjSource<V> source) {
+	private DblObjPuller(DblObjSource<V> source) {
 		this.source = source;
 	}
 
-	public Outlet<DblObjOutlet<V>> chunk(int n) {
-		return Outlet.of(FunUtil.map(DblObjOutlet<V>::new, DblObjFunUtil.chunk(n, source)));
+	public Puller<DblObjPuller<V>> chunk(int n) {
+		return Puller.of(FunUtil.map(DblObjPuller<V>::new, DblObjFunUtil.chunk(n, source)));
 	}
 
-	public DblObjOutlet<V> closeAtEnd(Closeable c) {
+	public DblObjPuller<V> closeAtEnd(Closeable c) {
 		return of(pair -> {
-			var b = next(pair);
+			var b = pull(pair);
 			if (!b)
 				Object_.closeQuietly(c);
 			return b;
 		});
 	}
 
-	public <R> R collect(Fun<DblObjOutlet<V>, R> fun) {
+	public <R> R collect(Fun<DblObjPuller<V>, R> fun) {
 		return fun.apply(this);
 	}
 
-	public <O> Outlet<O> concatMap(DblObj_Obj<V, Outlet<O>> fun) {
-		return Outlet.of(FunUtil.concat(DblObjFunUtil.map((k, v) -> fun.apply(k, v).source(), source)));
+	public <O> Puller<O> concatMap(DblObj_Obj<V, Puller<O>> fun) {
+		return Puller.of(FunUtil.concat(DblObjFunUtil.map((k, v) -> fun.apply(k, v).source(), source)));
 	}
 
-	public <K1, V1> Outlet2<K1, V1> concatMap2(DblObj_Obj<V, Outlet2<K1, V1>> fun) {
-		return Outlet2.of(FunUtil2.concat(DblObjFunUtil.map((k, v) -> fun.apply(k, v).source(), source)));
+	public <K1, V1> Puller2<K1, V1> concatMap2(DblObj_Obj<V, Puller2<K1, V1>> fun) {
+		return Puller2.of(FunUtil2.concat(DblObjFunUtil.map((k, v) -> fun.apply(k, v).source(), source)));
 	}
 
-	public <V1> DblObjOutlet<V1> concatMapDblObj(DblObj_Obj<V, DblObjOutlet<V1>> fun) {
+	public <V1> DblObjPuller<V1> concatMapDblObj(DblObj_Obj<V, DblObjPuller<V1>> fun) {
 		return of(DblObjFunUtil.concat(DblObjFunUtil.map((k, v) -> fun.apply(k, v).source, source)));
 	}
 
-	public <V1> DblObjOutlet<V1> concatMapValue(Fun<V, Outlet<V1>> fun) {
+	public <V1> DblObjPuller<V1> concatMapValue(Fun<V, Puller<V1>> fun) {
 		return of(DblObjFunUtil.concat(DblObjFunUtil.map((k, v) -> {
 			var source = fun.apply(v).source();
 			return pair -> {
@@ -155,41 +155,41 @@ public class DblObjOutlet<V> implements OutletDefaults<DblObjPair<V>> {
 		}, source)));
 	}
 
-	public DblObjOutlet<V> cons(double key, V value) {
+	public DblObjPuller<V> cons(double key, V value) {
 		return of(DblObjFunUtil.cons(key, value, source));
 	}
 
 	public int count() {
 		var pair = DblObjPair.of(empty, (V) null);
 		var i = 0;
-		while (next(pair))
+		while (pull(pair))
 			i++;
 		return i;
 	}
 
-	public DblObjOutlet<V> distinct() {
+	public DblObjPuller<V> distinct() {
 		var set = new HashSet<>();
 		return of(pair -> {
 			boolean b;
-			while ((b = next(pair)) && !set.add(DblObjPair.of(pair.t0, pair.t1)))
+			while ((b = pull(pair)) && !set.add(DblObjPair.of(pair.t0, pair.t1)))
 				;
 			return b;
 		});
 	}
 
-	public DblObjOutlet<V> drop(int n) {
+	public DblObjPuller<V> drop(int n) {
 		var pair = DblObjPair.of(empty, (V) null);
 		var isAvailable = true;
-		while (0 < n && (isAvailable &= next(pair)))
+		while (0 < n && (isAvailable &= pull(pair)))
 			n--;
 		return isAvailable ? this : empty();
 	}
 
 	@Override
 	public boolean equals(Object object) {
-		if (Object_.clazz(object) == DblObjOutlet.class) {
+		if (Object_.clazz(object) == DblObjPuller.class) {
 			@SuppressWarnings("unchecked")
-			var outlet = (DblObjOutlet<V>) (DblObjOutlet<?>) object;
+			var outlet = (DblObjPuller<V>) (DblObjPuller<?>) object;
 			var source2 = outlet.source;
 			boolean b, b0, b1;
 			var pair0 = DblObjPair.of(empty, (V) null);
@@ -204,32 +204,32 @@ public class DblObjOutlet<V> implements OutletDefaults<DblObjPair<V>> {
 			return false;
 	}
 
-	public DblObjOutlet<V> filter(DblObjPredicate<V> fun) {
+	public DblObjPuller<V> filter(DblObjPredicate<V> fun) {
 		return of(DblObjFunUtil.filter(fun, source));
 	}
 
-	public DblObjOutlet<V> filterKey(DblTest fun) {
+	public DblObjPuller<V> filterKey(DblTest fun) {
 		return of(DblObjFunUtil.filterKey(fun, source));
 	}
 
-	public DblObjOutlet<V> filterValue(Predicate<V> fun) {
+	public DblObjPuller<V> filterValue(Predicate<V> fun) {
 		return of(DblObjFunUtil.filterValue(fun, source));
 	}
 
 	public DblObjPair<V> first() {
 		var pair = DblObjPair.of(empty, (V) null);
-		return next(pair) ? pair : null;
+		return pull(pair) ? pair : null;
 	}
 
-	public <O> Outlet<O> flatMap(DblObj_Obj<V, Iterable<O>> fun) {
-		return Outlet.of(FunUtil.flatten(DblObjFunUtil.map(fun, source)));
+	public <O> Puller<O> flatMap(DblObj_Obj<V, Iterable<O>> fun) {
+		return Puller.of(FunUtil.flatten(DblObjFunUtil.map(fun, source)));
 	}
 
-	public DblObjOutlet<List<V>> groupBy() {
+	public DblObjPuller<List<V>> groupBy() {
 		return of(toListMap().source());
 	}
 
-	public <V1> DblObjOutlet<V1> groupBy(Fun<Streamlet<V>, V1> fun) {
+	public <V1> DblObjPuller<V1> groupBy(Fun<Streamlet<V>, V1> fun) {
 		return groupBy().mapValue(list -> fun.apply(Read.from(list)));
 	}
 
@@ -237,7 +237,7 @@ public class DblObjOutlet<V> implements OutletDefaults<DblObjPair<V>> {
 	public int hashCode() {
 		var pair = DblObjPair.of(empty, (V) null);
 		var h = 7;
-		while (next(pair))
+		while (pull(pair))
 			h = h * 31 + pair.hashCode();
 		return h;
 	}
@@ -255,36 +255,36 @@ public class DblObjOutlet<V> implements OutletDefaults<DblObjPair<V>> {
 		return DblObjFunUtil.iterator(source);
 	}
 
-	public DblOutlet keys() {
-		return DblOutlet.of(() -> {
+	public DblPuller keys() {
+		return DblPuller.of(() -> {
 			var pair = DblObjPair.of(empty, (V) null);
-			return next(pair) ? pair.t0 : empty;
+			return pull(pair) ? pair.t0 : empty;
 		});
 	}
 
 	public DblObjPair<V> last() {
 		var pair = DblObjPair.of(empty, (V) null);
-		if (next(pair))
-			while (next(pair))
+		if (pull(pair))
+			while (pull(pair))
 				;
 		else
 			pair = null;
 		return pair;
 	}
 
-	public <O> Outlet<O> map(DblObj_Obj<V, O> fun0) {
+	public <O> Puller<O> map(DblObj_Obj<V, O> fun0) {
 		return map_(fun0);
 	}
 
-	public <K1, V1> Outlet2<K1, V1> map2(DblObj_Obj<V, K1> kf, DblObj_Obj<V, V1> vf) {
-		return Outlet2.of(DblObjFunUtil.map2(kf, vf, source));
+	public <K1, V1> Puller2<K1, V1> map2(DblObj_Obj<V, K1> kf, DblObj_Obj<V, V1> vf) {
+		return Puller2.of(DblObjFunUtil.map2(kf, vf, source));
 	}
 
-	public <V1> DblObjOutlet<V1> mapDblObj(DblObj_Dbl<V> kf, DblObj_Obj<V, V1> vf) {
+	public <V1> DblObjPuller<V1> mapDblObj(DblObj_Dbl<V> kf, DblObj_Obj<V, V1> vf) {
 		return mapDblObj_(kf, vf);
 	}
 
-	public <V1> DblObjOutlet<V1> mapValue(Fun<V, V1> fun) {
+	public <V1> DblObjPuller<V1> mapValue(Fun<V, V1> fun) {
 		return mapDblObj_((k, v) -> k, (k, v) -> fun.apply(v));
 	}
 
@@ -299,8 +299,8 @@ public class DblObjOutlet<V> implements OutletDefaults<DblObjPair<V>> {
 	public DblObjPair<V> minOrNull(Comparator<DblObjPair<V>> comparator) {
 		var pair = DblObjPair.of(empty, (V) null);
 		var pair1 = DblObjPair.of(empty, (V) null);
-		if (next(pair)) {
-			while (next(pair1))
+		if (pull(pair)) {
+			while (pull(pair1))
 				if (0 < comparator.compare(pair, pair1))
 					pair.update(pair1.t0, pair1.t1);
 			return pair;
@@ -308,7 +308,7 @@ public class DblObjOutlet<V> implements OutletDefaults<DblObjPair<V>> {
 			return null;
 	}
 
-	public DblObjOutlet<V> nonBlocking(Double k0, V v0) {
+	public DblObjPuller<V> nonBlocking(Double k0, V v0) {
 		var queue = new NullableSyncQueue<DblObjPair<V>>();
 
 		new Thread(() -> {
@@ -320,7 +320,7 @@ public class DblObjOutlet<V> implements OutletDefaults<DblObjPair<V>> {
 			} while (b);
 		}).start();
 
-		return new DblObjOutlet<>(pair -> {
+		return new DblObjPuller<>(pair -> {
 			var mutable = Mutable.<DblObjPair<V>> nil();
 			var b = queue.poll(mutable);
 			if (b) {
@@ -334,8 +334,8 @@ public class DblObjOutlet<V> implements OutletDefaults<DblObjPair<V>> {
 
 	public DblObjPair<V> opt() {
 		var pair = DblObjPair.of(empty, (V) null);
-		if (next(pair))
-			if (!next(pair))
+		if (pull(pair))
+			if (!pull(pair))
 				return pair;
 			else
 				return fail("more than one result");
@@ -343,57 +343,57 @@ public class DblObjOutlet<V> implements OutletDefaults<DblObjPair<V>> {
 			return DblObjPair.none();
 	}
 
-	public Outlet<DblObjPair<V>> pairs() {
-		return Outlet.of(() -> {
+	public Puller<DblObjPair<V>> pairs() {
+		return Puller.of(() -> {
 			var pair = DblObjPair.of(empty, (V) null);
-			return next(pair) ? pair : null;
+			return pull(pair) ? pair : null;
 		});
 	}
 
-	public Pair<DblObjOutlet<V>, DblObjOutlet<V>> partition(DblObjPredicate<V> pred) {
+	public Pair<DblObjPuller<V>, DblObjPuller<V>> partition(DblObjPredicate<V> pred) {
 		return Pair.of(filter(pred), filter((k, v) -> !pred.test(k, v)));
 	}
 
-	public DblObjOutlet<V> reverse() {
+	public DblObjPuller<V> reverse() {
 		return of(List_.reverse(toList()));
 	}
 
 	public void sink(Sink2<Double, V> sink0) {
 		var sink1 = sink0.rethrow();
 		var pair = DblObjPair.of(empty, (V) null);
-		while (next(pair))
+		while (pull(pair))
 			sink1.sink2(pair.t0, pair.t1);
 	}
 
-	public DblObjOutlet<V> skip(int n) {
+	public DblObjPuller<V> skip(int n) {
 		var pair = DblObjPair.of(empty, (V) null);
 		var end = false;
 		for (var i = 0; !end && i < n; i++)
-			end = next(pair);
+			end = pull(pair);
 		return !end ? of(source) : empty();
 	}
 
-	public DblObjOutlet<V> snoc(Double key, V value) {
+	public DblObjPuller<V> snoc(Double key, V value) {
 		return of(DblObjFunUtil.snoc(key, value, source));
 	}
 
-	public DblObjOutlet<V> sort(Comparator<DblObjPair<V>> comparator) {
+	public DblObjPuller<V> sort(Comparator<DblObjPair<V>> comparator) {
 		var list = new ArrayList<DblObjPair<V>>();
 		DblObjPair<V> pair;
-		while (next(pair = DblObjPair.of(empty, null)))
+		while (pull(pair = DblObjPair.of(empty, null)))
 			list.add(pair);
 		return of(List_.sort(list, comparator));
 	}
 
-	public <O extends Comparable<? super O>> DblObjOutlet<V> sortBy(DblObj_Obj<V, O> fun) {
+	public <O extends Comparable<? super O>> DblObjPuller<V> sortBy(DblObj_Obj<V, O> fun) {
 		return sort((e0, e1) -> Object_.compare(fun.apply(e0.t0, e0.t1), fun.apply(e1.t0, e1.t1)));
 	}
 
-	public DblObjOutlet<V> sortByKey(Comparator<Double> comparator) {
+	public DblObjPuller<V> sortByKey(Comparator<Double> comparator) {
 		return sort((e0, e1) -> comparator.compare(e0.t0, e1.t0));
 	}
 
-	public DblObjOutlet<V> sortByValue(Comparator<V> comparator) {
+	public DblObjPuller<V> sortByValue(Comparator<V> comparator) {
 		return sort((e0, e1) -> comparator.compare(e0.t1, e1.t1));
 	}
 
@@ -401,16 +401,16 @@ public class DblObjOutlet<V> implements OutletDefaults<DblObjPair<V>> {
 		return source;
 	}
 
-	public Outlet<DblObjOutlet<V>> split(DblObjPredicate<V> fun) {
-		return Outlet.of(FunUtil.map(DblObjOutlet<V>::new, DblObjFunUtil.split(fun, source)));
+	public Puller<DblObjPuller<V>> split(DblObjPredicate<V> fun) {
+		return Puller.of(FunUtil.map(DblObjPuller<V>::new, DblObjFunUtil.split(fun, source)));
 	}
 
-	public DblObjOutlet<V> take(int n) {
+	public DblObjPuller<V> take(int n) {
 		return of(new DblObjSource<>() {
 			private int count = n;
 
 			public boolean source2(DblObjPair<V> pair) {
-				return 0 < count-- ? next(pair) : false;
+				return 0 < count-- ? pull(pair) : false;
 			}
 		});
 	}
@@ -425,7 +425,7 @@ public class DblObjOutlet<V> implements OutletDefaults<DblObjPair<V>> {
 	public List<DblObjPair<V>> toList() {
 		var list = new ArrayList<DblObjPair<V>>();
 		DblObjPair<V> pair;
-		while (next(pair = DblObjPair.of(empty, null)))
+		while (pull(pair = DblObjPair.of(empty, null)))
 			list.add(pair);
 		return list;
 	}
@@ -433,7 +433,7 @@ public class DblObjOutlet<V> implements OutletDefaults<DblObjPair<V>> {
 	public DblObjMap<List<V>> toListMap() {
 		var map = new DblObjMap<List<V>>();
 		var pair = DblObjPair.of(empty, (V) null);
-		while (next(pair))
+		while (pull(pair))
 			map.computeIfAbsent(pair.t0, k_ -> new ArrayList<>()).add(pair.t1);
 		return map;
 	}
@@ -448,7 +448,7 @@ public class DblObjOutlet<V> implements OutletDefaults<DblObjPair<V>> {
 
 	public ListMultimap<Double, V> toMultimap() {
 		var map = new ListMultimap<Double, V>();
-		groupBy().concatMapValue(Outlet::of).sink(map::put);
+		groupBy().concatMapValue(Puller::of).sink(map::put);
 		return map;
 	}
 
@@ -463,7 +463,7 @@ public class DblObjOutlet<V> implements OutletDefaults<DblObjPair<V>> {
 	public Set<DblObjPair<V>> toSet() {
 		var set = new HashSet<DblObjPair<V>>();
 		DblObjPair<V> pair;
-		while (next(pair = DblObjPair.of(empty, null)))
+		while (pull(pair = DblObjPair.of(empty, null)))
 			set.add(pair);
 		return set;
 
@@ -473,19 +473,19 @@ public class DblObjOutlet<V> implements OutletDefaults<DblObjPair<V>> {
 		return groupBy().mapValue(values -> Read.from(values).toSet()).toMap();
 	}
 
-	public Outlet<V> values() {
+	public Puller<V> values() {
 		return map_((k, v) -> v);
 	}
 
-	private <O> Outlet<O> map_(DblObj_Obj<V, O> fun0) {
-		return Outlet.of(DblObjFunUtil.map(fun0, source));
+	private <O> Puller<O> map_(DblObj_Obj<V, O> fun0) {
+		return Puller.of(DblObjFunUtil.map(fun0, source));
 	}
 
-	private <V1> DblObjOutlet<V1> mapDblObj_(DblObj_Dbl<V> kf, DblObj_Obj<V, V1> vf) {
+	private <V1> DblObjPuller<V1> mapDblObj_(DblObj_Dbl<V> kf, DblObj_Obj<V, V1> vf) {
 		return of(DblObjFunUtil.mapDblObj(kf, vf, source));
 	}
 
-	private boolean next(DblObjPair<V> pair) {
+	private boolean pull(DblObjPair<V> pair) {
 		return source.source2(pair);
 	}
 

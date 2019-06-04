@@ -13,13 +13,13 @@ public class StreamletTest {
 		for (var i = 0; i < objects.length; i++)
 			objects[i] = new Object();
 
-		var chunks = Outlet.of(objects).chunk(5);
-		assertEquals(5, chunks.next().toList().size());
-		assertEquals(5, chunks.next().toList().size());
-		assertEquals(5, chunks.next().toList().size());
-		assertEquals(5, chunks.next().toList().size());
-		assertEquals(5, chunks.next().toList().size());
-		assertEquals(4, chunks.next().toList().size());
+		var chunks = Puller.of(objects).chunk(5);
+		assertEquals(5, chunks.pull().toList().size());
+		assertEquals(5, chunks.pull().toList().size());
+		assertEquals(5, chunks.pull().toList().size());
+		assertEquals(5, chunks.pull().toList().size());
+		assertEquals(5, chunks.pull().toList().size());
+		assertEquals(4, chunks.pull().toList().size());
 	}
 
 }

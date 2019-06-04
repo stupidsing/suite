@@ -30,9 +30,9 @@ import suite.streamlet.FunUtil;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil2;
 import suite.streamlet.FunUtil2.Sink2;
-import suite.streamlet.Outlet;
-import suite.streamlet.Outlet2;
-import suite.streamlet.OutletDefaults;
+import suite.streamlet.Puller;
+import suite.streamlet.Puller2;
+import suite.streamlet.PullerDefaults;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.Array_;
@@ -40,25 +40,25 @@ import suite.util.List_;
 import suite.util.NullableSyncQueue;
 import suite.util.To;
 
-public class IntObjOutlet<V> implements OutletDefaults<IntObjPair<V>> {
+public class IntObjPuller<V> implements PullerDefaults<IntObjPair<V>> {
 
 	private static int empty = IntFunUtil.EMPTYVALUE;
 
 	private IntObjSource<V> source;
 
 	@SafeVarargs
-	public static <V> IntObjOutlet<V> concat(IntObjOutlet<V>... outlets) {
+	public static <V> IntObjPuller<V> concat(IntObjPuller<V>... outlets) {
 		var sources = new ArrayList<IntObjSource<V>>();
 		for (var outlet : outlets)
 			sources.add(outlet.source);
 		return of(IntObjFunUtil.concat(To.source(sources)));
 	}
 
-	public static <V> IntObjOutlet<V> empty() {
+	public static <V> IntObjPuller<V> empty() {
 		return of(IntObjFunUtil.nullSource());
 	}
 
-	public static <V> IntObjOutlet<List<V>> of(ListMultimap<Integer, V> multimap) {
+	public static <V> IntObjPuller<List<V>> of(ListMultimap<Integer, V> multimap) {
 		var iter = multimap.listEntries().iterator();
 		return of(pair -> {
 			var b = iter.hasNext();
@@ -70,12 +70,12 @@ public class IntObjOutlet<V> implements OutletDefaults<IntObjPair<V>> {
 		});
 	}
 
-	public static <V> IntObjOutlet<V> of(IntObjMap<V> map) {
+	public static <V> IntObjPuller<V> of(IntObjMap<V> map) {
 		return of(map.source());
 	}
 
 	@SafeVarargs
-	public static <V> IntObjOutlet<V> of(IntObjPair<V>... kvs) {
+	public static <V> IntObjPuller<V> of(IntObjPair<V>... kvs) {
 		return of(new IntObjSource<>() {
 			private int i;
 
@@ -91,7 +91,7 @@ public class IntObjOutlet<V> implements OutletDefaults<IntObjPair<V>> {
 		});
 	}
 
-	public static <V> IntObjOutlet<V> of(Iterable<IntObjPair<V>> col) {
+	public static <V> IntObjPuller<V> of(Iterable<IntObjPair<V>> col) {
 		var iter = col.iterator();
 		return of(new IntObjSource<>() {
 			public boolean source2(IntObjPair<V> pair) {
@@ -105,44 +105,44 @@ public class IntObjOutlet<V> implements OutletDefaults<IntObjPair<V>> {
 		});
 	}
 
-	public static <V> IntObjOutlet<V> of(IntObjSource<V> source) {
-		return new IntObjOutlet<>(source);
+	public static <V> IntObjPuller<V> of(IntObjSource<V> source) {
+		return new IntObjPuller<>(source);
 	}
 
-	private IntObjOutlet(IntObjSource<V> source) {
+	private IntObjPuller(IntObjSource<V> source) {
 		this.source = source;
 	}
 
-	public Outlet<IntObjOutlet<V>> chunk(int n) {
-		return Outlet.of(FunUtil.map(IntObjOutlet<V>::new, IntObjFunUtil.chunk(n, source)));
+	public Puller<IntObjPuller<V>> chunk(int n) {
+		return Puller.of(FunUtil.map(IntObjPuller<V>::new, IntObjFunUtil.chunk(n, source)));
 	}
 
-	public IntObjOutlet<V> closeAtEnd(Closeable c) {
+	public IntObjPuller<V> closeAtEnd(Closeable c) {
 		return of(pair -> {
-			var b = next(pair);
+			var b = pull(pair);
 			if (!b)
 				Object_.closeQuietly(c);
 			return b;
 		});
 	}
 
-	public <R> R collect(Fun<IntObjOutlet<V>, R> fun) {
+	public <R> R collect(Fun<IntObjPuller<V>, R> fun) {
 		return fun.apply(this);
 	}
 
-	public <O> Outlet<O> concatMap(IntObj_Obj<V, Outlet<O>> fun) {
-		return Outlet.of(FunUtil.concat(IntObjFunUtil.map((k, v) -> fun.apply(k, v).source(), source)));
+	public <O> Puller<O> concatMap(IntObj_Obj<V, Puller<O>> fun) {
+		return Puller.of(FunUtil.concat(IntObjFunUtil.map((k, v) -> fun.apply(k, v).source(), source)));
 	}
 
-	public <K1, V1> Outlet2<K1, V1> concatMap2(IntObj_Obj<V, Outlet2<K1, V1>> fun) {
-		return Outlet2.of(FunUtil2.concat(IntObjFunUtil.map((k, v) -> fun.apply(k, v).source(), source)));
+	public <K1, V1> Puller2<K1, V1> concatMap2(IntObj_Obj<V, Puller2<K1, V1>> fun) {
+		return Puller2.of(FunUtil2.concat(IntObjFunUtil.map((k, v) -> fun.apply(k, v).source(), source)));
 	}
 
-	public <V1> IntObjOutlet<V1> concatMapIntObj(IntObj_Obj<V, IntObjOutlet<V1>> fun) {
+	public <V1> IntObjPuller<V1> concatMapIntObj(IntObj_Obj<V, IntObjPuller<V1>> fun) {
 		return of(IntObjFunUtil.concat(IntObjFunUtil.map((k, v) -> fun.apply(k, v).source, source)));
 	}
 
-	public <V1> IntObjOutlet<V1> concatMapValue(Fun<V, Outlet<V1>> fun) {
+	public <V1> IntObjPuller<V1> concatMapValue(Fun<V, Puller<V1>> fun) {
 		return of(IntObjFunUtil.concat(IntObjFunUtil.map((k, v) -> {
 			var source = fun.apply(v).source();
 			return pair -> {
@@ -155,41 +155,41 @@ public class IntObjOutlet<V> implements OutletDefaults<IntObjPair<V>> {
 		}, source)));
 	}
 
-	public IntObjOutlet<V> cons(int key, V value) {
+	public IntObjPuller<V> cons(int key, V value) {
 		return of(IntObjFunUtil.cons(key, value, source));
 	}
 
 	public int count() {
 		var pair = IntObjPair.of(empty, (V) null);
 		var i = 0;
-		while (next(pair))
+		while (pull(pair))
 			i++;
 		return i;
 	}
 
-	public IntObjOutlet<V> distinct() {
+	public IntObjPuller<V> distinct() {
 		var set = new HashSet<>();
 		return of(pair -> {
 			boolean b;
-			while ((b = next(pair)) && !set.add(IntObjPair.of(pair.t0, pair.t1)))
+			while ((b = pull(pair)) && !set.add(IntObjPair.of(pair.t0, pair.t1)))
 				;
 			return b;
 		});
 	}
 
-	public IntObjOutlet<V> drop(int n) {
+	public IntObjPuller<V> drop(int n) {
 		var pair = IntObjPair.of(empty, (V) null);
 		var isAvailable = true;
-		while (0 < n && (isAvailable &= next(pair)))
+		while (0 < n && (isAvailable &= pull(pair)))
 			n--;
 		return isAvailable ? this : empty();
 	}
 
 	@Override
 	public boolean equals(Object object) {
-		if (Object_.clazz(object) == IntObjOutlet.class) {
+		if (Object_.clazz(object) == IntObjPuller.class) {
 			@SuppressWarnings("unchecked")
-			var outlet = (IntObjOutlet<V>) (IntObjOutlet<?>) object;
+			var outlet = (IntObjPuller<V>) (IntObjPuller<?>) object;
 			var source2 = outlet.source;
 			boolean b, b0, b1;
 			var pair0 = IntObjPair.of(empty, (V) null);
@@ -204,32 +204,32 @@ public class IntObjOutlet<V> implements OutletDefaults<IntObjPair<V>> {
 			return false;
 	}
 
-	public IntObjOutlet<V> filter(IntObjPredicate<V> fun) {
+	public IntObjPuller<V> filter(IntObjPredicate<V> fun) {
 		return of(IntObjFunUtil.filter(fun, source));
 	}
 
-	public IntObjOutlet<V> filterKey(IntTest fun) {
+	public IntObjPuller<V> filterKey(IntTest fun) {
 		return of(IntObjFunUtil.filterKey(fun, source));
 	}
 
-	public IntObjOutlet<V> filterValue(Predicate<V> fun) {
+	public IntObjPuller<V> filterValue(Predicate<V> fun) {
 		return of(IntObjFunUtil.filterValue(fun, source));
 	}
 
 	public IntObjPair<V> first() {
 		var pair = IntObjPair.of(empty, (V) null);
-		return next(pair) ? pair : null;
+		return pull(pair) ? pair : null;
 	}
 
-	public <O> Outlet<O> flatMap(IntObj_Obj<V, Iterable<O>> fun) {
-		return Outlet.of(FunUtil.flatten(IntObjFunUtil.map(fun, source)));
+	public <O> Puller<O> flatMap(IntObj_Obj<V, Iterable<O>> fun) {
+		return Puller.of(FunUtil.flatten(IntObjFunUtil.map(fun, source)));
 	}
 
-	public IntObjOutlet<List<V>> groupBy() {
+	public IntObjPuller<List<V>> groupBy() {
 		return of(toListMap().source());
 	}
 
-	public <V1> IntObjOutlet<V1> groupBy(Fun<Streamlet<V>, V1> fun) {
+	public <V1> IntObjPuller<V1> groupBy(Fun<Streamlet<V>, V1> fun) {
 		return groupBy().mapValue(list -> fun.apply(Read.from(list)));
 	}
 
@@ -237,7 +237,7 @@ public class IntObjOutlet<V> implements OutletDefaults<IntObjPair<V>> {
 	public int hashCode() {
 		var pair = IntObjPair.of(empty, (V) null);
 		var h = 7;
-		while (next(pair))
+		while (pull(pair))
 			h = h * 31 + pair.hashCode();
 		return h;
 	}
@@ -255,36 +255,36 @@ public class IntObjOutlet<V> implements OutletDefaults<IntObjPair<V>> {
 		return IntObjFunUtil.iterator(source);
 	}
 
-	public IntOutlet keys() {
-		return IntOutlet.of(() -> {
+	public IntPuller keys() {
+		return IntPuller.of(() -> {
 			var pair = IntObjPair.of(empty, (V) null);
-			return next(pair) ? pair.t0 : empty;
+			return pull(pair) ? pair.t0 : empty;
 		});
 	}
 
 	public IntObjPair<V> last() {
 		var pair = IntObjPair.of(empty, (V) null);
-		if (next(pair))
-			while (next(pair))
+		if (pull(pair))
+			while (pull(pair))
 				;
 		else
 			pair = null;
 		return pair;
 	}
 
-	public <O> Outlet<O> map(IntObj_Obj<V, O> fun0) {
+	public <O> Puller<O> map(IntObj_Obj<V, O> fun0) {
 		return map_(fun0);
 	}
 
-	public <K1, V1> Outlet2<K1, V1> map2(IntObj_Obj<V, K1> kf, IntObj_Obj<V, V1> vf) {
-		return Outlet2.of(IntObjFunUtil.map2(kf, vf, source));
+	public <K1, V1> Puller2<K1, V1> map2(IntObj_Obj<V, K1> kf, IntObj_Obj<V, V1> vf) {
+		return Puller2.of(IntObjFunUtil.map2(kf, vf, source));
 	}
 
-	public <V1> IntObjOutlet<V1> mapIntObj(IntObj_Int<V> kf, IntObj_Obj<V, V1> vf) {
+	public <V1> IntObjPuller<V1> mapIntObj(IntObj_Int<V> kf, IntObj_Obj<V, V1> vf) {
 		return mapIntObj_(kf, vf);
 	}
 
-	public <V1> IntObjOutlet<V1> mapValue(Fun<V, V1> fun) {
+	public <V1> IntObjPuller<V1> mapValue(Fun<V, V1> fun) {
 		return mapIntObj_((k, v) -> k, (k, v) -> fun.apply(v));
 	}
 
@@ -299,8 +299,8 @@ public class IntObjOutlet<V> implements OutletDefaults<IntObjPair<V>> {
 	public IntObjPair<V> minOrNull(Comparator<IntObjPair<V>> comparator) {
 		var pair = IntObjPair.of(empty, (V) null);
 		var pair1 = IntObjPair.of(empty, (V) null);
-		if (next(pair)) {
-			while (next(pair1))
+		if (pull(pair)) {
+			while (pull(pair1))
 				if (0 < comparator.compare(pair, pair1))
 					pair.update(pair1.t0, pair1.t1);
 			return pair;
@@ -308,7 +308,7 @@ public class IntObjOutlet<V> implements OutletDefaults<IntObjPair<V>> {
 			return null;
 	}
 
-	public IntObjOutlet<V> nonBlocking(Integer k0, V v0) {
+	public IntObjPuller<V> nonBlocking(Integer k0, V v0) {
 		var queue = new NullableSyncQueue<IntObjPair<V>>();
 
 		new Thread(() -> {
@@ -320,7 +320,7 @@ public class IntObjOutlet<V> implements OutletDefaults<IntObjPair<V>> {
 			} while (b);
 		}).start();
 
-		return new IntObjOutlet<>(pair -> {
+		return new IntObjPuller<>(pair -> {
 			var mutable = Mutable.<IntObjPair<V>> nil();
 			var b = queue.poll(mutable);
 			if (b) {
@@ -334,8 +334,8 @@ public class IntObjOutlet<V> implements OutletDefaults<IntObjPair<V>> {
 
 	public IntObjPair<V> opt() {
 		var pair = IntObjPair.of(empty, (V) null);
-		if (next(pair))
-			if (!next(pair))
+		if (pull(pair))
+			if (!pull(pair))
 				return pair;
 			else
 				return fail("more than one result");
@@ -343,57 +343,57 @@ public class IntObjOutlet<V> implements OutletDefaults<IntObjPair<V>> {
 			return IntObjPair.none();
 	}
 
-	public Outlet<IntObjPair<V>> pairs() {
-		return Outlet.of(() -> {
+	public Puller<IntObjPair<V>> pairs() {
+		return Puller.of(() -> {
 			var pair = IntObjPair.of(empty, (V) null);
-			return next(pair) ? pair : null;
+			return pull(pair) ? pair : null;
 		});
 	}
 
-	public Pair<IntObjOutlet<V>, IntObjOutlet<V>> partition(IntObjPredicate<V> pred) {
+	public Pair<IntObjPuller<V>, IntObjPuller<V>> partition(IntObjPredicate<V> pred) {
 		return Pair.of(filter(pred), filter((k, v) -> !pred.test(k, v)));
 	}
 
-	public IntObjOutlet<V> reverse() {
+	public IntObjPuller<V> reverse() {
 		return of(List_.reverse(toList()));
 	}
 
 	public void sink(Sink2<Integer, V> sink0) {
 		var sink1 = sink0.rethrow();
 		var pair = IntObjPair.of(empty, (V) null);
-		while (next(pair))
+		while (pull(pair))
 			sink1.sink2(pair.t0, pair.t1);
 	}
 
-	public IntObjOutlet<V> skip(int n) {
+	public IntObjPuller<V> skip(int n) {
 		var pair = IntObjPair.of(empty, (V) null);
 		var end = false;
 		for (var i = 0; !end && i < n; i++)
-			end = next(pair);
+			end = pull(pair);
 		return !end ? of(source) : empty();
 	}
 
-	public IntObjOutlet<V> snoc(Integer key, V value) {
+	public IntObjPuller<V> snoc(Integer key, V value) {
 		return of(IntObjFunUtil.snoc(key, value, source));
 	}
 
-	public IntObjOutlet<V> sort(Comparator<IntObjPair<V>> comparator) {
+	public IntObjPuller<V> sort(Comparator<IntObjPair<V>> comparator) {
 		var list = new ArrayList<IntObjPair<V>>();
 		IntObjPair<V> pair;
-		while (next(pair = IntObjPair.of(empty, null)))
+		while (pull(pair = IntObjPair.of(empty, null)))
 			list.add(pair);
 		return of(List_.sort(list, comparator));
 	}
 
-	public <O extends Comparable<? super O>> IntObjOutlet<V> sortBy(IntObj_Obj<V, O> fun) {
+	public <O extends Comparable<? super O>> IntObjPuller<V> sortBy(IntObj_Obj<V, O> fun) {
 		return sort((e0, e1) -> Object_.compare(fun.apply(e0.t0, e0.t1), fun.apply(e1.t0, e1.t1)));
 	}
 
-	public IntObjOutlet<V> sortByKey(Comparator<Integer> comparator) {
+	public IntObjPuller<V> sortByKey(Comparator<Integer> comparator) {
 		return sort((e0, e1) -> comparator.compare(e0.t0, e1.t0));
 	}
 
-	public IntObjOutlet<V> sortByValue(Comparator<V> comparator) {
+	public IntObjPuller<V> sortByValue(Comparator<V> comparator) {
 		return sort((e0, e1) -> comparator.compare(e0.t1, e1.t1));
 	}
 
@@ -401,16 +401,16 @@ public class IntObjOutlet<V> implements OutletDefaults<IntObjPair<V>> {
 		return source;
 	}
 
-	public Outlet<IntObjOutlet<V>> split(IntObjPredicate<V> fun) {
-		return Outlet.of(FunUtil.map(IntObjOutlet<V>::new, IntObjFunUtil.split(fun, source)));
+	public Puller<IntObjPuller<V>> split(IntObjPredicate<V> fun) {
+		return Puller.of(FunUtil.map(IntObjPuller<V>::new, IntObjFunUtil.split(fun, source)));
 	}
 
-	public IntObjOutlet<V> take(int n) {
+	public IntObjPuller<V> take(int n) {
 		return of(new IntObjSource<>() {
 			private int count = n;
 
 			public boolean source2(IntObjPair<V> pair) {
-				return 0 < count-- ? next(pair) : false;
+				return 0 < count-- ? pull(pair) : false;
 			}
 		});
 	}
@@ -425,7 +425,7 @@ public class IntObjOutlet<V> implements OutletDefaults<IntObjPair<V>> {
 	public List<IntObjPair<V>> toList() {
 		var list = new ArrayList<IntObjPair<V>>();
 		IntObjPair<V> pair;
-		while (next(pair = IntObjPair.of(empty, null)))
+		while (pull(pair = IntObjPair.of(empty, null)))
 			list.add(pair);
 		return list;
 	}
@@ -433,7 +433,7 @@ public class IntObjOutlet<V> implements OutletDefaults<IntObjPair<V>> {
 	public IntObjMap<List<V>> toListMap() {
 		var map = new IntObjMap<List<V>>();
 		var pair = IntObjPair.of(empty, (V) null);
-		while (next(pair))
+		while (pull(pair))
 			map.computeIfAbsent(pair.t0, k_ -> new ArrayList<>()).add(pair.t1);
 		return map;
 	}
@@ -448,7 +448,7 @@ public class IntObjOutlet<V> implements OutletDefaults<IntObjPair<V>> {
 
 	public ListMultimap<Integer, V> toMultimap() {
 		var map = new ListMultimap<Integer, V>();
-		groupBy().concatMapValue(Outlet::of).sink(map::put);
+		groupBy().concatMapValue(Puller::of).sink(map::put);
 		return map;
 	}
 
@@ -463,7 +463,7 @@ public class IntObjOutlet<V> implements OutletDefaults<IntObjPair<V>> {
 	public Set<IntObjPair<V>> toSet() {
 		var set = new HashSet<IntObjPair<V>>();
 		IntObjPair<V> pair;
-		while (next(pair = IntObjPair.of(empty, null)))
+		while (pull(pair = IntObjPair.of(empty, null)))
 			set.add(pair);
 		return set;
 
@@ -473,19 +473,19 @@ public class IntObjOutlet<V> implements OutletDefaults<IntObjPair<V>> {
 		return groupBy().mapValue(values -> Read.from(values).toSet()).toMap();
 	}
 
-	public Outlet<V> values() {
+	public Puller<V> values() {
 		return map_((k, v) -> v);
 	}
 
-	private <O> Outlet<O> map_(IntObj_Obj<V, O> fun0) {
-		return Outlet.of(IntObjFunUtil.map(fun0, source));
+	private <O> Puller<O> map_(IntObj_Obj<V, O> fun0) {
+		return Puller.of(IntObjFunUtil.map(fun0, source));
 	}
 
-	private <V1> IntObjOutlet<V1> mapIntObj_(IntObj_Int<V> kf, IntObj_Obj<V, V1> vf) {
+	private <V1> IntObjPuller<V1> mapIntObj_(IntObj_Int<V> kf, IntObj_Obj<V, V1> vf) {
 		return of(IntObjFunUtil.mapIntObj(kf, vf, source));
 	}
 
-	private boolean next(IntObjPair<V> pair) {
+	private boolean pull(IntObjPair<V> pair) {
 		return source.source2(pair);
 	}
 

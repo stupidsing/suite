@@ -5,21 +5,21 @@ import static suite.util.Friends.fail;
 import java.util.Arrays;
 import java.util.Objects;
 
-import suite.primitive.ChrFunUtil;
-import suite.primitive.ChrPrimitives.Obj_Chr;
-import suite.primitive.Chr_Chr;
 import suite.primitive.FltChrSink;
 import suite.primitive.FltChrSource;
 import suite.primitive.FltPrimitives.FltObjSource;
 import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.primitive.Flt_Chr;
+import suite.primitive.ChrFunUtil;
+import suite.primitive.ChrPrimitives.Obj_Chr;
+import suite.primitive.Chr_Chr;
 import suite.primitive.adt.pair.FltChrPair;
 import suite.primitive.adt.pair.FltObjPair;
-import suite.primitive.streamlet.FltObjOutlet;
+import suite.primitive.streamlet.FltObjPuller;
 import suite.primitive.streamlet.FltObjStreamlet;
 import suite.streamlet.As;
 import suite.streamlet.FunUtil.Fun;
-import suite.streamlet.Outlet;
+import suite.streamlet.Puller;
 
 /**
  * Map with primitive float key and primitive char value. Character.MIN_VALUE is
@@ -35,13 +35,13 @@ public class FltChrMap {
 	private float[] ks;
 	private char[] vs;
 
-	public static <T> Fun<Outlet<T>, FltChrMap> collect(Obj_Flt<T> kf0, Obj_Chr<T> vf0) {
+	public static <T> Fun<Puller<T>, FltChrMap> collect(Obj_Flt<T> kf0, Obj_Chr<T> vf0) {
 		var kf1 = kf0.rethrow();
 		var vf1 = vf0.rethrow();
-		return outlet -> {
+		return puller -> {
 			var map = new FltChrMap();
 			T t;
-			while ((t = outlet.source().g()) != null)
+			while ((t = puller.source().g()) != null)
 				map.put(kf1.apply(t), vf1.apply(t));
 			return map;
 		};
@@ -139,7 +139,7 @@ public class FltChrMap {
 	}
 
 	public FltObjStreamlet<Character> streamlet() {
-		return new FltObjStreamlet<>(() -> FltObjOutlet.of(new FltObjSource<Character>() {
+		return new FltObjStreamlet<>(() -> FltObjPuller.of(new FltObjSource<Character>() {
 			private FltChrSource source0 = source_();
 			private FltChrPair pair0 = FltChrPair.of((float) 0, (char) 0);
 

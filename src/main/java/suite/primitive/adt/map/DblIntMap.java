@@ -15,11 +15,11 @@ import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.Int_Int;
 import suite.primitive.adt.pair.DblIntPair;
 import suite.primitive.adt.pair.DblObjPair;
-import suite.primitive.streamlet.DblObjOutlet;
+import suite.primitive.streamlet.DblObjPuller;
 import suite.primitive.streamlet.DblObjStreamlet;
 import suite.streamlet.As;
 import suite.streamlet.FunUtil.Fun;
-import suite.streamlet.Outlet;
+import suite.streamlet.Puller;
 
 /**
  * Map with primitive double key and primitive int value. Integer.MIN_VALUE is
@@ -35,13 +35,13 @@ public class DblIntMap {
 	private double[] ks;
 	private int[] vs;
 
-	public static <T> Fun<Outlet<T>, DblIntMap> collect(Obj_Dbl<T> kf0, Obj_Int<T> vf0) {
+	public static <T> Fun<Puller<T>, DblIntMap> collect(Obj_Dbl<T> kf0, Obj_Int<T> vf0) {
 		var kf1 = kf0.rethrow();
 		var vf1 = vf0.rethrow();
-		return outlet -> {
+		return puller -> {
 			var map = new DblIntMap();
 			T t;
-			while ((t = outlet.source().g()) != null)
+			while ((t = puller.source().g()) != null)
 				map.put(kf1.apply(t), vf1.apply(t));
 			return map;
 		};
@@ -139,7 +139,7 @@ public class DblIntMap {
 	}
 
 	public DblObjStreamlet<Integer> streamlet() {
-		return new DblObjStreamlet<>(() -> DblObjOutlet.of(new DblObjSource<Integer>() {
+		return new DblObjStreamlet<>(() -> DblObjPuller.of(new DblObjSource<Integer>() {
 			private DblIntSource source0 = source_();
 			private DblIntPair pair0 = DblIntPair.of((double) 0, (int) 0);
 

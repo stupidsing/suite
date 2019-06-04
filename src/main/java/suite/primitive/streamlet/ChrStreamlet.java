@@ -26,20 +26,20 @@ import suite.primitive.adt.set.ChrSet;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil.Source;
 import suite.streamlet.FunUtil2.Fun2;
-import suite.streamlet.Outlet;
+import suite.streamlet.Puller;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 import suite.streamlet.StreamletDefaults;
 
-public class ChrStreamlet implements StreamletDefaults<Character, ChrOutlet> {
+public class ChrStreamlet implements StreamletDefaults<Character, ChrPuller> {
 
-	private Source<ChrOutlet> in;
+	private Source<ChrPuller> in;
 
-	private static ChrStreamlet streamlet(Source<ChrOutlet> in) {
+	private static ChrStreamlet streamlet(Source<ChrPuller> in) {
 		return new ChrStreamlet(in);
 	}
 
-	public ChrStreamlet(Source<ChrOutlet> in) {
+	public ChrStreamlet(Source<ChrPuller> in) {
 		this.in = in;
 	}
 
@@ -51,7 +51,7 @@ public class ChrStreamlet implements StreamletDefaults<Character, ChrOutlet> {
 		return spawn().average();
 	}
 
-	public Streamlet<ChrOutlet> chunk(int n) {
+	public Streamlet<ChrPuller> chunk(int n) {
 		return new Streamlet<>(() -> spawn().chunk(n));
 	}
 
@@ -191,12 +191,12 @@ public class ChrStreamlet implements StreamletDefaults<Character, ChrOutlet> {
 		return spawn().opt();
 	}
 
-	public ChrOutlet outlet() {
-		return spawn();
-	}
-
 	public Pair<ChrStreamlet, ChrStreamlet> partition(ChrTest pred) {
 		return Pair.of(filter(pred), filter(t -> !pred.test(t)));
+	}
+
+	public ChrPuller puller() {
+		return spawn();
 	}
 
 	public ChrStreamlet reverse() {
@@ -276,15 +276,15 @@ public class ChrStreamlet implements StreamletDefaults<Character, ChrOutlet> {
 	}
 
 	public <U, V> Streamlet<V> zip(Iterable<U> list1, ChrObj_Obj<U, V> fun) {
-		return new Streamlet<>(() -> spawn().zip(Outlet.of(list1), fun));
+		return new Streamlet<>(() -> spawn().zip(Puller.of(list1), fun));
 	}
 
 	private <O> Streamlet<O> concatMap_(Chr_Obj<Streamlet<O>> fun) {
-		return new Streamlet<>(() -> spawn().concatMap(t -> fun.apply(t).outlet()));
+		return new Streamlet<>(() -> spawn().concatMap(t -> fun.apply(t).puller()));
 	}
 
 	private <K, V> Streamlet2<K, V> concatMap2_(Chr_Obj<Streamlet2<K, V>> fun) {
-		return new Streamlet2<>(() -> spawn().concatMap2(t -> fun.apply(t).outlet()));
+		return new Streamlet2<>(() -> spawn().concatMap2(t -> fun.apply(t).puller()));
 	}
 
 	private <O> Streamlet<O> map_(Chr_Obj<O> fun) {
@@ -299,7 +299,7 @@ public class ChrStreamlet implements StreamletDefaults<Character, ChrOutlet> {
 		return spawn().toList();
 	}
 
-	private ChrOutlet spawn() {
+	private ChrPuller spawn() {
 		return in.g();
 	}
 

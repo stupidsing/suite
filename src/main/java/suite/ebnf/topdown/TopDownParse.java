@@ -14,7 +14,7 @@ import suite.ebnf.topdown.Expect.ExpectFun;
 import suite.os.Log_;
 import suite.primitive.adt.pair.IntIntPair;
 import suite.streamlet.FunUtil.Source;
-import suite.streamlet.Outlet;
+import suite.streamlet.Puller;
 import suite.streamlet.Read;
 import suite.util.String_;
 
@@ -37,10 +37,10 @@ public class TopDownParse {
 
 	private Map<String, Parser> parserByEntity;
 	private Expect expect = new Expect();
-	private Outlet<State> noResult = Outlet.empty();
+	private Puller<State> noResult = Puller.empty();
 
 	private interface Parser {
-		public Outlet<State> p(Parse parse, State state);
+		public Puller<State> p(Parse parse, State state);
 	}
 
 	private class State {
@@ -64,11 +64,11 @@ public class TopDownParse {
 			this.frame = frame;
 		}
 
-		private Outlet<State> pr(Parse g, Parser p) {
+		private Puller<State> pr(Parse g, Parser p) {
 			return g.parse(this, p);
 		}
 
-		private Outlet<State> p(Parse g, Parser p) {
+		private Puller<State> p(Parse g, Parser p) {
 			return p.p(g, this);
 		}
 	}
@@ -97,7 +97,7 @@ public class TopDownParse {
 			var o = new State(null, pos, null, 0).pr(this, parser);
 			State state;
 
-			while ((state = o.next()) != null)
+			while ((state = o.pull()) != null)
 				if (expect.whitespaces(in, length, state.pos) == length) {
 					var states = new ArrayDeque<State>();
 
@@ -131,7 +131,7 @@ public class TopDownParse {
 			return null;
 		}
 
-		private Outlet<State> parse(State state, Parser parser) {
+		private Puller<State> parse(State state, Parser parser) {
 			if (trace)
 				Log_.info("parse(" + parser + "): " + in.substring(state.pos));
 
@@ -143,9 +143,9 @@ public class TopDownParse {
 			return states;
 		}
 
-		private Outlet<State> expect(State state, ExpectFun expect, int pos) {
+		private Puller<State> expect(State state, ExpectFun expect, int pos) {
 			var end = expect.expect(in, length, pos);
-			return state.pos < end ? Outlet.of(state.pos(end)) : noResult;
+			return state.pos < end ? Puller.of(state.pos(end)) : noResult;
 		}
 
 		private IntIntPair findPosition(int position) {
@@ -188,7 +188,7 @@ public class TopDownParse {
 		case AND___:
 			parsers = buildChildren(eg);
 			parser = (parse, st) -> {
-				var o = Outlet.of(st);
+				var o = Puller.of(st);
 				for (var g_ : parsers)
 					o = o.concatMap(st_ -> st_.pr(parse, g_));
 				return o;
@@ -210,7 +210,7 @@ public class TopDownParse {
 			break;
 		case ONCE__:
 			g = build(eg.children.get(0));
-			parser = (parse, st) -> Outlet.of(st.pr(parse, g).take(1));
+			parser = (parse, st) -> Puller.of(st.pr(parse, g).take(1));
 			break;
 		case OPTION:
 			g = build(eg.children.get(0));
@@ -218,7 +218,7 @@ public class TopDownParse {
 			break;
 		case OR____:
 			parsers = buildChildren(eg);
-			parser = (parse, st) -> Outlet.of(parsers).concatMap(g_ -> st.pr(parse, g_));
+			parser = (parse, st) -> Puller.of(parsers).concatMap(g_ -> st.pr(parse, g_));
 			break;
 		case REPT0_:
 			parser = buildRepeat(eg, true);
@@ -252,16 +252,16 @@ public class TopDownParse {
 			var frame = new Frame(eg.content);
 			return st0.deepen(frame, 1) //
 					.p(parse, gb) //
-					.concatMap(st1 -> Outlet.of(new Source<State>() {
+					.concatMap(st1 -> Puller.of(new Source<State>() {
 						private State state_ = st1;
-						private Deque<Outlet<State>> outlets = new ArrayDeque<>();
+						private Deque<Puller<State>> pullers = new ArrayDeque<>();
 
 						public State g() {
 							if (state_ != null) {
 								State state0 = state_.deepen(frame, -1);
-								outlets.push(state0.pr(parse, gc));
-								while (!outlets.isEmpty() && (state_ = outlets.peek().next()) == null)
-									outlets.pop();
+								pullers.push(state0.pr(parse, gc));
+								while (!pullers.isEmpty() && (state_ = pullers.peek().pull()) == null)
+									pullers.pop();
 								return state0;
 							} else
 								return null;
@@ -274,23 +274,23 @@ public class TopDownParse {
 		var g = build(eg.children.get(0));
 
 		return (parse, st) -> {
-			Outlet<State> states = Outlet.of(new Source<>() {
+			Puller<State> states = Puller.of(new Source<>() {
 				private State state_ = st;
-				private Deque<Outlet<State>> outlets = new ArrayDeque<>();
+				private Deque<Puller<State>> pullers = new ArrayDeque<>();
 
 				public State g() {
 					var state0 = state_;
 					if (state0 != null) {
-						outlets.push(state0.pr(parse, g));
-						while (!outlets.isEmpty() && (state_ = outlets.peek().next()) == null)
-							outlets.pop();
+						pullers.push(state0.pr(parse, g));
+						while (!pullers.isEmpty() && (state_ = pullers.peek().pull()) == null)
+							pullers.pop();
 					}
 					return state0;
 				}
 			});
 
 			// skips first if it is a '+'
-			return isAllowNone || states.next() != null ? states : noResult;
+			return isAllowNone || states.pull() != null ? states : noResult;
 		};
 	}
 

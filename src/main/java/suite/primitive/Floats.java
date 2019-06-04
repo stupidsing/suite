@@ -13,10 +13,10 @@ import java.util.Iterator;
 import suite.cfg.Defaults;
 import suite.object.Object_;
 import suite.primitive.FltPrimitives.FltSource;
-import suite.primitive.streamlet.FltOutlet;
+import suite.primitive.streamlet.FltPuller;
 import suite.primitive.streamlet.FltStreamlet;
 import suite.streamlet.FunUtil.Fun;
-import suite.streamlet.Outlet;
+import suite.streamlet.Puller;
 import suite.util.Compare;
 import suite.util.ParseUtil;
 
@@ -56,9 +56,9 @@ public class Floats implements Iterable<Float> {
 		return bb.toFloats();
 	}
 
-	public static Floats of(Outlet<Floats> outlet) {
+	public static Floats of(Puller<Floats> puller) {
 		var cb = new FloatsBuilder();
-		outlet.forEach(cb::append);
+		puller.forEach(cb::append);
 		return cb.toFloats();
 	}
 
@@ -128,7 +128,7 @@ public class Floats implements Iterable<Float> {
 	}
 
 	public FltStreamlet streamlet() {
-		return new FltStreamlet(() -> FltOutlet.of(new FltSource() {
+		return new FltStreamlet(() -> FltPuller.of(new FltSource() {
 			private int i = start;
 
 			public float g() {

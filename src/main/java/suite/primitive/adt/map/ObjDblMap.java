@@ -11,7 +11,7 @@ import suite.primitive.DblPrimitives.DblObjSource;
 import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Dbl_Dbl;
 import suite.primitive.adt.pair.DblObjPair;
-import suite.primitive.streamlet.DblObjOutlet;
+import suite.primitive.streamlet.DblObjPuller;
 import suite.primitive.streamlet.DblObjStreamlet;
 import suite.streamlet.As;
 
@@ -29,10 +29,10 @@ public class ObjDblMap<K> {
 	private Object[] ks;
 	private double[] vs;
 
-	public static <K> ObjDblMap<K> collect(DblObjOutlet<K> outlet) {
+	public static <K> ObjDblMap<K> collect(DblObjPuller<K> puller) {
 		var map = new ObjDblMap<K>();
 		var pair = DblObjPair.<K> of((double) 0, null);
-		while (outlet.source().source2(pair))
+		while (puller.source().source2(pair))
 			map.put(pair.t1, pair.t0);
 		return map;
 	}
@@ -126,7 +126,7 @@ public class ObjDblMap<K> {
 	}
 
 	public DblObjStreamlet<K> streamlet() {
-		return new DblObjStreamlet<>(() -> DblObjOutlet.of(source_()));
+		return new DblObjStreamlet<>(() -> DblObjPuller.of(source_()));
 	}
 
 	@Override

@@ -13,7 +13,7 @@ import java.util.Iterator;
 import suite.cfg.Defaults;
 import suite.object.Object_;
 import suite.streamlet.FunUtil.Fun;
-import suite.streamlet.Outlet;
+import suite.streamlet.Puller;
 import suite.util.Compare;
 import suite.util.To;
 
@@ -53,9 +53,9 @@ public class Bytes implements Iterable<Byte> {
 		return bb.toBytes();
 	}
 
-	public static Bytes of(Outlet<Bytes> outlet) {
+	public static Bytes of(Puller<Bytes> puller) {
 		var bb = new BytesBuilder();
-		outlet.forEach(bb::append);
+		puller.forEach(bb::append);
 		return bb.toBytes();
 	}
 

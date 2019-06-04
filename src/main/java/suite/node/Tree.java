@@ -10,7 +10,7 @@ import suite.node.tree.TreeOr;
 import suite.node.tree.TreeTuple;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil.Source;
-import suite.streamlet.Outlet;
+import suite.streamlet.Puller;
 import suite.streamlet.Streamlet;
 
 public abstract class Tree extends Node {
@@ -49,7 +49,7 @@ public abstract class Tree extends Node {
 	}
 
 	public static Streamlet<Node> iter(Node node0, Fun<Node, Tree> fun) {
-		return new Streamlet<>(() -> Outlet.of(new Source<Node>() {
+		return new Streamlet<>(() -> Puller.of(new Source<Node>() {
 			private Node node = node0;
 
 			public Node g() {

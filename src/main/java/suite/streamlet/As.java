@@ -20,7 +20,7 @@ import suite.primitive.Chars;
 import suite.primitive.Chars.CharsBuilder;
 import suite.primitive.IntPrimitives.IntSink;
 import suite.primitive.IntPrimitives.Obj_Int;
-import suite.primitive.streamlet.IntOutlet;
+import suite.primitive.streamlet.IntPuller;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil.Sink;
 import suite.streamlet.FunUtil.Source;
@@ -35,10 +35,10 @@ public class As {
 		public O apply(int index, I i);
 	}
 
-	public static Fun<Outlet<String>, String> conc(String delimiter) {
-		return outlet -> {
+	public static Fun<Puller<String>, String> conc(String delimiter) {
+		return puller -> {
 			var sb = new StringBuilder();
-			outlet.sink(s -> {
+			puller.sink(s -> {
 				sb.append(s);
 				sb.append(delimiter);
 			});
@@ -46,40 +46,40 @@ public class As {
 		};
 	}
 
-	public static <T> Streamlet<T> concat(Outlet<Streamlet<T>> outlet) {
+	public static <T> Streamlet<T> concat(Puller<Streamlet<T>> puller) {
 		var list = new ArrayList<T>();
-		outlet.sink(st1 -> st1.sink(list::add));
+		puller.sink(st1 -> st1.sink(list::add));
 		return Read.from(list);
 	}
 
-	public static Streamlet<String[]> csv(Outlet<Bytes> outlet) {
-		return Read.from(outlet.collect(As::lines_).map(As::csvLine).toList());
+	public static Streamlet<String[]> csv(Puller<Bytes> puller) {
+		return Read.from(puller.collect(As::lines_).map(As::csvLine).toList());
 	}
 
-	public static <T> Fun<Outlet<T>, Void> executeThreads(Sink<T> sink) {
-		return outlet -> outlet.map(t -> Thread_.newThread(() -> sink.f(t))).collect(Thread_::startJoin);
+	public static <T> Fun<Puller<T>, Void> executeThreads(Sink<T> sink) {
+		return puller -> puller.map(t -> Thread_.newThread(() -> sink.f(t))).collect(Thread_::startJoin);
 	}
 
-	public static <T> Fun<IntOutlet, Void> executeThreadsByInt(IntSink sink) {
-		return outlet -> outlet.map(t -> Thread_.newThread(() -> sink.f(t))).collect(Thread_::startJoin);
+	public static <T> Fun<IntPuller, Void> executeThreadsByInt(IntSink sink) {
+		return puller -> puller.map(t -> Thread_.newThread(() -> sink.f(t))).collect(Thread_::startJoin);
 	}
 
 	public static InputStream inputStream(Bytes bytes) {
 		return new ByteArrayInputStream(bytes.bs, bytes.start, bytes.end - bytes.start);
 	}
 
-	public static <T> String joined(Outlet<T> outlet) {
-		return As.<T> joinedBy("").apply(outlet);
+	public static <T> String joined(Puller<T> puller) {
+		return As.<T> joinedBy("").apply(puller);
 	}
 
-	public static <T> Fun<Outlet<T>, String> joinedBy(String delimiter) {
+	public static <T> Fun<Puller<T>, String> joinedBy(String delimiter) {
 		return joinedBy("", delimiter, "");
 	}
 
-	public static <T> Fun<Outlet<T>, String> joinedBy(String before, String delimiter, String after) {
-		return outlet -> {
+	public static <T> Fun<Puller<T>, String> joinedBy(String before, String delimiter, String after) {
+		return puller -> {
 			var sb = new StringBuilder();
-			outlet.sink(s -> {
+			puller.sink(s -> {
 				if (0 < sb.length())
 					sb.append(delimiter);
 				sb.append(s);
@@ -88,24 +88,24 @@ public class As {
 		};
 	}
 
-	public static Outlet<String> lines(Outlet<Bytes> outlet) {
-		return lines_(outlet).map(t -> To.string(t).trim());
+	public static Puller<String> lines(Puller<Bytes> puller) {
+		return lines_(puller).map(t -> To.string(t).trim());
 	}
 
-	public static <K, V> Map<K, List<V>> listMap(Outlet<Pair<K, V>> outlet) {
+	public static <K, V> Map<K, List<V>> listMap(Puller<Pair<K, V>> puller) {
 		var map = new HashMap<K, List<V>>();
-		outlet.sink(pair -> map.computeIfAbsent(pair.t0, k_ -> new ArrayList<>()).add(pair.t1));
+		puller.sink(pair -> map.computeIfAbsent(pair.t0, k_ -> new ArrayList<>()).add(pair.t1));
 		return map;
 	}
 
-	public static <K, V> Map<K, V> map(Outlet2<K, V> outlet) {
+	public static <K, V> Map<K, V> map(Puller2<K, V> puller) {
 		var map = new HashMap<K, V>();
-		return outlet.isAll((k, v) -> map.put(k, v) == null || Fail.b("duplicate key " + k)) ? map : null;
+		return puller.isAll((k, v) -> map.put(k, v) == null || Fail.b("duplicate key " + k)) ? map : null;
 	}
 
-	public static <T> Fun<Outlet<T>, Integer> min(Obj_Int<T> fun) {
-		return outlet -> {
-			var source = outlet.source();
+	public static <T> Fun<Puller<T>, Integer> min(Obj_Int<T> fun) {
+		return puller -> {
+			var source = puller.source();
 			var t = source.g();
 			int result1;
 			if (t != null) {
@@ -119,49 +119,49 @@ public class As {
 		};
 	}
 
-	public static <K, V> ListMultimap<K, V> multimap(Outlet2<K, List<V>> outlet) {
-		return new ListMultimap<>(map(outlet));
+	public static <K, V> ListMultimap<K, V> multimap(Puller2<K, List<V>> puller) {
+		return new ListMultimap<>(map(puller));
 	}
 
-	public static <K, V, T> Fun<Outlet2<K, V>, Streamlet<T>> pairMap(Fun2<K, V, T> fun) {
-		return outlet -> new Streamlet<>(() -> outlet.map(fun::apply));
+	public static <K, V, T> Fun<Puller2<K, V>, Streamlet<T>> pairMap(Fun2<K, V, T> fun) {
+		return puller -> new Streamlet<>(() -> puller.map(fun::apply));
 	}
 
-	public static <I, O> Fun<Outlet<I>, Outlet<O>> sequenced(Seq<I, O> seq) {
-		return outlet -> Outlet.of(new Source<>() {
+	public static <I, O> Fun<Puller<I>, Puller<O>> sequenced(Seq<I, O> seq) {
+		return puller -> Puller.of(new Source<>() {
 			private int index;
 
 			public O g() {
-				var i = outlet.next();
+				var i = puller.pull();
 				return i != null ? seq.apply(index++, i) : null;
 			}
 		});
 	}
 
-	public static <K, V> Map<K, Set<V>> setMap(Outlet<Pair<K, V>> outlet) {
+	public static <K, V> Map<K, Set<V>> setMap(Puller<Pair<K, V>> puller) {
 		var map = new HashMap<K, Set<V>>();
-		outlet.sink(pair -> map.computeIfAbsent(pair.t0, k_ -> new HashSet<>()).add(pair.t1));
+		puller.sink(pair -> map.computeIfAbsent(pair.t0, k_ -> new HashSet<>()).add(pair.t1));
 		return map;
 	}
 
-	public static <T> Streamlet<T> streamlet(Outlet<T> outlet) {
-		return Read.from(outlet.toList());
+	public static <T> Streamlet<T> streamlet(Puller<T> puller) {
+		return Read.from(puller.toList());
 	}
 
-	public static String string(Outlet<Bytes> outlet) {
-		return To.string(Bytes.of(outlet));
+	public static String string(Puller<Bytes> puller) {
+		return To.string(Bytes.of(puller));
 	}
 
-	public static Streamlet<String[]> table(Outlet<Bytes> outlet) {
-		return Read.from(outlet.collect(As::lines_) //
+	public static Streamlet<String[]> table(Puller<Bytes> puller) {
+		return Read.from(puller.collect(As::lines_) //
 				.map(bytes -> To.string(bytes).split("\t")) //
 				.toList());
 	}
 
-	public static Outlet<Chars> utf8decode(Outlet<Bytes> bytesOutlet) {
-		var source = bytesOutlet.source();
+	public static Puller<Chars> utf8decode(Puller<Bytes> bytesPuller) {
+		var source = bytesPuller.source();
 
-		return Outlet.of(new Source<>() {
+		return Puller.of(new Source<>() {
 			private BytesBuilder bb = new BytesBuilder();
 
 			public Chars g() {
@@ -227,10 +227,10 @@ public class As {
 		});
 	}
 
-	public static Outlet<Bytes> utf8encode(Outlet<Chars> charsOutlet) {
-		var source = charsOutlet.source();
+	public static Puller<Bytes> utf8encode(Puller<Chars> charsPuller) {
+		var source = charsPuller.source();
 
-		return Outlet.of(new Source<>() {
+		return Puller.of(new Source<>() {
 			public Bytes g() {
 				var chars = source.g();
 				if (chars != null) {
@@ -292,8 +292,8 @@ public class As {
 		return list.toArray(new String[0]);
 	}
 
-	private static Outlet<Bytes> lines_(Outlet<Bytes> outlet) {
-		return Bytes_.split(Bytes.of((byte) 10)).apply(outlet);
+	private static Puller<Bytes> lines_(Puller<Bytes> puller) {
+		return Bytes_.split(Bytes.of((byte) 10)).apply(puller);
 	}
 
 }

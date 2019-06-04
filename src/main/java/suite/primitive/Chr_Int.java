@@ -4,7 +4,7 @@ import static suite.util.Friends.fail;
 
 import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.Ints.IntsBuilder;
-import suite.primitive.streamlet.ChrOutlet;
+import suite.primitive.streamlet.ChrPuller;
 import suite.primitive.streamlet.IntStreamlet;
 import suite.streamlet.FunUtil.Fun;
 
@@ -12,21 +12,21 @@ public interface Chr_Int {
 
 	public int apply(char c);
 
-	public static Fun<ChrOutlet, IntStreamlet> lift(Chr_Int fun0) {
+	public static Fun<ChrPuller, IntStreamlet> lift(Chr_Int fun0) {
 		var fun1 = fun0.rethrow();
 		return ts -> {
 			var b = new IntsBuilder();
 			char c;
-			while ((c = ts.next()) != ChrFunUtil.EMPTYVALUE)
+			while ((c = ts.pull()) != ChrFunUtil.EMPTYVALUE)
 				b.append(fun1.apply(c));
 			return b.toInts().streamlet();
 		};
 	}
 
-	public static Obj_Int<ChrOutlet> sum(Chr_Int fun0) {
+	public static Obj_Int<ChrPuller> sum(Chr_Int fun0) {
 		var fun1 = fun0.rethrow();
-		return outlet -> {
-			var source = outlet.source();
+		return puller -> {
+			var source = puller.source();
 			char c;
 			var result = (int) 0;
 			while ((c = source.g()) != ChrFunUtil.EMPTYVALUE)

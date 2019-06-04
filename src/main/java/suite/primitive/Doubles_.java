@@ -4,20 +4,20 @@ import static suite.util.Friends.rethrow;
 
 import suite.primitive.Doubles.DoublesBuilder;
 import suite.primitive.Doubles.WriteChar;
-import suite.primitive.streamlet.DblOutlet;
+import suite.primitive.streamlet.DblPuller;
 import suite.primitive.streamlet.DblStreamlet;
 import suite.streamlet.FunUtil;
 import suite.streamlet.FunUtil.Iterate;
 import suite.streamlet.FunUtil.Source;
-import suite.streamlet.Outlet;
+import suite.streamlet.Puller;
 import suite.streamlet.Read;
 
 public class Doubles_ {
 
 	private static int bufferSize = 65536;
 
-	public static Outlet<Doubles> buffer(Outlet<Doubles> outlet) {
-		return Outlet.of(new BufferedSource(outlet) {
+	public static Puller<Doubles> buffer(Puller<Doubles> puller) {
+		return Puller.of(new BufferedSource(puller) {
 			protected boolean search() {
 				return bufferSize <= (p0 = p1 = buffer.size());
 			}
@@ -27,8 +27,8 @@ public class Doubles_ {
 	@SafeVarargs
 	public static DblStreamlet concat(DblStreamlet... streamlets) {
 		return new DblStreamlet(() -> {
-			var source = Read.from(streamlets).outlet().source();
-			return DblOutlet.of(DblFunUtil.concat(FunUtil.map(DblStreamlet::source, source)));
+			var source = Read.from(streamlets).puller().source();
+			return DblPuller.of(DblFunUtil.concat(FunUtil.map(DblStreamlet::source, source)));
 		});
 	}
 
@@ -67,27 +67,27 @@ public class Doubles_ {
 			throw new IndexOutOfBoundsException();
 	}
 
-	public static void copy(Outlet<Doubles> outlet, WriteChar writer) {
+	public static void copy(Puller<Doubles> puller, WriteChar writer) {
 		rethrow(() -> {
 			Doubles doubles;
-			while ((doubles = outlet.next()) != null)
+			while ((doubles = puller.pull()) != null)
 				writer.write(doubles.cs, doubles.start, doubles.end - doubles.start);
 			return doubles;
 		});
 	}
 
 	public static DblStreamlet of(double... ts) {
-		return new DblStreamlet(() -> DblOutlet.of(ts));
+		return new DblStreamlet(() -> DblPuller.of(ts));
 	}
 
 	public static DblStreamlet of(double[] ts, int start, int end, int inc) {
-		return new DblStreamlet(() -> DblOutlet.of(ts, start, end, inc));
+		return new DblStreamlet(() -> DblPuller.of(ts, start, end, inc));
 	}
 
 	public static DblStreamlet for_(double s, double e) {
 		return new DblStreamlet(() -> {
 			var m = DblMutable.of(s);
-			return DblOutlet.of(() -> {
+			return DblPuller.of(() -> {
 				var c = m.increment();
 				return c < e ? c : DblFunUtil.EMPTYVALUE;
 			});
@@ -95,13 +95,13 @@ public class Doubles_ {
 	}
 
 	public static DblStreamlet reverse(double[] ts, int start, int end) {
-		return new DblStreamlet(() -> DblOutlet.of(ts, end - 1, start - 1, -1));
+		return new DblStreamlet(() -> DblPuller.of(ts, end - 1, start - 1, -1));
 	}
 
-	public static Iterate<Outlet<Doubles>> split(Doubles delim) {
+	public static Iterate<Puller<Doubles>> split(Doubles delim) {
 		var ds = delim.size();
 
-		return outlet -> Outlet.of(new BufferedSource(outlet) {
+		return puller -> Puller.of(new BufferedSource(puller) {
 			protected boolean search() {
 				var size = buffer.size();
 				while ((p1 = p0 + ds) <= size)
@@ -125,13 +125,13 @@ public class Doubles_ {
 	}
 
 	private static abstract class BufferedSource implements Source<Doubles> {
-		protected Outlet<Doubles> outlet;
+		protected Puller<Doubles> puller;
 		protected Doubles buffer = Doubles.empty;
 		protected boolean cont = true;
 		protected int p0, p1;
 
-		public BufferedSource(Outlet<Doubles> outlet) {
-			this.outlet = outlet;
+		public BufferedSource(Puller<Doubles> puller) {
+			this.puller = puller;
 		}
 
 		public Doubles g() {
@@ -141,7 +141,7 @@ public class Doubles_ {
 
 			p0 = 0;
 
-			while (!search() && (cont &= (in = outlet.next()) != null)) {
+			while (!search() && (cont &= (in = puller.pull()) != null)) {
 				cb.append(in);
 				buffer = cb.toDoubles();
 			}

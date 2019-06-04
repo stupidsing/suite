@@ -4,7 +4,7 @@ import static suite.util.Friends.fail;
 
 import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.Ints.IntsBuilder;
-import suite.primitive.streamlet.DblOutlet;
+import suite.primitive.streamlet.DblPuller;
 import suite.primitive.streamlet.IntStreamlet;
 import suite.streamlet.FunUtil.Fun;
 
@@ -12,21 +12,21 @@ public interface Dbl_Int {
 
 	public int apply(double c);
 
-	public static Fun<DblOutlet, IntStreamlet> lift(Dbl_Int fun0) {
+	public static Fun<DblPuller, IntStreamlet> lift(Dbl_Int fun0) {
 		var fun1 = fun0.rethrow();
 		return ts -> {
 			var b = new IntsBuilder();
 			double c;
-			while ((c = ts.next()) != DblFunUtil.EMPTYVALUE)
+			while ((c = ts.pull()) != DblFunUtil.EMPTYVALUE)
 				b.append(fun1.apply(c));
 			return b.toInts().streamlet();
 		};
 	}
 
-	public static Obj_Int<DblOutlet> sum(Dbl_Int fun0) {
+	public static Obj_Int<DblPuller> sum(Dbl_Int fun0) {
 		var fun1 = fun0.rethrow();
-		return outlet -> {
-			var source = outlet.source();
+		return puller -> {
+			var source = puller.source();
 			double c;
 			var result = (int) 0;
 			while ((c = source.g()) != DblFunUtil.EMPTYVALUE)

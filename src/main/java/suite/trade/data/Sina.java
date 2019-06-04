@@ -10,7 +10,7 @@ import suite.http.HttpUtil;
 import suite.node.util.Singleton;
 import suite.primitive.Bytes;
 import suite.streamlet.As;
-import suite.streamlet.Outlet;
+import suite.streamlet.Puller;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.ParseUtil;
@@ -64,7 +64,7 @@ public class Sina {
 				.collect(As.joinedBy(","));
 
 		var data = rethrow(() -> {
-			Outlet<Bytes> in;
+			Puller<Bytes> in;
 
 			if (isCache)
 				in = Singleton.me.storeCache.http(url);

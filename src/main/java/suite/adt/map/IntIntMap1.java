@@ -9,7 +9,7 @@ import suite.primitive.IntPrimitives.IntObjSource;
 import suite.primitive.Int_Int;
 import suite.primitive.adt.pair.IntIntPair;
 import suite.primitive.adt.pair.IntObjPair;
-import suite.primitive.streamlet.IntObjOutlet;
+import suite.primitive.streamlet.IntObjPuller;
 import suite.primitive.streamlet.IntObjStreamlet;
 import suite.streamlet.As;
 
@@ -131,7 +131,7 @@ public class IntIntMap1 {
 		return new IntObjStreamlet<>(() -> {
 			var source = source_();
 			var pair0 = IntIntPair.of(0, 0);
-			return IntObjOutlet.of(new IntObjSource<Integer>() {
+			return IntObjPuller.of(new IntObjSource<Integer>() {
 				public boolean source2(IntObjPair<Integer> pair) {
 					var b = source.source2(pair0);
 					if (b)

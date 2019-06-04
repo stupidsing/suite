@@ -9,6 +9,9 @@ import java.util.Set;
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.Pair;
 import suite.object.Object_;
+import suite.primitive.Ints;
+import suite.primitive.Ints.IntsBuilder;
+import suite.primitive.Ints_;
 import suite.primitive.IntOpt;
 import suite.primitive.IntPrimitives.IntComparator;
 import suite.primitive.IntPrimitives.IntObj_Obj;
@@ -17,29 +20,26 @@ import suite.primitive.IntPrimitives.IntSource;
 import suite.primitive.IntPrimitives.IntTest;
 import suite.primitive.IntPrimitives.Int_Obj;
 import suite.primitive.Int_Int;
-import suite.primitive.Ints;
-import suite.primitive.Ints.IntsBuilder;
-import suite.primitive.Ints_;
 import suite.primitive.adt.map.IntObjMap;
 import suite.primitive.adt.map.ObjIntMap;
 import suite.primitive.adt.set.IntSet;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil.Source;
 import suite.streamlet.FunUtil2.Fun2;
-import suite.streamlet.Outlet;
+import suite.streamlet.Puller;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 import suite.streamlet.StreamletDefaults;
 
-public class IntStreamlet implements StreamletDefaults<Integer, IntOutlet> {
+public class IntStreamlet implements StreamletDefaults<Integer, IntPuller> {
 
-	private Source<IntOutlet> in;
+	private Source<IntPuller> in;
 
-	private static IntStreamlet streamlet(Source<IntOutlet> in) {
+	private static IntStreamlet streamlet(Source<IntPuller> in) {
 		return new IntStreamlet(in);
 	}
 
-	public IntStreamlet(Source<IntOutlet> in) {
+	public IntStreamlet(Source<IntPuller> in) {
 		this.in = in;
 	}
 
@@ -51,7 +51,7 @@ public class IntStreamlet implements StreamletDefaults<Integer, IntOutlet> {
 		return spawn().average();
 	}
 
-	public Streamlet<IntOutlet> chunk(int n) {
+	public Streamlet<IntPuller> chunk(int n) {
 		return new Streamlet<>(() -> spawn().chunk(n));
 	}
 
@@ -191,12 +191,12 @@ public class IntStreamlet implements StreamletDefaults<Integer, IntOutlet> {
 		return spawn().opt();
 	}
 
-	public IntOutlet outlet() {
-		return spawn();
-	}
-
 	public Pair<IntStreamlet, IntStreamlet> partition(IntTest pred) {
 		return Pair.of(filter(pred), filter(t -> !pred.test(t)));
+	}
+
+	public IntPuller puller() {
+		return spawn();
 	}
 
 	public IntStreamlet reverse() {
@@ -276,15 +276,15 @@ public class IntStreamlet implements StreamletDefaults<Integer, IntOutlet> {
 	}
 
 	public <U, V> Streamlet<V> zip(Iterable<U> list1, IntObj_Obj<U, V> fun) {
-		return new Streamlet<>(() -> spawn().zip(Outlet.of(list1), fun));
+		return new Streamlet<>(() -> spawn().zip(Puller.of(list1), fun));
 	}
 
 	private <O> Streamlet<O> concatMap_(Int_Obj<Streamlet<O>> fun) {
-		return new Streamlet<>(() -> spawn().concatMap(t -> fun.apply(t).outlet()));
+		return new Streamlet<>(() -> spawn().concatMap(t -> fun.apply(t).puller()));
 	}
 
 	private <K, V> Streamlet2<K, V> concatMap2_(Int_Obj<Streamlet2<K, V>> fun) {
-		return new Streamlet2<>(() -> spawn().concatMap2(t -> fun.apply(t).outlet()));
+		return new Streamlet2<>(() -> spawn().concatMap2(t -> fun.apply(t).puller()));
 	}
 
 	private <O> Streamlet<O> map_(Int_Obj<O> fun) {
@@ -299,7 +299,7 @@ public class IntStreamlet implements StreamletDefaults<Integer, IntOutlet> {
 		return spawn().toList();
 	}
 
-	private IntOutlet spawn() {
+	private IntPuller spawn() {
 		return in.g();
 	}
 

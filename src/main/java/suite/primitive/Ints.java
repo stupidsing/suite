@@ -13,10 +13,10 @@ import java.util.Iterator;
 import suite.cfg.Defaults;
 import suite.object.Object_;
 import suite.primitive.IntPrimitives.IntSource;
-import suite.primitive.streamlet.IntOutlet;
+import suite.primitive.streamlet.IntPuller;
 import suite.primitive.streamlet.IntStreamlet;
 import suite.streamlet.FunUtil.Fun;
-import suite.streamlet.Outlet;
+import suite.streamlet.Puller;
 import suite.util.Compare;
 import suite.util.ParseUtil;
 
@@ -56,9 +56,9 @@ public class Ints implements Iterable<Integer> {
 		return bb.toInts();
 	}
 
-	public static Ints of(Outlet<Ints> outlet) {
+	public static Ints of(Puller<Ints> puller) {
 		var cb = new IntsBuilder();
-		outlet.forEach(cb::append);
+		puller.forEach(cb::append);
 		return cb.toInts();
 	}
 
@@ -128,7 +128,7 @@ public class Ints implements Iterable<Integer> {
 	}
 
 	public IntStreamlet streamlet() {
-		return new IntStreamlet(() -> IntOutlet.of(new IntSource() {
+		return new IntStreamlet(() -> IntPuller.of(new IntSource() {
 			private int i = start;
 
 			public int g() {

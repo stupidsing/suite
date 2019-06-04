@@ -5,19 +5,21 @@ import static suite.util.Friends.fail;
 import java.util.Arrays;
 import java.util.Objects;
 
-import suite.primitive.IntFunUtil;
 import suite.primitive.IntIntSink;
 import suite.primitive.IntIntSource;
 import suite.primitive.IntPrimitives.IntObjSource;
 import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.Int_Int;
+import suite.primitive.IntFunUtil;
+import suite.primitive.IntPrimitives.Obj_Int;
+import suite.primitive.Int_Int;
 import suite.primitive.adt.pair.IntIntPair;
 import suite.primitive.adt.pair.IntObjPair;
-import suite.primitive.streamlet.IntObjOutlet;
+import suite.primitive.streamlet.IntObjPuller;
 import suite.primitive.streamlet.IntObjStreamlet;
 import suite.streamlet.As;
 import suite.streamlet.FunUtil.Fun;
-import suite.streamlet.Outlet;
+import suite.streamlet.Puller;
 
 /**
  * Map with primitive int key and primitive int value. Integer.MIN_VALUE is
@@ -33,13 +35,13 @@ public class IntIntMap {
 	private int[] ks;
 	private int[] vs;
 
-	public static <T> Fun<Outlet<T>, IntIntMap> collect(Obj_Int<T> kf0, Obj_Int<T> vf0) {
+	public static <T> Fun<Puller<T>, IntIntMap> collect(Obj_Int<T> kf0, Obj_Int<T> vf0) {
 		var kf1 = kf0.rethrow();
 		var vf1 = vf0.rethrow();
-		return outlet -> {
+		return puller -> {
 			var map = new IntIntMap();
 			T t;
-			while ((t = outlet.source().g()) != null)
+			while ((t = puller.source().g()) != null)
 				map.put(kf1.apply(t), vf1.apply(t));
 			return map;
 		};
@@ -137,7 +139,7 @@ public class IntIntMap {
 	}
 
 	public IntObjStreamlet<Integer> streamlet() {
-		return new IntObjStreamlet<>(() -> IntObjOutlet.of(new IntObjSource<Integer>() {
+		return new IntObjStreamlet<>(() -> IntObjPuller.of(new IntObjSource<Integer>() {
 			private IntIntSource source0 = source_();
 			private IntIntPair pair0 = IntIntPair.of((int) 0, (int) 0);
 

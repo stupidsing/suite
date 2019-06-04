@@ -15,11 +15,11 @@ import suite.primitive.LngPrimitives.Obj_Lng;
 import suite.primitive.Lng_Lng;
 import suite.primitive.adt.pair.ChrLngPair;
 import suite.primitive.adt.pair.ChrObjPair;
-import suite.primitive.streamlet.ChrObjOutlet;
+import suite.primitive.streamlet.ChrObjPuller;
 import suite.primitive.streamlet.ChrObjStreamlet;
 import suite.streamlet.As;
 import suite.streamlet.FunUtil.Fun;
-import suite.streamlet.Outlet;
+import suite.streamlet.Puller;
 
 /**
  * Map with primitive char key and primitive long value. Long.MIN_VALUE is
@@ -35,13 +35,13 @@ public class ChrLngMap {
 	private char[] ks;
 	private long[] vs;
 
-	public static <T> Fun<Outlet<T>, ChrLngMap> collect(Obj_Chr<T> kf0, Obj_Lng<T> vf0) {
+	public static <T> Fun<Puller<T>, ChrLngMap> collect(Obj_Chr<T> kf0, Obj_Lng<T> vf0) {
 		var kf1 = kf0.rethrow();
 		var vf1 = vf0.rethrow();
-		return outlet -> {
+		return puller -> {
 			var map = new ChrLngMap();
 			T t;
-			while ((t = outlet.source().g()) != null)
+			while ((t = puller.source().g()) != null)
 				map.put(kf1.apply(t), vf1.apply(t));
 			return map;
 		};
@@ -139,7 +139,7 @@ public class ChrLngMap {
 	}
 
 	public ChrObjStreamlet<Long> streamlet() {
-		return new ChrObjStreamlet<>(() -> ChrObjOutlet.of(new ChrObjSource<Long>() {
+		return new ChrObjStreamlet<>(() -> ChrObjPuller.of(new ChrObjSource<Long>() {
 			private ChrLngSource source0 = source_();
 			private ChrLngPair pair0 = ChrLngPair.of((char) 0, (long) 0);
 

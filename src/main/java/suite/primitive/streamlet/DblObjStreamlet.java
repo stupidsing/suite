@@ -27,30 +27,30 @@ import suite.streamlet.FunUtil;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil.Source;
 import suite.streamlet.FunUtil2.Sink2;
-import suite.streamlet.Outlet;
-import suite.streamlet.Outlet2;
+import suite.streamlet.Puller;
+import suite.streamlet.Puller2;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 import suite.streamlet.StreamletDefaults;
 
-public class DblObjStreamlet<V> implements StreamletDefaults<DblObjPair<V>, DblObjOutlet<V>> {
+public class DblObjStreamlet<V> implements StreamletDefaults<DblObjPair<V>, DblObjPuller<V>> {
 
-	private Source<DblObjOutlet<V>> in;
+	private Source<DblObjPuller<V>> in;
 
 	@SafeVarargs
 	public static <V> DblObjStreamlet<V> concat(DblObjStreamlet<V>... streamlets) {
 		return streamlet(() -> {
-			var source = Read.from(streamlets).outlet().source();
-			return DblObjOutlet.of(DblObjFunUtil.concat(FunUtil.map(st -> st.spawn().source(), source)));
+			var source = Read.from(streamlets).puller().source();
+			return DblObjPuller.of(DblObjFunUtil.concat(FunUtil.map(st -> st.spawn().source(), source)));
 		});
 	}
 
-	private static <V> DblObjStreamlet<V> streamlet(Source<DblObjOutlet<V>> in) {
+	private static <V> DblObjStreamlet<V> streamlet(Source<DblObjPuller<V>> in) {
 		return new DblObjStreamlet<>(in);
 	}
 
-	public DblObjStreamlet(Source<DblObjOutlet<V>> in) {
+	public DblObjStreamlet(Source<DblObjPuller<V>> in) {
 		this.in = in;
 	}
 
@@ -58,7 +58,7 @@ public class DblObjStreamlet<V> implements StreamletDefaults<DblObjPair<V>, DblO
 		return fun.apply(this);
 	}
 
-	public Streamlet<DblObjOutlet<V>> chunk(int n) {
+	public Streamlet<DblObjPuller<V>> chunk(int n) {
 		return new Streamlet<>(() -> spawn().chunk(n));
 	}
 
@@ -83,8 +83,8 @@ public class DblObjStreamlet<V> implements StreamletDefaults<DblObjPair<V>, DblO
 	}
 
 	public <V1> DblObjStreamlet<V1> concatMapValue(Fun<V, Streamlet<V1>> fun) {
-		Fun<V, Outlet<V1>> f = v -> fun.apply(v).outlet();
-		return streamlet(() -> DblObjOutlet.of(spawn().concatMapValue(f)));
+		Fun<V, Puller<V1>> f = v -> fun.apply(v).puller();
+		return streamlet(() -> DblObjPuller.of(spawn().concatMapValue(f)));
 	}
 
 	public DblObjStreamlet<V> cons(double key, V value) {
@@ -191,16 +191,16 @@ public class DblObjStreamlet<V> implements StreamletDefaults<DblObjPair<V>, DblO
 		return spawn().opt();
 	}
 
-	public DblObjOutlet<V> outlet() {
-		return spawn();
-	}
-
 	public Streamlet<DblObjPair<V>> pairs() {
 		return new Streamlet<>(() -> spawn().pairs());
 	}
 
 	public Pair<DblObjStreamlet<V>, DblObjStreamlet<V>> partition(DblObjPredicate<V> pred) {
 		return Pair.of(filter(pred), filter((k, v) -> !pred.test(k, v)));
+	}
+
+	public DblObjPuller<V> puller() {
+		return spawn();
 	}
 
 	public DblObjStreamlet<V> reverse() {
@@ -288,18 +288,18 @@ public class DblObjStreamlet<V> implements StreamletDefaults<DblObjPair<V>, DblO
 	}
 
 	private <T> Streamlet<T> concatMap_(DblObj_Obj<V, Streamlet<T>> fun) {
-		DblObj_Obj<V, Outlet<T>> bf = (k, v) -> fun.apply(k, v).outlet();
-		return new Streamlet<>(() -> Outlet.of(spawn().concatMap(bf)));
+		DblObj_Obj<V, Puller<T>> bf = (k, v) -> fun.apply(k, v).puller();
+		return new Streamlet<>(() -> Puller.of(spawn().concatMap(bf)));
 	}
 
 	private <V1, K1> Streamlet2<K1, V1> concatMap2_(DblObj_Obj<V, Streamlet2<K1, V1>> fun) {
-		DblObj_Obj<V, Outlet2<K1, V1>> bf = (k, v) -> fun.apply(k, v).outlet();
-		return new Streamlet2<>(() -> Outlet2.of(spawn().concatMap2(bf)));
+		DblObj_Obj<V, Puller2<K1, V1>> bf = (k, v) -> fun.apply(k, v).puller();
+		return new Streamlet2<>(() -> Puller2.of(spawn().concatMap2(bf)));
 	}
 
 	private <V1> DblObjStreamlet<V1> concatMapDblObj_(DblObj_Obj<V, DblObjStreamlet<V1>> fun) {
-		DblObj_Obj<V, DblObjOutlet<V1>> bf = (k, v) -> fun.apply(k, v).outlet();
-		return streamlet(() -> DblObjOutlet.of(spawn().concatMapDblObj(bf)));
+		DblObj_Obj<V, DblObjPuller<V1>> bf = (k, v) -> fun.apply(k, v).puller();
+		return streamlet(() -> DblObjPuller.of(spawn().concatMapDblObj(bf)));
 	}
 
 	private <T> Streamlet<T> map_(DblObj_Obj<V, T> fun) {
@@ -318,7 +318,7 @@ public class DblObjStreamlet<V> implements StreamletDefaults<DblObjPair<V>, DblO
 		return spawn().toList();
 	}
 
-	private DblObjOutlet<V> spawn() {
+	private DblObjPuller<V> spawn() {
 		return in.g();
 	}
 

@@ -8,7 +8,7 @@ import java.util.Objects;
 import suite.object.Object_;
 import suite.streamlet.FunUtil;
 import suite.streamlet.FunUtil.Source;
-import suite.streamlet.Outlet;
+import suite.streamlet.Puller;
 import suite.streamlet.Streamlet;
 
 /**
@@ -91,7 +91,7 @@ public class PerList<T> implements Iterable<T> {
 	}
 
 	public Streamlet<T> streamlet() {
-		return new Streamlet<>(() -> Outlet.of(new Source<T>() {
+		return new Streamlet<>(() -> Puller.of(new Source<T>() {
 			private PerList<T> list = PerList.this;
 
 			public T g() {

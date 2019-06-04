@@ -39,37 +39,37 @@ import suite.streamlet.FunUtil;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil.Source;
 import suite.streamlet.FunUtil2;
-import suite.streamlet.Outlet;
-import suite.streamlet.Outlet2;
-import suite.streamlet.OutletDefaults;
+import suite.streamlet.Puller;
+import suite.streamlet.Puller2;
+import suite.streamlet.PullerDefaults;
 import suite.streamlet.Read;
 import suite.util.NullableSyncQueue;
 import suite.util.To;
 
-public class FltOutlet implements OutletDefaults<Float> {
+public class FltPuller implements PullerDefaults<Float> {
 
 	private static float empty = FltFunUtil.EMPTYVALUE;
 
 	private FltSource source;
 
 	@SafeVarargs
-	public static FltOutlet concat(FltOutlet... outlets) {
+	public static FltPuller concat(FltPuller... outlets) {
 		var sources = new ArrayList<FltSource>();
 		for (var outlet : outlets)
 			sources.add(outlet.source);
 		return of(FltFunUtil.concat(To.source(sources)));
 	}
 
-	public static FltOutlet empty() {
+	public static FltPuller empty() {
 		return of(FltFunUtil.nullSource());
 	}
 
 	@SafeVarargs
-	public static FltOutlet of(float... ts) {
+	public static FltPuller of(float... ts) {
 		return of(ts, 0, ts.length, 1);
 	}
 
-	public static FltOutlet of(float[] ts, int start, int end, int inc) {
+	public static FltPuller of(float[] ts, int start, int end, int inc) {
 		IntPredicate pred = 0 < inc ? i -> i < end : i -> end < i;
 
 		return of(new FltSource() {
@@ -83,115 +83,115 @@ public class FltOutlet implements OutletDefaults<Float> {
 		});
 	}
 
-	public static FltOutlet of(Enumeration<Float> en) {
+	public static FltPuller of(Enumeration<Float> en) {
 		return of(To.source(en));
 	}
 
-	public static FltOutlet of(Iterable<Float> col) {
+	public static FltPuller of(Iterable<Float> col) {
 		return of(To.source(col));
 	}
 
-	public static FltOutlet of(Source<Float> source) {
-		return FltOutlet.of(() -> {
+	public static FltPuller of(Source<Float> source) {
+		return FltPuller.of(() -> {
 			var c = source.g();
 			return c != null ? c : empty;
 		});
 	}
 
-	public static FltOutlet of(FltSource source) {
-		return new FltOutlet(source);
+	public static FltPuller of(FltSource source) {
+		return new FltPuller(source);
 	}
 
-	private FltOutlet(FltSource source) {
+	private FltPuller(FltSource source) {
 		this.source = source;
 	}
 
 	public float average() {
 		var count = 0;
 		float result = 0, c1;
-		while ((c1 = next()) != empty) {
+		while ((c1 = pull()) != empty) {
 			result += c1;
 			count++;
 		}
 		return (float) (result / count);
 	}
 
-	public Outlet<FltOutlet> chunk(int n) {
-		return Outlet.of(FunUtil.map(FltOutlet::new, FltFunUtil.chunk(n, source)));
+	public Puller<FltPuller> chunk(int n) {
+		return Puller.of(FunUtil.map(FltPuller::new, FltFunUtil.chunk(n, source)));
 	}
 
-	public FltOutlet closeAtEnd(Closeable c) {
+	public FltPuller closeAtEnd(Closeable c) {
 		return of(() -> {
-			var next = next();
+			var next = pull();
 			if (next == empty)
 				Object_.closeQuietly(c);
 			return next;
 		});
 	}
 
-	public <R> R collect(Fun<FltOutlet, R> fun) {
+	public <R> R collect(Fun<FltPuller, R> fun) {
 		return fun.apply(this);
 	}
 
-	public <O> Outlet<O> concatMap(Flt_Obj<Outlet<O>> fun) {
-		return Outlet.of(FunUtil.concat(FltFunUtil.map(t -> fun.apply(t).source(), source)));
+	public <O> Puller<O> concatMap(Flt_Obj<Puller<O>> fun) {
+		return Puller.of(FunUtil.concat(FltFunUtil.map(t -> fun.apply(t).source(), source)));
 	}
 
-	public <K, V> Outlet2<K, V> concatMap2(Flt_Obj<Outlet2<K, V>> fun) {
-		return Outlet2.of(FunUtil2.concat(FltFunUtil.map(t -> fun.apply(t).source(), source)));
+	public <K, V> Puller2<K, V> concatMap2(Flt_Obj<Puller2<K, V>> fun) {
+		return Puller2.of(FunUtil2.concat(FltFunUtil.map(t -> fun.apply(t).source(), source)));
 	}
 
-	public FltOutlet concatMapFlt(Flt_Obj<FltOutlet> fun) {
+	public FltPuller concatMapFlt(Flt_Obj<FltPuller> fun) {
 		return of(FltFunUtil.concat(FltFunUtil.map(t -> fun.apply(t).source, source)));
 	}
 
-	public FltOutlet cons(float c) {
+	public FltPuller cons(float c) {
 		return of(FltFunUtil.cons(c, source));
 	}
 
 	public int count() {
 		var i = 0;
-		while (next() != empty)
+		while (pull() != empty)
 			i++;
 		return i;
 	}
 
-	public <U, O> Outlet<O> cross(List<U> list, FltObj_Obj<U, O> fun) {
-		return Outlet.of(new Source<>() {
+	public <U, O> Puller<O> cross(List<U> list, FltObj_Obj<U, O> fun) {
+		return Puller.of(new Source<>() {
 			private float c;
 			private int index = list.size();
 
 			public O g() {
 				if (index == list.size()) {
 					index = 0;
-					c = next();
+					c = pull();
 				}
 				return fun.apply(c, list.get(index++));
 			}
 		});
 	}
 
-	public FltOutlet distinct() {
+	public FltPuller distinct() {
 		var set = new HashSet<>();
 		return of(() -> {
 			float c;
-			while ((c = next()) != empty && !set.add(c))
+			while ((c = pull()) != empty && !set.add(c))
 				;
 			return c;
 		});
 	}
 
-	public FltOutlet drop(int n) {
+	public FltPuller drop(int n) {
 		var isAvailable = true;
-		while (0 < n && (isAvailable &= next() != empty))
+		while (0 < n && (isAvailable &= pull() != empty))
 			n--;
 		return isAvailable ? this : empty();
 	}
 
 	@Override
 	public boolean equals(Object object) {
-		if (Object_.clazz(object) == FltOutlet.class) {
-			var source1 = ((FltOutlet) object).source;
+		if (Object_.clazz(object) == FltPuller.class) {
+			var source1 = ((FltPuller) object).source;
 			float o0, o1;
 			while (Objects.equals(o0 = source.g(), o1 = source1.g()))
 				if (o0 == empty && o1 == empty)
@@ -201,30 +201,30 @@ public class FltOutlet implements OutletDefaults<Float> {
 			return false;
 	}
 
-	public FltOutlet filter(FltTest fun) {
+	public FltPuller filter(FltTest fun) {
 		return of(FltFunUtil.filter(fun, source));
 	}
 
 	public float first() {
-		return next();
+		return pull();
 	}
 
-	public <O> Outlet<O> flatMap(Flt_Obj<Iterable<O>> fun) {
-		return Outlet.of(FunUtil.flatten(FltFunUtil.map(fun, source)));
+	public <O> Puller<O> flatMap(Flt_Obj<Iterable<O>> fun) {
+		return Puller.of(FunUtil.flatten(FltFunUtil.map(fun, source)));
 	}
 
 	public <R> R fold(R init, FltObj_Obj<R, R> fun) {
 		float c;
-		while ((c = next()) != empty)
+		while ((c = pull()) != empty)
 			init = fun.apply(c, init);
 		return init;
 	}
 
-	public <V> FltObjOutlet<FloatsBuilder> groupBy() {
-		return FltObjOutlet.of(toListMap().source());
+	public <V> FltObjPuller<FloatsBuilder> groupBy() {
+		return FltObjPuller.of(toListMap().source());
 	}
 
-	public <V> FltObjOutlet<V> groupBy(Fun<Floats, V> fun) {
+	public <V> FltObjPuller<V> groupBy(Fun<Floats, V> fun) {
 		return groupBy().mapValue(list -> fun.apply(list.toFloats()));
 	}
 
@@ -237,12 +237,12 @@ public class FltOutlet implements OutletDefaults<Float> {
 		return h;
 	}
 
-	public FltObjOutlet<Integer> index() {
-		return FltObjOutlet.of(new FltObjSource<>() {
+	public FltObjPuller<Integer> index() {
+		return FltObjPuller.of(new FltObjSource<>() {
 			private int i = 0;
 
 			public boolean source2(FltObjPair<Integer> pair) {
-				var c = next();
+				var c = pull();
 				if (c != empty) {
 					pair.update(c, i++);
 					return true;
@@ -267,25 +267,25 @@ public class FltOutlet implements OutletDefaults<Float> {
 
 	public float last() {
 		float c, c1 = empty;
-		while ((c = next()) != empty)
+		while ((c = pull()) != empty)
 			c1 = c;
 		return c1;
 	}
 
-	public <O> Outlet<O> map(Flt_Obj<O> fun) {
-		return Outlet.of(FltFunUtil.map(fun, source));
+	public <O> Puller<O> map(Flt_Obj<O> fun) {
+		return Puller.of(FltFunUtil.map(fun, source));
 	}
 
-	public <K, V> Outlet2<K, V> map2(Flt_Obj<K> kf0, Flt_Obj<V> vf0) {
+	public <K, V> Puller2<K, V> map2(Flt_Obj<K> kf0, Flt_Obj<V> vf0) {
 		return map2_(kf0, vf0);
 	}
 
-	public FltOutlet mapFlt(Flt_Flt fun0) {
+	public FltPuller mapFlt(Flt_Flt fun0) {
 		return of(FltFunUtil.mapFlt(fun0, source));
 	}
 
-	public <V> FltObjOutlet<V> mapFltObj(Flt_Obj<V> fun0) {
-		return FltObjOutlet.of(FltFunUtil.mapFltObj(fun0, source));
+	public <V> FltObjPuller<V> mapFltObj(Flt_Obj<V> fun0) {
+		return FltObjPuller.of(FltFunUtil.mapFltObj(fun0, source));
 	}
 
 	public float max() {
@@ -305,9 +305,9 @@ public class FltOutlet implements OutletDefaults<Float> {
 	}
 
 	public float minOrEmpty(FltComparator comparator) {
-		float c = next(), c1;
+		float c = pull(), c1;
 		if (c != empty) {
-			while ((c1 = next()) != empty)
+			while ((c1 = pull()) != empty)
 				if (0 < comparator.compare(c, c1))
 					c = c1;
 			return c;
@@ -315,11 +315,7 @@ public class FltOutlet implements OutletDefaults<Float> {
 			return empty;
 	}
 
-	public float next() {
-		return source.g();
-	}
-
-	public FltOutlet nonBlock(float c0) {
+	public FltPuller nonBlock(float c0) {
 		var queue = new NullableSyncQueue<Float>();
 
 		new Thread(() -> {
@@ -329,7 +325,7 @@ public class FltOutlet implements OutletDefaults<Float> {
 			while (c != empty);
 		}).start();
 
-		return new FltOutlet(() -> {
+		return new FltPuller(() -> {
 			var mutable = Mutable.<Float> nil();
 			var c = queue.poll(mutable) ? mutable.value() : c0;
 			return c;
@@ -337,9 +333,9 @@ public class FltOutlet implements OutletDefaults<Float> {
 	}
 
 	public FltOpt opt() {
-		var c = next();
+		var c = pull();
 		if (c != empty)
-			if (next() == empty)
+			if (pull() == empty)
 				return FltOpt.of(c);
 			else
 				return fail("more than one result");
@@ -347,29 +343,33 @@ public class FltOutlet implements OutletDefaults<Float> {
 			return FltOpt.none();
 	}
 
-	public Pair<FltOutlet, FltOutlet> partition(FltTest pred) {
+	public Pair<FltPuller, FltPuller> partition(FltTest pred) {
 		return Pair.of(filter(pred), filter(c -> !pred.test(c)));
 	}
 
-	public FltOutlet reverse() {
+	public float pull() {
+		return source.g();
+	}
+
+	public FltPuller reverse() {
 		return of(toList().toFloats().reverse());
 	}
 
 	public void sink(FltSink sink0) {
 		var sink1 = sink0.rethrow();
 		float c;
-		while ((c = next()) != empty)
+		while ((c = pull()) != empty)
 			sink1.f(c);
 	}
 
-	public FltOutlet skip(int n) {
+	public FltPuller skip(int n) {
 		var end = false;
 		for (var i = 0; !end && i < n; i++)
-			end = next() == empty;
+			end = pull() == empty;
 		return !end ? of(source) : empty();
 	}
 
-	public FltOutlet snoc(float c) {
+	public FltPuller snoc(float c) {
 		return of(FltFunUtil.snoc(c, source));
 	}
 
@@ -377,27 +377,27 @@ public class FltOutlet implements OutletDefaults<Float> {
 		return source;
 	}
 
-	public FltOutlet sort() {
+	public FltPuller sort() {
 		return of(toList().toFloats().sort());
 	}
 
-	public Outlet<FltOutlet> split(FltTest fun) {
-		return Outlet.of(FunUtil.map(FltOutlet::new, FltFunUtil.split(fun, source)));
+	public Puller<FltPuller> split(FltTest fun) {
+		return Puller.of(FunUtil.map(FltPuller::new, FltFunUtil.split(fun, source)));
 	}
 
 	public float sum() {
 		float result = 0, c1;
-		while ((c1 = next()) != empty)
+		while ((c1 = pull()) != empty)
 			result += c1;
 		return result;
 	}
 
-	public FltOutlet take(int n) {
+	public FltPuller take(int n) {
 		return of(new FltSource() {
 			private int count = n;
 
 			public float g() {
-				return 0 < count-- ? next() : null;
+				return 0 < count-- ? pull() : null;
 			}
 		});
 	}
@@ -410,7 +410,7 @@ public class FltOutlet implements OutletDefaults<Float> {
 	public FloatsBuilder toList() {
 		var list = new FloatsBuilder();
 		float c;
-		while ((c = next()) != empty)
+		while ((c = pull()) != empty)
 			list.append(c);
 		return list;
 	}
@@ -422,7 +422,7 @@ public class FltOutlet implements OutletDefaults<Float> {
 	public <K> FltObjMap<FloatsBuilder> toListMap(Flt_Flt valueFun) {
 		var map = new FltObjMap<FloatsBuilder>();
 		float c;
-		while ((c = next()) != empty)
+		while ((c = pull()) != empty)
 			map.computeIfAbsent(c, k_ -> new FloatsBuilder()).append(valueFun.apply(c));
 		return map;
 	}
@@ -431,7 +431,7 @@ public class FltOutlet implements OutletDefaults<Float> {
 		var kf1 = keyFun.rethrow();
 		var map = new ObjFltMap<K>();
 		float c;
-		while ((c = next()) != empty)
+		while ((c = pull()) != empty)
 			map.put(kf1.apply(c), c);
 		return map;
 	}
@@ -441,7 +441,7 @@ public class FltOutlet implements OutletDefaults<Float> {
 		var vf1 = vf0.rethrow();
 		var map = new HashMap<K, V>();
 		float c;
-		while ((c = next()) != empty) {
+		while ((c = pull()) != empty) {
 			var key = kf1.apply(c);
 			if (map.put(key, vf1.apply(c)) != null)
 				fail("duplicate key " + key);
@@ -460,7 +460,7 @@ public class FltOutlet implements OutletDefaults<Float> {
 	public FltSet toSet() {
 		var set = new FltSet();
 		float c;
-		while ((c = next()) != empty)
+		while ((c = pull()) != empty)
 			set.add(c);
 		return set;
 	}
@@ -469,16 +469,16 @@ public class FltOutlet implements OutletDefaults<Float> {
 		return map2_(keyFun, valueFun).groupBy().mapValue(values -> Read.from(values).toSet()).toMap();
 	}
 
-	public <U, R> Outlet<R> zip(Outlet<U> outlet1, FltObj_Obj<U, R> fun) {
-		return Outlet.of(() -> {
-			var t = next();
-			var u = outlet1.next();
+	public <U, R> Puller<R> zip(Puller<U> outlet1, FltObj_Obj<U, R> fun) {
+		return Puller.of(() -> {
+			var t = pull();
+			var u = outlet1.pull();
 			return t != empty && u != null ? fun.apply(t, u) : null;
 		});
 	}
 
-	private <K, V> Outlet2<K, V> map2_(Flt_Obj<K> kf0, Flt_Obj<V> vf0) {
-		return Outlet2.of(FltFunUtil.map2(kf0, vf0, source));
+	private <K, V> Puller2<K, V> map2_(Flt_Obj<K> kf0, Flt_Obj<V> vf0) {
+		return Puller2.of(FltFunUtil.map2(kf0, vf0, source));
 	}
 
 }

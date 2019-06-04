@@ -30,23 +30,23 @@ import suite.util.List_;
 import suite.util.NullableSyncQueue;
 import suite.util.To;
 
-public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
+public class Puller2<K, V> implements PullerDefaults<Pair<K, V>> {
 
 	private Source2<K, V> source2;
 
 	@SafeVarargs
-	public static <K, V> Outlet2<K, V> concat(Outlet2<K, V>... outlets) {
+	public static <K, V> Puller2<K, V> concat(Puller2<K, V>... outlets) {
 		var sources = new ArrayList<Source2<K, V>>();
 		for (var outlet : outlets)
 			sources.add(outlet.source2);
 		return of(FunUtil2.concat(To.source(sources)));
 	}
 
-	public static <K, V> Outlet2<K, V> empty() {
+	public static <K, V> Puller2<K, V> empty() {
 		return of(FunUtil2.nullSource());
 	}
 
-	public static <K, V> Outlet2<K, List<V>> of(ListMultimap<K, V> multimap) {
+	public static <K, V> Puller2<K, List<V>> of(ListMultimap<K, V> multimap) {
 		var iter = multimap.listEntries().iterator();
 		return of(pair -> {
 			var b = iter.hasNext();
@@ -58,7 +58,7 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 		});
 	}
 
-	public static <K, V> Outlet2<K, V> of(Map<K, V> map) {
+	public static <K, V> Puller2<K, V> of(Map<K, V> map) {
 		var iter = map.entrySet().iterator();
 		return of(pair -> {
 			var b = iter.hasNext();
@@ -71,7 +71,7 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 	}
 
 	@SafeVarargs
-	public static <K, V> Outlet2<K, V> of(Pair<K, V>... kvs) {
+	public static <K, V> Puller2<K, V> of(Pair<K, V>... kvs) {
 		return of(new Source2<>() {
 			private int i;
 
@@ -86,7 +86,7 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 		});
 	}
 
-	public static <K, V> Outlet2<K, V> of(Iterable<Pair<K, V>> col) {
+	public static <K, V> Puller2<K, V> of(Iterable<Pair<K, V>> col) {
 		var iter = col.iterator();
 		return of(new Source2<>() {
 			public boolean source2(Pair<K, V> pair) {
@@ -100,40 +100,40 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 		});
 	}
 
-	public static <K, V> Outlet2<K, V> of(Source2<K, V> source) {
-		return new Outlet2<>(source);
+	public static <K, V> Puller2<K, V> of(Source2<K, V> source) {
+		return new Puller2<>(source);
 	}
 
-	private Outlet2(Source2<K, V> source) {
+	private Puller2(Source2<K, V> source) {
 		this.source2 = source;
 	}
 
-	public Outlet<Outlet2<K, V>> chunk(int n) {
-		return Outlet.of(FunUtil.map(Outlet2<K, V>::new, FunUtil2.chunk(n, source2)));
+	public Puller<Puller2<K, V>> chunk(int n) {
+		return Puller.of(FunUtil.map(Puller2<K, V>::new, FunUtil2.chunk(n, source2)));
 	}
 
-	public Outlet2<K, V> closeAtEnd(Closeable c) {
+	public Puller2<K, V> closeAtEnd(Closeable c) {
 		return of(pair -> {
-			var b = next(pair);
+			var b = pull(pair);
 			if (!b)
 				Object_.closeQuietly(c);
 			return b;
 		});
 	}
 
-	public <R> R collect(Fun<Outlet2<K, V>, R> fun) {
+	public <R> R collect(Fun<Puller2<K, V>, R> fun) {
 		return fun.apply(this);
 	}
 
-	public <O> Outlet<O> concatMap(Fun2<K, V, Outlet<O>> fun) {
-		return Outlet.of(FunUtil.concat(FunUtil2.map((k, v) -> fun.apply(k, v).source(), source2)));
+	public <O> Puller<O> concatMap(Fun2<K, V, Puller<O>> fun) {
+		return Puller.of(FunUtil.concat(FunUtil2.map((k, v) -> fun.apply(k, v).source(), source2)));
 	}
 
-	public <K1, V1> Outlet2<K1, V1> concatMap2(Fun2<K, V, Outlet2<K1, V1>> fun) {
+	public <K1, V1> Puller2<K1, V1> concatMap2(Fun2<K, V, Puller2<K1, V1>> fun) {
 		return of(FunUtil2.concat(FunUtil2.map((k, v) -> fun.apply(k, v).source2, source2)));
 	}
 
-	public <V1> Outlet2<K, V1> concatMapValue(Fun<V, Outlet<V1>> fun) {
+	public <V1> Puller2<K, V1> concatMapValue(Fun<V, Puller<V1>> fun) {
 		return of(FunUtil2.concat(FunUtil2.map((k, v) -> {
 			var source = fun.apply(v).source();
 			return pair -> {
@@ -146,41 +146,41 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 		}, source2)));
 	}
 
-	public Outlet2<K, V> cons(K key, V value) {
+	public Puller2<K, V> cons(K key, V value) {
 		return of(FunUtil2.cons(key, value, source2));
 	}
 
 	public int count() {
 		var pair = Pair.<K, V> of(null, null);
 		var i = 0;
-		while (next(pair))
+		while (pull(pair))
 			i++;
 		return i;
 	}
 
-	public Outlet2<K, V> distinct() {
+	public Puller2<K, V> distinct() {
 		var set = new HashSet<>();
 		return of(pair -> {
 			boolean b;
-			while ((b = next(pair)) && !set.add(Pair.of(pair.t0, pair.t1)))
+			while ((b = pull(pair)) && !set.add(Pair.of(pair.t0, pair.t1)))
 				;
 			return b;
 		});
 	}
 
-	public Outlet2<K, V> drop(int n) {
+	public Puller2<K, V> drop(int n) {
 		var pair = Pair.<K, V> of(null, null);
 		var isAvailable = true;
-		while (0 < n && (isAvailable &= next(pair)))
+		while (0 < n && (isAvailable &= pull(pair)))
 			n--;
 		return isAvailable ? this : empty();
 	}
 
 	@Override
 	public boolean equals(Object object) {
-		if (Object_.clazz(object) == Outlet2.class) {
+		if (Object_.clazz(object) == Puller2.class) {
 			@SuppressWarnings("unchecked")
-			var outlet = (Outlet2<K, V>) (Outlet2<?, ?>) object;
+			var outlet = (Puller2<K, V>) (Puller2<?, ?>) object;
 			var source2 = outlet.source2;
 			boolean b, b0, b1;
 			var pair0 = Pair.<K, V> of(null, null);
@@ -195,40 +195,40 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 			return false;
 	}
 
-	public Outlet2<K, V> filter(BiPredicate<K, V> fun) {
+	public Puller2<K, V> filter(BiPredicate<K, V> fun) {
 		return of(FunUtil2.filter(fun, source2));
 	}
 
-	public Outlet2<K, V> filterKey(Predicate<K> fun) {
+	public Puller2<K, V> filterKey(Predicate<K> fun) {
 		return of(FunUtil2.filterKey(fun, source2));
 	}
 
-	public Outlet2<K, V> filterValue(Predicate<V> fun) {
+	public Puller2<K, V> filterValue(Predicate<V> fun) {
 		return of(FunUtil2.filterValue(fun, source2));
 	}
 
 	public Pair<K, V> first() {
 		var pair = Pair.<K, V> of(null, null);
-		return next(pair) ? pair : null;
+		return pull(pair) ? pair : null;
 	}
 
-	public <O> Outlet<O> flatMap(Fun2<K, V, Iterable<O>> fun) {
-		return Outlet.of(FunUtil.flatten(FunUtil2.map(fun, source2)));
+	public <O> Puller<O> flatMap(Fun2<K, V, Iterable<O>> fun) {
+		return Puller.of(FunUtil.flatten(FunUtil2.map(fun, source2)));
 	}
 
 	public <R> R fold(R init, FixieFun3<R, K, V, R> fun) {
 		var pair = Pair.<K, V> of(null, null);
-		while (next(pair))
+		while (pull(pair))
 			init = fun.apply(init, pair.t0, pair.t1);
 		return init;
 	}
 
-	public Outlet2<K, List<V>> groupBy() {
+	public Puller2<K, List<V>> groupBy() {
 		var map = toListMap();
-		return Outlet.of(map.entrySet()).map2(Entry::getKey, Entry::getValue);
+		return Puller.of(map.entrySet()).map2(Entry::getKey, Entry::getValue);
 	}
 
-	public <V1> Outlet2<K, V1> groupBy(Fun<Streamlet<V>, V1> fun) {
+	public <V1> Puller2<K, V1> groupBy(Fun<Streamlet<V>, V1> fun) {
 		return groupBy().mapValue(list -> fun.apply(Read.from(list)));
 	}
 
@@ -236,7 +236,7 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 	public int hashCode() {
 		var pair = Pair.<K, V> of(null, null);
 		var h = 7;
-		while (next(pair))
+		while (pull(pair))
 			h = h * 31 + pair.hashCode();
 		return h;
 	}
@@ -254,29 +254,29 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 		return FunUtil2.iterator(source2);
 	}
 
-	public Outlet<K> keys() {
+	public Puller<K> keys() {
 		return map_((k, v) -> k);
 	}
 
 	public Pair<K, V> last() {
 		var pair = Pair.<K, V> of(null, null);
-		if (next(pair))
-			while (next(pair))
+		if (pull(pair))
+			while (pull(pair))
 				;
 		else
 			pair = null;
 		return pair;
 	}
 
-	public <O> Outlet<O> map(Fun2<K, V, O> fun0) {
+	public <O> Puller<O> map(Fun2<K, V, O> fun0) {
 		return map_(fun0);
 	}
 
-	public <K1, V1> Outlet2<K1, V1> map2(Fun2<K, V, K1> kf, Fun2<K, V, V1> vf) {
+	public <K1, V1> Puller2<K1, V1> map2(Fun2<K, V, K1> kf, Fun2<K, V, V1> vf) {
 		return map2_(kf, vf);
 	}
 
-	public <V1> Outlet2<K, V1> mapValue(Fun<V, V1> fun) {
+	public <V1> Puller2<K, V1> mapValue(Fun<V, V1> fun) {
 		return map2_((k, v) -> k, (k, v) -> fun.apply(v));
 	}
 
@@ -291,8 +291,8 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 	public Pair<K, V> minOrNull(Comparator<Pair<K, V>> comparator) {
 		var pair = Pair.<K, V> of(null, null);
 		var pair1 = Pair.<K, V> of(null, null);
-		if (next(pair)) {
-			while (next(pair1))
+		if (pull(pair)) {
+			while (pull(pair1))
 				if (0 < comparator.compare(pair, pair1))
 					pair.update(pair1.t0, pair1.t1);
 			return pair;
@@ -300,7 +300,7 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 			return null;
 	}
 
-	public Outlet2<K, V> nonBlocking(K k0, V v0) {
+	public Puller2<K, V> nonBlocking(K k0, V v0) {
 		var queue = new NullableSyncQueue<Pair<K, V>>();
 
 		new Thread(() -> {
@@ -312,7 +312,7 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 			} while (b);
 		}).start();
 
-		return new Outlet2<>(pair -> {
+		return new Puller2<>(pair -> {
 			var mutable = Mutable.<Pair<K, V>> nil();
 			var b = queue.poll(mutable);
 			if (b) {
@@ -326,8 +326,8 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 
 	public Pair<K, V> opt() {
 		var pair = Pair.<K, V> of(null, null);
-		if (next(pair))
-			if (!next(pair))
+		if (pull(pair))
+			if (!pull(pair))
 				return pair;
 			else
 				return fail("more than one result");
@@ -335,57 +335,57 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 			return Pair.none();
 	}
 
-	public Outlet<Pair<K, V>> pairs() {
-		return Outlet.of(() -> {
+	public Puller<Pair<K, V>> pairs() {
+		return Puller.of(() -> {
 			var pair = Pair.<K, V> of(null, null);
-			return next(pair) ? pair : null;
+			return pull(pair) ? pair : null;
 		});
 	}
 
-	public Pair<Outlet2<K, V>, Outlet2<K, V>> partition(BiPredicate<K, V> pred) {
+	public Pair<Puller2<K, V>, Puller2<K, V>> partition(BiPredicate<K, V> pred) {
 		return Pair.of(filter(pred), filter(pred.negate()));
 	}
 
-	public Outlet2<K, V> reverse() {
+	public Puller2<K, V> reverse() {
 		return of(List_.reverse(toList()));
 	}
 
 	public void sink(Sink2<K, V> sink0) {
 		var sink1 = sink0.rethrow();
 		var pair = Pair.<K, V> of(null, null);
-		while (next(pair))
+		while (pull(pair))
 			sink1.sink2(pair.t0, pair.t1);
 	}
 
-	public Outlet2<K, V> skip(int n) {
+	public Puller2<K, V> skip(int n) {
 		var pair = Pair.<K, V> of(null, null);
 		var end = false;
 		for (var i = 0; !end && i < n; i++)
-			end = next(pair);
+			end = pull(pair);
 		return !end ? of(source2) : empty();
 	}
 
-	public Outlet2<K, V> snoc(K key, V value) {
+	public Puller2<K, V> snoc(K key, V value) {
 		return of(FunUtil2.snoc(key, value, source2));
 	}
 
-	public Outlet2<K, V> sort(Comparator<Pair<K, V>> comparator) {
+	public Puller2<K, V> sort(Comparator<Pair<K, V>> comparator) {
 		var list = new ArrayList<Pair<K, V>>();
 		Pair<K, V> pair;
-		while (next(pair = Pair.of(null, null)))
+		while (pull(pair = Pair.of(null, null)))
 			list.add(pair);
 		return of(List_.sort(list, comparator));
 	}
 
-	public <O extends Comparable<? super O>> Outlet2<K, V> sortBy(Fun2<K, V, O> fun) {
+	public <O extends Comparable<? super O>> Puller2<K, V> sortBy(Fun2<K, V, O> fun) {
 		return sort((e0, e1) -> Object_.compare(fun.apply(e0.t0, e0.t1), fun.apply(e1.t0, e1.t1)));
 	}
 
-	public Outlet2<K, V> sortByKey(Comparator<K> comparator) {
+	public Puller2<K, V> sortByKey(Comparator<K> comparator) {
 		return sort((e0, e1) -> comparator.compare(e0.t0, e1.t0));
 	}
 
-	public Outlet2<K, V> sortByValue(Comparator<V> comparator) {
+	public Puller2<K, V> sortByValue(Comparator<V> comparator) {
 		return sort((e0, e1) -> comparator.compare(e0.t1, e1.t1));
 	}
 
@@ -393,16 +393,16 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 		return source2;
 	}
 
-	public Outlet<Outlet2<K, V>> split(BiPredicate<K, V> fun) {
-		return Outlet.of(FunUtil.map(Outlet2<K, V>::new, FunUtil2.split(fun, source2)));
+	public Puller<Puller2<K, V>> split(BiPredicate<K, V> fun) {
+		return Puller.of(FunUtil.map(Puller2<K, V>::new, FunUtil2.split(fun, source2)));
 	}
 
-	public Outlet2<K, V> take(int n) {
+	public Puller2<K, V> take(int n) {
 		return of(new Source2<>() {
 			private int count = n;
 
 			public boolean source2(Pair<K, V> pair) {
-				return 0 < count-- ? next(pair) : false;
+				return 0 < count-- ? pull(pair) : false;
 			}
 		});
 	}
@@ -417,7 +417,7 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 	public List<Pair<K, V>> toList() {
 		var list = new ArrayList<Pair<K, V>>();
 		Pair<K, V> pair;
-		while (next(pair = Pair.of(null, null)))
+		while (pull(pair = Pair.of(null, null)))
 			list.add(pair);
 		return list;
 	}
@@ -425,7 +425,7 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 	public Map<K, List<V>> toListMap() {
 		var map = new HashMap<K, List<V>>();
 		var pair = Pair.<K, V> of(null, null);
-		while (next(pair))
+		while (pull(pair))
 			map.computeIfAbsent(pair.t0, k_ -> new ArrayList<>()).add(pair.t1);
 		return map;
 	}
@@ -433,7 +433,7 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 	public Map<K, V> toMap() {
 		var map = new HashMap<K, V>();
 		var pair = Pair.<K, V> of(null, null);
-		while (next(pair))
+		while (pull(pair))
 			if (map.put(pair.t0, pair.t1) != null)
 				fail("duplicate key " + pair.t0);
 		return map;
@@ -441,14 +441,14 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 
 	public ListMultimap<K, V> toMultimap() {
 		var map = new ListMultimap<K, V>();
-		groupBy().concatMapValue(Outlet::of).sink(map::put);
+		groupBy().concatMapValue(Puller::of).sink(map::put);
 		return map;
 	}
 
 	public Set<Pair<K, V>> toSet() {
 		var set = new HashSet<Pair<K, V>>();
 		Pair<K, V> pair;
-		while (next(pair = Pair.of(null, null)))
+		while (pull(pair = Pair.of(null, null)))
 			set.add(pair);
 		return set;
 
@@ -458,19 +458,19 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 		return groupBy().mapValue(values -> Read.from(values).toSet()).toMap();
 	}
 
-	public Outlet<V> values() {
+	public Puller<V> values() {
 		return map_((k, v) -> v);
 	}
 
-	private <O> Outlet<O> map_(Fun2<K, V, O> fun0) {
-		return Outlet.of(FunUtil2.map(fun0, source2));
+	private <O> Puller<O> map_(Fun2<K, V, O> fun0) {
+		return Puller.of(FunUtil2.map(fun0, source2));
 	}
 
-	private <K1, V1> Outlet2<K1, V1> map2_(Fun2<K, V, K1> kf, Fun2<K, V, V1> vf) {
+	private <K1, V1> Puller2<K1, V1> map2_(Fun2<K, V, K1> kf, Fun2<K, V, V1> vf) {
 		return of(FunUtil2.map2(kf, vf, source2));
 	}
 
-	private boolean next(Pair<K, V> pair) {
+	private boolean pull(Pair<K, V> pair) {
 		return source2.source2(pair);
 	}
 

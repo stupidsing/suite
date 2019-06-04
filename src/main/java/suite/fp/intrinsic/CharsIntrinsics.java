@@ -10,7 +10,7 @@ import suite.node.Node;
 import suite.persistent.PerPointer;
 import suite.primitive.Chars;
 import suite.primitive.Chars_;
-import suite.streamlet.Outlet;
+import suite.streamlet.Puller;
 import suite.util.To;
 
 public class CharsIntrinsics {
@@ -36,7 +36,7 @@ public class CharsIntrinsics {
 		var s0 = ThunkUtil.yawnList(callback::yawn, inputs.get(1), true);
 		var s1 = s0.map(n -> Data.<Chars> get(callback.yawn(n)));
 		var s2 = Chars_.split(delim).apply(s1);
-		Outlet<Node> s3 = s2.map(Data<Chars>::new);
+		Puller<Node> s3 = s2.map(Data<Chars>::new);
 		var p = IndexedSourceReader.of(s3.source());
 		return Intrinsics.drain(callback, p);
 	};

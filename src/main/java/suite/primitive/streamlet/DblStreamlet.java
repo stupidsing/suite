@@ -9,6 +9,9 @@ import java.util.Set;
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.Pair;
 import suite.object.Object_;
+import suite.primitive.Doubles;
+import suite.primitive.Doubles.DoublesBuilder;
+import suite.primitive.Doubles_;
 import suite.primitive.DblOpt;
 import suite.primitive.DblPrimitives.DblComparator;
 import suite.primitive.DblPrimitives.DblObj_Obj;
@@ -17,29 +20,26 @@ import suite.primitive.DblPrimitives.DblSource;
 import suite.primitive.DblPrimitives.DblTest;
 import suite.primitive.DblPrimitives.Dbl_Obj;
 import suite.primitive.Dbl_Dbl;
-import suite.primitive.Doubles;
-import suite.primitive.Doubles.DoublesBuilder;
-import suite.primitive.Doubles_;
 import suite.primitive.adt.map.DblObjMap;
 import suite.primitive.adt.map.ObjDblMap;
 import suite.primitive.adt.set.DblSet;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil.Source;
 import suite.streamlet.FunUtil2.Fun2;
-import suite.streamlet.Outlet;
+import suite.streamlet.Puller;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 import suite.streamlet.StreamletDefaults;
 
-public class DblStreamlet implements StreamletDefaults<Double, DblOutlet> {
+public class DblStreamlet implements StreamletDefaults<Double, DblPuller> {
 
-	private Source<DblOutlet> in;
+	private Source<DblPuller> in;
 
-	private static DblStreamlet streamlet(Source<DblOutlet> in) {
+	private static DblStreamlet streamlet(Source<DblPuller> in) {
 		return new DblStreamlet(in);
 	}
 
-	public DblStreamlet(Source<DblOutlet> in) {
+	public DblStreamlet(Source<DblPuller> in) {
 		this.in = in;
 	}
 
@@ -51,7 +51,7 @@ public class DblStreamlet implements StreamletDefaults<Double, DblOutlet> {
 		return spawn().average();
 	}
 
-	public Streamlet<DblOutlet> chunk(int n) {
+	public Streamlet<DblPuller> chunk(int n) {
 		return new Streamlet<>(() -> spawn().chunk(n));
 	}
 
@@ -191,12 +191,12 @@ public class DblStreamlet implements StreamletDefaults<Double, DblOutlet> {
 		return spawn().opt();
 	}
 
-	public DblOutlet outlet() {
-		return spawn();
-	}
-
 	public Pair<DblStreamlet, DblStreamlet> partition(DblTest pred) {
 		return Pair.of(filter(pred), filter(t -> !pred.test(t)));
+	}
+
+	public DblPuller puller() {
+		return spawn();
 	}
 
 	public DblStreamlet reverse() {
@@ -276,15 +276,15 @@ public class DblStreamlet implements StreamletDefaults<Double, DblOutlet> {
 	}
 
 	public <U, V> Streamlet<V> zip(Iterable<U> list1, DblObj_Obj<U, V> fun) {
-		return new Streamlet<>(() -> spawn().zip(Outlet.of(list1), fun));
+		return new Streamlet<>(() -> spawn().zip(Puller.of(list1), fun));
 	}
 
 	private <O> Streamlet<O> concatMap_(Dbl_Obj<Streamlet<O>> fun) {
-		return new Streamlet<>(() -> spawn().concatMap(t -> fun.apply(t).outlet()));
+		return new Streamlet<>(() -> spawn().concatMap(t -> fun.apply(t).puller()));
 	}
 
 	private <K, V> Streamlet2<K, V> concatMap2_(Dbl_Obj<Streamlet2<K, V>> fun) {
-		return new Streamlet2<>(() -> spawn().concatMap2(t -> fun.apply(t).outlet()));
+		return new Streamlet2<>(() -> spawn().concatMap2(t -> fun.apply(t).puller()));
 	}
 
 	private <O> Streamlet<O> map_(Dbl_Obj<O> fun) {
@@ -299,7 +299,7 @@ public class DblStreamlet implements StreamletDefaults<Double, DblOutlet> {
 		return spawn().toList();
 	}
 
-	private DblOutlet spawn() {
+	private DblPuller spawn() {
 		return in.g();
 	}
 

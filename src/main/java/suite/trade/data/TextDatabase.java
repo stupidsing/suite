@@ -77,12 +77,12 @@ public class TextDatabase {
 	}
 
 	private synchronized void save() {
-		var outlet = Read //
+		var puller = Read //
 				.from(data) //
 				.map(this::toBytes) //
 				.collect(Bytes_::buffer);
 
-		FileUtil.out(path).doWrite(os -> Bytes_.copy(outlet, os::write));
+		FileUtil.out(path).doWrite(os -> Bytes_.copy(puller, os::write));
 	}
 
 	private void merge(Path path) {

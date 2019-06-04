@@ -4,7 +4,7 @@ import static suite.util.Friends.fail;
 
 import suite.primitive.LngPrimitives.Obj_Lng;
 import suite.primitive.Longs.LongsBuilder;
-import suite.primitive.streamlet.IntOutlet;
+import suite.primitive.streamlet.IntPuller;
 import suite.primitive.streamlet.LngStreamlet;
 import suite.streamlet.FunUtil.Fun;
 
@@ -12,21 +12,21 @@ public interface Int_Lng {
 
 	public long apply(int c);
 
-	public static Fun<IntOutlet, LngStreamlet> lift(Int_Lng fun0) {
+	public static Fun<IntPuller, LngStreamlet> lift(Int_Lng fun0) {
 		var fun1 = fun0.rethrow();
 		return ts -> {
 			var b = new LongsBuilder();
 			int c;
-			while ((c = ts.next()) != IntFunUtil.EMPTYVALUE)
+			while ((c = ts.pull()) != IntFunUtil.EMPTYVALUE)
 				b.append(fun1.apply(c));
 			return b.toLongs().streamlet();
 		};
 	}
 
-	public static Obj_Lng<IntOutlet> sum(Int_Lng fun0) {
+	public static Obj_Lng<IntPuller> sum(Int_Lng fun0) {
 		var fun1 = fun0.rethrow();
-		return outlet -> {
-			var source = outlet.source();
+		return puller -> {
+			var source = puller.source();
 			int c;
 			var result = (long) 0;
 			while ((c = source.g()) != IntFunUtil.EMPTYVALUE)

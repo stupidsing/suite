@@ -6,7 +6,7 @@ import suite.primitive.Floats_;
 import suite.primitive.FltFunUtil;
 import suite.primitive.FltPrimitives.FltSink;
 import suite.primitive.FltPrimitives.FltSource;
-import suite.primitive.streamlet.FltOutlet;
+import suite.primitive.streamlet.FltPuller;
 import suite.primitive.streamlet.FltStreamlet;
 
 /**
@@ -135,7 +135,7 @@ public class FltSet {
 	}
 
 	public FltStreamlet streamlet() {
-		return new FltStreamlet(() -> FltOutlet.of(source_()));
+		return new FltStreamlet(() -> FltPuller.of(source_()));
 	}
 
 	@Override

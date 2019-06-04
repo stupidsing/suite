@@ -9,6 +9,9 @@ import java.util.Set;
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.Pair;
 import suite.object.Object_;
+import suite.primitive.Longs;
+import suite.primitive.Longs.LongsBuilder;
+import suite.primitive.Longs_;
 import suite.primitive.LngOpt;
 import suite.primitive.LngPrimitives.LngComparator;
 import suite.primitive.LngPrimitives.LngObj_Obj;
@@ -17,29 +20,26 @@ import suite.primitive.LngPrimitives.LngSource;
 import suite.primitive.LngPrimitives.LngTest;
 import suite.primitive.LngPrimitives.Lng_Obj;
 import suite.primitive.Lng_Lng;
-import suite.primitive.Longs;
-import suite.primitive.Longs.LongsBuilder;
-import suite.primitive.Longs_;
 import suite.primitive.adt.map.LngObjMap;
 import suite.primitive.adt.map.ObjLngMap;
 import suite.primitive.adt.set.LngSet;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil.Source;
 import suite.streamlet.FunUtil2.Fun2;
-import suite.streamlet.Outlet;
+import suite.streamlet.Puller;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 import suite.streamlet.StreamletDefaults;
 
-public class LngStreamlet implements StreamletDefaults<Long, LngOutlet> {
+public class LngStreamlet implements StreamletDefaults<Long, LngPuller> {
 
-	private Source<LngOutlet> in;
+	private Source<LngPuller> in;
 
-	private static LngStreamlet streamlet(Source<LngOutlet> in) {
+	private static LngStreamlet streamlet(Source<LngPuller> in) {
 		return new LngStreamlet(in);
 	}
 
-	public LngStreamlet(Source<LngOutlet> in) {
+	public LngStreamlet(Source<LngPuller> in) {
 		this.in = in;
 	}
 
@@ -51,7 +51,7 @@ public class LngStreamlet implements StreamletDefaults<Long, LngOutlet> {
 		return spawn().average();
 	}
 
-	public Streamlet<LngOutlet> chunk(int n) {
+	public Streamlet<LngPuller> chunk(int n) {
 		return new Streamlet<>(() -> spawn().chunk(n));
 	}
 
@@ -191,12 +191,12 @@ public class LngStreamlet implements StreamletDefaults<Long, LngOutlet> {
 		return spawn().opt();
 	}
 
-	public LngOutlet outlet() {
-		return spawn();
-	}
-
 	public Pair<LngStreamlet, LngStreamlet> partition(LngTest pred) {
 		return Pair.of(filter(pred), filter(t -> !pred.test(t)));
+	}
+
+	public LngPuller puller() {
+		return spawn();
 	}
 
 	public LngStreamlet reverse() {
@@ -276,15 +276,15 @@ public class LngStreamlet implements StreamletDefaults<Long, LngOutlet> {
 	}
 
 	public <U, V> Streamlet<V> zip(Iterable<U> list1, LngObj_Obj<U, V> fun) {
-		return new Streamlet<>(() -> spawn().zip(Outlet.of(list1), fun));
+		return new Streamlet<>(() -> spawn().zip(Puller.of(list1), fun));
 	}
 
 	private <O> Streamlet<O> concatMap_(Lng_Obj<Streamlet<O>> fun) {
-		return new Streamlet<>(() -> spawn().concatMap(t -> fun.apply(t).outlet()));
+		return new Streamlet<>(() -> spawn().concatMap(t -> fun.apply(t).puller()));
 	}
 
 	private <K, V> Streamlet2<K, V> concatMap2_(Lng_Obj<Streamlet2<K, V>> fun) {
-		return new Streamlet2<>(() -> spawn().concatMap2(t -> fun.apply(t).outlet()));
+		return new Streamlet2<>(() -> spawn().concatMap2(t -> fun.apply(t).puller()));
 	}
 
 	private <O> Streamlet<O> map_(Lng_Obj<O> fun) {
@@ -299,7 +299,7 @@ public class LngStreamlet implements StreamletDefaults<Long, LngOutlet> {
 		return spawn().toList();
 	}
 
-	private LngOutlet spawn() {
+	private LngPuller spawn() {
 		return in.g();
 	}
 

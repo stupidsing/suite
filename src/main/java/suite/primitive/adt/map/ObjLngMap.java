@@ -11,7 +11,7 @@ import suite.primitive.LngPrimitives.LngObjSource;
 import suite.primitive.LngPrimitives.Obj_Lng;
 import suite.primitive.Lng_Lng;
 import suite.primitive.adt.pair.LngObjPair;
-import suite.primitive.streamlet.LngObjOutlet;
+import suite.primitive.streamlet.LngObjPuller;
 import suite.primitive.streamlet.LngObjStreamlet;
 import suite.streamlet.As;
 
@@ -29,10 +29,10 @@ public class ObjLngMap<K> {
 	private Object[] ks;
 	private long[] vs;
 
-	public static <K> ObjLngMap<K> collect(LngObjOutlet<K> outlet) {
+	public static <K> ObjLngMap<K> collect(LngObjPuller<K> puller) {
 		var map = new ObjLngMap<K>();
 		var pair = LngObjPair.<K> of((long) 0, null);
-		while (outlet.source().source2(pair))
+		while (puller.source().source2(pair))
 			map.put(pair.t1, pair.t0);
 		return map;
 	}
@@ -126,7 +126,7 @@ public class ObjLngMap<K> {
 	}
 
 	public LngObjStreamlet<K> streamlet() {
-		return new LngObjStreamlet<>(() -> LngObjOutlet.of(source_()));
+		return new LngObjStreamlet<>(() -> LngObjPuller.of(source_()));
 	}
 
 	@Override

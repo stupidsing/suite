@@ -7,7 +7,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import suite.os.Log_;
-import suite.streamlet.Outlet;
+import suite.streamlet.Puller;
 import suite.streamlet.Read;
 
 public class Thread_ {
@@ -89,7 +89,7 @@ public class Thread_ {
 		threads1.sink(Th::join_);
 	}
 
-	public static Void startJoin(Outlet<Th> threads0) {
+	public static Void startJoin(Puller<Th> threads0) {
 		var threads1 = threads0.toList();
 		threads1.forEach(Th::start);
 		threads1.forEach(Th::join_);

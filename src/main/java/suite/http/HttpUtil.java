@@ -24,7 +24,7 @@ import suite.primitive.Bytes_;
 import suite.primitive.Chars;
 import suite.streamlet.As;
 import suite.streamlet.FunUtil.Fun;
-import suite.streamlet.Outlet;
+import suite.streamlet.Puller;
 import suite.streamlet.Read;
 import suite.util.Memoize;
 import suite.util.ParseUtil;
@@ -37,14 +37,14 @@ public class HttpUtil {
 	public static class HttpRequest {
 		private String method;
 		private URL url;
-		private Outlet<Bytes> in;
+		private Puller<Bytes> in;
 		private Map<String, String> headers;
 
 		private HttpRequest() {
-			this("GET", null, Outlet.empty(), Map.ofEntries());
+			this("GET", null, Puller.empty(), Map.ofEntries());
 		}
 
-		private HttpRequest(String method, URL url, Outlet<Bytes> in, Map<String, String> headers) {
+		private HttpRequest(String method, URL url, Puller<Bytes> in, Map<String, String> headers) {
 			this.method = method;
 			this.url = url;
 			this.in = in;
@@ -59,7 +59,7 @@ public class HttpUtil {
 			return new HttpRequest(method, url, in, headers);
 		}
 
-		public HttpRequest in(Outlet<Bytes> in) {
+		public HttpRequest in(Puller<Bytes> in) {
 			return new HttpRequest(method, url, in, headers);
 		}
 
@@ -71,15 +71,15 @@ public class HttpUtil {
 			return out().collect(To::inputStream);
 		}
 
-		public Outlet<String> lines() {
+		public Puller<String> lines() {
 			return out().collect(As::lines);
 		}
 
-		public Outlet<Chars> utf8() {
+		public Puller<Chars> utf8() {
 			return out().collect(As::utf8decode);
 		}
 
-		public Outlet<Bytes> out() {
+		public Puller<Bytes> out() {
 			return send().out;
 		}
 
@@ -91,9 +91,9 @@ public class HttpUtil {
 	public static class HttpResult {
 		public final int responseCode;
 		public final ListMultimap<String, String> headers;
-		public final Outlet<Bytes> out;
+		public final Puller<Bytes> out;
 
-		private HttpResult(int responseCode, ListMultimap<String, String> headers, Outlet<Bytes> out) {
+		private HttpResult(int responseCode, ListMultimap<String, String> headers, Puller<Bytes> out) {
 			this.responseCode = responseCode;
 			this.headers = headers;
 			this.out = out;
@@ -113,22 +113,22 @@ public class HttpUtil {
 	}
 
 	public static HttpResult http(String method, URL url) {
-		return http(method, url, Outlet.empty());
+		return http(method, url, Puller.empty());
 	}
 
-	public static HttpResult http(String method, String url, Outlet<Bytes> in) {
+	public static HttpResult http(String method, String url, Puller<Bytes> in) {
 		return http(method, To.url(url), in);
 	}
 
-	public static HttpResult http(String method, URL url, Outlet<Bytes> in) {
+	public static HttpResult http(String method, URL url, Puller<Bytes> in) {
 		return http(method, url, in, Map.ofEntries());
 	}
 
 	public static HttpResult http(String method, URL url, Map<String, String> headers) {
-		return http(method, url, Outlet.empty(), headers);
+		return http(method, url, Puller.empty(), headers);
 	}
 
-	public static HttpResult http(String method, URL url, Outlet<Bytes> in, Map<String, String> headers) {
+	public static HttpResult http(String method, URL url, Puller<Bytes> in, Map<String, String> headers) {
 		return http_(method, url, in, headers);
 	}
 
@@ -145,7 +145,7 @@ public class HttpUtil {
 		return links;
 	}
 
-	private static HttpResult http_(String method, URL url, Outlet<Bytes> in, Map<String, String> headers) {
+	private static HttpResult http_(String method, URL url, Puller<Bytes> in, Map<String, String> headers) {
 		var al = timestampFun.apply(url.getHost());
 		var backoff = new Backoff();
 		long current, last, start, next;
@@ -163,7 +163,7 @@ public class HttpUtil {
 	// keep timestamps to avoid overloading servers
 	private static Fun<String, AtomicLong> timestampFun = Memoize.fun(server -> new AtomicLong());
 
-	private static HttpResult httpApache(String method, URL url, Outlet<Bytes> in, Map<String, String> headers0)
+	private static HttpResult httpApache(String method, URL url, Puller<Bytes> in, Map<String, String> headers0)
 			throws IOException {
 		Log_.info("START " + method + " " + url);
 		var client = HttpClients.createDefault();
@@ -185,7 +185,7 @@ public class HttpUtil {
 		var statusCode = statusLine.getStatusCode();
 		var inputStream = response.getEntity().getContent();
 		var headers1 = Read.from(response.getAllHeaders()).map2(Header::getName, Header::getValue).toMultimap();
-		var out = To.outlet(inputStream) //
+		var out = To.puller(inputStream) //
 				.closeAtEnd(inputStream) //
 				.closeAtEnd(response) //
 				.closeAtEnd(client) //
@@ -201,7 +201,7 @@ public class HttpUtil {
 	}
 
 	@SuppressWarnings("unused")
-	private static HttpResult httpJre(String method, URL url, Outlet<Bytes> in, Map<String, String> headers) throws IOException {
+	private static HttpResult httpJre(String method, URL url, Puller<Bytes> in, Map<String, String> headers) throws IOException {
 		var conn = (HttpURLConnection) url.openConnection();
 		conn.setDoOutput(true);
 		conn.setRequestMethod(method);
@@ -213,7 +213,7 @@ public class HttpUtil {
 		}
 
 		var responseCode = conn.getResponseCode();
-		var out = To.outlet(conn.getInputStream());
+		var out = To.puller(conn.getInputStream());
 
 		if (responseCode == HttpURLConnection.HTTP_MOVED_PERM //
 				|| responseCode == HttpURLConnection.HTTP_MOVED_TEMP //

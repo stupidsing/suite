@@ -142,10 +142,10 @@ public class Pusher<T> {
 		return redirect_((t, sink) -> sink.f(fun.apply(t)));
 	}
 
-	public Outlet<T> outlet() {
+	public Puller<T> puller() {
 		var queue = new NullableSyncQueue<T>();
 		wire_(queue::offerQuietly);
-		return Outlet.of(() -> rethrow(queue::take));
+		return Puller.of(() -> rethrow(queue::take));
 	}
 
 	public void push(T t) {

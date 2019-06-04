@@ -7,17 +7,19 @@ import java.util.Objects;
 
 import suite.primitive.FltFltSink;
 import suite.primitive.FltFltSource;
-import suite.primitive.FltFunUtil;
 import suite.primitive.FltPrimitives.FltObjSource;
+import suite.primitive.FltPrimitives.Obj_Flt;
+import suite.primitive.Flt_Flt;
+import suite.primitive.FltFunUtil;
 import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.primitive.Flt_Flt;
 import suite.primitive.adt.pair.FltFltPair;
 import suite.primitive.adt.pair.FltObjPair;
-import suite.primitive.streamlet.FltObjOutlet;
+import suite.primitive.streamlet.FltObjPuller;
 import suite.primitive.streamlet.FltObjStreamlet;
 import suite.streamlet.As;
 import suite.streamlet.FunUtil.Fun;
-import suite.streamlet.Outlet;
+import suite.streamlet.Puller;
 
 /**
  * Map with primitive float key and primitive float value. Float.MIN_VALUE is
@@ -33,13 +35,13 @@ public class FltFltMap {
 	private float[] ks;
 	private float[] vs;
 
-	public static <T> Fun<Outlet<T>, FltFltMap> collect(Obj_Flt<T> kf0, Obj_Flt<T> vf0) {
+	public static <T> Fun<Puller<T>, FltFltMap> collect(Obj_Flt<T> kf0, Obj_Flt<T> vf0) {
 		var kf1 = kf0.rethrow();
 		var vf1 = vf0.rethrow();
-		return outlet -> {
+		return puller -> {
 			var map = new FltFltMap();
 			T t;
-			while ((t = outlet.source().g()) != null)
+			while ((t = puller.source().g()) != null)
 				map.put(kf1.apply(t), vf1.apply(t));
 			return map;
 		};
@@ -137,7 +139,7 @@ public class FltFltMap {
 	}
 
 	public FltObjStreamlet<Float> streamlet() {
-		return new FltObjStreamlet<>(() -> FltObjOutlet.of(new FltObjSource<Float>() {
+		return new FltObjStreamlet<>(() -> FltObjPuller.of(new FltObjSource<Float>() {
 			private FltFltSource source0 = source_();
 			private FltFltPair pair0 = FltFltPair.of((float) 0, (float) 0);
 

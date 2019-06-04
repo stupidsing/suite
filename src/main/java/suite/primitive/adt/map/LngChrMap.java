@@ -5,21 +5,21 @@ import static suite.util.Friends.fail;
 import java.util.Arrays;
 import java.util.Objects;
 
-import suite.primitive.ChrFunUtil;
-import suite.primitive.ChrPrimitives.Obj_Chr;
-import suite.primitive.Chr_Chr;
 import suite.primitive.LngChrSink;
 import suite.primitive.LngChrSource;
 import suite.primitive.LngPrimitives.LngObjSource;
 import suite.primitive.LngPrimitives.Obj_Lng;
 import suite.primitive.Lng_Chr;
+import suite.primitive.ChrFunUtil;
+import suite.primitive.ChrPrimitives.Obj_Chr;
+import suite.primitive.Chr_Chr;
 import suite.primitive.adt.pair.LngChrPair;
 import suite.primitive.adt.pair.LngObjPair;
-import suite.primitive.streamlet.LngObjOutlet;
+import suite.primitive.streamlet.LngObjPuller;
 import suite.primitive.streamlet.LngObjStreamlet;
 import suite.streamlet.As;
 import suite.streamlet.FunUtil.Fun;
-import suite.streamlet.Outlet;
+import suite.streamlet.Puller;
 
 /**
  * Map with primitive long key and primitive char value. Character.MIN_VALUE is
@@ -35,13 +35,13 @@ public class LngChrMap {
 	private long[] ks;
 	private char[] vs;
 
-	public static <T> Fun<Outlet<T>, LngChrMap> collect(Obj_Lng<T> kf0, Obj_Chr<T> vf0) {
+	public static <T> Fun<Puller<T>, LngChrMap> collect(Obj_Lng<T> kf0, Obj_Chr<T> vf0) {
 		var kf1 = kf0.rethrow();
 		var vf1 = vf0.rethrow();
-		return outlet -> {
+		return puller -> {
 			var map = new LngChrMap();
 			T t;
-			while ((t = outlet.source().g()) != null)
+			while ((t = puller.source().g()) != null)
 				map.put(kf1.apply(t), vf1.apply(t));
 			return map;
 		};
@@ -139,7 +139,7 @@ public class LngChrMap {
 	}
 
 	public LngObjStreamlet<Character> streamlet() {
-		return new LngObjStreamlet<>(() -> LngObjOutlet.of(new LngObjSource<Character>() {
+		return new LngObjStreamlet<>(() -> LngObjPuller.of(new LngObjSource<Character>() {
 			private LngChrSource source0 = source_();
 			private LngChrPair pair0 = LngChrPair.of((long) 0, (char) 0);
 

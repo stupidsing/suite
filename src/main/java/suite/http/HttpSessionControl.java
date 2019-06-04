@@ -104,7 +104,7 @@ public class HttpSessionControl {
 		private HttpResponse showLoginPage(PerList<String> redirectPath, boolean isLoginFailed) {
 			var redirectPath1 = redirectPath.streamlet().map(p -> "/" + p).collect(As::joined);
 
-			return HttpResponse.of(To.outlet("<html>" //
+			return HttpResponse.of(To.puller("<html>" //
 					+ "<head><title>Login</title></head>" //
 					+ "<body>" //
 					+ "<font face=\"Monospac821 BT,Monaco,Consolas\">" //

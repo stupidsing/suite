@@ -5,21 +5,21 @@ import static suite.util.Friends.fail;
 import java.util.Arrays;
 import java.util.Objects;
 
-import suite.primitive.DblFunUtil;
-import suite.primitive.DblPrimitives.Obj_Dbl;
-import suite.primitive.Dbl_Dbl;
 import suite.primitive.IntDblSink;
 import suite.primitive.IntDblSource;
 import suite.primitive.IntPrimitives.IntObjSource;
 import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.Int_Dbl;
+import suite.primitive.DblFunUtil;
+import suite.primitive.DblPrimitives.Obj_Dbl;
+import suite.primitive.Dbl_Dbl;
 import suite.primitive.adt.pair.IntDblPair;
 import suite.primitive.adt.pair.IntObjPair;
-import suite.primitive.streamlet.IntObjOutlet;
+import suite.primitive.streamlet.IntObjPuller;
 import suite.primitive.streamlet.IntObjStreamlet;
 import suite.streamlet.As;
 import suite.streamlet.FunUtil.Fun;
-import suite.streamlet.Outlet;
+import suite.streamlet.Puller;
 
 /**
  * Map with primitive int key and primitive double value. Double.MIN_VALUE is
@@ -35,13 +35,13 @@ public class IntDblMap {
 	private int[] ks;
 	private double[] vs;
 
-	public static <T> Fun<Outlet<T>, IntDblMap> collect(Obj_Int<T> kf0, Obj_Dbl<T> vf0) {
+	public static <T> Fun<Puller<T>, IntDblMap> collect(Obj_Int<T> kf0, Obj_Dbl<T> vf0) {
 		var kf1 = kf0.rethrow();
 		var vf1 = vf0.rethrow();
-		return outlet -> {
+		return puller -> {
 			var map = new IntDblMap();
 			T t;
-			while ((t = outlet.source().g()) != null)
+			while ((t = puller.source().g()) != null)
 				map.put(kf1.apply(t), vf1.apply(t));
 			return map;
 		};
@@ -139,7 +139,7 @@ public class IntDblMap {
 	}
 
 	public IntObjStreamlet<Double> streamlet() {
-		return new IntObjStreamlet<>(() -> IntObjOutlet.of(new IntObjSource<Double>() {
+		return new IntObjStreamlet<>(() -> IntObjPuller.of(new IntObjSource<Double>() {
 			private IntDblSource source0 = source_();
 			private IntDblPair pair0 = IntDblPair.of((int) 0, (double) 0);
 

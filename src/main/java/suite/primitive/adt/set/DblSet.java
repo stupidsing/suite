@@ -2,11 +2,11 @@ package suite.primitive.adt.set;
 
 import java.util.Arrays;
 
+import suite.primitive.Doubles_;
 import suite.primitive.DblFunUtil;
 import suite.primitive.DblPrimitives.DblSink;
 import suite.primitive.DblPrimitives.DblSource;
-import suite.primitive.Doubles_;
-import suite.primitive.streamlet.DblOutlet;
+import suite.primitive.streamlet.DblPuller;
 import suite.primitive.streamlet.DblStreamlet;
 
 /**
@@ -135,7 +135,7 @@ public class DblSet {
 	}
 
 	public DblStreamlet streamlet() {
-		return new DblStreamlet(() -> DblOutlet.of(source_()));
+		return new DblStreamlet(() -> DblPuller.of(source_()));
 	}
 
 	@Override

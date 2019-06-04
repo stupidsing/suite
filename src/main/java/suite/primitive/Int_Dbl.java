@@ -4,29 +4,29 @@ import static suite.util.Friends.fail;
 
 import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Doubles.DoublesBuilder;
+import suite.primitive.streamlet.IntPuller;
 import suite.primitive.streamlet.DblStreamlet;
-import suite.primitive.streamlet.IntOutlet;
 import suite.streamlet.FunUtil.Fun;
 
 public interface Int_Dbl {
 
 	public double apply(int c);
 
-	public static Fun<IntOutlet, DblStreamlet> lift(Int_Dbl fun0) {
+	public static Fun<IntPuller, DblStreamlet> lift(Int_Dbl fun0) {
 		var fun1 = fun0.rethrow();
 		return ts -> {
 			var b = new DoublesBuilder();
 			int c;
-			while ((c = ts.next()) != IntFunUtil.EMPTYVALUE)
+			while ((c = ts.pull()) != IntFunUtil.EMPTYVALUE)
 				b.append(fun1.apply(c));
 			return b.toDoubles().streamlet();
 		};
 	}
 
-	public static Obj_Dbl<IntOutlet> sum(Int_Dbl fun0) {
+	public static Obj_Dbl<IntPuller> sum(Int_Dbl fun0) {
 		var fun1 = fun0.rethrow();
-		return outlet -> {
-			var source = outlet.source();
+		return puller -> {
+			var source = puller.source();
 			int c;
 			var result = (double) 0;
 			while ((c = source.g()) != IntFunUtil.EMPTYVALUE)

@@ -8,7 +8,7 @@ import suite.primitive.IntPrimitives.IntObjSink;
 import suite.primitive.IntPrimitives.IntObjSource;
 import suite.primitive.IntPrimitives.Int_Obj;
 import suite.primitive.adt.pair.IntObjPair;
-import suite.primitive.streamlet.IntObjOutlet;
+import suite.primitive.streamlet.IntObjPuller;
 import suite.primitive.streamlet.IntObjStreamlet;
 import suite.streamlet.As;
 import suite.streamlet.FunUtil.Iterate;
@@ -27,10 +27,10 @@ public class IntObjMap<V> {
 	private int[] ks;
 	private Object[] vs;
 
-	public static <V> IntObjMap<V> collect(IntObjOutlet<V> outlet) {
+	public static <V> IntObjMap<V> collect(IntObjPuller<V> puller) {
 		var map = new IntObjMap<V>();
 		var pair = IntObjPair.<V> of((int) 0, null);
-		while (outlet.source().source2(pair))
+		while (puller.source().source2(pair))
 			map.put(pair.t0, pair.t1);
 		return map;
 	}
@@ -124,7 +124,7 @@ public class IntObjMap<V> {
 	}
 
 	public IntObjStreamlet<V> streamlet() {
-		return new IntObjStreamlet<>(() -> IntObjOutlet.of(source_()));
+		return new IntObjStreamlet<>(() -> IntObjPuller.of(source_()));
 	}
 
 	@Override

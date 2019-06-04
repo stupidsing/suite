@@ -27,30 +27,30 @@ import suite.streamlet.FunUtil;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil.Source;
 import suite.streamlet.FunUtil2.Sink2;
-import suite.streamlet.Outlet;
-import suite.streamlet.Outlet2;
+import suite.streamlet.Puller;
+import suite.streamlet.Puller2;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 import suite.streamlet.StreamletDefaults;
 
-public class IntObjStreamlet<V> implements StreamletDefaults<IntObjPair<V>, IntObjOutlet<V>> {
+public class IntObjStreamlet<V> implements StreamletDefaults<IntObjPair<V>, IntObjPuller<V>> {
 
-	private Source<IntObjOutlet<V>> in;
+	private Source<IntObjPuller<V>> in;
 
 	@SafeVarargs
 	public static <V> IntObjStreamlet<V> concat(IntObjStreamlet<V>... streamlets) {
 		return streamlet(() -> {
-			var source = Read.from(streamlets).outlet().source();
-			return IntObjOutlet.of(IntObjFunUtil.concat(FunUtil.map(st -> st.spawn().source(), source)));
+			var source = Read.from(streamlets).puller().source();
+			return IntObjPuller.of(IntObjFunUtil.concat(FunUtil.map(st -> st.spawn().source(), source)));
 		});
 	}
 
-	private static <V> IntObjStreamlet<V> streamlet(Source<IntObjOutlet<V>> in) {
+	private static <V> IntObjStreamlet<V> streamlet(Source<IntObjPuller<V>> in) {
 		return new IntObjStreamlet<>(in);
 	}
 
-	public IntObjStreamlet(Source<IntObjOutlet<V>> in) {
+	public IntObjStreamlet(Source<IntObjPuller<V>> in) {
 		this.in = in;
 	}
 
@@ -58,7 +58,7 @@ public class IntObjStreamlet<V> implements StreamletDefaults<IntObjPair<V>, IntO
 		return fun.apply(this);
 	}
 
-	public Streamlet<IntObjOutlet<V>> chunk(int n) {
+	public Streamlet<IntObjPuller<V>> chunk(int n) {
 		return new Streamlet<>(() -> spawn().chunk(n));
 	}
 
@@ -83,8 +83,8 @@ public class IntObjStreamlet<V> implements StreamletDefaults<IntObjPair<V>, IntO
 	}
 
 	public <V1> IntObjStreamlet<V1> concatMapValue(Fun<V, Streamlet<V1>> fun) {
-		Fun<V, Outlet<V1>> f = v -> fun.apply(v).outlet();
-		return streamlet(() -> IntObjOutlet.of(spawn().concatMapValue(f)));
+		Fun<V, Puller<V1>> f = v -> fun.apply(v).puller();
+		return streamlet(() -> IntObjPuller.of(spawn().concatMapValue(f)));
 	}
 
 	public IntObjStreamlet<V> cons(int key, V value) {
@@ -191,16 +191,16 @@ public class IntObjStreamlet<V> implements StreamletDefaults<IntObjPair<V>, IntO
 		return spawn().opt();
 	}
 
-	public IntObjOutlet<V> outlet() {
-		return spawn();
-	}
-
 	public Streamlet<IntObjPair<V>> pairs() {
 		return new Streamlet<>(() -> spawn().pairs());
 	}
 
 	public Pair<IntObjStreamlet<V>, IntObjStreamlet<V>> partition(IntObjPredicate<V> pred) {
 		return Pair.of(filter(pred), filter((k, v) -> !pred.test(k, v)));
+	}
+
+	public IntObjPuller<V> puller() {
+		return spawn();
 	}
 
 	public IntObjStreamlet<V> reverse() {
@@ -288,18 +288,18 @@ public class IntObjStreamlet<V> implements StreamletDefaults<IntObjPair<V>, IntO
 	}
 
 	private <T> Streamlet<T> concatMap_(IntObj_Obj<V, Streamlet<T>> fun) {
-		IntObj_Obj<V, Outlet<T>> bf = (k, v) -> fun.apply(k, v).outlet();
-		return new Streamlet<>(() -> Outlet.of(spawn().concatMap(bf)));
+		IntObj_Obj<V, Puller<T>> bf = (k, v) -> fun.apply(k, v).puller();
+		return new Streamlet<>(() -> Puller.of(spawn().concatMap(bf)));
 	}
 
 	private <V1, K1> Streamlet2<K1, V1> concatMap2_(IntObj_Obj<V, Streamlet2<K1, V1>> fun) {
-		IntObj_Obj<V, Outlet2<K1, V1>> bf = (k, v) -> fun.apply(k, v).outlet();
-		return new Streamlet2<>(() -> Outlet2.of(spawn().concatMap2(bf)));
+		IntObj_Obj<V, Puller2<K1, V1>> bf = (k, v) -> fun.apply(k, v).puller();
+		return new Streamlet2<>(() -> Puller2.of(spawn().concatMap2(bf)));
 	}
 
 	private <V1> IntObjStreamlet<V1> concatMapIntObj_(IntObj_Obj<V, IntObjStreamlet<V1>> fun) {
-		IntObj_Obj<V, IntObjOutlet<V1>> bf = (k, v) -> fun.apply(k, v).outlet();
-		return streamlet(() -> IntObjOutlet.of(spawn().concatMapIntObj(bf)));
+		IntObj_Obj<V, IntObjPuller<V1>> bf = (k, v) -> fun.apply(k, v).puller();
+		return streamlet(() -> IntObjPuller.of(spawn().concatMapIntObj(bf)));
 	}
 
 	private <T> Streamlet<T> map_(IntObj_Obj<V, T> fun) {
@@ -318,7 +318,7 @@ public class IntObjStreamlet<V> implements StreamletDefaults<IntObjPair<V>, IntO
 		return spawn().toList();
 	}
 
-	private IntObjOutlet<V> spawn() {
+	private IntObjPuller<V> spawn() {
 		return in.g();
 	}
 

@@ -53,7 +53,7 @@ public class HttpIo {
 			var is1 = !cl.isEmpty() ? sizeLimitedInputStream(is0, cl.get()) : is0;
 
 			return String_.equals(protocol, "HTTP/1.1") //
-					? new HttpResponse(status, headers, To.outlet(is1)) //
+					? new HttpResponse(status, headers, To.puller(is1)) //
 					: fail("only HTTP/1.1 is supported");
 		});
 	}

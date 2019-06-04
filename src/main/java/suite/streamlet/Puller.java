@@ -24,7 +24,7 @@ import suite.adt.pair.Pair;
 import suite.object.Object_;
 import suite.primitive.IntPrimitives.IntObjSource;
 import suite.primitive.adt.pair.IntObjPair;
-import suite.primitive.streamlet.IntObjOutlet;
+import suite.primitive.streamlet.IntObjPuller;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil.Sink;
 import suite.streamlet.FunUtil.Source;
@@ -40,80 +40,80 @@ import suite.util.To;
  *
  * @author ywsing
  */
-public class Outlet<T> implements OutletDefaults<T> {
+public class Puller<T> implements PullerDefaults<T> {
 
 	private Source<T> source;
 
 	@SafeVarargs
-	public static <T> Outlet<T> concat(Outlet<T>... outlets) {
+	public static <T> Puller<T> concat(Puller<T>... outlets) {
 		var sources = new ArrayList<Source<T>>();
 		for (var outlet : outlets)
 			sources.add(outlet.source);
 		return of(FunUtil.concat(To.source(sources)));
 	}
 
-	public static <T> Outlet<T> empty() {
+	public static <T> Puller<T> empty() {
 		return of(FunUtil.nullSource());
 	}
 
 	@SafeVarargs
-	public static <T> Outlet<T> of(T... ts) {
+	public static <T> Puller<T> of(T... ts) {
 		return of(To.source(ts));
 	}
 
-	public static <T> Outlet<T> of(Enumeration<T> en) {
+	public static <T> Puller<T> of(Enumeration<T> en) {
 		return of(To.source(en));
 	}
 
-	public static <T> Outlet<T> of(Iterable<T> col) {
+	public static <T> Puller<T> of(Iterable<T> col) {
 		return of(To.source(col));
 	}
 
-	public static <T> Outlet<T> of(Source<T> source) {
-		return new Outlet<>(source);
+	public static <T> Puller<T> of(Source<T> source) {
+		return new Puller<>(source);
 	}
 
-	private Outlet(Source<T> source) {
+	private Puller(Source<T> source) {
 		this.source = source;
 	}
 
-	public Outlet<Outlet<T>> chunk(int n) {
-		return of(FunUtil.map(Outlet<T>::new, FunUtil.chunk(n, source)));
+	public Puller<Puller<T>> chunk(int n) {
+		return of(FunUtil.map(Puller<T>::new, FunUtil.chunk(n, source)));
 	}
 
-	public Outlet<T> closeAtEnd(Closeable c) {
+	public Puller<T> closeAtEnd(Closeable c) {
 		return of(() -> {
-			var next = next();
+			var next = pull();
 			if (next == null)
 				Object_.closeQuietly(c);
 			return next;
 		});
 	}
 
-	public <R> R collect(Fun<Outlet<T>, R> fun) {
+	public <R> R collect(Fun<Puller<T>, R> fun) {
 		return fun.apply(this);
 	}
 
-	public <O> Outlet<O> concatMap(Fun<T, Outlet<O>> fun) {
+	public <O> Puller<O> concatMap(Fun<T, Puller<O>> fun) {
 		return of(FunUtil.concat(FunUtil.map(t -> fun.apply(t).source, source)));
 	}
 
-	public <K, V> Outlet2<K, V> concatMap2(Fun<T, Outlet2<K, V>> fun) {
-		return Outlet2.of(FunUtil2.concat(FunUtil.map(t -> fun.apply(t).source(), source)));
+	public <K, V> Puller2<K, V> concatMap2(Fun<T, Puller2<K, V>> fun) {
+		return Puller2.of(FunUtil2.concat(FunUtil.map(t -> fun.apply(t).source(), source)));
 	}
 
-	public Outlet<T> cons(T t) {
+	public Puller<T> cons(T t) {
 		return of(FunUtil.cons(t, source));
 	}
 
 	public int count() {
 		var i = 0;
-		while (next() != null)
+		while (pull() != null)
 			i++;
 		return i;
 	}
 
-	public <U, R> Outlet<R> cross(List<U> list, Fun2<T, U, R> fun) {
+	public <U, R> Puller<R> cross(List<U> list, Fun2<T, U, R> fun) {
 		return of(new Source<>() {
 			private T t;
 			private int index = list.size();
@@ -121,34 +121,34 @@ public class Outlet<T> implements OutletDefaults<T> {
 			public R g() {
 				if (index == list.size()) {
 					index = 0;
-					t = next();
+					t = pull();
 				}
 				return fun.apply(t, list.get(index++));
 			}
 		});
 	}
 
-	public Outlet<T> distinct() {
+	public Puller<T> distinct() {
 		var set = new HashSet<>();
 		return of(() -> {
 			T t;
-			while ((t = next()) != null && !set.add(t))
+			while ((t = pull()) != null && !set.add(t))
 				;
 			return t;
 		});
 	}
 
-	public Outlet<T> drop(int n) {
+	public Puller<T> drop(int n) {
 		var isAvailable = true;
-		while (0 < n && (isAvailable &= next() != null))
+		while (0 < n && (isAvailable &= pull() != null))
 			n--;
 		return isAvailable ? this : empty();
 	}
 
 	@Override
 	public boolean equals(Object object) {
-		if (Object_.clazz(object) == Outlet.class) {
-			var source1 = ((Outlet<?>) object).source;
+		if (Object_.clazz(object) == Puller.class) {
+			var source1 = ((Puller<?>) object).source;
 			Object o0, o1;
 			while (Objects.equals(o0 = source.g(), o1 = source1.g()))
 				if (o0 == null && o1 == null)
@@ -158,30 +158,30 @@ public class Outlet<T> implements OutletDefaults<T> {
 			return false;
 	}
 
-	public Outlet<T> filter(Predicate<T> fun) {
+	public Puller<T> filter(Predicate<T> fun) {
 		return of(FunUtil.filter(fun, source));
 	}
 
 	public T first() {
-		return next();
+		return pull();
 	}
 
-	public <O> Outlet<O> flatMap(Fun<T, Iterable<O>> fun) {
+	public <O> Puller<O> flatMap(Fun<T, Iterable<O>> fun) {
 		return of(FunUtil.flatten(FunUtil.map(fun, source)));
 	}
 
 	public <R> R fold(R init, Fun2<R, T, R> fun) {
 		T t;
-		while ((t = next()) != null)
+		while ((t = pull()) != null)
 			init = fun.apply(init, t);
 		return init;
 	}
 
-	public <K, V> Outlet2<K, List<T>> groupBy(Fun<T, K> keyFun) {
+	public <K, V> Puller2<K, List<T>> groupBy(Fun<T, K> keyFun) {
 		return map2_(keyFun, value -> value).groupBy();
 	}
 
-	public <K, V1> Outlet2<K, V1> groupBy(Fun<T, K> keyFun, Fun<Streamlet<T>, V1> fun) {
+	public <K, V1> Puller2<K, V1> groupBy(Fun<T, K> keyFun, Fun<Streamlet<T>, V1> fun) {
 		return groupBy(keyFun).mapValue(list -> fun.apply(Read.from(list)));
 	}
 
@@ -194,12 +194,12 @@ public class Outlet<T> implements OutletDefaults<T> {
 		return h;
 	}
 
-	public IntObjOutlet<T> index() {
-		return IntObjOutlet.of(new IntObjSource<>() {
+	public IntObjPuller<T> index() {
+		return IntObjPuller.of(new IntObjSource<>() {
 			private int i = 0;
 
 			public boolean source2(IntObjPair<T> pair) {
-				var t = next();
+				var t = pull();
 				boolean b = t != null;
 				if (b)
 					pair.update(i++, t);
@@ -223,16 +223,16 @@ public class Outlet<T> implements OutletDefaults<T> {
 
 	public T last() {
 		T t, t1 = null;
-		while ((t = next()) != null)
+		while ((t = pull()) != null)
 			t1 = t;
 		return t1;
 	}
 
-	public <O> Outlet<O> map(Fun<T, O> fun) {
+	public <O> Puller<O> map(Fun<T, O> fun) {
 		return of(FunUtil.map(fun, source));
 	}
 
-	public <K, V> Outlet2<K, V> map2(Fun<T, K> kf0, Fun<T, V> vf0) {
+	public <K, V> Puller2<K, V> map2(Fun<T, K> kf0, Fun<T, V> vf0) {
 		return map2_(kf0, vf0);
 	}
 
@@ -242,9 +242,9 @@ public class Outlet<T> implements OutletDefaults<T> {
 	}
 
 	public T minOrNull(Comparator<T> comparator) {
-		T t = next(), t1;
+		T t = pull(), t1;
 		if (t != null) {
-			while ((t1 = next()) != null)
+			while ((t1 = pull()) != null)
 				if (0 < comparator.compare(t, t1))
 					t = t1;
 			return t;
@@ -252,11 +252,7 @@ public class Outlet<T> implements OutletDefaults<T> {
 			return null;
 	}
 
-	public T next() {
-		return source.g();
-	}
-
-	public Outlet<T> nonBlocking(T t0) {
+	public Puller<T> nonBlocking(T t0) {
 		var queue = new NullableSyncQueue<T>();
 
 		new Thread(() -> {
@@ -266,43 +262,47 @@ public class Outlet<T> implements OutletDefaults<T> {
 			while (t != null);
 		}).start();
 
-		return new Outlet<>(() -> {
+		return new Puller<>(() -> {
 			var mutable = Mutable.<T> nil();
 			return queue.poll(mutable) ? mutable.value() : t0;
 		});
 	}
 
 	public Opt<T> opt() {
-		var t = next();
+		var t = pull();
 		if (t != null)
-			return next() == null ? Opt.of(t) : fail("more than one result");
+			return pull() == null ? Opt.of(t) : fail("more than one result");
 		else
 			return Opt.none();
 	}
 
-	public Pair<Outlet<T>, Outlet<T>> partition(Predicate<T> pred) {
+	public Pair<Puller<T>, Puller<T>> partition(Predicate<T> pred) {
 		return Pair.of(filter(pred), filter(pred.negate()));
 	}
 
-	public Outlet<T> reverse() {
+	public T pull() {
+		return source.g();
+	}
+
+	public Puller<T> reverse() {
 		return of(List_.reverse(toList()));
 	}
 
 	public void sink(Sink<T> sink0) {
 		var sink1 = sink0.rethrow();
 		T t;
-		while ((t = next()) != null)
+		while ((t = pull()) != null)
 			sink1.f(t);
 	}
 
-	public Outlet<T> skip(int n) {
+	public Puller<T> skip(int n) {
 		var end = false;
 		for (var i = 0; !end && i < n; i++)
-			end = next() == null;
+			end = pull() == null;
 		return !end ? of(source) : empty();
 	}
 
-	public Outlet<T> snoc(T t) {
+	public Puller<T> snoc(T t) {
 		return of(FunUtil.snoc(t, source));
 	}
 
@@ -310,24 +310,24 @@ public class Outlet<T> implements OutletDefaults<T> {
 		return source;
 	}
 
-	public Outlet<T> sort(Comparator<T> comparator) {
+	public Puller<T> sort(Comparator<T> comparator) {
 		return of(List_.sort(toList(), comparator));
 	}
 
-	public <O extends Comparable<? super O>> Outlet<T> sortBy(Fun<T, O> fun) {
+	public <O extends Comparable<? super O>> Puller<T> sortBy(Fun<T, O> fun) {
 		return sort((e0, e1) -> Object_.compare(fun.apply(e0), fun.apply(e1)));
 	}
 
-	public Outlet<Outlet<T>> split(Predicate<T> fun) {
-		return of(FunUtil.map(Outlet<T>::new, FunUtil.split(fun, source)));
+	public Puller<Puller<T>> split(Predicate<T> fun) {
+		return of(FunUtil.map(Puller<T>::new, FunUtil.split(fun, source)));
 	}
 
-	public Outlet<T> take(int n) {
+	public Puller<T> take(int n) {
 		return of(new Source<>() {
 			private int count = n;
 
 			public T g() {
-				return 0 < count-- ? next() : null;
+				return 0 < count-- ? pull() : null;
 			}
 		});
 	}
@@ -339,23 +339,23 @@ public class Outlet<T> implements OutletDefaults<T> {
 	}
 
 	public FixieA<T, T, T, T, T, T, T, T, T, T> toFixie() {
-		var t0 = next();
-		var t1 = t0 != null ? next() : null;
-		var t2 = t1 != null ? next() : null;
-		var t3 = t2 != null ? next() : null;
-		var t4 = t3 != null ? next() : null;
-		var t5 = t4 != null ? next() : null;
-		var t6 = t5 != null ? next() : null;
-		var t7 = t6 != null ? next() : null;
-		var t8 = t7 != null ? next() : null;
-		var t9 = t8 != null ? next() : null;
+		var t0 = pull();
+		var t1 = t0 != null ? pull() : null;
+		var t2 = t1 != null ? pull() : null;
+		var t3 = t2 != null ? pull() : null;
+		var t4 = t3 != null ? pull() : null;
+		var t5 = t4 != null ? pull() : null;
+		var t6 = t5 != null ? pull() : null;
+		var t7 = t6 != null ? pull() : null;
+		var t8 = t7 != null ? pull() : null;
+		var t9 = t8 != null ? pull() : null;
 		return Fixie.of(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9);
 	}
 
 	public List<T> toList() {
 		var list = new ArrayList<T>();
 		T t;
-		while ((t = next()) != null)
+		while ((t = pull()) != null)
 			list.add(t);
 		return list;
 	}
@@ -367,7 +367,7 @@ public class Outlet<T> implements OutletDefaults<T> {
 	public <K, V> Map<K, List<V>> toListMap(Fun<T, K> keyFun, Fun<T, V> valueFun) {
 		var map = new HashMap<K, List<V>>();
 		T t;
-		while ((t = next()) != null)
+		while ((t = pull()) != null)
 			map.computeIfAbsent(keyFun.apply(t), k_ -> new ArrayList<>()).add(valueFun.apply(t));
 		return map;
 	}
@@ -391,7 +391,7 @@ public class Outlet<T> implements OutletDefaults<T> {
 	public Set<T> toSet() {
 		var set = new HashSet<T>();
 		T t;
-		while ((t = next()) != null)
+		while ((t = pull()) != null)
 			set.add(t);
 		return set;
 	}
@@ -400,16 +400,16 @@ public class Outlet<T> implements OutletDefaults<T> {
 		return map2_(keyFun, valueFun).groupBy().mapValue(values -> Read.from(values).toSet()).toMap();
 	}
 
-	public <U, R> Outlet<R> zip(Outlet<U> outlet1, Fun2<T, U, R> fun) {
+	public <U, R> Puller<R> zip(Puller<U> outlet1, Fun2<T, U, R> fun) {
 		return of(() -> {
-			var t = next();
-			var u = outlet1.next();
+			var t = pull();
+			var u = outlet1.pull();
 			return t != null && u != null ? fun.apply(t, u) : null;
 		});
 	}
 
-	private <K, V> Outlet2<K, V> map2_(Fun<T, K> kf0, Fun<T, V> vf0) {
-		return Outlet2.of(FunUtil.map2(kf0, vf0, source));
+	private <K, V> Puller2<K, V> map2_(Fun<T, K> kf0, Fun<T, V> vf0) {
+		return Puller2.of(FunUtil.map2(kf0, vf0, source));
 	}
 
 }

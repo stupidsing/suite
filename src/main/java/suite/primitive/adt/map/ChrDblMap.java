@@ -15,11 +15,11 @@ import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Dbl_Dbl;
 import suite.primitive.adt.pair.ChrDblPair;
 import suite.primitive.adt.pair.ChrObjPair;
-import suite.primitive.streamlet.ChrObjOutlet;
+import suite.primitive.streamlet.ChrObjPuller;
 import suite.primitive.streamlet.ChrObjStreamlet;
 import suite.streamlet.As;
 import suite.streamlet.FunUtil.Fun;
-import suite.streamlet.Outlet;
+import suite.streamlet.Puller;
 
 /**
  * Map with primitive char key and primitive double value. Double.MIN_VALUE is
@@ -35,13 +35,13 @@ public class ChrDblMap {
 	private char[] ks;
 	private double[] vs;
 
-	public static <T> Fun<Outlet<T>, ChrDblMap> collect(Obj_Chr<T> kf0, Obj_Dbl<T> vf0) {
+	public static <T> Fun<Puller<T>, ChrDblMap> collect(Obj_Chr<T> kf0, Obj_Dbl<T> vf0) {
 		var kf1 = kf0.rethrow();
 		var vf1 = vf0.rethrow();
-		return outlet -> {
+		return puller -> {
 			var map = new ChrDblMap();
 			T t;
-			while ((t = outlet.source().g()) != null)
+			while ((t = puller.source().g()) != null)
 				map.put(kf1.apply(t), vf1.apply(t));
 			return map;
 		};
@@ -139,7 +139,7 @@ public class ChrDblMap {
 	}
 
 	public ChrObjStreamlet<Double> streamlet() {
-		return new ChrObjStreamlet<>(() -> ChrObjOutlet.of(new ChrObjSource<Double>() {
+		return new ChrObjStreamlet<>(() -> ChrObjPuller.of(new ChrObjSource<Double>() {
 			private ChrDblSource source0 = source_();
 			private ChrDblPair pair0 = ChrDblPair.of((char) 0, (double) 0);
 

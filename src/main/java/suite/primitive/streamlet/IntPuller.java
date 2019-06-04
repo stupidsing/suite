@@ -18,6 +18,8 @@ import suite.adt.Mutable;
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.Pair;
 import suite.object.Object_;
+import suite.primitive.Ints;
+import suite.primitive.Ints.IntsBuilder;
 import suite.primitive.IntFunUtil;
 import suite.primitive.IntOpt;
 import suite.primitive.IntPrimitives.IntComparator;
@@ -28,8 +30,6 @@ import suite.primitive.IntPrimitives.IntSource;
 import suite.primitive.IntPrimitives.IntTest;
 import suite.primitive.IntPrimitives.Int_Obj;
 import suite.primitive.Int_Int;
-import suite.primitive.Ints;
-import suite.primitive.Ints.IntsBuilder;
 import suite.primitive.adt.map.IntObjMap;
 import suite.primitive.adt.map.ObjIntMap;
 import suite.primitive.adt.pair.IntObjPair;
@@ -39,37 +39,37 @@ import suite.streamlet.FunUtil;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil.Source;
 import suite.streamlet.FunUtil2;
-import suite.streamlet.Outlet;
-import suite.streamlet.Outlet2;
-import suite.streamlet.OutletDefaults;
+import suite.streamlet.Puller;
+import suite.streamlet.Puller2;
+import suite.streamlet.PullerDefaults;
 import suite.streamlet.Read;
 import suite.util.NullableSyncQueue;
 import suite.util.To;
 
-public class IntOutlet implements OutletDefaults<Integer> {
+public class IntPuller implements PullerDefaults<Integer> {
 
 	private static int empty = IntFunUtil.EMPTYVALUE;
 
 	private IntSource source;
 
 	@SafeVarargs
-	public static IntOutlet concat(IntOutlet... outlets) {
+	public static IntPuller concat(IntPuller... outlets) {
 		var sources = new ArrayList<IntSource>();
 		for (var outlet : outlets)
 			sources.add(outlet.source);
 		return of(IntFunUtil.concat(To.source(sources)));
 	}
 
-	public static IntOutlet empty() {
+	public static IntPuller empty() {
 		return of(IntFunUtil.nullSource());
 	}
 
 	@SafeVarargs
-	public static IntOutlet of(int... ts) {
+	public static IntPuller of(int... ts) {
 		return of(ts, 0, ts.length, 1);
 	}
 
-	public static IntOutlet of(int[] ts, int start, int end, int inc) {
+	public static IntPuller of(int[] ts, int start, int end, int inc) {
 		IntPredicate pred = 0 < inc ? i -> i < end : i -> end < i;
 
 		return of(new IntSource() {
@@ -83,115 +83,115 @@ public class IntOutlet implements OutletDefaults<Integer> {
 		});
 	}
 
-	public static IntOutlet of(Enumeration<Integer> en) {
+	public static IntPuller of(Enumeration<Integer> en) {
 		return of(To.source(en));
 	}
 
-	public static IntOutlet of(Iterable<Integer> col) {
+	public static IntPuller of(Iterable<Integer> col) {
 		return of(To.source(col));
 	}
 
-	public static IntOutlet of(Source<Integer> source) {
-		return IntOutlet.of(() -> {
+	public static IntPuller of(Source<Integer> source) {
+		return IntPuller.of(() -> {
 			var c = source.g();
 			return c != null ? c : empty;
 		});
 	}
 
-	public static IntOutlet of(IntSource source) {
-		return new IntOutlet(source);
+	public static IntPuller of(IntSource source) {
+		return new IntPuller(source);
 	}
 
-	private IntOutlet(IntSource source) {
+	private IntPuller(IntSource source) {
 		this.source = source;
 	}
 
 	public int average() {
 		var count = 0;
 		int result = 0, c1;
-		while ((c1 = next()) != empty) {
+		while ((c1 = pull()) != empty) {
 			result += c1;
 			count++;
 		}
 		return (int) (result / count);
 	}
 
-	public Outlet<IntOutlet> chunk(int n) {
-		return Outlet.of(FunUtil.map(IntOutlet::new, IntFunUtil.chunk(n, source)));
+	public Puller<IntPuller> chunk(int n) {
+		return Puller.of(FunUtil.map(IntPuller::new, IntFunUtil.chunk(n, source)));
 	}
 
-	public IntOutlet closeAtEnd(Closeable c) {
+	public IntPuller closeAtEnd(Closeable c) {
 		return of(() -> {
-			var next = next();
+			var next = pull();
 			if (next == empty)
 				Object_.closeQuietly(c);
 			return next;
 		});
 	}
 
-	public <R> R collect(Fun<IntOutlet, R> fun) {
+	public <R> R collect(Fun<IntPuller, R> fun) {
 		return fun.apply(this);
 	}
 
-	public <O> Outlet<O> concatMap(Int_Obj<Outlet<O>> fun) {
-		return Outlet.of(FunUtil.concat(IntFunUtil.map(t -> fun.apply(t).source(), source)));
+	public <O> Puller<O> concatMap(Int_Obj<Puller<O>> fun) {
+		return Puller.of(FunUtil.concat(IntFunUtil.map(t -> fun.apply(t).source(), source)));
 	}
 
-	public <K, V> Outlet2<K, V> concatMap2(Int_Obj<Outlet2<K, V>> fun) {
-		return Outlet2.of(FunUtil2.concat(IntFunUtil.map(t -> fun.apply(t).source(), source)));
+	public <K, V> Puller2<K, V> concatMap2(Int_Obj<Puller2<K, V>> fun) {
+		return Puller2.of(FunUtil2.concat(IntFunUtil.map(t -> fun.apply(t).source(), source)));
 	}
 
-	public IntOutlet concatMapInt(Int_Obj<IntOutlet> fun) {
+	public IntPuller concatMapInt(Int_Obj<IntPuller> fun) {
 		return of(IntFunUtil.concat(IntFunUtil.map(t -> fun.apply(t).source, source)));
 	}
 
-	public IntOutlet cons(int c) {
+	public IntPuller cons(int c) {
 		return of(IntFunUtil.cons(c, source));
 	}
 
 	public int count() {
 		var i = 0;
-		while (next() != empty)
+		while (pull() != empty)
 			i++;
 		return i;
 	}
 
-	public <U, O> Outlet<O> cross(List<U> list, IntObj_Obj<U, O> fun) {
-		return Outlet.of(new Source<>() {
+	public <U, O> Puller<O> cross(List<U> list, IntObj_Obj<U, O> fun) {
+		return Puller.of(new Source<>() {
 			private int c;
 			private int index = list.size();
 
 			public O g() {
 				if (index == list.size()) {
 					index = 0;
-					c = next();
+					c = pull();
 				}
 				return fun.apply(c, list.get(index++));
 			}
 		});
 	}
 
-	public IntOutlet distinct() {
+	public IntPuller distinct() {
 		var set = new HashSet<>();
 		return of(() -> {
 			int c;
-			while ((c = next()) != empty && !set.add(c))
+			while ((c = pull()) != empty && !set.add(c))
 				;
 			return c;
 		});
 	}
 
-	public IntOutlet drop(int n) {
+	public IntPuller drop(int n) {
 		var isAvailable = true;
-		while (0 < n && (isAvailable &= next() != empty))
+		while (0 < n && (isAvailable &= pull() != empty))
 			n--;
 		return isAvailable ? this : empty();
 	}
 
 	@Override
 	public boolean equals(Object object) {
-		if (Object_.clazz(object) == IntOutlet.class) {
-			var source1 = ((IntOutlet) object).source;
+		if (Object_.clazz(object) == IntPuller.class) {
+			var source1 = ((IntPuller) object).source;
 			int o0, o1;
 			while (Objects.equals(o0 = source.g(), o1 = source1.g()))
 				if (o0 == empty && o1 == empty)
@@ -201,30 +201,30 @@ public class IntOutlet implements OutletDefaults<Integer> {
 			return false;
 	}
 
-	public IntOutlet filter(IntTest fun) {
+	public IntPuller filter(IntTest fun) {
 		return of(IntFunUtil.filter(fun, source));
 	}
 
 	public int first() {
-		return next();
+		return pull();
 	}
 
-	public <O> Outlet<O> flatMap(Int_Obj<Iterable<O>> fun) {
-		return Outlet.of(FunUtil.flatten(IntFunUtil.map(fun, source)));
+	public <O> Puller<O> flatMap(Int_Obj<Iterable<O>> fun) {
+		return Puller.of(FunUtil.flatten(IntFunUtil.map(fun, source)));
 	}
 
 	public <R> R fold(R init, IntObj_Obj<R, R> fun) {
 		int c;
-		while ((c = next()) != empty)
+		while ((c = pull()) != empty)
 			init = fun.apply(c, init);
 		return init;
 	}
 
-	public <V> IntObjOutlet<IntsBuilder> groupBy() {
-		return IntObjOutlet.of(toListMap().source());
+	public <V> IntObjPuller<IntsBuilder> groupBy() {
+		return IntObjPuller.of(toListMap().source());
 	}
 
-	public <V> IntObjOutlet<V> groupBy(Fun<Ints, V> fun) {
+	public <V> IntObjPuller<V> groupBy(Fun<Ints, V> fun) {
 		return groupBy().mapValue(list -> fun.apply(list.toInts()));
 	}
 
@@ -237,12 +237,12 @@ public class IntOutlet implements OutletDefaults<Integer> {
 		return h;
 	}
 
-	public IntObjOutlet<Integer> index() {
-		return IntObjOutlet.of(new IntObjSource<>() {
+	public IntObjPuller<Integer> index() {
+		return IntObjPuller.of(new IntObjSource<>() {
 			private int i = 0;
 
 			public boolean source2(IntObjPair<Integer> pair) {
-				var c = next();
+				var c = pull();
 				if (c != empty) {
 					pair.update(c, i++);
 					return true;
@@ -267,25 +267,25 @@ public class IntOutlet implements OutletDefaults<Integer> {
 
 	public int last() {
 		int c, c1 = empty;
-		while ((c = next()) != empty)
+		while ((c = pull()) != empty)
 			c1 = c;
 		return c1;
 	}
 
-	public <O> Outlet<O> map(Int_Obj<O> fun) {
-		return Outlet.of(IntFunUtil.map(fun, source));
+	public <O> Puller<O> map(Int_Obj<O> fun) {
+		return Puller.of(IntFunUtil.map(fun, source));
 	}
 
-	public <K, V> Outlet2<K, V> map2(Int_Obj<K> kf0, Int_Obj<V> vf0) {
+	public <K, V> Puller2<K, V> map2(Int_Obj<K> kf0, Int_Obj<V> vf0) {
 		return map2_(kf0, vf0);
 	}
 
-	public IntOutlet mapInt(Int_Int fun0) {
+	public IntPuller mapInt(Int_Int fun0) {
 		return of(IntFunUtil.mapInt(fun0, source));
 	}
 
-	public <V> IntObjOutlet<V> mapIntObj(Int_Obj<V> fun0) {
-		return IntObjOutlet.of(IntFunUtil.mapIntObj(fun0, source));
+	public <V> IntObjPuller<V> mapIntObj(Int_Obj<V> fun0) {
+		return IntObjPuller.of(IntFunUtil.mapIntObj(fun0, source));
 	}
 
 	public int max() {
@@ -305,9 +305,9 @@ public class IntOutlet implements OutletDefaults<Integer> {
 	}
 
 	public int minOrEmpty(IntComparator comparator) {
-		int c = next(), c1;
+		int c = pull(), c1;
 		if (c != empty) {
-			while ((c1 = next()) != empty)
+			while ((c1 = pull()) != empty)
 				if (0 < comparator.compare(c, c1))
 					c = c1;
 			return c;
@@ -315,11 +315,7 @@ public class IntOutlet implements OutletDefaults<Integer> {
 			return empty;
 	}
 
-	public int next() {
-		return source.g();
-	}
-
-	public IntOutlet nonBlock(int c0) {
+	public IntPuller nonBlock(int c0) {
 		var queue = new NullableSyncQueue<Integer>();
 
 		new Thread(() -> {
@@ -329,7 +325,7 @@ public class IntOutlet implements OutletDefaults<Integer> {
 			while (c != empty);
 		}).start();
 
-		return new IntOutlet(() -> {
+		return new IntPuller(() -> {
 			var mutable = Mutable.<Integer> nil();
 			var c = queue.poll(mutable) ? mutable.value() : c0;
 			return c;
@@ -337,9 +333,9 @@ public class IntOutlet implements OutletDefaults<Integer> {
 	}
 
 	public IntOpt opt() {
-		var c = next();
+		var c = pull();
 		if (c != empty)
-			if (next() == empty)
+			if (pull() == empty)
 				return IntOpt.of(c);
 			else
 				return fail("more than one result");
@@ -347,29 +343,33 @@ public class IntOutlet implements OutletDefaults<Integer> {
 			return IntOpt.none();
 	}
 
-	public Pair<IntOutlet, IntOutlet> partition(IntTest pred) {
+	public Pair<IntPuller, IntPuller> partition(IntTest pred) {
 		return Pair.of(filter(pred), filter(c -> !pred.test(c)));
 	}
 
-	public IntOutlet reverse() {
+	public int pull() {
+		return source.g();
+	}
+
+	public IntPuller reverse() {
 		return of(toList().toInts().reverse());
 	}
 
 	public void sink(IntSink sink0) {
 		var sink1 = sink0.rethrow();
 		int c;
-		while ((c = next()) != empty)
+		while ((c = pull()) != empty)
 			sink1.f(c);
 	}
 
-	public IntOutlet skip(int n) {
+	public IntPuller skip(int n) {
 		var end = false;
 		for (var i = 0; !end && i < n; i++)
-			end = next() == empty;
+			end = pull() == empty;
 		return !end ? of(source) : empty();
 	}
 
-	public IntOutlet snoc(int c) {
+	public IntPuller snoc(int c) {
 		return of(IntFunUtil.snoc(c, source));
 	}
 
@@ -377,27 +377,27 @@ public class IntOutlet implements OutletDefaults<Integer> {
 		return source;
 	}
 
-	public IntOutlet sort() {
+	public IntPuller sort() {
 		return of(toList().toInts().sort());
 	}
 
-	public Outlet<IntOutlet> split(IntTest fun) {
-		return Outlet.of(FunUtil.map(IntOutlet::new, IntFunUtil.split(fun, source)));
+	public Puller<IntPuller> split(IntTest fun) {
+		return Puller.of(FunUtil.map(IntPuller::new, IntFunUtil.split(fun, source)));
 	}
 
 	public int sum() {
 		int result = 0, c1;
-		while ((c1 = next()) != empty)
+		while ((c1 = pull()) != empty)
 			result += c1;
 		return result;
 	}
 
-	public IntOutlet take(int n) {
+	public IntPuller take(int n) {
 		return of(new IntSource() {
 			private int count = n;
 
 			public int g() {
-				return 0 < count-- ? next() : null;
+				return 0 < count-- ? pull() : null;
 			}
 		});
 	}
@@ -410,7 +410,7 @@ public class IntOutlet implements OutletDefaults<Integer> {
 	public IntsBuilder toList() {
 		var list = new IntsBuilder();
 		int c;
-		while ((c = next()) != empty)
+		while ((c = pull()) != empty)
 			list.append(c);
 		return list;
 	}
@@ -422,7 +422,7 @@ public class IntOutlet implements OutletDefaults<Integer> {
 	public <K> IntObjMap<IntsBuilder> toListMap(Int_Int valueFun) {
 		var map = new IntObjMap<IntsBuilder>();
 		int c;
-		while ((c = next()) != empty)
+		while ((c = pull()) != empty)
 			map.computeIfAbsent(c, k_ -> new IntsBuilder()).append(valueFun.apply(c));
 		return map;
 	}
@@ -431,7 +431,7 @@ public class IntOutlet implements OutletDefaults<Integer> {
 		var kf1 = keyFun.rethrow();
 		var map = new ObjIntMap<K>();
 		int c;
-		while ((c = next()) != empty)
+		while ((c = pull()) != empty)
 			map.put(kf1.apply(c), c);
 		return map;
 	}
@@ -441,7 +441,7 @@ public class IntOutlet implements OutletDefaults<Integer> {
 		var vf1 = vf0.rethrow();
 		var map = new HashMap<K, V>();
 		int c;
-		while ((c = next()) != empty) {
+		while ((c = pull()) != empty) {
 			var key = kf1.apply(c);
 			if (map.put(key, vf1.apply(c)) != null)
 				fail("duplicate key " + key);
@@ -460,7 +460,7 @@ public class IntOutlet implements OutletDefaults<Integer> {
 	public IntSet toSet() {
 		var set = new IntSet();
 		int c;
-		while ((c = next()) != empty)
+		while ((c = pull()) != empty)
 			set.add(c);
 		return set;
 	}
@@ -469,16 +469,16 @@ public class IntOutlet implements OutletDefaults<Integer> {
 		return map2_(keyFun, valueFun).groupBy().mapValue(values -> Read.from(values).toSet()).toMap();
 	}
 
-	public <U, R> Outlet<R> zip(Outlet<U> outlet1, IntObj_Obj<U, R> fun) {
-		return Outlet.of(() -> {
-			var t = next();
-			var u = outlet1.next();
+	public <U, R> Puller<R> zip(Puller<U> outlet1, IntObj_Obj<U, R> fun) {
+		return Puller.of(() -> {
+			var t = pull();
+			var u = outlet1.pull();
 			return t != empty && u != null ? fun.apply(t, u) : null;
 		});
 	}
 
-	private <K, V> Outlet2<K, V> map2_(Int_Obj<K> kf0, Int_Obj<V> vf0) {
-		return Outlet2.of(IntFunUtil.map2(kf0, vf0, source));
+	private <K, V> Puller2<K, V> map2_(Int_Obj<K> kf0, Int_Obj<V> vf0) {
+		return Puller2.of(IntFunUtil.map2(kf0, vf0, source));
 	}
 
 }

@@ -7,11 +7,11 @@ import java.util.ArrayList;
 import suite.adt.pair.Pair;
 import suite.primitive.Doubles.DoublesBuilder;
 import suite.primitive.adt.pair.DblObjPair;
-import suite.primitive.streamlet.DblOutlet;
+import suite.primitive.streamlet.DblPuller;
 import suite.primitive.streamlet.DblStreamlet;
 import suite.streamlet.FunUtil.Fun;
-import suite.streamlet.Outlet;
-import suite.streamlet.Outlet2;
+import suite.streamlet.Puller;
+import suite.streamlet.Puller2;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 
@@ -24,12 +24,12 @@ public class DblPrimitives {
 	public interface Dbl_Obj<T> {
 		public T apply(double c);
 
-		public static <T> Fun<DblOutlet, Streamlet<T>> lift(Dbl_Obj<T> fun0) {
+		public static <T> Fun<DblPuller, Streamlet<T>> lift(Dbl_Obj<T> fun0) {
 			var fun1 = fun0.rethrow();
 			return s -> {
 				var ts = new ArrayList<T>();
 				double c;
-				while ((c = s.next()) != DblFunUtil.EMPTYVALUE)
+				while ((c = s.pull()) != DblFunUtil.EMPTYVALUE)
 					ts.add(fun1.apply(c));
 				return Read.from(ts);
 			};
@@ -127,21 +127,21 @@ public class DblPrimitives {
 	public interface Obj_Dbl<T> {
 		public double apply(T t);
 
-		public static <T> Fun<Outlet<T>, DblStreamlet> lift(Obj_Dbl<T> fun0) {
+		public static <T> Fun<Puller<T>, DblStreamlet> lift(Obj_Dbl<T> fun0) {
 			var fun1 = fun0.rethrow();
 			return ts -> {
 				var b = new DoublesBuilder();
 				T t;
-				while ((t = ts.next()) != null)
+				while ((t = ts.pull()) != null)
 					b.append(fun1.apply(t));
 				return b.toDoubles().streamlet();
 			};
 		}
 
-		public static <T> Obj_Dbl<Outlet<T>> sum(Obj_Dbl<T> fun0) {
+		public static <T> Obj_Dbl<Puller<T>> sum(Obj_Dbl<T> fun0) {
 			var fun1 = fun0.rethrow();
-			return outlet -> {
-				var source = outlet.source();
+			return puller -> {
+				var source = puller.source();
 				T t;
 				var result = (double) 0;
 				while ((t = source.g()) != null)
@@ -164,11 +164,11 @@ public class DblPrimitives {
 	public interface ObjObj_Dbl<X, Y> {
 		public double apply(X x, Y y);
 
-		public static <K, V> Obj_Dbl<Outlet2<K, V>> sum(ObjObj_Dbl<K, V> fun0) {
+		public static <K, V> Obj_Dbl<Puller2<K, V>> sum(ObjObj_Dbl<K, V> fun0) {
 			ObjObj_Dbl<K, V> fun1 = fun0.rethrow();
-			return outlet -> {
+			return puller -> {
 				var pair = Pair.<K, V> of(null, null);
-				var source = outlet.source();
+				var source = puller.source();
 				var result = (double) 0;
 				while (source.source2(pair))
 					result += fun1.apply(pair.t0, pair.t1);

@@ -12,7 +12,7 @@ import suite.node.Tree;
 import suite.primitive.IoSink;
 import suite.streamlet.FunUtil.Iterate;
 import suite.streamlet.FunUtil.Source;
-import suite.streamlet.Outlet;
+import suite.streamlet.Puller;
 
 public class ThunkUtil {
 
@@ -25,7 +25,7 @@ public class ThunkUtil {
 		var sb = new StringBuilder();
 		Node n;
 
-		while ((n = st.next()) != null)
+		while ((n = st.pull()) != null)
 			sb.append((char) Int.num(n));
 
 		return sb.toString();
@@ -46,12 +46,12 @@ public class ThunkUtil {
 	public static void yawnSink(Iterate<Node> yawn, Node node, IoSink<Node> sink) throws IOException {
 		var st = yawnList(yawn, node, true);
 		Node n;
-		while ((n = st.next()) != null)
+		while ((n = st.pull()) != null)
 			sink.f(n);
 	}
 
-	public static Outlet<Node> yawnList(Iterate<Node> yawn, Node node, boolean isFacilitateGc) {
-		return Outlet.of(new Source<>() {
+	public static Puller<Node> yawnList(Iterate<Node> yawn, Node node, boolean isFacilitateGc) {
+		return Puller.of(new Source<>() {
 			private Node node_ = node;
 			private boolean first = true;
 

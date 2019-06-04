@@ -39,37 +39,37 @@ import suite.streamlet.FunUtil;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil.Source;
 import suite.streamlet.FunUtil2;
-import suite.streamlet.Outlet;
-import suite.streamlet.Outlet2;
-import suite.streamlet.OutletDefaults;
+import suite.streamlet.Puller;
+import suite.streamlet.Puller2;
+import suite.streamlet.PullerDefaults;
 import suite.streamlet.Read;
 import suite.util.NullableSyncQueue;
 import suite.util.To;
 
-public class ChrOutlet implements OutletDefaults<Character> {
+public class ChrPuller implements PullerDefaults<Character> {
 
 	private static char empty = ChrFunUtil.EMPTYVALUE;
 
 	private ChrSource source;
 
 	@SafeVarargs
-	public static ChrOutlet concat(ChrOutlet... outlets) {
+	public static ChrPuller concat(ChrPuller... outlets) {
 		var sources = new ArrayList<ChrSource>();
 		for (var outlet : outlets)
 			sources.add(outlet.source);
 		return of(ChrFunUtil.concat(To.source(sources)));
 	}
 
-	public static ChrOutlet empty() {
+	public static ChrPuller empty() {
 		return of(ChrFunUtil.nullSource());
 	}
 
 	@SafeVarargs
-	public static ChrOutlet of(char... ts) {
+	public static ChrPuller of(char... ts) {
 		return of(ts, 0, ts.length, 1);
 	}
 
-	public static ChrOutlet of(char[] ts, int start, int end, int inc) {
+	public static ChrPuller of(char[] ts, int start, int end, int inc) {
 		IntPredicate pred = 0 < inc ? i -> i < end : i -> end < i;
 
 		return of(new ChrSource() {
@@ -83,115 +83,115 @@ public class ChrOutlet implements OutletDefaults<Character> {
 		});
 	}
 
-	public static ChrOutlet of(Enumeration<Character> en) {
+	public static ChrPuller of(Enumeration<Character> en) {
 		return of(To.source(en));
 	}
 
-	public static ChrOutlet of(Iterable<Character> col) {
+	public static ChrPuller of(Iterable<Character> col) {
 		return of(To.source(col));
 	}
 
-	public static ChrOutlet of(Source<Character> source) {
-		return ChrOutlet.of(() -> {
+	public static ChrPuller of(Source<Character> source) {
+		return ChrPuller.of(() -> {
 			var c = source.g();
 			return c != null ? c : empty;
 		});
 	}
 
-	public static ChrOutlet of(ChrSource source) {
-		return new ChrOutlet(source);
+	public static ChrPuller of(ChrSource source) {
+		return new ChrPuller(source);
 	}
 
-	private ChrOutlet(ChrSource source) {
+	private ChrPuller(ChrSource source) {
 		this.source = source;
 	}
 
 	public char average() {
 		var count = 0;
 		char result = 0, c1;
-		while ((c1 = next()) != empty) {
+		while ((c1 = pull()) != empty) {
 			result += c1;
 			count++;
 		}
 		return (char) (result / count);
 	}
 
-	public Outlet<ChrOutlet> chunk(int n) {
-		return Outlet.of(FunUtil.map(ChrOutlet::new, ChrFunUtil.chunk(n, source)));
+	public Puller<ChrPuller> chunk(int n) {
+		return Puller.of(FunUtil.map(ChrPuller::new, ChrFunUtil.chunk(n, source)));
 	}
 
-	public ChrOutlet closeAtEnd(Closeable c) {
+	public ChrPuller closeAtEnd(Closeable c) {
 		return of(() -> {
-			var next = next();
+			var next = pull();
 			if (next == empty)
 				Object_.closeQuietly(c);
 			return next;
 		});
 	}
 
-	public <R> R collect(Fun<ChrOutlet, R> fun) {
+	public <R> R collect(Fun<ChrPuller, R> fun) {
 		return fun.apply(this);
 	}
 
-	public <O> Outlet<O> concatMap(Chr_Obj<Outlet<O>> fun) {
-		return Outlet.of(FunUtil.concat(ChrFunUtil.map(t -> fun.apply(t).source(), source)));
+	public <O> Puller<O> concatMap(Chr_Obj<Puller<O>> fun) {
+		return Puller.of(FunUtil.concat(ChrFunUtil.map(t -> fun.apply(t).source(), source)));
 	}
 
-	public <K, V> Outlet2<K, V> concatMap2(Chr_Obj<Outlet2<K, V>> fun) {
-		return Outlet2.of(FunUtil2.concat(ChrFunUtil.map(t -> fun.apply(t).source(), source)));
+	public <K, V> Puller2<K, V> concatMap2(Chr_Obj<Puller2<K, V>> fun) {
+		return Puller2.of(FunUtil2.concat(ChrFunUtil.map(t -> fun.apply(t).source(), source)));
 	}
 
-	public ChrOutlet concatMapChr(Chr_Obj<ChrOutlet> fun) {
+	public ChrPuller concatMapChr(Chr_Obj<ChrPuller> fun) {
 		return of(ChrFunUtil.concat(ChrFunUtil.map(t -> fun.apply(t).source, source)));
 	}
 
-	public ChrOutlet cons(char c) {
+	public ChrPuller cons(char c) {
 		return of(ChrFunUtil.cons(c, source));
 	}
 
 	public int count() {
 		var i = 0;
-		while (next() != empty)
+		while (pull() != empty)
 			i++;
 		return i;
 	}
 
-	public <U, O> Outlet<O> cross(List<U> list, ChrObj_Obj<U, O> fun) {
-		return Outlet.of(new Source<>() {
+	public <U, O> Puller<O> cross(List<U> list, ChrObj_Obj<U, O> fun) {
+		return Puller.of(new Source<>() {
 			private char c;
 			private int index = list.size();
 
 			public O g() {
 				if (index == list.size()) {
 					index = 0;
-					c = next();
+					c = pull();
 				}
 				return fun.apply(c, list.get(index++));
 			}
 		});
 	}
 
-	public ChrOutlet distinct() {
+	public ChrPuller distinct() {
 		var set = new HashSet<>();
 		return of(() -> {
 			char c;
-			while ((c = next()) != empty && !set.add(c))
+			while ((c = pull()) != empty && !set.add(c))
 				;
 			return c;
 		});
 	}
 
-	public ChrOutlet drop(int n) {
+	public ChrPuller drop(int n) {
 		var isAvailable = true;
-		while (0 < n && (isAvailable &= next() != empty))
+		while (0 < n && (isAvailable &= pull() != empty))
 			n--;
 		return isAvailable ? this : empty();
 	}
 
 	@Override
 	public boolean equals(Object object) {
-		if (Object_.clazz(object) == ChrOutlet.class) {
-			var source1 = ((ChrOutlet) object).source;
+		if (Object_.clazz(object) == ChrPuller.class) {
+			var source1 = ((ChrPuller) object).source;
 			char o0, o1;
 			while (Objects.equals(o0 = source.g(), o1 = source1.g()))
 				if (o0 == empty && o1 == empty)
@@ -201,30 +201,30 @@ public class ChrOutlet implements OutletDefaults<Character> {
 			return false;
 	}
 
-	public ChrOutlet filter(ChrTest fun) {
+	public ChrPuller filter(ChrTest fun) {
 		return of(ChrFunUtil.filter(fun, source));
 	}
 
 	public char first() {
-		return next();
+		return pull();
 	}
 
-	public <O> Outlet<O> flatMap(Chr_Obj<Iterable<O>> fun) {
-		return Outlet.of(FunUtil.flatten(ChrFunUtil.map(fun, source)));
+	public <O> Puller<O> flatMap(Chr_Obj<Iterable<O>> fun) {
+		return Puller.of(FunUtil.flatten(ChrFunUtil.map(fun, source)));
 	}
 
 	public <R> R fold(R init, ChrObj_Obj<R, R> fun) {
 		char c;
-		while ((c = next()) != empty)
+		while ((c = pull()) != empty)
 			init = fun.apply(c, init);
 		return init;
 	}
 
-	public <V> ChrObjOutlet<CharsBuilder> groupBy() {
-		return ChrObjOutlet.of(toListMap().source());
+	public <V> ChrObjPuller<CharsBuilder> groupBy() {
+		return ChrObjPuller.of(toListMap().source());
 	}
 
-	public <V> ChrObjOutlet<V> groupBy(Fun<Chars, V> fun) {
+	public <V> ChrObjPuller<V> groupBy(Fun<Chars, V> fun) {
 		return groupBy().mapValue(list -> fun.apply(list.toChars()));
 	}
 
@@ -237,12 +237,12 @@ public class ChrOutlet implements OutletDefaults<Character> {
 		return h;
 	}
 
-	public ChrObjOutlet<Integer> index() {
-		return ChrObjOutlet.of(new ChrObjSource<>() {
+	public ChrObjPuller<Integer> index() {
+		return ChrObjPuller.of(new ChrObjSource<>() {
 			private int i = 0;
 
 			public boolean source2(ChrObjPair<Integer> pair) {
-				var c = next();
+				var c = pull();
 				if (c != empty) {
 					pair.update(c, i++);
 					return true;
@@ -267,25 +267,25 @@ public class ChrOutlet implements OutletDefaults<Character> {
 
 	public char last() {
 		char c, c1 = empty;
-		while ((c = next()) != empty)
+		while ((c = pull()) != empty)
 			c1 = c;
 		return c1;
 	}
 
-	public <O> Outlet<O> map(Chr_Obj<O> fun) {
-		return Outlet.of(ChrFunUtil.map(fun, source));
+	public <O> Puller<O> map(Chr_Obj<O> fun) {
+		return Puller.of(ChrFunUtil.map(fun, source));
 	}
 
-	public <K, V> Outlet2<K, V> map2(Chr_Obj<K> kf0, Chr_Obj<V> vf0) {
+	public <K, V> Puller2<K, V> map2(Chr_Obj<K> kf0, Chr_Obj<V> vf0) {
 		return map2_(kf0, vf0);
 	}
 
-	public ChrOutlet mapChr(Chr_Chr fun0) {
+	public ChrPuller mapChr(Chr_Chr fun0) {
 		return of(ChrFunUtil.mapChr(fun0, source));
 	}
 
-	public <V> ChrObjOutlet<V> mapChrObj(Chr_Obj<V> fun0) {
-		return ChrObjOutlet.of(ChrFunUtil.mapChrObj(fun0, source));
+	public <V> ChrObjPuller<V> mapChrObj(Chr_Obj<V> fun0) {
+		return ChrObjPuller.of(ChrFunUtil.mapChrObj(fun0, source));
 	}
 
 	public char max() {
@@ -305,9 +305,9 @@ public class ChrOutlet implements OutletDefaults<Character> {
 	}
 
 	public char minOrEmpty(ChrComparator comparator) {
-		char c = next(), c1;
+		char c = pull(), c1;
 		if (c != empty) {
-			while ((c1 = next()) != empty)
+			while ((c1 = pull()) != empty)
 				if (0 < comparator.compare(c, c1))
 					c = c1;
 			return c;
@@ -315,11 +315,7 @@ public class ChrOutlet implements OutletDefaults<Character> {
 			return empty;
 	}
 
-	public char next() {
-		return source.g();
-	}
-
-	public ChrOutlet nonBlock(char c0) {
+	public ChrPuller nonBlock(char c0) {
 		var queue = new NullableSyncQueue<Character>();
 
 		new Thread(() -> {
@@ -329,7 +325,7 @@ public class ChrOutlet implements OutletDefaults<Character> {
 			while (c != empty);
 		}).start();
 
-		return new ChrOutlet(() -> {
+		return new ChrPuller(() -> {
 			var mutable = Mutable.<Character> nil();
 			var c = queue.poll(mutable) ? mutable.value() : c0;
 			return c;
@@ -337,9 +333,9 @@ public class ChrOutlet implements OutletDefaults<Character> {
 	}
 
 	public ChrOpt opt() {
-		var c = next();
+		var c = pull();
 		if (c != empty)
-			if (next() == empty)
+			if (pull() == empty)
 				return ChrOpt.of(c);
 			else
 				return fail("more than one result");
@@ -347,29 +343,33 @@ public class ChrOutlet implements OutletDefaults<Character> {
 			return ChrOpt.none();
 	}
 
-	public Pair<ChrOutlet, ChrOutlet> partition(ChrTest pred) {
+	public Pair<ChrPuller, ChrPuller> partition(ChrTest pred) {
 		return Pair.of(filter(pred), filter(c -> !pred.test(c)));
 	}
 
-	public ChrOutlet reverse() {
+	public char pull() {
+		return source.g();
+	}
+
+	public ChrPuller reverse() {
 		return of(toList().toChars().reverse());
 	}
 
 	public void sink(ChrSink sink0) {
 		var sink1 = sink0.rethrow();
 		char c;
-		while ((c = next()) != empty)
+		while ((c = pull()) != empty)
 			sink1.f(c);
 	}
 
-	public ChrOutlet skip(int n) {
+	public ChrPuller skip(int n) {
 		var end = false;
 		for (var i = 0; !end && i < n; i++)
-			end = next() == empty;
+			end = pull() == empty;
 		return !end ? of(source) : empty();
 	}
 
-	public ChrOutlet snoc(char c) {
+	public ChrPuller snoc(char c) {
 		return of(ChrFunUtil.snoc(c, source));
 	}
 
@@ -377,27 +377,27 @@ public class ChrOutlet implements OutletDefaults<Character> {
 		return source;
 	}
 
-	public ChrOutlet sort() {
+	public ChrPuller sort() {
 		return of(toList().toChars().sort());
 	}
 
-	public Outlet<ChrOutlet> split(ChrTest fun) {
-		return Outlet.of(FunUtil.map(ChrOutlet::new, ChrFunUtil.split(fun, source)));
+	public Puller<ChrPuller> split(ChrTest fun) {
+		return Puller.of(FunUtil.map(ChrPuller::new, ChrFunUtil.split(fun, source)));
 	}
 
 	public char sum() {
 		char result = 0, c1;
-		while ((c1 = next()) != empty)
+		while ((c1 = pull()) != empty)
 			result += c1;
 		return result;
 	}
 
-	public ChrOutlet take(int n) {
+	public ChrPuller take(int n) {
 		return of(new ChrSource() {
 			private int count = n;
 
 			public char g() {
-				return 0 < count-- ? next() : null;
+				return 0 < count-- ? pull() : null;
 			}
 		});
 	}
@@ -410,7 +410,7 @@ public class ChrOutlet implements OutletDefaults<Character> {
 	public CharsBuilder toList() {
 		var list = new CharsBuilder();
 		char c;
-		while ((c = next()) != empty)
+		while ((c = pull()) != empty)
 			list.append(c);
 		return list;
 	}
@@ -422,7 +422,7 @@ public class ChrOutlet implements OutletDefaults<Character> {
 	public <K> ChrObjMap<CharsBuilder> toListMap(Chr_Chr valueFun) {
 		var map = new ChrObjMap<CharsBuilder>();
 		char c;
-		while ((c = next()) != empty)
+		while ((c = pull()) != empty)
 			map.computeIfAbsent(c, k_ -> new CharsBuilder()).append(valueFun.apply(c));
 		return map;
 	}
@@ -431,7 +431,7 @@ public class ChrOutlet implements OutletDefaults<Character> {
 		var kf1 = keyFun.rethrow();
 		var map = new ObjChrMap<K>();
 		char c;
-		while ((c = next()) != empty)
+		while ((c = pull()) != empty)
 			map.put(kf1.apply(c), c);
 		return map;
 	}
@@ -441,7 +441,7 @@ public class ChrOutlet implements OutletDefaults<Character> {
 		var vf1 = vf0.rethrow();
 		var map = new HashMap<K, V>();
 		char c;
-		while ((c = next()) != empty) {
+		while ((c = pull()) != empty) {
 			var key = kf1.apply(c);
 			if (map.put(key, vf1.apply(c)) != null)
 				fail("duplicate key " + key);
@@ -460,7 +460,7 @@ public class ChrOutlet implements OutletDefaults<Character> {
 	public ChrSet toSet() {
 		var set = new ChrSet();
 		char c;
-		while ((c = next()) != empty)
+		while ((c = pull()) != empty)
 			set.add(c);
 		return set;
 	}
@@ -469,16 +469,16 @@ public class ChrOutlet implements OutletDefaults<Character> {
 		return map2_(keyFun, valueFun).groupBy().mapValue(values -> Read.from(values).toSet()).toMap();
 	}
 
-	public <U, R> Outlet<R> zip(Outlet<U> outlet1, ChrObj_Obj<U, R> fun) {
-		return Outlet.of(() -> {
-			var t = next();
-			var u = outlet1.next();
+	public <U, R> Puller<R> zip(Puller<U> outlet1, ChrObj_Obj<U, R> fun) {
+		return Puller.of(() -> {
+			var t = pull();
+			var u = outlet1.pull();
 			return t != empty && u != null ? fun.apply(t, u) : null;
 		});
 	}
 
-	private <K, V> Outlet2<K, V> map2_(Chr_Obj<K> kf0, Chr_Obj<V> vf0) {
-		return Outlet2.of(ChrFunUtil.map2(kf0, vf0, source));
+	private <K, V> Puller2<K, V> map2_(Chr_Obj<K> kf0, Chr_Obj<V> vf0) {
+		return Puller2.of(ChrFunUtil.map2(kf0, vf0, source));
 	}
 
 }

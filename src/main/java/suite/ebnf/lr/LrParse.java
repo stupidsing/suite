@@ -15,7 +15,7 @@ import suite.parser.Lexer;
 import suite.persistent.PerList;
 import suite.streamlet.As;
 import suite.streamlet.FunUtil.Source;
-import suite.streamlet.Outlet;
+import suite.streamlet.Puller;
 import suite.streamlet.Read;
 
 public class LrParse {
@@ -39,7 +39,7 @@ public class LrParse {
 	}
 
 	public Ast parse(String in) {
-		var source = Outlet.of(new Lexer(in).tokens()).map(Ast::new).source();
+		var source = Puller.of(new Lexer(in).tokens()).map(Ast::new).source();
 
 		System.out.println("shifts/reduces = " + list(buildLr.fsm));
 		System.out.println("Initial state = " + buildLr.state0);

@@ -26,20 +26,20 @@ import suite.primitive.adt.set.FltSet;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil.Source;
 import suite.streamlet.FunUtil2.Fun2;
-import suite.streamlet.Outlet;
+import suite.streamlet.Puller;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 import suite.streamlet.StreamletDefaults;
 
-public class FltStreamlet implements StreamletDefaults<Float, FltOutlet> {
+public class FltStreamlet implements StreamletDefaults<Float, FltPuller> {
 
-	private Source<FltOutlet> in;
+	private Source<FltPuller> in;
 
-	private static FltStreamlet streamlet(Source<FltOutlet> in) {
+	private static FltStreamlet streamlet(Source<FltPuller> in) {
 		return new FltStreamlet(in);
 	}
 
-	public FltStreamlet(Source<FltOutlet> in) {
+	public FltStreamlet(Source<FltPuller> in) {
 		this.in = in;
 	}
 
@@ -51,7 +51,7 @@ public class FltStreamlet implements StreamletDefaults<Float, FltOutlet> {
 		return spawn().average();
 	}
 
-	public Streamlet<FltOutlet> chunk(int n) {
+	public Streamlet<FltPuller> chunk(int n) {
 		return new Streamlet<>(() -> spawn().chunk(n));
 	}
 
@@ -191,12 +191,12 @@ public class FltStreamlet implements StreamletDefaults<Float, FltOutlet> {
 		return spawn().opt();
 	}
 
-	public FltOutlet outlet() {
-		return spawn();
-	}
-
 	public Pair<FltStreamlet, FltStreamlet> partition(FltTest pred) {
 		return Pair.of(filter(pred), filter(t -> !pred.test(t)));
+	}
+
+	public FltPuller puller() {
+		return spawn();
 	}
 
 	public FltStreamlet reverse() {
@@ -276,15 +276,15 @@ public class FltStreamlet implements StreamletDefaults<Float, FltOutlet> {
 	}
 
 	public <U, V> Streamlet<V> zip(Iterable<U> list1, FltObj_Obj<U, V> fun) {
-		return new Streamlet<>(() -> spawn().zip(Outlet.of(list1), fun));
+		return new Streamlet<>(() -> spawn().zip(Puller.of(list1), fun));
 	}
 
 	private <O> Streamlet<O> concatMap_(Flt_Obj<Streamlet<O>> fun) {
-		return new Streamlet<>(() -> spawn().concatMap(t -> fun.apply(t).outlet()));
+		return new Streamlet<>(() -> spawn().concatMap(t -> fun.apply(t).puller()));
 	}
 
 	private <K, V> Streamlet2<K, V> concatMap2_(Flt_Obj<Streamlet2<K, V>> fun) {
-		return new Streamlet2<>(() -> spawn().concatMap2(t -> fun.apply(t).outlet()));
+		return new Streamlet2<>(() -> spawn().concatMap2(t -> fun.apply(t).puller()));
 	}
 
 	private <O> Streamlet<O> map_(Flt_Obj<O> fun) {
@@ -299,7 +299,7 @@ public class FltStreamlet implements StreamletDefaults<Float, FltOutlet> {
 		return spawn().toList();
 	}
 
-	private FltOutlet spawn() {
+	private FltPuller spawn() {
 		return in.g();
 	}
 

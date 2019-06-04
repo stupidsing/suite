@@ -37,7 +37,7 @@ import suite.streamlet.As;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil.Sink;
 import suite.streamlet.FunUtil.Source;
-import suite.streamlet.Outlet;
+import suite.streamlet.Puller;
 
 public class To {
 
@@ -79,9 +79,9 @@ public class To {
 		return LocalDate.parse(s, Defaults.dateFormat);
 	}
 
-	public static Fun<Outlet<Bytes>, Boolean> file(String filename) {
-		return outlet -> {
-			FileUtil.out(filename).doWrite(os -> Copy.stream(inputStream(outlet), os));
+	public static Fun<Puller<Bytes>, Boolean> file(String filename) {
+		return puller -> {
+			FileUtil.out(filename).doWrite(os -> Copy.stream(inputStream(puller), os));
 			return true;
 		};
 	}
@@ -102,7 +102,7 @@ public class To {
 		return hex4(i >>> 16 & 0xFFFF) + hex4(i & 0xFFFF);
 	}
 
-	public static ReadStream inputStream(Outlet<Bytes> outlet) {
+	public static ReadStream inputStream(Puller<Bytes> puller) {
 		return new ReadStream(new InputStream() {
 			private InputStream is;
 			private boolean isOpen = true;
@@ -116,7 +116,7 @@ public class To {
 			public int read(byte[] bs, int offset, int length) throws IOException {
 				var nBytesRead = -1;
 				while (is == null || (nBytesRead = is.read(bs, offset, length)) < 0) {
-					var bytes = outlet.next();
+					var bytes = puller.pull();
 					if (isOpen = (bytes != null))
 						is = bytes.collect(As::inputStream);
 					else
@@ -136,7 +136,7 @@ public class To {
 	}
 
 	public static <T> List<T> list(Source<T> source) {
-		return list(Outlet.of(source));
+		return list(Puller.of(source));
 	}
 
 	public static <T> List<T> list(Iterable<T> i) {
@@ -155,21 +155,21 @@ public class To {
 		return matrix;
 	}
 
-	public static Outlet<Bytes> outlet(String data) {
-		return outlet(new ByteArrayInputStream(data.getBytes(Defaults.charset)));
+	public static String percent(double d) {
+		return String.format("%.1f", d * 100d) + "%";
 	}
 
-	public static Outlet<Bytes> outlet(InputStream is) {
+	public static Puller<Bytes> puller(String data) {
+		return puller(new ByteArrayInputStream(data.getBytes(Defaults.charset)));
+	}
+
+	public static Puller<Bytes> puller(InputStream is) {
 		var bis = new BufferedInputStream(is);
-		return Outlet.of(() -> {
+		return Puller.of(() -> {
 			var bs = new byte[Defaults.bufferSize];
 			var nBytesRead = rethrow(() -> bis.read(bs));
 			return 0 <= nBytesRead ? Bytes.of(bs, 0, nBytesRead) : null;
 		}).closeAtEnd(bis).closeAtEnd(is);
-	}
-
-	public static String percent(double d) {
-		return String.format("%.1f", d * 100d) + "%";
 	}
 
 	public static Sink<String> sink(StringBuilder sb) {

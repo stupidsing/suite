@@ -4,20 +4,20 @@ import static suite.util.Friends.rethrow;
 
 import suite.primitive.Chars.CharsBuilder;
 import suite.primitive.Chars.WriteChar;
-import suite.primitive.streamlet.ChrOutlet;
+import suite.primitive.streamlet.ChrPuller;
 import suite.primitive.streamlet.ChrStreamlet;
 import suite.streamlet.FunUtil;
 import suite.streamlet.FunUtil.Iterate;
 import suite.streamlet.FunUtil.Source;
-import suite.streamlet.Outlet;
+import suite.streamlet.Puller;
 import suite.streamlet.Read;
 
 public class Chars_ {
 
 	private static int bufferSize = 65536;
 
-	public static Outlet<Chars> buffer(Outlet<Chars> outlet) {
-		return Outlet.of(new BufferedSource(outlet) {
+	public static Puller<Chars> buffer(Puller<Chars> puller) {
+		return Puller.of(new BufferedSource(puller) {
 			protected boolean search() {
 				return bufferSize <= (p0 = p1 = buffer.size());
 			}
@@ -27,8 +27,8 @@ public class Chars_ {
 	@SafeVarargs
 	public static ChrStreamlet concat(ChrStreamlet... streamlets) {
 		return new ChrStreamlet(() -> {
-			var source = Read.from(streamlets).outlet().source();
-			return ChrOutlet.of(ChrFunUtil.concat(FunUtil.map(ChrStreamlet::source, source)));
+			var source = Read.from(streamlets).puller().source();
+			return ChrPuller.of(ChrFunUtil.concat(FunUtil.map(ChrStreamlet::source, source)));
 		});
 	}
 
@@ -67,27 +67,27 @@ public class Chars_ {
 			throw new IndexOutOfBoundsException();
 	}
 
-	public static void copy(Outlet<Chars> outlet, WriteChar writer) {
+	public static void copy(Puller<Chars> puller, WriteChar writer) {
 		rethrow(() -> {
 			Chars chars;
-			while ((chars = outlet.next()) != null)
+			while ((chars = puller.pull()) != null)
 				writer.write(chars.cs, chars.start, chars.end - chars.start);
 			return chars;
 		});
 	}
 
 	public static ChrStreamlet of(char... ts) {
-		return new ChrStreamlet(() -> ChrOutlet.of(ts));
+		return new ChrStreamlet(() -> ChrPuller.of(ts));
 	}
 
 	public static ChrStreamlet of(char[] ts, int start, int end, int inc) {
-		return new ChrStreamlet(() -> ChrOutlet.of(ts, start, end, inc));
+		return new ChrStreamlet(() -> ChrPuller.of(ts, start, end, inc));
 	}
 
 	public static ChrStreamlet for_(char s, char e) {
 		return new ChrStreamlet(() -> {
 			var m = ChrMutable.of(s);
-			return ChrOutlet.of(() -> {
+			return ChrPuller.of(() -> {
 				var c = m.increment();
 				return c < e ? c : ChrFunUtil.EMPTYVALUE;
 			});
@@ -95,13 +95,13 @@ public class Chars_ {
 	}
 
 	public static ChrStreamlet reverse(char[] ts, int start, int end) {
-		return new ChrStreamlet(() -> ChrOutlet.of(ts, end - 1, start - 1, -1));
+		return new ChrStreamlet(() -> ChrPuller.of(ts, end - 1, start - 1, -1));
 	}
 
-	public static Iterate<Outlet<Chars>> split(Chars delim) {
+	public static Iterate<Puller<Chars>> split(Chars delim) {
 		var ds = delim.size();
 
-		return outlet -> Outlet.of(new BufferedSource(outlet) {
+		return puller -> Puller.of(new BufferedSource(puller) {
 			protected boolean search() {
 				var size = buffer.size();
 				while ((p1 = p0 + ds) <= size)
@@ -125,13 +125,13 @@ public class Chars_ {
 	}
 
 	private static abstract class BufferedSource implements Source<Chars> {
-		protected Outlet<Chars> outlet;
+		protected Puller<Chars> puller;
 		protected Chars buffer = Chars.empty;
 		protected boolean cont = true;
 		protected int p0, p1;
 
-		public BufferedSource(Outlet<Chars> outlet) {
-			this.outlet = outlet;
+		public BufferedSource(Puller<Chars> puller) {
+			this.puller = puller;
 		}
 
 		public Chars g() {
@@ -141,7 +141,7 @@ public class Chars_ {
 
 			p0 = 0;
 
-			while (!search() && (cont &= (in = outlet.next()) != null)) {
+			while (!search() && (cont &= (in = puller.pull()) != null)) {
 				cb.append(in);
 				buffer = cb.toChars();
 			}

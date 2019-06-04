@@ -23,7 +23,7 @@ import suite.util.To;
 public interface HttpHandler {
 
 	public static HttpHandler ofData(String data) {
-		return request -> HttpResponse.of(To.outlet(data));
+		return request -> HttpResponse.of(To.puller(data));
 	}
 
 	public static HttpHandler ofDispatch(PerMap<String, HttpHandler> map) {
@@ -64,7 +64,7 @@ public interface HttpHandler {
 								.put("Content-Range", "bytes " + p0 + "-" + px + "/" + size) //
 								.put("Content-Type", "text/html; charset=UTF-8");
 
-						return HttpResponse.of(HttpResponse.HTTP206, empty, To.outlet(new InputStream() {
+						return HttpResponse.of(HttpResponse.HTTP206, empty, To.puller(new InputStream() {
 							public int read() throws IOException {
 								var pos = p.value();
 								if (pos != px) {
@@ -89,7 +89,7 @@ public interface HttpHandler {
 						}));
 					}
 
-					return HttpResponse.of(HttpResponse.HTTP200, To.outlet(Files.newInputStream(path)), size);
+					return HttpResponse.of(HttpResponse.HTTP200, To.puller(Files.newInputStream(path)), size);
 				}
 			else
 				return HttpResponse.of(HttpResponse.HTTP404);

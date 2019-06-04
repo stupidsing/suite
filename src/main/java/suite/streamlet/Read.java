@@ -33,16 +33,16 @@ public class Read {
 
 		return new Streamlet<>(() -> {
 			InputStream is = rethrow(() -> new FileInputStream(file));
-			return To.outlet(is).closeAtEnd(is);
+			return To.puller(is).closeAtEnd(is);
 		});
 	}
 
 	public static Streamlet<Bytes> bytes(String data) {
-		return new Streamlet<>(() -> To.outlet(data));
+		return new Streamlet<>(() -> To.puller(data));
 	}
 
 	public static Streamlet<Bytes> bytes(InputStream is) {
-		return new Streamlet<>(() -> To.outlet(is));
+		return new Streamlet<>(() -> To.puller(is));
 	}
 
 	public static <T> Streamlet<T> empty() {
@@ -68,31 +68,31 @@ public class Read {
 	}
 
 	public static <T> Streamlet<T> from(T[] ts) {
-		return new Streamlet<>(() -> Outlet.of(ts));
+		return new Streamlet<>(() -> Puller.of(ts));
 	}
 
 	public static <T> Streamlet<T> from(Enumeration<T> en) {
-		return new Streamlet<>(() -> Outlet.of(en));
+		return new Streamlet<>(() -> Puller.of(en));
 	}
 
 	public static <T> Streamlet<T> from(Iterable<T> col) {
-		return new Streamlet<>(() -> Outlet.of(col));
+		return new Streamlet<>(() -> Puller.of(col));
 	}
 
 	public static <T> Streamlet<T> from(Source<Source<T>> source) {
-		return new Streamlet<>(() -> Outlet.of(source.g()));
+		return new Streamlet<>(() -> Puller.of(source.g()));
 	}
 
 	public static <K, V> Streamlet2<K, V> from2(Map<K, V> map) {
-		return new Streamlet2<>(() -> Outlet2.of(map));
+		return new Streamlet2<>(() -> Puller2.of(map));
 	}
 
 	public static <K, V> Streamlet2<K, V> from2(Iterable<Pair<K, V>> col) {
-		return new Streamlet2<>(() -> Outlet2.of(col));
+		return new Streamlet2<>(() -> Puller2.of(col));
 	}
 
 	public static <K, V> Streamlet2<K, V> from2(Source<Source2<K, V>> source) {
-		return new Streamlet2<>(() -> Outlet2.of(source.g()));
+		return new Streamlet2<>(() -> Puller2.of(source.g()));
 	}
 
 	public static Streamlet<String> lines(Path path) {
@@ -103,13 +103,13 @@ public class Read {
 		return new Streamlet<>(() -> lines(rethrow(() -> new FileInputStream(file))));
 	}
 
-	public static Outlet<String> lines(InputStream is) {
+	public static Puller<String> lines(InputStream is) {
 		return lines(new InputStreamReader(is, Defaults.charset)).closeAtEnd(is);
 	}
 
-	public static Outlet<String> lines(Reader reader) {
+	public static Puller<String> lines(Reader reader) {
 		var br = new BufferedReader(reader);
-		return Outlet.of(() -> rethrow(() -> Util.readLine(br))).closeAtEnd(br).closeAtEnd(reader);
+		return Puller.of(() -> rethrow(() -> Util.readLine(br))).closeAtEnd(br).closeAtEnd(reader);
 	}
 
 	public static Streamlet<Bytes> url(String url) {
