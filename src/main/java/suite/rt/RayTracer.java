@@ -141,9 +141,9 @@ public class RayTracer {
 				var cos = -dot / ray.dir.mag();
 
 				// account reflection
-				R3 reflectDir = R3.add(ray.dir, normal.scale(-2d * dot));
-				R3 reflectPoint = R3.add(hitPoint, negligible(normal));
-				R3 reflectColor = traceRay(depth - 1, new Ray(reflectPoint, reflectDir));
+				var reflectDir = R3.add(ray.dir, normal.scale(-2d * dot));
+				var reflectPoint = R3.add(hitPoint, negligible(normal));
+				var reflectColor = traceRay(depth - 1, new Ray(reflectPoint, reflectDir));
 
 				// account refraction
 				var eta = isInside ? glassRefractiveIndex / airRefractiveIndex : airRefractiveIndex / glassRefractiveIndex;
@@ -151,8 +151,8 @@ public class RayTracer {
 				R3 refractColor;
 
 				if (0 <= k) {
-					R3 refractDir = R3.add(ray.dir.scale(eta / ray.dir.mag()), normal.scale(eta * cos - sqrt(k)));
-					R3 refractPoint = R3.sub(hitPoint, negligible(normal));
+					var refractDir = R3.add(ray.dir.scale(eta / ray.dir.mag()), normal.scale(eta * cos - sqrt(k)));
+					var refractPoint = R3.sub(hitPoint, negligible(normal));
 					refractColor = traceRay(depth - 1, new Ray(refractPoint, refractDir));
 				} else
 					refractColor = R3.origin;
