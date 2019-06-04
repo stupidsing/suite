@@ -140,20 +140,7 @@ public class P0Parse {
 
 		private Funp p(Node node) {
 			return new SwitchNode<Funp>(node //
-			).match("do! .0", a -> {
-				return FunpIo.of(nv(doToken).p(a));
-			}).match("!for (.0 := .1 # .2 # .3)", (a, b, c, d) -> {
-				var vn = Atom.name(a);
-				var var = FunpVariable.of(vn);
-				var p1 = nv(doToken).nv(vn);
-				var while_ = p1.p(c);
-				var do_ = FunpDoAssignVar.of(var, p1.p(d), FunpDontCare.of());
-				return FunpIo.of(FunpDefine.of( //
-						vn, //
-						p(b), //
-						FunpDoWhile.of(while_, do_, p(Suite.parse("{}")) //
-				), Fdt.L_MONO));
-			}).match(".0:.1 .2", (a, b, c) -> {
+			).match(".0:.1 .2", (a, b, c) -> {
 				var c0 = Coerce.valueOf(Atom.name(b).toUpperCase());
 				var c1 = Coerce.valueOf(Atom.name(a).toUpperCase());
 				return FunpCoerce.of(c0, c1, p(c));
@@ -240,6 +227,8 @@ public class P0Parse {
 				return define(Fdt.G_POLY, a, capture(lambdaSeparate(b, c)), d);
 			}).match("define.global { .0 } ~ .1", (a, b) -> {
 				return defineMono(a, b, Fdt.G_MONO);
+			}).match("do! .0", a -> {
+				return FunpIo.of(nv(doToken).p(a));
 			}).match("error", () -> {
 				return FunpError.of();
 			}).match("fold (.0 = .1; .2; .3)", (a, b, c, d) -> {
@@ -249,6 +238,17 @@ public class P0Parse {
 				var while_ = p1.p(c);
 				var do_ = FunpDoAssignVar.of(var, p1.p(d), var);
 				return FunpDefine.of(vn, p(b), FunpDoWhile.of(while_, do_, var), Fdt.L_MONO);
+			}).match("for! (.0 := .1 # .2 # .3)", (a, b, c, d) -> {
+				var vn = Atom.name(a);
+				var var = FunpVariable.of(vn);
+				var p1 = nv(doToken).nv(vn);
+				var while_ = p1.p(c);
+				var do_ = FunpDoAssignVar.of(var, p1.p(d), FunpDontCare.of());
+				return FunpIo.of(FunpDefine.of( //
+						vn, //
+						p(b), //
+						FunpDoWhile.of(while_, do_, p(Suite.parse("{}")) //
+				), Fdt.L_MONO));
 			}).match("if (`.0` = .1) then .2 else .3", (a, b, c, d) -> {
 				return bind(a, b, c, d);
 			}).match("if .0 then .1 else .2", (a, b, c) -> {
