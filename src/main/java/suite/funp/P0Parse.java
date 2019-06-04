@@ -142,14 +142,17 @@ public class P0Parse {
 			return new SwitchNode<Funp>(node //
 			).match("!do .0", a -> {
 				return FunpIo.of(nv(doToken).p(a));
-			}).match("!for (.0 = .1; .2; .3)", (a, b, c, d) -> {
+			}).match("!for (.0 = .1 # .2 # .3)", (a, b, c, d) -> {
 				var vn = Atom.name(a);
 				var var = FunpVariable.of(vn);
 				var p1 = nv(doToken).nv(vn);
 				var while_ = p1.p(c);
 				var do_ = FunpDoAssignVar.of(var, p1.p(d), var);
-				return FunpIo
-						.of(FunpDefine.of(vn, p(b), FunpDoWhile.of(while_, do_, p(Suite.parse("{}"))), Fdt.L_MONO));
+				return FunpIo.of(FunpDefine.of( //
+						vn, //
+						p(b), //
+						FunpDoWhile.of(while_, do_, p(Suite.parse("{}")) //
+				), Fdt.L_MONO));
 			}).match(".0:.1 .2", (a, b, c) -> {
 				var c0 = Coerce.valueOf(Atom.name(b).toUpperCase());
 				var c1 = Coerce.valueOf(Atom.name(a).toUpperCase());
