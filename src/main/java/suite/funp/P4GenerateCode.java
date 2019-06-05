@@ -348,7 +348,7 @@ public class P4GenerateCode {
 					var ra = isOutSpec ? pop0 : c1.rs.get(ps);
 					var labelEnd = em.label();
 
-					var labelAlloc = spawn(c2 -> {
+					var labelAlloc = c1.spawn(c2 -> {
 						var pointer = amd64.mem(labelPointer, ps);
 						c2.em.mov(ra, pointer);
 						c2.em.addImm(pointer, allocSize);
@@ -359,7 +359,7 @@ public class P4GenerateCode {
 					c1.em.emit(Insn.JZ, labelAlloc);
 					c1.mask(ra).mov(fcp, amd64.mem(ra, 0, ps));
 					c1.em.label(labelEnd);
-					return returnOp(ra);
+					return c1.returnOp(ra);
 				});
 			})).applyIf(FunpHeapDealloc.class, f -> f.apply((size, reference, expr) -> {
 				var out = compile(expr);
@@ -619,14 +619,28 @@ public class P4GenerateCode {
 				em.addImm(_sp, -alignedSize);
 				c1.compileAssign(value, FunpMemory.of(Funp_.framePointer, fd1, fd1 + size));
 			}
+
 			var out = f.apply(c1);
+			var op0 = out.op0;
+			var op1 = out.op1;
+			var rs1 = c1.rs.mask(pop0, pop1);
+
+			if (opPops != null)
+				rs1 = rs1.mask(opPops.toArray(Operand[]::new));
+
+			if (op0 != null && new RegisterSet().mask(op0).contains(_bp, _sp))
+				op0 = c1.em.mov(rs1.get(ps), op0);
+			if (op1 != null && new RegisterSet().mask(op1).contains(_bp, _sp))
+				op1 = c1.em.mov(rs1.mask(op0).get(ps), op1);
+
 			if (opPops != null)
 				opPops.forEach(opPop -> em.emit(Insn.POP, opPop));
 			else if (size == pushSize)
-				em.emit(Insn.POP, rs.mask(pop0, pop1, out.op0, out.op1).get(size));
+				em.emit(Insn.POP, rs1.mask(op0, op1).get(size));
 			else
 				em.addImm(_sp, alignedSize);
-			return out;
+
+			return new CompileOut(op0, op1);
 		}
 
 		private void compileAssign(FunpMemory source, FunpMemory target) {
@@ -1063,7 +1077,7 @@ public class P4GenerateCode {
 			if (index < opRegs.length && rs_.contains(op = opRegs[index])) {
 				var opPush = pushRegs[op.reg];
 				em.emit(Insn.PUSH, opPush);
-				saveRegs(sink, rs_.unmask(op.reg), fd_ - op.size, index + 1, opRegs);
+				saveRegs(sink, rs_.unmask(op.reg), fd_ - opPush.size, index + 1, opRegs);
 				em.emit(Insn.POP, opPush);
 			} else
 				sink.f(nc(rs_, fd_));

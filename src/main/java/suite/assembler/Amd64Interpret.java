@@ -70,12 +70,35 @@ public class Amd64Interpret {
 	public Amd64Interpret() {
 	}
 
-	public int interpret(Pair<List<Instruction>, Bytes> pair, Bytes input) {
-		return interpret(pair.t0, pair.t1, input);
+	public int interpret(Pair<List<Instruction>, Bytes> pair, Bytes in) {
+		return interpret(pair.t0, pair.t1, in);
 	}
 
-	public int interpret(List<Instruction> instructions, Bytes code, Bytes input) {
+	public int interpret(List<Instruction> instructions, Bytes code, Bytes in) {
 		out.clear();
+
+		var io = new Object() {
+			private Bytes input = in;
+
+			private int read(int p1, int p2, int p3) {
+				var length = min(p3, input.size());
+				var di = index(p2);
+				for (var i = 0; i < length; i++)
+					mem.put(di++, input.get(i));
+				input = input.range(length);
+				return length;
+			}
+
+			private int write(int p1, int p2, int p3) {
+				var length = p3;
+				var si = index(p2);
+				var bs = new byte[length];
+				for (var i = 0; i < length; i++)
+					bs[i] = mem.get(si++);
+				output.f(Bytes.of(bs));
+				return length;
+			}
+		};
 
 		mem.order(ByteOrder.LITTLE_ENDIAN);
 		mem.position(posCode.t0);
@@ -187,22 +210,11 @@ public class Amd64Interpret {
 					if ((byte) source0 == -128)
 						if (p0 == 0x01) // exit
 							return p1;
-						else if (p0 == 0x03) { // read
-							var length = min(p3, input.size());
-							var di = index(p2);
-							for (var i = 0; i < length; i++)
-								mem.put(di++, input.get(i));
-							input = input.range(length);
-							rc = length;
-						} else if (p0 == 0x04) { // write
-							var length = p3;
-							var si = index(p2);
-							var bs = new byte[length];
-							for (var i = 0; i < length; i++)
-								bs[i] = mem.get(si++);
-							output.f(Bytes.of(bs));
-							rc = length;
-						} else if (p0 == 0x5A) { // map
+						else if (p0 == 0x03)
+							rc = io.read(p1, p2, p3);
+						else if (p0 == 0x04)
+							rc = io.write(p1, p2, p3);
+						else if (p0 == 0x5A) { // map
 							var size = mem.getInt(index(p1) + 4);
 							rc = size < posData.t1 - posData.t0 ? baseData.t0 : fail();
 						} else
@@ -340,10 +352,17 @@ public class Amd64Interpret {
 					break;
 				case SYSCALL:
 					p0 = (int) (regs[eax] & 0xFF);
-					if (p0 == 0x09) // map
-						rc = regs[esi] < posData.t1 - posData.t0 ? baseData.t0 : fail();
+					p1 = (int) regs[edi];
+					p2 = (int) regs[esi];
+					p3 = (int) regs[edx];
+					if (p0 == 0x00)
+						rc = io.read(p1, p2, p3);
+					else if (p0 == 0x01)
+						rc = io.write(p1, p2, p3);
+					else if (p0 == 0x09) // map
+						rc = p2 < posData.t1 - posData.t0 ? baseData.t0 : fail();
 					else if (p0 == 0x3C) // exit
-						return (int) regs[edi];
+						return (int) p1;
 					else
 						rc = fail("invalid syscall " + regs[eax]);
 					regs[eax] = rc;
@@ -474,7 +493,8 @@ public class Amd64Interpret {
 	private String state(Instruction instruction) {
 		var sb = new StringBuilder();
 		for (var i = 0; i < 8; i++)
-			sb.append((i % 2 == 0 ? "\n" : " ") + amd64.regByName.inverse().get(amd64.reg32[i]) + ":" + To.hex8(regs[i]));
+			sb.append(
+					(i % 2 == 0 ? "\n" : " ") + amd64.regByName.inverse().get(amd64.reg32[i]) + ":" + To.hex8(regs[i]));
 		sb.append("\nCMP = " + c);
 		sb.append("\nINSTRUCTION = " + dump.dump(instruction));
 		return sb.toString();
