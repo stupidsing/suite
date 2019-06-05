@@ -81,7 +81,7 @@ public class FunpTest {
 
 	@Test
 	public void testFold() {
-		test(100, "fold (n = 0; n < 100; n + 1)");
+		test(100, "fold (n := 0 # n < 100 # n + 1)");
 	}
 
 	@Test
