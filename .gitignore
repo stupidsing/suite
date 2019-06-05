@@ -4,6 +4,8 @@
 .project
 .settings
 bin
+build
+gradle
 logs
 precompiled
 suite.iml
