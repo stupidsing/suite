@@ -10,6 +10,7 @@ import javax.imageio.ImageIO;
 import org.junit.Test;
 
 import suite.cfg.Defaults;
+import suite.editor.ImageViewer;
 import suite.math.R3;
 import suite.os.FileUtil;
 import suite.rt.RayTracer.LightSource;
@@ -199,7 +200,12 @@ public class RayTracerTest {
 	private void rasterize(RayTracer rayTracer) throws IOException {
 		var path = Defaults.tmp(Thread_.getStackTrace(3).getMethodName() + ".png");
 		var bufferedImage = rayTracer.trace(640, 480, 640);
-		FileUtil.out(path).doWrite(os -> ImageIO.write(bufferedImage, "png", os));
+		if (Boolean.TRUE)
+			FileUtil.out(path).doWrite(os -> ImageIO.write(bufferedImage, "png", os));
+		else {
+			new ImageViewer(bufferedImage);
+			System.in.read();
+		}
 	}
 
 	private List<LightSource> lights(LightSource... lights) {
