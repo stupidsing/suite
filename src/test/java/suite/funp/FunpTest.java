@@ -81,7 +81,7 @@ public class FunpTest {
 
 	@Test
 	public void testFold() {
-		test(100, "fold (i := 0 # i < 100 # i + 1)");
+		test(102, "let inc := 3 ~ fold (i := 0 # i < 100 # i + inc)");
 		test(100, "let (i, j) := (fold ((a, b) := (0, 0) # a < 100 # (a + 1, b + 1))) ~ i");
 	}
 

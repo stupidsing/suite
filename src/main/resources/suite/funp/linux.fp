@@ -100,12 +100,12 @@ define.global !write (pointer, length) := do!
 
 define.global !write.all (pointer, length) :=
 	for! (
-		n := length #
-		0 < n #
-		let p1 := !adjust.pointer pointer (length - n) ~
-		let n1 := !write (p1, n) ~
-		assert (n1 != 0) ~
-		n - n1
+		n := 0 #
+		n < length #
+		let p1 := !adjust.pointer pointer n ~
+		let nBytesWritten := !write (p1, length - n) ~
+		assert (nBytesWritten != 0) ~
+		n + nBytesWritten
 	)
 ~
 
@@ -117,6 +117,18 @@ define !get.char {} := do!
 	assert (s1 < e1) ~
 	assign start.end := (s1 + 1, e1) ~
 	buffer [s0]
+~
+
+define !get.number {} := do!
+	let ch0 := number:byte !get.char {} ~
+	let positive := ch0 != 45 ~
+	let dummy := for! (
+		(n, ch) := (0, ch0) #
+		48 <= ch && ch <= 57 #
+		(n * 10 + ch - 48, number:byte !get.char {})
+	) ~
+	--if positive then n else (0 - n)
+	0
 ~
 
 define !get.string (pointer, length) :=
