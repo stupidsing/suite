@@ -105,7 +105,8 @@ define.global !write.all (pointer, length) :=
 		let p1 := !adjust.pointer pointer n ~
 		let nBytesWritten := !write (p1, length - n) ~
 		assert (nBytesWritten != 0) ~
-		n + nBytesWritten
+		n + nBytesWritten #
+		{}
 	)
 ~
 
@@ -119,25 +120,25 @@ define !get.char {} := do!
 	buffer [s0]
 ~
 
-define !get.number {} := do!
-	let ch0 := number:byte !get.char {} ~
-	let positive := ch0 != 45 ~
-	let dummy := for! (
-		(n, ch) := (0, ch0) #
-		48 <= ch && ch <= 57 #
-		(n * 10 + ch - 48, number:byte !get.char {})
-	) ~
-	--if positive then n else (0 - n)
-	0
-~
-
+--define !get.number {} := do!
+--	let ch0 := number:byte !get.char {} ~
+--	let positive := ch0 != number '-' ~
+--	let n0 := for! (
+--		(n, ch) := (0, ch0) #
+--		number '0' <= ch && ch <= number '9' #
+--		(n * 10 + ch - number '0', number:byte !get.char {}) #
+--		if positive then n else (0 - n)
+--	) ~
+--~
+--
 define !get.string (pointer, length) :=
 	for! (
 		(n, b) := (0, true) #
 		n < length && b #
 		let p1 := !adjust.pointer pointer n ~
 		let nBytesRead := !read (p1, 1) ~
-		(n + nBytesRead, p1* != byte 10)
+		(n + nBytesRead, p1* != byte 10) #
+		{}
 	)
 ~
 
@@ -171,7 +172,8 @@ define !put.string s :=
 		i := 0 #
 		s* [i] != byte 0 #
 		!put.char s* [i] ~
-		i + 1
+		i + 1 #
+		{}
 	)
 ~
 
@@ -182,7 +184,8 @@ define !cat {} :=
 		let pointer := address.of predef (array buffer.size * byte) ~
 		let nBytesRead := !read (pointer, buffer.size) ~
 		!write.all (pointer, nBytesRead) ~
-		nBytesRead
+		nBytesRead #
+		0
 	)
 ~
 
@@ -191,6 +194,7 @@ define !cat {} :=
 	!cat,
 	!dealloc,
 	!get.char,
+	--!get.number,
 	!mmap,
 	!munmap,
 	!put.char,

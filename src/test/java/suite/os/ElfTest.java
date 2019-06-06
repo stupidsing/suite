@@ -52,7 +52,7 @@ public class ElfTest {
 
 	@Test
 	public void testFold() {
-		test(100, "fold (n := 0 # n < 100 # n + 1)", "");
+		test(100, "fold (n := 0 # n < 100 # n + 1 # n)", "");
 	}
 
 	// io :: a -> io a
@@ -64,18 +64,17 @@ public class ElfTest {
 		var program = "" //
 				+ "let linux := consult \"linux.fp\" ~ do! \n" //
 				+ "	let !cat := linux/!cat ~ \n" //
-				+ "	!cat {} ~ \n" //
-				+ "	0 \n";
+				+ "	!cat {} \n";
 
 		test(0, program, text);
 	}
 
 	@Test
 	public void testPutChar() {
-		test(0, "let !put.char := (consult \"linux.fp\")/!put.char ~ do! (!put.char byte 65 ~ 0)", "A");
-		test(0, "let !put.number := (consult \"linux.fp\")/!put.number ~ do! (!put.number 65 ~ 0)", "65");
+		test(0, "let !put.char := (consult \"linux.fp\")/!put.char ~ do! (!put.char byte 'A' ~ 0)", "A");
+		test(0, "let !put.number := (consult \"linux.fp\")/!put.number ~ do! (!put.number number 'A' ~ 0)", "65");
 		test(0, "let !put.number := (consult \"linux.fp\")/!put.number ~ do! (!put.number -999 ~ 0)", "-999");
-		test(9, "let !put.number := (consult \"linux.fp\")/!put.number ~ for! (i := 0 # i < 10 # !put.number i ~ i + 1)", "0123456789");
+		test(0, "let !put.number := (consult \"linux.fp\")/!put.number ~ for! (i := 0 # i < 10 # !put.number i ~ i + 1 # 0)", "0123456789");
 	}
 
 	@Test

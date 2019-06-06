@@ -229,10 +229,11 @@ public class P0Parse {
 				return FunpIo.of(nv(doToken).p(a));
 			}).match("error", () -> {
 				return FunpError.of();
-			}).match("fold (.0 := .1 # .2 # .3)", (a, b, c, d) -> {
+			}).match("fold (.0 := .1 # .2 # .3 # .4)", (a, b, c, d, e) -> {
 				var lf = nv(doToken).lambda(a, true);
 				var lc = lf.apply(c);
 				var ld = lf.apply(d);
+				var le = lf.apply(e);
 				var vn = lc.vn;
 				var var = FunpVariable.of(vn);
 				var while_ = lc.expr;
@@ -240,12 +241,13 @@ public class P0Parse {
 				return FunpDefine.of( //
 						vn, //
 						p(b), //
-						FunpDoWhile.of(while_, do_, var), //
+						FunpDoWhile.of(while_, do_, le.expr), //
 						Fdt.L_IOAP);
-			}).match("for! (.0 := .1 # .2 # .3)", (a, b, c, d) -> {
+			}).match("for! (.0 := .1 # .2 # .3 # .4)", (a, b, c, d, e) -> {
 				var lf = nv(doToken).lambda(a, true);
 				var lc = lf.apply(c);
 				var ld = lf.apply(d);
+				var le = lf.apply(e);
 				var vn = lc.vn;
 				var var = FunpVariable.of(vn);
 				var while_ = lc.expr;
@@ -253,7 +255,7 @@ public class P0Parse {
 				return FunpIo.of(FunpDefine.of( //
 						vn, //
 						p(b), //
-						FunpDoWhile.of(while_, do_, p(Suite.parse("{}"))), //
+						FunpDoWhile.of(while_, do_, le.expr), //
 						Fdt.L_IOAP));
 			}).match("if (`.0` = .1) then .2 else .3", (a, b, c, d) -> {
 				return bind(a, b, c, d);
