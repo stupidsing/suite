@@ -36,6 +36,8 @@ import suite.funp.P0.FunpDoAssignRef;
 import suite.funp.P0.FunpDoAssignVar;
 import suite.funp.P0.FunpDoEvalIo;
 import suite.funp.P0.FunpDoFold;
+import suite.funp.P0.FunpDoHeapDel;
+import suite.funp.P0.FunpDoHeapNew;
 import suite.funp.P0.FunpDoWhile;
 import suite.funp.P0.FunpDontCare;
 import suite.funp.P0.FunpError;
@@ -405,6 +407,11 @@ public class P2InferType {
 				unify(n, typeLambdaOf(tv, typeBoolean), infer(cont));
 				unify(n, typeLambdaOf(tv, tvio), infer(next));
 				return tvio;
+			})).applyIf(FunpDoHeapDel.class, f -> f.apply((reference, expr) -> {
+				unify(n, typeRefOf(new Reference()), infer(reference));
+				return infer(expr);
+			})).applyIf(FunpDoHeapNew.class, f -> f.apply(() -> {
+				return typeRefOf(new Reference());
 			})).applyIf(FunpDontCare.class, f -> {
 				return new Reference();
 			}).applyIf(FunpDoWhile.class, f -> f.apply((while_, do_, expr) -> {
@@ -663,15 +670,15 @@ public class P2InferType {
 				var next_ = e1.applyOnce(m, next, size);
 				var while_ = FunpDoWhile.of(cont_, assign(m, next_, FunpDontCare.of()), m);
 				return FunpAllocStack.of(size, e1.erase(init), while_, offset);
+			})).applyIf(FunpDoHeapDel.class, f -> f.apply((reference, expr) -> {
+				var t = new Reference();
+				unify(n, typeRefOf(t), typeOf(reference));
+				return FunpHeapDealloc.of(getTypeSize(t), erase(reference), erase(expr));
+			})).applyIf(FunpDoHeapNew.class, f -> f.apply(() -> {
+				return FunpHeapAlloc.of(getTypeSize(typeOf(f)));
 			})).applyIf(FunpField.class, f -> {
 				return getField(f);
-			}).applyIf(FunpHeapDealloc.class, f -> f.apply((size, ref, expr) -> {
-				var in = FunpData.of(List.of( //
-						Pair.of(FunpNumber.ofNumber(size), IntIntPair.of(0, ps)), //
-						Pair.of(ref, IntIntPair.of(ps, ps + ps))));
-				applyOnce(in, globals.get("!dealloc").get(scope), ps + ps);
-				return erase(expr);
-			})).applyIf(FunpIo.class, f -> f.apply(expr -> {
+			}).applyIf(FunpIo.class, f -> f.apply(expr -> {
 				return erase(expr);
 			})).applyIf(FunpIndex.class, f -> f.apply((reference, index0) -> {
 				var te = new Reference();

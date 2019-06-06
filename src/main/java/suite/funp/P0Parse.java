@@ -31,6 +31,8 @@ import suite.funp.P0.FunpDoWhile;
 import suite.funp.P0.FunpDontCare;
 import suite.funp.P0.FunpError;
 import suite.funp.P0.FunpField;
+import suite.funp.P0.FunpDoHeapDel;
+import suite.funp.P0.FunpDoHeapNew;
 import suite.funp.P0.FunpIf;
 import suite.funp.P0.FunpIndex;
 import suite.funp.P0.FunpIo;
@@ -225,6 +227,8 @@ public class P0Parse {
 				return define(Fdt.G_POLY, a, capture(lambdaSeparate(b, c)), d);
 			}).match("define.global { .0 } ~ .1", (a, b) -> {
 				return defineMono(a, b, Fdt.G_MONO);
+			}).match("delete .0 ~ .1", (a, b) -> {
+				return checkDo(() -> FunpDoHeapDel.of(p(a), p(b)));
 			}).match("do! .0", a -> {
 				return FunpIo.of(nv(doToken).p(a));
 			}).match("error", () -> {
@@ -252,6 +256,8 @@ public class P0Parse {
 				return define(Fdt.G_MONO, a, capture(lambdaSeparate(b, c)), d);
 			}).match("me", () -> {
 				return FunpMe.of();
+			}).match("new", () -> {
+				return checkDo(() -> FunpDoHeapNew.of());
 			}).match("number", () -> {
 				return FunpNumber.of(IntMutable.nil());
 			}).match("number .0", a -> {

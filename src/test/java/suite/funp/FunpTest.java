@@ -117,6 +117,11 @@ public class FunpTest {
 	}
 
 	@Test
+	public void testNew() {
+		test(123, "do! (let p := new ~ assign p* := 123 ~ let v := p* ~ delete p ~ v)");
+	}
+
+	@Test
 	public void testRecurse() {
 		test(3, "define { dec n := if (3 < n) then (dec (n - 1)) else n ~ } ~ 3999 | dec");
 		test(89, "define { fib n := if (1 < n) then (fib (n - 1) + fib (n - 2)) else 1 ~ } ~ 10 | fib");
