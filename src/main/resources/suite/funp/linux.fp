@@ -35,14 +35,14 @@ define !alloc size0 := do!
 	let sizep := numberp:number size1 ~
 	define {
 		!alloc.chain p :=
+			expand ps := pointer* ~
 			for! (
 				(pointer, pr) := p, null #
-				pr = null && pointer* != null #
-				let ps := pointer* ~
+				pr = null && ps != null #
 				if (ps*/size != sizep) then (
 					address.of ps*/next, null
 				) else (
-					!assign pointer* := ps*/next ~
+					!assign ps := ps*/next ~
 					null, ps
 				) #
 				pr
