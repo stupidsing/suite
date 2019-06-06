@@ -13,6 +13,11 @@ public class RunUtil {
 		return get_(key, defaultValue);
 	}
 
+	public static boolean isLinux() {
+		var os = System.getenv("OS");
+		return os == null || !os.startsWith("Windows");
+	}
+
 	public static boolean isLinux64() {
 		if (get_("USE_32BIT", null) != null)
 			return false;
@@ -20,11 +25,6 @@ public class RunUtil {
 			return true;
 		else
 			return RunUtil.isLinux() && Execute.shell("uname -a").contains("x86_64");
-	}
-
-	public static boolean isLinux() {
-		var os = System.getenv("OS");
-		return os == null || !os.startsWith("Windows");
 	}
 
 	public static void run(Callable<Boolean> callable) {
