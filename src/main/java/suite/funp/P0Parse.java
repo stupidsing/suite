@@ -230,33 +230,9 @@ public class P0Parse {
 			}).match("error", () -> {
 				return FunpError.of();
 			}).match("fold (.0 := .1 # .2 # .3 # .4)", (a, b, c, d, e) -> {
-				var lf = nv(doToken).lambda(a, true);
-				var lc = lf.apply(c);
-				var ld = lf.apply(d);
-				var le = lf.apply(e);
-				var vn = lc.vn;
-				var var = FunpVariable.of(vn);
-				var while_ = lc.expr;
-				var do_ = FunpDoAssignVar.of(var, ld.expr, FunpDontCare.of());
-				return FunpDefine.of( //
-						vn, //
-						p(b), //
-						FunpDoWhile.of(while_, do_, le.expr), //
-						Fdt.L_IOAP);
+				return fold(a, b, c, d, e);
 			}).match("for! (.0 := .1 # .2 # .3 # .4)", (a, b, c, d, e) -> {
-				var lf = nv(doToken).lambda(a, true);
-				var lc = lf.apply(c);
-				var ld = lf.apply(d);
-				var le = lf.apply(e);
-				var vn = lc.vn;
-				var var = FunpVariable.of(vn);
-				var while_ = lc.expr;
-				var do_ = FunpDoAssignVar.of(var, ld.expr, FunpDontCare.of());
-				return FunpIo.of(FunpDefine.of( //
-						vn, //
-						p(b), //
-						FunpDoWhile.of(while_, do_, le.expr), //
-						Fdt.L_IOAP));
+				return FunpIo.of(fold(a, b, c, d, e));
 			}).match("if (`.0` = .1) then .2 else .3", (a, b, c, d) -> {
 				return bind(a, b, c, d);
 			}).match("if .0 then .1 else .2", (a, b, c) -> {
@@ -376,6 +352,22 @@ public class P0Parse {
 		private Funp defineMono(Streamlet2<String, Node> list, Node b, Fdt fdt) {
 			var p1 = new Parse(list.fold(vns, (vns, k, v) -> vns.add(k)));
 			return FunpDefineRec.of(list.mapValue(p1::p).toList(), p1.p(b), fdt);
+		}
+
+		private Funp fold(Node a, Node b, Node c, Node d, Node e) {
+			var lf = nv(doToken).lambda(a, true);
+			var lc = lf.apply(c);
+			var ld = lf.apply(d);
+			var le = lf.apply(e);
+			var vn = lc.vn;
+			var var = FunpVariable.of(vn);
+			var while_ = lc.expr;
+			var do_ = FunpDoAssignVar.of(var, ld.expr, FunpDontCare.of());
+			return FunpDefine.of( //
+					vn, //
+					p(b), //
+					FunpDoWhile.of(while_, do_, le.expr), //
+					Fdt.L_IOAP);
 		}
 
 		private Streamlet2<String, Node> kvs(Node node) {
