@@ -121,10 +121,8 @@ define !get.char {} := do!
 
 define !get.string (pointer, length) :=
 	for! (
-		nb := (0, true) #
-		let (n, b) := nb ~
+		(n, b) := (0, true) #
 		n < length && b #
-		let (n, b) := nb ~
 		let p1 := !adjust.pointer pointer n ~
 		let nBytesRead := !read (p1, 1) ~
 		(n + nBytesRead, p1* != byte 10)
