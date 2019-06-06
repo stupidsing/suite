@@ -149,16 +149,23 @@ public class P1Inline {
 		new Object() {
 			public void count(Funp node_) {
 				inspect.rewrite(node_, Funp.class, n_ -> n_.sw( //
-				).applyIf(FunpTypeCheck.class, f -> f.apply((left, right, expr) -> {
+				).applyIf(FunpDoAssignVar.class, f -> f.apply((var, value, expr) -> {
+					getCount(var).update(9999);
+					return null;
+				})).applyIf(FunpTypeCheck.class, f -> f.apply((left, right, expr) -> {
 					count(expr);
 					return n_;
 				})).applyIf(FunpReference.class, f -> f.apply(expr -> {
-					countByDefs.computeIfAbsent(defByVariables.get(expr), v -> IntMutable.of(0)).update(9999);
+					getCount(expr).update(9999);
 					return null;
-				})).applyIf(FunpVariable.class, f -> f.apply(var -> {
-					countByDefs.computeIfAbsent(defByVariables.get(f), v -> IntMutable.of(0)).increment();
+				})).applyIf(FunpVariable.class, f -> f.apply(vn -> {
+					getCount(f).increment();
 					return null;
 				})).result());
+			}
+
+			private IntMutable getCount(Funp var) {
+				return countByDefs.computeIfAbsent(defByVariables.get(var), v -> IntMutable.of(0));
 			}
 		}.count(node);
 
@@ -202,12 +209,15 @@ public class P1Inline {
 		return new Object() {
 			private Funp inline(Funp node_) {
 				return inspect.rewrite(node_, Funp.class, n_ -> {
+					FunpDefine define;
 					FunpField field;
 					FunpStruct struct;
 					FunpVariable variable;
 					if ((field = n_.cast(FunpField.class)) != null //
 							&& (variable = field.reference.expr.cast(FunpVariable.class)) != null //
-							&& (struct = defs.get(variable).cast(FunpDefine.class, n -> n.value.cast(FunpStruct.class))) != null) {
+							&& (define = defs.get(variable).cast(FunpDefine.class)) != null //
+							&& (define.type == Fdt.L_MONO || define.type == Fdt.L_POLY) //
+							&& (struct = define.value.cast(FunpStruct.class)) != null) {
 						var pair = Read //
 								.from2(struct.pairs) //
 								.filterKey(field_ -> String_.equals(field_, field.field)) //

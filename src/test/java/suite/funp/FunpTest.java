@@ -81,7 +81,8 @@ public class FunpTest {
 
 	@Test
 	public void testFold() {
-		test(100, "fold (n := 0 # n < 100 # n + 1)");
+		test(100, "fold (i := 0 # i < 100 # i + 1)");
+		test(100, "let (i, j) := (fold ((a, b) := (0, 0) # a < 100 # (a + 1, b + 1))) ~ i");
 	}
 
 	@Test
@@ -116,7 +117,7 @@ public class FunpTest {
 
 	@Test
 	public void testRecurse() {
-		test(1, "define { dec n := if (0 < n) then (dec (n - 1)) else 1 ~ } ~ 9999 | dec");
+		test(3, "define { dec n := if (3 < n) then (dec (n - 1)) else n ~ } ~ 3999 | dec");
 		test(89, "define { fib n := if (1 < n) then (fib (n - 1) + fib (n - 2)) else 1 ~ } ~ 10 | fib");
 	}
 

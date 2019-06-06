@@ -138,10 +138,10 @@ define.global !put.char ch :=
 
 define !put.number n :=
 	define {
-		!put.number_ n := do!
-			if (0 < n) then (
-				let div := n / 10 ~
-				let mod := n % 10 ~
+		!put.number_ i := do!
+			if (0 < i) then (
+				let div := i / 10 ~
+				let mod := i % 10 ~
 				!put.number_ div ~
 				!put.char byte:number (mod + number '0')
 			) else {}
