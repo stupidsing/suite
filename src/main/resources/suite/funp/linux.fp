@@ -29,17 +29,30 @@ virtual ps.block := {
 let.global alloc.pointer := type (address.of ps.block) null ~
 let.global alloc.free.chain := type (address.of ps.block) null ~
 
+-- can replace by default !new
 define !alloc size0 := do!
 	let size1 := max (os.ps, size0) ~
 	let sizep := numberp:number size1 ~
 	define {
+		--!alloc.chain pointer :=
+		--	for! (
+		--		(ps, pr) := pointer*, null #
+		--		ps != null && pr == null #
+		--		if (ps*/size != sizep) then (
+		--			address.of ps*/next, null
+		--		) else (
+		--			!assign pointer* := ps*/next ~
+		--			null, ps
+		--		) #
+		--		pr
+		--	)
 		!alloc.chain pointer := do!
 			let ps := pointer* ~
 			if (ps != null) then (
 				if (ps*/size != sizep) then (
 					!alloc.chain address.of ps*/next
 				) else (
-					assign pointer* := ps*/next ~
+					!assign pointer* := ps*/next ~
 					ps
 				)
 			) else null
@@ -50,19 +63,20 @@ define !alloc size0 := do!
 		let ap := alloc.pointer ~
 		let ps := if (ap != null) then ap else !mmap 16384 ~
 		let pointer.block := !adjust.pointer ps os.ps ~
-		assign ps*/size := sizep ~
-		assign alloc.pointer := !adjust.pointer pointer.block size1 ~
+		!assign ps*/size := sizep ~
+		!assign alloc.pointer := !adjust.pointer pointer.block size1 ~
 		pointer.block
 	) else p0
 ~
 
+-- can replace by default !delete
 define !dealloc (size0, pointer.block) := do!
 	let ps := !adjust.pointer pointer.block (0 - os.ps) ~
-	assign ps* := type ps.block {
+	!assign ps* := type ps.block {
 		size: numberp:number max (os.ps, size0),
 		next: alloc.free.chain,
 	} ~
-	assign alloc.free.chain := ps ~
+	!assign alloc.free.chain := ps ~
 	{}
 ~
 
@@ -80,11 +94,11 @@ define !new.mut.number init := do!
 	let size := size.of init ~
 	let address := !alloc size ~
 	let pointer := pointer:pointer address ~
-	assign pointer* := init ~
+	!assign pointer* := init ~
 	{
 		destroy {} := !dealloc (size, address) ~
 		get {} := do! pointer* ~
-		set v1 := do! (assign pointer* := v1 ~ {}) ~
+		set v1 := do! (!assign pointer* := v1 ~ {}) ~
 	}
 ~
 
@@ -116,7 +130,7 @@ define !get.char {} := do!
 	let (s0, e0) := start.end ~
 	let (s1, e1) := if (s0 < e0) then start.end else (0, !read (address.of buffer, buffer.size)) ~
 	assert (s1 < e1) ~
-	assign start.end := (s1 + 1, e1) ~
+	!assign start.end := (s1 + 1, e1) ~
 	buffer [s0]
 ~
 
@@ -124,7 +138,7 @@ define !get.line (pointer, length) := do!
 	for! (
 		(n, ch) := (0, !get.char {}) #
 		n < length && number:byte ch != 10 #
-		assign (!adjust.pointer pointer n)* := ch ~
+		!assign (!adjust.pointer pointer n)* := ch ~
 		(n + 1, !get.char {}) #
 		{}
 	)

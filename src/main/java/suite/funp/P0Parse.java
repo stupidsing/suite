@@ -27,12 +27,12 @@ import suite.funp.P0.FunpDoAsm;
 import suite.funp.P0.FunpDoAssignRef;
 import suite.funp.P0.FunpDoAssignVar;
 import suite.funp.P0.FunpDoEvalIo;
+import suite.funp.P0.FunpDoHeapDel;
+import suite.funp.P0.FunpDoHeapNew;
 import suite.funp.P0.FunpDoWhile;
 import suite.funp.P0.FunpDontCare;
 import suite.funp.P0.FunpError;
 import suite.funp.P0.FunpField;
-import suite.funp.P0.FunpDoHeapDel;
-import suite.funp.P0.FunpDoHeapNew;
 import suite.funp.P0.FunpIf;
 import suite.funp.P0.FunpIndex;
 import suite.funp.P0.FunpIo;
@@ -182,19 +182,30 @@ public class P0Parse {
 				return isList(a) ? FunpArray.of(Tree.iter(a).map(this::p).toList()) : null;
 			}).match("{ .0 }", a -> {
 				return FunpStruct.of(kvs(a).mapValue(this::p).toList());
+			}).match("!asm .0 {.1}/.2", (a, b, c) -> {
+				return checkDo(() -> FunpDoAsm.of(Tree.iter(a, TermOp.OR____).map(n -> {
+					var ma = Suite.pattern(".0 = .1").match(n);
+					return Pair.of(Amd64.me.regByName.get(ma[0]), p(ma[1]));
+				}).toList(), Tree.iter(b, TermOp.OR____).toList(), Amd64.me.regByName.get(c)));
+			}).match("!assign .0 := .1 ~ .2", (a, b, c) -> {
+				return checkDo(() -> FunpDoAssignRef.of(FunpReference.of(p(a)), p(b), p(c)));
+			}).match("!delete := .0 ~ .1", (a, b) -> {
+				return checkDo(() -> FunpDoHeapDel.of(p(a), p(b)));
+			}).match("!new", () -> {
+				return checkDo(() -> FunpDoHeapNew.of());
+			}).match("!new .0", a -> {
+				var vn = "n$" + Util.temp();
+				var v = FunpVariable.of(vn);
+				return checkDo(() -> FunpDefine.of( //
+						vn, //
+						FunpDoHeapNew.of(), //
+						FunpDoAssignRef.of(FunpReference.of(FunpDeref.of(v)), p(a), v), Fdt.L_MONO));
 			}).match("address.of .0", a -> {
 				return FunpReference.of(p(a));
 			}).match("address.of.any", () -> {
 				return FunpReference.of(FunpDontCare.of());
 			}).match("array .0 * .1", (a, b) -> {
 				return FunpRepeat.of(a != dontCare ? Int.num(a) : null, p(b));
-			}).match("asm .0 {.1}/.2", (a, b, c) -> {
-				return checkDo(() -> FunpDoAsm.of(Tree.iter(a, TermOp.OR____).map(n -> {
-					var ma = Suite.pattern(".0 = .1").match(n);
-					return Pair.of(Amd64.me.regByName.get(ma[0]), p(ma[1]));
-				}).toList(), Tree.iter(b, TermOp.OR____).toList(), Amd64.me.regByName.get(c)));
-			}).match("assign .0 := .1 ~ .2", (a, b, c) -> {
-				return checkDo(() -> FunpDoAssignRef.of(FunpReference.of(p(a)), p(b), p(c)));
 			}).match("byte", () -> {
 				return FunpCoerce.of(Coerce.NUMBER, Coerce.BYTE, FunpDontCare.of());
 			}).match("byte .0", a -> {
@@ -227,8 +238,6 @@ public class P0Parse {
 				return define(Fdt.G_POLY, a, capture(lambdaSeparate(b, c)), d);
 			}).match("define.global { .0 } ~ .1", (a, b) -> {
 				return defineMono(a, b, Fdt.G_MONO);
-			}).match("delete .0 ~ .1", (a, b) -> {
-				return checkDo(() -> FunpDoHeapDel.of(p(a), p(b)));
 			}).match("do! .0", a -> {
 				return FunpIo.of(nv(doToken).p(a));
 			}).match("error", () -> {
@@ -256,8 +265,6 @@ public class P0Parse {
 				return define(Fdt.G_MONO, a, capture(lambdaSeparate(b, c)), d);
 			}).match("me", () -> {
 				return FunpMe.of();
-			}).match("new", () -> {
-				return checkDo(() -> FunpDoHeapNew.of());
 			}).match("number", () -> {
 				return FunpNumber.of(IntMutable.nil());
 			}).match("number .0", a -> {

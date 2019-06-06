@@ -20,8 +20,8 @@ public class FunpTest {
 
 	@Test
 	public void testAssign() {
-		test(3, "define p := address.of predef { a: 1, b: 2, c: 3, } ~ do! (assign p*/b := 4 ~ p*/c)");
-		test(4, "define p := address.of predef { a: 1, b: 2, c: 3, } ~ do! (assign p*/c := 4 ~ p*/c)");
+		test(3, "define p := address.of predef { a: 1, b: 2, c: 3, } ~ do! (!assign p*/b := 4 ~ p*/c)");
+		test(4, "define p := address.of predef { a: 1, b: 2, c: 3, } ~ do! (!assign p*/c := 4 ~ p*/c)");
 	}
 
 	@Test
@@ -118,7 +118,17 @@ public class FunpTest {
 
 	@Test
 	public void testNew() {
-		test(123, "do! (let p := new ~ assign p* := 123 ~ let v := p* ~ delete p ~ v)");
+		test(123, "do! (\n" //
+				+ "	let p := !new ~ \n" //
+				+ "	!assign p* := 123 ~ \n" //
+				+ "	let v := p* ~ \n" //
+				+ "	!delete := p ~ v \n" //
+				+ ")");
+		test(456, "do! (\n" //
+				+ "	let p := !new 456 ~ \n" //
+				+ "	let v := p* ~ \n" //
+				+ "	!delete := p ~ v \n" //
+				+ ")");
 	}
 
 	@Test
