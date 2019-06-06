@@ -22,7 +22,7 @@ define is-pair := (:a => :b => (:a, :b) -> boolean) of skip-type-check (n => +is
 define second := (:a => :b => (:a, :b) -> :b) of skip-type-check (tuple => +pright_{tuple}) ~
 define tail := (:t => [:t] -> [:t]) of skip-type-check (list => +ltail_{list}) ~
 ---------------------------------------------------------------------------
-define popen* := ([string] -> string -> (number, [n^Chars], [n^Chars])) of
+define popen@ := ([string] -> string -> (number, [n^Chars], [n^Chars])) of
 	atom:INTRN!MonadIntrinsics.popen | get%i | call%i-v2
 ~
 define deep-seq := (:t => :t -> :t) of
@@ -180,7 +180,7 @@ define partition := fun =>
 	}_{(), ()}
 ~
 define popen := command => in =>
-	do (in | popen*_{command})
+	do (in | popen@_{command})
 ~
 define replicate := flip_{e =>
 	unfold-left_{i => optional_{i != 0}_{i - 1, e}}

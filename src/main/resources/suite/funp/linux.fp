@@ -120,6 +120,16 @@ define !get.char {} := do!
 	buffer [s0]
 ~
 
+define !get.line (pointer, length) := do!
+	for! (
+		(n, ch) := (0, !get.char {}) #
+		n < length && number:byte ch != 10 #
+		assign (!adjust.pointer pointer n)* := ch ~
+		(n + 1, !get.char {}) #
+		{}
+	)
+~
+
 define !get.number {} := do!
 	let ch0 := number:byte !get.char {} ~
 	let positive := ch0 != number '-' ~
@@ -145,6 +155,10 @@ define !get.string (pointer, length) :=
 define.global !put.char ch :=
 	type ch = byte ~
 	!write.all (address.of predef [ch,], 1)
+~
+
+define !put.line {} :=
+	!put.char byte 10
 ~
 
 define !put.number n :=
