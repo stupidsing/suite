@@ -301,8 +301,11 @@ public class P0Parse {
 			}).match("virtual .0 := .1 ~ .2", (a, b, c) -> {
 				return defineMono(Read.each2(Pair.of(Atom.name(a), b)), c, Fdt.VIRT);
 			}).applyIf(Atom.class, atom -> {
-				var vn = atom.name;
-				return vns.contains(vn) ? FunpVariable.of(vn) : FunpVariableNew.of(vn);
+				if (atom != Atom.NIL) {
+					var vn = atom.name;
+					return vns.contains(vn) ? FunpVariable.of(vn) : FunpVariableNew.of(vn);
+				} else
+					return fail();
 			}).applyIf(Int.class, n -> {
 				return FunpNumber.ofNumber(n.number);
 			}).applyIf(Str.class, str -> {

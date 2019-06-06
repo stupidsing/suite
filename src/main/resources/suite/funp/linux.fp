@@ -120,17 +120,17 @@ define !get.char {} := do!
 	buffer [s0]
 ~
 
---define !get.number {} := do!
---	let ch0 := number:byte !get.char {} ~
---	let positive := ch0 != number '-' ~
---	let n0 := for! (
---		(n, ch) := (0, ch0) #
---		number '0' <= ch && ch <= number '9' #
---		(n * 10 + ch - number '0', number:byte !get.char {}) #
---		if positive then n else (0 - n)
---	) ~
---~
---
+define !get.number {} := do!
+	let ch0 := number:byte !get.char {} ~
+	let positive := ch0 != number '-' ~
+	for! (
+		(n, ch) := (0, ch0) #
+		number '0' <= ch && ch <= number '9' #
+		(n * 10 + ch - number '0', number:byte !get.char {}) #
+		if positive then n else (0 - n)
+	)
+~
+
 define !get.string (pointer, length) :=
 	for! (
 		(n, b) := (0, true) #
@@ -194,7 +194,7 @@ define !cat {} :=
 	!cat,
 	!dealloc,
 	!get.char,
-	--!get.number,
+	!get.number,
 	!mmap,
 	!munmap,
 	!put.char,
