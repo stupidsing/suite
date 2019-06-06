@@ -601,7 +601,7 @@ public class P0 {
 	public enum Fdt {
 		G_MONO, // global variable, mono type
 		G_POLY, // global variable, polymorphic type
-		HEAP, // local variable, pointer to heap
+		L_HEAP, // local variable, pointer to heap
 		L_IOAP, // local variable, I/O access
 		L_MONO, // local variable, mono type
 		L_POLY, // local variable, polymorphic type

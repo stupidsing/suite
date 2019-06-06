@@ -237,7 +237,7 @@ public class P0Parse {
 				var vn = lc.vn;
 				var var = FunpVariable.of(vn);
 				var while_ = lc.expr;
-				var do_ = FunpDoAssignVar.of(var, ld.expr, var);
+				var do_ = FunpDoAssignVar.of(var, ld.expr, FunpDontCare.of());
 				return FunpDefine.of( //
 						vn, //
 						p(b), //

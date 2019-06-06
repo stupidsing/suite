@@ -289,7 +289,7 @@ public class P2InferType {
 						var struct = FunpStruct.of(captures);
 						var lc = FunpLambdaCapture.of(pcap, li.cap, struct, vn, c(expr));
 						var assign = FunpDoAssignRef.of(FunpReference.of(FunpDeref.of(pcap)), struct, lc);
-						return FunpDefine.of(pcapn, FunpDontCare.of(), assign, Fdt.HEAP);
+						return FunpDefine.of(pcapn, FunpDontCare.of(), assign, Fdt.L_HEAP);
 
 						// TODO free cap after use
 					} else
@@ -570,7 +570,7 @@ public class P2InferType {
 					if (Set.of("!alloc", "!dealloc").contains(vn))
 						globals.put(vn, var);
 					return FunpAllocGlobal.of(size, erase(value, vn), e1.erase(expr), address);
-				} else if (type == Fdt.HEAP) {
+				} else if (type == Fdt.L_HEAP) {
 					var t = new Reference();
 					unify(n, typeOf(value), typeRefOf(t));
 					var size = getTypeSize(t);
