@@ -34,28 +34,19 @@ define !alloc size0 := do!
 	let size1 := max (os.ps, size0) ~
 	let sizep := numberp:number size1 ~
 	define {
-		--!alloc.chain pointer :=
-		--	for! (
-		--		(ps, pr) := pointer*, null #
-		--		ps != null && pr == null #
-		--		if (ps*/size != sizep) then (
-		--			address.of ps*/next, null
-		--		) else (
-		--			!assign pointer* := ps*/next ~
-		--			null, ps
-		--		) #
-		--		pr
-		--	)
-		!alloc.chain pointer := do!
-			let ps := pointer* ~
-			if (ps != null) then (
+		!alloc.chain p :=
+			for! (
+				(pointer, pr) := p, null #
+				pr = null && pointer* != null #
+				let ps := pointer* ~
 				if (ps*/size != sizep) then (
-					!alloc.chain address.of ps*/next
+					address.of ps*/next, null
 				) else (
 					!assign pointer* := ps*/next ~
-					ps
-				)
-			) else null
+					null, ps
+				) #
+				pr
+			)
 		~
 	} ~
 	let p0 := !alloc.chain address.of alloc.free.chain ~
