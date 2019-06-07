@@ -206,6 +206,8 @@ public class P0Parse {
 				return FunpReference.of(FunpDontCare.of());
 			}).match("array .0 * .1", (a, b) -> {
 				return FunpRepeat.of(a != dontCare ? Int.num(a) : null, p(b));
+			}).match("assert .0 ~ .1", (a, b) -> {
+				return FunpIf.of(p(a), p(b), FunpError.of());
 			}).match("byte", () -> {
 				return FunpCoerce.of(Coerce.NUMBER, Coerce.BYTE, FunpDontCare.of());
 			}).match("byte .0", a -> {
@@ -267,6 +269,8 @@ public class P0Parse {
 				return define(Fdt.G_MONO, a, capture(lambdaSeparate(b, c)), d);
 			}).match("me", () -> {
 				return FunpMe.of();
+			}).match("null", () -> {
+				return FunpCoerce.of(Coerce.NUMBER, Coerce.POINTER, FunpNumber.ofNumber(0));
 			}).match("number", () -> {
 				return FunpNumber.of(IntMutable.nil());
 			}).match("number .0", a -> {

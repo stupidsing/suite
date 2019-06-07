@@ -1,8 +1,5 @@
 consult "asm.${platform}.fp" ~
 
-expand null := pointer:number 0 ~
-expand (assert .check ~ .expr) := if .check then .expr else error ~
-
 expand !adjust.pointer .pointer .add :=
 	type .pointer = address.of.any ~
 	pointer:numberp !asm.adjust.pointer .pointer .add

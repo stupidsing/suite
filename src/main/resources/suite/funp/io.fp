@@ -1,8 +1,5 @@
 consult "linux.fp" ~
 
-expand null := pointer:number 0 ~
-expand (assert .check ~ .expr) := if .check then .expr else error ~
-
 define !new.mut.number init := do!
 	type init = number ~
 	let pointer := type (address.of init) !new ~
