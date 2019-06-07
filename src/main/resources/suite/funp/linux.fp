@@ -17,18 +17,7 @@ define !munmap (length, pointer) := do!
 	!asm.munmap length pointer
 ~
 
-define !new.mut.number init := do!
-	type init = number ~
-	let pointer := type (address.of init) !new ~
-	!assign pointer* := init ~
-	{
-		destroy {} := do! (!delete := pointer ~ {}) ~
-		get {} := do! pointer* ~
-		set v1 := do! (!assign pointer* := v1 ~ {}) ~
-	}
-~
-
-define !read (pointer, length) := do!
+define.global !read (pointer, length) := do!
 	type pointer = address.of.any ~
 	!asm.read pointer length
 ~
@@ -40,6 +29,17 @@ define.global !write (pointer, length) := do!
 
 define max (a, b) := if (a < b) then b else a ~
 define min (a, b) := if (a < b) then a else b ~
+
+define !new.mut.number init := do!
+	type init = number ~
+	let pointer := type (address.of init) !new ~
+	!assign pointer* := init ~
+	{
+		destroy {} := do! (!delete := pointer ~ {}) ~
+		get {} := do! pointer* ~
+		set v1 := do! (!assign pointer* := v1 ~ {}) ~
+	}
+~
 
 define.global !write.all (pointer, length) :=
 	for! (
