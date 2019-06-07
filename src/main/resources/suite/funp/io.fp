@@ -1,4 +1,3 @@
-consult "asm.${platform}.fp" ~
 consult "linux.fp" ~
 
 expand null := pointer:number 0 ~
