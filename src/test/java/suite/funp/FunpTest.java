@@ -56,7 +56,7 @@ public class FunpTest {
 				+ "0 | (i => 0 | f 1 | g 2 | h 3 | f 1 | g 2 | h 3)");
 
 		// capture once and calling twice! the capture would be freed after the first
-		// call. second call should cause problem...
+		// call. the second call should cause problem...
 		if (Boolean.FALSE)
 			test(6, "" //
 					+ "define f j := capture (i => i + j) ~ " //
