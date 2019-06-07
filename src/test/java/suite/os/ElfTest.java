@@ -76,10 +76,10 @@ public class ElfTest {
 
 	@Test
 	public void testPutChar() {
-		test(0, "let !put.char := (consult \"io.fp\")/!put.char ~ do! (!put.char byte 'A' ~ 0)", "A");
-		test(0, "let !put.number := (consult \"io.fp\")/!put.number ~ do! (!put.number number 'A' ~ 0)", "65");
-		test(0, "let !put.number := (consult \"io.fp\")/!put.number ~ do! (!put.number -999 ~ 0)", "-999");
-		test(0, "let !put.number := (consult \"io.fp\")/!put.number ~ for! (i := 0 # i < 10 # !put.number i ~ i + 1 # 0)", "0123456789");
+		test(0, "let !pc := (consult \"io.fp\")/!put.char ~ do! (!pc byte 'A' ~ 0)", "A");
+		test(0, "let !pn := (consult \"io.fp\")/!put.number ~ do! (!pn number 'A' ~ 0)", "65");
+		test(0, "let !pn := (consult \"io.fp\")/!put.number ~ do! (!pn -999 ~ 0)", "-999");
+		test(0, "let !pn := (consult \"io.fp\")/!put.number ~ for! (i := 0 # i < 10 # !pn i ~ i + 1 # 0)", "0123456789");
 	}
 
 	@Test
