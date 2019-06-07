@@ -67,7 +67,10 @@ public class P0 {
 
 	public static class FunpCoerce implements Funp, P2.End {
 		public enum Coerce {
-			BYTE, NUMBERP, NUMBER, POINTER,
+			BYTE, // 8 bits
+			NUMBERP, // a number with same size as a machine level pointer
+			NUMBER, // a number with same size as a machine level generic register, 32-bits
+			POINTER, // a machine level pointer
 		};
 
 		public Coerce from;

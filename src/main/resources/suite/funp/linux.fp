@@ -9,9 +9,6 @@ expand !adjust.pointer .pointer .add :=
 	pointer:numberp !asm.adjust.pointer .pointer .add
 ~
 
-define max (a, b) := if (a < b) then b else a ~
-define min (a, b) := if (a < b) then a else b ~
-
 define !mmap length := do!
 	pointer:numberp !asm.mmap length
 ~
@@ -41,6 +38,9 @@ define.global !write (pointer, length) := do!
 	type pointer = address.of.any ~
 	!asm.write pointer length
 ~
+
+define max (a, b) := if (a < b) then b else a ~
+define min (a, b) := if (a < b) then a else b ~
 
 define.global !write.all (pointer, length) :=
 	for! (
