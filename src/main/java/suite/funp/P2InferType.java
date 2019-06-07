@@ -221,7 +221,7 @@ public class P2InferType {
 			}
 
 			private FunpLambda setLambda(boolean isRef_, FunpLambda varLambda_) {
-				isRef = isRef_ ? isRef_ : isRef;
+				isRef |= isRef_;
 				return varLambda = varLambda_;
 			}
 		}
@@ -293,7 +293,8 @@ public class P2InferType {
 						var assign = FunpDoAssignRef.of(FunpReference.of(FunpDeref.of(pcap)), struct, lc);
 						return FunpDefine.of(pcapn, FunpDontCare.of(), assign, Fdt.L_HEAP);
 
-						// TODO free cap after use
+						// FIXME now we free the capture immediately after first invocation; cannot
+						// invoke again
 					} else
 						return null;
 				})).applyIf(FunpVariable.class, f -> f.apply(vn -> {
