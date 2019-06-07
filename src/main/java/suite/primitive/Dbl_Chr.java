@@ -2,10 +2,10 @@ package suite.primitive;
 
 import static suite.util.Friends.fail;
 
-import suite.primitive.ChrPrimitives.Obj_Chr;
 import suite.primitive.Chars.CharsBuilder;
-import suite.primitive.streamlet.DblPuller;
+import suite.primitive.ChrPrimitives.Obj_Chr;
 import suite.primitive.streamlet.ChrStreamlet;
+import suite.primitive.streamlet.DblPuller;
 import suite.streamlet.FunUtil.Fun;
 
 public interface Dbl_Chr {

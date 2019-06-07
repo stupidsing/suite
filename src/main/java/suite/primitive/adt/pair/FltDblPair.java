@@ -3,11 +3,11 @@ package suite.primitive.adt.pair;
 import java.util.Comparator;
 
 import suite.object.Object_;
+import suite.primitive.DblFunUtil;
+import suite.primitive.Dbl_Dbl;
 import suite.primitive.FltDbl_Obj;
 import suite.primitive.FltFunUtil;
 import suite.primitive.Flt_Flt;
-import suite.primitive.DblFunUtil;
-import suite.primitive.Dbl_Dbl;
 import suite.streamlet.FunUtil.Iterate;
 
 public class FltDblPair {

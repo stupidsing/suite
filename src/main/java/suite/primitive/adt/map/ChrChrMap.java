@@ -7,10 +7,8 @@ import java.util.Objects;
 
 import suite.primitive.ChrChrSink;
 import suite.primitive.ChrChrSource;
-import suite.primitive.ChrPrimitives.ChrObjSource;
-import suite.primitive.ChrPrimitives.Obj_Chr;
-import suite.primitive.Chr_Chr;
 import suite.primitive.ChrFunUtil;
+import suite.primitive.ChrPrimitives.ChrObjSource;
 import suite.primitive.ChrPrimitives.Obj_Chr;
 import suite.primitive.Chr_Chr;
 import suite.primitive.adt.pair.ChrChrPair;

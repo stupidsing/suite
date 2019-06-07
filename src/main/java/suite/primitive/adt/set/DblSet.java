@@ -2,10 +2,10 @@ package suite.primitive.adt.set;
 
 import java.util.Arrays;
 
-import suite.primitive.Doubles_;
 import suite.primitive.DblFunUtil;
 import suite.primitive.DblPrimitives.DblSink;
 import suite.primitive.DblPrimitives.DblSource;
+import suite.primitive.Doubles_;
 import suite.primitive.streamlet.DblPuller;
 import suite.primitive.streamlet.DblStreamlet;
 

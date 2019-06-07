@@ -5,12 +5,10 @@ import static suite.util.Friends.fail;
 import java.util.Arrays;
 import java.util.Objects;
 
+import suite.primitive.LngFunUtil;
 import suite.primitive.LngLngSink;
 import suite.primitive.LngLngSource;
 import suite.primitive.LngPrimitives.LngObjSource;
-import suite.primitive.LngPrimitives.Obj_Lng;
-import suite.primitive.Lng_Lng;
-import suite.primitive.LngFunUtil;
 import suite.primitive.LngPrimitives.Obj_Lng;
 import suite.primitive.Lng_Lng;
 import suite.primitive.adt.pair.LngLngPair;

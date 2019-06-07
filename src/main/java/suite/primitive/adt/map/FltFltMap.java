@@ -7,10 +7,8 @@ import java.util.Objects;
 
 import suite.primitive.FltFltSink;
 import suite.primitive.FltFltSource;
-import suite.primitive.FltPrimitives.FltObjSource;
-import suite.primitive.FltPrimitives.Obj_Flt;
-import suite.primitive.Flt_Flt;
 import suite.primitive.FltFunUtil;
+import suite.primitive.FltPrimitives.FltObjSource;
 import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.primitive.Flt_Flt;
 import suite.primitive.adt.pair.FltFltPair;

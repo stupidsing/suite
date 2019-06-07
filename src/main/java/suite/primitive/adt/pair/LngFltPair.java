@@ -3,11 +3,11 @@ package suite.primitive.adt.pair;
 import java.util.Comparator;
 
 import suite.object.Object_;
+import suite.primitive.FltFunUtil;
+import suite.primitive.Flt_Flt;
 import suite.primitive.LngFlt_Obj;
 import suite.primitive.LngFunUtil;
 import suite.primitive.Lng_Lng;
-import suite.primitive.FltFunUtil;
-import suite.primitive.Flt_Flt;
 import suite.streamlet.FunUtil.Iterate;
 
 public class LngFltPair {

@@ -4,8 +4,8 @@ import static suite.util.Friends.fail;
 
 import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Doubles.DoublesBuilder;
-import suite.primitive.streamlet.FltPuller;
 import suite.primitive.streamlet.DblStreamlet;
+import suite.primitive.streamlet.FltPuller;
 import suite.streamlet.FunUtil.Fun;
 
 public interface Flt_Dbl {

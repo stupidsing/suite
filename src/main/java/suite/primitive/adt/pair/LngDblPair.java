@@ -3,11 +3,11 @@ package suite.primitive.adt.pair;
 import java.util.Comparator;
 
 import suite.object.Object_;
+import suite.primitive.DblFunUtil;
+import suite.primitive.Dbl_Dbl;
 import suite.primitive.LngDbl_Obj;
 import suite.primitive.LngFunUtil;
 import suite.primitive.Lng_Lng;
-import suite.primitive.DblFunUtil;
-import suite.primitive.Dbl_Dbl;
 import suite.streamlet.FunUtil.Iterate;
 
 public class LngDblPair {

@@ -5,12 +5,10 @@ import static suite.util.Friends.fail;
 import java.util.Arrays;
 import java.util.Objects;
 
+import suite.primitive.IntFunUtil;
 import suite.primitive.IntIntSink;
 import suite.primitive.IntIntSource;
 import suite.primitive.IntPrimitives.IntObjSource;
-import suite.primitive.IntPrimitives.Obj_Int;
-import suite.primitive.Int_Int;
-import suite.primitive.IntFunUtil;
 import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.Int_Int;
 import suite.primitive.adt.pair.IntIntPair;

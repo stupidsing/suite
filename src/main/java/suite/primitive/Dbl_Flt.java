@@ -2,8 +2,8 @@ package suite.primitive;
 
 import static suite.util.Friends.fail;
 
-import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.primitive.Floats.FloatsBuilder;
+import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.primitive.streamlet.DblPuller;
 import suite.primitive.streamlet.FltStreamlet;
 import suite.streamlet.FunUtil.Fun;

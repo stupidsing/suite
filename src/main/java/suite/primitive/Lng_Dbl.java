@@ -4,8 +4,8 @@ import static suite.util.Friends.fail;
 
 import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Doubles.DoublesBuilder;
-import suite.primitive.streamlet.LngPuller;
 import suite.primitive.streamlet.DblStreamlet;
+import suite.primitive.streamlet.LngPuller;
 import suite.streamlet.FunUtil.Fun;
 
 public interface Lng_Dbl {

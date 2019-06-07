@@ -7,10 +7,8 @@ import java.util.Objects;
 
 import suite.primitive.DblDblSink;
 import suite.primitive.DblDblSource;
-import suite.primitive.DblPrimitives.DblObjSource;
-import suite.primitive.DblPrimitives.Obj_Dbl;
-import suite.primitive.Dbl_Dbl;
 import suite.primitive.DblFunUtil;
+import suite.primitive.DblPrimitives.DblObjSource;
 import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Dbl_Dbl;
 import suite.primitive.adt.pair.DblDblPair;

@@ -3,8 +3,8 @@ package suite.primitive.adt.pair;
 import java.util.Comparator;
 
 import suite.object.Object_;
-import suite.primitive.DblLng_Obj;
 import suite.primitive.DblFunUtil;
+import suite.primitive.DblLng_Obj;
 import suite.primitive.Dbl_Dbl;
 import suite.primitive.LngFunUtil;
 import suite.primitive.Lng_Lng;

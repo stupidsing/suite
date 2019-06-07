@@ -6,8 +6,6 @@ import suite.object.Object_;
 import suite.primitive.FltFlt_Obj;
 import suite.primitive.FltFunUtil;
 import suite.primitive.Flt_Flt;
-import suite.primitive.FltFunUtil;
-import suite.primitive.Flt_Flt;
 import suite.streamlet.FunUtil.Iterate;
 
 public class FltFltPair {

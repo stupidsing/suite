@@ -5,14 +5,14 @@ import static suite.util.Friends.fail;
 import java.util.Arrays;
 import java.util.Objects;
 
+import suite.primitive.FltFunUtil;
+import suite.primitive.FltPrimitives.Obj_Flt;
+import suite.primitive.Flt_Flt;
 import suite.primitive.LngFltSink;
 import suite.primitive.LngFltSource;
 import suite.primitive.LngPrimitives.LngObjSource;
 import suite.primitive.LngPrimitives.Obj_Lng;
 import suite.primitive.Lng_Flt;
-import suite.primitive.FltFunUtil;
-import suite.primitive.FltPrimitives.Obj_Flt;
-import suite.primitive.Flt_Flt;
 import suite.primitive.adt.pair.LngFltPair;
 import suite.primitive.adt.pair.LngObjPair;
 import suite.primitive.streamlet.LngObjPuller;

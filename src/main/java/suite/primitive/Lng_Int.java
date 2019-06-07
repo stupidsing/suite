@@ -4,8 +4,8 @@ import static suite.util.Friends.fail;
 
 import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.Ints.IntsBuilder;
-import suite.primitive.streamlet.LngPuller;
 import suite.primitive.streamlet.IntStreamlet;
+import suite.primitive.streamlet.LngPuller;
 import suite.streamlet.FunUtil.Fun;
 
 public interface Lng_Int {

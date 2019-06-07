@@ -5,14 +5,14 @@ import static suite.util.Friends.fail;
 import java.util.Arrays;
 import java.util.Objects;
 
+import suite.primitive.ChrFunUtil;
+import suite.primitive.ChrPrimitives.Obj_Chr;
+import suite.primitive.Chr_Chr;
 import suite.primitive.FltChrSink;
 import suite.primitive.FltChrSource;
 import suite.primitive.FltPrimitives.FltObjSource;
 import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.primitive.Flt_Chr;
-import suite.primitive.ChrFunUtil;
-import suite.primitive.ChrPrimitives.Obj_Chr;
-import suite.primitive.Chr_Chr;
 import suite.primitive.adt.pair.FltChrPair;
 import suite.primitive.adt.pair.FltObjPair;
 import suite.primitive.streamlet.FltObjPuller;

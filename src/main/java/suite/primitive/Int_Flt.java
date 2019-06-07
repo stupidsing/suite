@@ -2,10 +2,10 @@ package suite.primitive;
 
 import static suite.util.Friends.fail;
 
-import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.primitive.Floats.FloatsBuilder;
-import suite.primitive.streamlet.IntPuller;
+import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.primitive.streamlet.FltStreamlet;
+import suite.primitive.streamlet.IntPuller;
 import suite.streamlet.FunUtil.Fun;
 
 public interface Int_Flt {

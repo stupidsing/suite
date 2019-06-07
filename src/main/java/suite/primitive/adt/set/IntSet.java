@@ -2,10 +2,10 @@ package suite.primitive.adt.set;
 
 import java.util.Arrays;
 
-import suite.primitive.Ints_;
 import suite.primitive.IntFunUtil;
 import suite.primitive.IntPrimitives.IntSink;
 import suite.primitive.IntPrimitives.IntSource;
+import suite.primitive.Ints_;
 import suite.primitive.streamlet.IntPuller;
 import suite.primitive.streamlet.IntStreamlet;
 
