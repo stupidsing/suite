@@ -130,7 +130,9 @@ public class FunpTest {
 		test(2, "{} | ({} => 2)");
 		test(1, "0 | (a => a + 1)");
 		test(3, "1, 2 | ((a, b) => a + b)");
+		test(3, "[1, 2,] | ([a, b,] => a + b)");
 		test(2, "let f := { a, b: v, c, } => v ~ f { a: 1, b: 2, c: 3, }");
+		test(2, "let f := { b: v, } => v ~ f { a: 1, b: 2, c: 3, }");
 		test(2, "let f := [a, b, c,] => b ~ f [1, 2, 3,]");
 	}
 

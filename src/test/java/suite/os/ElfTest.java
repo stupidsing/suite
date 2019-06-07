@@ -68,8 +68,8 @@ public class ElfTest {
 
 		var program = "" //
 				+ "let io := consult \"io.fp\" ~ do! \n" //
-				+ "	let !cat := io/!cat ~ \n" //
-				+ "	!cat {} \n";
+				+ "     let !cat := io/!cat ~ \n" //
+				+ "     !cat {} \n";
 
 		test(0, program, text);
 	}
