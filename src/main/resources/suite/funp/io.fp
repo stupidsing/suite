@@ -127,6 +127,7 @@ define !cat {} :=
 	!mmap,
 	!munmap,
 	!put.char,
+	!put.line,
 	!put.number,
 	!put.string,
 	!read,
