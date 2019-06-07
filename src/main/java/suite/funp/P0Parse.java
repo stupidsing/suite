@@ -233,11 +233,11 @@ public class P0Parse {
 					return null;
 				// return parse(Suite.subst("poly .1 | (.0 => .2)", m));
 			}).match("define .0 .1 := .2 ~ .3", (a, b, c, d) -> {
-				return define(Fdt.L_POLY, a, capture(lambdaSeparate(b, c)), d);
+				return define(Fdt.L_POLY, a, lambdaSeparate(b, c), d);
 			}).match("define { .0 } ~ .1", (a, b) -> {
 				return defineList(a, b, Fdt.L_POLY);
 			}).match("define.global .0 .1 := .2 ~ .3", (a, b, c, d) -> {
-				return define(Fdt.G_POLY, a, capture(lambdaSeparate(b, c)), d);
+				return define(Fdt.G_POLY, a, lambdaSeparate(b, c), d);
 			}).match("define.global { .0 } ~ .1", (a, b) -> {
 				return defineList(a, b, Fdt.G_POLY);
 			}).match("do! .0", a -> {
@@ -260,13 +260,13 @@ public class P0Parse {
 					return null;
 				// return parse(Suite.subst(".1 | (.0 => .2)", m));
 			}).match("let .0 .1 := .2 ~ .3", (a, b, c, d) -> {
-				return define(Fdt.L_MONO, a, capture(lambdaSeparate(b, c)), d);
+				return define(Fdt.L_MONO, a, lambdaSeparate(b, c), d);
 			}).match("let { .0 } ~ .1", (a, b) -> {
 				return defineList(a, b, Fdt.L_MONO);
 			}).match("let.global .0 := .1 ~ .2", (a, b, c) -> {
 				return define(Fdt.G_MONO, a, p(b), c);
 			}).match("let.global .0 .1 := .2 ~ .3", (a, b, c, d) -> {
-				return define(Fdt.G_MONO, a, capture(lambdaSeparate(b, c)), d);
+				return define(Fdt.G_MONO, a, lambdaSeparate(b, c), d);
 			}).match("me", () -> {
 				return FunpMe.of();
 			}).match("null", () -> {
@@ -395,7 +395,7 @@ public class P0Parse {
 					.map(n -> {
 						Node[] m;
 						if ((m = Suite.pattern(".0 .1 := .2").match(n)) != null)
-							return Pair.of(Atom.name(m[0]), Suite.substitute("capture (.0 => .1)", m[1], m[2]));
+							return Pair.of(Atom.name(m[0]), Suite.substitute(".0 => .1", m[1], m[2]));
 						else if ((m = Suite.pattern(".0 := .1").match(n)) != null
 								|| (m = Suite.pattern(".0: .1").match(n)) != null)
 							return Pair.of(Atom.name(m[0]), m[1]);
