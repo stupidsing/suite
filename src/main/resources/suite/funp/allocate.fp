@@ -76,6 +76,4 @@ define !alloc.mut.number init := do!
 	!alloc,
 	!alloc.mut.number,
 	!dealloc,
-	!mmap,
-	!munmap,
 }
