@@ -36,13 +36,37 @@ public class FunpTest {
 	@Test
 	public void testCapture() {
 		test(31, "define m := 31 ~ 15 | capture (n => m)");
+
+		// unreliable when optimized. the optimizer would perform substitute the
+		// variable definition that makes the capture time latter than the assignment to
+		// m.
+		if (Boolean.FALSE)
+			test(31, "do! (" //
+					+ "let m := 31 ~ " //
+					+ "let l := capture (n => m) ~ " //
+					+ "!assign m := 63 ~ " //
+					+ "15 | l)");
+
 		test(0, "define m j := (type j = number ~ 0) ~ 1 | capture (n => m 2)");
 
-		test(0, "" //
-				+ "define f j := (type j = number ~ 0) ~ " //
-				+ "define g j := (type j = number ~ 0) ~ " //
-				+ "define h j := (type j = number ~ 0) ~ " //
-				+ "0 | (i => 0 | f | g | h)");
+		// use capture to return a lambda expression
+		test(12, "" //
+				+ "define f j := capture (i => i + j) ~ " //
+				+ "define g j := capture (i => i + j) ~ " //
+				+ "define h j := capture (i => i + j) ~ " //
+				+ "0 | (i => 0 | f 1 | g 2 | h 3 | f 1 | g 2 | h 3)");
+
+		// capture once and calling twice! the capture would be freed after the first
+		// call. second call should cause problem...
+		if (Boolean.FALSE)
+			test(6, "" //
+					+ "define f j := capture (i => i + j) ~ " //
+					+ "define fs := f 2 ~ " //
+					+ "define a := 0 | fs | fs ~ " //
+					+ "define g j := capture (i => i + j) ~ " //
+					+ "define gs := g 3 ~ " //
+					+ "define b := 0 | gs | gs ~ " //
+					+ "b");
 	}
 
 	@Test

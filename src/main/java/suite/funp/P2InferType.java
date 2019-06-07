@@ -699,6 +699,10 @@ public class P2InferType {
 				var expr1 = new Erase(scope1, env1, me).erase(expr);
 				return eraseRoutine(lt, frame, expr1);
 			})).applyIf(FunpLambdaCapture.class, f -> f.apply((fp0, frameVar, frame, vn, expr) -> {
+
+				// the capture would free itself upon first call, therefore should not be called
+				// for the second time
+
 				var b = ps + ps; // return address and EBP
 				var lt = new LambdaType(n);
 				var size = getTypeSize(typeOf(frame));
