@@ -67,8 +67,8 @@ public class ElfTest {
 		var text = "garbage\n";
 
 		var program = "" //
-				+ "let linux := consult \"linux.fp\" ~ do! \n" //
-				+ "	let !cat := linux/!cat ~ \n" //
+				+ "let io := consult \"io.fp\" ~ do! \n" //
+				+ "	let !cat := io/!cat ~ \n" //
 				+ "	!cat {} \n";
 
 		test(0, program, text);
@@ -76,10 +76,10 @@ public class ElfTest {
 
 	@Test
 	public void testPutChar() {
-		test(0, "let !put.char := (consult \"linux.fp\")/!put.char ~ do! (!put.char byte 'A' ~ 0)", "A");
-		test(0, "let !put.number := (consult \"linux.fp\")/!put.number ~ do! (!put.number number 'A' ~ 0)", "65");
-		test(0, "let !put.number := (consult \"linux.fp\")/!put.number ~ do! (!put.number -999 ~ 0)", "-999");
-		test(0, "let !put.number := (consult \"linux.fp\")/!put.number ~ for! (i := 0 # i < 10 # !put.number i ~ i + 1 # 0)", "0123456789");
+		test(0, "let !put.char := (consult \"io.fp\")/!put.char ~ do! (!put.char byte 'A' ~ 0)", "A");
+		test(0, "let !put.number := (consult \"io.fp\")/!put.number ~ do! (!put.number number 'A' ~ 0)", "65");
+		test(0, "let !put.number := (consult \"io.fp\")/!put.number ~ do! (!put.number -999 ~ 0)", "-999");
+		test(0, "let !put.number := (consult \"io.fp\")/!put.number ~ for! (i := 0 # i < 10 # !put.number i ~ i + 1 # 0)", "0123456789");
 	}
 
 	@Test

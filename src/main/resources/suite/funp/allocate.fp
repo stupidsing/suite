@@ -1,4 +1,5 @@
 consult "asm.${platform}.fp" ~
+consult "linux.fp" ~
 
 expand null := pointer:number 0 ~
 expand (assert .check ~ .expr) := if .check then .expr else error ~
@@ -7,18 +8,6 @@ expand !adjust.pointer .pointer .add :=
 	type .pointer = address.of.any ~
 	pointer:numberp !asm.adjust.pointer .pointer .add
 ~
-
-define !mmap length := do!
-	pointer:numberp !asm.mmap length
-~
-
-define !munmap (length, pointer) := do!
-	type pointer = address.of.any ~
-	!asm.munmap length pointer
-~
-
-define max (a, b) := if (a < b) then b else a ~
-define min (a, b) := if (a < b) then a else b ~
 
 virtual ps.block := {
 	size: numberp,
