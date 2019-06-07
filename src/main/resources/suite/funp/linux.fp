@@ -1,7 +1,6 @@
 consult "asm.${platform}.fp" ~
 
 expand null := pointer:number 0 ~
-expand buffer.size := 256 ~
 expand (assert .check ~ .expr) := if .check then .expr else error ~
 
 expand !adjust.pointer .pointer .add :=
@@ -53,6 +52,8 @@ define.global !write.all (pointer, length) :=
 		{}
 	)
 ~
+
+expand buffer.size := 256 ~
 
 define !get.char {} := do!
 	let.global buffer := array buffer.size * byte ~
