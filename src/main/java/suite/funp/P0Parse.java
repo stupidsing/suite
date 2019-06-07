@@ -233,11 +233,11 @@ public class P0Parse {
 			}).match("define .0 .1 := .2 ~ .3", (a, b, c, d) -> {
 				return define(Fdt.L_POLY, a, capture(lambdaSeparate(b, c)), d);
 			}).match("define { .0 } ~ .1", (a, b) -> {
-				return defineMono(a, b, Fdt.L_MONO);
+				return defineList(a, b, Fdt.L_POLY);
 			}).match("define.global .0 .1 := .2 ~ .3", (a, b, c, d) -> {
 				return define(Fdt.G_POLY, a, capture(lambdaSeparate(b, c)), d);
 			}).match("define.global { .0 } ~ .1", (a, b) -> {
-				return defineMono(a, b, Fdt.G_MONO);
+				return defineList(a, b, Fdt.G_POLY);
 			}).match("do! .0", a -> {
 				return FunpIo.of(nv(doToken).p(a));
 			}).match("error", () -> {
@@ -259,6 +259,8 @@ public class P0Parse {
 				// return parse(Suite.subst(".1 | (.0 => .2)", m));
 			}).match("let .0 .1 := .2 ~ .3", (a, b, c, d) -> {
 				return define(Fdt.L_MONO, a, capture(lambdaSeparate(b, c)), d);
+			}).match("let { .0 } ~ .1", (a, b) -> {
+				return defineList(a, b, Fdt.L_MONO);
 			}).match("let.global .0 := .1 ~ .2", (a, b, c) -> {
 				return define(Fdt.G_MONO, a, p(b), c);
 			}).match("let.global .0 .1 := .2 ~ .3", (a, b, c, d) -> {
@@ -288,7 +290,7 @@ public class P0Parse {
 			}).match(dontCare, () -> {
 				return FunpDontCare.of();
 			}).match("virtual .0 := .1 ~ .2", (a, b, c) -> {
-				return defineMono(Read.each2(Pair.of(Atom.name(a), b)), c, Fdt.VIRT);
+				return defineList(Read.each2(Pair.of(Atom.name(a), b)), c, Fdt.VIRT);
 			}).applyIf(Atom.class, atom -> {
 				if (atom != Atom.NIL) {
 					var vn = atom.name;
@@ -358,11 +360,11 @@ public class P0Parse {
 			return vn != null ? FunpDefine.of(vn, value, nv(vn).p(expr), t) : null;
 		}
 
-		private Funp defineMono(Node a, Node b, Fdt fdt) {
-			return defineMono(kvs(a).collect(), b, fdt);
+		private Funp defineList(Node a, Node b, Fdt fdt) {
+			return defineList(kvs(a).collect(), b, fdt);
 		}
 
-		private Funp defineMono(Streamlet2<String, Node> list, Node b, Fdt fdt) {
+		private Funp defineList(Streamlet2<String, Node> list, Node b, Fdt fdt) {
 			var p1 = new Parse(list.fold(vns, (vns, k, v) -> vns.add(k)));
 			return FunpDefineRec.of(list.mapValue(p1::p).toList(), p1.p(b), fdt);
 		}

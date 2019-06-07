@@ -26,6 +26,11 @@ public class ElfTest {
 	private WriteElf elf = new WriteElf(isAmd64);
 
 	@Test
+	public void testAllocate() {
+		test(0, "let alloc := consult \"allocate.fp\" ~ 0", "");
+	}
+
+	@Test
 	public void testAssembler() {
 		List<Instruction> instructions;
 

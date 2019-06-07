@@ -592,7 +592,7 @@ public class P2InferType {
 				else
 					return fail();
 			})).applyIf(FunpDefineRec.class, f -> f.apply((pairs, expr, type) -> {
-				if (type == Fdt.G_MONO) {
+				if (Fdt.isGlobal(type)) {
 					var assigns = new ArrayList<Fixie3<String, Var, Funp>>();
 					var env1 = env;
 					var offset = 0;
@@ -615,7 +615,7 @@ public class P2InferType {
 							.fold(expr1, (e, x) -> x.map((vn, v, n_) -> assign(v.get(scope), e1.erase(n_, vn), e)));
 
 					return FunpAllocGlobal.of(offset, FunpDontCare.of(), expr2, address);
-				} else if (type == Fdt.L_MONO) {
+				} else if (Fdt.isLocal(type)) {
 					var assigns = new ArrayList<Fixie3<String, Var, Funp>>();
 					var env1 = env;
 					var offset = 0;
