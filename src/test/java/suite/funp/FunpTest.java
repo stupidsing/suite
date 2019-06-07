@@ -37,9 +37,8 @@ public class FunpTest {
 	public void testCapture() {
 		test(31, "define m := 31 ~ 15 | capture (n => m)");
 
-		// unreliable when optimized. the optimizer would perform substitute the
-		// variable definition that makes the capture time latter than the assignment to
-		// m.
+		// unreliable when optimized. the optimizer would substitute the variable
+		// definition that makes the capture time latter than the assignment to m.
 		if (Boolean.FALSE)
 			test(31, "do! (" //
 					+ "let m := 31 ~ " //
