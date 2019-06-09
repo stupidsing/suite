@@ -25,7 +25,7 @@ define.global !write.all (pointer, length) :=
 
 expand buffer.size := 256 ~
 
-define !get.char {} := do!
+define.global !get.char {} := do!
 	let.global buffer := array buffer.size * byte ~
 	let.global start.end := (0, 0) ~
 	let (s0, e0) := start.end ~
@@ -46,12 +46,13 @@ define !get.line (pointer, length) := do!
 ~
 
 define !get.number {} := do!
-	let ch0 := number:byte !get.char {} ~
+	let !gc {} := do! number:byte !get.char {} ~
+	let ch0 := !gc {} ~
 	let positive := ch0 != number '-' ~
 	for! (
-		(n, ch) := (0, ch0) #
+		(n, ch) := (0, if positive then ch0 else !gc {}) #
 		number '0' <= ch && ch <= number '9' #
-		(n * 10 + ch - number '0', number:byte !get.char {}) #
+		(n * 10 + ch - number '0', !gc {}) #
 		if positive then n else (0 - n)
 	)
 ~

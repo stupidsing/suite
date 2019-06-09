@@ -614,7 +614,7 @@ public class P4GenerateCode {
 			Operand op;
 
 			if (size == pushSize && (op = p4deOp.decomposeNumber(fd, value, size)) != null)
-				em.emit(Insn.PUSH, op);
+				em.push(op);
 			else {
 				em.addImm(_sp, -alignedSize);
 				c1.compileAssign(value, FunpMemory.of(Funp_.framePointer, fd1, fd1 + size));
@@ -634,9 +634,9 @@ public class P4GenerateCode {
 				op1 = c1.em.mov(rs1.mask(op0).get(ps), op1);
 
 			if (opPops != null)
-				opPops.forEach(opPop -> em.emit(Insn.POP, opPop));
+				opPops.forEach(em::pop);
 			else if (size == pushSize)
-				em.emit(Insn.POP, rs1.mask(op0, op1).get(size));
+				em.pop(rs1.mask(op0, op1).get(size));
 			else
 				em.addImm(_sp, alignedSize);
 
@@ -841,11 +841,11 @@ public class P4GenerateCode {
 		private Operand compileRoutine(Sink<Compile0> sink) {
 			return spawn(c1 -> {
 				var em = c1.em;
-				em.emit(Insn.PUSH, _bp);
+				em.push(_bp);
 				if (isUseEbp)
 					em.mov(_bp, _sp);
 				sink.f(c1.nc(registerSet, 0));
-				em.emit(Insn.POP, _bp);
+				em.pop(_bp);
 				em.emit(Insn.RET);
 			});
 		}
@@ -1076,9 +1076,9 @@ public class P4GenerateCode {
 			OpReg op;
 			if (index < opRegs.length && rs_.contains(op = opRegs[index])) {
 				var opPush = pushRegs[op.reg];
-				em.emit(Insn.PUSH, opPush);
+				em.push(opPush);
 				saveRegs(sink, rs_.unmask(op.reg), fd_ - opPush.size, index + 1, opRegs);
-				em.emit(Insn.POP, opPush);
+				em.pop(opPush);
 			} else
 				sink.f(nc(rs_, fd_));
 		}

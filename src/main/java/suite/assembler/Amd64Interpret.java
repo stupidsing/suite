@@ -200,7 +200,7 @@ public class Amd64Interpret {
 					assign.f(source0 + 1);
 					break;
 				case IMUL:
-					assign.f(setFlags(source0 * source1));
+					assign.f(setFlags(source1 * fetch.apply(instruction.op2)));
 					break;
 				case INT:
 					p0 = (int) (regs[eax] & 0xFF);

@@ -48,6 +48,31 @@ public class P4Emit {
 			this.in = in;
 		}
 
+		public void pop(Operand op) {
+			if (op.size == Funp_.pushSize)
+				emit(Insn.POP, op);
+			else
+				fail();
+		}
+
+		public void push(Operand op) {
+			var opImm = op.cast(OpImm.class);
+			if (op.size == Funp_.pushSize)
+				// PUSH immediate is limited to 32-bit
+				if (op.size != 8 || opImm == null)
+					emit(Insn.PUSH, op);
+				else if (Byte.MIN_VALUE <= opImm.imm && opImm.imm <= Byte.MAX_VALUE)
+					emit(Insn.PUSH, amd64.imm(opImm.imm, 1));
+				else if (Integer.MIN_VALUE <= opImm.imm && opImm.imm <= Integer.MAX_VALUE)
+					emit(Insn.PUSH, amd64.imm(opImm.imm, 4));
+				else {
+					emitRegInsn(Insn.SUB, amd64.rsp, amd64.imm(op.size, 4));
+					mov(amd64.mem(amd64.rsp, 0l, op.size), op);
+				}
+			else
+				fail();
+		}
+
 		public OpReg emitRegInsn(Insn insn, OpReg op0, Operand op1) {
 			if (op1 instanceof OpImm) {
 				var i = ((OpImm) op1).imm;
