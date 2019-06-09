@@ -5,11 +5,11 @@ expand !adjust.pointer .pointer .add :=
 	pointer:numberp !asm.adjust.pointer .pointer .add
 ~
 
-define !mmap length := do!
+define.global !mmap length := do!
 	pointer:numberp !asm.mmap length
 ~
 
-define !munmap (length, pointer) := do!
+define.global !munmap (length, pointer) := do!
 	type pointer = address.of.any ~
 	!asm.munmap length pointer
 ~

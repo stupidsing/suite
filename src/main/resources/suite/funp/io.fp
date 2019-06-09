@@ -1,5 +1,7 @@
 consult "linux.fp" ~
 
+-- global functions should not reference non-global functions
+
 define !new.mut.number init := do!
 	type init = number ~
 	let pointer := type (address.of init) !new ~
@@ -81,8 +83,7 @@ define !put.number n :=
 	let {
 		!put.number_ i := do!
 			if (0 < i) then (
-				let div := i / 10 ~
-				let mod := i % 10 ~
+				let (div, mod) := (i / 10, i % 10) ~
 				!put.number_ div ~
 				!put.char byte:number (mod + number '0')
 			) else {}
