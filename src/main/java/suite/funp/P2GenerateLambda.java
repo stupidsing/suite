@@ -130,8 +130,8 @@ public class P2GenerateLambda {
 				return rt -> b1;
 			})).applyIf(FunpCoerce.class, f -> f.apply((from, to, expr) -> {
 				return compile_(expr);
-			})).applyIf(FunpDefine.class, f -> f.apply((vn, value, expr, type) -> {
-				var b = type == Fdt.L_MONO || type == Fdt.L_POLY;
+			})).applyIf(FunpDefine.class, f -> f.apply((vn, value, expr, fdt) -> {
+				var b = fdt == Fdt.L_MONO || fdt == Fdt.L_POLY;
 				return b ? compile_(FunpApply.of(value, FunpLambda.of(vn, expr, false))) : null;
 			})).applyIf(FunpDeref.class, f -> {
 				var p = compile_(f);

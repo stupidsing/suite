@@ -70,18 +70,18 @@ public class P1Inline {
 
 			private Funp rename(Funp node_) {
 				return inspect.rewrite(node_, Funp.class, n_ -> n_.sw( //
-				).applyIf(FunpDefine.class, f -> f.apply((vn0, value, expr, type) -> {
+				).applyIf(FunpDefine.class, f -> f.apply((vn0, value, expr, fdt) -> {
 					var vn1 = newVarName.apply(vn0);
 					var r1 = new Rename(vns.replace(vn0, vn1));
-					return FunpDefine.of(vn1, rename(value), r1.rename(expr), type);
-				})).applyIf(FunpDefineRec.class, f -> f.apply((pairs0, expr, type) -> {
+					return FunpDefine.of(vn1, rename(value), r1.rename(expr), fdt);
+				})).applyIf(FunpDefineRec.class, f -> f.apply((pairs0, expr, fdt) -> {
 					var pairs = Read.from2(pairs0);
 					var vns1 = pairs.keys().fold(vns, (vns_, vn) -> vns_.replace(vn, newVarName.apply(vn)));
 					var r1 = new Rename(vns1);
 					return FunpDefineRec.of( //
 							pairs.map2((vn, value) -> vns1.get(vn), (vn, value) -> r1.rename(value)).toList(), //
 							r1.rename(expr), //
-							type);
+							fdt);
 				})).applyIf(FunpLambda.class, f -> f.apply((vn0, expr, isCapture) -> {
 					var vn1 = newVarName.apply(vn0);
 					var r1 = new Rename(vns.replace(vn0, vn1));
@@ -107,7 +107,7 @@ public class P1Inline {
 					FunpDefine define;
 
 					while ((define = n0.cast(FunpDefine.class)) != null //
-							&& define.type == Fdt.L_MONO //
+							&& define.fdt == Fdt.L_MONO //
 							&& define.value instanceof FunpDontCare) {
 						vns.add(define.vn);
 						n0 = define.expr;
@@ -177,7 +177,7 @@ public class P1Inline {
 				.distinct() //
 				.filter(def -> def instanceof FunpDefine && countByDefs.getOrDefault(def, zero).value() <= 1) //
 				.map2(def -> (FunpDefine) def) //
-				.filterValue(def -> def.type == Fdt.L_MONO || def.type == Fdt.L_POLY) //
+				.filterValue(def -> def.fdt == Fdt.L_MONO || def.fdt == Fdt.L_POLY) //
 				.toMap();
 
 		var expands = Read //
@@ -216,7 +216,7 @@ public class P1Inline {
 					if ((field = n_.cast(FunpField.class)) != null //
 							&& (variable = field.reference.expr.cast(FunpVariable.class)) != null //
 							&& (define = defs.get(variable).cast(FunpDefine.class)) != null //
-							&& (define.type == Fdt.L_MONO || define.type == Fdt.L_POLY) //
+							&& (define.fdt == Fdt.L_MONO || define.fdt == Fdt.L_POLY) //
 							&& (struct = define.value.cast(FunpStruct.class)) != null) {
 						var pair = Read //
 								.from2(struct.pairs) //

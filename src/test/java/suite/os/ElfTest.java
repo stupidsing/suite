@@ -52,7 +52,7 @@ public class ElfTest {
 
 	@Test
 	public void testCall() {
-		test(3, "let id := (i => i + 1) ~ (2 | id)", "");
+		test(3, "let id := (i => i + 1) ~ 2 | id", "");
 	}
 
 	@Test
@@ -67,9 +67,9 @@ public class ElfTest {
 		var text = "garbage\n";
 
 		var program = "" //
-				+ "let io := consult \"io.fp\" ~ do! \n" //
+				+ "let io := consult \"io.fp\" ~ \n" //
 				+ "     let !cat := io/!cat ~ \n" //
-				+ "     !cat {} \n";
+				+ "     do! !cat {} \n";
 
 		test(0, program, text);
 	}

@@ -355,13 +355,13 @@ public class P2InferType {
 				};
 				unify(n, tf.apply(from), infer(expr));
 				return tf.apply(to);
-			})).applyIf(FunpDefine.class, f -> f.apply((vn, value, expr, type) -> {
+			})).applyIf(FunpDefine.class, f -> f.apply((vn, value, expr, fdt) -> {
 				var tvalue = infer(value, vn);
-				return new Infer(env.replace(vn, Pair.of(type, tvalue)), checks, me).infer(expr);
-			})).applyIf(FunpDefineRec.class, f -> f.apply((pairs, expr, type) -> {
+				return new Infer(env.replace(vn, Pair.of(fdt, tvalue)), checks, me).infer(expr);
+			})).applyIf(FunpDefineRec.class, f -> f.apply((pairs, expr, fdt) -> {
 				var pairs_ = Read.from(pairs);
 				var vns = pairs_.map(Pair::fst);
-				var env1 = vns.fold(env, (e, vn) -> e.put(vn, Pair.of(type, new Reference())));
+				var env1 = vns.fold(env, (e, vn) -> e.put(vn, Pair.of(fdt, new Reference())));
 				var ts = typeStructOf(Dict.of(vns //
 						.<Node, Reference> map2(Atom::of, vn -> Reference.of(env1.get(vn).t1)) //
 						.toMap()), TreeUtil.buildUp(TermOp.AND___, Read.from(vns).<Node> map(Atom::of).toList()));
@@ -574,8 +574,8 @@ public class P2InferType {
 				return FunpData.of(list);
 			})).applyIf(FunpTypeCheck.class, f -> f.apply((left, right, expr) -> {
 				return erase(expr);
-			})).applyIf(FunpDefine.class, f -> f.apply((vn, value, expr, type) -> {
-				if (Fdt.isGlobal(type)) {
+			})).applyIf(FunpDefine.class, f -> f.apply((vn, value, expr, fdt) -> {
+				if (Fdt.isGlobal(fdt)) {
 					var size = getTypeSize(typeOf(value));
 					var address = Mutable.<Operand> nil();
 					var var = global(address, 0, size);
@@ -583,7 +583,7 @@ public class P2InferType {
 					if (Set.of("!alloc", "!dealloc").contains(vn))
 						globals.put(vn, var);
 					return FunpAllocGlobal.of(size, erase(value, vn), e1.erase(expr), address);
-				} else if (type == Fdt.L_HEAP) {
+				} else if (fdt == Fdt.L_HEAP) {
 					var t = new Reference();
 					unify(n, typeOf(value), typeRefOf(t));
 					var size = getTypeSize(t);
@@ -591,14 +591,14 @@ public class P2InferType {
 							? FunpHeapAlloc.of(size) //
 							: applyOnce(FunpNumber.ofNumber(size), globals.get("!alloc").get(scope), ps);
 					return defineLocal(f, vn, alloc, expr, ps);
-				} else if (Fdt.isLocal(type))
+				} else if (Fdt.isLocal(fdt))
 					return defineLocal(f, vn, value, expr);
-				else if (type == Fdt.VIRT)
+				else if (fdt == Fdt.VIRT)
 					return erase(expr);
 				else
 					return fail();
-			})).applyIf(FunpDefineRec.class, f -> f.apply((pairs, expr, type) -> {
-				if (Fdt.isGlobal(type)) {
+			})).applyIf(FunpDefineRec.class, f -> f.apply((pairs, expr, fdt) -> {
+				if (Fdt.isGlobal(fdt)) {
 					var assigns = new ArrayList<Fixie3<String, Var, Funp>>();
 					var env1 = env;
 					var offset = 0;
@@ -621,7 +621,7 @@ public class P2InferType {
 							.fold(expr1, (e, x) -> x.map((vn, v, n_) -> assign(v.get(scope), e1.erase(n_, vn), e)));
 
 					return FunpAllocGlobal.of(offset, FunpDontCare.of(), expr2, address);
-				} else if (Fdt.isLocal(type)) {
+				} else if (Fdt.isLocal(fdt)) {
 					var assigns = new ArrayList<Fixie3<String, Var, Funp>>();
 					var env1 = env;
 					var offset = 0;
@@ -644,7 +644,7 @@ public class P2InferType {
 							.fold(expr1, (e, x) -> x.map((vn, v, n_) -> assign(v.get(scope), e1.erase(n_, vn), e)));
 
 					return FunpAllocStack.of(offset, FunpDontCare.of(), expr2, offsetStack);
-				} else if (type == Fdt.VIRT)
+				} else if (fdt == Fdt.VIRT)
 					return erase(expr);
 				else
 					return fail();

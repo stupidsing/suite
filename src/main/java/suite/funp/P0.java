@@ -94,37 +94,37 @@ public class P0 {
 		public String vn;
 		public Funp value;
 		public Funp expr;
-		public Fdt type;
+		public Fdt fdt;
 
-		public static FunpDefine of(String vn, Funp value, Funp expr, Fdt type) {
+		public static FunpDefine of(String vn, Funp value, Funp expr, Fdt fdt) {
 			var f = new FunpDefine();
 			f.vn = vn;
 			f.value = value;
 			f.expr = expr;
-			f.type = type;
+			f.fdt = fdt;
 			return f;
 		}
 
 		public <R> R apply(FixieFun4<String, Funp, Funp, Fdt, R> fun) {
-			return fun.apply(vn, value, expr, type);
+			return fun.apply(vn, value, expr, fdt);
 		}
 	}
 
 	public static class FunpDefineRec implements Funp, P2.End {
 		public List<Pair<String, Funp>> pairs;
 		public Funp expr;
-		public Fdt type;
+		public Fdt fdt;
 
-		public static FunpDefineRec of(List<Pair<String, Funp>> pairs, Funp expr, Fdt type) {
+		public static FunpDefineRec of(List<Pair<String, Funp>> pairs, Funp expr, Fdt fdt) {
 			var f = new FunpDefineRec();
 			f.pairs = pairs;
 			f.expr = expr;
-			f.type = type;
+			f.fdt = fdt;
 			return f;
 		}
 
 		public <R> R apply(FixieFun3<List<Pair<String, Funp>>, Funp, Fdt, R> fun) {
-			return fun.apply(pairs, expr, type);
+			return fun.apply(pairs, expr, fdt);
 		}
 	}
 

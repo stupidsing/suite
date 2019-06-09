@@ -101,11 +101,11 @@ public class Funp_ {
 		new Object() {
 			private Funp associate(PerMap<String, Funp> vars, Funp node_) {
 				return inspect.rewrite(node_, Funp.class, n_ -> n_.sw( //
-				).applyIf(FunpDefine.class, f -> f.apply((vn, value, expr, type) -> {
+				).applyIf(FunpDefine.class, f -> f.apply((vn, value, expr, fdt) -> {
 					associate(vars, value);
 					associate(vars.replace(vn, f), expr);
 					return n_;
-				})).applyIf(FunpDefineRec.class, f -> f.apply((pairs, expr, type) -> {
+				})).applyIf(FunpDefineRec.class, f -> f.apply((pairs, expr, fdt) -> {
 					var vars1 = Read.from(pairs).fold(vars, (vs, pair) -> vs.replace(pair.t0, f));
 					for (var pair : pairs)
 						associate(vars1, pair.t1);

@@ -153,13 +153,13 @@ public class P0Parse {
 					var vn = Atom.name(a);
 					var m = Suite.pattern("[.0]").match(b);
 					var isIndex = m != null && 0 < m.length && !isList(m[0]);
-					var isIo = checkDo() && vn.startsWith("!");
+					var isIo = checkDo() && isBang(a);
 					var apply = vns.contains(vn) && !isIndex ? FunpApply.of(p(b), FunpVariable.of(vn)) : null;
 					return isIo && apply != null ? FunpDoEvalIo.of(apply) : apply;
 				} else
 					return null;
 			}).match(".0 .1 ~ .2", (a, b, c) -> {
-				if (a instanceof Atom && Atom.name(a).startsWith("!")) {
+				if (isBang(a)) {
 					var apply = FunpApply.of(p(b), p(a));
 					var lambda = lambda(dontCare, c);
 					return checkDo(() -> FunpDefine.of(lambda.vn, apply, lambda.expr, Fdt.L_IOAP));
@@ -387,6 +387,10 @@ public class P0Parse {
 					p(b), //
 					FunpDoWhile.of(while_, do_, le.expr), //
 					Fdt.L_IOAP);
+		}
+
+		private boolean isBang(Node n) {
+			return n instanceof Atom && Atom.name(n).startsWith("!");
 		}
 
 		private Streamlet2<String, Node> kvs(Node node) {

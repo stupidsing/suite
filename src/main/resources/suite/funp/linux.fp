@@ -24,5 +24,5 @@ define.global !write (pointer, length) := do!
 	!asm.write pointer length
 ~
 
-define max (a, b) := if (a < b) then b else a ~
-define min (a, b) := if (a < b) then a else b ~
+define.global max (a, b) := if (a < b) then b else a ~
+define.global min (a, b) := if (a < b) then a else b ~
