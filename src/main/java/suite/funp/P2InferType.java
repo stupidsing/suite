@@ -106,6 +106,7 @@ import suite.streamlet.FunUtil2.Fun2;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
+import suite.util.Fail;
 import suite.util.String_;
 import suite.util.Switch;
 import suite.util.Util;
@@ -147,12 +148,16 @@ public class P2InferType {
 		var checks = new ArrayList<Source<Boolean>>();
 
 		if (unify(t, new Infer(PerMap.empty(), checks, null).infer(n2))) {
-			if (!Read.from(checks).isAll(Source<Boolean>::g))
-				fail();
+			var b = true //
+					&& (Read.from(checks).isAll(Source<Boolean>::g) || Fail.b("fail type-checks")) //
+					&& (getTypeSize(t) == is || Fail.b("invalid return type"));
 
-			var erase = new Erase(0, PerMap.empty(), null);
-			erase.erase(n2); // first pass
-			return erase.erase(n2); // second pass
+			if (b) {
+				var erase = new Erase(0, PerMap.empty(), null);
+				erase.erase(n2); // first pass
+				return erase.erase(n2); // second pass
+			} else
+				return fail();
 		} else
 			return Funp_.fail(n0, "cannot infer type");
 	}
