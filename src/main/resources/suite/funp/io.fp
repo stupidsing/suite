@@ -37,7 +37,7 @@ define.global !get.char {} := do!
 	buffer [s0]
 ~
 
-define !get.line (pointer, length) := do!
+define !get.line (pointer, length) :=
 	for! (
 		(n, ch) := (0, !get.char {}) #
 		n < length && number:byte ch != 10 #
@@ -51,7 +51,7 @@ define !get.number {} := do!
 	let !gc {} := do! number:byte !get.char {} ~
 	let ch0 := !gc {} ~
 	let positive := ch0 != number '-' ~
-	for! (
+	fold (
 		(n, ch) := (0, if positive then ch0 else !gc {}) #
 		number '0' <= ch && ch <= number '9' #
 		(n * 10 + ch - number '0', !gc {}) #

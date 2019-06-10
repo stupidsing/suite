@@ -75,7 +75,16 @@ public class ElfTest {
 	}
 
 	@Test
-	public void testPutChar() {
+	public void testNumbers() {
+		test(0, "" //
+				+ "let io := consult \"io.fp\" ~ \n" //
+				+ "let !gn := io/!get.number ~ \n" //
+				+ "let !pn := io/!put.number ~ \n" //
+				+ "do! (let n := type number !gn {} ~ !pn (n + 1) ~ 0)", "235\n", "236");
+	}
+
+	@Test
+	public void testPut() {
 		test(0, "let !pc := (consult \"io.fp\")/!put.char ~ do! (!pc byte 'A' ~ 0)", "A");
 		test(0, "let !pn := (consult \"io.fp\")/!put.number ~ do! (!pn number 'A' ~ 0)", "65");
 		test(0, "let !pn := (consult \"io.fp\")/!put.number ~ do! (!pn -999 ~ 0)", "-999");

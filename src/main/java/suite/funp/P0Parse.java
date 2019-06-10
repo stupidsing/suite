@@ -241,13 +241,13 @@ public class P0Parse {
 			}).match("define.global { .0 } ~ .1", (a, b) -> {
 				return defineList(a, b, Fdt.G_POLY);
 			}).match("do! .0", a -> {
-				return FunpIo.of(nv(doToken).p(a));
+				return do_(parse -> parse.p(a));
 			}).match("error", () -> {
 				return FunpError.of();
 			}).match("fold (.0 := .1 # .2 # .3 # .4)", (a, b, c, d, e) -> {
 				return fold(a, b, c, d, e);
 			}).match("for! (.0 := .1 # .2 # .3 # .4)", (a, b, c, d, e) -> {
-				return FunpIo.of(fold(a, b, c, d, e));
+				return do_(parse -> parse.fold(a, b, c, d, e));
 			}).match("if (`.0` = .1) then .2 else .3", (a, b, c, d) -> {
 				return bind(a, b, c, d);
 			}).match("if .0 then .1 else .2", (a, b, c) -> {
@@ -371,6 +371,10 @@ public class P0Parse {
 		private Funp defineList(Streamlet2<String, Node> list, Node b, Fdt fdt) {
 			var p1 = new Parse(list.fold(vns, (vns, k, v) -> vns.add(k)));
 			return FunpDefineRec.of(list.mapValue(p1::p).toList(), p1.p(b), fdt);
+		}
+
+		private Funp do_(Fun<Parse, Funp> f) {
+			return !checkDo() ? FunpIo.of(f.apply(nv(doToken))) : fail("already in do block");
 		}
 
 		private Funp fold(Node a, Node b, Node c, Node d, Node e) {
