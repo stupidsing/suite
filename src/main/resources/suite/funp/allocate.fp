@@ -6,7 +6,7 @@ expand !adjust.pointer .pointer .add :=
 	pointer:numberp !asm.adjust.pointer .pointer .add
 ~
 
-virtual ps.block := {
+define.virtual ps.block := {
 	size: numberp,
 	next: address.of ps.block,
 } ~

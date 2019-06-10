@@ -2,6 +2,8 @@ consult "linux.fp" ~
 
 -- global functions should not reference non-global functions
 
+expand buffer.size := 256 ~
+
 define !new.mut.number init := do!
 	type init = number ~
 	let pointer := type (address.of init) !new ~
@@ -24,8 +26,6 @@ define.global !write.all (pointer, length) :=
 		{}
 	)
 ~
-
-expand buffer.size := 256 ~
 
 define.global !get.char {} := do!
 	let.global buffer := array buffer.size * byte ~

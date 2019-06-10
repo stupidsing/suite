@@ -239,6 +239,8 @@ public class P0Parse {
 				return define(Fdt.G_POLY, a, lambdaSeparate(b, c), d);
 			}).match("define.global { .0 } ~ .1", (a, b) -> {
 				return defineList(a, b, Fdt.G_POLY);
+			}).match("define.virtual .0 := .1 ~ .2", (a, b, c) -> {
+				return defineList(Read.each2(Pair.of(Atom.name(a), b)), c, Fdt.VIRT);
 			}).match("do! .0", a -> {
 				return do_(parse -> parse.p(a));
 			}).match("error", () -> {
@@ -288,18 +290,15 @@ public class P0Parse {
 				return FunpTypeCheck.of(p(a), p(b), p(c));
 			}).match(Atom.FALSE, () -> {
 				return FunpBoolean.of(false);
+			}).match(Atom.NIL, () -> {
+				return FunpStruct.of(List.of());
 			}).match(Atom.TRUE, () -> {
 				return FunpBoolean.of(true);
 			}).match(dontCare, () -> {
 				return FunpDontCare.of();
-			}).match("virtual .0 := .1 ~ .2", (a, b, c) -> {
-				return defineList(Read.each2(Pair.of(Atom.name(a), b)), c, Fdt.VIRT);
 			}).applyIf(Atom.class, atom -> {
-				if (atom != Atom.NIL) {
-					var vn = atom.name;
-					return vns.contains(vn) ? FunpVariable.of(vn) : FunpVariableNew.of(vn);
-				} else
-					return Funp_.fail(null, "invalid nil identifier");
+				var vn = atom.name;
+				return vns.contains(vn) ? FunpVariable.of(vn) : FunpVariableNew.of(vn);
 			}).applyIf(Int.class, n -> {
 				return FunpNumber.ofNumber(n.number);
 			}).applyIf(Str.class, str -> {
