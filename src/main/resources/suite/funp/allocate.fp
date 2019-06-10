@@ -1,10 +1,4 @@
-consult "asm.${platform}.fp" ~
 consult "linux.fp" ~
-
-expand !adjust.pointer .pointer .add :=
-	type .pointer = address.of.any ~
-	pointer:numberp !asm.adjust.pointer .pointer .add
-~
 
 define.virtual ps.block := {
 	size: numberp,
