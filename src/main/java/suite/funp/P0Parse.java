@@ -1,6 +1,5 @@
 package suite.funp;
 
-import static suite.util.Friends.fail;
 import static suite.util.Friends.forInt;
 import static suite.util.Friends.rethrow;
 
@@ -300,7 +299,7 @@ public class P0Parse {
 					var vn = atom.name;
 					return vns.contains(vn) ? FunpVariable.of(vn) : FunpVariableNew.of(vn);
 				} else
-					return fail();
+					return Funp_.fail(null, "invalid nil identifier");
 			}).applyIf(Int.class, n -> {
 				return FunpNumber.ofNumber(n.number);
 			}).applyIf(Str.class, str -> {
@@ -374,7 +373,7 @@ public class P0Parse {
 		}
 
 		private Funp do_(Fun<Parse, Funp> f) {
-			return !checkDo() ? FunpIo.of(f.apply(nv(doToken))) : fail("already in do block");
+			return !checkDo() ? FunpIo.of(f.apply(nv(doToken))) : Funp_.fail(null, "already in do block");
 		}
 
 		private Funp fold(Node a, Node b, Node c, Node d, Node e) {
@@ -434,7 +433,7 @@ public class P0Parse {
 		private int num(Node a) {
 			var s = a instanceof Atom ? Atom.name(a) : null;
 			if (s != null)
-				return s.length() == 1 ? s.charAt(0) : fail();
+				return s.length() == 1 ? s.charAt(0) : Funp_.fail(null, "not a number");
 			else if (a instanceof Int)
 				return Int.num(a);
 			else
