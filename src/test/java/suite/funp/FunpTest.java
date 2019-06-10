@@ -144,15 +144,15 @@ public class FunpTest {
 	@Test
 	public void testNew() {
 		test(123, "do! (\n" //
-				+ "	let p := !new ~ \n" //
+				+ "	let p := !new^ _ ~ \n" //
 				+ "	!assign p* := 123 ~ \n" //
 				+ "	let v := p* ~ \n" //
-				+ "	!delete := p ~ v \n" //
+				+ "	!delete^ p ~ v \n" //
 				+ ")");
 		test(456, "do! (\n" //
-				+ "	let p := !new 456 ~ \n" //
+				+ "	let p := !new^ 456 ~ \n" //
 				+ "	let v := p* ~ \n" //
-				+ "	!delete := p ~ v \n" //
+				+ "	!delete^ p ~ v \n" //
 				+ ")");
 	}
 

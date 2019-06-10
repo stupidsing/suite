@@ -188,17 +188,20 @@ public class P0Parse {
 				}).toList(), Tree.iter(b, TermOp.OR____).toList(), Amd64.me.regByName.get(c)));
 			}).match("!assign .0 := .1 ~ .2", (a, b, c) -> {
 				return checkDo(() -> FunpDoAssignRef.of(FunpReference.of(p(a)), p(b), p(c)));
-			}).match("!delete := .0 ~ .1", (a, b) -> {
+			}).match("!delete^ .0 ~ .1", (a, b) -> {
 				return checkDo(() -> FunpDoHeapDel.of(p(a), p(b)));
-			}).match("!new", () -> {
-				return checkDo(() -> FunpDoHeapNew.of());
-			}).match("!new .0", a -> {
-				var vn = "n$" + Util.temp();
-				var v = FunpVariable.of(vn);
-				return checkDo(() -> FunpDefine.of( //
-						vn, //
-						FunpDoHeapNew.of(), //
-						FunpDoAssignRef.of(FunpReference.of(FunpDeref.of(v)), p(a), v), Fdt.L_MONO));
+			}).match("!new^ .0", a -> {
+				var n = FunpDoHeapNew.of();
+				return checkDo(() -> {
+					if (a == dontCare)
+						return n;
+					else {
+						var vn = "n$" + Util.temp();
+						var v = FunpVariable.of(vn);
+						var ref = FunpReference.of(FunpDeref.of(v));
+						return FunpDefine.of(vn, n, FunpDoAssignRef.of(ref, p(a), v), Fdt.L_MONO);
+					}
+				});
 			}).match("address.of .0", a -> {
 				return FunpReference.of(p(a));
 			}).match("address.of.any", () -> {
