@@ -9,9 +9,9 @@ define.global !mmap length := do!
 	pointer:numberp !asm.mmap length
 ~
 
-define.global !munmap (length, pointer) := do!
+define.global !munmap (pointer, length) := do!
 	type pointer = address.of.any ~
-	!asm.munmap length pointer
+	!asm.munmap pointer length
 ~
 
 define.global !read (pointer, length) := do!
