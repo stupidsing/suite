@@ -53,7 +53,7 @@ define !dealloc (size0, pointer.block) := do!
 		next: alloc.free.chain,
 	} ~
 	!assign alloc.free.chain := ps ~
-	{}
+	()
 ~
 
 define !alloc.mut.number init := do!
@@ -63,9 +63,9 @@ define !alloc.mut.number init := do!
 	let pointer := pointer:pointer address ~
 	!assign pointer* := init ~
 	{
-		destroy {} := !dealloc (size, address) ~
-		get {} := do! pointer* ~
-		set v1 := do! (!assign pointer* := v1 ~ {}) ~
+		destroy () := !dealloc (size, address) ~
+		get () := do! pointer* ~
+		set v1 := do! (!assign pointer* := v1 ~ ()) ~
 	}
 ~
 

@@ -467,7 +467,7 @@ public class P0Parse {
 		}
 
 		private boolean isVar(Node v) {
-			return v != dontCare && v instanceof Atom;
+			return v != dontCare && v != Atom.NIL && v instanceof Atom;
 		}
 
 		private Parse nv(String vn) {

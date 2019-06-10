@@ -87,7 +87,7 @@ public class FunpTest {
 		test(4, "define i := 3 ~ i + 1");
 		test(4, "define f i := i + 1 ~ 3 | f");
 		test(1, "let.global a := [0, 1, 2,] ~ a [1]");
-		test(1, "define { a: 1, b: ({} => me/a), c: 3, } ~ b {}");
+		test(1, "define { a: 1, b: (() => me/a), c: 3, } ~ b ()");
 	}
 
 	@Test
@@ -113,11 +113,11 @@ public class FunpTest {
 	public void testGlobal() {
 		test(0, "" //
 				+ "let module := \n" //
-				+ "	let.global f {} := 0 ~ \n" // global required
-				+ "	let g {} := f {} ~ \n" //
+				+ "	let.global f () := 0 ~ \n" // global required
+				+ "	let g () := f () ~ \n" //
 				+ "	{ g, } \n" //
 				+ "~ \n" //
-				+ "{} | module/g");
+				+ "() | module/g");
 	}
 
 	@Test
@@ -127,7 +127,7 @@ public class FunpTest {
 
 	@Test
 	public void testLambda() {
-		test(2, "{} | ({} => 2)");
+		test(2, "() | (() => 2)");
 		test(1, "0 | (a => a + 1)");
 		test(3, "1, 2 | ((a, b) => a + b)");
 		test(3, "[1, 2,] | ([a, b,] => a + b)");
@@ -193,7 +193,7 @@ public class FunpTest {
 	public void testTag() {
 		test(3, "if (`t:v` = t:3) then v else 0");
 		test(3, "define d := t:3 ~ if (`t:v` = d) then v else 0");
-		test(0, "let d := s:{} ~ type d = t:3 ~ if (`t:v` = d) then v else 0");
+		test(0, "let d := s:() ~ type d = t:3 ~ if (`t:v` = d) then v else 0");
 	}
 
 	private void test(int expected, String program) {

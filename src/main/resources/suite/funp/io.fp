@@ -9,9 +9,9 @@ define !new.mut.number init := do!
 	let pointer := type (address.of init) !new ~
 	!assign pointer* := init ~
 	{
-		destroy {} := do! (!delete := pointer ~ {}) ~
-		get {} := do! pointer* ~
-		set v1 := do! (!assign pointer* := v1 ~ {}) ~
+		destroy () := do! (!delete := pointer ~ ()) ~
+		get () := do! pointer* ~
+		set v1 := do! (!assign pointer* := v1 ~ ()) ~
 	}
 ~
 
@@ -23,11 +23,11 @@ define.global !write.all (pointer, length) :=
 		let nBytesWritten := !write (p1, length - n) ~
 		assert (nBytesWritten != 0) ~
 		n + nBytesWritten #
-		{}
+		()
 	)
 ~
 
-define.global !get.char {} := do!
+define.global !get.char () := do!
 	let.global buffer := array buffer.size * byte ~
 	let.global start.end := (0, 0) ~
 	let (s0, e0) := start.end ~
@@ -39,22 +39,22 @@ define.global !get.char {} := do!
 
 define !get.line (pointer, length) :=
 	for! (
-		(n, ch) := (0, !get.char {}) #
+		(n, ch) := (0, !get.char ()) #
 		n < length && number:byte ch != 10 #
 		!assign (!adjust.pointer pointer n)* := ch ~
-		(n + 1, !get.char {}) #
-		{}
+		(n + 1, !get.char ()) #
+		()
 	)
 ~
 
-define !get.number {} := do!
-	let !gc {} := do! number:byte !get.char {} ~
-	let ch0 := !gc {} ~
+define !get.number () := do!
+	let !gc () := do! number:byte !get.char () ~
+	let ch0 := !gc () ~
 	let positive := ch0 != number '-' ~
 	fold (
-		(n, ch) := (0, if positive then ch0 else !gc {}) #
+		(n, ch) := (0, if positive then ch0 else !gc ()) #
 		number '0' <= ch && ch <= number '9' #
-		(n * 10 + ch - number '0', !gc {}) #
+		(n * 10 + ch - number '0', !gc ()) #
 		if positive then n else (0 - n)
 	)
 ~
@@ -66,7 +66,7 @@ define !get.string (pointer, length) :=
 		let p1 := !adjust.pointer pointer n ~
 		let nBytesRead := !read (p1, 1) ~
 		(n + nBytesRead, p1* != byte 10) #
-		{}
+		()
 	)
 ~
 
@@ -75,7 +75,7 @@ define.global !put.char ch :=
 	!write.all (address.of predef [ch,], 1)
 ~
 
-define !put.line {} :=
+define !put.line () :=
 	!put.char byte 10
 ~
 
@@ -86,7 +86,7 @@ define !put.number n :=
 				let (div, mod) := (i / 10, i % 10) ~
 				!put.number_ div ~
 				!put.char byte:number (mod + number '0')
-			) else {}
+			) else ()
 		~
 	} ~
 	case
@@ -104,11 +104,11 @@ define !put.string s :=
 		s* [i] != byte 0 #
 		!put.char s* [i] ~
 		i + 1 #
-		{}
+		()
 	)
 ~
 
-define !cat {} :=
+define !cat () :=
 	for! (
 		n := 1 #
 		n != 0 #
