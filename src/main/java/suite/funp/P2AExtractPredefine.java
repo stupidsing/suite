@@ -1,0 +1,44 @@
+package suite.funp;
+
+import java.util.ArrayList;
+
+import suite.funp.Funp_.Funp;
+import suite.funp.P0.Fdt;
+import suite.funp.P0.FunpDefine;
+import suite.funp.P0.FunpDoAssignVar;
+import suite.funp.P0.FunpDontCare;
+import suite.funp.P0.FunpLambda;
+import suite.funp.P0.FunpPredefine;
+import suite.funp.P0.FunpVariable;
+import suite.inspect.Inspect;
+import suite.node.util.Singleton;
+import suite.streamlet.Read;
+import suite.util.Util;
+
+public class P2AExtractPredefine {
+
+	private Inspect inspect = Singleton.me.inspect;
+
+	public Funp extractPredefine(Funp node0) {
+		var vns = new ArrayList<String>();
+
+		var node1 = new Object() {
+			private Funp extract(Funp n) {
+				return inspect.rewrite(n, Funp.class, n_ -> {
+					return n_.sw( //
+					).applyIf(FunpLambda.class, f -> f.apply((vn, expr, isCapture) -> {
+						return FunpLambda.of(vn, extractPredefine(expr), isCapture);
+					})).applyIf(FunpPredefine.class, f -> f.apply(expr -> {
+						var vn = "predefine$" + Util.temp();
+						vns.add(vn);
+						var var = FunpVariable.of(vn);
+						return FunpDoAssignVar.of(var, extract(expr), var);
+					})).result();
+				});
+			}
+		}.extract(node0);
+
+		return Read.from(vns).fold(node1, (n, vn) -> FunpDefine.of(vn, FunpDontCare.of(), n, Fdt.L_MONO));
+	}
+
+}
