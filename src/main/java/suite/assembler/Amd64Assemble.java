@@ -1100,7 +1100,12 @@ public class Amd64Assemble {
 				+ (bit4(r) << 2) //
 				+ (bit4(x) << 1) //
 				+ (bit4(b) << 0);
-		return isLongMode && size == 1 || b04 != 0 ? 0x40 + b04 : -1;
+		if (Boolean.TRUE) {
+			return b04 != 0 ? 0x40 + b04 : -1;
+		} else {
+			// why it was this?
+			return isLongMode && size == 1 || b04 != 0 ? 0x40 + b04 : -1;
+		}
 	}
 
 	// https://en.wikipedia.org/wiki/VEX_prefix
