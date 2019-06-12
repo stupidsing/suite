@@ -1,9 +1,7 @@
 package suite.funp;
 
 import static suite.util.Friends.forInt;
-import static suite.util.Friends.rethrow;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,11 +48,7 @@ import suite.funp.P0.FunpTree;
 import suite.funp.P0.FunpTypeCheck;
 import suite.funp.P0.FunpVariable;
 import suite.funp.P0.FunpVariableNew;
-import suite.http.HttpUtil;
 import suite.inspect.Inspect;
-import suite.lp.Trail;
-import suite.lp.doer.Binder;
-import suite.lp.doer.Generalizer;
 import suite.lp.kb.Prototype;
 import suite.node.Atom;
 import suite.node.Int;
@@ -65,7 +59,6 @@ import suite.node.io.SwitchNode;
 import suite.node.io.TermOp;
 import suite.node.util.Singleton;
 import suite.node.util.TreeUtil;
-import suite.os.FileUtil;
 import suite.persistent.PerMap;
 import suite.persistent.PerSet;
 import suite.primitive.IntMutable;
@@ -76,9 +69,6 @@ import suite.streamlet.FunUtil.Iterate;
 import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
-import suite.util.ReadStream;
-import suite.util.Rethrow.FunIo;
-import suite.util.Rethrow.SourceEx;
 import suite.util.Switch;
 import suite.util.To;
 import suite.util.Util;
@@ -97,85 +87,9 @@ public class P0Parse {
 	}
 
 	private Funp parse(Node node0, PerMap<Prototype, Node[]> macros) {
-		var node1 = new Consult().c(node0);
-		var node2 = new Expand(macros).e(node1);
+		var node1 = new P0AConsult().c(node0);
+		var node2 = new P0BExpand(macros).e(node1);
 		return new Parse(PerSet.empty()).p(node2);
-	}
-
-	private class Consult {
-		private Node c(Node node) {
-			return new SwitchNode<Node>(node //
-			).match("consult .0 ~ .1", (a, b) -> {
-				return c(consult(Str.str(a).replace("${platform}", Funp_.isAmd64 ? "amd64" : "i686"), b));
-			}).match("consult .0", a -> {
-				return c(consult(Str.str(a)));
-			}).applyIf(Node.class, n -> {
-				var tree = Tree.decompose(node);
-				return tree != null ? Tree.of(tree.getOperator(), c(tree.getLeft()), c(tree.getRight())) : node;
-			}).nonNullResult();
-		}
-
-		private Node consult(String url) {
-			FunIo<ReadStream, Node> r0 = is -> {
-				var parsed = Suite.parse(FileUtil.read(is));
-				return Tree.of(TermOp.TUPLE_, Atom.of("predef"), parsed);
-			};
-			return consult_(url, is -> is.doRead(r0));
-		}
-
-		private Node consult(String url, Node program) {
-			FunIo<ReadStream, Node> r0 = is -> {
-				var node = Suite.parse(FileUtil.read(is) + "$APP");
-				return Tree //
-						.iter(node, TermOp.CONTD_) //
-						.reverse() //
-						.fold(program, (n, left) -> Tree.of(TermOp.CONTD_, left, n));
-			};
-
-			return consult_(url, is -> is.doRead(r0));
-		}
-
-		private Node consult_(String url, Fun<ReadStream, Node> r0) {
-			Fun<SourceEx<ReadStream, IOException>, Node> r1 = source -> rethrow(source::g).doRead(r0::apply);
-
-			if (url.startsWith("file://"))
-				return r1.apply(() -> FileUtil.in(url.substring(7)));
-			else if (url.startsWith("http://") || url.startsWith("https://"))
-				return r0.apply(HttpUtil.get(url).inputStream());
-			else
-				return r1.apply(() -> ReadStream.of(getClass().getResourceAsStream(url)));
-		}
-	}
-
-	private class Expand {
-		private PerMap<Prototype, Node[]> macros;
-
-		private Expand(PerMap<Prototype, Node[]> macros) {
-			this.macros = macros;
-		}
-
-		private Node e(Node node) {
-			Node[] m;
-
-			if ((m = Suite.pattern("expand .0 := .1 ~ .2").match(node)) != null) {
-				var head = m[0];
-				return new Expand(macros.put(Prototype.of(head), new Node[] { head, m[1], })).e(m[2]);
-			} else if ((m = macros.get(Prototype.of(node))) != null) {
-				var g = new Generalizer();
-				var t0 = g.generalize(m[0]);
-				var t1 = g.generalize(m[1]);
-				var trail = new Trail();
-
-				if (Binder.bind(node, t0, trail))
-					return e(t1);
-				else
-					trail.unwindAll();
-			}
-
-			var tree = Tree.decompose(node);
-
-			return tree != null ? Tree.of(tree.getOperator(), e(tree.getLeft()), e(tree.getRight())) : node;
-		}
 	}
 
 	private class Parse {
@@ -331,6 +245,8 @@ public class P0Parse {
 				return FunpCoerce.of(Coerce.NUMBER, Coerce.NUMBERP, FunpNumber.ofNumber(num(a)));
 			}).match("predef .0", a -> {
 				return FunpPredefine.of("predefine$" + Util.temp(), p(a));
+			}).match("predef/.0 .1", (a, b) -> {
+				return FunpPredefine.of(Atom.name(a), p(b));
 			}).match("size.of .0", a -> {
 				return FunpSizeOf.of(p(a));
 			}).match("type .0 .1", (a, b) -> {
