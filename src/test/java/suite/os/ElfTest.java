@@ -78,8 +78,7 @@ public class ElfTest {
 	public void testNumbers() {
 		test(0, "" //
 				+ "let io := consult \"io.fp\" ~ \n" //
-				+ "let !gn := io/!get.number ~ \n" //
-				+ "let !pn := io/!put.number ~ \n" //
+				+ "let { !get.number: !gn, !put.number: !pn, } := io ~ \n" //
 				+ "do! (let n := type number !gn {} ~ !pn (n + 1) ~ 0)", "235\n", "236");
 	}
 

@@ -230,7 +230,8 @@ public class P0Parse {
 			}).match("consult .0", a -> {
 				return consult(Str.str(a));
 			}).match("define .0 := .1 ~ .2", (a, b, c) -> {
-				if (Tree.decompose(a, TermOp.TUPLE_) == null) {
+				var tree = Tree.decompose(a, TermOp.TUPLE_);
+				if (tree == null || !isId(tree.getLeft())) {
 					var lambda = lambda(a, c);
 					return FunpDefine.of(lambda.vn, p(b), lambda.expr, Fdt.L_POLY);
 				} else
@@ -259,7 +260,8 @@ public class P0Parse {
 			}).match("if .0 then .1 else .2", (a, b, c) -> {
 				return FunpIf.of(p(a), p(b), p(c));
 			}).match("let .0 := .1 ~ .2", (a, b, c) -> {
-				if (Tree.decompose(a, TermOp.TUPLE_) == null) {
+				var tree = Tree.decompose(a, TermOp.TUPLE_);
+				if (tree == null || !isId(tree.getLeft())) {
 					var lambda = lambda(a, c);
 					return FunpDefine.of(lambda.vn, p(b), lambda.expr, Fdt.L_MONO);
 				} else
@@ -398,6 +400,14 @@ public class P0Parse {
 
 		private boolean isBang(Node n) {
 			return n instanceof Atom && Atom.name(n).startsWith("!");
+		}
+
+		private boolean isId(Node n) {
+			if (n instanceof Atom) {
+				var ch0 = Atom.name(n).charAt(0);
+				return ch0 == '!' || Character.isAlphabetic(ch0);
+			} else
+				return false;
 		}
 
 		private Streamlet2<String, Node> kvs(Node node) {

@@ -88,6 +88,9 @@ public class FunpTest {
 		test(4, "define f i := i + 1 ~ 3 | f");
 		test(1, "let.global a := [0, 1, 2,] ~ a [1]");
 		test(1, "define { a: 1, b: (() => me/a), c: 3, } ~ b ()");
+		test(4, "define (a, b) := (3, 4) ~ b");
+		test(4, "define [a, b,] := [3, 4,] ~ b");
+		test(4, "define { a: av, b: bv, } := { a: 3, b: 4, } ~ bv");
 	}
 
 	@Test
