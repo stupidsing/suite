@@ -175,7 +175,7 @@ public class P2GenerateLambda {
 			})).applyIf(FunpNumber.class, f -> f.apply(i -> {
 				var i1 = new Int(i.value());
 				return rt -> i1;
-			})).applyIf(FunpPredefine.class, f -> f.apply(expr -> {
+			})).applyIf(FunpPredefine.class, f -> f.apply((vn, expr) -> {
 				return compile_(expr);
 			})).applyIf(FunpReference.class, f -> {
 				var v = compile_(f);

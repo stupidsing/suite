@@ -403,16 +403,18 @@ public class P0 {
 	}
 
 	public static class FunpPredefine implements Funp, P2.End {
+		public String vn;
 		public Funp expr;
 
-		public static FunpPredefine of(Funp expr) {
+		public static FunpPredefine of(String vn, Funp expr) {
 			var f = new FunpPredefine();
+			f.vn = vn;
 			f.expr = expr;
 			return f;
 		}
 
-		public <R> R apply(FixieFun1<Funp, R> fun) {
-			return fun.apply(expr);
+		public <R> R apply(FixieFun2<String, Funp, R> fun) {
+			return fun.apply(vn, expr);
 		}
 	}
 

@@ -13,7 +13,6 @@ import suite.funp.P0.FunpVariable;
 import suite.inspect.Inspect;
 import suite.node.util.Singleton;
 import suite.streamlet.Read;
-import suite.util.Util;
 
 public class P2AExtractPredefine {
 
@@ -28,11 +27,14 @@ public class P2AExtractPredefine {
 					return n_.sw( //
 					).applyIf(FunpLambda.class, f -> f.apply((vn, expr, isCapture) -> {
 						return FunpLambda.of(vn, extractPredefine(expr), isCapture);
-					})).applyIf(FunpPredefine.class, f -> f.apply(expr -> {
-						var vn = "predefine$" + Util.temp();
-						vns.add(vn);
+					})).applyIf(FunpPredefine.class, f -> f.apply((vn, expr) -> {
 						var var = FunpVariable.of(vn);
-						return FunpDoAssignVar.of(var, extract(expr), var);
+						if (vns.contains(vn))
+							return var;
+						else {
+							vns.add(vn);
+							return FunpDoAssignVar.of(var, extract(expr), var);
+						}
 					})).result();
 				});
 			}

@@ -97,18 +97,12 @@ public class P0Parse {
 	}
 
 	private Funp parse(Node node0, PerMap<Prototype, Node[]> macros) {
-		var node1 = new Consult(macros).c(node0);
+		var node1 = new Consult().c(node0);
 		var node2 = new Expand(macros).e(node1);
 		return new Parse(PerSet.empty()).p(node2);
 	}
 
 	private class Consult {
-		private PerMap<Prototype, Node[]> macros;
-
-		private Consult(PerMap<Prototype, Node[]> macros) {
-			this.macros = macros;
-		}
-
 		private Node c(Node node) {
 			return new SwitchNode<Node>(node //
 			).match("consult .0 ~ .1", (a, b) -> {
@@ -116,20 +110,6 @@ public class P0Parse {
 			}).match("consult .0", a -> {
 				return c(consult(Str.str(a)));
 			}).applyIf(Node.class, n -> {
-				var m = macros.get(Prototype.of(node));
-
-				if (m != null) {
-					var g = new Generalizer();
-					var t0 = g.generalize(m[0]);
-					var t1 = g.generalize(m[1]);
-					var trail = new Trail();
-
-					if (Binder.bind(node, t0, trail))
-						return c(t1);
-					else
-						trail.unwindAll();
-				}
-
 				var tree = Tree.decompose(node);
 				return tree != null ? Tree.of(tree.getOperator(), c(tree.getLeft()), c(tree.getRight())) : node;
 			}).nonNullResult();
@@ -350,7 +330,7 @@ public class P0Parse {
 			}).match("numberp .0", a -> {
 				return FunpCoerce.of(Coerce.NUMBER, Coerce.NUMBERP, FunpNumber.ofNumber(num(a)));
 			}).match("predef .0", a -> {
-				return FunpPredefine.of(p(a));
+				return FunpPredefine.of("predefine$" + Util.temp(), p(a));
 			}).match("size.of .0", a -> {
 				return FunpSizeOf.of(p(a));
 			}).match("type .0 .1", (a, b) -> {
