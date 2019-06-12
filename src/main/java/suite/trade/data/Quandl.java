@@ -1,10 +1,14 @@
 package suite.trade.data;
 
+import java.util.List;
+
+import suite.adt.pair.Pair;
 import suite.cfg.Defaults;
 import suite.node.util.Singleton;
 import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.primitive.LngPrimitives.Obj_Lng;
 import suite.streamlet.As;
+import suite.streamlet.Streamlet;
 import suite.trade.Time;
 import suite.trade.TimeRange;
 import suite.util.String_;
@@ -12,20 +16,15 @@ import suite.util.String_;
 public class Quandl {
 
 	public DataSource dataSourceCsv(String symbol, TimeRange period) {
-		var m = Defaults.secrets("quandl .0");
 		var usMarketClose = 16l;
 		var ph0 = period.to.epochSec() - (usMarketClose + 4) * 24 * 3600;
 		var ph1 = ph0 - (ph0 % 86400l);
 
-		var urlString = "https://www.quandl.com/api/v1/datasets/CHRIS/CME_CL1.csv" //
-				+ "?ph=" + ph1 //
-				+ (m != null ? "&api_key=" + m[0] : "");
+		var urlString = "https://www.quandl.com/api/v1/datasets/CHRIS/CME_CL1.csv?ph=" + ph1;
 
 		// Date, Open, High, Low, Last, Change, Settle, Volume, Previous Day
 		// Open Interest
-		var arrays = Singleton.me.storeCache //
-				.http(urlString) //
-				.collect(As::csv) //
+		var arrays = csv(urlString) //
 				.skip(1) //
 				.sort((a0, a1) -> String_.compare(a0[0], a1[0])) //
 				.collect();
@@ -38,6 +37,26 @@ public class Quandl {
 		var volumes = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[7]))).toArray();
 
 		return DataSource.ofOhlcv(ts, opens, settles, lows, highs, volumes).range(period);
+	}
+
+	public Pair<String[], List<String[]>> dataSourceCsvV3(String qn, TimeRange period) {
+		var urlString = "https://www.quandl.com/api/v3/datasets/" + qn + ".csv" //
+				+ "?start_date=" + period.from.ymd() //
+				+ "&end_date=" + period.to.ymd() //
+				+ "&order=asc";
+		// + "&collapse=annual"
+
+		// Date, Value
+		var csv = csv(urlString);
+		var header = csv.first();
+		var list = csv.skip(1).toList();
+		return Pair.of(header, list);
+	}
+
+	private Streamlet<String[]> csv(String urlString) {
+		var m = Defaults.secrets("quandl .0");
+
+		return Singleton.me.storeCache.http(urlString + (m != null ? "&api_key=" + m[0] : "")).collect(As::csv);
 	}
 
 }

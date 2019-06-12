@@ -1103,7 +1103,7 @@ public class Amd64Assemble {
 		if (Boolean.TRUE) {
 			return b04 != 0 ? 0x40 + b04 : -1;
 		} else {
-			// why it was this?
+			// why it was like this?
 			return isLongMode && size == 1 || b04 != 0 ? 0x40 + b04 : -1;
 		}
 	}
