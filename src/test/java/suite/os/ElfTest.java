@@ -65,20 +65,14 @@ public class ElfTest {
 	@Test
 	public void testIo() {
 		var text = "garbage\n";
-
-		var program = "" //
-				+ "let io := consult \"io.fp\" ~ \n" //
-				+ "     let !cat := io/!cat ~ \n" //
-				+ "     do! !cat {} \n";
-
+		var program = "do! !! (consult \"io.fp\")/!cat {}";
 		test(0, program, text);
 	}
 
 	@Test
 	public void testNumbers() {
 		test(0, "" //
-				+ "let io := consult \"io.fp\" ~ \n" //
-				+ "let { !get.number: !gn, !put.number: !pn, } := io ~ \n" //
+				+ "let { !get.number: !gn, !put.number: !pn, } := consult \"io.fp\" ~ \n" //
 				+ "do! (let n := type number !gn {} ~ !pn (n + 1) ~ 0)", "235\n", "236");
 	}
 

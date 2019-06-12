@@ -93,12 +93,78 @@ public class P0Parse {
 	private Map<String, Integer> idByTag = new HashMap<>();
 
 	public Funp parse(Node node) {
-		return parse(node, PerMap.<Prototype, Node[]> empty());
+		return parse(node, PerMap.empty());
 	}
 
 	private Funp parse(Node node0, PerMap<Prototype, Node[]> macros) {
-		var node1 = new Expand(macros).e(node0);
-		return new Parse(PerSet.empty()).p(node1);
+		var node1 = new Consult(macros).c(node0);
+		var node2 = new Expand(macros).e(node1);
+		return new Parse(PerSet.empty()).p(node2);
+	}
+
+	private class Consult {
+		private PerMap<Prototype, Node[]> macros;
+
+		private Consult(PerMap<Prototype, Node[]> macros) {
+			this.macros = macros;
+		}
+
+		private Node c(Node node) {
+			return new SwitchNode<Node>(node //
+			).match("consult .0 ~ .1", (a, b) -> {
+				return c(consult(Str.str(a).replace("${platform}", Funp_.isAmd64 ? "amd64" : "i686"), b));
+			}).match("consult .0", a -> {
+				return c(consult(Str.str(a)));
+			}).applyIf(Node.class, n -> {
+				var m = macros.get(Prototype.of(node));
+
+				if (m != null) {
+					var g = new Generalizer();
+					var t0 = g.generalize(m[0]);
+					var t1 = g.generalize(m[1]);
+					var trail = new Trail();
+
+					if (Binder.bind(node, t0, trail))
+						return c(t1);
+					else
+						trail.unwindAll();
+				}
+
+				var tree = Tree.decompose(node);
+				return tree != null ? Tree.of(tree.getOperator(), c(tree.getLeft()), c(tree.getRight())) : node;
+			}).nonNullResult();
+		}
+
+		private Node consult(String url) {
+			FunIo<ReadStream, Node> r0 = is -> {
+				var parsed = Suite.parse(FileUtil.read(is));
+				return Tree.of(TermOp.TUPLE_, Atom.of("predef"), parsed);
+			};
+			return consult_(url, is -> is.doRead(r0));
+		}
+
+		private Node consult(String url, Node program) {
+			FunIo<ReadStream, Node> r0 = is -> {
+				var node = Suite.parse(FileUtil.read(is) + "$APP");
+				return Tree //
+						.iter(node, TermOp.CONTD_) //
+						.reverse() //
+						.fold(program, (n, left) -> Tree.of(TermOp.CONTD_, left, n));
+			};
+
+			return consult_(url, is -> is.doRead(r0));
+		}
+
+		private Node consult_(String url, Fun<ReadStream, Node> r0) {
+			Fun<SourceEx<ReadStream, IOException>, Node> r1 = source -> rethrow(source::g).doRead(r0::apply);
+
+			if (url.startsWith("file://"))
+				return r1.apply(() -> FileUtil.in(url.substring(7)));
+			else if (url.startsWith("http://") || url.startsWith("https://"))
+				return r0.apply(HttpUtil.get(url).inputStream());
+			else
+				return r1.apply(() -> ReadStream.of(getClass().getResourceAsStream(url)));
+		}
 	}
 
 	private class Expand {
@@ -225,10 +291,6 @@ public class P0Parse {
 						return m != null ? FunpIf.of(p(m[0]), p(m[1]), d(m[2])) : p(n);
 					}
 				}.d(a);
-			}).match("consult .0 ~ .1", (a, b) -> {
-				return consult(Str.str(a).replace("${platform}", Funp_.isAmd64 ? "amd64" : "i686"), b);
-			}).match("consult .0", a -> {
-				return consult(Str.str(a));
 			}).match("define .0 := .1 ~ .2", (a, b, c) -> {
 				var tree = Tree.decompose(a, TermOp.TUPLE_);
 				if (tree == null || !isId(tree.getLeft())) {
@@ -333,35 +395,6 @@ public class P0Parse {
 
 		private boolean checkDo() {
 			return vns.contains(doToken);
-		}
-
-		private Funp consult(String url) {
-			FunIo<ReadStream, Funp> r0 = is -> FunpPredefine.of(parse(Suite.parse(FileUtil.read(is))));
-			return consult_(url, is -> is.doRead(r0));
-		}
-
-		private Funp consult(String url, Node program) {
-			FunIo<ReadStream, Funp> r0 = is -> {
-				var node0 = Suite.parse(FileUtil.read(is) + "$APP");
-				var node1 = Tree //
-						.iter(node0, TermOp.CONTD_) //
-						.reverse() //
-						.fold(program, (n, left) -> Tree.of(TermOp.CONTD_, left, n));
-				return parse(node1);
-			};
-
-			return consult_(url, is -> is.doRead(r0));
-		}
-
-		private Funp consult_(String url, Fun<ReadStream, Funp> r0) {
-			Fun<SourceEx<ReadStream, IOException>, Funp> r1 = source -> rethrow(source::g).doRead(r0::apply);
-
-			if (url.startsWith("file://"))
-				return r1.apply(() -> FileUtil.in(url.substring(7)));
-			else if (url.startsWith("http://") || url.startsWith("https://"))
-				return r0.apply(HttpUtil.get(url).inputStream());
-			else
-				return r1.apply(() -> ReadStream.of(getClass().getResourceAsStream(url)));
 		}
 
 		private Funp define(Fdt t, Node var, Funp value, Node expr) {
