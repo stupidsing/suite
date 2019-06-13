@@ -25,7 +25,7 @@ let frp = function() {
 			edge: () => {
 				let data_;
 				return redirect_((data, push) => {
-					if(data != data_) push(data);
+					if (data != data_) push(data);
 					data_ = data;
 				});
 			},
