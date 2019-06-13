@@ -18,8 +18,8 @@
 		let height = window.innerHeight;
 
 		let canvas = document.getElementById("canvas");
-		canvas.width = width;
-		canvas.height = height;
+		canvas.width = width - 2;
+		canvas.height = height - 2;
 
 		let frame = frp.animframe();
 		let fx = frp.kb.arrowx.resample(frame).last();
@@ -37,7 +37,7 @@
 			},
 		};
 
-		let ball_ = function(ballx, bally) {
+		let ballf = function(ballx, bally) {
 			let dx = 2, dy = 2;
 
 			let ball = {
@@ -49,10 +49,10 @@
 					ballx += dx;
 					bally += dy;
 
-					if (ballx < 0) { ballx = 0; dx = 2; }
-					if (bally < 0) { bally = 0; dy = 2; }
-					if (width < ballx) { ballx = width; dx = -2; }
-					if (height < bally) { bally = height; dy = -2; }
+					if (ballx < 0) { ballx = 0; dx *= -1; }
+					if (bally < 0) { bally = 0; dy *= -1; }
+					if (width < ballx) { ballx = width; dx *= -1; }
+					if (height < bally) { bally = height; dy *= -1; }
 					return [ball];
 				},
 				draw: context => {
@@ -63,11 +63,11 @@
 					context.fillStyle = "#AABBCC";
 					context.beginPath();
 					context.moveTo(ballx, bally - radius);
-					context.lineTo(ballx + radius * 0.866, bally - radius * 0.5);
-					context.lineTo(ballx + radius * 0.866, bally + radius * 0.5);
+					context.lineTo(ballx + radius * .866, bally - radius * .5);
+					context.lineTo(ballx + radius * .866, bally + radius * .5);
 					context.lineTo(ballx, bally + radius);
-					context.lineTo(ballx - radius * 0.866, bally + radius * 0.5);
-					context.lineTo(ballx - radius * 0.866, bally - radius * 0.5);
+					context.lineTo(ballx - radius * .866, bally + radius * .5);
+					context.lineTo(ballx - radius * .866, bally - radius * .5);
 					context.closePath();
 					context.fill();
 				},
@@ -78,7 +78,7 @@
 
 		let ballx0 = Math.floor(width * Math.random());
 		let bally0 = Math.floor(height * Math.random());
-		let objects = [background, ball_(ballx0, bally0)];
+		let objects = [background, ballf(ballx0, bally0)];
 
 		let clicks = frp.mouse.move
 			.resample(frp.mouse.click.filter(mb => mb))
@@ -91,7 +91,7 @@
 			objects = read(objects)
 				.map(object => read(object.move()))
 				.concat()
-				.append(clicks().map(xy => ball_(xy.x, xy.y)))
+				.append(clicks().map(({x, y}) => ballf(x, y)))
 				.list();
 
 			// repaint
