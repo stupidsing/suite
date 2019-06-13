@@ -2,9 +2,9 @@
 
 let frp = function() {
 	let newPusher = () => { // FRP dispatcher
-		let pullers = [];
-		let push_ = data => { for (let puller of pullers) puller(data); };
-		let wire_ = puller => pullers.push(puller);
+		let pushees = [];
+		let push_ = data => { for (let pushee of pushees) pushee(data); };
+		let wire_ = pushee => pushees.push(pushee);
 
 		let redirect_ = tf => {
 			let pusher = newPusher();
@@ -19,7 +19,7 @@ let frp = function() {
 				other.wire(pusher.push);
 				return pusher;
 			},
-			close: () => pullers = [], // for garbage collection
+			close: () => pushees = [], // for garbage collection
 			concatmap: f => redirect_((data, push) => f(data).wire(push)),
 			delay: time => redirect_((data, push) => setTimeout(() => push(data), time)),
 			edge: () => {

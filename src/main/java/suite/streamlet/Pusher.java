@@ -21,7 +21,7 @@ import suite.streamlet.FunUtil2.Fun2;
 import suite.util.NullableSyncQueue;
 
 /**
- * A pull-based functional reactive programming class.
+ * A push-based functional reactive programming class.
  * 
  * @author ywsing
  */
@@ -29,7 +29,7 @@ public class Pusher<T> {
 
 	private static ScheduledExecutorService executor = Executors.newScheduledThreadPool(8);
 
-	private Bag<Sink<T>> pullers;
+	private Bag<Sink<T>> pushees;
 
 	public interface Redirector<T0, T1> {
 		public void accept(T0 t0, Sink<T1> sink);
@@ -87,8 +87,8 @@ public class Pusher<T> {
 		this(new Bag<>());
 	}
 
-	private Pusher(Bag<Sink<T>> pullers) {
-		this.pullers = pullers;
+	private Pusher(Bag<Sink<T>> pushees) {
+		this.pushees = pushees;
 	}
 
 	public <U> Pusher<U> concatMap(Fun<T, Pusher<U>> fun) {
@@ -142,14 +142,14 @@ public class Pusher<T> {
 		return redirect_((t, sink) -> sink.f(fun.apply(t)));
 	}
 
-	public Puller<T> puller() {
+	public void push(T t) {
+		pushees.forEach(sink -> sink.f(t));
+	}
+
+	public Puller<T> pushee() {
 		var queue = new NullableSyncQueue<T>();
 		wire_(queue::offerQuietly);
 		return Puller.of(() -> rethrow(queue::take));
-	}
-
-	public void push(T t) {
-		pullers.forEach(sink -> sink.f(t));
 	}
 
 	public <U> Pusher<U> redirect(Redirector<T, U> redirector) {
@@ -174,17 +174,17 @@ public class Pusher<T> {
 		wire_(t -> runner.run());
 	}
 
-	public void wire(Sink<T> puller) {
-		wire_(puller);
+	public void wire(Sink<T> pushee) {
+		wire_(pushee);
 	}
 
 	private <U> Pusher<U> redirect_(Redirector<T, U> redirector) {
 		return of(push -> wire_(t -> redirector.accept(t, push)));
 	}
 
-	private Runnable wire_(Sink<T> puller) {
-		pullers.add(puller);
-		return () -> pullers.remove(puller);
+	private Runnable wire_(Sink<T> pushee) {
+		pushees.add(pushee);
+		return () -> pushees.remove(pushee);
 	}
 
 }
