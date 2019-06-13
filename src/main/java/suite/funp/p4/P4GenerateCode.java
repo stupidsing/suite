@@ -1,4 +1,4 @@
-package suite.funp;
+package suite.funp.p4;
 
 import static java.util.Map.entry;
 import static suite.util.Friends.fail;
@@ -23,6 +23,7 @@ import suite.assembler.Amd64.OpReg;
 import suite.assembler.Amd64.Operand;
 import suite.assembler.Amd64Assemble;
 import suite.assembler.Amd64Parse;
+import suite.funp.Funp_;
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.FunpBoolean;
 import suite.funp.P0.FunpCoerce;
@@ -55,7 +56,8 @@ import suite.funp.P2.FunpRoutine2;
 import suite.funp.P2.FunpRoutineIo;
 import suite.funp.P2.FunpSaveRegisters0;
 import suite.funp.P2.FunpSaveRegisters1;
-import suite.funp.P4Emit.Emit;
+import suite.funp.RegisterSet;
+import suite.funp.p4.P4Emit.Emit;
 import suite.node.Atom;
 import suite.node.io.Operator.Assoc;
 import suite.node.io.TermOp;

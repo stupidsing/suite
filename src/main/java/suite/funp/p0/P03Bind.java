@@ -1,4 +1,4 @@
-package suite.funp;
+package suite.funp.p0;
 
 import static suite.util.Friends.forInt;
 
@@ -26,11 +26,11 @@ import suite.primitive.IntPrimitives.IntObj_Obj;
 import suite.primitive.IntPrimitives.Int_Obj;
 import suite.util.Switch;
 
-public class P0DBind {
+public class P03Bind {
 
 	private PerSet<String> vns;
 
-	public P0DBind(PerSet<String> vns) {
+	public P03Bind(PerSet<String> vns) {
 		this.vns = vns;
 	}
 

@@ -1,9 +1,10 @@
-package suite.funp;
+package suite.funp.p1;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import suite.funp.Funp_;
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.Fdt;
 import suite.funp.P0.FunpApply;
@@ -30,7 +31,7 @@ import suite.streamlet.Read;
 import suite.util.List_;
 import suite.util.String_;
 
-public class P1Inline {
+public class P10Inline {
 
 	private Inspect inspect = Singleton.me.inspect;
 

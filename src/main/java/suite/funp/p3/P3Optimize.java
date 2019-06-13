@@ -1,4 +1,4 @@
-package suite.funp;
+package suite.funp.p3;
 
 import suite.adt.pair.Pair;
 import suite.funp.Funp_.Funp;

@@ -1,4 +1,4 @@
-package suite.funp;
+package suite.funp.p4;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,6 +7,7 @@ import suite.assembler.Amd64;
 import suite.assembler.Amd64.OpMem;
 import suite.assembler.Amd64.OpReg;
 import suite.assembler.Amd64.Operand;
+import suite.funp.Funp_;
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.FunpDontCare;
 import suite.funp.P0.FunpNumber;

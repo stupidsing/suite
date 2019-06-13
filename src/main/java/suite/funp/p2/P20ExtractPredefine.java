@@ -1,4 +1,4 @@
-package suite.funp;
+package suite.funp.p2;
 
 import java.util.ArrayList;
 
@@ -14,7 +14,7 @@ import suite.inspect.Inspect;
 import suite.node.util.Singleton;
 import suite.streamlet.Read;
 
-public class P2AExtractPredefine {
+public class P20ExtractPredefine {
 
 	private Inspect inspect = Singleton.me.inspect;
 

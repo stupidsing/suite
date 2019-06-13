@@ -1,4 +1,4 @@
-package suite.funp;
+package suite.funp.p2;
 
 import static suite.util.Friends.fail;
 import static suite.util.Friends.forInt;
@@ -20,6 +20,7 @@ import suite.adt.pair.Fixie_.Fixie3;
 import suite.adt.pair.Pair;
 import suite.assembler.Amd64.OpReg;
 import suite.assembler.Amd64.Operand;
+import suite.funp.Funp_;
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.Fdt;
 import suite.funp.P0.FunpApply;
@@ -116,8 +117,8 @@ import suite.util.Util;
 public class P2InferType {
 
 	private Inspect inspect = Singleton.me.inspect;
-	private P2AExtractPredefine p2a = new P2AExtractPredefine();
-	private P2BCaptureLambda p2b = new P2BCaptureLambda();
+	private P20ExtractPredefine p2a = new P20ExtractPredefine();
+	private P21CaptureLambda p2b = new P21CaptureLambda();
 
 	private int is = Funp_.integerSize;
 	private int ps = Funp_.pointerSize;

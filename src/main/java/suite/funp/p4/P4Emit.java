@@ -1,4 +1,4 @@
-package suite.funp;
+package suite.funp.p4;
 
 import static suite.util.Friends.fail;
 
@@ -16,6 +16,7 @@ import suite.assembler.Amd64.OpImmLabel;
 import suite.assembler.Amd64.OpMem;
 import suite.assembler.Amd64.OpReg;
 import suite.assembler.Amd64.Operand;
+import suite.funp.Funp_;
 import suite.persistent.PerList;
 import suite.streamlet.FunUtil.Sink;
 import suite.streamlet.Read;

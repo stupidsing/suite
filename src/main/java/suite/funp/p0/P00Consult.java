@@ -1,10 +1,12 @@
-package suite.funp;
+package suite.funp.p0;
 
 import static suite.util.Friends.rethrow;
 
 import java.io.IOException;
 
 import suite.Suite;
+import suite.funp.Funp_;
+import suite.funp.Funp_.Funp;
 import suite.http.HttpUtil;
 import suite.node.Atom;
 import suite.node.Node;
@@ -18,7 +20,7 @@ import suite.util.ReadStream;
 import suite.util.Rethrow.FunIo;
 import suite.util.Rethrow.SourceEx;
 
-public class P0AConsult {
+public class P00Consult {
 
 	public Node c(Node node) {
 		return new SwitchNode<Node>(node //
@@ -61,7 +63,7 @@ public class P0AConsult {
 		else if (url.startsWith("http://") || url.startsWith("https://"))
 			return r0.apply(HttpUtil.get(url).inputStream());
 		else
-			return r1.apply(() -> ReadStream.of(getClass().getResourceAsStream(url)));
+			return r1.apply(() -> ReadStream.of(Funp.class.getResourceAsStream(url)));
 	}
 
 }

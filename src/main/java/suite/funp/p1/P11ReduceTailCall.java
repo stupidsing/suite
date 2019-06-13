@@ -1,4 +1,4 @@
-package suite.funp;
+package suite.funp.p1;
 
 import java.util.List;
 
@@ -24,7 +24,7 @@ import suite.util.String_;
 import suite.util.Switch;
 import suite.util.Util;
 
-public class P1ReduceTailCall {
+public class P11ReduceTailCall {
 
 	private Inspect inspect = Singleton.me.inspect;
 

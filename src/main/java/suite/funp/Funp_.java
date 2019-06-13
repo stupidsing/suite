@@ -15,6 +15,12 @@ import suite.funp.P0.FunpDefineRec;
 import suite.funp.P0.FunpLambda;
 import suite.funp.P0.FunpVariable;
 import suite.funp.P2.FunpFramePointer;
+import suite.funp.p0.P0Parse;
+import suite.funp.p1.P10Inline;
+import suite.funp.p1.P11ReduceTailCall;
+import suite.funp.p2.P2InferType;
+import suite.funp.p3.P3Optimize;
+import suite.funp.p4.P4GenerateCode;
 import suite.inspect.Inspect;
 import suite.node.Node;
 import suite.node.util.Singleton;
@@ -68,8 +74,8 @@ public class Funp_ {
 
 	public class Main {
 		private P0Parse p0 = new P0Parse();
-		private P1Inline p1 = new P1Inline();
-		private P1ReduceTailCall p1r = new P1ReduceTailCall();
+		private P10Inline p1 = new P10Inline();
+		private P11ReduceTailCall p1r = new P11ReduceTailCall();
 		private P2InferType p2 = new P2InferType();
 		private P2GenerateLambda p2g = new P2GenerateLambda();
 		private P3Optimize p3 = new P3Optimize();

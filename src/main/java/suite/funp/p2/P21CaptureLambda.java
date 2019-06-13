@@ -1,4 +1,4 @@
-package suite.funp;
+package suite.funp.p2;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import suite.adt.pair.Pair;
+import suite.funp.Funp_;
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.Fdt;
 import suite.funp.P0.FunpDefine;
@@ -27,7 +28,7 @@ import suite.streamlet.FunUtil2.Fun2;
 import suite.streamlet.Read;
 import suite.util.Util;
 
-public class P2BCaptureLambda {
+public class P21CaptureLambda {
 
 	private Inspect inspect = Singleton.me.inspect;
 

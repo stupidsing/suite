@@ -1,4 +1,4 @@
-package suite.funp;
+package suite.funp.p0;
 
 import java.util.HashMap;
 import java.util.List;
@@ -8,6 +8,7 @@ import suite.Suite;
 import suite.adt.Mutable;
 import suite.adt.pair.Pair;
 import suite.assembler.Amd64;
+import suite.funp.Funp_;
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.Fdt;
 import suite.funp.P0.FunpApply;
@@ -80,8 +81,8 @@ public class P0Parse {
 	}
 
 	private Funp parse(Node node0, PerMap<Prototype, Node[]> macros) {
-		var node1 = new P0AConsult().c(node0);
-		var node2 = new P0BExpand(macros).e(node1);
+		var node1 = new P00Consult().c(node0);
+		var node2 = new P01Expand(macros).e(node1);
 		return new Parse(PerSet.empty()).p(node2);
 	}
 
@@ -394,7 +395,7 @@ public class P0Parse {
 			var value = p(b);
 			var then = new Parse(vns_.streamlet().fold(vns, PerSet::add)).p(c);
 			var else_ = p(d);
-			var f0 = new P0DBind(vns_).bind(be, value, then, else_);
+			var f0 = new P03Bind(vns_).bind(be, value, then, else_);
 			var f1 = FunpTypeCheck.of(be, value, f0);
 			return vns_.streamlet().<Funp> fold(f1, (f, vn) -> FunpDefine.of(vn, FunpDontCare.of(), f, Fdt.L_MONO));
 		}
