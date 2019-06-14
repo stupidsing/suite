@@ -95,19 +95,18 @@ public class P0Parse {
 
 		private Funp p(Node node) {
 			return new SwitchNode<Funp>(node //
-			).match(".0:.1 .2", (a, b, c) -> {
+			).match("!! .0 .1 ~ .2", (a, b, c) -> {
+				return callBang(a, b, c);
+			}).match("!! .0 .1", (a, b) -> {
+				return checkDo(() -> FunpDoEvalIo.of(FunpApply.of(p(b), p(a))));
+			}).match("!! .0 .1", (a, b) -> {
+				return checkDo(() -> FunpDoEvalIo.of(FunpApply.of(p(b), p(a))));
+			}).match(".0:.1 .2", (a, b, c) -> {
 				var c0 = Coerce.valueOf(Atom.name(b).toUpperCase());
 				var c1 = Coerce.valueOf(Atom.name(a).toUpperCase());
 				return FunpCoerce.of(c0, c1, p(c));
 			}).match(".0 .1 ~ .2", (a, b, c) -> {
-				if (isBang(a)) {
-					var apply = FunpApply.of(p(b), p(a));
-					var lambda = lambda(dontCare, c);
-					return checkDo(() -> FunpDefine.of(lambda.vn, apply, lambda.expr, Fdt.L_IOAP));
-				} else
-					return null;
-			}).match("!! .0 .1", (a, b) -> {
-				return checkDo(() -> FunpDoEvalIo.of(FunpApply.of(p(b), p(a))));
+				return isBang(a) ? callBang(a, b, c) : null;
 			}).match(".0 => .1", (a, b) -> {
 				return lambdaSeparate(a, b);
 			}).match(".0 | .1", (a, b) -> {
@@ -272,6 +271,12 @@ public class P0Parse {
 			}).applyTree((op, l, r) -> {
 				return FunpTree.of(op, p(l), p(r));
 			}).nonNullResult();
+		}
+
+		private Funp callBang(Node a, Node b, Node c) {
+			var apply = FunpApply.of(p(b), p(a));
+			var lambda = lambda(dontCare, c);
+			return checkDo(() -> FunpDefine.of(lambda.vn, apply, lambda.expr, Fdt.L_IOAP));
 		}
 
 		private FunpLambda capture(FunpLambda lambda) {
