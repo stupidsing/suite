@@ -28,6 +28,7 @@ public class ParseDate {
 			entry("OCT", 10), //
 			entry("NOV", 11), //
 			entry("DEC", 12));
+
 	private Map<String, Integer> weekDayByName = Map.ofEntries( //
 			entry("MON", 1), //
 			entry("TUE", 2), //
