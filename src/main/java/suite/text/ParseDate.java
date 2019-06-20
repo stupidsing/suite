@@ -1,5 +1,6 @@
 package suite.text;
 
+import static java.util.Map.entry;
 import static suite.util.Friends.fail;
 
 import java.time.Instant;
@@ -7,11 +8,34 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.Set;
 
 import suite.streamlet.Read;
 
 public class ParseDate {
+
+	private Map<String, Integer> monthValueByName = Map.ofEntries( //
+			entry("JAN", 1), //
+			entry("FEB", 2), //
+			entry("MAR", 3), //
+			entry("APR", 4), //
+			entry("MAY", 5), //
+			entry("JUN", 6), //
+			entry("JUL", 7), //
+			entry("AUG", 8), //
+			entry("SEP", 9), //
+			entry("OCT", 10), //
+			entry("NOV", 11), //
+			entry("DEC", 12));
+	private Map<String, Integer> weekDayByName = Map.ofEntries( //
+			entry("MON", 1), //
+			entry("TUE", 2), //
+			entry("WED", 3), //
+			entry("THU", 4), //
+			entry("FRI", 5), //
+			entry("SAT", 6), //
+			entry("SUN", 7));
 
 	public Instant parse(String s) {
 		var zdt = ZonedDateTime.ofInstant(Instant.now(), ZoneOffset.UTC.normalized());
@@ -146,8 +170,8 @@ public class ParseDate {
 		var b = pattern.length() <= s.length();
 		var list = new ArrayList<String>();
 		var p0 = 0;
-		char pc0 = 0;
-		Match m;
+		var pc0 = (char) 0;
+		var m = new Match();
 
 		if (b) {
 			for (var p = 0; p < pattern.length(); p++) {
@@ -170,65 +194,22 @@ public class ParseDate {
 				pc0 = pc;
 			}
 
-			var px = pattern.length();
 			if (pc0 == '$' || pc0 == '#')
-				list.add(s.substring(p0, px));
+				list.add(s.substring(p0, pattern.length()));
 
-			m = new Match();
 			m.m = Read.from(list).filter(w -> !w.isEmpty()).toArray(String.class);
-			m.tail = s.substring(px);
-		} else
-			m = null;
+			m.tail = s.substring(pattern.length());
+		}
 
 		return b ? m : null;
 	}
 
 	private Integer toMonth(String word) {
-		if (word.startsWith("JAN"))
-			return 1;
-		else if (word.startsWith("FEB"))
-			return 2;
-		else if (word.startsWith("MAR"))
-			return 3;
-		else if (word.startsWith("APR"))
-			return 4;
-		else if (word.startsWith("MAY"))
-			return 5;
-		else if (word.startsWith("JUN"))
-			return 6;
-		else if (word.startsWith("SEP"))
-			return 7;
-		else if (word.startsWith("AUG"))
-			return 8;
-		else if (word.startsWith("SEP"))
-			return 9;
-		else if (word.startsWith("OCT"))
-			return 10;
-		else if (word.startsWith("NOV"))
-			return 11;
-		else if (word.startsWith("DEC"))
-			return 12;
-		else
-			return null;
+		return 3 <= word.length() ? monthValueByName.get(word.substring(0, 3)) : null;
 	}
 
 	private Integer toWeekDay(String word) {
-		if (word.startsWith("MON"))
-			return 1;
-		else if (word.startsWith("TUE"))
-			return 2;
-		else if (word.startsWith("WED"))
-			return 3;
-		else if (word.startsWith("THU"))
-			return 4;
-		else if (word.startsWith("FRI"))
-			return 5;
-		else if (word.startsWith("SAT"))
-			return 6;
-		else if (word.startsWith("SUN"))
-			return 7;
-		else
-			return null;
+		return 3 <= word.length() ? weekDayByName.get(word.substring(0, 3)) : null;
 	}
 
 	private boolean isId(char ch0) {
