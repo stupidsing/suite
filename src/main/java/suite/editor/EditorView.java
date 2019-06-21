@@ -56,7 +56,7 @@ public class EditorView {
 	}
 
 	public JFrame run(EditorControl control, String title) {
-		var gc = this;
+		var gc = model;
 
 		var searchTextField = this.searchTextField = applyDefaults(new JTextField(32));
 
@@ -147,7 +147,7 @@ public class EditorView {
 	}
 
 	private JMenuBar newMenuBar(EditorControl control) {
-		var gc = this;
+		var gc = model;
 
 		var newMenuItem = applyDefaults(new JMenuItem("New...", KeyEvent.VK_N));
 		newMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, InputEvent.CTRL_DOWN_MASK));

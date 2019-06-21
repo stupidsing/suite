@@ -24,7 +24,7 @@ public class EditorPane extends JEditorPane {
 	private static final long serialVersionUID = 1l;
 
 	public EditorPane(EditorModel model) {
-		var gc = this;
+		var gc = model;
 		var document = getDocument();
 		var undoManager = new UndoManager();
 
