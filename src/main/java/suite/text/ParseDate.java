@@ -13,6 +13,11 @@ import java.util.Set;
 
 import suite.streamlet.Read;
 
+/**
+ * A smart, generic date and time parser.
+ *
+ * @author ywsing
+ */
 public class ParseDate {
 
 	private Map<String, Integer> monthValueByName = Map.ofEntries( //

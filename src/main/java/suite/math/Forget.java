@@ -6,6 +6,7 @@ public class Forget {
 
 	private static Vector vec = new Vector();
 
+	// component-wise multiplication
 	public static float[] forget(float[] fs, float[] n) {
 		return forgetOn(vec.copyOf(fs), n);
 	}
