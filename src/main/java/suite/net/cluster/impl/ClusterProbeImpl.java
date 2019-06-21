@@ -58,8 +58,8 @@ public class ClusterProbeImpl implements ClusterProbe {
 	 */
 	private Map<String, Long> lastSentTimeByPeer = new HashMap<>();
 
-	private Pusher<String> onJoined = Pusher.of();
-	private Pusher<String> onLeft = Pusher.of();
+	private Pusher<String> onJoined = new Pusher<>();
+	private Pusher<String> onLeft = new Pusher<>();
 
 	private enum Command {
 		HELO, FINE, BYEE

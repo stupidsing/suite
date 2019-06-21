@@ -7,7 +7,7 @@ import suite.streamlet.Pusher;
 public class ValuePusher<T> {
 
 	private T value;
-	public final Pusher<T> changed = Pusher.of();
+	public final Pusher<T> changed = new Pusher<>();
 
 	public static <T> ValuePusher<T> of(T value) {
 		return new ValuePusher<>(value);

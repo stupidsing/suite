@@ -38,14 +38,14 @@ public class Pusher<T> {
 	}
 
 	public static <T> Pusher<T> append(Pusher<T> n0, Pusher<T> n1) {
-		Pusher<T> pusher = of();
+		var pusher = new Pusher<T>();
 		n0.wire_(pusher, pusher::push);
 		n1.wire_(pusher, pusher::push);
 		return pusher;
 	}
 
 	public static <T> Pusher<T> from(Source<T> source) {
-		Pusher<T> pusher = of();
+		var pusher = new Pusher<T>();
 		executor.submit(() -> {
 			T t;
 			while ((t = source.g()) != null)
@@ -55,7 +55,7 @@ public class Pusher<T> {
 	}
 
 	public static <T> void loop(Source<T> source, Sink<Pusher<T>> sink) {
-		Pusher<T> pusher = of();
+		var pusher = new Pusher<T>();
 		T t;
 
 		executor.submit(() -> sink.f(pusher));
@@ -65,7 +65,7 @@ public class Pusher<T> {
 	}
 
 	public static <T, U, V> Pusher<V> merge(Pusher<T> n0, Pusher<U> n1, Fun2<T, U, V> fun) {
-		Pusher<V> pusher = of();
+		var pusher = new Pusher<V>();
 		var cr = new CasReference<Pair<T, U>>(Pair.of(null, null));
 		Sink<Pair<T, U>> recalc = pair -> pusher.push(pair.map(fun));
 		n0.wire_(pusher, t -> recalc.f(cr.apply(pair -> Pair.of(t, pair.t1))));
@@ -74,16 +74,12 @@ public class Pusher<T> {
 	}
 
 	public static Pusher<Object> ofFixed(int ms) {
-		var pusher = of();
+		var pusher = new Pusher<Object>();
 		executor.scheduleAtFixedRate(() -> pusher.push(null), ms, ms, TimeUnit.MILLISECONDS);
 		return pusher;
 	}
 
-	public static <T> Pusher<T> of() {
-		return new Pusher<>();
-	}
-
-	private Pusher() {
+	public Pusher() {
 		this(new WeakHashMap<>());
 	}
 
@@ -179,7 +175,7 @@ public class Pusher<T> {
 	}
 
 	private <U> Pusher<U> redirect_(Redirector<T, U> redirector) {
-		Pusher<U> pusher = of();
+		var pusher = new Pusher<U>();
 		wire_(pusher, t -> redirector.accept(t, pusher));
 		return pusher;
 	}
