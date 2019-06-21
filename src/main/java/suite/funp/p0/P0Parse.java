@@ -264,9 +264,8 @@ public class P0Parse {
 				return FunpDefine.of(vn, fa, FunpReference.of(FunpVariable.of(vn)), Fdt.G_MONO);
 			}).applyTree((op, l, r) -> {
 				if (op == TermOp.TUPLE_) {
-					var isIo = checkDo() && isBang(l);
 					var apply = FunpApply.of(p(r), p(l));
-					return isIo && apply != null ? FunpDoEvalIo.of(apply) : apply;
+					return checkDo() && isBang(l) ? FunpDoEvalIo.of(apply) : apply;
 				} else
 					return FunpTree.of(op, p(l), p(r));
 			}).nonNullResult();
