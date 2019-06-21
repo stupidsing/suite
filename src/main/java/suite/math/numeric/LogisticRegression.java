@@ -20,7 +20,7 @@ public class LogisticRegression {
 		var nSamples = xs.length;
 		var nParameters = xs[0].length;
 
-		var ms = new float[nParameters];
+		var weights = new float[nParameters];
 		var b = 0d;
 
 		for (var iter = 0; iter < 2048; iter++) {
@@ -28,7 +28,7 @@ public class LogisticRegression {
 			var errors = new float[nParameters];
 
 			for (var i = 0; i < nSamples; i++) {
-				var output = b + vec.dot(ms, xs[i]);
+				var output = b + vec.dot(weights, xs[i]);
 				var error = Sigmoid.sigmoid(output) - ys[i];
 				errorSum += error;
 				vec.addOn(errors, vec.scale(xs[i], error));
@@ -36,11 +36,11 @@ public class LogisticRegression {
 
 			var inv = 1d / nSamples;
 			b -= learningRate * errorSum * inv;
-			vec.subOn(ms, vec.scaleOn(errors, learningRate * inv));
+			vec.subOn(weights, vec.scaleOn(errors, learningRate * inv));
 		}
 
 		var b_ = b;
-		return xs_ -> Sigmoid.sigmoid(vec.dot(ms, xs_) + b_);
+		return xs_ -> Sigmoid.sigmoid(vec.dot(weights, xs_) + b_);
 	}
 
 }
