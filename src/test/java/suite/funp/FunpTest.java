@@ -19,6 +19,11 @@ public class FunpTest {
 	}
 
 	@Test
+	public void testAsm() {
+		test(3, "do! !asm (ESI = 2;) { INC ESI; }/ESI");
+	}
+
+	@Test
 	public void testAssign() {
 		test(3, "define p := address.of predef { a: 1, b: 2, c: 3, } ~ do! (!assign p*/b := 4 ~ p*/c)");
 		test(4, "define p := address.of predef { a: 1, b: 2, c: 3, } ~ do! (!assign p*/c := 4 ~ p*/c)");
