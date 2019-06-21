@@ -45,11 +45,13 @@ public class Pusher<T> {
 	}
 
 	public static <T> Pusher<T> from(Source<T> source) {
-		return of(sink -> executor.submit(() -> {
+		Pusher<T> pusher = of();
+		executor.submit(() -> {
 			T t;
 			while ((t = source.g()) != null)
-				sink.f(t);
-		}));
+				pusher.push(t);
+		});
+		return pusher;
 	}
 
 	public static <T> void loop(Source<T> source, Sink<Pusher<T>> sink) {
@@ -72,12 +74,8 @@ public class Pusher<T> {
 	}
 
 	public static Pusher<Object> ofFixed(int ms) {
-		return of(push -> executor.scheduleAtFixedRate(() -> push.f(null), ms, ms, TimeUnit.MILLISECONDS));
-	}
-
-	public static <T> Pusher<T> of(Sink<Sink<T>> sink) {
-		Pusher<T> pusher = of();
-		sink.f(pusher::push);
+		var pusher = of();
+		executor.scheduleAtFixedRate(() -> pusher.push(null), ms, ms, TimeUnit.MILLISECONDS);
 		return pusher;
 	}
 

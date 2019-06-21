@@ -122,9 +122,11 @@ public class Listen {
 	}
 
 	private static <T> Pusher<T> pusher(Sink<Sink<T>> sink) {
-		var pusher = Pusher.of(sink);
-
-		return Pusher.of(push -> pusher.wire(pusher, t -> SwingUtilities.invokeLater(() -> push.f(t))));
+		var pusher0 = Pusher.<T> of();
+		var pusher1 = Pusher.<T> of();
+		sink.f(pusher0::push);
+		pusher0.wire(pusher1, t -> SwingUtilities.invokeLater(() -> pusher1.push(t)));
+		return pusher1;
 	}
 
 }

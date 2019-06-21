@@ -36,18 +36,20 @@ public class Pusher0<T> {
 	}
 
 	public static <T> Pusher0<T> append(Pusher0<T> n0, Pusher0<T> n1) {
-		return of(push -> {
-			n0.wire_(push);
-			n1.wire_(push);
-		});
+		Pusher0<T> pusher = of();
+		n0.wire_(pusher::push);
+		n1.wire_(pusher::push);
+		return pusher;
 	}
 
 	public static <T> Pusher0<T> from(Source<T> source) {
-		return of(sink -> executor.submit(() -> {
+		Pusher0<T> pusher = of();
+		executor.submit(() -> {
 			T t;
 			while ((t = source.g()) != null)
-				sink.f(t);
-		}));
+				pusher.push(t);
+		});
+		return pusher;
 	}
 
 	public static <T> void loop(Source<T> source, Sink<Pusher0<T>> sink) {
@@ -61,21 +63,17 @@ public class Pusher0<T> {
 	}
 
 	public static <T, U, V> Pusher0<V> merge(Pusher0<T> n0, Pusher0<U> n1, Fun2<T, U, V> fun) {
-		return of(push -> {
-			var cr = new CasReference<Pair<T, U>>(Pair.of(null, null));
-			Sink<Pair<T, U>> recalc = pair -> push.f(pair.map(fun));
-			n0.wire_(t -> recalc.f(cr.apply(pair -> Pair.of(t, pair.t1))));
-			n1.wire_(u -> recalc.f(cr.apply(pair -> Pair.of(pair.t0, u))));
-		});
+		Pusher0<V> pusher = of();
+		var cr = new CasReference<Pair<T, U>>(Pair.of(null, null));
+		Sink<Pair<T, U>> recalc = pair -> pusher.push(pair.map(fun));
+		n0.wire_(t -> recalc.f(cr.apply(pair -> Pair.of(t, pair.t1))));
+		n1.wire_(u -> recalc.f(cr.apply(pair -> Pair.of(pair.t0, u))));
+		return pusher;
 	}
 
 	public static Pusher0<Object> ofFixed(int ms) {
-		return of(push -> executor.scheduleAtFixedRate(() -> push.f(null), ms, ms, TimeUnit.MILLISECONDS));
-	}
-
-	public static <T> Pusher0<T> of(Sink<Sink<T>> sink) {
-		Pusher0<T> pusher = of();
-		sink.f(pusher::push);
+		var pusher = of();
+		executor.scheduleAtFixedRate(() -> pusher.push(null), ms, ms, TimeUnit.MILLISECONDS);
 		return pusher;
 	}
 
@@ -179,7 +177,9 @@ public class Pusher0<T> {
 	}
 
 	private <U> Pusher0<U> redirect_(Redirector<T, U> redirector) {
-		return of(push -> wire_(t -> redirector.accept(t, push)));
+		Pusher0<U> pusher = of();
+		wire_(t -> redirector.accept(t, pusher::push));
+		return pusher;
 	}
 
 	private Runnable wire_(Sink<T> pushee) {
