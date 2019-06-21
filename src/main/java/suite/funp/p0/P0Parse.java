@@ -99,8 +99,6 @@ public class P0Parse {
 				return callBang(a, b, c);
 			}).match("!! .0 .1", (a, b) -> {
 				return checkDo(() -> FunpDoEvalIo.of(FunpApply.of(p(b), p(a))));
-			}).match("!! .0 .1", (a, b) -> {
-				return checkDo(() -> FunpDoEvalIo.of(FunpApply.of(p(b), p(a))));
 			}).match(".0:.1 .2", (a, b, c) -> {
 				var c0 = Coerce.valueOf(Atom.name(b).toUpperCase());
 				var c1 = Coerce.valueOf(Atom.name(a).toUpperCase());
