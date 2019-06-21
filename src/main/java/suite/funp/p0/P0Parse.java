@@ -95,30 +95,26 @@ public class P0Parse {
 
 		private Funp p(Node node) {
 			return new SwitchNode<Funp>(node //
-			).match("!! .0 .1 ~ .2", (a, b, c) -> {
-				return callBang(a, b, c);
-			}).match("!! .0 .1", (a, b) -> {
-				return checkDo(() -> FunpDoEvalIo.of(FunpApply.of(p(b), p(a))));
+			).match("!! .0", a -> {
+				return checkDo(() -> FunpDoEvalIo.of(p(a)));
+			}).match("!! .0 ~ .1", (a, b) -> {
+				var lambda = lambda(dontCare, b);
+				return checkDo(() -> FunpDefine.of(lambda.vn, p(a), lambda.expr, Fdt.L_IOAP));
 			}).match(".0:.1 .2", (a, b, c) -> {
 				var c0 = Coerce.valueOf(Atom.name(b).toUpperCase());
 				var c1 = Coerce.valueOf(Atom.name(a).toUpperCase());
 				return FunpCoerce.of(c0, c1, p(c));
 			}).match(".0 .1 ~ .2", (a, b, c) -> {
-				return isBang(a) ? callBang(a, b, c) : null;
+				if (isBang(a)) {
+					var apply = FunpApply.of(p(b), p(a));
+					var lambda = lambda(dontCare, c);
+					return checkDo(() -> FunpDefine.of(lambda.vn, apply, lambda.expr, Fdt.L_IOAP));
+				} else
+					return null;
 			}).match(".0 => .1", (a, b) -> {
 				return lambdaSeparate(a, b);
 			}).match(".0 | .1", (a, b) -> {
 				return FunpApply.of(p(a), p(b));
-			}).match(".0 .1", (a, b) -> {
-				if (a instanceof Atom) {
-					var vn = Atom.name(a);
-					var m = Suite.pattern("[.0]").match(b);
-					var isIndex = m != null && 0 < m.length && !isList(m[0]);
-					var isIo = checkDo() && isBang(a);
-					var apply = vns.contains(vn) && !isIndex ? FunpApply.of(p(b), FunpVariable.of(vn)) : null;
-					return isIo && apply != null ? FunpDoEvalIo.of(apply) : apply;
-				} else
-					return null;
 			}).match(".0 [.1]", (a, b) -> {
 				return !isList(b) ? FunpIndex.of(FunpReference.of(p(a)), p(b)) : null;
 			}).match(".0, .1", (a, b) -> {
@@ -267,14 +263,13 @@ public class P0Parse {
 						.toList());
 				return FunpDefine.of(vn, fa, FunpReference.of(FunpVariable.of(vn)), Fdt.G_MONO);
 			}).applyTree((op, l, r) -> {
-				return FunpTree.of(op, p(l), p(r));
+				if (op == TermOp.TUPLE_) {
+					var isIo = checkDo() && isBang(l);
+					var apply = FunpApply.of(p(r), p(l));
+					return isIo && apply != null ? FunpDoEvalIo.of(apply) : apply;
+				} else
+					return FunpTree.of(op, p(l), p(r));
 			}).nonNullResult();
-		}
-
-		private Funp callBang(Node a, Node b, Node c) {
-			var apply = FunpApply.of(p(b), p(a));
-			var lambda = lambda(dontCare, c);
-			return checkDo(() -> FunpDefine.of(lambda.vn, apply, lambda.expr, Fdt.L_IOAP));
 		}
 
 		private FunpLambda capture(FunpLambda lambda) {
