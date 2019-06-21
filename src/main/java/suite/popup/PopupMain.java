@@ -84,7 +84,7 @@ public class PopupMain {
 			frame.repaint();
 		};
 
-		Listen.componentResized(frame).wire(refresh::run);
+		Listen.componentResized(frame).wire(refresh, refresh::run);
 
 		refresh.run();
 		System.in.read();

@@ -25,8 +25,8 @@ public class NioClusterMap<K, V> {
 			peers.addAll(cluster.getActivePeers());
 			Collections.sort(peers);
 
-			cluster.getOnJoined().wire(onJoined);
-			cluster.getOnLeft().wire(onLeft);
+			cluster.getOnJoined().wire(this, onJoined);
+			cluster.getOnLeft().wire(this, onLeft);
 			cluster.setOnReceive(GetQuery.Request.class, onGet);
 			cluster.setOnReceive(PutQuery.Request.class, onPut);
 		}

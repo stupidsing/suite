@@ -133,7 +133,7 @@ public class Keyboard {
 		private List<Character> chs = new ArrayList<>();
 		private Trie<Integer, VK> t = trie;
 
-		public void accept(Character ch_, Sink<Pair<VK, Character>> push) {
+		public void accept(Character ch_, Pusher<Pair<VK, Character>> pusher) {
 			if (ch_ != null) {
 				var t1 = t.getMap().get((int) ch_);
 				VK vk;
@@ -142,14 +142,14 @@ public class Keyboard {
 
 				if (t1 != null)
 					if ((vk = (t = t1).getValue()) != null) {
-						push.f(Pair.of(vk, null));
+						pusher.push(Pair.of(vk, null));
 						reset();
 					} else
 						;
 				else
-					flush(push);
+					flush(pusher::push);
 			} else
-				flush(push);
+				flush(pusher::push);
 		}
 
 		private void flush(Sink<Pair<VK, Character>> push) {

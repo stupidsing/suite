@@ -24,6 +24,7 @@ public class EditorPane extends JEditorPane {
 	private static final long serialVersionUID = 1l;
 
 	public EditorPane(EditorModel model) {
+		var gc = this;
 		var document = getDocument();
 		var undoManager = new UndoManager();
 
@@ -50,13 +51,13 @@ public class EditorPane extends JEditorPane {
 				});
 		};
 
-		bind(KeyEvent.VK_TAB, 0).wire(Listen.catchAll(tabize));
-		bind(KeyEvent.VK_TAB, InputEvent.SHIFT_DOWN_MASK).wire(Listen.catchAll(untabize));
-		bind(KeyEvent.VK_Y, InputEvent.CTRL_DOWN_MASK).wire(undoManager::redo);
-		bind(KeyEvent.VK_Z, InputEvent.CTRL_DOWN_MASK).wire(undoManager::undo);
+		bind(KeyEvent.VK_TAB, 0).wire(gc, Listen.catchAll(tabize));
+		bind(KeyEvent.VK_TAB, InputEvent.SHIFT_DOWN_MASK).wire(gc, Listen.catchAll(untabize));
+		bind(KeyEvent.VK_Y, InputEvent.CTRL_DOWN_MASK).wire(gc, undoManager::redo);
+		bind(KeyEvent.VK_Z, InputEvent.CTRL_DOWN_MASK).wire(gc, undoManager::undo);
 
 		document.addUndoableEditListener(event -> undoManager.addEdit(event.getEdit()));
-		Listen.documentChanged(document).wire(event -> model.changeIsModified(true));
+		Listen.documentChanged(document).wire(gc, event -> model.changeIsModified(true));
 	}
 
 	private void replaceLines(Fun<Segment, String> fun) throws BadLocationException {

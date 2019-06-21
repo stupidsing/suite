@@ -192,7 +192,7 @@ public class DevMain {
 
 		keyboard.loop(pusher -> pusher //
 				.fold(state0, (state, pair_) -> pair_.map((vk, ch) -> mutateState.apply(vk, ch, state))) //
-				.wire(redraw));
+				.wire(this, redraw));
 	}
 
 	private class State {

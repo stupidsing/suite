@@ -2,8 +2,11 @@ package suite.streamlet;
 
 import static suite.util.Friends.rethrow;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
+import java.util.WeakHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -12,7 +15,6 @@ import java.util.function.Predicate;
 
 import suite.adt.Mutable;
 import suite.adt.pair.Pair;
-import suite.concurrent.Bag;
 import suite.concurrent.CasReference;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil.Sink;
@@ -29,17 +31,17 @@ public class Pusher<T> {
 
 	private static ScheduledExecutorService executor = Executors.newScheduledThreadPool(8);
 
-	private Bag<Sink<T>> pushees;
+	private WeakHashMap<Object, List<Sink<T>>> pushees;
 
 	public interface Redirector<T0, T1> {
-		public void accept(T0 t0, Sink<T1> sink);
+		public void accept(T0 t0, Pusher<T1> sink);
 	}
 
 	public static <T> Pusher<T> append(Pusher<T> n0, Pusher<T> n1) {
-		return of(push -> {
-			n0.wire_(push);
-			n1.wire_(push);
-		});
+		Pusher<T> pusher = of();
+		n0.wire_(pusher, pusher::push);
+		n1.wire_(pusher, pusher::push);
+		return pusher;
 	}
 
 	public static <T> Pusher<T> from(Source<T> source) {
@@ -61,12 +63,12 @@ public class Pusher<T> {
 	}
 
 	public static <T, U, V> Pusher<V> merge(Pusher<T> n0, Pusher<U> n1, Fun2<T, U, V> fun) {
-		return of(push -> {
-			var cr = new CasReference<Pair<T, U>>(Pair.of(null, null));
-			Sink<Pair<T, U>> recalc = pair -> push.f(pair.map(fun));
-			n0.wire_(t -> recalc.f(cr.apply(pair -> Pair.of(t, pair.t1))));
-			n1.wire_(u -> recalc.f(cr.apply(pair -> Pair.of(pair.t0, u))));
-		});
+		Pusher<V> pusher = of();
+		var cr = new CasReference<Pair<T, U>>(Pair.of(null, null));
+		Sink<Pair<T, U>> recalc = pair -> pusher.push(pair.map(fun));
+		n0.wire_(pusher, t -> recalc.f(cr.apply(pair -> Pair.of(t, pair.t1))));
+		n1.wire_(pusher, u -> recalc.f(cr.apply(pair -> Pair.of(pair.t0, u))));
+		return pusher;
 	}
 
 	public static Pusher<Object> ofFixed(int ms) {
@@ -84,29 +86,29 @@ public class Pusher<T> {
 	}
 
 	private Pusher() {
-		this(new Bag<>());
+		this(new WeakHashMap<>());
 	}
 
-	private Pusher(Bag<Sink<T>> pushees) {
+	private Pusher(WeakHashMap<Object, List<Sink<T>>> pushees) {
 		this.pushees = pushees;
 	}
 
 	public <U> Pusher<U> concatMap(Fun<T, Pusher<U>> fun) {
-		return redirect_((t, push) -> fun.apply(t).wire_(push));
+		return redirect_((t, pusher) -> fun.apply(t).wire_(pusher, pusher::push));
 	}
 
 	public Pusher<T> delay(int ms) {
-		return redirect_((t, push) -> executor.schedule(() -> push.f(t), ms, TimeUnit.MILLISECONDS));
+		return redirect_((t, pusher) -> executor.schedule(() -> pusher.push(t), ms, TimeUnit.MILLISECONDS));
 	}
 
 	public Pusher<T> delayAccum(int ms) {
 		var al = new AtomicLong();
-		return redirect_((t, push) -> {
+		return redirect_((t, pusher) -> {
 			var current = System.currentTimeMillis();
 			al.set(current);
 			executor.schedule(() -> {
 				if (al.get() == current)
-					push.f(t);
+					pusher.push(t);
 			}, ms, TimeUnit.MILLISECONDS);
 		});
 	}
@@ -115,23 +117,23 @@ public class Pusher<T> {
 		return redirect_(new Redirector<>() {
 			private T previous = null;
 
-			public void accept(T t, Sink<T> push) {
+			public void accept(T t, Pusher<T> pusher) {
 				if (previous == null || !Objects.equals(previous, t))
-					push.f(t);
+					pusher.push(t);
 			}
 		});
 	}
 
 	public Pusher<T> filter(Predicate<T> pred) {
-		return redirect_((t, push) -> {
+		return redirect_((t, pusher) -> {
 			if (pred.test(t))
-				push.f(t);
+				pusher.push(t);
 		});
 	}
 
 	public <U> Pusher<U> fold(U init, Fun2<U, T, U> fun) {
 		var cr = new CasReference<U>(init);
-		return redirect_((t1, push) -> push.f(cr.apply(t0 -> fun.apply(t0, t1))));
+		return redirect_((t1, pusher) -> pusher.push(cr.apply(t0 -> fun.apply(t0, t1))));
 	}
 
 	public Pusher<T> level(int ms) {
@@ -139,16 +141,16 @@ public class Pusher<T> {
 	}
 
 	public <U> Pusher<U> map(Fun<T, U> fun) {
-		return redirect_((t, sink) -> sink.f(fun.apply(t)));
+		return redirect_((t, pusher) -> pusher.push(fun.apply(t)));
 	}
 
 	public void push(T t) {
-		pushees.forEach(sink -> sink.f(t));
+		pushees.forEach((gc, sinks) -> sinks.forEach(sink -> sink.f(t)));
 	}
 
 	public Puller<T> pushee() {
 		var queue = new NullableSyncQueue<T>();
-		wire_(queue::offerQuietly);
+		wire_(queue, queue::offerQuietly);
 		return Puller.of(() -> rethrow(queue::take));
 	}
 
@@ -158,33 +160,34 @@ public class Pusher<T> {
 
 	public Pusher<T> resample(Pusher<?> event) {
 		var mut = Mutable.<T> nil();
-		wire_(mut::update);
-		return event.redirect_((e, push) -> push.f(mut.value()));
+		wire_(mut, mut::update);
+		return event.redirect_((e, pusher) -> pusher.push(mut.value()));
 	}
 
 	public Pusher<T> unique() {
 		var set = new HashSet<>();
-		return redirect_((t, push) -> {
+		return redirect_((t, pusher) -> {
 			if (set.add(t))
-				push.f(t);
+				pusher.push(t);
 		});
 	}
 
-	public void wire(Runnable runner) {
-		wire_(t -> runner.run());
+	public void wire(Object gc, Runnable runner) {
+		wire_(gc, t -> runner.run());
 	}
 
-	public void wire(Sink<T> pushee) {
-		wire_(pushee);
+	public void wire(Object gc, Sink<T> pushee) {
+		wire_(gc, pushee);
 	}
 
 	private <U> Pusher<U> redirect_(Redirector<T, U> redirector) {
-		return of(push -> wire_(t -> redirector.accept(t, push)));
+		Pusher<U> pusher = of();
+		wire_(pusher, t -> redirector.accept(t, pusher));
+		return pusher;
 	}
 
-	private Runnable wire_(Sink<T> pushee) {
-		pushees.add(pushee);
-		return () -> pushees.remove(pushee);
+	private void wire_(Object gc, Sink<T> pushee) {
+		pushees.computeIfAbsent(gc, o -> new ArrayList<>()).add(pushee);
 	}
 
 }
