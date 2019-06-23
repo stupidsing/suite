@@ -42,9 +42,11 @@ public class Dump {
 	}
 
 	public static String toLine(Object node) {
+		return String_.build(sb -> toLine(node, sb::append));
+	}
+
+	private static void toLine(Object node, Sink<String> sink) {
 		var dumpedObjects = new IdentityHashMap<Object, Object>();
-		var sb = new StringBuilder();
-		Sink<String> sink = sb::append;
 
 		new Object() {
 			private void d(Object object, String suffix) {
@@ -115,8 +117,6 @@ public class Dump {
 					}).nonNullResult();
 			}
 		}.d(node, "");
-
-		return sb.toString();
 	}
 
 	/**
@@ -132,11 +132,11 @@ public class Dump {
 	 * with a descriptive name which you gave.
 	 */
 	public static void details(String name, Object object) {
-		var sb = new StringBuilder();
-		sb.append("Dumping ");
-		sb.append(name);
-		Dump.toDetails("", object, sb);
-		Log_.info(sb.toString());
+		Log_.info(String_.build(sb -> {
+			sb.append("Dumping ");
+			sb.append(name);
+			Dump.toDetails("", object, sb);
+		}));
 	}
 
 	public static String object(Object object) {
@@ -155,9 +155,7 @@ public class Dump {
 	 *                   The monster.
 	 */
 	public static String toDetails(String prefix, Object object) {
-		var sb = new StringBuilder();
-		toDetails(prefix, object, sb);
-		return sb.toString();
+		return String_.build(sb -> toDetails(prefix, object, sb));
 	}
 
 	public static void toDetails(String prefix, Object object, StringBuilder sb) {
@@ -212,14 +210,14 @@ public class Dump {
 
 				// simple listings for simple classes
 				if (clazz.isArray())
-					if (Util.isSimple(clazz.getComponentType())) {
-						var sb = new StringBuilder();
-						sb.append("[");
-						for (var i = 0; i < Array.getLength(object); i++)
-							sb.append(Array.get(object, i) + ", ");
-						sb.append("]");
-						d(prefix, sb.toString());
-					} else
+					if (Util.isSimple(clazz.getComponentType()))
+						d(prefix, String_.build(sb -> {
+							sb.append("[");
+							for (var i = 0; i < Array.getLength(object); i++)
+								sb.append(Array.get(object, i) + ", ");
+							sb.append("]");
+						}));
+					else
 						for (var i = 0; i < Array.getLength(object); i++)
 							d(prefix + "[" + count++ + "]", Array.get(object, i));
 				else if (Collection.class.isAssignableFrom(clazz))

@@ -4,6 +4,7 @@ import java.util.List;
 
 import suite.adt.pair.Pair;
 import suite.streamlet.FunUtil.Fun;
+import suite.util.String_;
 
 public class Preprocess {
 
@@ -41,10 +42,10 @@ public class Preprocess {
 	}
 
 	private static String forward(String in, List<Run> runs) {
-		var sb = new StringBuilder();
-		for (var run : runs)
-			sb.append(run.segment != null ? in.substring(run.segment.start, run.segment.end) : run.text);
-		return sb.toString();
+		return String_.build(sb -> {
+			for (var run : runs)
+				sb.append(run.segment != null ? in.substring(run.segment.start, run.segment.end) : run.text);
+		});
 	}
 
 	private static int reverse(List<Run> runs, int targetPosition) {

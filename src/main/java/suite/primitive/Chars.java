@@ -19,6 +19,7 @@ import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.Puller;
 import suite.util.Compare;
 import suite.util.ParseUtil;
+import suite.util.String_;
 
 public class Chars implements Iterable<Character> {
 
@@ -262,10 +263,10 @@ public class Chars implements Iterable<Character> {
 
 	@Override
 	public String toString() {
-		var sb = new StringBuilder();
-		for (var i = start; i < end; i++)
-			sb.append(cs[i]);
-		return sb.toString();
+		return String_.build(sb -> {
+			for (var i = start; i < end; i++)
+				sb.append(cs[i]);
+		});
 	}
 
 	private boolean startsWith_(Chars chars, int s) {

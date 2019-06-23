@@ -58,18 +58,18 @@ public class Wildcard {
 	}
 
 	public static String apply(String pattern, String[] input) {
-		var sb = new StringBuilder();
-		var i = 0;
-		for (var ch : String_.chars(pattern))
-			switch (ch) {
-			case '*':
-			case '?':
-				sb.append(input[i++]);
-				break;
-			default:
-				sb.append(ch);
-			}
-		return sb.toString();
+		return String_.build(sb -> {
+			var i = 0;
+			for (var ch : String_.chars(pattern))
+				switch (ch) {
+				case '*':
+				case '?':
+					sb.append(input[i++]);
+					break;
+				default:
+					sb.append(ch);
+				}
+		});
 	}
 
 }

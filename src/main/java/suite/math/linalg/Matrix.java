@@ -12,6 +12,7 @@ import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Dbl_Dbl;
 import suite.primitive.Int_Dbl;
 import suite.streamlet.Read;
+import suite.util.String_;
 import suite.util.To;
 
 public class Matrix {
@@ -424,15 +425,11 @@ public class Matrix {
 	}
 
 	public String toString(float[] m) {
-		var sb = new StringBuilder();
-		dump(sb, m);
-		return sb.toString();
+		return String_.build(sb -> dump(sb, m));
 	}
 
 	public String toString(float[][] m) {
-		var sb = new StringBuilder();
-		dump(sb, m);
-		return sb.toString();
+		return String_.build(sb -> dump(sb, m));
 	}
 
 	public float[][] transpose(float[][] m) {

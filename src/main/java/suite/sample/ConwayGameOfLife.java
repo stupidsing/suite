@@ -56,16 +56,16 @@ public class ConwayGameOfLife {
 
 	@Override
 	public String toString() {
-		var sb = new StringBuilder();
-		for (var y = 1; y < size; y++)
-			sb.append((char) 65309);
-		sb.append('\n');
-		for (var x = 1; x < size; x++) {
+		return String_.build(sb -> {
 			for (var y = 1; y < size; y++)
-				sb.append((char) (game[x][y] ? 65327 : 12288));
+				sb.append((char) 65309);
 			sb.append('\n');
-		}
-		return sb.toString();
+			for (var x = 1; x < size; x++) {
+				for (var y = 1; y < size; y++)
+					sb.append((char) (game[x][y] ? 65327 : 12288));
+				sb.append('\n');
+			}
+		});
 	}
 
 }

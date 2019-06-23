@@ -5,6 +5,8 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+import suite.util.String_;
+
 public class ExecuteTest {
 
 	@Test
@@ -19,10 +21,10 @@ public class ExecuteTest {
 
 	@Test
 	public void test1() {
-		var sb = new StringBuilder();
-		for (var i = 0; i < 1024; i++)
-			sb.append("01234567890123456789012345678901234567890123456789012345678901234567890123456789\n");
-		var in = sb.toString();
+		var in = String_.build(sb -> {
+			for (var i = 0; i < 1024; i++)
+				sb.append("01234567890123456789012345678901234567890123456789012345678901234567890123456789\n");
+		});
 
 		var exec = new Execute(new String[] { "cat", }, in);
 

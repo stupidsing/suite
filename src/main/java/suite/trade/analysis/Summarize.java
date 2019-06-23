@@ -97,25 +97,26 @@ public class Summarize {
 					+ (!keys.isEmpty() ? ", " + keys : "");
 		});
 
-		var sb = new StringBuilder();
-		Sink<String> log = sb::append;
+		var text = String_.build(sb -> {
+			Sink<String> log = sb::append;
 
-		var outs = summaryByKey //
-				.mapValue(Summarize_::out0) //
-				.sortByKey(Object_::compareAnyway) //
-				.map((k, v) -> "\nFor strategy " + k + ":" + v);
+			var outs = summaryByKey //
+					.mapValue(Summarize_::out0) //
+					.sortByKey(Object_::compareAnyway) //
+					.map((k, v) -> "\nFor strategy " + k + ":" + v);
 
-		for (var out : outs)
-			log.f(out);
+			for (var out : outs)
+				log.f(out);
 
-		log.f(FormatUtil.tablize("\nOverall:\t" + Time.now().ymdHms() + overall.out1()));
+			log.f(FormatUtil.tablize("\nOverall:\t" + Time.now().ymdHms() + overall.out1()));
+		});
 
 		// profit and loss
 		var pnlByKey = sellAll(trades, priceBySymbol) //
 				.groupBy(fun, t -> (double) Account.ofHistory(t).cash()) //
 				.toMap();
 
-		return new SummarizeByStrategy<>(sb.toString(), overall.account, pnlByKey);
+		return new SummarizeByStrategy<>(text, overall.account, pnlByKey);
 	}
 
 	public class SummarizeByStrategy<K> {

@@ -26,6 +26,7 @@ import suite.primitive.adt.map.LngIntMap;
 import suite.primitive.adt.pair.IntIntPair;
 import suite.primitive.adt.pair.LngLngPair;
 import suite.streamlet.FunUtil.Sink;
+import suite.util.String_;
 import suite.util.To;
 
 public class Amd64Interpret {
@@ -491,13 +492,13 @@ public class Amd64Interpret {
 	}
 
 	private String state(Instruction instruction) {
-		var sb = new StringBuilder();
-		for (var i = 0; i < 8; i++)
-			sb.append(
-					(i % 2 == 0 ? "\n" : " ") + amd64.regByName.inverse().get(amd64.reg32[i]) + ":" + To.hex8(regs[i]));
-		sb.append("\nCMP = " + c);
-		sb.append("\nINSTRUCTION = " + dump.dump(instruction));
-		return sb.toString();
+		return String_.build(sb -> {
+			for (var i = 0; i < 8; i++)
+				sb.append((i % 2 == 0 ? "\n" : " ") + amd64.regByName.inverse().get(amd64.reg32[i]) + ":"
+						+ To.hex8(regs[i]));
+			sb.append("\nCMP = " + c);
+			sb.append("\nINSTRUCTION = " + dump.dump(instruction));
+		});
 	}
 
 }

@@ -30,14 +30,13 @@ public class EditorPane extends JEditorPane {
 
 		SinkEx<ActionEvent, BadLocationException> tabize = event -> {
 			if (isSelectedText())
-				replaceLines(segment -> {
-					var sb = new StringBuilder("\t");
+				replaceLines(segment -> String_.build(sb -> {
+					sb.append("\t");
 					for (var ch : String_.chars(segment)) {
 						sb.append(ch);
 						sb.append(ch == 10 ? "\t" : "");
 					}
-					return sb.toString();
-				});
+				}));
 			else
 				document.insertString(getCaretPosition(), "\t", null);
 		};

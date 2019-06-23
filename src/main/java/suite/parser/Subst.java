@@ -3,6 +3,7 @@ package suite.parser;
 import java.util.Map;
 
 import suite.streamlet.FunUtil.Iterate;
+import suite.util.String_;
 
 public class Subst {
 
@@ -23,9 +24,7 @@ public class Subst {
 	}
 
 	public String subst(String s, Iterate<String> fun) {
-		var sb = new StringBuilder();
-		subst(s, fun, sb);
-		return sb.toString();
+		return String_.build(sb -> subst(s, fun, sb));
 	}
 
 	public void subst(String s, Iterate<String> fun, StringBuilder sb) {

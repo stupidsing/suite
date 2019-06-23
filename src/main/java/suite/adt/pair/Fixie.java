@@ -26,6 +26,7 @@ import suite.adt.pair.Fixie_.FixieFun8;
 import suite.adt.pair.Fixie_.FixieFun9;
 import suite.adt.pair.Fixie_.FixieFunA;
 import suite.object.Object_;
+import suite.util.String_;
 
 public class Fixie<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9> implements FixieA<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9> {
 
@@ -234,28 +235,28 @@ public class Fixie<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9> implements FixieA<T0,
 
 	@Override
 	public String toString() {
-		var sb = new StringBuilder();
-		if (t0 != D)
-			sb.append(t0.toString());
-		if (t1 != D)
-			sb.append(":" + t1.toString());
-		if (t2 != D)
-			sb.append(":" + t2.toString());
-		if (t3 != D)
-			sb.append(":" + t3.toString());
-		if (t4 != D)
-			sb.append(":" + t4.toString());
-		if (t5 != D)
-			sb.append(":" + t5.toString());
-		if (t6 != D)
-			sb.append(":" + t6.toString());
-		if (t7 != D)
-			sb.append(":" + t7.toString());
-		if (t8 != D)
-			sb.append(":" + t8.toString());
-		if (t9 != D)
-			sb.append(":" + t9.toString());
-		return sb.toString();
+		return String_.build(sb -> {
+			if (t0 != D)
+				sb.append(t0.toString());
+			if (t1 != D)
+				sb.append(":" + t1.toString());
+			if (t2 != D)
+				sb.append(":" + t2.toString());
+			if (t3 != D)
+				sb.append(":" + t3.toString());
+			if (t4 != D)
+				sb.append(":" + t4.toString());
+			if (t5 != D)
+				sb.append(":" + t5.toString());
+			if (t6 != D)
+				sb.append(":" + t6.toString());
+			if (t7 != D)
+				sb.append(":" + t7.toString());
+			if (t8 != D)
+				sb.append(":" + t8.toString());
+			if (t9 != D)
+				sb.append(":" + t9.toString());
+		});
 	}
 
 	@Override

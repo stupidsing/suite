@@ -15,6 +15,7 @@ import suite.object.Object_;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.Puller;
 import suite.util.Compare;
+import suite.util.String_;
 import suite.util.To;
 
 public class Bytes implements Iterable<Byte> {
@@ -235,10 +236,10 @@ public class Bytes implements Iterable<Byte> {
 
 	@Override
 	public String toString() {
-		var sb = new StringBuilder();
-		for (var i = start; i < end; i++)
-			sb.append(" " + To.hex2(bs[i]));
-		return sb.toString();
+		return String_.build(sb -> {
+			for (var i = start; i < end; i++)
+				sb.append(" " + To.hex2(bs[i]));
+		});
 	}
 
 	private boolean startsWith_(Bytes bytes, int s) {

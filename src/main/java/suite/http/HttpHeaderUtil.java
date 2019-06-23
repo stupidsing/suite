@@ -31,14 +31,16 @@ public class HttpHeaderUtil {
 
 	public static Map<String, String> getPostedAttrs(InputStream is) {
 		var reader = new InputStreamReader(is, Defaults.charset);
-		var sb = new StringBuilder();
-		var buffer = new char[Defaults.bufferSize];
-		int nCharsRead;
 
-		while (0 <= (nCharsRead = rethrow(() -> reader.read(buffer))))
-			sb.append(buffer, 0, nCharsRead);
+		var query = String_.build(sb -> {
+			var buffer = new char[Defaults.bufferSize];
+			int nCharsRead;
 
-		return getAttrs(sb.toString());
+			while (0 <= (nCharsRead = rethrow(() -> reader.read(buffer))))
+				sb.append(buffer, 0, nCharsRead);
+		});
+
+		return getAttrs(query);
 	}
 
 	public static Map<String, String> getAttrs(String query) {

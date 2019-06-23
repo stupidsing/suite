@@ -5,6 +5,7 @@ import java.util.Objects;
 
 import suite.object.Object_;
 import suite.streamlet.Streamlet;
+import suite.util.String_;
 
 public class PerSet<V extends Comparable<V>> implements Iterable<V> {
 
@@ -65,14 +66,14 @@ public class PerSet<V extends Comparable<V>> implements Iterable<V> {
 
 	@Override
 	public String toString() {
-		var sb = new StringBuilder();
-		sb.append("(");
+		return String_.build(sb -> {
+			sb.append("(");
 
-		for (var v : this)
-			sb.append(v + ", ");
+			for (var v : this)
+				sb.append(v + ", ");
 
-		sb.append(")");
-		return sb.toString();
+			sb.append(")");
+		});
 	}
 
 }

@@ -13,6 +13,7 @@ import suite.primitive.IoSink;
 import suite.streamlet.FunUtil.Iterate;
 import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Puller;
+import suite.util.String_;
 
 public class ThunkUtil {
 
@@ -22,13 +23,12 @@ public class ThunkUtil {
 	 */
 	public static String yawnString(Iterate<Node> yawn, Node node) {
 		var st = yawnList(yawn, node, false);
-		var sb = new StringBuilder();
-		Node n;
+		return String_.build(sb -> {
+			Node n;
 
-		while ((n = st.pull()) != null)
-			sb.append((char) Int.num(n));
-
-		return sb.toString();
+			while ((n = st.pull()) != null)
+				sb.append((char) Int.num(n));
+		});
 	}
 
 	public static void yawnWriter(Iterate<Node> yawn, Node node, Writer writer) throws IOException {

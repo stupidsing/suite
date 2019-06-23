@@ -55,24 +55,22 @@ public class Profiler {
 	}
 
 	public String dump() {
-		var sb = new StringBuilder();
+		return String_.build(sb -> {
+			sb.append("PROFILING RESULT\n\n");
+			sb.append("TOTAL SAMPLES = " + count.get() + "\n");
+			sb.append("\n\n");
 
-		sb.append("PROFILING RESULT\n\n");
-		sb.append("TOTAL SAMPLES = " + count.get() + "\n");
-		sb.append("\n\n");
+			sb.append("METHODS\n\n");
+			sb.append(Read //
+					.from2(records) //
+					.sort((p0, p1) -> p1.t1.count - p0.t1.count) //
+					.map((name, record) -> String.format("%d\t%s", record.count, name)) //
+					.toLines());
+			sb.append("\n\n");
 
-		sb.append("METHODS\n\n");
-		sb.append(Read //
-				.from2(records) //
-				.sort((p0, p1) -> p1.t1.count - p0.t1.count) //
-				.map((name, record) -> String.format("%d\t%s", record.count, name)) //
-				.toLines());
-		sb.append("\n\n");
-
-		sb.append("CALLS\n\n");
-		dumpCalls(sb, "", callRoot);
-
-		return sb.toString();
+			sb.append("CALLS\n\n");
+			dumpCalls(sb, "", callRoot);
+		});
 	}
 
 	private void dumpCalls(StringBuilder sb, String indent, Call call) {

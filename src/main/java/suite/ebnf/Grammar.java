@@ -79,9 +79,7 @@ public class Grammar {
 
 	@Override
 	public String toString() {
-		var sb = new StringBuilder();
-		toString("", sb);
-		return sb.toString();
+		return String_.build(sb -> toString("", sb));
 	}
 
 	private void toString(String indent, StringBuilder sb) {

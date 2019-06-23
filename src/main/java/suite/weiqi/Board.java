@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.Stack;
 
+import suite.util.String_;
 import suite.weiqi.Weiqi.Array;
 import suite.weiqi.Weiqi.Occupation;
 
@@ -136,17 +137,15 @@ public class Board extends Array<Occupation> {
 
 	@Override
 	public String toString() {
-		var sb = new StringBuilder();
-
-		for (var x = 0; x < Weiqi.size; x++) {
-			for (var y = 0; y < Weiqi.size; y++) {
-				var c = Coordinate.c(x, y);
-				sb.append(get(c).display() + " ");
+		return String_.build(sb -> {
+			for (var x = 0; x < Weiqi.size; x++) {
+				for (var y = 0; y < Weiqi.size; y++) {
+					var c = Coordinate.c(x, y);
+					sb.append(get(c).display() + " ");
+				}
+				sb.append("\n");
 			}
-			sb.append("\n");
-		}
-
-		return sb.toString();
+		});
 	}
 
 }

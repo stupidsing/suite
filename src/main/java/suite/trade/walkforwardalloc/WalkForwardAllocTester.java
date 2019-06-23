@@ -22,6 +22,7 @@ import suite.trade.data.DataSource.AlignKeyDataSource;
 import suite.trade.data.DataSource.Eod;
 import suite.trade.data.TradeCfg;
 import suite.ts.TimeSeries;
+import suite.util.String_;
 import suite.util.To;
 
 public class WalkForwardAllocTester {
@@ -117,10 +118,11 @@ public class WalkForwardAllocTester {
 		var length = valuations_.length;
 		var deltaMs = (start - System.currentTimeMillis()) / length;
 		var rs = ts.returnsStat(valuations_, deltaMs);
-		var sb = new StringBuilder();
 
-		for (var e : Read.from2(holdBySymbol).sortBy((symbol, value) -> -value).take(5))
-			sb.append(e.<String> map((symbol, hold) -> symbol + ":" + To.percent(hold / length) + ","));
+		var holds = String_.build(sb -> {
+			for (var e : Read.from2(holdBySymbol).sortBy((symbol, value) -> -value).take(5))
+				sb.append(e.<String> map((symbol, hold) -> symbol + ":" + To.percent(hold / length) + ","));
+		});
 
 		return "nTicks:" + length //
 				+ " val:" + (0 < length ? valuations_[length - 1] : "N/A") //
@@ -128,7 +130,7 @@ public class WalkForwardAllocTester {
 				+ " sharpe:" + To.string(rs.sharpeRatio()) //
 				+ " skew:" + To.string(stat.skewness(valuations_)) //
 				+ " " + account.transactionSummary(cfg::transactionFee).out0() //
-				+ " holds::" + sb + "...";
+				+ " holds::" + holds + "...";
 	}
 
 	private String play(List<Trade> trades_) {

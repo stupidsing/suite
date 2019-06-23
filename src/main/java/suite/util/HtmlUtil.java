@@ -117,9 +117,7 @@ public class HtmlUtil {
 	}
 
 	public String format(HtmlNode node) {
-		var sb = new StringBuilder();
-
-		new Object() {
+		return String_.build(sb -> new Object() {
 			private void f(HtmlNode node_) {
 				if (node_.name != null) {
 					sb.append("<" + node_.name);
@@ -133,42 +131,39 @@ public class HtmlUtil {
 				} else
 					sb.append(node_.tag);
 			}
-		}.f(node);
-
-		return sb.toString();
+		}.f(node));
 	}
 
 	public String decode(String in) {
 		var charByEscapeToken = escapeTokenByChar.inverse();
 		String decoded;
 
-		if (in != null) {
-			var sb = new StringBuilder();
-			var index = 0;
+		if (in != null)
+			decoded = String_.build(sb -> {
+				var index = 0;
 
-			while (index < in.length()) {
-				var start = index;
-				var ch = in.charAt(index++);
+				while (index < in.length()) {
+					var start = index;
+					var ch = in.charAt(index++);
 
-				if (ch == '&') {
-					while (in.charAt(index++) != ';')
-						;
+					if (ch == '&') {
+						while (in.charAt(index++) != ';')
+							;
 
-					var key = in.substring(start, index);
-					String entity;
+						var key = in.substring(start, index);
+						String entity;
 
-					if (String_.charAt(key, 1) == '#')
-						sb.append((char) Integer.parseInt(String_.range(key, 2, -1)));
-					else if ((entity = charByEscapeToken.get(key)) != null)
-						sb.append(entity);
-					else
-						sb.append(key);
-				} else
-					sb.append(ch);
-			}
-
-			decoded = sb.toString();
-		} else
+						if (String_.charAt(key, 1) == '#')
+							sb.append((char) Integer.parseInt(String_.range(key, 2, -1)));
+						else if ((entity = charByEscapeToken.get(key)) != null)
+							sb.append(entity);
+						else
+							sb.append(key);
+					} else
+						sb.append(ch);
+				}
+			});
+		else
 			decoded = null;
 
 		return decoded;
@@ -177,24 +172,22 @@ public class HtmlUtil {
 	public String encode(String in) {
 		String encoded;
 
-		if (in != null) {
-			var sb = new StringBuilder();
+		if (in != null)
+			encoded = String_.build(sb -> {
+				for (var index = 0; index < in.length(); index++) {
+					var ch = in.charAt(index);
+					var escaped = escapeTokenByChar.get(Character.toString(ch));
+					var isAscii = 32 <= ch && ch < 128 && ch != '"' && ch != '<' && ch != '>';
 
-			for (var index = 0; index < in.length(); index++) {
-				var ch = in.charAt(index);
-				var escaped = escapeTokenByChar.get(Character.toString(ch));
-				var isAscii = 32 <= ch && ch < 128 && ch != '"' && ch != '<' && ch != '>';
-
-				if (escaped != null)
-					sb.append(escaped);
-				else if (!isAscii)
-					sb.append("&#" + (int) ch);
-				else
-					sb.append(ch);
-			}
-
-			encoded = sb.toString();
-		} else
+					if (escaped != null)
+						sb.append(escaped);
+					else if (!isAscii)
+						sb.append("&#" + (int) ch);
+					else
+						sb.append(ch);
+				}
+			});
+		else
 			encoded = null;
 
 		return encoded;

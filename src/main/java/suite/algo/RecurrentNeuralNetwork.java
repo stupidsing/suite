@@ -9,6 +9,7 @@ import suite.math.Tanh;
 import suite.math.linalg.Matrix;
 import suite.math.linalg.Vector;
 import suite.primitive.Floats_;
+import suite.util.String_;
 
 public class RecurrentNeuralNetwork {
 
@@ -61,10 +62,10 @@ public class RecurrentNeuralNetwork {
 
 		@Override
 		public String toString() {
-			var sb = new StringBuilder();
-			sb.append("weights = " + mtx.toString(weights));
-			sb.append("memory = " + mtx.toString(memory) + "\n");
-			return sb.toString();
+			return String_.build(sb -> {
+				sb.append("weights = " + mtx.toString(weights));
+				sb.append("memory = " + mtx.toString(memory) + "\n");
+			});
 		}
 
 		private float[] activate_(float[] input, float[] expected) {

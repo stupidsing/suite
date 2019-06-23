@@ -6,6 +6,7 @@ import static suite.util.Friends.min;
 
 import suite.primitive.IntInt_Flt;
 import suite.primitive.Int_Dbl;
+import suite.util.String_;
 import suite.util.To;
 
 public class VirtualMatrix {
@@ -82,18 +83,14 @@ public class VirtualMatrix {
 	}
 
 	public String dump() {
-		var sb = new StringBuilder();
-		dump(sb);
-		return sb.toString();
-	}
-
-	public void dump(StringBuilder sb) {
-		sb.append("[ ");
-		for (var i = 0; i < height; i++) {
-			for (var j = 0; i < width_; j++)
-				sb.append(To.string(get.apply(i, j)) + " ");
-			sb.append("\n");
-		}
+		return String_.build(sb -> {
+			sb.append("[ ");
+			for (var i = 0; i < height; i++) {
+				for (var j = 0; i < width_; j++)
+					sb.append(To.string(get.apply(i, j)) + " ");
+				sb.append("\n");
+			}
+		});
 	}
 
 	public VirtualVector mul(VirtualVector vv) {

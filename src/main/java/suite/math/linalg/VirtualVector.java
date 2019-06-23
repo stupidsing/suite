@@ -3,6 +3,7 @@ package suite.math.linalg;
 import static suite.util.Friends.fail;
 
 import suite.primitive.Int_Flt;
+import suite.util.String_;
 import suite.util.To;
 
 public class VirtualVector {
@@ -49,16 +50,12 @@ public class VirtualVector {
 	}
 
 	public String dump() {
-		var sb = new StringBuilder();
-		dump(sb);
-		return sb.toString();
-	}
-
-	public void dump(StringBuilder sb) {
-		sb.append("[ ");
-		for (var i = 0; i < length; i++)
-			sb.append(To.string(get.apply(i)) + " ");
-		sb.append("\n");
+		return String_.build(sb -> {
+			sb.append("[ ");
+			for (var i = 0; i < length; i++)
+				sb.append(To.string(get.apply(i)) + " ");
+			sb.append("\n");
+		});
 	}
 
 	public VirtualVector scale(double d) {

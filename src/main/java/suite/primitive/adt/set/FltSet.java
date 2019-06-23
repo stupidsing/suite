@@ -8,6 +8,7 @@ import suite.primitive.FltPrimitives.FltSink;
 import suite.primitive.FltPrimitives.FltSource;
 import suite.primitive.streamlet.FltPuller;
 import suite.primitive.streamlet.FltStreamlet;
+import suite.util.String_;
 
 /**
  * Set with floatacter elements. Float.MIN_VALUE is not allowed. Not
@@ -140,10 +141,7 @@ public class FltSet {
 
 	@Override
 	public String toString() {
-		var sb = new StringBuilder();
-		for (var c : streamlet())
-			sb.append(c + ",");
-		return sb.toString();
+		return String_.build(sb -> streamlet().forEach(sb::append));
 	}
 
 	private boolean add_(float c) {

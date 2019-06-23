@@ -21,6 +21,7 @@ import suite.cfg.Defaults;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.ReadStream;
+import suite.util.String_;
 import suite.util.To;
 import suite.util.WriteStream;
 
@@ -102,19 +103,18 @@ public class FileUtil {
 	}
 
 	public static String read(InputStream in) {
-		try (var is = in; var isr = new InputStreamReader(is, Defaults.charset); var br = new BufferedReader(isr)) {
-			var buffer = new char[Defaults.bufferSize];
-			var sb = new StringBuilder();
+		return String_.build(sb -> {
+			try (var is = in; var isr = new InputStreamReader(is, Defaults.charset); var br = new BufferedReader(isr)) {
+				var buffer = new char[Defaults.bufferSize];
 
-			while (br.ready()) {
-				var n = br.read(buffer);
-				sb.append(new String(buffer, 0, n));
+				while (br.ready()) {
+					var n = br.read(buffer);
+					sb.append(new String(buffer, 0, n));
+				}
+			} catch (IOException ex) {
+				fail(ex);
 			}
-
-			return sb.toString();
-		} catch (IOException ex) {
-			return fail(ex);
-		}
+		});
 	}
 
 	public static String read(Path path) {

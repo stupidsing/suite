@@ -10,6 +10,7 @@ import suite.streamlet.FunUtil;
 import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Puller;
 import suite.streamlet.Streamlet;
+import suite.util.String_;
 
 /**
  * Persistent linked list.
@@ -138,13 +139,13 @@ public class PerList<T> implements Iterable<T> {
 
 	@Override
 	public String toString() {
-		var sb = new StringBuilder();
-		var node = this;
-		while (!node.isEmpty()) {
-			sb.append(node.head + ", ");
-			node = node.tail;
-		}
-		return sb.toString();
+		return String_.build(sb -> {
+			var node = this;
+			while (!node.isEmpty()) {
+				sb.append(node.head + ", ");
+				node = node.tail;
+			}
+		});
 	}
 
 }

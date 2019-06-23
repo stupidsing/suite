@@ -105,12 +105,10 @@ public class ReversePolish {
 			list.add(s);
 		}
 
-		var sb = new StringBuilder();
-
-		for (var i = list.size() - 1; 0 <= i; i--)
-			sb.append(list.get(i) + '\n');
-
-		return sb.toString();
+		return String_.build(sb -> {
+			for (var i = list.size() - 1; 0 <= i; i--)
+				sb.append(list.get(i) + '\n');
+		});
 	}
 
 }

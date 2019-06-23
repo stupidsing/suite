@@ -33,6 +33,7 @@ import suite.primitive.adt.map.ObjIntMap;
 import suite.primitive.adt.pair.IntIntPair;
 import suite.streamlet.As;
 import suite.streamlet.Read;
+import suite.util.String_;
 
 /**
  * Converts a node into graph representation. The nodes link to other nodes via
@@ -324,37 +325,36 @@ public class Grapher {
 	}
 
 	public String toString() {
-		var sb = new StringBuilder();
-
-		for (var gn : gns) {
-			String s;
-			switch (gn.type) {
-			case DICT:
-				s = Read //
-						.from(gn.children) //
-						.map(p -> p.t0 + ":" + p.t1 + ", ") //
-						.collect(As.joinedBy("dict(", ", ", ")"));
-				break;
-			case TERM:
-				s = Formatter.dump(gn.terminal);
-				break;
-			case TREE:
-				s = "tree(" + gn.children.get(0).t1 + gn.op.name_() + gn.children.get(1).t1 + ")";
-				break;
-			case TUPLE:
-				s = Read //
-						.from(gn.children) //
-						.map(p -> p.t1 + ", ") //
-						.collect(As.joinedBy("tuple(", ", ", ")"));
-				break;
-			default:
-				s = fail();
+		return String_.build(sb -> {
+			for (var gn : gns) {
+				String s;
+				switch (gn.type) {
+				case DICT:
+					s = Read //
+							.from(gn.children) //
+							.map(p -> p.t0 + ":" + p.t1 + ", ") //
+							.collect(As.joinedBy("dict(", ", ", ")"));
+					break;
+				case TERM:
+					s = Formatter.dump(gn.terminal);
+					break;
+				case TREE:
+					s = "tree(" + gn.children.get(0).t1 + gn.op.name_() + gn.children.get(1).t1 + ")";
+					break;
+				case TUPLE:
+					s = Read //
+							.from(gn.children) //
+							.map(p -> p.t1 + ", ") //
+							.collect(As.joinedBy("tuple(", ", ", ")"));
+					break;
+				default:
+					s = fail();
+				}
+				sb.append(s + "\n");
 			}
-			sb.append(s + "\n");
-		}
 
-		sb.append("return(" + id + ")\n");
-		return sb.toString();
+			sb.append("return(" + id + ")\n");
+		});
 	}
 
 }

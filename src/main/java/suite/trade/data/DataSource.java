@@ -22,6 +22,7 @@ import suite.trade.TimeRange;
 import suite.trade.Trade_;
 import suite.ts.TimeSeries;
 import suite.util.Set_;
+import suite.util.String_;
 import suite.util.To;
 
 // all prices should be already adjusted according to corporate service actions
@@ -204,14 +205,14 @@ public class DataSource {
 	}
 
 	public String recent(String prefix, int size) {
-		var sb = new StringBuilder();
-		for (var i = ts.length - size; i < ts.length; i++)
-			sb.append(prefix + "[" + Time.ofEpochSec(ts[i]) + "]" //
-					+ " o/c:" + To.string(opens[i]) + "/" + To.string(closes[i]) //
-					+ " l/h:" + To.string(lows[i]) + "/" + To.string(highs[i]) //
-					+ " v:" + To.string(volumes[i]) //
-					+ "\n");
-		return sb.toString();
+		return String_.build(sb -> {
+			for (var i = ts.length - size; i < ts.length; i++)
+				sb.append(prefix + "[" + Time.ofEpochSec(ts[i]) + "]" //
+						+ " o/c:" + To.string(opens[i]) + "/" + To.string(closes[i]) //
+						+ " l/h:" + To.string(lows[i]) + "/" + To.string(highs[i]) //
+						+ " v:" + To.string(volumes[i]) //
+						+ "\n");
+		});
 	}
 
 	public float[] returns() {

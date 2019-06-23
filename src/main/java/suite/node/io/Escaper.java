@@ -6,22 +6,22 @@ import suite.util.String_;
 public class Escaper {
 
 	public static String escape(String s, char quote) {
-		var sb = new StringBuilder();
-		sb.append(quote);
+		return String_.build(sb -> {
+			sb.append(quote);
 
-		for (var ch : String_.chars(s))
-			if (Character.isWhitespace(ch) && ch != ' ')
-				if (256 <= ch)
-					sb.append(encodeHex16(ch >> 8));
+			for (var ch : String_.chars(s))
+				if (Character.isWhitespace(ch) && ch != ' ')
+					if (256 <= ch)
+						sb.append(encodeHex16(ch >> 8));
+					else
+						sb.append(encodeHex8(ch & 0xff));
+				else if (ch == quote || ch == '%')
+					sb.append(ch + "" + ch);
 				else
-					sb.append(encodeHex8(ch & 0xff));
-			else if (ch == quote || ch == '%')
-				sb.append(ch + "" + ch);
-			else
-				sb.append(ch);
+					sb.append(ch);
 
-		sb.append(quote);
-		return sb.toString();
+			sb.append(quote);
+		});
 	}
 
 	public static String unescape(String s, String quote) {

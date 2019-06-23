@@ -26,6 +26,7 @@ import suite.streamlet.FunUtil.Sink;
 import suite.streamlet.FunUtil.Source;
 import suite.streamlet.FunUtil2.Fun2;
 import suite.util.Fail;
+import suite.util.String_;
 import suite.util.Thread_;
 import suite.util.To;
 
@@ -36,14 +37,10 @@ public class As {
 	}
 
 	public static Fun<Puller<String>, String> conc(String delimiter) {
-		return puller -> {
-			var sb = new StringBuilder();
-			puller.sink(s -> {
-				sb.append(s);
-				sb.append(delimiter);
-			});
-			return sb.toString();
-		};
+		return puller -> String_.build(sb -> puller.sink(s -> {
+			sb.append(s);
+			sb.append(delimiter);
+		}));
 	}
 
 	public static <T> Streamlet<T> concat(Puller<Streamlet<T>> puller) {
@@ -77,15 +74,16 @@ public class As {
 	}
 
 	public static <T> Fun<Puller<T>, String> joinedBy(String before, String delimiter, String after) {
-		return puller -> {
-			var sb = new StringBuilder();
-			puller.sink(s -> {
-				if (0 < sb.length())
-					sb.append(delimiter);
-				sb.append(s);
-			});
-			return before + sb + after;
-		};
+		return puller -> "" //
+				+ before //
+				+ String_.build(sb -> {
+					puller.sink(s -> {
+						if (0 < sb.length())
+							sb.append(delimiter);
+						sb.append(s);
+					});
+				}) //
+				+ after;
 	}
 
 	public static Puller<String> lines(Puller<Bytes> puller) {

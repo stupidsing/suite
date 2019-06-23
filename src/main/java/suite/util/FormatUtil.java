@@ -19,23 +19,21 @@ public class FormatUtil {
 						.collect(Obj_Int.lift(row -> row[column].length())).max())) //
 				.toArray();
 
-		var sb = new StringBuilder();
+		return String_.build(sb -> {
+			for (var row : rows) {
+				for (var column = 0; column < nColumns; column++) {
+					var cell = row[column];
+					var width = widths[column];
 
-		for (var row : rows) {
-			for (var column = 0; column < nColumns; column++) {
-				var cell = row[column];
-				var width = widths[column];
+					sb.append(cell);
 
-				sb.append(cell);
+					for (var i = cell.length(); i < width; i++)
+						sb.append(" ");
+				}
 
-				for (var i = cell.length(); i < width; i++)
-					sb.append(" ");
+				sb.append("\n");
 			}
-
-			sb.append("\n");
-		}
-
-		return sb.toString();
+		});
 	}
 
 	public static String trimLeft(String s) {

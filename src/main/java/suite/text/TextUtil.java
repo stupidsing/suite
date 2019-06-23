@@ -11,6 +11,7 @@ import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
 import suite.streamlet.Read;
 import suite.util.List_;
+import suite.util.String_;
 import suite.util.To;
 
 public class TextUtil {
@@ -146,13 +147,13 @@ public class TextUtil {
 	}
 
 	public String toString(List<BytesPair> pairs) {
-		var sb = new StringBuilder();
-		for (var pair : pairs)
-			if (pair.t0 == pair.t1)
-				sb.append(To.string(pair.t0));
-			else
-				sb.append("[" + To.string(pair.t0) + "|" + To.string(pair.t1) + "]");
-		return sb.toString();
+		return String_.build(sb -> {
+			for (var pair : pairs)
+				if (pair.t0 == pair.t1)
+					sb.append(To.string(pair.t0));
+				else
+					sb.append("[" + To.string(pair.t0) + "|" + To.string(pair.t1) + "]");
+		});
 	}
 
 	private List<BytesPair> cons(BytesPair ph, List<BytesPair> pt) {

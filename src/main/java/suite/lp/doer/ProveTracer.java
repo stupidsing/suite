@@ -13,6 +13,7 @@ import suite.node.Tree;
 import suite.node.io.Formatter;
 import suite.streamlet.FunUtil.Iterate;
 import suite.streamlet.FunUtil.Source;
+import suite.util.String_;
 
 public class ProveTracer {
 
@@ -138,10 +139,10 @@ public class ProveTracer {
 		// this method could be invoked in shutdown hook and the prover might
 		// still be running. Do not use iterator/for-each loop access, those
 		// would cause ConcurrentModificationException.
-		var sb = new StringBuilder();
-		for (var i = 0; i < size; i++)
-			records.get(i).appendTo(sb);
-		return sb.toString();
+		return String_.build(sb -> {
+			for (var i = 0; i < size; i++)
+				records.get(i).appendTo(sb);
+		});
 	}
 
 }

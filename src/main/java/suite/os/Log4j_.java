@@ -16,6 +16,7 @@ import suite.inspect.Dump;
 import suite.proxy.Intercept;
 import suite.streamlet.FunUtil.Source;
 import suite.util.Array_;
+import suite.util.String_;
 
 public class Log4j_ {
 
@@ -127,15 +128,16 @@ public class Log4j_ {
 		return Intercept.object(interface_, object, invocation -> (m, ps) -> {
 			var methodName = m.getName();
 			var prefix = methodName + "()\n";
-			var sb = new StringBuilder();
 
-			sb.append(prefix);
+			var dump = String_.build(sb -> {
+				sb.append(prefix);
 
-			if (ps != null)
-				for (var i = 0; i < ps.length; i++)
-					Dump.toDetails("p" + i, ps[i], sb);
+				if (ps != null)
+					for (var i = 0; i < ps.length; i++)
+						Dump.toDetails("p" + i, ps[i], sb);
+			});
 
-			log.info(sb.toString());
+			log.info(dump);
 
 			try {
 				var value = invocation.invoke(m, ps);

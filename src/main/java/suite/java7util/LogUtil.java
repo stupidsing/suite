@@ -8,6 +8,7 @@ import org.apache.commons.logging.LogFactory;
 
 import suite.inspect.Dump;
 import suite.util.Array_;
+import suite.util.String_;
 
 @Deprecated
 public class LogUtil {
@@ -22,15 +23,14 @@ public class LogUtil {
 		InvocationHandler handler = (proxy, method, ps) -> {
 			var methodName = method.getName();
 			var prefix = methodName + "()\n";
-			var sb = new StringBuilder();
 
-			sb.append(prefix);
+			log.info(String_.build(sb -> {
+				sb.append(prefix);
 
-			if (ps != null)
-				for (var i = 0; i < ps.length; i++)
-					Dump.toDetails("p" + i, ps[i], sb);
-
-			log.info(sb.toString());
+				if (ps != null)
+					for (var i = 0; i < ps.length; i++)
+						Dump.toDetails("p" + i, ps[i], sb);
+			}));
 
 			try {
 				Object value = method.invoke(object, ps);

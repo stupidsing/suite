@@ -20,6 +20,7 @@ import suite.node.io.ReversePolish;
 import suite.node.pp.NewPrettyPrinter;
 import suite.node.pp.PrettyPrinter;
 import suite.os.FileUtil;
+import suite.util.String_;
 
 public class FormatPredicates {
 
@@ -31,11 +32,12 @@ public class FormatPredicates {
 	});
 
 	public BuiltinPredicate concat = PredicateUtil.ps((prover, nodes) -> {
-		var sb = new StringBuilder();
 		var n = nodes.length;
-		for (var i = 0; i < n - 1; i++)
-			sb.append(Formatter.display(nodes[i]));
-		return prover.bind(new Str(sb.toString()), nodes[n - 1]);
+		var s = String_.build(sb -> {
+			for (var i = 0; i < n - 1; i++)
+				sb.append(Formatter.display(nodes[i]));
+		});
+		return prover.bind(new Str(s), nodes[n - 1]);
 	});
 
 	public BuiltinPredicate graphize = PredicateUtil.fun(n -> new Str(Formatter.graphize(n)));

@@ -11,6 +11,7 @@ import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.Fail;
 import suite.util.List_;
+import suite.util.String_;
 
 public class PbTree<T> implements PerTree<T> {
 
@@ -262,17 +263,15 @@ public class PbTree<T> implements PerTree<T> {
 
 	@Override
 	public String toString() {
-		var sb = new StringBuilder();
-		dump(sb, root, "");
-		return sb.toString();
-	}
-
-	private void dump(StringBuilder sb, List<Slot> node, String indent) {
-		if (node != null)
-			for (var slot : node) {
-				sb.append(indent + (slot.pivot != null ? slot.pivot : "<-inf>") + "\n");
-				dump(sb, slot.slots, indent + "  ");
+		return String_.build(sb -> new Object() {
+			private void dump(List<Slot> node, String indent) {
+				if (node != null)
+					for (var slot : node) {
+						sb.append(indent + (slot.pivot != null ? slot.pivot : "<-inf>") + "\n");
+						dump(slot.slots, indent + "  ");
+					}
 			}
+		}.dump(root, ""));
 	}
 
 }

@@ -2,13 +2,22 @@ package suite.util;
 
 import static suite.util.Friends.min;
 
-import java.util.Iterator;
 import java.util.Objects;
 
 import suite.adt.pair.Pair;
 import suite.object.Object_;
+import suite.streamlet.FunUtil.Sink;
+import suite.streamlet.FunUtil.Source;
+import suite.streamlet.Puller;
+import suite.streamlet.Streamlet;
 
 public class String_ {
+
+	public static String build(Sink<StringBuilder> sink) {
+		var sb = new StringBuilder();
+		sink.f(sb);
+		return sb.toString();
+	}
 
 	public static char charAt(String s, int pos) {
 		if (pos < 0)
@@ -16,18 +25,14 @@ public class String_ {
 		return s.charAt(pos);
 	}
 
-	public static Iterable<Character> chars(CharSequence s) {
-		return () -> new Iterator<>() {
+	public static Streamlet<Character> chars(CharSequence s) {
+		return new Streamlet<>(() -> Puller.of(new Source<>() {
 			private int index = 0;
 
-			public boolean hasNext() {
-				return index < s.length();
+			public Character g() {
+				return index < s.length() ? s.charAt(index++) : null;
 			}
-
-			public Character next() {
-				return s.charAt(index++);
-			}
-		};
+		}));
 	}
 
 	public static int compare(String s0, String s1) {

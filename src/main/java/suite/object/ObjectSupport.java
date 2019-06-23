@@ -67,16 +67,16 @@ public class ObjectSupport<T> {
 
 	public String toString(T t) {
 		var recurse0 = recurse.get();
-		var sb = new StringBuilder();
 
 		if (!recurse0.containsId(t))
 			try {
 				recurse.set(PerList.cons(t, recurse0));
-				sb.append(t.getClass().getSimpleName() + "(");
-				for (var value : listFun.apply(t))
-					sb.append(value + ",");
-				sb.append(")");
-				return sb.toString();
+				return String_.build(sb -> {
+					sb.append(t.getClass().getSimpleName() + "(");
+					for (var value : listFun.apply(t))
+						sb.append(value + ",");
+					sb.append(")");
+				});
 			} finally {
 				recurse.set(recurse0);
 			}
