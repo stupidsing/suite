@@ -28,6 +28,7 @@ import suite.trade.backalloc.BackAllocConfigurations.Bacs;
 import suite.trade.backalloc.BackAllocTester;
 import suite.trade.backalloc.BackAllocator;
 import suite.trade.backalloc.strategy.BackAllocatorOld;
+import suite.trade.data.HkexUtil;
 import suite.trade.data.TradeCfg;
 import suite.trade.data.TradeCfgImpl;
 import suite.trade.singlealloc.SingleAllocBackTest;
@@ -40,7 +41,7 @@ import suite.util.To;
 // mvn compile exec:java -Dexec.mainClass=suite.DailyMain
 public class DailyMain {
 
-	private Set<String> blackList = Set.of("0607.HK", "2973.HK");
+	private Set<String> blackList = Set.of("0566.HK");
 
 	private TradeCfg cfg = new TradeCfgImpl();
 	private Serialize ser = Singleton.me.serialize;
@@ -68,11 +69,11 @@ public class DailyMain {
 		Trade_.blackList = Set_.union(Trade_.blackList, blackList);
 
 		var sellPool = "sellpool";
-		var ymd = Time.now().ymd();
+		var ymd = HkexUtil.getCloseTimeBefore(Time.now()).ymd();
 		var td = ymd + "#";
 
 		// perform systematic trading
-		List<Result> results = List.of( //
+		var results = Read.each( //
 				alloc(bacs.pair_bb, 66666f), //
 				alloc("bug", bacs.bac_sell, 0f), //
 				alloc(bacs.pair_donchian, 100000f), //
@@ -94,8 +95,7 @@ public class DailyMain {
 
 		var sbs = Summarize.of(cfg).summarize(trade -> trade.strategy);
 
-		var strategyTrades = Read //
-				.from(results) //
+		var strategyTrades = results //
 				.concatMap2(result -> Read.from(result.trades).map2(trade -> result.strategy, trade -> trade)) //
 				.filterValue(trade -> trade.buySell != 0) //
 				.collect();
@@ -225,8 +225,7 @@ public class DailyMain {
 	}
 
 	private Result alloc(Pair<String, BackAllocConfiguration> pair, float fund) {
-		var bac = pair.t1;
-		return alloc(pair.t0, fund, bac.backAllocator, bac.instrumentsFun.apply(today));
+		return pair.map((tag, bac) -> alloc(tag, fund, bac.backAllocator, bac.instrumentsFun.apply(today)));
 	}
 
 	private Result alloc(String tag, BackAllocConfiguration pair, float fund) {
