@@ -156,8 +156,7 @@ public class HttpUtil {
 
 		Thread_.sleepQuietly(start - current);
 
-		return rethrow(() -> httpApache(method, url, in, headers));
-		// return rethrow(() -> httpJre(method, url, in, headers));
+		return rethrow(() -> Boolean.TRUE ? httpApache(method, url, in, headers) : httpJre(method, url, in, headers));
 	}
 
 	// keep timestamps to avoid overloading servers
@@ -200,7 +199,6 @@ public class HttpUtil {
 					+ ": " + out.collect(As::string));
 	}
 
-	@SuppressWarnings("unused")
 	private static HttpResult httpJre(String method, URL url, Puller<Bytes> in, Map<String, String> headers) throws IOException {
 		var conn = (HttpURLConnection) url.openConnection();
 		conn.setDoOutput(true);
