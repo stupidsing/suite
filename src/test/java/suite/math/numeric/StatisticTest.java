@@ -6,7 +6,6 @@ import org.junit.Test;
 
 import suite.inspect.Dump;
 import suite.math.Math_;
-import suite.math.linalg.Matrix;
 import suite.math.linalg.Vector;
 import suite.primitive.adt.pair.FltObjPair;
 import suite.streamlet.Read;
@@ -14,7 +13,6 @@ import suite.util.To;
 
 public class StatisticTest {
 
-	private Matrix mtx = new Matrix();
 	private Random random = new Random();
 	private Statistic stat = new Statistic();
 	private Vector vec = new Vector();
@@ -54,7 +52,11 @@ public class StatisticTest {
 			m[i][1] = -i;
 		}
 
-		System.out.println(mtx.toString(stat.scatterMatrix(m)));
+		var s = stat.scatterMatrix(m);
+		Math_.verifyEquals(47970f, s[0][0]);
+		Math_.verifyEquals(-15990f, s[0][1]);
+		Math_.verifyEquals(-15990f, s[1][0]);
+		Math_.verifyEquals(5330f, s[1][1]);
 	}
 
 }
