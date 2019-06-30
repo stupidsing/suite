@@ -13,15 +13,12 @@ import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
+import suite.primitive.IntInt_Bool;
 import suite.primitive.IntInt_Int;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 
 public class TreeUtil {
-
-	public interface IntInt_Bool {
-		public boolean apply(int a, int b);
-	}
 
 	public static Atom AND = Atom.of("and");
 	public static Atom OR_ = Atom.of("or");

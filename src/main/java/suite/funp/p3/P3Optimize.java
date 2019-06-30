@@ -18,7 +18,7 @@ import suite.inspect.Inspect;
 import suite.node.io.TermOp;
 import suite.node.util.Singleton;
 import suite.node.util.TreeUtil;
-import suite.node.util.TreeUtil.IntInt_Bool;
+import suite.primitive.IntInt_Bool;
 import suite.primitive.IntInt_Int;
 import suite.primitive.adt.pair.IntIntPair;
 import suite.streamlet.FunUtil2.Fun2;
