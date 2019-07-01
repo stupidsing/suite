@@ -103,6 +103,10 @@ public class SwitchNode<R> {
 		return match2_(pattern, fun);
 	}
 
+	public SwitchNode<R> match(Pattern pattern, FixieFun3<Node, Node, Node, R> fun) {
+		return match3_(pattern, fun);
+	}
+
 	public SwitchNode<R> match(String pattern, FixieFun0<R> fun) {
 		return match0_(Suite.pattern(pattern), fun);
 	}

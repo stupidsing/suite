@@ -5,6 +5,7 @@ import static suite.util.Friends.forInt;
 import static suite.util.Friends.max;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.List;
@@ -131,7 +132,7 @@ public class P2InferType {
 	private Pattern typePatDecor = Suite.pattern(".0: .1");
 	private Pattern typePatInt = Suite.pattern("INT .0");
 	private Pattern typePatLambda = Suite.pattern("LAMBDA .0 .1");
-	private Pattern typePatStruct = Suite.pattern("STRUCT .0 .1");
+	private Pattern typePatStruct = Suite.pattern("STRUCT .0 .1 .2"); // STRUCT true? dict list
 	private Pattern typePatTag = Suite.pattern("TAG .0");
 
 	private Node typeBoolean = Atom.of("BOOLEAN");
@@ -215,9 +216,13 @@ public class P2InferType {
 				var pairs_ = Read.from(pairs);
 				var vns = pairs_.map(Pair::fst);
 				var env1 = vns.fold(env, (e, vn) -> e.put(vn, Pair.of(fdt, new Reference())));
-				var ts = typeStructOf(Dict.of(vns //
+				var map = vns //
 						.<Node, Reference> map2(Atom::of, vn -> Reference.of(env1.get(vn).t1)) //
-						.toMap()), TreeUtil.buildUp(TermOp.AND___, Read.from(vns).<Node> map(Atom::of).toList()));
+						.toMap();
+				var ts = typeStructOf( //
+						Reference.of(Atom.TRUE), //
+						Dict.of(map), //
+						TreeUtil.buildUp(TermOp.AND___, Read.from(vns).<Node> map(Atom::of).toList()));
 				var infer1 = new Infer(env1, checks, ts);
 
 				for (var pair : pairs_) {
@@ -327,9 +332,15 @@ public class P2InferType {
 						.from2(pairs) //
 						.<Node, Reference> map2((n_, v) -> Atom.of(n_), (n_, v) -> Reference.of(infer(v, n_))) //
 						.toMap();
+				var isCompleted = new Reference();
 				var ref = new Reference();
-				var ts = typeStructOf(Dict.of(types), ref);
+				var ts = typeStructOf(isCompleted, Dict.of(types), ref);
+
+				// complete the structure
 				checks.add(() -> {
+					if (isCompleted.isFree())
+						unify(isCompleted, Atom.TRUE);
+
 					if (ref.isFree()) {
 						var fs0 = Read.from(pairs).<Node> map(pair -> Atom.of(pair.t0));
 						var fs1 = Read.from(types.keySet());
@@ -338,6 +349,7 @@ public class P2InferType {
 					}
 					return true;
 				});
+
 				return ts;
 			})).applyIf(FunpTag.class, f -> f.apply((id, tag, value) -> {
 				var types = new HashMap<Node, Reference>();
@@ -595,7 +607,7 @@ public class P2InferType {
 				var values = Read.from2(pairs).toMap();
 				var list = new ArrayList<Pair<Funp, IntIntPair>>();
 				var offset = 0;
-				var struct = isCompletedStruct(ts);
+				var struct = isCompletedStructList(ts);
 
 				for (var pair : struct) {
 					var name = Atom.name(pair.t0);
@@ -745,7 +757,7 @@ public class P2InferType {
 			var ts = typeStructOf(Dict.of(map));
 			unify(n, typeOf(n.reference), typeRefOf(ts));
 			var offset = 0;
-			var struct = isCompletedStruct(ts);
+			var struct = isCompletedStructList(ts);
 			if (struct != null)
 				for (var pair : struct) {
 					var offset1 = offset + getTypeSize(pair.t1);
@@ -898,10 +910,10 @@ public class P2InferType {
 						return typePatDecor.subst(cloneNode(a), cloneType(b));
 					}).match(typePatLambda, (a, b) -> {
 						return typePatLambda.subst(cloneType(a), cloneType(b));
-					}).match(typePatStruct, (a, b) -> {
-						var map0 = Dict.m(a);
+					}).match(typePatStruct, (a, b, c) -> {
+						var map0 = Dict.m(b);
 						var map1 = Read.from2(map0).mapValue(t -> Reference.of(cloneType(t))).toMap();
-						return typePatStruct.subst(Dict.of(map1), b);
+						return typePatStruct.subst(a, Dict.of(map1), c);
 					}).match(typePatTag, a -> {
 						var map0 = Dict.m(a);
 						var map1 = Read.from2(map0).mapValue(t -> Reference.of(cloneType(t))).toMap();
@@ -950,11 +962,11 @@ public class P2InferType {
 	}
 
 	private Node typeStructOf(Dict dict) {
-		return typeStructOf(dict, new Reference());
+		return typeStructOf(new Reference(), dict, new Reference());
 	}
 
-	private Node typeStructOf(Dict dict, Node list) {
-		return typePatStruct.subst(dict, list);
+	private Node typeStructOf(Reference isCompleted, Dict dict, Node list) {
+		return typePatStruct.subst(isCompleted, dict, list);
 	}
 
 	private Node typeTagOf(Dict dict) {
@@ -963,7 +975,7 @@ public class P2InferType {
 
 	private int getTypeSize(Node n0) {
 		var n = n0.finalNode();
-		Streamlet2<Node, Reference> struct;
+		Collection<Reference> structMembers;
 		Node[] m, d;
 		if (n == typeBoolean)
 			return Funp_.booleanSize;
@@ -983,8 +995,8 @@ public class P2InferType {
 			return ps + ps;
 		else if (n == typeNumber)
 			return is;
-		else if ((struct = isCompletedStruct(n)) != null)
-			return struct.values().toInt(Obj_Int.sum(this::getTypeSize));
+		else if ((structMembers = isCompletedStructSet(n)) != null)
+			return Read.from(structMembers).toInt(Obj_Int.sum(this::getTypeSize));
 		else if ((m = typePatTag.match(n)) != null) {
 			var dict = Dict.m(m[0]);
 			var size = 0;
@@ -995,11 +1007,17 @@ public class P2InferType {
 			return Funp_.fail(null, "cannot get size of type " + toString(n));
 	}
 
-	private Streamlet2<Node, Reference> isCompletedStruct(Node n) {
-		Node[] m = typePatStruct.match(n);
+	private Collection<Reference> isCompletedStructSet(Node n) {
+		var m = typePatStruct.match(n);
+		return m != null && m[0] == Atom.TRUE ? Dict.m(m[1]).values() : null;
+	}
+
+	private Streamlet2<Node, Reference> isCompletedStructList(Node n) {
+		var m = typePatStruct.match(n);
+		System.out.println("ICS " + n);
 		if (m != null) {
-			var dict = Dict.m(m[0]);
-			return Tree.iter(m[1]).map2(dict::get);
+			var dict = Dict.m(m[1]);
+			return Tree.iter(m[2]).map2(dict::get);
 		} else
 			return null;
 	}
