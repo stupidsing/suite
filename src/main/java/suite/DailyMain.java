@@ -131,7 +131,7 @@ public class DailyMain {
 				+ "\n- sell mamr and " + sellPool //
 				+ "\n");
 
-		var result = sb.toString();
+		var result = sb.toString().replace(".0\t", "\t");
 		Log_.info(result);
 
 		var smtp = new SmtpSslGmail();
