@@ -124,6 +124,8 @@ public class P2InferType {
 	private int is = Funp_.integerSize;
 	private int ps = Funp_.pointerSize;
 	private int maxRegAlloc = Funp_.isAmd64 ? 3 : 2;
+	private String gcclazz = "$clazz";
+	private Node gcclazzField = Atom.of(gcclazz);
 
 	private Pattern typeDecorArray = Suite.pattern("ARRAY .0");
 	private Pattern typeDecorIo = Suite.pattern("IO");
@@ -142,6 +144,8 @@ public class P2InferType {
 	private Map<Funp, Node> typeByNode = new IdentityHashMap<>();
 	private Map<Funp, Boolean> isRegByNode = new IdentityHashMap<>();
 	private Map<String, Var> globals = new HashMap<>();
+
+	private boolean isGcStruct = false;
 
 	public Funp infer(Funp n0) {
 		var t = new Reference();
@@ -333,13 +337,12 @@ public class P2InferType {
 						.from2(pairs) //
 						.<Node, Reference> map2((n_, v) -> Atom.of(n_), (n_, v) -> Reference.of(infer(v, n_))) //
 						.toMap();
+				var typesDict = Dict.of(types);
 				var isCompleted = new Reference();
 				var ref = new Reference();
-				var ts = typeStructOf(isCompleted, Dict.of(types), ref);
+				var ts = typeStructOf(isCompleted, typesDict, ref);
 
 				// complete the structure
-				var isGcStruct = false;
-
 				checks.add(() -> {
 					unify(isCompleted, Atom.TRUE);
 
@@ -348,7 +351,7 @@ public class P2InferType {
 
 						if (isGcStruct)
 							list = Read //
-									.from2(types) //
+									.from2(typesDict.getMap()) //
 									.sort((p0, p1) -> {
 										var b0 = isReference(p0.t1);
 										var b1 = isReference(p1.t1);
@@ -361,11 +364,11 @@ public class P2InferType {
 										c = c == 0 ? -Integer.compare(typeSize0, typeSize1) : c;
 										return c;
 									}) //
-									.cons(Atom.of("$clazz"), Reference.of(typeNumberp)) //
-									.keys();
+									.keys() //
+									.cons(gcclazzField);
 						else {
 							var fs0 = Read.from(pairs).<Node> map(pair -> Atom.of(pair.t0));
-							var fs1 = Read.from(types.keySet());
+							var fs1 = Read.from2(typesDict.getMap()).keys();
 							list = Streamlet.concat(fs0, fs1).distinct();
 						}
 
@@ -624,25 +627,44 @@ public class P2InferType {
 				return FunpData.of(list);
 			})).applyIf(FunpSizeOf.class, f -> f.apply(expr -> {
 				return FunpNumber.ofNumber(getTypeSize(typeOf(expr)));
-			})).applyIf(FunpStruct.class, f -> f.apply(pairs -> {
+			})).applyIf(FunpStruct.class, f -> f.apply(pairs_ -> {
 				var map = new HashMap<Node, Reference>();
 				var ts = typeStructOf(Dict.of(map));
 				unify(n, ts, type0);
 
-				var values = Read.from2(pairs).toMap();
+				var values = Read.from2(pairs_).toMap();
 				var list = new ArrayList<Pair<Funp, IntIntPair>>();
 				var offset = 0;
-				var struct = isCompletedStructList(ts);
+				var pairs = isCompletedStructList(ts);
+				var clazzMut = IntMutable.nil();
+				var clazz = 0;
 
-				for (var pair : struct) {
-					var name = Atom.name(pair.t0);
+				for (var pair : pairs) {
 					var type = pair.t1;
-					var value = values.get(name);
 					var offset0 = offset;
+					Funp value;
+
+					if (pair.t0 != gcclazzField) {
+						var name = Atom.name(pair.t0);
+						value = erase(values.get(name), name);
+
+						if (isReference(type)) {
+							var shift = offset0 / ps - 1;
+							if (shift < ps - 2)
+								clazz |= 1 << shift;
+							else
+								fail();
+						}
+					} else
+						value = FunpCoerce.of(Coerce.NUMBER, Coerce.NUMBERP, FunpNumber.of(clazzMut));
+
 					offset += getTypeSize(type);
+
 					if (value != null)
-						list.add(Pair.of(erase(value, name), IntIntPair.of(offset0, offset)));
+						list.add(Pair.of(value, IntIntPair.of(offset0, offset)));
 				}
+
+				clazzMut.set(clazz);
 
 				return FunpData.of(list);
 			})).applyIf(FunpTag.class, f -> f.apply((id, tag, expr) -> {
@@ -998,6 +1020,11 @@ public class P2InferType {
 		return typePatTag.subst(dict);
 	}
 
+	private boolean isReference(Node n) {
+		Node[] m;
+		return (m = typePatDecor.match(n)) != null && typeDecorRef.match(m[0]) != null;
+	}
+
 	private int getTypeSize(Node n0) {
 		var n = n0.finalNode();
 		Collection<Reference> structMembers;
@@ -1018,10 +1045,8 @@ public class P2InferType {
 			return Int.num(m[0]);
 		else if ((m = typePatLambda.match(n)) != null)
 			return ps + ps;
-		else if (n == typeNumber)
-			return is;
 		else if ((structMembers = isCompletedStructSet(n)) != null)
-			return Read.from(structMembers).toInt(Obj_Int.sum(this::getTypeSize));
+			return Read.from(structMembers).toInt(Obj_Int.sum(this::getTypeSize)) + (isGcStruct ? ps : 0);
 		else if ((m = typePatTag.match(n)) != null) {
 			var dict = Dict.m(m[0]);
 			var size = 0;
@@ -1039,10 +1064,9 @@ public class P2InferType {
 
 	private Streamlet2<Node, Reference> isCompletedStructList(Node n) {
 		var m = typePatStruct.match(n);
-		System.out.println("ICS " + n);
 		if (m != null) {
 			var dict = Dict.m(m[1]);
-			return Tree.iter(m[2]).map2(dict::get);
+			return Tree.iter(m[2]).map2(f -> f != gcclazzField ? dict.get(f) : Reference.of(typeNumberp));
 		} else
 			return null;
 	}
