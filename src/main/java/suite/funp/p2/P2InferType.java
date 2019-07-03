@@ -137,6 +137,7 @@ public class P2InferType {
 
 	private Node typeBoolean = Atom.of("BOOLEAN");
 	private Node typeNumber = typePatInt.subst(Int.of(is));
+	private Node typeNumberp = typePatInt.subst(Int.of(ps));
 
 	private Map<Funp, Node> typeByNode = new IdentityHashMap<>();
 	private Map<Funp, Boolean> isRegByNode = new IdentityHashMap<>();
@@ -337,16 +338,40 @@ public class P2InferType {
 				var ts = typeStructOf(isCompleted, Dict.of(types), ref);
 
 				// complete the structure
+				var isGcStruct = false;
+
 				checks.add(() -> {
-					if (isCompleted.isFree())
-						unify(isCompleted, Atom.TRUE);
+					unify(isCompleted, Atom.TRUE);
 
 					if (ref.isFree()) {
-						var fs0 = Read.from(pairs).<Node> map(pair -> Atom.of(pair.t0));
-						var fs1 = Read.from(types.keySet());
-						var list = Streamlet.concat(fs0, fs1).distinct().toList();
-						unify(ref, TreeUtil.buildUp(TermOp.AND___, list));
+						Streamlet<Node> list;
+
+						if (isGcStruct)
+							list = Read //
+									.from2(types) //
+									.sort((p0, p1) -> {
+										var b0 = isReference(p0.t1);
+										var b1 = isReference(p1.t1);
+										var typeSize0 = getTypeSize(p0.t1);
+										var typeSize1 = getTypeSize(p1.t1);
+										var i0 = typeSize0 % ps == 0;
+										var i1 = typeSize1 % ps == 0;
+										var c = -Boolean.compare(b0, b1);
+										c = c == 0 ? -Boolean.compare(i0, i1) : c;
+										c = c == 0 ? -Integer.compare(typeSize0, typeSize1) : c;
+										return c;
+									}) //
+									.cons(Atom.of("$clazz"), Reference.of(typeNumberp)) //
+									.keys();
+						else {
+							var fs0 = Read.from(pairs).<Node> map(pair -> Atom.of(pair.t0));
+							var fs1 = Read.from(types.keySet());
+							list = Streamlet.concat(fs0, fs1).distinct();
+						}
+
+						unify(ref, TreeUtil.buildUp(TermOp.AND___, list.toList()));
 					}
+
 					return true;
 				});
 
