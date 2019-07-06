@@ -272,24 +272,24 @@ public class Statistic {
 	// https://medium.com/@raghavan99o/scatter-matrix-covariance-and-correlation-explained-14921741ca56
 	// The scatter matrix contains the relation between each combination of the
 	// variables.
-	public float[][] scatterMatrix(float[][] m) {
-		var nSamples = m.length;
-		var nParameters = m[0].length;
+	public float[][] scatterMatrix(float[][] samples) {
+		var nSamples = samples.length;
+		var nParameters = samples[0].length;
 		var means = new float[nParameters];
 
-		for (var v : m)
-			vec.addOn(means, v);
+		for (var sample : samples)
+			vec.addOn(means, sample);
 
 		vec.scaleOn(means, 1d / nSamples);
 
-		var s = new float[nParameters][nParameters];
+		var scatter = new float[nParameters][nParameters];
 
-		for (var v : m) {
-			var v_ = vec.sub(v, means);
-			mtx.addOn(s, mtx.mul(v_));
+		for (var sample : samples) {
+			var dev = vec.sub(sample, means);
+			mtx.addOn(scatter, mtx.mul(dev));
 		}
 
-		return s;
+		return scatter;
 	}
 
 	public double skewness(float[] fs) {

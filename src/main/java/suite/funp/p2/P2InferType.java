@@ -473,16 +473,12 @@ public class P2InferType {
 					var address = Mutable.<Operand> nil();
 					var var = global(address, 0, size);
 					var e1 = new Erase(scope, env.replace(vn, var), me);
-					if (Set.of("!alloc", "!dealloc").contains(vn))
-						globals.put(vn, var);
 					return FunpAllocGlobal.of(size, erase(value, vn), e1.erase(expr), address);
 				} else if (fdt == Fdt.L_HEAP) {
 					var t = new Reference();
 					unify(n, typeOf(value), typeRefOf(t));
 					var size = getTypeSize(t);
-					var alloc = Boolean.TRUE //
-							? FunpHeapAlloc.of(size) //
-							: applyOnce(FunpNumber.ofNumber(size), globals.get("!alloc").get(scope), ps);
+					var alloc = FunpHeapAlloc.of(size);
 					return defineLocal(f, vn, alloc, expr, ps);
 				} else if (Fdt.isLocal(fdt))
 					return defineLocal(f, vn, value, expr);
