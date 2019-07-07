@@ -60,7 +60,7 @@ public class Eigen {
 		var xs = To.vector(size, i -> random.nextFloat());
 		var eigenValue = Double.NaN;
 
-		for (var iter = 0; iter < 256; iter++) {
+		for (var iter = 0; iter < 512; iter++) {
 			var ys = mtx.mul(m, xs);
 			eigenValue = 0f;
 			for (var y : ys)
