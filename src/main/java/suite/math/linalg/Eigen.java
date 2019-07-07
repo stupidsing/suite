@@ -7,7 +7,7 @@ import java.util.Random;
 
 import suite.adt.pair.Pair;
 import suite.primitive.Int_Dbl;
-import suite.primitive.adt.pair.FltObjPair;
+import suite.primitive.adt.pair.DblObjPair;
 import suite.util.To;
 
 public class Eigen {
@@ -55,12 +55,12 @@ public class Eigen {
 		return eigenVectors;
 	}
 
-	private FltObjPair<float[]> power0(float[][] m) {
+	private DblObjPair<float[]> power0(float[][] m) {
 		var size = mtx.sqSize(m);
 		var xs = To.vector(size, i -> random.nextFloat());
-		var eigenValue = Float.NaN;
+		var eigenValue = Double.NaN;
 
-		for (var iteration = 0; iteration < 256; iteration++) {
+		for (var iter = 0; iter < 256; iter++) {
 			var ys = mtx.mul(m, xs);
 			eigenValue = 0f;
 			for (var y : ys)
@@ -69,7 +69,7 @@ public class Eigen {
 			xs = vec.scale(ys, 1d / eigenValue);
 		}
 
-		return FltObjPair.of(eigenValue, vec.normalizeOn(xs));
+		return DblObjPair.of(eigenValue, vec.normalizeOn(xs));
 	}
 
 	// https://en.wikipedia.org/wiki/Lanczos_algorithm
