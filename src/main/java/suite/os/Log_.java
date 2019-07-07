@@ -6,8 +6,8 @@ import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Locale;
 
+import suite.cfg.Defaults;
 import suite.inspect.Dump;
 import suite.proxy.Intercept;
 import suite.streamlet.FunUtil.Source;
@@ -98,7 +98,7 @@ public class Log_ {
 	}
 
 	private static Out out = new Out() {
-		private DateTimeFormatter yyyymmdd = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
+		private DateTimeFormatter yyyymmdd = Defaults.dateTimeFormat;
 
 		public void logException(String type, String message, Throwable th) {
 			try (var sw = new StringWriter(); var pw = new PrintWriter(sw);) {
