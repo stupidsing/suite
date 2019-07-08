@@ -554,10 +554,6 @@ public class P0 {
 		public Funp left;
 		public Funp right;
 
-		public static FunpTree2 of(Atom operator, Funp left, Funp right) {
-			return of(Funp_.integerSize, operator, left, right);
-		}
-
 		public static FunpTree2 of(int size, Atom operator, Funp left, Funp right) {
 			var f = new FunpTree2();
 			f.size = size;

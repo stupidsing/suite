@@ -108,6 +108,7 @@ public class FunpTest {
 	public void testExpr() {
 		test(7, "1 + 2 * 3");
 		test(3, "1 + 2 * (3 + 4) / 7");
+		test(160, "5 shl 5");
 	}
 
 	@Test

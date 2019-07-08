@@ -42,6 +42,7 @@ import suite.funp.P0.FunpSizeOf;
 import suite.funp.P0.FunpStruct;
 import suite.funp.P0.FunpTag;
 import suite.funp.P0.FunpTree;
+import suite.funp.P0.FunpTree2;
 import suite.funp.P0.FunpTypeCheck;
 import suite.funp.P0.FunpVariable;
 import suite.funp.P0.FunpVariableNew;
@@ -104,6 +105,11 @@ public class P0Parse {
 				var c0 = Coerce.valueOf(Atom.name(b).toUpperCase());
 				var c1 = Coerce.valueOf(Atom.name(a).toUpperCase());
 				return FunpCoerce.of(c0, c1, p(c));
+			}).match(".0 .1 .2", (a, b, c) -> {
+				if (TreeUtil.tupleOperations.containsKey(b))
+					return FunpTree2.of(Funp_.integerSize, (Atom) b, p(a), p(c));
+				else
+					return null;
 			}).match(".0 .1 ~ .2", (a, b, c) -> {
 				if (isBang(a)) {
 					var apply = FunpApply.of(p(b), p(a));

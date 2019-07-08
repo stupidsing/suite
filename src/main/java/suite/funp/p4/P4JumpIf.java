@@ -52,13 +52,15 @@ public class P4JumpIf {
 
 		public JumpIf(Funp node) {
 			var tree = node.cast(FunpTree.class);
-			operator = tree != null ? tree.operator : null;
-			left = tree != null ? tree.left : null;
-			right = tree != null ? tree.right : null;
-			this.jnx = operator != null ? jnxInsnByOp.get(operator) : null;
-			this.jxx = operator != null ? jxxInsnByOp.get(operator) : null;
-			this.jnxRev = operator != null ? jnxRevInsnByOp.get(operator) : null;
-			this.jxxRev = operator != null ? jxxRevInsnByOp.get(operator) : null;
+			if (tree != null) {
+				operator = tree.operator;
+				left = tree.left;
+				right = tree.right;
+				jnx = jnxInsnByOp.get(operator);
+				jxx = jxxInsnByOp.get(operator);
+				jnxRev = jnxRevInsnByOp.get(operator);
+				jxxRev = jxxRevInsnByOp.get(operator);
+			}
 		}
 
 		public Source<Boolean> jnxIf() {
