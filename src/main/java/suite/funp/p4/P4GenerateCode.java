@@ -11,7 +11,7 @@ import java.util.Set;
 import suite.Suite;
 import suite.adt.Mutable;
 import suite.adt.pair.Fixie_.FixieFun3;
-import suite.adt.pair.Fixie_.FixieFun4;
+import suite.adt.pair.Fixie_.FixieFun5;
 import suite.adt.pair.Pair;
 import suite.assembler.Amd64;
 import suite.assembler.Amd64.Insn;
@@ -789,9 +789,9 @@ public class P4GenerateCode {
 			return opResult;
 		}
 
-		private FixieFun4<Insn, Insn, Funp, Funp, Boolean> compileCmpJmp(Operand label) {
-			return (insn, revInsn, lhs, rhs) -> {
-				var pair = compileCommutativeTree(is, Insn.CMP, Assoc.RIGHT, lhs, rhs);
+		private FixieFun5<Integer, Insn, Insn, Funp, Funp, Boolean> compileCmpJmp(Operand label) {
+			return (opSize, insn, revInsn, lhs, rhs) -> {
+				var pair = compileCommutativeTree(opSize, Insn.CMP, Assoc.RIGHT, lhs, rhs);
 				em.emit(pair.t0 == lhs ? insn : revInsn, label);
 				return true;
 			};

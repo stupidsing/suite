@@ -4,7 +4,7 @@ import static java.util.Map.entry;
 
 import java.util.Map;
 
-import suite.adt.pair.Fixie_.FixieFun4;
+import suite.adt.pair.Fixie_.FixieFun5;
 import suite.assembler.Amd64.Insn;
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.FunpBoolean;
@@ -14,7 +14,7 @@ import suite.streamlet.FunUtil.Source;
 
 public class P4JumpIf {
 
-	private FixieFun4<Insn, Insn, Funp, Funp, Boolean> cmpJmp;
+	private FixieFun5<Integer, Insn, Insn, Funp, Funp, Boolean> cmpJmp;
 
 	private Map<TermOp, Insn> jxxInsnByOp = Map.ofEntries( //
 			entry(TermOp.EQUAL_, Insn.JE), //
@@ -40,11 +40,12 @@ public class P4JumpIf {
 			entry(TermOp.LT____, Insn.JLE), //
 			entry(TermOp.NOTEQ_, Insn.JE));
 
-	public P4JumpIf(FixieFun4<Insn, Insn, Funp, Funp, Boolean> cmpJmp) {
+	public P4JumpIf(FixieFun5<Integer, Insn, Insn, Funp, Funp, Boolean> cmpJmp) {
 		this.cmpJmp = cmpJmp;
 	}
 
 	public class JumpIf {
+		private int opSize;
 		private Object operator;
 		private Funp left, right;
 		private Insn jnx, jxx, jxxRev, jnxRev;
@@ -52,6 +53,7 @@ public class P4JumpIf {
 		public JumpIf(Funp node) {
 			var tree = node.cast(FunpOp.class);
 			if (tree != null) {
+				opSize = tree.opSize;
 				operator = tree.operator;
 				left = tree.left;
 				right = tree.right;
@@ -70,7 +72,7 @@ public class P4JumpIf {
 			} else if (operator == TermOp.NOTEQ_ && right instanceof FunpBoolean && ((FunpBoolean) right).b)
 				return new JumpIf(left).jxxIf();
 			else if (jnx != null)
-				return () -> cmpJmp.apply(jnx, jnxRev, left, right);
+				return () -> cmpJmp.apply(opSize, jnx, jnxRev, left, right);
 			else
 				return null;
 		}
@@ -83,7 +85,7 @@ public class P4JumpIf {
 			} else if (operator == TermOp.NOTEQ_ && right instanceof FunpBoolean && ((FunpBoolean) right).b)
 				return new JumpIf(left).jnxIf();
 			else if (jxx != null)
-				return () -> cmpJmp.apply(jxx, jxxRev, left, right);
+				return () -> cmpJmp.apply(opSize, jxx, jxxRev, left, right);
 			else
 				return null;
 		}
