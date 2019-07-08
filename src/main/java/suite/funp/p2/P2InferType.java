@@ -1056,7 +1056,7 @@ public class P2InferType {
 		else if ((m = typePatLambda.match(n)) != null)
 			return ps + ps;
 		else if ((structMembers = isCompletedStructSet(n)) != null)
-			return Read.from(structMembers).toInt(Obj_Int.sum(this::getTypeSize));
+			return Read.from(structMembers).toInt(Obj_Int.sum(this::getTypeSize)) + (isGcStruct ? ps : 0);
 		else if ((m = typePatTag.match(n)) != null) {
 			var dict = Dict.m(m[0]);
 			var size = 0;
