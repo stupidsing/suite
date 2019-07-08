@@ -10,7 +10,7 @@ allprojects {
 }
 
 dependencies {
-	compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.7'
+	compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.9'
 	compile group: 'com.jcraft', name: 'jsch', version: '0.1.54'
 	compile group: 'com.nativelibs4java', name: 'bridj', version: '0.7.0'
 	compile group: 'com.nativelibs4java', name: 'javacl', version: '1.0.0-RC4'

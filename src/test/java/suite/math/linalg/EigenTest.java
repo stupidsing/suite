@@ -39,6 +39,7 @@ public class EigenTest {
 		var eigenVectors = eigen.power(m);
 
 		for (var eigenVector : eigenVectors) {
+			System.out.println("eigen vector = " + mtx.toString(eigenVector));
 			var n0 = norm(eigenVector);
 			var n1 = norm(mtx.mul(m, eigenVector));
 			vec.verifyEquals(n0, n1, .01f);

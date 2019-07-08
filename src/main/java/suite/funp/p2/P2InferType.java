@@ -143,7 +143,6 @@ public class P2InferType {
 
 	private Map<Funp, Node> typeByNode = new IdentityHashMap<>();
 	private Map<Funp, Boolean> isRegByNode = new IdentityHashMap<>();
-	private Map<String, Var> globals = new HashMap<>();
 
 	private boolean isGcStruct = false;
 
