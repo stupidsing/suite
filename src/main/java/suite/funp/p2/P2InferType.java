@@ -99,6 +99,7 @@ import suite.node.util.TreeUtil;
 import suite.persistent.PerMap;
 import suite.primitive.IntMutable;
 import suite.primitive.IntPrimitives.Obj_Int;
+import suite.primitive.adt.map.ObjIntMap;
 import suite.primitive.adt.pair.IntIntPair;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil.Source;
@@ -332,6 +333,12 @@ public class P2InferType {
 				infer(expr);
 				return typeNumber;
 			})).applyIf(FunpStruct.class, f -> f.apply(pairs -> {
+				var pos = new ObjIntMap<String>();
+				var i = 0;
+
+				for (var pair : pairs)
+					pos.put(pair.t0, i++);
+
 				var types = Read //
 						.from2(pairs) //
 						.<Node, Reference> map2((n_, v) -> Atom.of(n_), (n_, v) -> Reference.of(infer(v, n_))) //
@@ -356,11 +363,14 @@ public class P2InferType {
 										var b1 = isReference(p1.t1);
 										var typeSize0 = getTypeSize(p0.t1);
 										var typeSize1 = getTypeSize(p1.t1);
-										var i0 = typeSize0 % ps == 0;
-										var i1 = typeSize1 % ps == 0;
+										var a0 = typeSize0 % ps == 0;
+										var a1 = typeSize1 % ps == 0;
+										var o0 = pos.get(Atom.name(p0.t0));
+										var o1 = pos.get(Atom.name(p1.t0));
 										var c = -Boolean.compare(b0, b1);
-										c = c == 0 ? -Boolean.compare(i0, i1) : c;
+										c = c == 0 ? -Boolean.compare(a0, a1) : c;
 										c = c == 0 ? -Integer.compare(typeSize0, typeSize1) : c;
+										c = c == 0 ? Integer.compare(o0, o1) : c;
 										return c;
 									}) //
 									.keys() //
