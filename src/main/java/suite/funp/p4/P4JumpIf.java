@@ -8,8 +8,7 @@ import suite.adt.pair.Fixie_.FixieFun4;
 import suite.assembler.Amd64.Insn;
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.FunpBoolean;
-import suite.funp.P0.FunpTree;
-import suite.node.io.Operator;
+import suite.funp.P2.FunpOp;
 import suite.node.io.TermOp;
 import suite.streamlet.FunUtil.Source;
 
@@ -46,12 +45,12 @@ public class P4JumpIf {
 	}
 
 	public class JumpIf {
-		private Operator operator;
+		private Object operator;
 		private Funp left, right;
 		private Insn jnx, jxx, jxxRev, jnxRev;
 
 		public JumpIf(Funp node) {
-			var tree = node.cast(FunpTree.class);
+			var tree = node.cast(FunpOp.class);
 			if (tree != null) {
 				operator = tree.operator;
 				left = tree.left;

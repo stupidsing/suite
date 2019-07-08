@@ -1,6 +1,7 @@
 package suite.funp.p3;
 
 import suite.adt.pair.Pair;
+import suite.funp.Funp_;
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.FunpBoolean;
 import suite.funp.P0.FunpCoerce;
@@ -10,10 +11,9 @@ import suite.funp.P0.FunpDontCare;
 import suite.funp.P0.FunpIf;
 import suite.funp.P0.FunpNumber;
 import suite.funp.P0.FunpReference;
-import suite.funp.P0.FunpTree;
-import suite.funp.P0.FunpTree2;
 import suite.funp.P2.FunpData;
 import suite.funp.P2.FunpMemory;
+import suite.funp.P2.FunpOp;
 import suite.inspect.Inspect;
 import suite.node.io.TermOp;
 import suite.node.util.Singleton;
@@ -27,6 +27,8 @@ import suite.streamlet.Read;
 public class P3Optimize {
 
 	private Inspect inspect = Singleton.me.inspect;
+
+	private int ps = Funp_.pointerSize;
 
 	public Funp optimize(Funp n) {
 		return inspect.rewrite(n, Funp.class, this::optimize_);
@@ -61,19 +63,19 @@ public class P3Optimize {
 				}
 				return null;
 			})).applyIf(FunpReference.class, g -> {
-				return FunpTree.of(TermOp.PLUS__, g.expr, FunpNumber.ofNumber(start));
+				return FunpOp.of(ps, ps, TermOp.PLUS__, g.expr, FunpNumber.ofNumber(start));
 			}).result();
 		})).applyIf(FunpReference.class, f -> f.apply(expr -> {
 			return optimize(expr).sw().applyIf(FunpMemory.class, g -> g.pointer).result();
-		})).applyIf(FunpTree.class, f -> f.apply((size, op, lhs, rhs) -> {
+		})).applyIf(FunpOp.class, f -> f.apply((size, opSize, op, lhs, rhs) -> {
 			var iib = TreeUtil.boolOperations.get(op);
 			var iii = TreeUtil.intOperations.get(op);
+			var iit = TreeUtil.tupleOperations.get(op);
 			Funp f1 = null;
 			f1 = iib != null ? evaluate(iib, lhs, rhs) : null;
 			f1 = iii != null ? evaluate(iii, lhs, rhs) : null;
+			f1 = iit != null ? evaluate(iit, lhs, rhs) : null;
 			return f1;
-		})).applyIf(FunpTree2.class, f -> f.apply((size, op, lhs, rhs) -> {
-			return evaluate(TreeUtil.tupleOperations.get(op), lhs, rhs);
 		})).result();
 	}
 

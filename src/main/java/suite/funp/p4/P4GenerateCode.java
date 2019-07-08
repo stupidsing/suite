@@ -34,8 +34,6 @@ import suite.funp.P0.FunpDontCare;
 import suite.funp.P0.FunpError;
 import suite.funp.P0.FunpIf;
 import suite.funp.P0.FunpNumber;
-import suite.funp.P0.FunpTree;
-import suite.funp.P0.FunpTree2;
 import suite.funp.P2.FunpAllocGlobal;
 import suite.funp.P2.FunpAllocReg;
 import suite.funp.P2.FunpAllocStack;
@@ -50,6 +48,7 @@ import suite.funp.P2.FunpInvoke;
 import suite.funp.P2.FunpInvoke2;
 import suite.funp.P2.FunpInvokeIo;
 import suite.funp.P2.FunpMemory;
+import suite.funp.P2.FunpOp;
 import suite.funp.P2.FunpOperand;
 import suite.funp.P2.FunpRoutine;
 import suite.funp.P2.FunpRoutine2;
@@ -439,7 +438,7 @@ public class P4GenerateCode {
 				Operand op0, op1;
 
 				Fun<IntObj_Obj<OpReg, CompileOut>, CompileOut> mf = fun -> {
-					var ft = pointer.cast(FunpTree.class);
+					var ft = pointer.cast(FunpOp.class);
 					var fn = ft != null && ft.operator == TermOp.PLUS__ ? ft.right.cast(FunpNumber.class) : null;
 					var i = fn != null ? fn.i.value() : IntFunUtil.EMPTYVALUE;
 					var pointer1 = i != IntFunUtil.EMPTYVALUE ? ft.left : pointer;
@@ -509,10 +508,9 @@ public class P4GenerateCode {
 						em.mov(pair.t0, compileFrame(pair.t1, pair.t0.size));
 					return new CompileOut(op0, op1);
 				}
-			})).applyIf(FunpTree.class, f -> f.apply((size, op, lhs, rhs) -> {
-				return returnOp(compileTree(size, n, op, op.assoc(), lhs, rhs));
-			})).applyIf(FunpTree2.class, f -> f.apply((size, op, lhs, rhs) -> {
-				return returnOp(compileTree(size, n, op, Assoc.RIGHT, lhs, rhs));
+			})).applyIf(FunpOp.class, f -> f.apply((size, opSize, op, lhs, rhs) -> {
+				var assoc = op instanceof TermOp ? ((TermOp) op).assoc() : Assoc.RIGHT;
+				return returnOp(compileTree(size, n, op, assoc, lhs, rhs));
 			})).nonNullResult();
 		}
 
@@ -730,8 +728,8 @@ public class P4GenerateCode {
 			var op = p4deOp.decompose(fd, n, 0, size);
 			Operand opResult = null;
 
-			if (opResult == null && op != null)
-				opResult = lea(op);
+			if (opResult == null && op != null && size < ps)
+				opResult = regs[lea(op).reg];
 
 			if (opResult == null && operator == TermOp.OR____) {
 				compileLoad(size, lhs);
@@ -1049,8 +1047,9 @@ public class P4GenerateCode {
 				return (OpReg) op;
 			else {
 				var op0 = isOutSpec ? pop0 : rs.get(ps);
-				em.lea(op0, opMem);
-				return pointerRegs[op0.reg];
+				var opr = pointerRegs[op0.reg];
+				em.lea(opr, opMem);
+				return opr;
 			}
 		}
 

@@ -524,7 +524,7 @@ public class P0 {
 		}
 	}
 
-	public static class FunpTree implements Funp, P4.End {
+	public static class FunpTree implements Funp, P2.End {
 		public int size;
 		public Operator operator;
 		public Funp left;
@@ -548,7 +548,7 @@ public class P0 {
 		}
 	}
 
-	public static class FunpTree2 implements Funp, P4.End {
+	public static class FunpTree2 implements Funp, P2.End {
 		public int size;
 		public Atom operator;
 		public Funp left;

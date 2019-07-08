@@ -11,10 +11,9 @@ import suite.funp.Funp_;
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.FunpDontCare;
 import suite.funp.P0.FunpNumber;
-import suite.funp.P0.FunpTree;
-import suite.funp.P0.FunpTree2;
 import suite.funp.P2.FunpFramePointer;
 import suite.funp.P2.FunpMemory;
+import suite.funp.P2.FunpOp;
 import suite.funp.P2.FunpOperand;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
@@ -61,8 +60,8 @@ public class P4DecomposeOperand {
 			}
 
 			private void decompose(Funp n_) {
-				FunpTree tree;
-				if ((tree = n_.cast(FunpTree.class)) != null && tree.operator == operator) {
+				FunpOp tree;
+				if ((tree = n_.cast(FunpOp.class)) != null && tree.operator == operator) {
 					decompose(tree.left);
 					decompose(tree.right);
 				} else
@@ -83,14 +82,14 @@ public class P4DecomposeOperand {
 
 			private void decompose(Funp n0) {
 				FunpNumber number;
-				FunpTree2 tree;
+				FunpOp tree;
 				Funp right;
 				for (var n1 : decompose.apply(TermOp.MULT__, n0))
 					if (n1 instanceof FunpFramePointer && isUseEbp && reg == null)
 						reg = Funp_._bp;
 					else if ((number = n1.cast(FunpNumber.class)) != null)
 						scale *= number.i.value();
-					else if ((tree = n1.cast(FunpTree2.class)) != null //
+					else if ((tree = n1.cast(FunpOp.class)) != null //
 							&& tree.operator == TreeUtil.SHL //
 							&& (right = tree.right) instanceof FunpNumber) {
 						decompose(tree.left);

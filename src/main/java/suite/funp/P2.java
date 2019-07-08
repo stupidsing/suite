@@ -290,6 +290,28 @@ public class P2 {
 		}
 	}
 
+	public static class FunpOp implements Funp, P4.End {
+		public int size;
+		public int opSize;
+		public Object operator;
+		public Funp left;
+		public Funp right;
+
+		public static FunpOp of(int size, int opSize, Object operator, Funp left, Funp right) {
+			var f = new FunpOp();
+			f.size = size;
+			f.opSize = opSize;
+			f.operator = operator;
+			f.left = left;
+			f.right = right;
+			return f;
+		}
+
+		public <R> R apply(FixieFun5<Integer, Integer, Object, Funp, Funp, R> fun) {
+			return fun.apply(size, opSize, operator, left, right);
+		}
+	}
+
 	public static class FunpOperand implements Funp, P4.End {
 		public Mutable<Operand> operand;
 
