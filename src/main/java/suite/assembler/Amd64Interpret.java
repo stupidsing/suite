@@ -117,10 +117,11 @@ public class Amd64Interpret {
 		}
 
 		while (true) {
+			var eip_ = eip;
 			var instruction = instructions.get(eip++);
 
 			if (Boolean.FALSE)
-				Log_.info(state(instruction));
+				Log_.info(state(eip_, instruction));
 
 			try {
 				Obj_Lng<Operand> fetch = op -> {
@@ -375,7 +376,7 @@ public class Amd64Interpret {
 					fail("unknown instruction " + instruction.insn);
 				}
 			} catch (Exception ex) {
-				Log_.info(state(instruction));
+				Log_.info(state(eip_, instruction));
 				throw ex;
 			}
 		}
@@ -491,13 +492,14 @@ public class Amd64Interpret {
 			return fail("address gone wild: " + Long.toHexString(address));
 	}
 
-	private String state(Instruction instruction) {
+	private String state(int eip, Instruction instruction) {
 		return String_.build(sb -> {
 			for (var i = 0; i < 8; i++)
-				sb.append((i % 2 == 0 ? "\n" : " ") + amd64.regByName.inverse().get(amd64.reg32[i]) + ":"
-						+ To.hex8(regs[i]));
+				sb.append((i % 2 == 0 ? "\n" : " ") //
+						+ amd64.regByName.inverse().get(amd64.reg32[i]) //
+						+ ":" + To.hex8(regs[i]));
 			sb.append("\nCMP = " + c);
-			sb.append("\nINSTRUCTION = " + dump.dump(instruction));
+			sb.append("\n[" + To.hex8(eip) + "] INSTRUCTION = " + dump.dump(instruction));
 		});
 	}
 
