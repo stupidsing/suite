@@ -367,7 +367,7 @@ public class P4GenerateCode {
 				return mask(pop0, pop1, out.op0, out.op1).compileHeap(size, (c1, allocSize, fcp) -> {
 					var ref = c1.compilePsReg(reference);
 					c1.mask(ref).mov(amd64.mem(ref, 0, ps), fcp);
-					c1.em.mov(fcp, ref);
+					c1.mov(fcp, ref);
 					return out;
 				});
 			})).applyIf(FunpIf.class, f -> f.apply((if_, then_, else_) -> {
