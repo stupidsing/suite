@@ -114,7 +114,7 @@ public class Eigen {
 	public float[] values(float[][] m, float[][] vs) {
 		return To.vector(vs.length, i -> {
 			var v = vs[i];
-			return (float) (vec.abs(mtx.mul(m, v)) / vec.abs(v));
+			return vec.dot(v, mtx.mul(m, v)) / vec.dot(v);
 		});
 	}
 
