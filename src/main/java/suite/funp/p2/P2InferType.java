@@ -146,7 +146,7 @@ public class P2InferType {
 	private Map<Funp, Node> typeByNode = new IdentityHashMap<>();
 	private Map<Funp, Boolean> isRegByNode = new IdentityHashMap<>();
 
-	private boolean isGcStruct = false;
+	private boolean isGcStruct = true;
 
 	public Funp infer(Funp n0) {
 		var t = new Reference();
@@ -610,7 +610,7 @@ public class P2InferType {
 						.replace(vn, localStack(1, IntMutable.of(0), b, b + lt.is));
 				var fp = erase(fp0);
 				var expr1 = new Erase(1, env1, null).erase(expr);
-				var expr2 = FunpHeapDealloc.of(size, FunpFramePointer.of(), expr1);
+				var expr2 = FunpHeapDealloc.of(size, FunpMemory.of(FunpFramePointer.of(), 0, ps), expr1);
 				return eraseRoutine(lt, fp, expr2);
 			})).applyIf(FunpMe.class, f -> {
 				return me.get(scope);

@@ -266,7 +266,7 @@ public class Amd64Interpret {
 					assign.f(address((OpMem) op1));
 					break;
 				case LOG:
-					Log_.info("value = " + source0);
+					Log_.info("value = " + To.hex8(source0));
 					break;
 				case MOV:
 					assign.f(source1);
