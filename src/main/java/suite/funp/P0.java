@@ -525,38 +525,30 @@ public class P0 {
 	}
 
 	public static class FunpTree implements Funp, P2.End {
-		public int size;
 		public Operator operator;
 		public Funp left;
 		public Funp right;
 
 		public static FunpTree of(Operator operator, Funp left, Funp right) {
-			return of(Funp_.integerSize, operator, left, right);
-		}
-
-		public static FunpTree of(int size, Operator operator, Funp left, Funp right) {
 			var f = new FunpTree();
-			f.size = size;
 			f.operator = operator;
 			f.left = left;
 			f.right = right;
 			return f;
 		}
 
-		public <R> R apply(FixieFun4<Integer, Operator, Funp, Funp, R> fun) {
-			return fun.apply(size, operator, left, right);
+		public <R> R apply(FixieFun3<Operator, Funp, Funp, R> fun) {
+			return fun.apply(operator, left, right);
 		}
 	}
 
 	public static class FunpTree2 implements Funp, P2.End {
-		public int size;
 		public Atom operator;
 		public Funp left;
 		public Funp right;
 
-		public static FunpTree2 of(int size, Atom operator, Funp left, Funp right) {
+		public static FunpTree2 of(Atom operator, Funp left, Funp right) {
 			var f = new FunpTree2();
-			f.size = size;
 			f.operator = operator;
 			f.left = left;
 			f.right = right;
@@ -574,8 +566,8 @@ public class P0 {
 			return list;
 		}
 
-		public <R> R apply(FixieFun4<Integer, Atom, Funp, Funp, R> fun) {
-			return fun.apply(size, operator, left, right);
+		public <R> R apply(FixieFun3<Atom, Funp, Funp, R> fun) {
+			return fun.apply(operator, left, right);
 		}
 	}
 

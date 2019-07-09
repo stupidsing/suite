@@ -63,11 +63,11 @@ public class P3Optimize {
 				}
 				return null;
 			})).applyIf(FunpReference.class, g -> {
-				return FunpOp.of(ps, ps, TermOp.PLUS__, g.expr, FunpNumber.ofNumber(start));
+				return FunpOp.of(ps, TermOp.PLUS__, g.expr, FunpNumber.ofNumber(start));
 			}).result();
 		})).applyIf(FunpReference.class, f -> f.apply(expr -> {
 			return optimize(expr).sw().applyIf(FunpMemory.class, g -> g.pointer).result();
-		})).applyIf(FunpOp.class, f -> f.apply((size, opSize, op, lhs, rhs) -> {
+		})).applyIf(FunpOp.class, f -> f.apply((opSize, op, lhs, rhs) -> {
 			var iib = TreeUtil.boolOperations.get(op);
 			var iii = TreeUtil.intOperations.get(op);
 			var iit = TreeUtil.tupleOperations.get(op);

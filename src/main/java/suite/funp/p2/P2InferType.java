@@ -402,22 +402,22 @@ public class P2InferType {
 				types.put(Atom.of(tag), Reference.of(tr));
 				unify(n, typeRefOf(typeTagOf(Dict.of(types))), infer(reference));
 				return tr;
-			})).applyIf(FunpTree.class, f -> f.apply((size, op, lhs, rhs) -> {
+			})).applyIf(FunpTree.class, f -> f.apply((op, lhs, rhs) -> {
 				Node ti;
 				if (Set.of(TermOp.BIGAND, TermOp.BIGOR_).contains(op))
 					ti = typeBoolean;
 				else if (Set.of(TermOp.EQUAL_, TermOp.NOTEQ_).contains(op))
 					ti = new Reference();
 				else
-					ti = size == is ? typeNumber : fail();
+					ti = typeNumber;
 				unify(n, infer(lhs), ti);
 				unify(n, infer(rhs), ti);
 				var cmp = Set.of(TermOp.EQUAL_, TermOp.NOTEQ_, TermOp.LE____, TermOp.LT____).contains(op);
 				return cmp ? typeBoolean : ti;
-			})).applyIf(FunpTree2.class, f -> f.apply((size, op, lhs, rhs) -> {
+			})).applyIf(FunpTree2.class, f -> f.apply((op, lhs, rhs) -> {
 				unify(n, infer(lhs), typeNumber);
 				unify(n, infer(rhs), typeNumber);
-				return size == is ? typeNumber : fail();
+				return typeNumber;
 			})).applyIf(FunpTypeCheck.class, f -> f.apply((lhs, rhs, expr) -> {
 				Node te;
 				if (rhs != null) {
@@ -585,8 +585,8 @@ public class P2InferType {
 				var size = getTypeSize(te);
 				var address0 = erase(reference);
 				var index1 = FunpCoerce.of(Coerce.NUMBER, Coerce.POINTER, erase(index0));
-				var inc = FunpOp.of(ps, ps, TermOp.MULT__, index1, FunpNumber.ofNumber(size));
-				var address1 = FunpOp.of(ps, ps, TermOp.PLUS__, address0, inc);
+				var inc = FunpOp.of(ps, TermOp.MULT__, index1, FunpNumber.ofNumber(size));
+				var address1 = FunpOp.of(ps, TermOp.PLUS__, address0, inc);
 				return FunpMemory.of(address1, 0, size);
 			})).applyIf(FunpLambda.class, f -> f.apply((vn, expr, isCapture) -> {
 				var b = ps + ps; // return address and EBP
@@ -676,7 +676,7 @@ public class P2InferType {
 				return FunpMemory.of(erase(reference), 0, is);
 			})).applyIf(FunpTagValue.class, f -> f.apply((reference, tag) -> {
 				return FunpMemory.of(erase(reference), is, is + getTypeSize(type0));
-			})).applyIf(FunpTree.class, f -> f.apply((size, op, l, r) -> {
+			})).applyIf(FunpTree.class, f -> f.apply((op, l, r) -> {
 				var size0 = getTypeSize(typeOf(l));
 				var size1 = getTypeSize(typeOf(r));
 				if (Set.of(TermOp.EQUAL_, TermOp.NOTEQ_).contains(op) && (is < size0 || is < size1)) {
@@ -688,11 +688,11 @@ public class P2InferType {
 					var f2 = FunpAssignMem.of(m1, erase(r), f1);
 					return FunpAllocStack.of(size0 + size1, FunpDontCare.of(), f2, offsetStack);
 				} else
-					return size0 == size1 ? FunpOp.of(size, size0, op, erase(l), erase(r)) : fail();
-			})).applyIf(FunpTree2.class, f -> f.apply((size, op, l, r) -> {
+					return size0 == size1 ? FunpOp.of(size0, op, erase(l), erase(r)) : fail();
+			})).applyIf(FunpTree2.class, f -> f.apply((op, l, r) -> {
 				var size0 = getTypeSize(typeOf(l));
 				var size1 = getTypeSize(typeOf(r));
-				return size0 == size1 ? FunpOp.of(size, size0, op, erase(l), erase(r)) : fail();
+				return size0 == size1 ? FunpOp.of(size0, op, erase(l), erase(r)) : fail();
 			})).applyIf(FunpVariable.class, f -> f.apply(var -> {
 				return getVariable(var);
 			})).result();
@@ -786,7 +786,7 @@ public class P2InferType {
 					})).applyIf(FunpDeref.class, f -> f.apply(pointer -> {
 						return erase(pointer);
 					})).applyIf(FunpField.class, f -> f.apply((ref, field) -> {
-						return FunpOp.of(ps, ps, TermOp.PLUS__, erase(ref), FunpNumber.ofNumber(getFieldOffset(f).t0));
+						return FunpOp.of(ps, TermOp.PLUS__, erase(ref), FunpNumber.ofNumber(getFieldOffset(f).t0));
 					})).applyIf(FunpMe.class, f -> {
 						return me.getAddress(scope);
 					}).applyIf(FunpVariable.class, f -> f.apply(vn -> {
@@ -891,7 +891,7 @@ public class P2InferType {
 		}
 
 		private Funp getAddress(int scope0) {
-			return getMemory(scope0).apply((p, s, e) -> FunpOp.of(ps, ps, TermOp.PLUS__, p, FunpNumber.ofNumber(s)));
+			return getMemory(scope0).apply((p, s, e) -> FunpOp.of(ps, TermOp.PLUS__, p, FunpNumber.ofNumber(s)));
 		}
 
 		private FunpMemory getMemory(int scope0) {
@@ -909,9 +909,9 @@ public class P2InferType {
 					? forInt(scope, scope0).<Funp> fold(Funp_.framePointer, (i, n) -> FunpMemory.of(n, 0, ps)) // locals
 					: FunpNumber.of(IntMutable.of(0)); // globals
 			var nfp1 = offsetOperand != null //
-					? FunpOp.of(ps, ps, TermOp.PLUS__, nfp0, FunpOperand.of(offsetOperand)) //
+					? FunpOp.of(ps, TermOp.PLUS__, nfp0, FunpOperand.of(offsetOperand)) //
 					: nfp0;
-			return FunpMemory.of(FunpOp.of(ps, ps, TermOp.PLUS__, nfp1, FunpNumber.of(offset)), start, end);
+			return FunpMemory.of(FunpOp.of(ps, TermOp.PLUS__, nfp1, FunpNumber.of(offset)), start, end);
 		}
 
 		private boolean isReg() {

@@ -107,7 +107,7 @@ public class P0Parse {
 				return FunpCoerce.of(c0, c1, p(c));
 			}).match(".0 .1 .2", (a, b, c) -> {
 				if (TreeUtil.tupleOperations.containsKey(b))
-					return FunpTree2.of(Funp_.integerSize, (Atom) b, p(a), p(c));
+					return FunpTree2.of((Atom) b, p(a), p(c));
 				else
 					return null;
 			}).match(".0 .1 ~ .2", (a, b, c) -> {

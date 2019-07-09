@@ -508,9 +508,9 @@ public class P4GenerateCode {
 						em.mov(pair.t0, compileFrame(pair.t1, pair.t0.size));
 					return new CompileOut(op0, op1);
 				}
-			})).applyIf(FunpOp.class, f -> f.apply((size, opSize, op, lhs, rhs) -> {
+			})).applyIf(FunpOp.class, f -> f.apply((opSize, op, lhs, rhs) -> {
 				var assoc = op instanceof TermOp ? ((TermOp) op).assoc() : Assoc.RIGHT;
-				return returnOp(compileTree(size, n, op, assoc, lhs, rhs));
+				return returnOp(compileTree(opSize, n, op, assoc, lhs, rhs));
 			})).nonNullResult();
 		}
 
@@ -715,6 +715,8 @@ public class P4GenerateCode {
 			return fun.apply(mask(fcp), pair.t1, fcp);
 		}
 
+		// if operator is Insn.CMP, this would return a 1-byte operand.
+		// otherwise a integer-sized (is) operand is returned.
 		private Operand compileTree(int size, Funp n, Object operator, Assoc assoc, Funp lhs, Funp rhs) {
 			var regs = amd64.regs(size);
 			var _ax = regs[axReg];
