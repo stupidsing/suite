@@ -873,15 +873,11 @@ public class P4GenerateCode {
 						blanks += size;
 						return true;
 					}).applyIf(FunpNumber.class, f -> {
-						return d(f);
+						flush();
+						return instructions.add(amd64.instruction(Insn.D, amd64.imm(f.i.value(), size)));
 					}).applyIf(Funp.class, f -> {
 						return false;
 					}).result();
-				}
-
-				private boolean d(FunpNumber number) {
-					flush();
-					return instructions.add(amd64.instruction(Insn.D, imm(number)));
 				}
 
 				private void flush() {
