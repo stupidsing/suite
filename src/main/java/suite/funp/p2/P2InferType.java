@@ -497,10 +497,19 @@ public class P2InferType {
 				else
 					return fail();
 			})).applyIf(FunpDefineRec.class, f -> f.apply((pairs, expr, fdt) -> {
+				var assigns = new ArrayList<Fixie3<String, Var, Funp>>();
+				var env1 = env;
+				var offset = 0;
+
+				Fun<Erase, Funp> addAssigns = e1 -> {
+					var expr1 = e1.erase(expr);
+
+					return Read //
+							.from(assigns) //
+							.fold(expr1, (e, x) -> x.map((vn, v, n_) -> assign(v.get(scope), e1.erase(n_, vn), e)));
+				};
+
 				if (Fdt.isGlobal(fdt)) {
-					var assigns = new ArrayList<Fixie3<String, Var, Funp>>();
-					var env1 = env;
-					var offset = 0;
 					var address = Mutable.<Operand> nil();
 
 					for (var pair : pairs) {
@@ -513,17 +522,8 @@ public class P2InferType {
 					}
 
 					var e1 = new Erase(scope, env1, global(address, 0, getTypeSize(type0)));
-					var expr1 = e1.erase(expr);
-
-					var expr2 = Read //
-							.from(assigns) //
-							.fold(expr1, (e, x) -> x.map((vn, v, n_) -> assign(v.get(scope), e1.erase(n_, vn), e)));
-
-					return FunpAllocGlobal.of(offset, FunpDontCare.of(), expr2, address);
+					return FunpAllocGlobal.of(offset, FunpDontCare.of(), addAssigns.apply(e1), address);
 				} else if (Fdt.isLocal(fdt)) {
-					var assigns = new ArrayList<Fixie3<String, Var, Funp>>();
-					var env1 = env;
-					var offset = 0;
 					var offsetStack = IntMutable.nil();
 
 					for (var pair : pairs) {
@@ -536,13 +536,7 @@ public class P2InferType {
 					}
 
 					var e1 = new Erase(scope, env1, localStack(scope, offsetStack, 0, getTypeSize(type0)));
-					var expr1 = e1.erase(expr);
-
-					var expr2 = Read //
-							.from(assigns) //
-							.fold(expr1, (e, x) -> x.map((vn, v, n_) -> assign(v.get(scope), e1.erase(n_, vn), e)));
-
-					return FunpAllocStack.of(offset, FunpDontCare.of(), expr2, offsetStack);
+					return FunpAllocStack.of(offset, FunpDontCare.of(), addAssigns.apply(e1), offsetStack);
 				} else if (fdt == Fdt.VIRT)
 					return erase(expr);
 				else
