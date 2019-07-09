@@ -69,7 +69,7 @@ public class Eigen {
 			xs = vec.scale(ys, 1d / eigenValue);
 		}
 
-		return DblObjPair.of(eigenValue, vec.normalizeOn(xs));
+		return DblObjPair.of(eigenValue, xs);
 	}
 
 	// https://en.wikipedia.org/wiki/Lanczos_algorithm
