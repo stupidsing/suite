@@ -5,7 +5,7 @@ import org.junit.Test;
 import suite.math.Math_;
 import suite.util.To;
 
-public class EigenTest {
+public class EigenTest1 {
 
 	private Eigen eigen = new Eigen();
 	private Matrix mtx = new Matrix();
@@ -44,15 +44,16 @@ public class EigenTest {
 	}
 
 	private void test(float[][] m) {
-		var pairs = eigen.power0(m);
+		var eigenVectors = eigen.power1(m);
 
-		for (var pair : pairs) {
+		for (var pair : eigenVectors) {
 			var eigenValue = pair.t0;
 			var eigenVector = pair.t1;
-			System.out.println("eigen pair = " + To.string(eigenValue) + " :: " + mtx.toString(eigenVector));
+			String s = "eigen pair = " + To.string(eigenValue) + " :: " + mtx.toString(eigenVector);
 			var n0 = norm(eigenVector);
 			var n1 = norm(mtx.mul(m, eigenVector));
 			vec.verifyEquals(n0, n1, .01f);
+			System.out.println(s);
 		}
 	}
 

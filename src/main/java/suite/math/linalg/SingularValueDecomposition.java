@@ -94,9 +94,8 @@ public class SingularValueDecomposition {
 	// 5.7.3 Whitening Transformation
 	public float[][] whiten(float[][] omega) {
 		var covs = mtx.covariance(omega);
-		var evs = eigen.power(covs);
-		var evals = eigen.values(omega, covs);
-		var m = To.matrix(mtx.height(evs), mtx.width(evs), (i, j) -> evs[i][j] / sqrt(evals[j]));
+		var evs = eigen.power0(covs);
+		var m = To.matrix(covs.length, covs.length, (i, j) -> evs.get(i).t1[j] / sqrt(evs.get(j).t0));
 		return mtx.mul(m, omega);
 	}
 

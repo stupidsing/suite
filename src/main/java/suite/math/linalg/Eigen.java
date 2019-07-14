@@ -3,6 +3,8 @@ package suite.math.linalg;
 import static suite.util.Friends.abs;
 import static suite.util.Friends.forInt;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import suite.adt.pair.Pair;
@@ -31,45 +33,73 @@ public class Eigen {
 		}
 
 		var cov = mtx.scale(mtx.mul_mTn(m1, m1), 1d / height);
-		return power0(cov).t1;
+		return powerIteration(cov).t1;
 		// var evs = eigen.power(cov);
 		// return eigen.values(cov, evs);
 	}
 
 	// Paul Wilmott on Quantitative Finance, Second Edition
 	// 37.13.1 The Power Method, page 620
-	public float[][] power(float[][] m0) {
+	// symmetric positive definite matrices only (e.g. covariance matrix)
+	public List<DblObjPair<float[]>> power0(float[][] m0) {
 		var m = mtx.copyOf(m0);
 		var size = mtx.sqSize(m);
-		var eigenVectors = new float[size][];
+		var pairs = new ArrayList<DblObjPair<float[]>>();
 
 		for (var v = 0; v < size; v++) {
-			var pair = power0(m);
+			var pair = powerIteration(m);
+			pairs.add(pair);
 			var eigenValue = pair.t0;
-			eigenVectors[v] = pair.t1;
 
 			for (var i = 0; i < size; i++)
 				m[i][i] -= eigenValue;
 		}
 
-		return eigenVectors;
+		return pairs;
 	}
 
-	private DblObjPair<float[]> power0(float[][] m) {
+	// http://macs.citadel.edu/chenm/344.dir/08.dir/lect4_2.pdf
+	public List<DblObjPair<float[]>> power1(float[][] a) {
+		var b = mtx.copyOf(a);
+		var size = a.length;
+
+		var rprev = 0d;
+		var uprev = new float[size];
+		var xprev = new float[size];
+		var pairs = new ArrayList<DblObjPair<float[]>>();
+
+		for (var i = 0; i < size; i++) {
+			var pair = powerIteration(b);
+			var r = pair.t0;
+			var u = pair.t1;
+			var x = vec.scale(b[i], 1d / (r * u[i]));
+			var v = vec.addOn(vec.scale(u, r - rprev), vec.scale(uprev, rprev * vec.dot(xprev, u)));
+			b = mtx.subOn(b, mtx.scaleOn(mtx.mul(u, x), r));
+			rprev = r;
+			uprev = u;
+			xprev = x;
+			pairs.add(DblObjPair.of(r, v));
+		}
+
+		return pairs;
+	}
+
+	private DblObjPair<float[]> powerIteration(float[][] m) {
 		var size = mtx.sqSize(m);
 		var xs = To.vector(size, i -> random.nextFloat());
-		var eigenValue = Double.NaN;
+		var maxy = Double.NaN;
 
 		for (var iter = 0; iter < 512; iter++) {
 			var ys = mtx.mul(m, xs);
-			eigenValue = 0f;
+			maxy = 0f;
 			for (var y : ys)
-				if (abs(eigenValue) < abs(y))
-					eigenValue = y;
-			xs = vec.scale(ys, 1d / eigenValue);
+				if (abs(maxy) < abs(y))
+					maxy = y;
+			xs = vec.scale(ys, 1d / maxy);
 		}
 
-		return DblObjPair.of(eigenValue, xs);
+		// xs = vec.normalizeOn(xs);
+		return DblObjPair.of(vec.dot(xs, mtx.mul(m, xs)) / vec.dot(xs), xs);
 	}
 
 	// https://en.wikipedia.org/wiki/Lanczos_algorithm
@@ -109,13 +139,6 @@ public class Eigen {
 			t[i - 1][i] = t[i][i - 1] = betas[i];
 
 		return Pair.of(mtx.transpose(vs), t);
-	}
-
-	public float[] values(float[][] m, float[][] vs) {
-		return To.vector(vs.length, i -> {
-			var v = vs[i];
-			return vec.dot(v, mtx.mul(m, v)) / vec.dot(v);
-		});
 	}
 
 }
