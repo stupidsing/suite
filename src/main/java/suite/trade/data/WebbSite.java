@@ -11,6 +11,7 @@ import suite.trade.TimeRange;
 import suite.trade.data.DataSource.Datum;
 import suite.util.String_;
 
+// https://www.facebook.com/notes/yuen-cheng/%E5%88%86%E4%BA%AB%E6%8B%BF%E5%8F%96webb-site%E6%B8%AF%E8%82%A1%E8%82%A1%E5%83%B9%E7%A8%8B%E5%BC%8F/1642684929197453/
 public class WebbSite {
 
 	@SuppressWarnings("unused")
