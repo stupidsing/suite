@@ -42,7 +42,7 @@ public class EigenTest {
 				{ 2f, 2f, 5f, }, //
 				{ -2f, -1f, -4f, }, };
 
-		verify(m, eigen.power0(m));
+		verify(m, eigen.power0(m)); // actually fail, duplicated eigen vector
 		// verify(m, eigen.power1(m)); // fail
 	}
 
