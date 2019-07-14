@@ -7,7 +7,6 @@ import java.util.Map;
 import suite.node.util.Singleton;
 import suite.streamlet.As;
 import suite.trade.Time;
-import suite.trade.TimeRange;
 import suite.trade.data.DataSource.Datum;
 import suite.util.String_;
 
@@ -37,7 +36,7 @@ public class WebbSite {
 		private float totalReturn;
 	}
 
-	public DataSource dataSource(String symbol, TimeRange period) {
+	public DataSource dataSource(String symbol) {
 		var urlString = "https://webb-site.com/dbpub/pricesCSV.asp?i=" + codeBySymbol.get(symbol);
 
 		// atDate,settleDate,susp,closing,bid,ask,low,high,vol,turn,VWAP,adjClose,adjBid,adjAsk,adjLow,adjHigh,adjVol,adjVWAP,totalRet
@@ -69,8 +68,8 @@ public class WebbSite {
 					return factor;
 				}) //
 				.map(factor -> new Datum( //
-						factor.atDate.addHours(9 - 8).epochSec(), //
-						factor.atDate.addHours(16 - 8).addSeconds(30 * 60).epochSec(), //
+						factor.atDate.addHours(9).epochSec(), //
+						factor.atDate.addHours(16).addSeconds(30 * 60).epochSec(), //
 						// (factor.bid + factor.ask) / 2f, //
 						// factor.closing, //
 						// factor.low, //
