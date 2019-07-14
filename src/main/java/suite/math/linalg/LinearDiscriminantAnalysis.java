@@ -52,7 +52,6 @@ public class LinearDiscriminantAnalysis {
 		var mul = cd.inverseMul(sw);
 		var mt = mtx.transpose(To.array(nParameters, float[].class, n -> mul.apply(mtx.transpose(sb)[n])));
 		var eigens = eigen.power1(mt);
-
 		var w = new float[k][];
 
 		for (var i = 0; i < k; i++)

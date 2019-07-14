@@ -42,11 +42,12 @@ public class LinearDiscriminantAnalysisTest {
 			data[c] = dataByCategoryId.get(c).toArray(new float[0][]);
 
 		var fun = lda.lda(2, data);
+		var eps = .001f;
 
-		vec.verifyEquals(fun.apply(new float[] { 1f, 0f, 0f, 0f, }), new float[] { -.2049f, -.009f, }, .001f);
-		vec.verifyEquals(fun.apply(new float[] { 0f, 1f, 0f, 0f, }), new float[] { -.3871f, -.589f, }, .001f);
-		vec.verifyEquals(fun.apply(new float[] { 0f, 0f, 1f, 0f, }), new float[] { .5465f, .2543f, }, .001f);
-		vec.verifyEquals(fun.apply(new float[] { 0f, 0f, 0f, 1f, }), new float[] { .7138f, -.767f, }, .001f);
+		vec.verifyEquals(fun.apply(new float[] { 1f, 0f, 0f, 0f, }), new float[] { -.2049f, -.009f, }, eps);
+		vec.verifyEquals(fun.apply(new float[] { 0f, 1f, 0f, 0f, }), new float[] { -.3871f, -.589f, }, eps);
+		vec.verifyEquals(fun.apply(new float[] { 0f, 0f, 1f, 0f, }), new float[] { .5465f, .2543f, }, eps);
+		vec.verifyEquals(fun.apply(new float[] { 0f, 0f, 0f, 1f, }), new float[] { .7138f, -.767f, }, eps);
 	}
 
 }
