@@ -48,8 +48,9 @@ public class Eigen {
 
 		for (var v = 0; v < size; v++) {
 			var pair = powerIteration(m);
-			pairs.add(pair);
 			var eigenValue = pair.t0;
+			var eigenVector = pair.t1;
+			pairs.add(DblObjPair.of(vec.dot(eigenVector, mtx.mul(m, eigenVector)) / vec.dot(eigenVector), eigenVector));
 
 			for (var i = 0; i < size; i++)
 				m[i][i] -= eigenValue;
@@ -98,8 +99,8 @@ public class Eigen {
 			xs = vec.scale(ys, 1d / maxy);
 		}
 
-		// xs = vec.normalizeOn(xs);
-		return DblObjPair.of(vec.dot(xs, mtx.mul(m, xs)) / vec.dot(xs), xs);
+		// return DblObjPair.of(vec.dot(xs, mtx.mul(m, xs)) / vec.dot(xs), xs);
+		return DblObjPair.of(maxy, xs);
 	}
 
 	// https://en.wikipedia.org/wiki/Lanczos_algorithm

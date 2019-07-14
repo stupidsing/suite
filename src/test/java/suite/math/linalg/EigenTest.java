@@ -1,8 +1,11 @@
 package suite.math.linalg;
 
+import java.util.List;
+
 import org.junit.Test;
 
 import suite.math.Math_;
+import suite.primitive.adt.pair.DblObjPair;
 import suite.util.To;
 
 public class EigenTest {
@@ -13,26 +16,35 @@ public class EigenTest {
 
 	@Test
 	public void test2() {
-		test(new float[][] { //
+		var m = new float[][] { //
 				{ 4f, 3f, }, //
-				{ -2f, -3f, }, });
+				{ -2f, -3f, }, };
+
+		verify(m, eigen.power0(m));
+		verify(m, eigen.power1(m));
 	}
 
 	@Test
 	public void test3() {
-		test(new float[][] { //
+		var m = new float[][] { //
 				{ -4f, 14f, 0f, }, //
 				{ -5f, 13f, 0f, }, //
-				{ -1f, 0f, 2f, }, });
+				{ -1f, 0f, 2f, }, };
+
+		verify(m, eigen.power0(m));
+		verify(m, eigen.power1(m));
 	}
 
-//	@Test
-//	public void testDegenerate() {
-//		test(new float[][] { //
-//				{ 3f, 2f, 6f, }, //
-//				{ 2f, 2f, 5f, }, //
-//				{ -2f, -1f, -4f, }, });
-//	}
+	@Test
+	public void testDegenerate() {
+		var m = new float[][] { //
+				{ 3f, 2f, 6f, }, //
+				{ 2f, 2f, 5f, }, //
+				{ -2f, -1f, -4f, }, };
+
+		verify(m, eigen.power0(m));
+		// verify(m, eigen.power1(m)); // fail
+	}
 
 	@Test
 	public void testPca() {
@@ -43,9 +55,7 @@ public class EigenTest {
 			Math_.verifyEquals(f, pc[0]);
 	}
 
-	private void test(float[][] m) {
-		var pairs = eigen.power0(m);
-
+	private void verify(float[][] m, List<DblObjPair<float[]>> pairs) {
 		for (var pair : pairs) {
 			var eigenValue = pair.t0;
 			var eigenVector = pair.t1;
