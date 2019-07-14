@@ -60,18 +60,10 @@ public class EigenTest {
 			var eigenValue = pair.t0;
 			var eigenVector = pair.t1;
 			System.out.println("eigen pair = " + To.string(eigenValue) + " :: " + mtx.toString(eigenVector));
-			var n0 = norm(eigenVector);
-			var n1 = norm(mtx.mul(m, eigenVector));
+			var n0 = vec.scale(eigenVector, eigenValue);
+			var n1 = mtx.mul(m, eigenVector);
 			vec.verifyEquals(n0, n1, .01f);
 		}
-	}
-
-	private float[] norm(float[] v0) {
-		var v1 = vec.normalize(v0);
-		if (v1[0] < 0f)
-			return vec.scale(v1, -1d);
-		else
-			return v1;
 	}
 
 }

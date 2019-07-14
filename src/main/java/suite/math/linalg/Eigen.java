@@ -50,7 +50,7 @@ public class Eigen {
 			var pair = powerIteration(m);
 			var eigenValue = pair.t0;
 			var eigenVector = pair.t1;
-			pairs.add(DblObjPair.of(vec.dot(eigenVector, mtx.mul(m, eigenVector)) / vec.dot(eigenVector), eigenVector));
+			pairs.add(DblObjPair.of(vec.dot(eigenVector, mtx.mul(m0, eigenVector)) / vec.dot(eigenVector), eigenVector));
 
 			for (var i = 0; i < size; i++)
 				m[i][i] -= eigenValue;
