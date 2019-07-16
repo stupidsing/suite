@@ -11,8 +11,7 @@ public class CholeskyDecomposition {
 	private Matrix mtx = new Matrix();
 
 	/**
-	 * @param m
-	 *            a Hermitian (i.e. symmetric), positive-definite matrix.
+	 * @param m a Hermitian (i.e. symmetric), positive-definite matrix.
 	 * @return a function that calculates x -> m^-1 * x.
 	 */
 	public Iterate<float[]> inverseMul(float[][] m) {
@@ -20,9 +19,11 @@ public class CholeskyDecomposition {
 		var l = ldlt.t0;
 		var d = ldlt.t1;
 		var reciprocalsD = To.vector(d, f -> 1f / f);
+
+		var height = mtx.height(m);
+		var width = mtx.width(m);
+
 		return fs0 -> {
-			var height = mtx.height(m);
-			var width = mtx.width(m);
 			var fs1 = new float[height]; // will be inverse(L) * fs0
 
 			for (var i = 0; i < height; i++) {
@@ -52,8 +53,7 @@ public class CholeskyDecomposition {
 	 * definite. Also its contents will be destroyed as the decomposition is
 	 * performed in-place.
 	 * 
-	 * @param m
-	 *            a Hermitian (i.e. symmetric), positive-definite matrix.
+	 * @param m a Hermitian (i.e. symmetric), positive-definite matrix.
 	 * @return lower-triangular matrix L that satisfy m = L * L*
 	 */
 	public float[][] decompose(float[][] m) {
@@ -86,8 +86,7 @@ public class CholeskyDecomposition {
 	 * definite. Also its contents will be destroyed as the decomposition is
 	 * performed in-place.
 	 * 
-	 * @param m
-	 *            a Hermitian (i.e. symmetric), positive-definite matrix.
+	 * @param m a Hermitian (i.e. symmetric), positive-definite matrix.
 	 * @return A pair of lower-triangular matrix L and diagonal vector D that
 	 *         satisfies m = L * D * L*.
 	 */
