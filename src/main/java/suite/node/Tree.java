@@ -45,10 +45,10 @@ public abstract class Tree extends Node {
 	}
 
 	public static Streamlet<Node> read(Node node0, Operator operator) {
-		return iter(node0, n -> Tree.decompose(n, operator));
+		return read(node0, n -> Tree.decompose(n, operator));
 	}
 
-	public static Streamlet<Node> iter(Node node0, Fun<Node, Tree> fun) {
+	public static Streamlet<Node> read(Node node0, Fun<Node, Tree> fun) {
 		return new Streamlet<>(() -> Puller.of(new Source<Node>() {
 			private Node node = node0;
 
