@@ -503,7 +503,7 @@ public class SewingProverImpl implements ProverFactory {
 				var tr1 = saveEnvTr(compileTrRule(ht[0], ht[1]));
 				var current = Mutable.of(value0_.apply(rt.env));
 				rt.pushRem(rt_ -> valuex_.test(rt_, current.value()) ? okay : fail);
-				for (var elem : Tree.iter(list0_.apply(rt.env))) {
+				for (var elem : Tree.read(list0_.apply(rt.env))) {
 					var result = new Reference();
 					rt.pushRem(rt_ -> {
 						current.update(result.finalNode());
@@ -522,7 +522,7 @@ public class SewingProverImpl implements ProverFactory {
 			tr = rt -> {
 				var ht = Suite.pattern(".0 .1").match(ht_.apply(rt.env));
 				var tr1 = saveEnvTr(compileTrRule(ht[0], ht[1]));
-				for (var n : Tree.iter(l_.apply(rt.env)))
+				for (var n : Tree.read(l_.apply(rt.env)))
 					rt.pushRem(rt_ -> {
 						rt_.query = n;
 						return tr1;
@@ -530,7 +530,7 @@ public class SewingProverImpl implements ProverFactory {
 				return okay;
 			};
 		} else if ((m = Suite.pattern("member .0 .1").match(node)) != null && TreeUtil.isList(m[0], TermOp.AND___)) {
-			var elems_ = Tree.iter(m[0]).map(bf::binder).toList();
+			var elems_ = Tree.read(m[0]).map(bf::binder).toList();
 			var f = bf.cloner(m[1]);
 			tr = rt -> {
 				var iter = elems_.iterator();

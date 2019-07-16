@@ -66,7 +66,7 @@ class RuleSetImport {
 	synchronized boolean importFrom(RuleSet ruleSet, Node node) {
 		var rules = new ArrayList<Rule>();
 
-		for (var elem : Tree.iter(node, TermOp.NEXT__))
+		for (var elem : Tree.read(node, TermOp.NEXT__))
 			rules.add(Rule.of(elem));
 
 		var prover = new Prover(ruleSet);

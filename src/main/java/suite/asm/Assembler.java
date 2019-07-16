@@ -94,7 +94,7 @@ public class Assembler {
 		var generalizer = new Generalizer();
 		var trail = new Trail();
 
-		for (var node : Tree.iter(input))
+		for (var node : Tree.read(input))
 			new SwitchNode<Boolean>(generalizer.generalize(node) //
 			).match(".0 = .1", (l, r) -> {
 				return Binder.bind(l, r, trail) || Fail.b("bind failed");
@@ -194,7 +194,7 @@ class AsmSl implements Asm {
 
 	private Bytes convertByteStream(Node node) {
 		var bb = new BytesBuilder();
-		for (var n : Tree.iter(node))
+		for (var n : Tree.read(node))
 			bb.append((byte) Int.num(n));
 		return bb.toBytes();
 	}

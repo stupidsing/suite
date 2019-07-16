@@ -47,7 +47,7 @@ public class P00Consult {
 		FunIo<ReadStream, Node> r0 = is -> {
 			var node = Suite.parse(FileUtil.read(is) + "$APP");
 			return Tree //
-					.iter(node, TermOp.CONTD_) //
+					.read(node, TermOp.CONTD_) //
 					.reverse() //
 					.fold(program, (n, left) -> Tree.of(TermOp.CONTD_, left, n));
 		};

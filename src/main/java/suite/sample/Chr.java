@@ -65,11 +65,11 @@ public class Chr {
 				node = t1.getRight();
 
 				if (key == Atom.of("given"))
-					rule.givens = To.list(Tree.iter(value));
+					rule.givens = To.list(Tree.read(value));
 				else if (key == Atom.of("if"))
-					rule.ifs = To.list(Tree.iter(value));
+					rule.ifs = To.list(Tree.read(value));
 				else if (key == Atom.of("then"))
-					rule.thens = To.list(Tree.iter(value));
+					rule.thens = To.list(Tree.read(value));
 				else if (key == Atom.of("when"))
 					rule.when = value;
 				else

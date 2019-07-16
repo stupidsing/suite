@@ -99,7 +99,7 @@ public class P0CrudeScript {
 				}).match("expression (.0,)", a -> {
 					return expr(a);
 				}).match("expression-add (.0, .1)", (a, b) -> {
-					return Tree.iter(b).fold(expr(a), (f, c) -> FunpTree.of(TermOp.PLUS__, f, expr(c)));
+					return Tree.read(b).fold(expr(a), (f, c) -> FunpTree.of(TermOp.PLUS__, f, expr(c)));
 				}).match("expression-and (.0,)", a -> {
 					return expr(a);
 				}).match("expression-as (.0,)", a -> {
@@ -109,23 +109,23 @@ public class P0CrudeScript {
 				}).matchArray("expression-array .0", m -> {
 					return FunpArray.of(Read.from(m).map(this::expr).toList());
 				}).match("expression-bool-and (.0, .1)", (a, b) -> {
-					return Tree.iter(b).fold(expr(a), (f, c) -> FunpTree.of(TermOp.BIGAND, f, expr(c)));
+					return Tree.read(b).fold(expr(a), (f, c) -> FunpTree.of(TermOp.BIGAND, f, expr(c)));
 				}).match("expression-bool-not (.0,)", a -> {
 					return expr(a);
 				}).match("expression-bool-or (.0, .1)", (a, b) -> {
-					return Tree.iter(b).fold(expr(a), (f, c) -> FunpTree.of(TermOp.BIGOR_, f, expr(c)));
+					return Tree.read(b).fold(expr(a), (f, c) -> FunpTree.of(TermOp.BIGOR_, f, expr(c)));
 				}).match("expression-compare (.0,)", a -> {
 					return expr(a);
 				}).match("expression-dict .0", a -> {
 					var list = Tree //
-							.iter(a) //
+							.read(a) //
 							.chunk(2) //
 							.map(o -> o.toFixie().map((k, v) -> Pair.of(Str.str(k), expr(v)))) //
 							.toList();
 					return FunpStruct.of(list);
 				}).match("expression-div (.0, .1)", (a, b) -> {
 					return Tree //
-							.iter(b) //
+							.read(b) //
 							.chunk(2) //
 							.fold(expr(a), (f, o) -> o.toFixie().map((op, d) -> {
 								return new SwitchNode<Funp>(op //
@@ -136,9 +136,9 @@ public class P0CrudeScript {
 								}).nonNullResult();
 							}));
 				}).match("expression-invoke (.0, .1)", (a, b) -> {
-					return Tree.iter(b).fold(expr(a), (f, c) -> FunpApply.of(f, expr(c)));
+					return Tree.read(b).fold(expr(a), (f, c) -> FunpApply.of(f, expr(c)));
 				}).match("expression-mul (.0, .1)", (a, b) -> {
-					return Tree.iter(b).fold(expr(a), (f, c) -> FunpTree.of(TermOp.MULT__, f, expr(c)));
+					return Tree.read(b).fold(expr(a), (f, c) -> FunpTree.of(TermOp.MULT__, f, expr(c)));
 				}).match("expression-not (.0,)", a -> {
 					return expr(a);
 				}).match("expression-lambda (bind (<IDENTIFIER> (.0,),), expression (.1,),)", (a, b) -> {
@@ -152,7 +152,7 @@ public class P0CrudeScript {
 				}).match("expression-pp .0", a -> {
 					var pat0 = Suite.pattern("op-inc-dec ('++' (),)");
 					var pat1 = Suite.pattern("op-inc-dec ('--' (),)");
-					var list = To.list(Tree.iter(a));
+					var list = To.list(Tree.read(a));
 					Obj_Int<Node> f = op -> pat0.match(op) != null ? 1 : pat1.match(op) != null ? -1 : 0;
 
 					int s = 0, e = list.size() - 1, c;
@@ -177,7 +177,7 @@ public class P0CrudeScript {
 					return s == e ? e2 : fail();
 				}).match("expression-prop (.0, .1)", (a, b) -> {
 					return Tree //
-							.iter(b) //
+							.read(b) //
 							.chunk(2) //
 							.fold(expr(a), (f, o) -> o.toFixie().map((k, v) -> {
 								return new SwitchNode<Funp>(k //
@@ -196,7 +196,7 @@ public class P0CrudeScript {
 				}).match("expression-tuple .0", a -> {
 					var list = new ArrayList<Pair<String, Funp>>();
 					var i = 0;
-					for (var child : Tree.iter(a))
+					for (var child : Tree.read(a))
 						list.add(Pair.of("t" + i++, expr(child)));
 					return FunpStruct.of(list);
 				}).match("expression-xor (.0,)", a -> {

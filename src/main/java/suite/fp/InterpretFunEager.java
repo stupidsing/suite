@@ -95,7 +95,7 @@ public class InterpretFunEager {
 				};
 			}).match(Matcher.defvars, (list, do_) -> {
 				var tuple = Suite.pattern(".0 .1");
-				var arrays = Tree.iter(list).map(tuple::match).toList();
+				var arrays = Tree.read(list).map(tuple::match).toList();
 				var vm1 = vm;
 				var fs1 = fs;
 

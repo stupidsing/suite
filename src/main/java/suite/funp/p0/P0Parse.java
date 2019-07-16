@@ -133,14 +133,14 @@ public class P0Parse {
 			}).match(".0*", a -> {
 				return FunpDeref.of(p(a));
 			}).match("[.0]", a -> {
-				return isList(a) ? FunpArray.of(Tree.iter(a).map(this::p).toList()) : null;
+				return isList(a) ? FunpArray.of(Tree.read(a).map(this::p).toList()) : null;
 			}).match("{ .0 }", a -> {
 				return FunpStruct.of(kvs(a).mapValue(this::p).toList());
 			}).match("!asm .0 {.1}/.2", (a, b, c) -> {
-				return checkDo(() -> FunpDoAsm.of(Tree.iter(a, TermOp.OR____).map(n -> {
+				return checkDo(() -> FunpDoAsm.of(Tree.read(a, TermOp.OR____).map(n -> {
 					var ma = Suite.pattern(".0 = .1").match(n);
 					return Pair.of(Amd64.me.regByName.get(ma[0]), p(ma[1]));
-				}).toList(), Tree.iter(b, TermOp.OR____).toList(), Amd64.me.regByName.get(c)));
+				}).toList(), Tree.read(b, TermOp.OR____).toList(), Amd64.me.regByName.get(c)));
 			}).match("!assign .0 := .1 ~ .2", (a, b, c) -> {
 				return checkDo(() -> FunpDoAssignRef.of(FunpReference.of(p(a)), p(b), p(c)));
 			}).match("!delete^ .0 ~ .1", (a, b) -> {

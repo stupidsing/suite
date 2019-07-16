@@ -40,11 +40,11 @@ public abstract class Tree extends Node {
 		tree.right = right;
 	}
 
-	public static Streamlet<Node> iter(Node node) {
-		return iter(node, TermOp.AND___);
+	public static Streamlet<Node> read(Node node) {
+		return read(node, TermOp.AND___);
 	}
 
-	public static Streamlet<Node> iter(Node node0, Operator operator) {
+	public static Streamlet<Node> read(Node node0, Operator operator) {
 		return iter(node0, n -> Tree.decompose(n, operator));
 	}
 

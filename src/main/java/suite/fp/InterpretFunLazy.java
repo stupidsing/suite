@@ -143,7 +143,7 @@ public class InterpretFunLazy {
 					return tr;
 				}).match(Matcher.defvars, (list, do_) -> {
 					var tuple = Suite.pattern(".0 .1");
-					var defs = Tree.iter(list).map(tuple::match).map2(a -> Atom.name(a[0]), a -> a[1]).collect();
+					var defs = Tree.read(list).map(tuple::match).map2(a -> Atom.name(a[0]), a -> a[1]).collect();
 					var env1 = defs.keys().fold(env, (e, v) -> e.replace(v, new Reference()));
 					var i1 = new InferType(env1);
 					defs.sink((v, def) -> bind(i1.infer(def), env1.get(v)));
@@ -254,7 +254,7 @@ public class InterpretFunLazy {
 				};
 			}).match(Matcher.defvars, (list, do_) -> {
 				var tuple = Suite.pattern(".0 .1");
-				var arrays = Tree.iter(list).map(tuple::match).collect();
+				var arrays = Tree.read(list).map(tuple::match).collect();
 				var size = arrays.size();
 				var lazy = arrays.fold(this, (l, array) -> l.put(array[0]));
 				var values_ = arrays.map(array -> lazy.lazy(array[1])).toList();

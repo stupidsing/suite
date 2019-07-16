@@ -141,14 +141,14 @@ public class VerifyTest {
 				return verify(Suite.substitute("true | fulfill .0", a));
 			}).match(".0 | choose_{.1}", (a, b) -> {
 				var list = verify(a);
-				for (var node : Tree.iter(list))
+				for (var node : Tree.read(list))
 					if (Binder.bind(node, new Generalizer().generalize(b), new Trail()))
 						return node;
 				return fail("cannot verify " + proof);
 			}).match(".0 | choose .1", (a, b) -> {
 				var list = verify(a);
 				Tree tree;
-				for (var node : Tree.iter(list))
+				for (var node : Tree.read(list))
 					if ((tree = Tree.decompose(node, TermOp.NEXT__)) != null && tree.getLeft() == b)
 						return tree.getRight();
 				return fail("cannot verify " + proof);

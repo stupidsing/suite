@@ -1070,7 +1070,7 @@ public class P2InferType {
 		var m = typePatStruct.match(n);
 		if (m != null) {
 			var dict = Dict.m(m[1]);
-			return Tree.iter(m[2]).map2(f -> f != gcclazzField ? dict.get(f) : Reference.of(typeNumberp));
+			return Tree.read(m[2]).map2(f -> f != gcclazzField ? dict.get(f) : Reference.of(typeNumberp));
 		} else
 			return null;
 	}
