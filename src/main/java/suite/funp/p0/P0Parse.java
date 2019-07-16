@@ -338,7 +338,7 @@ public class P0Parse {
 
 		private Streamlet2<String, Node> kvs(Node node) {
 			return Tree //
-					.iter(node, Tree::decompose) //
+					.read(node, Tree::decompose) //
 					.map(n -> {
 						Node[] m;
 						if ((m = Suite.pattern(".0 .1 := .2").match(n)) != null)
