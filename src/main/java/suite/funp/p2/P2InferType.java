@@ -948,6 +948,7 @@ public class P2InferType {
 
 	public Node cloneType(Node type) {
 		var cloned = new IdentityHashMap<Node, Reference>();
+		var cloner = new Cloner();
 
 		return new Object() {
 			private Node cloneType(Node t0) {
@@ -972,7 +973,7 @@ public class P2InferType {
 						var map1 = Read.from2(map0).mapValue(t -> Reference.of(cloneType(t))).toMap();
 						return typePatTag.subst(Dict.of(map1));
 					}).applyIf(Node.class, t -> {
-						return t;
+						return cloner.clone(t);
 					}).nonNullResult();
 
 					if (!unify(tx, tc))
@@ -981,16 +982,16 @@ public class P2InferType {
 
 				return tx;
 			}
+
+			private Node cloneNode(Node node) {
+				return cloner.clone(node);
+			}
 		}.cloneType(type);
 	}
 
 	private boolean unify(Node type0, Node type1) {
 		return new BinderRecursive(new Trail()).bind(type0, type1);
 		// return Binder.bind(type0, type1, new Trail());
-	}
-
-	public Node cloneNode(Node node) {
-		return new Cloner().clone(node);
 	}
 
 	private Node typeOf(Funp n) {

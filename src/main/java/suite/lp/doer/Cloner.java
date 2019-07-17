@@ -19,7 +19,7 @@ public class Cloner {
 	}
 
 	public Node clone(Node node) {
-		Tree tree = Tree.of(null, null, node);
+		var tree = Tree.of(null, null, node);
 		cloneRight(tree);
 		return tree.getRight();
 	}
@@ -28,7 +28,7 @@ public class Cloner {
 		while (tree != null) {
 			Tree nextTree = null;
 			var right = tree.getRight();
-			IdentityKey<Node> key = IdentityKey.of(right);
+			var key = IdentityKey.of(right);
 			var right1 = clonedNodes.get(key);
 			Tree rt;
 
