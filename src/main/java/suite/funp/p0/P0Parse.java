@@ -192,6 +192,13 @@ public class P0Parse {
 				return define(Fdt.L_POLY, a, lambdaSeparate(b, c), d);
 			}).match("define { .0 } ~ .1", (a, b) -> {
 				return defineList(a, b, Fdt.L_POLY);
+			}).match("define.global .0 := .1 ~ .2", (a, b, c) -> {
+				var tree = Tree.decompose(a, TermOp.TUPLE_);
+				if (tree == null || !isId(tree.getLeft())) {
+					var lambda = lambda(a, c);
+					return FunpDefine.of(lambda.vn, p(b), lambda.expr, Fdt.G_POLY);
+				} else
+					return null;
 			}).match("define.global .0 .1 := .2 ~ .3", (a, b, c, d) -> {
 				return define(Fdt.G_POLY, a, lambdaSeparate(b, c), d);
 			}).match("define.global { .0 } ~ .1", (a, b) -> {
@@ -223,9 +230,16 @@ public class P0Parse {
 			}).match("let { .0 } ~ .1", (a, b) -> {
 				return defineList(a, b, Fdt.L_MONO);
 			}).match("let.global .0 := .1 ~ .2", (a, b, c) -> {
-				return define(Fdt.G_MONO, a, p(b), c);
+				var tree = Tree.decompose(a, TermOp.TUPLE_);
+				if (tree == null || !isId(tree.getLeft())) {
+					var lambda = lambda(a, c);
+					return FunpDefine.of(lambda.vn, p(b), lambda.expr, Fdt.G_MONO);
+				} else
+					return null;
 			}).match("let.global .0 .1 := .2 ~ .3", (a, b, c, d) -> {
 				return define(Fdt.G_MONO, a, lambdaSeparate(b, c), d);
+			}).match("let.global { .0 } ~ .1", (a, b) -> {
+				return defineList(a, b, Fdt.G_MONO);
 			}).match("me", () -> {
 				return FunpMe.of();
 			}).match("null", () -> {
