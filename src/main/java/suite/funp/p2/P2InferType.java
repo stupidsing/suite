@@ -231,10 +231,8 @@ public class P2InferType {
 						TreeUtil.buildUp(TermOp.AND___, Read.from(vns).<Node> map(Atom::of).toList()));
 				var infer1 = new Infer(env1, checks, ts);
 
-				for (var pair : pairs_) {
-					var vn = pair.t0;
-					unify(n, env1.get(vn).t1, infer1.infer(pair.t1, vn));
-				}
+				for (var pair : pairs_)
+					pair.map((vn, v) -> unify(n, env1.get(vn).t1, infer1.infer(v, vn)));
 
 				return infer1.infer(expr);
 			})).applyIf(FunpDeref.class, f -> f.apply(pointer -> {
