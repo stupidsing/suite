@@ -640,12 +640,13 @@ public class P2InferType {
 				var clazz = 0;
 
 				for (var pair : pairs) {
+					var field = pair.t0;
 					var type = pair.t1;
 					var offset0 = offset;
 					Funp value;
 
-					if (pair.t0 != gcclazzField) {
-						var name = Atom.name(pair.t0);
+					if (field != gcclazzField) {
+						var name = Atom.name(field);
 						value = erase(values.get(name), name);
 
 						if (isReference(type)) {
@@ -799,8 +800,7 @@ public class P2InferType {
 		}
 
 		private FunpMemory getField(FunpField n) {
-			var pair = getFieldOffset(n);
-			return FunpMemory.of(erase(n.reference), pair.t0, pair.t1);
+			return getFieldOffset(n).map((s, e) -> FunpMemory.of(erase(n.reference), s, e));
 		}
 
 		private IntIntPair getFieldOffset(FunpField n) {

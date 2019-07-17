@@ -165,6 +165,8 @@ public class P0Parse {
 				return FunpRepeat.of(a != dontCare ? Int.num(a) : null, p(b));
 			}).match("assert .0 ~ .1", (a, b) -> {
 				return FunpIf.of(p(a), p(b), FunpError.of());
+			}).match("boolean", () -> {
+				return FunpBoolean.of(false);
 			}).match("byte", () -> {
 				return FunpCoerce.of(Coerce.NUMBER, Coerce.BYTE, FunpDontCare.of());
 			}).match("byte .0", a -> {
