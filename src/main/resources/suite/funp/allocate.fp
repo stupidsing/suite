@@ -12,7 +12,7 @@ let.global alloc.free.chain := type (address.of ps.block) null ~
 define !alloc size0 := do!
 	let size1 := max (os.ps, size0) ~
 	let sizep := numberp:number size1 ~
-	define {
+	let {
 		!alloc.chain p :=
 			expand ps := pointer* ~
 			for! (

@@ -332,6 +332,7 @@ public class P2InferType {
 				infer(expr);
 				return typeNumber;
 			})).applyIf(FunpStruct.class, f -> f.apply(pairs -> {
+				var isGcStruct_ = isGcStruct && !pairs.isEmpty();
 				var pos = new ObjIntMap<String>();
 				var i = 0;
 
@@ -343,7 +344,8 @@ public class P2InferType {
 				var types0 = Read //
 						.from2(pairs) //
 						.<Node, Reference> map2((n_, v) -> Atom.of(n_), (n_, v) -> Reference.of(infer(v, n_)));
-				var types1 = types0;
+
+				var types1 = isGcStruct_ ? types0.cons(gcclazzField, Reference.of(typeNumberp)) : types0;
 				var types2 = types1.toMap();
 				var typesDict = Dict.of(types2);
 				var isCompleted = new Reference();
@@ -357,7 +359,7 @@ public class P2InferType {
 					if (ref.isFree()) {
 						Streamlet<Node> list;
 
-						if (isGcStruct)
+						if (isGcStruct_)
 							list = Read //
 									.from2(types2) //
 									.sort((p0, p1) -> {
@@ -375,8 +377,7 @@ public class P2InferType {
 										c = c == 0 ? Integer.compare(o0, o1) : c;
 										return c;
 									}) //
-									.keys() //
-									.cons(gcclazzField);
+									.keys();
 						else {
 							var fs0 = Read.from(pairs).<Node> map(pair -> Atom.of(pair.t0));
 							var fs1 = Read.from2(types2).keys();
@@ -1051,7 +1052,7 @@ public class P2InferType {
 		else if ((m = typePatLambda.match(n)) != null)
 			return ps + ps;
 		else if ((structMembers = isCompletedStructSet(n)) != null)
-			return Read.from(structMembers).toInt(Obj_Int.sum(this::getTypeSize)) + (isGcStruct ? ps : 0);
+			return Read.from(structMembers).toInt(Obj_Int.sum(this::getTypeSize));
 		else if ((m = typePatTag.match(n)) != null) {
 			var dict = Dict.m(m[0]);
 			var size = 0;
@@ -1069,9 +1070,9 @@ public class P2InferType {
 
 	private Streamlet2<Node, Reference> isCompletedStructList(Node n) {
 		var m = typePatStruct.match(n);
-		if (m != null) {
+		if (m != null && m[0] == Atom.TRUE) {
 			var dict = Dict.m(m[1]);
-			return Tree.read(m[2]).map2(f -> f != gcclazzField ? dict.get(f) : Reference.of(typeNumberp));
+			return Tree.read(m[2]).map2(dict::get);
 		} else
 			return null;
 	}
