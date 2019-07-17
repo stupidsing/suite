@@ -965,13 +965,9 @@ public class P2InferType {
 					}).match(typePatLambda, (a, b) -> {
 						return typePatLambda.subst(cloneType(a), cloneType(b));
 					}).match(typePatStruct, (a, b, c) -> {
-						var map0 = Dict.m(b);
-						var map1 = Read.from2(map0).mapValue(t -> Reference.of(cloneType(t))).toMap();
-						return typePatStruct.subst(a, Dict.of(map1), c);
+						return typePatStruct.subst(a, cloneDict(b), c);
 					}).match(typePatTag, a -> {
-						var map0 = Dict.m(a);
-						var map1 = Read.from2(map0).mapValue(t -> Reference.of(cloneType(t))).toMap();
-						return typePatTag.subst(Dict.of(map1));
+						return typePatTag.subst(cloneDict(a));
 					}).applyIf(Node.class, t -> {
 						return cloner.clone(t);
 					}).nonNullResult();
@@ -981,6 +977,12 @@ public class P2InferType {
 				}
 
 				return tx;
+			}
+
+			private Dict cloneDict(Node b) {
+				var map0 = Dict.m(b);
+				var map1 = Read.from2(map0).mapValue(t -> Reference.of(cloneType(t))).toMap();
+				return Dict.of(map1);
 			}
 
 			private Node cloneNode(Node node) {
