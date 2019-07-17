@@ -337,14 +337,17 @@ public class P2InferType {
 				var pos = new ObjIntMap<String>();
 				var i = 0;
 
+				pos.put(gcclazz, i++);
+
 				for (var pair : pairs)
 					pos.put(pair.t0, i++);
 
-				var types = Read //
+				var types0 = Read //
 						.from2(pairs) //
-						.<Node, Reference> map2((n_, v) -> Atom.of(n_), (n_, v) -> Reference.of(infer(v, n_))) //
-						.toMap();
-				var typesDict = Dict.of(types);
+						.<Node, Reference> map2((n_, v) -> Atom.of(n_), (n_, v) -> Reference.of(infer(v, n_)));
+				var types1 = types0;
+				var types2 = types1.toMap();
+				var typesDict = Dict.of(types2);
 				var isCompleted = new Reference();
 				var ref = new Reference();
 				var ts = typeStructOf(isCompleted, typesDict, ref);
@@ -358,7 +361,7 @@ public class P2InferType {
 
 						if (isGcStruct)
 							list = Read //
-									.from2(typesDict.getMap()) //
+									.from2(types2) //
 									.sort((p0, p1) -> {
 										var b0 = isReference(p0.t1);
 										var b1 = isReference(p1.t1);
@@ -378,7 +381,7 @@ public class P2InferType {
 									.cons(gcclazzField);
 						else {
 							var fs0 = Read.from(pairs).<Node> map(pair -> Atom.of(pair.t0));
-							var fs1 = Read.from2(typesDict.getMap()).keys();
+							var fs1 = Read.from2(types2).keys();
 							list = Streamlet.concat(fs0, fs1).distinct();
 						}
 
