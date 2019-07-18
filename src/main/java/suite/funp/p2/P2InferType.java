@@ -958,9 +958,7 @@ public class P2InferType {
 					cloned.put(t0, tx = new Reference());
 
 					var tc = new SwitchNode<Node>(t0.finalNode() //
-					).applyIf(Reference.class, t -> {
-						return new Reference();
-					}).match(typePatDecor, (a, b) -> {
+					).match(typePatDecor, (a, b) -> {
 						return typePatDecor.subst(cloneNode(a), cloneType(b));
 					}).match(typePatLambda, (a, b) -> {
 						return typePatLambda.subst(cloneType(a), cloneType(b));
