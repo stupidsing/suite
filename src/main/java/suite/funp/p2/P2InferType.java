@@ -959,7 +959,7 @@ public class P2InferType {
 
 					var tc = new SwitchNode<Node>(t0.finalNode() //
 					).match(typePatDecor, (a, b) -> {
-						return typePatDecor.subst(cloneNode(a), cloneType(b));
+						return typePatDecor.subst(cloner.clone(a), cloneType(b));
 					}).match(typePatLambda, (a, b) -> {
 						return typePatLambda.subst(cloneType(a), cloneType(b));
 					}).match(typePatStruct, (a, b, c) -> { // clone the dict but not the completion flag or the member list
@@ -981,10 +981,6 @@ public class P2InferType {
 				var map0 = Dict.m(b);
 				var map1 = Read.from2(map0).mapValue(t -> Reference.of(cloneType(t))).toMap();
 				return Dict.of(map1);
-			}
-
-			private Node cloneNode(Node node) {
-				return cloner.clone(node);
 			}
 		}.cloneType(type);
 	}
