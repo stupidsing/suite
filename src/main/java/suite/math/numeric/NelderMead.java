@@ -34,7 +34,6 @@ public class NelderMead {
 		for (var iter = 0; iter < 1024; iter++) {
 			pairs.sort(Comparator.comparing(pair -> pair.t0));
 
-			// centroid
 			var centroid = new float[dim];
 			var ps_1 = pairs.size() - 1;
 
