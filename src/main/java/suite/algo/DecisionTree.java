@@ -2,65 +2,67 @@ package suite.algo;
 
 import static suite.util.Friends.forInt;
 
-import java.util.function.Predicate;
-
 import suite.adt.map.IntIntMap1;
 import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.IntFunUtil;
 import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.Int_Dbl;
-import suite.primitive.adt.pair.DblObjPair;
+import suite.primitive.adt.pair.DblIntPair;
 import suite.primitive.adt.pair.IntObjPair;
-import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 
 public class DecisionTree {
 
-	public Obj_Int<boolean[]> id3(Streamlet<IntObjPair<boolean[]>> data, int default_) {
-		if (data.first() == null)
+	public final Obj_Int<Object[]> classifier;
+
+	private int default_;
+
+	public DecisionTree(Streamlet<IntObjPair<Object[]>> data) {
+		default_ = data.groupBy(IntObjPair::fst, Streamlet::size).sortByValue(Integer::compareTo).first().t0;
+		classifier = id3(data);
+	}
+
+	public Obj_Int<Object[]> id3(Streamlet<IntObjPair<Object[]>> data) {
+		var first = data.first();
+
+		if (first == null)
 			return fs -> default_;
-		else if (isSingleClassification(data) != null)
-			return fs -> isSingleClassification(data);
+		else if (data.isAll(datum -> datum.t0 == first.t0))
+			return fs -> first.t0;
 		else {
 			var entropy0 = entropy(data);
-			var max = DblObjPair.<Predicate<boolean[]>> of(Double.MIN_VALUE, null);
+			var max = DblIntPair.of(Double.MIN_VALUE, -1);
 
-			forInt(data.first().t1.length).sink(p -> {
-				Predicate<boolean[]> pred = datum -> datum[p];
-				var sets = data //
-						.partition(datum -> pred.test(datum.t1)) //
-						.map((s0, s1) -> Read.each(s0.collect(), s1.collect()));
+			forInt(first.t1.length).sink(p -> {
+				var es = data //
+						.groupBy(datum -> datum.t1[p]) //
+						.values() //
+						.toDouble(Obj_Dbl.sum(set -> entropy(set) * set.size()));
 
-				var es = sets.toDouble(Obj_Dbl.sum(set -> entropy(set) * set.size()));
 				var informationGain = entropy0 - es / data.size();
 
 				if (max.t0 < informationGain)
-					max.update(informationGain, pred);
+					max.update(informationGain, p);
 			});
 
-			var pred = max.t1;
-			var partitions = data.partition(datum -> pred.test(datum.t1));
-			var f0 = id3(partitions.t0, default_);
-			var f1 = id3(partitions.t1, default_);
-			return fs -> (pred.test(fs) ? f0 : f1).apply(fs);
+			var p = max.t1;
+
+			var funs = data //
+					.groupBy(datum -> datum.t1[p], data_ -> data_) //
+					.mapValue(this::id3) //
+					.toMap();
+
+			return fs -> funs.get(fs[p]).apply(fs);
 		}
 	}
 
-	private double entropy(Streamlet<IntObjPair<boolean[]>> data) {
+	private double entropy(Iterable<IntObjPair<Object[]>> data) {
 		var hist0 = new IntIntMap1();
 		for (var datum : data)
 			hist0.update(datum.t0, v -> (v != IntFunUtil.EMPTYVALUE ? v : 0) + 1);
 		var hist1 = hist0.values();
 		var sum = (double) hist1.sum();
 		return hist1.toDouble(Int_Dbl.sum(c -> Math.log(c / sum)));
-	}
-
-	private Integer isSingleClassification(Streamlet<IntObjPair<boolean[]>> data) {
-		var b = true;
-		var cl = data.first().t0;
-		for (var datum : data)
-			b &= datum.t0 == cl;
-		return b ? cl : null;
 	}
 
 }
