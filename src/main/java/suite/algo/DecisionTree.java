@@ -18,7 +18,7 @@ public class DecisionTree {
 	private int default_;
 
 	public DecisionTree(Streamlet<IntObjPair<Object[]>> data) {
-		default_ = data.groupBy(IntObjPair::fst, Streamlet::size).sortByValue(Integer::compareTo).first().t0;
+		default_ = mostFrequent(data);
 		classifier = id3(data);
 	}
 
@@ -47,13 +47,20 @@ public class DecisionTree {
 
 			var p = max.t1;
 
-			var funs = data //
-					.groupBy(datum -> datum.t1[p], data_ -> data_) //
-					.mapValue(this::id3) //
-					.toMap();
+			if (0 < p) {
+				var funs = data //
+						.groupBy(datum -> datum.t1[p], data_ -> data_) //
+						.mapValue(this::id3) //
+						.toMap();
 
-			return fs -> funs.get(fs[p]).apply(fs);
+				return fs -> funs.get(fs[p]).apply(fs);
+			} else
+				return fs -> mostFrequent(data);
 		}
+	}
+
+	private int mostFrequent(Streamlet<IntObjPair<Object[]>> data) {
+		return data.groupBy(IntObjPair::fst, Streamlet::size).sortByValue(Integer::compareTo).first().t0;
 	}
 
 	private double entropy(Iterable<IntObjPair<Object[]>> data) {
