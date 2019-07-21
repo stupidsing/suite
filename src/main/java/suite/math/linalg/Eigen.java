@@ -20,22 +20,34 @@ public class Eigen {
 
 	// Machine Learning - An Algorithm Perspective
 	// 6.2 Principal Components Analysis
-	public float[] pca(float[][] m0) {
-		var m1 = mtx.copyOf(m0);
-		var height = mtx.height(m1);
-		var width_ = mtx.width(m1);
+	// m :: nSamples x nParameters
+	// also specify the number of most significant eigen-vectors to pick
+	public class Pca {
+		public final float[][] eigenVectors;
+		public final float[][] pca; // nSamples x nEigenPairs
 
-		for (var j = 0; j < width_; j++) {
-			var j_ = j;
-			var mean = forInt(height).toDouble(Int_Dbl.sum(i -> m1[i][j_])) / height;
-			for (var i = 0; i < height; i++)
-				m1[i][j_] -= mean;
+		public Pca(float[][] m0, int nEigenPairs) {
+			var m1 = mtx.copyOf(m0);
+			var nSamples = mtx.height(m1);
+			var nParameters = mtx.width(m1);
+
+			// adjust m1 to the mean
+			forInt(nParameters).sink(j -> {
+				var mean = forInt(nSamples).toDouble(Int_Dbl.sum(i -> m1[i][j])) / nSamples;
+				for (var i = 0; i < nSamples; i++)
+					m1[i][j] -= mean;
+			});
+
+			// nParameters x nParameters
+			var cov = mtx.scaleOn(mtx.mul_mTn(m1, m1), 1d / nSamples);
+			// var cov = mtx.covariance0(mtx.transpose(m));
+
+			var eigens = power0(cov);
+
+			// nEigenPairs x nParameters
+			eigenVectors = forInt(nEigenPairs).map(i -> vec.normalizeOn(eigens.get(i).t1)).toArray(float[].class);
+			pca = mtx.transpose(mtx.mul_mnT(eigenVectors, m1));
 		}
-
-		var cov = mtx.scale(mtx.mul_mTn(m1, m1), 1d / height);
-		return powerIteration(cov).t1;
-		// var evs = eigen.power(cov);
-		// return eigen.values(cov, evs);
 	}
 
 	// Paul Wilmott on Quantitative Finance, Second Edition

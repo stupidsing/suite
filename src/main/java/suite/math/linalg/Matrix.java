@@ -8,10 +8,8 @@ import java.util.Arrays;
 
 import suite.math.Math_;
 import suite.math.R3;
-import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Dbl_Dbl;
 import suite.primitive.Int_Dbl;
-import suite.streamlet.Read;
 import suite.util.String_;
 import suite.util.To;
 
@@ -34,7 +32,8 @@ public class Matrix {
 	}
 
 	public float[][] convolute(float[][] m, float[][] k) {
-		int kh = h(k), kw = w(k);
+		var kh = h(k);
+		var kw = w(k);
 		var h1 = h(m) - kh + 1;
 		var w1 = w(m) - kw + 1;
 		var o = of(h1, w1);
@@ -47,10 +46,11 @@ public class Matrix {
 	}
 
 	// https://en.wikipedia.org/wiki/Covariance_matrix
+	// vs :: nParameters x nSamples
 	public float[][] covariance(float[][] vs) {
 		var h = h(vs);
 		var w = w(vs);
-		var means = To.vector(h, j -> Read.from(vs).toDouble(Obj_Dbl.sum(vector -> vector[j])) / w);
+		var means = To.vector(vs, v -> forInt(w).toDouble(Int_Dbl.sum(j -> v[j])) / w);
 		return To.matrix(h, h, (i0, i1) -> forInt(w).toDouble(Int_Dbl.sum(j -> vs[i0][j] * vs[i1][j])) / w - means[i0] * means[i1]);
 	}
 
@@ -429,7 +429,12 @@ public class Matrix {
 	}
 
 	public String toString(float[][] m) {
-		return String_.build(sb -> dump(sb, m));
+		return String_.build(sb -> {
+			for (var row : m) {
+				dump(sb, row);
+				sb.append("\n");
+			}
+		});
 	}
 
 	public float[][] transpose(float[][] m) {
@@ -471,13 +476,6 @@ public class Matrix {
 			for (var j = 0; j < width; j++)
 				m1[i][j] = m0[i][j];
 		return m1;
-	}
-
-	private void dump(StringBuilder sb, float[][] m) {
-		for (var row : m) {
-			dump(sb, row);
-			sb.append("\n");
-		}
 	}
 
 	private void dump(StringBuilder sb, float[] m) {
