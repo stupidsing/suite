@@ -1,4 +1,6 @@
-package suite.adt.map; import static suite.util.Friends.fail;
+package suite.adt.map;
+
+import static suite.util.Friends.fail;
 
 import java.util.Arrays;
 
@@ -11,6 +13,8 @@ import suite.primitive.adt.pair.IntIntPair;
 import suite.primitive.adt.pair.IntObjPair;
 import suite.primitive.streamlet.IntObjPuller;
 import suite.primitive.streamlet.IntObjStreamlet;
+import suite.primitive.streamlet.IntPuller;
+import suite.primitive.streamlet.IntStreamlet;
 import suite.streamlet.As;
 
 /**
@@ -139,6 +143,14 @@ public class IntIntMap1 {
 					return b;
 				}
 			});
+		});
+	}
+
+	public IntStreamlet values() {
+		return new IntStreamlet(() -> {
+			var source = source_();
+			var pair0 = IntIntPair.of(0, 0);
+			return IntPuller.of(() -> source.source2(pair0) ? pair0.t1 : empty);
 		});
 	}
 
