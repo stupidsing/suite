@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import suite.object.Object_;
-import suite.primitive.adt.pair.IntIntPair;
+import suite.primitive.Coord;
 
 public class Coordinate implements Comparable<Coordinate> {
 
@@ -64,11 +64,11 @@ public class Coordinate implements Comparable<Coordinate> {
 	}
 
 	public int getX() {
-		return getLocation().t0;
+		return getLocation().x;
 	}
 
 	public int getY() {
-		return getLocation().t1;
+		return getLocation().y;
 	}
 
 	@Override
@@ -93,17 +93,17 @@ public class Coordinate implements Comparable<Coordinate> {
 	@Override
 	public String toString() {
 		var location = getLocation();
-		return String.format("%d,%d", location.t0, location.t1);
+		return String.format("%d,%d", location.x, location.y);
 	}
 
 	public int index() {
 		return index;
 	}
 
-	private IntIntPair getLocation() {
+	private Coord getLocation() {
 		var x = index >> Weiqi.shift;
 		var y = index & (1 << Weiqi.shift) - 1;
-		return IntIntPair.of(x, y);
+		return Coord.of(x, y);
 	}
 
 }

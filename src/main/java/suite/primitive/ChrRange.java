@@ -13,11 +13,11 @@ public class ChrRange {
 	public char e;
 
 	public static Iterate<ChrRange> mapFst(Chr_Chr fun) {
-		return pair -> of(fun.apply(pair.s), pair.e);
+		return range -> of(fun.apply(range.s), range.e);
 	}
 
 	public static Iterate<ChrRange> mapSnd(Chr_Chr fun) {
-		return pair -> of(pair.s, fun.apply(pair.e));
+		return range -> of(range.s, fun.apply(range.e));
 	}
 
 	public static ChrRange none() {
@@ -33,28 +33,28 @@ public class ChrRange {
 	}
 
 	public static Comparator<ChrRange> comparator() {
-		return (pair0, pair1) -> {
-			int c = Boolean.compare(pair0 != null, pair1 != null);
-			c = c == 0 ? Character.compare(pair0.s, pair1.s) : c;
-			c = c == 0 ? Character.compare(pair0.e, pair1.e) : c;
+		return (range0, range1) -> {
+			var c = Boolean.compare(range0 != null, range1 != null);
+			c = c == 0 ? Character.compare(range0.s, range1.s) : c;
+			c = c == 0 ? Character.compare(range0.e, range1.e) : c;
 			return c;
 		};
 	}
 
 	public static Comparator<ChrRange> comparatorByFirst() {
-		return (pair0, pair1) -> {
-			int c = Boolean.compare(pair0 != null, pair1 != null);
-			c = c == 0 ? Character.compare(pair0.s, pair1.s) : c;
+		return (range0, range1) -> {
+			var c = Boolean.compare(range0 != null, range1 != null);
+			c = c == 0 ? Character.compare(range0.s, range1.s) : c;
 			return c;
 		};
 	}
 
-	public static char fst(ChrRange pair) {
-		return pair.s;
+	public static char fst(ChrRange range) {
+		return range.s;
 	}
 
-	public static char snd(ChrRange pair) {
-		return pair.e;
+	public static char snd(ChrRange range) {
+		return range.e;
 	}
 
 	public char length() {

@@ -18,10 +18,10 @@ import suite.ansi.Termios;
 import suite.os.FileUtil;
 import suite.persistent.PerRope.IRopeList;
 import suite.primitive.Chars_;
+import suite.primitive.Coord;
 import suite.primitive.IntMutable;
 import suite.primitive.IntPrimitives.IntSink;
 import suite.primitive.Ints.IntsBuilder;
-import suite.primitive.adt.pair.IntIntPair;
 import suite.streamlet.FunUtil.Sink;
 
 // mvn compile exec:java -Dexec.mainClass=suite.sample.DevMain -Dexec.args="${COLUMNS} ${LINES}"
@@ -151,7 +151,7 @@ public class DevMain {
 						return st;
 				}))).apply((st, undo, redo, text, oc, cc) -> oc.map((ox, oy) -> cc.map((cx, cy) -> {
 					var cc_ = text.coord(sat(text.index(cx, cy), 0, text.length()));
-					return st.cursor(cc_.t0, cc_.t1);
+					return st.cursor(cc_.x, cc_.y);
 				}))).apply((st, undo, redo, text, oc, cc) -> oc.map((ox, oy) -> cc.map((cx, cy) -> {
 					var x0 = max(0, cx - viewSizeX + 1);
 					var y0 = max(0, cy - viewSizeY + 1);
@@ -163,7 +163,7 @@ public class DevMain {
 		FixieFun3<VK, Character, State, State> mutateState = (vk, ch, state) -> {
 			var es = state.editState;
 			var cc = es.cursorCoord;
-			return new State(mutateEs.apply(vk, ch, es), "c" + cc.t1 + "," + cc.t0);
+			return new State(mutateEs.apply(vk, ch, es), "c" + cc.y + "," + cc.x);
 		};
 
 		Sink<State> redraw = state -> state.editState
@@ -209,10 +209,10 @@ public class DevMain {
 		private EditSt undo;
 		private EditSt redo;
 		private Text text;
-		private IntIntPair offsetCoord;
-		private IntIntPair cursorCoord;
+		private Coord offsetCoord;
+		private Coord cursorCoord;
 
-		private EditSt(EditSt undo, EditSt redo, Text text, IntIntPair offsetCoord, IntIntPair cursorCoord) {
+		private EditSt(EditSt undo, EditSt redo, Text text, Coord offsetCoord, Coord cursorCoord) {
 			this.undo = undo;
 			this.redo = redo;
 			this.text = text;
@@ -221,12 +221,12 @@ public class DevMain {
 		}
 
 		private EditSt splice(int deletes, IRopeList<Character> s) {
-			var index = text.index(cursorCoord.t0, cursorCoord.t1);
+			var index = text.index(cursorCoord.x, cursorCoord.y);
 			return splice(index, index + deletes, s);
 		}
 
 		private EditSt splice(int i0, int ix, IRopeList<Character> s) {
-			var cursorIndex0 = text.index(cursorCoord.t0, cursorCoord.t1);
+			var cursorIndex0 = text.index(cursorCoord.x, cursorCoord.y);
 			int cursorIndex1;
 			if (cursorIndex0 < i0)
 				cursorIndex1 = cursorIndex0;
@@ -253,14 +253,14 @@ public class DevMain {
 
 		private EditSt cursor(int index) {
 			var coord = text.coord(index);
-			return cursor(coord.t0, coord.t1);
+			return cursor(coord.x, coord.y);
 		}
 
 		private EditSt cursor(int cx, int cy) {
 			return new EditSt(undo, redo, text, offsetCoord, c(cx, cy));
 		}
 
-		private <R> R apply(FixieFun6<EditSt, EditSt, EditSt, Text, IntIntPair, IntIntPair, R> fun) {
+		private <R> R apply(FixieFun6<EditSt, EditSt, EditSt, Text, Coord, Coord, R> fun) {
 			return fun.apply(this, undo, redo, text, offsetCoord, cursorCoord);
 		}
 	}
@@ -348,7 +348,7 @@ public class DevMain {
 			return min(start(py) + px, end(py));
 		}
 
-		private IntIntPair coord(int index) {
+		private Coord coord(int index) {
 			var nLines = nLines();
 			int y = 0, y1;
 			while ((y1 = y + 1) <= nLines && start(y1) <= index)
@@ -383,8 +383,8 @@ public class DevMain {
 
 	private IRopeList<Character> empty = IRopeList.of("");
 
-	private static IntIntPair c(int x, int y) {
-		return IntIntPair.of(x, y);
+	private static Coord c(int x, int y) {
+		return Coord.of(x, y);
 	}
 
 	private static int sat(int x, int min, int max) {

@@ -13,11 +13,11 @@ public class DblRange {
 	public double e;
 
 	public static Iterate<DblRange> mapFst(Dbl_Dbl fun) {
-		return pair -> of(fun.apply(pair.s), pair.e);
+		return range -> of(fun.apply(range.s), range.e);
 	}
 
 	public static Iterate<DblRange> mapSnd(Dbl_Dbl fun) {
-		return pair -> of(pair.s, fun.apply(pair.e));
+		return range -> of(range.s, fun.apply(range.e));
 	}
 
 	public static DblRange none() {
@@ -33,28 +33,28 @@ public class DblRange {
 	}
 
 	public static Comparator<DblRange> comparator() {
-		return (pair0, pair1) -> {
-			int c = Boolean.compare(pair0 != null, pair1 != null);
-			c = c == 0 ? Double.compare(pair0.s, pair1.s) : c;
-			c = c == 0 ? Double.compare(pair0.e, pair1.e) : c;
+		return (range0, range1) -> {
+			var c = Boolean.compare(range0 != null, range1 != null);
+			c = c == 0 ? Double.compare(range0.s, range1.s) : c;
+			c = c == 0 ? Double.compare(range0.e, range1.e) : c;
 			return c;
 		};
 	}
 
 	public static Comparator<DblRange> comparatorByFirst() {
-		return (pair0, pair1) -> {
-			int c = Boolean.compare(pair0 != null, pair1 != null);
-			c = c == 0 ? Double.compare(pair0.s, pair1.s) : c;
+		return (range0, range1) -> {
+			var c = Boolean.compare(range0 != null, range1 != null);
+			c = c == 0 ? Double.compare(range0.s, range1.s) : c;
 			return c;
 		};
 	}
 
-	public static double fst(DblRange pair) {
-		return pair.s;
+	public static double fst(DblRange range) {
+		return range.s;
 	}
 
-	public static double snd(DblRange pair) {
-		return pair.e;
+	public static double snd(DblRange range) {
+		return range.e;
 	}
 
 	public double length() {

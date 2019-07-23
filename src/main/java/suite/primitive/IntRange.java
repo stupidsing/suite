@@ -13,11 +13,11 @@ public class IntRange {
 	public int e;
 
 	public static Iterate<IntRange> mapFst(Int_Int fun) {
-		return pair -> of(fun.apply(pair.s), pair.e);
+		return range -> of(fun.apply(range.s), range.e);
 	}
 
 	public static Iterate<IntRange> mapSnd(Int_Int fun) {
-		return pair -> of(pair.s, fun.apply(pair.e));
+		return range -> of(range.s, fun.apply(range.e));
 	}
 
 	public static IntRange none() {
@@ -33,28 +33,28 @@ public class IntRange {
 	}
 
 	public static Comparator<IntRange> comparator() {
-		return (pair0, pair1) -> {
-			int c = Boolean.compare(pair0 != null, pair1 != null);
-			c = c == 0 ? Integer.compare(pair0.s, pair1.s) : c;
-			c = c == 0 ? Integer.compare(pair0.e, pair1.e) : c;
+		return (range0, range1) -> {
+			var c = Boolean.compare(range0 != null, range1 != null);
+			c = c == 0 ? Integer.compare(range0.s, range1.s) : c;
+			c = c == 0 ? Integer.compare(range0.e, range1.e) : c;
 			return c;
 		};
 	}
 
 	public static Comparator<IntRange> comparatorByFirst() {
-		return (pair0, pair1) -> {
-			int c = Boolean.compare(pair0 != null, pair1 != null);
-			c = c == 0 ? Integer.compare(pair0.s, pair1.s) : c;
+		return (range0, range1) -> {
+			var c = Boolean.compare(range0 != null, range1 != null);
+			c = c == 0 ? Integer.compare(range0.s, range1.s) : c;
 			return c;
 		};
 	}
 
-	public static int fst(IntRange pair) {
-		return pair.s;
+	public static int fst(IntRange range) {
+		return range.s;
 	}
 
-	public static int snd(IntRange pair) {
-		return pair.e;
+	public static int snd(IntRange range) {
+		return range.e;
 	}
 
 	public int length() {

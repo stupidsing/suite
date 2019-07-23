@@ -39,7 +39,7 @@ public class LngDblPair {
 
 	public static Comparator<LngDblPair> comparator() {
 		return (pair0, pair1) -> {
-			int c = Boolean.compare(pair0 != null, pair1 != null);
+			var c = Boolean.compare(pair0 != null, pair1 != null);
 			c = c == 0 ? Long.compare(pair0.t0, pair1.t0) : c;
 			c = c == 0 ? Double.compare(pair0.t1, pair1.t1) : c;
 			return c;
@@ -48,7 +48,7 @@ public class LngDblPair {
 
 	public static Comparator<LngDblPair> comparatorByFirst() {
 		return (pair0, pair1) -> {
-			int c = Boolean.compare(pair0 != null, pair1 != null);
+			var c = Boolean.compare(pair0 != null, pair1 != null);
 			c = c == 0 ? Long.compare(pair0.t0, pair1.t0) : c;
 			return c;
 		};

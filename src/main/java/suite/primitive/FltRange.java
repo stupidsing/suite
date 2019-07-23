@@ -13,11 +13,11 @@ public class FltRange {
 	public float e;
 
 	public static Iterate<FltRange> mapFst(Flt_Flt fun) {
-		return pair -> of(fun.apply(pair.s), pair.e);
+		return range -> of(fun.apply(range.s), range.e);
 	}
 
 	public static Iterate<FltRange> mapSnd(Flt_Flt fun) {
-		return pair -> of(pair.s, fun.apply(pair.e));
+		return range -> of(range.s, fun.apply(range.e));
 	}
 
 	public static FltRange none() {
@@ -33,28 +33,28 @@ public class FltRange {
 	}
 
 	public static Comparator<FltRange> comparator() {
-		return (pair0, pair1) -> {
-			int c = Boolean.compare(pair0 != null, pair1 != null);
-			c = c == 0 ? Float.compare(pair0.s, pair1.s) : c;
-			c = c == 0 ? Float.compare(pair0.e, pair1.e) : c;
+		return (range0, range1) -> {
+			var c = Boolean.compare(range0 != null, range1 != null);
+			c = c == 0 ? Float.compare(range0.s, range1.s) : c;
+			c = c == 0 ? Float.compare(range0.e, range1.e) : c;
 			return c;
 		};
 	}
 
 	public static Comparator<FltRange> comparatorByFirst() {
-		return (pair0, pair1) -> {
-			int c = Boolean.compare(pair0 != null, pair1 != null);
-			c = c == 0 ? Float.compare(pair0.s, pair1.s) : c;
+		return (range0, range1) -> {
+			var c = Boolean.compare(range0 != null, range1 != null);
+			c = c == 0 ? Float.compare(range0.s, range1.s) : c;
 			return c;
 		};
 	}
 
-	public static float fst(FltRange pair) {
-		return pair.s;
+	public static float fst(FltRange range) {
+		return range.s;
 	}
 
-	public static float snd(FltRange pair) {
-		return pair.e;
+	public static float snd(FltRange range) {
+		return range.e;
 	}
 
 	public float length() {

@@ -102,7 +102,6 @@ import suite.primitive.IntMutable;
 import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.IntRange;
 import suite.primitive.adt.map.ObjIntMap;
-import suite.primitive.adt.pair.IntIntPair;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Read;
@@ -790,7 +789,7 @@ public class P2InferType {
 					})).applyIf(FunpDeref.class, f -> f.apply(pointer -> {
 						return erase(pointer);
 					})).applyIf(FunpField.class, f -> f.apply((ref, field) -> {
-						return FunpOp.of(ps, TermOp.PLUS__, erase(ref), FunpNumber.ofNumber(getFieldOffset(f).t0));
+						return FunpOp.of(ps, TermOp.PLUS__, erase(ref), FunpNumber.ofNumber(getFieldOffset(f).s));
 					})).applyIf(FunpMe.class, f -> {
 						return me.getAddress(scope);
 					}).applyIf(FunpVariable.class, f -> f.apply(vn -> {
@@ -806,7 +805,7 @@ public class P2InferType {
 			return getFieldOffset(n).map((s, e) -> FunpMemory.of(erase(n.reference), s, e));
 		}
 
-		private IntIntPair getFieldOffset(FunpField n) {
+		private IntRange getFieldOffset(FunpField n) {
 			var map = new HashMap<Node, Reference>();
 			var ts = typeStructOf(Dict.of(map));
 			unify(n, typeOf(n.reference), typeRefOf(ts));
@@ -818,7 +817,7 @@ public class P2InferType {
 					if (!String_.equals(Atom.name(pair.k), n.field))
 						offset = offset1;
 					else
-						return IntIntPair.of(offset, offset1);
+						return IntRange.of(offset, offset1);
 				}
 			return fail();
 		}

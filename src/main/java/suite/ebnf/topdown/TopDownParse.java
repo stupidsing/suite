@@ -12,7 +12,7 @@ import suite.ebnf.Grammar;
 import suite.ebnf.Grammar.GrammarType;
 import suite.ebnf.topdown.Expect.ExpectFun;
 import suite.os.Log_;
-import suite.primitive.adt.pair.IntIntPair;
+import suite.primitive.Coord;
 import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Puller;
 import suite.streamlet.Read;
@@ -148,7 +148,7 @@ public class TopDownParse {
 			return state.pos < end ? Puller.of(state.pos(end)) : noResult;
 		}
 
-		private IntIntPair findPosition(int position) {
+		private Coord findPosition(int position) {
 			int row = 1, col = 1;
 			for (var i = 0; i < position; i++) {
 				col++;
@@ -157,7 +157,7 @@ public class TopDownParse {
 					col = 1;
 				}
 			}
-			return IntIntPair.of(row, col);
+			return Coord.of(row, col);
 		}
 	}
 

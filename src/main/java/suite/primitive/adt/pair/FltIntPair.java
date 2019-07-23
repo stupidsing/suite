@@ -39,7 +39,7 @@ public class FltIntPair {
 
 	public static Comparator<FltIntPair> comparator() {
 		return (pair0, pair1) -> {
-			int c = Boolean.compare(pair0 != null, pair1 != null);
+			var c = Boolean.compare(pair0 != null, pair1 != null);
 			c = c == 0 ? Float.compare(pair0.t0, pair1.t0) : c;
 			c = c == 0 ? Integer.compare(pair0.t1, pair1.t1) : c;
 			return c;
@@ -48,7 +48,7 @@ public class FltIntPair {
 
 	public static Comparator<FltIntPair> comparatorByFirst() {
 		return (pair0, pair1) -> {
-			int c = Boolean.compare(pair0 != null, pair1 != null);
+			var c = Boolean.compare(pair0 != null, pair1 != null);
 			c = c == 0 ? Float.compare(pair0.t0, pair1.t0) : c;
 			return c;
 		};

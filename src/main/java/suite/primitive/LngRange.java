@@ -13,11 +13,11 @@ public class LngRange {
 	public long e;
 
 	public static Iterate<LngRange> mapFst(Lng_Lng fun) {
-		return pair -> of(fun.apply(pair.s), pair.e);
+		return range -> of(fun.apply(range.s), range.e);
 	}
 
 	public static Iterate<LngRange> mapSnd(Lng_Lng fun) {
-		return pair -> of(pair.s, fun.apply(pair.e));
+		return range -> of(range.s, fun.apply(range.e));
 	}
 
 	public static LngRange none() {
@@ -33,28 +33,28 @@ public class LngRange {
 	}
 
 	public static Comparator<LngRange> comparator() {
-		return (pair0, pair1) -> {
-			int c = Boolean.compare(pair0 != null, pair1 != null);
-			c = c == 0 ? Long.compare(pair0.s, pair1.s) : c;
-			c = c == 0 ? Long.compare(pair0.e, pair1.e) : c;
+		return (range0, range1) -> {
+			var c = Boolean.compare(range0 != null, range1 != null);
+			c = c == 0 ? Long.compare(range0.s, range1.s) : c;
+			c = c == 0 ? Long.compare(range0.e, range1.e) : c;
 			return c;
 		};
 	}
 
 	public static Comparator<LngRange> comparatorByFirst() {
-		return (pair0, pair1) -> {
-			int c = Boolean.compare(pair0 != null, pair1 != null);
-			c = c == 0 ? Long.compare(pair0.s, pair1.s) : c;
+		return (range0, range1) -> {
+			var c = Boolean.compare(range0 != null, range1 != null);
+			c = c == 0 ? Long.compare(range0.s, range1.s) : c;
 			return c;
 		};
 	}
 
-	public static long fst(LngRange pair) {
-		return pair.s;
+	public static long fst(LngRange range) {
+		return range.s;
 	}
 
-	public static long snd(LngRange pair) {
-		return pair.e;
+	public static long snd(LngRange range) {
+		return range.e;
 	}
 
 	public long length() {
