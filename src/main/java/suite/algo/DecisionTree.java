@@ -15,14 +15,21 @@ public class DecisionTree {
 
 	public final Obj_Int<Object[]> classifier;
 
+	private Streamlet<IntObjPair<Object[]>> input;
 	private int default_;
 
-	public DecisionTree(Streamlet<IntObjPair<Object[]>> data) {
-		default_ = mostFrequent(data);
-		classifier = id3(data);
+	public DecisionTree(Streamlet<IntObjPair<Object[]>> input) {
+		this.input = input;
+		default_ = mostFrequent(input);
+		classifier = id3(input);
 	}
 
-	public Obj_Int<Object[]> id3(Streamlet<IntObjPair<Object[]>> data) {
+	public double error() {
+		var correct = input.toInt(Obj_Int.sum(datum -> datum.map((y, xs) -> classifier.apply(xs) == y ? 1 : 0)));
+		return correct / (double) input.size();
+	}
+
+	private Obj_Int<Object[]> id3(Streamlet<IntObjPair<Object[]>> data) {
 		var first = data.first();
 
 		if (first == null)

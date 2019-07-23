@@ -21,7 +21,7 @@ public class AdaBoost {
 	private Vector vec = new Vector();
 
 	public class XY {
-		public final boolean[] xs;
+		public final boolean[] xs; // weak classifiers
 		public final boolean y;
 
 		public XY(boolean[] xs, boolean y) {
