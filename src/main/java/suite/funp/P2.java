@@ -18,7 +18,7 @@ import suite.funp.P0.FunpStruct;
 import suite.funp.P0.FunpVariable;
 import suite.node.io.Operator;
 import suite.primitive.IntMutable;
-import suite.primitive.adt.pair.IntIntPair;
+import suite.primitive.IntRange;
 
 public class P2 {
 
@@ -140,15 +140,15 @@ public class P2 {
 	}
 
 	public static class FunpData implements Funp, P4.End {
-		public List<Pair<Funp, IntIntPair>> pairs;
+		public List<Pair<Funp, IntRange>> pairs;
 
-		public static FunpData of(List<Pair<Funp, IntIntPair>> pairs) {
+		public static FunpData of(List<Pair<Funp, IntRange>> pairs) {
 			var f = new FunpData();
 			f.pairs = pairs;
 			return f;
 		}
 
-		public <R> R apply(FixieFun1<List<Pair<Funp, IntIntPair>>, R> fun) {
+		public <R> R apply(FixieFun1<List<Pair<Funp, IntRange>>, R> fun) {
 			return fun.apply(pairs);
 		}
 	}

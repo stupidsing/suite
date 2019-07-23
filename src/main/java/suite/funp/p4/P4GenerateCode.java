@@ -300,7 +300,7 @@ public class P4GenerateCode {
 				return returnAssign((c1, t) -> Read //
 						.from2(pairs) //
 						.sink((n_, ofs) -> c1.compileAssign(n_,
-								FunpMemory.of(t.pointer, t.start + ofs.t0, t.start + ofs.t1))));
+								FunpMemory.of(t.pointer, t.start + ofs.s, t.start + ofs.e))));
 			})).applyIf(FunpDoAsm.class, f -> f.apply((assigns, asm, opResult) -> {
 				var p = new Amd64Parse();
 				new Object() {
@@ -864,11 +864,11 @@ public class P4GenerateCode {
 					})).applyIf(FunpData.class, f -> f.apply(pairs -> {
 						var offset = 0;
 						var b = true;
-						for (var pair : Read.from(pairs).sort((p0, p1) -> Integer.compare(p0.t1.t0, p1.t1.t0))) {
+						for (var pair : Read.from(pairs).sort((p0, p1) -> Integer.compare(p0.t1.s, p1.t1.s))) {
 							var pos = pair.t1;
-							b &= fill(pos.t0 - offset, FunpDontCare.of());
-							b &= fill(pos.t1 - pos.t0, pair.t0);
-							offset = pos.t1;
+							b &= fill(pos.s - offset, FunpDontCare.of());
+							b &= fill(pos.length(), pair.t0);
+							offset = pos.e;
 						}
 						return b && fill(size - offset, FunpDontCare.of());
 					})).applyIf(FunpDontCare.class, f -> {

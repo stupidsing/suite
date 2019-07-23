@@ -20,7 +20,7 @@ import suite.node.util.Singleton;
 import suite.node.util.TreeUtil;
 import suite.primitive.IntInt_Bool;
 import suite.primitive.IntInt_Int;
-import suite.primitive.adt.pair.IntIntPair;
+import suite.primitive.IntRange;
 import suite.streamlet.FunUtil2.Fun2;
 import suite.streamlet.Read;
 
@@ -41,10 +41,10 @@ public class P3Optimize {
 		})).applyIf(FunpData.class, f -> f.apply(pairs -> {
 			return FunpData.of(Read.from2(pairs).concatMap((expr, range) -> {
 				var expr1 = optimize(expr);
-				var start = range.t0;
+				var start = range.s;
 				var pairsx = expr1.cast(FunpData.class, g -> g.apply(pairs1 -> Read //
 						.from2(pairs1) //
-						.map((exprc, range1) -> Pair.of(optimize(exprc), IntIntPair.of(start + range1.t0, start + range1.t1)))));
+						.map((exprc, range1) -> Pair.of(optimize(exprc), IntRange.of(start + range1.s, start + range1.e)))));
 				return pairsx != null ? pairsx : Read.each(Pair.of(expr1, range));
 			}).toList());
 		})).applyIf(FunpDeref.class, f -> f.apply(pointer -> {
@@ -58,7 +58,7 @@ public class P3Optimize {
 			).applyIf(FunpData.class, g -> g.apply(pairs -> {
 				for (var pair : pairs) {
 					var range = pair.t1;
-					if (start == range.t0 && end == range.t1)
+					if (start == range.s && end == range.e)
 						return pair.t0;
 				}
 				return null;

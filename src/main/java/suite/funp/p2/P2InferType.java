@@ -100,6 +100,7 @@ import suite.node.util.TreeUtil;
 import suite.persistent.PerMap;
 import suite.primitive.IntMutable;
 import suite.primitive.IntPrimitives.Obj_Int;
+import suite.primitive.IntRange;
 import suite.primitive.adt.map.ObjIntMap;
 import suite.primitive.adt.pair.IntIntPair;
 import suite.streamlet.FunUtil.Fun;
@@ -471,10 +472,10 @@ public class P2InferType {
 				unify(n, type0, typeArrayOf(null, te));
 				var elementSize = getTypeSize(te);
 				var offset = 0;
-				var list = new ArrayList<Pair<Funp, IntIntPair>>();
+				var list = new ArrayList<Pair<Funp, IntRange>>();
 				for (var element : elements) {
 					var offset0 = offset;
-					list.add(Pair.of(erase(element), IntIntPair.of(offset0, offset += elementSize)));
+					list.add(Pair.of(erase(element), IntRange.of(offset0, offset += elementSize)));
 				}
 				return FunpData.of(list);
 			})).applyIf(FunpTypeCheck.class, f -> f.apply((left, right, expr) -> {
@@ -621,10 +622,10 @@ public class P2InferType {
 			})).applyIf(FunpRepeat.class, f -> f.apply((count, expr) -> {
 				var elementSize = getTypeSize(typeOf(expr));
 				var offset = 0;
-				var list = new ArrayList<Pair<Funp, IntIntPair>>();
+				var list = new ArrayList<Pair<Funp, IntRange>>();
 				for (var i = 0; i < count; i++) {
 					var offset0 = offset;
-					list.add(Pair.of(expr, IntIntPair.of(offset0, offset += elementSize)));
+					list.add(Pair.of(expr, IntRange.of(offset0, offset += elementSize)));
 				}
 				return FunpData.of(list);
 			})).applyIf(FunpSizeOf.class, f -> f.apply(expr -> {
@@ -635,7 +636,7 @@ public class P2InferType {
 				unify(n, ts, type0);
 
 				var values = Read.from2(pairs_).toMap();
-				var list = new ArrayList<Pair<Funp, IntIntPair>>();
+				var list = new ArrayList<Pair<Funp, IntRange>>();
 				var offset = 0;
 				var pairs = isCompletedStructList(ts);
 				var clazzMut = IntMutable.nil();
@@ -664,7 +665,7 @@ public class P2InferType {
 					offset += getTypeSize(type);
 
 					if (value != null)
-						list.add(Pair.of(value, IntIntPair.of(offset0, offset)));
+						list.add(Pair.of(value, IntRange.of(offset0, offset)));
 				}
 
 				clazzMut.set(clazz);
@@ -672,8 +673,8 @@ public class P2InferType {
 				return FunpData.of(list);
 			})).applyIf(FunpTag.class, f -> f.apply((id, tag, expr) -> {
 				var size = getTypeSize(typeOf(expr));
-				var pt = Pair.<Funp, IntIntPair> of(FunpNumber.of(id), IntIntPair.of(0, is));
-				var pv = Pair.of(erase(expr), IntIntPair.of(is, is + size));
+				var pt = Pair.<Funp, IntRange> of(FunpNumber.of(id), IntRange.of(0, is));
+				var pv = Pair.of(erase(expr), IntRange.of(is, is + size));
 				return FunpData.of(List.of(pt, pv));
 			})).applyIf(FunpTagId.class, f -> f.apply(reference -> {
 				return FunpMemory.of(erase(reference), 0, is);
