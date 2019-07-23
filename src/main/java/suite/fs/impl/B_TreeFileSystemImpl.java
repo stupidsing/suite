@@ -20,8 +20,8 @@ public class B_TreeFileSystemImpl implements FileSystem {
 		var cmp = Bytes.comparator;
 		var pair = B_TreeBuilder.build(isNew, path, pageSize, pageSize, serializer, cmp);
 
-		b_tree = pair.t0;
-		var b_treeMutator = pair.t1;
+		b_tree = pair.k;
+		var b_treeMutator = pair.v;
 		mutator = new FileSystemMutatorImpl(keyUtil, () -> b_treeMutator);
 	}
 

@@ -144,17 +144,17 @@ public class Nodify {
 				return new Nodifier(o -> rethrow(() -> {
 					var map = new HashMap<Node, Reference>();
 					for (var pair : pairs) {
-						var fieldInfo = pair.t1;
+						var fieldInfo = pair.v;
 						var value = apply_(fieldInfo.field.get(o), fieldInfo.nodifier);
-						map.put(pair.t0, Reference.of(value));
+						map.put(pair.k, Reference.of(value));
 					}
 					return Dict.of(map);
 				}), n -> rethrow(() -> {
 					var map = Dict.m(n);
 					var o1 = Object_.new_(clazz);
 					for (var pair : pairs) {
-						var fieldInfo = pair.t1;
-						var value = map.get(pair.t0).finalNode();
+						var fieldInfo = pair.v;
+						var value = map.get(pair.k).finalNode();
 						fieldInfo.field.set(o1, apply_(value, fieldInfo.nodifier));
 					}
 					return o1;

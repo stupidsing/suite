@@ -185,11 +185,11 @@ public class FunCreator<I> extends FunFactory {
 			var cg = new ClassGen(clsName, superClass.getName(), ".java", ACC_PUBLIC | ACC_SUPER, ifs, cp);
 
 			for (var e : fieldStaticTypeValues.entrySet())
-				cg.addField(new FieldGen(ACC_PUBLIC | ACC_STATIC, e.getValue().t0, e.getKey(), cp).getField());
+				cg.addField(new FieldGen(ACC_PUBLIC | ACC_STATIC, e.getValue().k, e.getKey(), cp).getField());
 			for (var e : fieldTypes.entrySet())
 				cg.addField(new FieldGen(ACC_PUBLIC, e.getValue(), e.getKey(), cp).getField());
 			for (var e : ftvs.entrySet())
-				cg.addField(new FieldGen(ACC_PUBLIC, e.getValue().t0, e.getKey(), cp).getField());
+				cg.addField(new FieldGen(ACC_PUBLIC, e.getValue().k, e.getKey(), cp).getField());
 
 			cg.addMethod(m0);
 			cg.addMethod(m1);
@@ -205,7 +205,7 @@ public class FunCreator<I> extends FunFactory {
 
 			for (var e : fieldStaticTypeValues.entrySet())
 				try {
-					clazz.getField(e.getKey()).set(null, e.getValue().t1);
+					clazz.getField(e.getKey()).set(null, e.getValue().v);
 				} catch (ReflectiveOperationException ex) {
 					fail(ex);
 				}
@@ -223,7 +223,7 @@ public class FunCreator<I> extends FunFactory {
 					if ((value = fieldValues.get(fieldName)) != null)
 						field.set(t, value);
 					else if ((typeValue = fieldTypeValues.get(fieldName)) != null)
-						field.set(t, typeValue.t1);
+						field.set(t, typeValue.v);
 				}
 				return t;
 			});

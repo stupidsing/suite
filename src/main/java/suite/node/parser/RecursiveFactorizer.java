@@ -33,8 +33,8 @@ public class RecursiveFactorizer {
 	public FactorizeResult parse(String s) {
 		in = To.chars(s);
 		var pair = Preprocess.transform(PreprocessorFactory.create(operators), s);
-		var in1 = pair.t0;
-		reverser = pair.t1;
+		var in1 = pair.k;
+		reverser = pair.v;
 
 		var parsed = parse_(To.chars(in1), 0);
 

@@ -113,9 +113,9 @@ public class Polynomial<N> {
 		var sum = format_.apply(n0);
 
 		for (var pair : poly.streamlet().sortByKey(Integer::compare)) {
-			var p = pair.t0;
+			var p = pair.k;
 			var power = p < 0 ? mul.inverse(powerFun.apply(-p)) : powerFun.apply(p);
-			sum = add.apply(mul.apply(format_.apply(pair.t1), power), sum);
+			sum = add.apply(mul.apply(format_.apply(pair.v), power), sum);
 		}
 
 		return sum;
@@ -130,7 +130,7 @@ public class Polynomial<N> {
 		var c = polyOf();
 		for (var pair0 : a.streamlet())
 			for (var pair1 : b.streamlet())
-				c.add(pair0.t0 + pair1.t0, mul_.apply(pair0.t1, pair1.t1));
+				c.add(pair0.k + pair1.k, mul_.apply(pair0.v, pair1.v));
 		return c;
 	}
 
@@ -141,7 +141,7 @@ public class Polynomial<N> {
 	private Poly<N> add(Poly<N> a, Poly<N> b) {
 		var c = polyOf();
 		for (var pair : IntObjStreamlet.concat(a.streamlet(), b.streamlet()))
-			c.add(pair.t0, pair.t1);
+			c.add(pair.k, pair.v);
 		return c;
 	}
 

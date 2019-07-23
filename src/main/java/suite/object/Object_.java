@@ -143,13 +143,13 @@ public class Object_ {
 				mapper = new Mapper(object -> rethrow(() -> {
 					var map = new HashMap<>();
 					for (var sf : sfs)
-						map.put(sf.t0, sf.t1.get(object));
+						map.put(sf.k, sf.v.get(object));
 					return map;
 				}), object -> rethrow(() -> {
 					var map = (Map<?, ?>) object;
 					var object1 = new_(clazz);
 					for (var sf : sfs)
-						sf.t1.set(object1, map.get(sf.t0));
+						sf.v.set(object1, map.get(sf.k));
 					return object1;
 				}));
 			}

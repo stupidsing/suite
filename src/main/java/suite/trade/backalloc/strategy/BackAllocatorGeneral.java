@@ -256,7 +256,7 @@ public class BackAllocatorGeneral {
 		return (akds, indices) -> {
 			var prices = akds.dsByKey //
 					.filter((symbol_, ds) -> String_.equals(symbol, symbol_)) //
-					.uniqueResult().t1.prices;
+					.uniqueResult().v.prices;
 
 			var price0 = prices[indices[0]];
 
@@ -450,11 +450,11 @@ public class BackAllocatorGeneral {
 				var sums = new int[2];
 
 				for (var pair : m0) {
-					var n = pair.t1;
+					var n = pair.v;
 					var sign = 0 < n ? 0 : 1;
 					var sum0 = sums[sign];
 					var sum1 = max(-maxUnitsTotal, min(maxUnitsTotal, sum0 + n));
-					m1.add(Pair.of(pair.t0, (sums[sign] = sum1) - sum0));
+					m1.add(Pair.of(pair.k, (sums[sign] = sum1) - sum0));
 				}
 
 				return Read //

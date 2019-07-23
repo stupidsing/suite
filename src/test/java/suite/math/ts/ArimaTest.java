@@ -46,7 +46,7 @@ public class ArimaTest {
 
 	private void test(float[] ars, float[] mas, Estimate estimate) {
 		var xs = generate(256, ars, mas);
-		var a = estimate.arima(xs, ars.length, 0, mas.length).t1;
+		var a = estimate.arima(xs, ars.length, 0, mas.length).v;
 		System.out.println("x = " + Arrays.toString(xs));
 		System.out.println("ar = " + Arrays.toString(a.ars));
 		System.out.println("ma = " + Arrays.toString(a.mas));

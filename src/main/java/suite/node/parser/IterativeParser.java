@@ -62,7 +62,7 @@ public class IterativeParser {
 	}
 
 	public Node parse(String in0) {
-		var in = Preprocess.transform(PreprocessorFactory.create(operators), in0).t0;
+		var in = Preprocess.transform(PreprocessorFactory.create(operators), in0).k;
 		var stack = new ArrayDeque<Section>();
 
 		Sink<Operator> addOperator = operator -> {

@@ -112,9 +112,9 @@ public class Funp_ {
 					associate(vars.replace(vn, f), expr);
 					return n_;
 				})).applyIf(FunpDefineRec.class, f -> f.apply((pairs, expr, fdt) -> {
-					var vars1 = Read.from(pairs).fold(vars, (vs, pair) -> vs.replace(pair.t0, f));
+					var vars1 = Read.from(pairs).fold(vars, (vs, pair) -> vs.replace(pair.k, f));
 					for (var pair : pairs)
-						associate(vars1, pair.t1);
+						associate(vars1, pair.v);
 					associate(vars1, expr);
 					return n_;
 				})).applyIf(FunpLambda.class, f -> f.apply((vn, expr, isCapture) -> {

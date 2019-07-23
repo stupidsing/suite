@@ -43,9 +43,9 @@ public class NntpServerMain {
 
 				while (!(line = Util.readLine(sis)).isEmpty()) {
 					var pair = new CommandUtil<>(NntpCommand.values()).recognize(line.toUpperCase());
-					var options = pair.t1;
+					var options = pair.v;
 
-					switch (pair.t0) {
+					switch (pair.k) {
 					case ARTICLE:
 						if ((article = nntp.getArticle(currentGroupId, options)) != null) {
 							pw.println("220 Okay");
@@ -80,7 +80,7 @@ public class NntpServerMain {
 							pw.println("215 Okay");
 							for (var groupId : nntp.listGroupIds()) {
 								var articleIdRange = nntp.getArticleIdRange(groupId);
-								pw.println(groupId + " " + articleIdRange.t0 + " " + articleIdRange.t1 + " y");
+								pw.println(groupId + " " + articleIdRange.k + " " + articleIdRange.v + " y");
 							}
 							pw.println(".");
 						} else if (String_.equals(options, "NEWSGROUPS")) {

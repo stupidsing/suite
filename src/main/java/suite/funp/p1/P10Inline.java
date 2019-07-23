@@ -223,7 +223,7 @@ public class P10Inline {
 								.from2(struct.pairs) //
 								.filterKey(field_ -> String_.equals(field_, field.field)) //
 								.first();
-						return pair != null ? inline(pair.t1) : null;
+						return pair != null ? inline(pair.v) : null;
 					} else
 						return null;
 				});

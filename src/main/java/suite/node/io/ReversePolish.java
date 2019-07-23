@@ -95,8 +95,8 @@ public class ReversePolish {
 			}).applyIf(Node.class, n_ -> {
 				var nr = NodeRead.of(n_);
 				for (var pair : nr.children) {
-					deque.push(pair.t1);
-					deque.push(pair.t0);
+					deque.push(pair.v);
+					deque.push(pair.k);
 				}
 				return "^" + nr.type + ":" + nr.terminal + ":" + nr.op + ":" + nr.children.size();
 				// "^" + Formatter.dump(n);

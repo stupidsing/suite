@@ -55,18 +55,18 @@ public class LrParse {
 			var lookahead = token != null ? token.entity : "EOF";
 			var sr = shift(stack, state, lookahead);
 
-			if (sr.t0 != null) { // shift
+			if (sr.k != null) { // shift
 				stack.push(Pair.of(token, state));
-				state = sr.t0;
+				state = sr.k;
 				token = tokens.g();
 			} else { // reduce
-				var reduce = sr.t1;
+				var reduce = sr.v;
 				var nodes = PerList.<Ast> end();
 
 				for (var i = 0; i < reduce.n(); i++) {
 					var ns = stack.pop();
-					nodes = PerList.cons(ns.t0, nodes);
-					state = ns.t1;
+					nodes = PerList.cons(ns.k, nodes);
+					state = ns.v;
 				}
 
 				var name = reduce.name();
@@ -77,7 +77,7 @@ public class LrParse {
 
 				// force shift after reduce
 				stack.push(Pair.of(token1, state));
-				state = shift(stack, state, token1.entity).t0;
+				state = shift(stack, state, token1.entity).k;
 			}
 		}
 	}

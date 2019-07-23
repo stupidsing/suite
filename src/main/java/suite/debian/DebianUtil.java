@@ -30,7 +30,7 @@ public class DebianUtil {
 			while ((line = br.readLine()) != null) {
 				if (!line.startsWith(" ") && 0 < sb.length()) {
 					var pair = String_.split2(sb.toString(), ":");
-					pm.put(pair.t0, pair.t1);
+					pm.put(pair.k, pair.v);
 					sb.setLength(0);
 				}
 

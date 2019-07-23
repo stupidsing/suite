@@ -76,7 +76,7 @@ public class JournalledFileFactory {
 			public synchronized Bytes load(int pointer) {
 				var pair = findPageInJournal(pointer);
 				if (pair != null)
-					return pair.t1.bytes;
+					return pair.v.bytes;
 				else
 					return dataFile.load(pointer);
 			}
@@ -87,8 +87,8 @@ public class JournalledFileFactory {
 				JournalEntry journalEntry;
 
 				if (pair != null) {
-					jp = pair.t0;
-					journalEntry = pair.t1;
+					jp = pair.k;
+					journalEntry = pair.v;
 				} else {
 					jp = journalEntries.size();
 					journalEntries.add(journalEntry = new JournalEntry(pointer, null));

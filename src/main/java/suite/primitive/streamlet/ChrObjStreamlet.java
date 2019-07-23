@@ -277,7 +277,7 @@ public class ChrObjStreamlet<V> implements StreamletDefaults<ChrObjPair<V>, ChrO
 
 	public ChrObjPair<V> uniqueResult() {
 		var pair = spawn().opt();
-		if (pair.t0 != ChrFunUtil.EMPTYVALUE)
+		if (pair.k != ChrFunUtil.EMPTYVALUE)
 			return pair;
 		else
 			return fail("no result");

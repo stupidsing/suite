@@ -16,8 +16,8 @@ public class CholeskyDecomposition {
 	 */
 	public Iterate<float[]> inverseMul(float[][] m) {
 		Pair<float[][], float[]> ldlt = ldlt(m);
-		var l = ldlt.t0;
-		var d = ldlt.t1;
+		var l = ldlt.k;
+		var d = ldlt.v;
 		var reciprocalsD = To.vector(d, f -> 1f / f);
 
 		var height = mtx.height(m);

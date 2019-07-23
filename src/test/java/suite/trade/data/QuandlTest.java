@@ -16,8 +16,8 @@ public class QuandlTest {
 		var e = Time.now();
 		var s = e.addDays(-360);
 		var pair = quandl.dataSourceCsvV3("CHRIS/CME_CL1", TimeRange.of(s, e)); // "WGFD/WLD_GFDD_DI_13"
-		System.out.println(Arrays.toString(pair.t0));
-		System.out.println(Arrays.toString(pair.t1.get(0)));
+		System.out.println(Arrays.toString(pair.k));
+		System.out.println(Arrays.toString(pair.v.get(0)));
 	}
 
 }

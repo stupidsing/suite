@@ -97,7 +97,7 @@ public class Chr {
 		var nodes1 = new ArrayList<Node>();
 
 		for (var e : state.factsByPrototype)
-			nodes1.addAll(To.list(e.t1));
+			nodes1.addAll(To.list(e.v));
 
 		return nodes1;
 	}
@@ -161,7 +161,7 @@ public class Chr {
 				public State apply(State state) {
 					var factsByPrototype1 = PerMap.<Prototype, PerSet<Node>> empty();
 					for (var e : state.factsByPrototype)
-						factsByPrototype1 = factsByPrototype1.put(e.t0, replace(e.t1));
+						factsByPrototype1 = factsByPrototype1.put(e.k, replace(e.v));
 					return new State(factsByPrototype1);
 				}
 

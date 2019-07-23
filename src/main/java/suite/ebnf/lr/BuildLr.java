@@ -71,11 +71,11 @@ public class BuildLr {
 				return true;
 			} else if (order1 < order0 || Objects.equals(value0, value1))
 				return false;
-			else if (value0.t0 != null && value1.t0 != null) {
+			else if (value0.k != null && value1.k != null) {
 
 				// merge each children if both are shifts
-				var transition0 = fsm.get(value0.t0);
-				var transition1 = fsm.get(value1.t0);
+				var transition0 = fsm.get(value0.k);
+				var transition1 = fsm.get(value1.k);
 				return merges.add(Pair.of(transition0, transition1));
 			} else
 				return fail("duplicate key " + key + " old (" + value0 + ") new (" + value1 + ")");
@@ -84,7 +84,7 @@ public class BuildLr {
 		private int order(Pair<State, Reduce> pair) {
 			if (pair == null) // nothing
 				return 0;
-			else if (pair.t1 != null) // reduce
+			else if (pair.v != null) // reduce
 				return 1;
 			else
 				return 2;
@@ -140,9 +140,9 @@ public class BuildLr {
 
 			for (var pair : keys1) {
 				var next_ = transitions.get(pair);
-				var nextx_ = newTransition(pair.t1);
+				var nextx_ = newTransition(pair.v);
 
-				var blr1 = build(pair.t0, nextx_);
+				var blr1 = build(pair.k, nextx_);
 				merges.add(Pair.of(next_, blr1.next));
 				keys0.add(pair);
 			}
@@ -152,7 +152,7 @@ public class BuildLr {
 		do {
 			b = false;
 			for (var merge : new ArrayList<>(merges))
-				b |= merge.t0.putAll(merge.t1);
+				b |= merge.k.putAll(merge.v);
 		} while (b);
 
 		return new Blr(1, transitions.get(k));

@@ -145,12 +145,12 @@ public class Serialize {
 					if (defaultCtor != null) {
 						object = defaultCtor.newInstance();
 						for (var pair : pairs)
-							pair.t0.set(object, ((Serializer<?>) pair.t1).read(si));
+							pair.k.set(object, ((Serializer<?>) pair.v).read(si));
 					} else {
 						var ps = new Object[immutableCtor.getParameterCount()];
 						for (var i = 0; i < ps.length; i++) {
 							var pair = pairs[i];
-							ps[i] = ((Serializer<?>) pair.t1).read(si);
+							ps[i] = ((Serializer<?>) pair.v).read(si);
 						}
 						object = immutableCtor.newInstance(ps);
 					}
@@ -163,8 +163,8 @@ public class Serialize {
 			public void write(SerOutput so, T t) throws IOException {
 				for (var pair : pairs) {
 					@SuppressWarnings("unchecked")
-					var serializer1 = (Serializer<Object>) pair.t1;
-					serializer1.write(so, rethrow(() -> pair.t0.get(t)));
+					var serializer1 = (Serializer<Object>) pair.v;
+					serializer1.write(so, rethrow(() -> pair.k.get(t)));
 				}
 
 			}
@@ -382,8 +382,8 @@ public class Serialize {
 			}
 
 			public void write(SerOutput so, Pair<T0, T1> pair) throws IOException {
-				serializer0.write(so, pair.t0);
-				serializer1.write(so, pair.t1);
+				serializer0.write(so, pair.k);
+				serializer1.write(so, pair.v);
 			}
 		};
 	}

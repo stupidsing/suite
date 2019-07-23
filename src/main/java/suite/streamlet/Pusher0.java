@@ -66,8 +66,8 @@ public class Pusher0<T> {
 		var pusher = new Pusher0<V>();
 		var cr = new CasReference<Pair<T, U>>(Pair.of(null, null));
 		Sink<Pair<T, U>> recalc = pair -> pusher.push(pair.map(fun));
-		n0.wire_(t -> recalc.f(cr.apply(pair -> Pair.of(t, pair.t1))));
-		n1.wire_(u -> recalc.f(cr.apply(pair -> Pair.of(pair.t0, u))));
+		n0.wire_(t -> recalc.f(cr.apply(pair -> Pair.of(t, pair.v))));
+		n1.wire_(u -> recalc.f(cr.apply(pair -> Pair.of(pair.k, u))));
 		return pusher;
 	}
 

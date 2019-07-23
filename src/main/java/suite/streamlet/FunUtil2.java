@@ -66,7 +66,7 @@ public class FunUtil2 {
 			private Source2<K, V> source_ = pair1 -> {
 				var b = (isAvail = isAvail && source2.source2(pair)) && ++i < n;
 				if (b)
-					pair1.update(pair.t0, pair.t1);
+					pair1.update(pair.k, pair.v);
 				else
 					i = 0;
 				return b;
@@ -77,7 +77,7 @@ public class FunUtil2 {
 			}
 
 			public Source2<K, V> g() {
-				return isAvail ? cons(pair.t0, pair.t1, source_) : null;
+				return isAvail ? cons(pair.k, pair.v, source_) : null;
 			}
 		};
 	}
@@ -115,7 +115,7 @@ public class FunUtil2 {
 		var fun1 = Rethrow.biPredicate(fun0);
 		return pair -> {
 			boolean b;
-			while ((b = source2.source2(pair)) && !fun1.test(pair.t0, pair.t1))
+			while ((b = source2.source2(pair)) && !fun1.test(pair.k, pair.v))
 				;
 			return b;
 		};
@@ -125,7 +125,7 @@ public class FunUtil2 {
 		var fun1 = Rethrow.predicate(fun0);
 		return pair -> {
 			boolean b;
-			while ((b = source2.source2(pair)) && !fun1.test(pair.t0))
+			while ((b = source2.source2(pair)) && !fun1.test(pair.k))
 				;
 			return b;
 		};
@@ -135,7 +135,7 @@ public class FunUtil2 {
 		var fun1 = Rethrow.predicate(fun0);
 		return pair -> {
 			boolean b;
-			while ((b = source2.source2(pair)) && !fun1.test(pair.t1))
+			while ((b = source2.source2(pair)) && !fun1.test(pair.v))
 				;
 			return b;
 		};
@@ -153,7 +153,7 @@ public class FunUtil2 {
 		var pred1 = Rethrow.biPredicate(pred0);
 		Pair<K, V> pair = Pair.of(null, null);
 		while (source2.source2(pair))
-			if (!pred1.test(pair.t0, pair.t1))
+			if (!pred1.test(pair.k, pair.v))
 				return false;
 		return true;
 	}
@@ -162,7 +162,7 @@ public class FunUtil2 {
 		var pred1 = Rethrow.biPredicate(pred0);
 		Pair<K, V> pair = Pair.of(null, null);
 		while (source2.source2(pair))
-			if (pred1.test(pair.t0, pair.t1))
+			if (pred1.test(pair.k, pair.v))
 				return true;
 		return false;
 	}
@@ -195,7 +195,7 @@ public class FunUtil2 {
 	public static <K, V, T> Source<T> map(Fun2<K, V, T> fun0, Source2<K, V> source2) {
 		var fun1 = fun0.rethrow();
 		Pair<K, V> pair = Pair.of(null, null);
-		return () -> source2.source2(pair) ? fun1.apply(pair.t0, pair.t1) : null;
+		return () -> source2.source2(pair) ? fun1.apply(pair.k, pair.v) : null;
 	}
 
 	public static <K, V, K1, V1, T> Source2<K1, V1> map2(Fun2<K, V, K1> kf0, Fun2<K, V, V1> vf0, Source2<K, V> source2) {
@@ -205,7 +205,7 @@ public class FunUtil2 {
 		return pair -> {
 			var b = source2.source2(pair1);
 			if (b) {
-				pair.update(kf1.apply(pair1.t0, pair1.t1), vf1.apply(pair1.t0, pair1.t1));
+				pair.update(kf1.apply(pair1.k, pair1.v), vf1.apply(pair1.k, pair1.v));
 			}
 			return b;
 		};
@@ -247,14 +247,14 @@ public class FunUtil2 {
 		return new Source<>() {
 			private Pair<K, V> pair = Pair.of(null, null);
 			private boolean isAvailable;
-			private Source2<K, V> source2_ = pair_ -> (isAvailable &= source2.source2(pair_)) && !fun1.test(pair.t0, pair.t1);
+			private Source2<K, V> source2_ = pair_ -> (isAvailable &= source2.source2(pair_)) && !fun1.test(pair.k, pair.v);
 
 			{
 				isAvailable = source2.source2(pair);
 			}
 
 			public Source2<K, V> g() {
-				return isAvailable ? cons(pair.t0, pair.t1, source2_) : null;
+				return isAvailable ? cons(pair.k, pair.v, source2_) : null;
 			}
 		};
 	}
@@ -279,7 +279,7 @@ public class FunUtil2 {
 				var p = queue.take();
 				var b = p != null;
 				if (b)
-					pair.update(p.t0, p.t1);
+					pair.update(p.k, p.v);
 				return b;
 			} catch (InterruptedException | InterruptedRuntimeException ex) {
 				thread.interrupt();

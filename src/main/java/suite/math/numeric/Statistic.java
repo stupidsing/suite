@@ -75,8 +75,8 @@ public class Statistic {
 	public LinearRegression linearRegression(Streamlet<FltObjPair<float[]>> pairs) {
 		List<FltObjPair<float[]>> list = pairs.toList();
 		var size = list.size();
-		var x = To.array(size, float[].class, i -> list.get(i).t1);
-		var y = To.vector(size, i -> list.get(i).t0);
+		var x = To.array(size, float[].class, i -> list.get(i).v);
+		var y = To.vector(size, i -> list.get(i).k);
 		return linearRegression(x, y, null);
 	}
 
@@ -250,13 +250,13 @@ public class Statistic {
 			var maxp = Double.MIN_VALUE;
 
 			while (source2.source2(pair)) {
-				var p = ((double) pair.t1.value()) / ix;
+				var p = ((double) pair.v.value()) / ix;
 
 				for (var j = 0; j < jx; j++)
 					p *= xcounts.computeIfAbsent(ins[j], x_ -> IntMutable.of(0)).value() / (double) jx;
 
 				if (maxp < p) {
-					result = pair.t0;
+					result = pair.k;
 					maxp = p;
 				}
 			}

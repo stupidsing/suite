@@ -29,7 +29,7 @@ public class IntObjMapTest {
 		var pair = IntObjPair.of(0, 0);
 
 		while (source.source2(pair))
-			actual.add(pair.t0 + ":" + pair.t1);
+			actual.add(pair.k + ":" + pair.v);
 
 		assertEquals(expected, actual);
 	}

@@ -44,8 +44,8 @@ public class TermKey implements Comparable<TermKey> {
 			} else {
 				var nr = NodeRead.of(node);
 				for (var p : nr.children) {
-					visit(p.t0);
-					visit(p.t1);
+					visit(p.k);
+					visit(p.v);
 				}
 				nrSink.f(nr);
 			}
@@ -83,10 +83,10 @@ public class TermKey implements Comparable<TermKey> {
 					for (var i = 0; b && i < size0; i++) {
 						var p0 = list.get(i);
 						var p1 = list1.get(i);
-						b &= Objects.equals(p0.t0, p1.t0);
+						b &= Objects.equals(p0.k, p1.k);
 
-						var nh0 = p0.t1;
-						var nh1 = p1.t1;
+						var nh0 = p0.v;
+						var nh1 = p1.v;
 						var b0 = nh0 != null;
 						var b1 = nh1 != null;
 						b &= b0 == b1;
@@ -103,11 +103,11 @@ public class TermKey implements Comparable<TermKey> {
 		public int hashCode() {
 			var h = 7;
 			for (var pair : list) {
-				h = h * 31 + Objects.hash(pair.t0);
-				if (pair.t1 != null) {
-					h = h * 31 + Objects.hash(pair.t1.type);
-					h = h * 31 + Objects.hash(pair.t1.terminal);
-					h = h * 31 + Objects.hash(pair.t1.op);
+				h = h * 31 + Objects.hash(pair.k);
+				if (pair.v != null) {
+					h = h * 31 + Objects.hash(pair.v.type);
+					h = h * 31 + Objects.hash(pair.v.terminal);
+					h = h * 31 + Objects.hash(pair.v.op);
 				}
 			}
 			return h;

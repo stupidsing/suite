@@ -30,7 +30,7 @@ public class Lccs {
 		var rollingSize = max(1, min(size0, size1));
 		var longest = IntObjPair.<Pair<Segment, Segment>> of(Integer.MIN_VALUE, null);
 
-		while (longest.t1 == null) {
+		while (longest.v == null) {
 			var segmentLists0 = hashSegments(bytes0, rollingSize);
 			var segmentLists1 = hashSegments(bytes1, rollingSize);
 			var keys0 = segmentLists0.streamlet().keys().toSet();
@@ -50,7 +50,7 @@ public class Lccs {
 							var i = rollingSize;
 							while (i < ix && bytes0.get(start0 + i) == bytes1.get(start1 + i))
 								i++;
-							if (longest.t0 < i)
+							if (longest.k < i)
 								longest.update(i, Pair.of(Segment.of(start0, start0 + i), Segment.of(start1, start1 + i)));
 						}
 					}
@@ -59,7 +59,7 @@ public class Lccs {
 				return Pair.of(Segment.of(0, 0), Segment.of(0, 0));
 		}
 
-		return longest.t1;
+		return longest.v;
 	}
 
 	private IntObjMap<List<Segment>> hashSegments(Bytes bytes, int rollingSize) {

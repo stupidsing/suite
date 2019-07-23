@@ -45,7 +45,7 @@ public class Eigen {
 			var eigens = power0(cov);
 
 			// nEigenPairs x nParameters
-			eigenVectors = forInt(nEigenPairs).map(i -> vec.normalizeOn(eigens.get(i).t1)).toArray(float[].class);
+			eigenVectors = forInt(nEigenPairs).map(i -> vec.normalizeOn(eigens.get(i).v)).toArray(float[].class);
 			pca = mtx.transpose(mtx.mul_mnT(eigenVectors, m1));
 		}
 	}
@@ -60,8 +60,8 @@ public class Eigen {
 
 		for (var v = 0; v < size; v++) {
 			var pair = powerIteration(m);
-			var eigenValue = pair.t0;
-			var eigenVector = pair.t1;
+			var eigenValue = pair.k;
+			var eigenVector = pair.v;
 			pairs.add(DblObjPair.of(vec.dot(eigenVector, mtx.mul(m0, eigenVector)) / vec.dot(eigenVector), eigenVector));
 
 			for (var i = 0; i < size; i++)
@@ -83,8 +83,8 @@ public class Eigen {
 
 		for (var i = 0; i < size; i++) {
 			var pair = powerIteration(b);
-			var r = pair.t0;
-			var u = pair.t1;
+			var r = pair.k;
+			var u = pair.v;
 			var x = vec.scale(b[i], 1d / (r * u[i]));
 			var v = vec.addOn(vec.scale(u, r - rprev), vec.scale(uprev, rprev * vec.dot(xprev, u)));
 			b = mtx.subOn(b, mtx.scaleOn(mtx.mul(u, x), r));

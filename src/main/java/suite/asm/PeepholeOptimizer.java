@@ -18,7 +18,7 @@ public class PeepholeOptimizer {
 		var lnis1 = new ArrayList<Pair<Reference, Node>>();
 
 		for (var lni0 : lnis0) {
-			var node0 = lni0.t1;
+			var node0 = lni0.v;
 
 			var node1 = new SwitchNode<Node>(node0 //
 			).match("ADDI (.0, .1)", (m0, m1) -> {
@@ -44,7 +44,7 @@ public class PeepholeOptimizer {
 				return n;
 			}).nonNullResult();
 
-			lnis1.add(Pair.of(lni0.t0, node1));
+			lnis1.add(Pair.of(lni0.k, node1));
 		}
 
 		return lnis1;

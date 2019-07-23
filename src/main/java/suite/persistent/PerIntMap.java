@@ -23,7 +23,7 @@ public class PerIntMap<V> {
 
 	public static <V> PerIntMap<V> of(List<IntObjPair<V>> list) {
 		var list6 = new ArrayList<>(list);
-		list6.sort((p0, p1) -> Integer.compare(p0.t0, p1.t0));
+		list6.sort((p0, p1) -> Integer.compare(p0.k, p1.k));
 		var list5 = consolidate(list6);
 		var list4 = consolidate(list5);
 		var list3 = consolidate(list4);
@@ -36,7 +36,7 @@ public class PerIntMap<V> {
 		var list1 = new ArrayList<IntObjPair<Bl<V>>>();
 		int size = list0.size(), i0 = 0, prevKey = 0, key;
 		for (var i = 0; i < size; i++) {
-			if (prevKey != (key = list0.get(i).t0 & 63)) {
+			if (prevKey != (key = list0.get(i).k & 63)) {
 				list1.add(IntObjPair.of(prevKey >>> 6, Bl.of(list0.subList(i0, i))));
 				i0 = i;
 				prevKey = key;

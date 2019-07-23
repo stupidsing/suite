@@ -41,11 +41,11 @@ public class ParseUtil {
 
 	public static Streamlet<String> searchn(String s, String name, Assoc assoc) {
 		var pair = iter(s, name, assoc);
-		return pair.t0.snoc(pair.t1);
+		return pair.k.snoc(pair.v);
 	}
 
 	public static Streamlet<String> splitn(String s, String name, Assoc assoc) {
-		return iter(s, name, assoc).t0;
+		return iter(s, name, assoc).k;
 	}
 
 	private static Pair<Streamlet<String>, String> iter(String s, String name, Assoc assoc) {
@@ -53,8 +53,8 @@ public class ParseUtil {
 		Pair<String, String> pair;
 
 		while ((pair = search(s, name, assoc)) != null) {
-			list.add(pair.t0);
-			s = pair.t1;
+			list.add(pair.k);
+			s = pair.v;
 		}
 
 		return Pair.of(Read.from(list), s);

@@ -39,10 +39,10 @@ public class EvaluateUtil {
 	// using level 1 CompiledProverBuilder would break the test case
 	// FunRbTreeTest. it would blow up the stack in InstructionExecutor
 	private Fun<Pair<ProverCfg, Node>, Finder> fccFinderFun = Memoize.fun(pair -> {
-		var builder = new SewingProverBuilder(pair.t0);
+		var builder = new SewingProverBuilder(pair.k);
 		// builder builder = new InterpretedProverBuilder(pair.t0);
 		// builder builder = new CompiledProverBuilder.level1(pair.t0);
-		return builder.build(Suite.funCompilerRuleSet()).apply(pair.t1);
+		return builder.build(Suite.funCompilerRuleSet()).apply(pair.v);
 	});
 
 	public boolean proveLogic(Node lp) {

@@ -97,7 +97,7 @@ public class WalkForwardAllocTester {
 		valuations.append(valuation_ = up.valuation0);
 
 		for (var e : up.val0.streamlet())
-			holdBySymbol.compute(e.t0, (s, h) -> e.t1 / valuation_ + (h != null ? h : 0d));
+			holdBySymbol.compute(e.k, (s, h) -> e.v / valuation_ + (h != null ? h : 0d));
 
 		var trades_ = up.trades;
 		String actions;

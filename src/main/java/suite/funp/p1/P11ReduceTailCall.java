@@ -33,8 +33,8 @@ public class P11ReduceTailCall {
 			return node_.cast(FunpDefineRec.class, f -> f.apply((pairs, expr, type) -> {
 				if (pairs.size() == 1) {
 					var pair = pairs.get(0);
-					var lambdaVar = pair.t0;
-					var lambda1 = pair.t1.cast(FunpLambda.class, g -> g.apply((vn, do_, isCapture) -> {
+					var lambdaVar = pair.k;
+					var lambda1 = pair.v.cast(FunpLambda.class, g -> g.apply((vn, do_, isCapture) -> {
 						return !isHasLambda(do_) ? rewriteTco(lambdaVar, vn, do_) : null;
 					}));
 					return lambda1 != null ? FunpDefineRec.of(List.of(Pair.of(lambdaVar, lambda1)), expr, type) : null;

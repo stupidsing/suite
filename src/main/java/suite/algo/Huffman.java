@@ -27,7 +27,7 @@ public class Huffman {
 
 	public <Unit> List<Unit> decode(Pair<List<Unit>, List<Boolean>> input) {
 		var dictionary = load(input);
-		return To.list(decode(dictionary, To.source(input.t1)));
+		return To.list(decode(dictionary, To.source(input.v)));
 	}
 
 	private <Unit> Dictionary<Unit> build(List<Unit> input) {
@@ -62,7 +62,7 @@ public class Huffman {
 		var nodeByUnit = new HashMap<Unit, Node<Unit>>();
 		var deque = new ArrayDeque<Node<Unit>>();
 
-		for (var unit : input.t0)
+		for (var unit : input.k)
 			if (unit == null) {
 				var node0 = deque.pop();
 				var node1 = deque.pop();

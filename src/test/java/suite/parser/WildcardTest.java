@@ -20,8 +20,8 @@ public class WildcardTest {
 	@Test
 	public void test1() {
 		var match = Wildcard.matchStart("if * then ", "if a = b then if c = d then e = f else g = h");
-		assertTrue(Arrays.equals(match.t0, new String[] { "a = b", }));
-		assertEquals("if c = d then e = f else g = h", match.t1);
+		assertTrue(Arrays.equals(match.k, new String[] { "a = b", }));
+		assertEquals("if c = d then e = f else g = h", match.v);
 	}
 
 }

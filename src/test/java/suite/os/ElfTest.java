@@ -99,7 +99,7 @@ public class ElfTest {
 		var main = Funp_.main(true);
 
 		if (Boolean.TRUE && RunUtil.isLinux()) { // not Windows => run ELF
-			var exec = elf.exec(ibs.toArray(), offset -> main.compile(offset, program).t1);
+			var exec = elf.exec(ibs.toArray(), offset -> main.compile(offset, program).v);
 			assertEquals(code, exec.code);
 			assertEquals(expected, exec.out);
 		} else { // Windows => interpret assembly

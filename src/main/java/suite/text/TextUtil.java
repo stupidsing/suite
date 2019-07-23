@@ -43,7 +43,7 @@ public class TextUtil {
 	public List<BytesPair> diff(Bytes bytesx, Bytes bytesy) {
 		var lccs = new Lccs();
 		var diff = lccs.lccs(bytesx, bytesy);
-		Segment sx = diff.t0, sy = diff.t1;
+		Segment sx = diff.k, sy = diff.v;
 		int x0 = 0, x1 = sx.start, x2 = sx.end, xx = bytesx.size();
 		int y0 = 0, y1 = sy.start, y2 = sy.end, yx = bytesy.size();
 		var common = bytesx.range(x1, x2);

@@ -171,7 +171,7 @@ public class DblPrimitives {
 				var source = puller.source();
 				var result = (double) 0;
 				while (source.source2(pair))
-					result += fun1.apply(pair.t0, pair.t1);
+					result += fun1.apply(pair.k, pair.v);
 				return result;
 			};
 		}

@@ -20,14 +20,14 @@ public class NaiveBayes {
 
 	public NaiveBayes(List<Pair<int[], Boolean>> records, double threshold) {
 		var nCategories = 2;
-		var length_ = records.get(0).t0.length;
+		var length_ = records.get(0).k.length;
 		var ms = new int[nCategories];
 		var ws = Ints_.toArray(nCategories, cat -> 1);
 		var is = To.array(nCategories, int[].class, cat -> Ints_.toArray(length_, i -> 1));
 
 		for (var record : records) {
-			var xs = record.t0;
-			var cat = i(record.t1);
+			var xs = record.k;
+			var cat = i(record.v);
 			ms[cat]++;
 			for (var i = 0; i < length_; i++) {
 				var x = xs[i];

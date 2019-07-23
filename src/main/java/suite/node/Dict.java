@@ -22,7 +22,7 @@ public class Dict extends Node {
 	public static Dict ofPairs(Pair<Node, Reference>[] pairs) {
 		var map = new HashMap<Node, Reference>();
 		for (var pair : pairs)
-			map.put(pair.t0, pair.t1);
+			map.put(pair.k, pair.v);
 		return of(map);
 	}
 

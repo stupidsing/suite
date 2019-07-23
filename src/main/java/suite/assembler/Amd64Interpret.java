@@ -72,7 +72,7 @@ public class Amd64Interpret {
 	}
 
 	public int interpret(Pair<List<Instruction>, Bytes> pair, Bytes in) {
-		return interpret(pair.t0, pair.t1, in);
+		return interpret(pair.k, pair.v, in);
 	}
 
 	public int interpret(List<Instruction> instructions, Bytes code, Bytes in) {

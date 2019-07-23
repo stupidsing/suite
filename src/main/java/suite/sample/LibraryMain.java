@@ -48,10 +48,10 @@ public class LibraryMain {
 				.partition((path, size) -> 0 < size);
 
 		// remove empty files
-		partition.t1.sink((path, size) -> FileUtil.delete(path));
+		partition.v.sink((path, size) -> FileUtil.delete(path));
 
 		// get all file information
-		var path_fileInfos = partition.t0 //
+		var path_fileInfos = partition.k //
 				.map2((path, size) -> {
 					var attrs = rethrow(() -> Files.readAttributes(path, BasicFileAttributes.class));
 
@@ -69,7 +69,7 @@ public class LibraryMain {
 		// construct file listing
 		FileUtil.out(inputDir + ".listing").doPrintWriter(pw -> {
 			for (var path_fileInfo : path_fileInfos)
-				pw.println(path_fileInfo.t0 + path_fileInfo.t1.md5);
+				pw.println(path_fileInfo.k + path_fileInfo.v.md5);
 		});
 
 		path_fileInfos //

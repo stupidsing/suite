@@ -92,7 +92,7 @@ public class As {
 
 	public static <K, V> Map<K, List<V>> listMap(Puller<Pair<K, V>> puller) {
 		var map = new HashMap<K, List<V>>();
-		puller.sink(pair -> map.computeIfAbsent(pair.t0, k_ -> new ArrayList<>()).add(pair.t1));
+		puller.sink(pair -> map.computeIfAbsent(pair.k, k_ -> new ArrayList<>()).add(pair.v));
 		return map;
 	}
 
@@ -138,7 +138,7 @@ public class As {
 
 	public static <K, V> Map<K, Set<V>> setMap(Puller<Pair<K, V>> puller) {
 		var map = new HashMap<K, Set<V>>();
-		puller.sink(pair -> map.computeIfAbsent(pair.t0, k_ -> new HashSet<>()).add(pair.t1));
+		puller.sink(pair -> map.computeIfAbsent(pair.k, k_ -> new HashSet<>()).add(pair.v));
 		return map;
 	}
 

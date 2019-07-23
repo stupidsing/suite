@@ -113,7 +113,7 @@ public class Keyboard {
 		pairs.add(Pair.of(List.of(127), VK.BKSP_));
 
 		for (var pair : pairs)
-			trie.add(pair.t0, pair.t1);
+			trie.add(pair.k, pair.v);
 	}
 
 	public void loop(Sink<Pusher<Pair<VK, Character>>> sink) {

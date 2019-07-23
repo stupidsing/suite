@@ -58,7 +58,7 @@ public class Rewrite_ {
 				var map = Dict.m(node);
 				return new NodeRead(ReadType.DICT, null, null, Read //
 						.from2(map) //
-						.sort((p0, p1) -> Comparer.comparer.compare(p0.t0, p1.t0)) //
+						.sort((p0, p1) -> Comparer.comparer.compare(p0.k, p1.k)) //
 						.mapValue(Node::finalNode) //
 						.collect());
 			} else if ((tree = Tree.decompose(node)) != null) {
@@ -93,10 +93,10 @@ public class Rewrite_ {
 				node = terminal;
 				break;
 			case TREE:
-				node = Tree.of(op, children.get(0).t1, children.get(1).t1);
+				node = Tree.of(op, children.get(0).v, children.get(1).v);
 				break;
 			case TUPLE:
-				node = Tuple.of(Read.from(children).map(p -> p.t1).toArray(Node.class));
+				node = Tuple.of(Read.from(children).map(p -> p.v).toArray(Node.class));
 				break;
 			default:
 				node = fail();
@@ -110,11 +110,11 @@ public class Rewrite_ {
 		var isSame = true;
 
 		for (var pair : nr.children) {
-			var child0 = pair.t1;
+			var child0 = pair.v;
 			var childx = fun.apply(child0);
 			if (child0 != childx) {
 				isSame = false;
-				children1.add(Pair.of(pair.t0, childx));
+				children1.add(Pair.of(pair.k, childx));
 			} else
 				children1.add(pair);
 		}

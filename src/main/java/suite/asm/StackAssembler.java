@@ -52,7 +52,7 @@ public class StackAssembler {
 		int fs = 0, rs = 0;
 
 		for (var lni0 : lnis0) {
-			var node0 = lni0.t1;
+			var node0 = lni0.v;
 			Node node1;
 			Node[] m;
 
@@ -113,7 +113,7 @@ public class StackAssembler {
 			} else
 				node1 = rewrite(rs, node0);
 
-			lnis1.add(Pair.of(lni0.t0, node1));
+			lnis1.add(Pair.of(lni0.k, node1));
 		}
 
 		return new PeepholeOptimizer().optimize(lnis1);

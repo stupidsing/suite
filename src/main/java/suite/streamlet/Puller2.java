@@ -52,7 +52,7 @@ public class Puller2<K, V> implements PullerDefaults<Pair<K, V>> {
 			var b = iter.hasNext();
 			if (b) {
 				var pair1 = iter.next();
-				pair.update(pair1.t0, pair1.t1);
+				pair.update(pair1.k, pair1.v);
 			}
 			return b;
 		});
@@ -79,7 +79,7 @@ public class Puller2<K, V> implements PullerDefaults<Pair<K, V>> {
 				var b = i < kvs.length;
 				if (b) {
 					var kv = kvs[i];
-					pair.update(kv.t0, kv.t1);
+					pair.update(kv.k, kv.v);
 				}
 				return b;
 			}
@@ -93,7 +93,7 @@ public class Puller2<K, V> implements PullerDefaults<Pair<K, V>> {
 				var b = iter.hasNext();
 				if (b) {
 					var pair1 = iter.next();
-					pair.update(pair1.t0, pair1.t1);
+					pair.update(pair1.k, pair1.v);
 				}
 				return b;
 			}
@@ -162,7 +162,7 @@ public class Puller2<K, V> implements PullerDefaults<Pair<K, V>> {
 		var set = new HashSet<>();
 		return of(pair -> {
 			boolean b;
-			while ((b = pull(pair)) && !set.add(Pair.of(pair.t0, pair.t1)))
+			while ((b = pull(pair)) && !set.add(Pair.of(pair.k, pair.v)))
 				;
 			return b;
 		});
@@ -219,7 +219,7 @@ public class Puller2<K, V> implements PullerDefaults<Pair<K, V>> {
 	public <R> R fold(R init, FixieFun3<R, K, V, R> fun) {
 		var pair = Pair.<K, V> of(null, null);
 		while (pull(pair))
-			init = fun.apply(init, pair.t0, pair.t1);
+			init = fun.apply(init, pair.k, pair.v);
 		return init;
 	}
 
@@ -294,7 +294,7 @@ public class Puller2<K, V> implements PullerDefaults<Pair<K, V>> {
 		if (pull(pair)) {
 			while (pull(pair1))
 				if (0 < comparator.compare(pair, pair1))
-					pair.update(pair1.t0, pair1.t1);
+					pair.update(pair1.k, pair1.v);
 			return pair;
 		} else
 			return null;
@@ -317,7 +317,7 @@ public class Puller2<K, V> implements PullerDefaults<Pair<K, V>> {
 			var b = queue.poll(mutable);
 			if (b) {
 				var p = mutable.value();
-				pair.update(p.t0, p.t1);
+				pair.update(p.k, p.v);
 			} else
 				pair.update(k0, v0);
 			return b;
@@ -354,7 +354,7 @@ public class Puller2<K, V> implements PullerDefaults<Pair<K, V>> {
 		var sink1 = sink0.rethrow();
 		var pair = Pair.<K, V> of(null, null);
 		while (pull(pair))
-			sink1.sink2(pair.t0, pair.t1);
+			sink1.sink2(pair.k, pair.v);
 	}
 
 	public Puller2<K, V> skip(int n) {
@@ -378,15 +378,15 @@ public class Puller2<K, V> implements PullerDefaults<Pair<K, V>> {
 	}
 
 	public <O extends Comparable<? super O>> Puller2<K, V> sortBy(Fun2<K, V, O> fun) {
-		return sort((e0, e1) -> Object_.compare(fun.apply(e0.t0, e0.t1), fun.apply(e1.t0, e1.t1)));
+		return sort((e0, e1) -> Object_.compare(fun.apply(e0.k, e0.v), fun.apply(e1.k, e1.v)));
 	}
 
 	public Puller2<K, V> sortByKey(Comparator<K> comparator) {
-		return sort((e0, e1) -> comparator.compare(e0.t0, e1.t0));
+		return sort((e0, e1) -> comparator.compare(e0.k, e1.k));
 	}
 
 	public Puller2<K, V> sortByValue(Comparator<V> comparator) {
-		return sort((e0, e1) -> comparator.compare(e0.t1, e1.t1));
+		return sort((e0, e1) -> comparator.compare(e0.v, e1.v));
 	}
 
 	public Source2<K, V> source() {
@@ -426,7 +426,7 @@ public class Puller2<K, V> implements PullerDefaults<Pair<K, V>> {
 		var map = new HashMap<K, List<V>>();
 		var pair = Pair.<K, V> of(null, null);
 		while (pull(pair))
-			map.computeIfAbsent(pair.t0, k_ -> new ArrayList<>()).add(pair.t1);
+			map.computeIfAbsent(pair.k, k_ -> new ArrayList<>()).add(pair.v);
 		return map;
 	}
 
@@ -434,8 +434,8 @@ public class Puller2<K, V> implements PullerDefaults<Pair<K, V>> {
 		var map = new HashMap<K, V>();
 		var pair = Pair.<K, V> of(null, null);
 		while (pull(pair))
-			if (map.put(pair.t0, pair.t1) != null)
-				fail("duplicate key " + pair.t0);
+			if (map.put(pair.k, pair.v) != null)
+				fail("duplicate key " + pair.k);
 		return map;
 	}
 

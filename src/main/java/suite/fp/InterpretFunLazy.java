@@ -277,8 +277,8 @@ public class InterpretFunLazy {
 			}).match(Matcher.fun, (param, do_) -> {
 				var vm1 = PerMap.<Node, Fun<Frame, Thunk>> empty();
 				for (var e : vm) {
-					var getter0 = e.t1;
-					vm1 = vm1.put(e.t0, frame -> getter0.apply(frame.parent));
+					var getter0 = e.v;
+					vm1 = vm1.put(e.k, frame -> getter0.apply(frame.parent));
 				}
 				var value_ = new Lazy(0, vm1).put(param).lazy(do_);
 				return frame -> () -> f(in -> {

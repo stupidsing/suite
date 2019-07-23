@@ -35,7 +35,7 @@ public class DecisionTree {
 				.map(classifier_ -> classifier_.apply(xs)) //
 				.groupBy(y -> y, Streamlet::size) //
 				.sortByValue(Integer::compareTo) //
-				.first().t0;
+				.first().k;
 
 		return new DecisionTree(input, classifier);
 	}
@@ -49,15 +49,15 @@ public class DecisionTree {
 
 				if (first == null)
 					return xs -> default_;
-				else if (data.isAll(datum -> datum.t0 == first.t0))
-					return xs -> first.t0;
+				else if (data.isAll(datum -> datum.k == first.k))
+					return xs -> first.k;
 				else {
 					var entropy0 = entropy(data);
 					var max = DblIntPair.of(Double.MIN_VALUE, -1);
 
-					forInt(first.t1.length).sink(p -> {
+					forInt(first.v.length).sink(p -> {
 						var es = data //
-								.groupBy(datum -> datum.t1[p]) //
+								.groupBy(datum -> datum.v[p]) //
 								.values() //
 								.toDouble(Obj_Dbl.sum(set -> entropy(set) * set.size()));
 
@@ -71,7 +71,7 @@ public class DecisionTree {
 
 					if (0 < p) {
 						var funs = data //
-								.groupBy(datum -> datum.t1[p], data_ -> data_) //
+								.groupBy(datum -> datum.v[p], data_ -> data_) //
 								.mapValue(this::id3) //
 								.toMap();
 
@@ -88,14 +88,14 @@ public class DecisionTree {
 	private static double entropy(Iterable<IntObjPair<Object[]>> data) {
 		var hist0 = new IntIntMap1();
 		for (var datum : data)
-			hist0.update(datum.t0, v -> (v != IntFunUtil.EMPTYVALUE ? v : 0) + 1);
+			hist0.update(datum.k, v -> (v != IntFunUtil.EMPTYVALUE ? v : 0) + 1);
 		var hist1 = hist0.values();
 		var sum = (double) hist1.sum();
 		return hist1.toDouble(Int_Dbl.sum(c -> Math.log(c / sum)));
 	}
 
 	private static int majority(Streamlet<IntObjPair<Object[]>> data) {
-		return data.groupBy(IntObjPair::fst, Streamlet::size).sortByValue(Integer::compareTo).first().t0;
+		return data.groupBy(IntObjPair::fst, Streamlet::size).sortByValue(Integer::compareTo).first().k;
 	}
 
 	private DecisionTree(Streamlet<IntObjPair<Object[]>> input, Obj_Int<Object[]> classifier) {

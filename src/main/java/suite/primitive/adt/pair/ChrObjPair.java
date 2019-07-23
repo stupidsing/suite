@@ -10,86 +10,86 @@ import suite.primitive.Chr_Chr;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil.Iterate;
 
-public class ChrObjPair<T> {
+public class ChrObjPair<V> {
 
 	private static ChrObjPair<?> none_ = ChrObjPair.of(ChrFunUtil.EMPTYVALUE, null);
 
-	public char t0;
-	public T t1;
+	public char k;
+	public V v;
 
 	public static <V> Iterate<ChrObjPair<V>> mapFst(Chr_Chr fun) {
-		return pair -> of(fun.apply(pair.t0), pair.t1);
+		return pair -> of(fun.apply(pair.k), pair.v);
 	}
 
 	public static <V0, V1> Fun<ChrObjPair<V0>, ChrObjPair<V1>> mapSnd(Fun<V0, V1> fun) {
-		return pair -> of(pair.t0, fun.apply(pair.t1));
+		return pair -> of(pair.k, fun.apply(pair.v));
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <T> ChrObjPair<T> none() {
-		return (ChrObjPair<T>) none_;
+	public static <V> ChrObjPair<V> none() {
+		return (ChrObjPair<V>) none_;
 	}
 
-	public static <T> ChrObjPair<T> of(char t0, T t1) {
-		return new ChrObjPair<>(t0, t1);
+	public static <V> ChrObjPair<V> of(char k, V v) {
+		return new ChrObjPair<>(k, v);
 	}
 
-	protected ChrObjPair(char t0, T t1) {
-		this.t0 = t0;
-		this.t1 = t1;
+	protected ChrObjPair(char k, V v) {
+		this.k = k;
+		this.v = v;
 	}
 
-	public static <T extends Comparable<? super T>> Comparator<ChrObjPair<T>> comparator() {
+	public static <V extends Comparable<? super V>> Comparator<ChrObjPair<V>> comparator() {
 		return (pair0, pair1) -> {
 			var c = Boolean.compare(pair0 != null, pair1 != null);
-			c = c == 0 ? Character.compare(pair0.t0, pair1.t0) : c;
-			c = c == 0 ? Object_.compare(pair0.t1, pair1.t1) : c;
+			c = c == 0 ? Character.compare(pair0.k, pair1.k) : c;
+			c = c == 0 ? Object_.compare(pair0.v, pair1.v) : c;
 			return c;
 		};
 	}
 
-	public static <T> Comparator<ChrObjPair<T>> comparatorByFirst() {
+	public static <V> Comparator<ChrObjPair<V>> comparatorByFirst() {
 		return (pair0, pair1) -> {
 			var c = Boolean.compare(pair0 != null, pair1 != null);
-			c = c == 0 ? Character.compare(pair0.t0, pair1.t0) : c;
+			c = c == 0 ? Character.compare(pair0.k, pair1.k) : c;
 			return c;
 		};
 	}
 
 	public static char fst(ChrObjPair<?> pair) {
-		return pair.t0;
+		return pair.k;
 	}
 
 	public static <T> T snd(ChrObjPair<T> pair) {
-		return pair != null ? pair.t1 : null;
+		return pair != null ? pair.v : null;
 	}
 
-	public <O> O map(ChrObj_Obj<T, O> fun) {
-		return fun.apply(t0, t1);
+	public <O> O map(ChrObj_Obj<V, O> fun) {
+		return fun.apply(k, v);
 	}
 
-	public void update(char t0_, T t1_) {
-		t0 = t0_;
-		t1 = t1_;
+	public void update(char k_, V v_) {
+		k = k_;
+		v = v_;
 	}
 
 	@Override
 	public boolean equals(Object object) {
 		if (Object_.clazz(object) == ChrObjPair.class) {
 			var other = (ChrObjPair<?>) object;
-			return t0 == other.t0 && Objects.equals(t1, other.t1);
+			return k == other.k && Objects.equals(v, other.v);
 		} else
 			return false;
 	}
 
 	@Override
 	public int hashCode() {
-		return Character.hashCode(t0) + 31 * Objects.hashCode(t1);
+		return Character.hashCode(k) + 31 * Objects.hashCode(v);
 	}
 
 	@Override
 	public String toString() {
-		return t0 + ":" + t1;
+		return k + ":" + v;
 	}
 
 }

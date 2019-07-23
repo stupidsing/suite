@@ -83,17 +83,17 @@ public class KmeansCluster {
 				.take(points.size()) //
 				.forEach(bin -> map.computeIfAbsent(bin.t0, c -> new AtomicInteger()).incrementAndGet());
 
-		return map.streamlet().min((k, v) -> -v.t1.get()).t0;
+		return map.streamlet().min((k, v) -> -v.v.get()).k;
 	}
 
 	private int findNearest(float[] point, List<float[]> points) {
 		var min = DblObjPair.of(Double.MAX_VALUE, 0);
 		for (var j = 0; j < points.size(); j++) {
 			var dist = sqdist(point, points.get(j));
-			if (dist < min.t0)
+			if (dist < min.k)
 				min.update(dist, j);
 		}
-		return min.t1;
+		return min.v;
 	}
 
 	private double sqdist(float[] a, float[] b) {

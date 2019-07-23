@@ -100,8 +100,8 @@ public class CommandDispatcher {
 		var code = true;
 
 		var pair = new CommandUtil<>(InputType.values()).recognize(input);
-		var type = pair.t0;
-		input = pair.t1.trim();
+		var type = pair.k;
+		input = pair.v.trim();
 
 		if (input.endsWith("#"))
 			input = String_.range(input, 0, -1);

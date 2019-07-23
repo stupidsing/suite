@@ -277,7 +277,7 @@ public class LngObjStreamlet<V> implements StreamletDefaults<LngObjPair<V>, LngO
 
 	public LngObjPair<V> uniqueResult() {
 		var pair = spawn().opt();
-		if (pair.t0 != LngFunUtil.EMPTYVALUE)
+		if (pair.k != LngFunUtil.EMPTYVALUE)
 			return pair;
 		else
 			return fail("no result");

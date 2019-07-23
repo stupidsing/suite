@@ -187,8 +187,8 @@ public class Fractional<I> {
 				m1 = d;
 			} else {
 				var divMod = divMod_.apply(n, d);
-				var f = divMod.t0; // div_.apply(n, d);
-				var ndf = divMod.t1; // add_.apply(n, neg_.apply(df));
+				var f = divMod.k; // div_.apply(n, d);
+				var ndf = divMod.v; // add_.apply(n, neg_.apply(df));
 				var gcd1 = new Gcd(d, ndf, depth - 1);
 
 				// n = gcd1.gcd * (gcd1.m0 * f + gcd1.m1)

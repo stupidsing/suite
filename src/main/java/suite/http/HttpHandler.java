@@ -29,8 +29,8 @@ public interface HttpHandler {
 	public static HttpHandler ofDispatch(PerMap<String, HttpHandler> map) {
 		return request -> {
 			var p = request.split();
-			var handler = map.get(p.t0);
-			return handler != null ? handler.handle(p.t1) : fail("no handler for " + p.t0);
+			var handler = map.get(p.k);
+			return handler != null ? handler.handle(p.v) : fail("no handler for " + p.k);
 		};
 	}
 

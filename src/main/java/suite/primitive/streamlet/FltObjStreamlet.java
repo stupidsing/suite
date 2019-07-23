@@ -277,7 +277,7 @@ public class FltObjStreamlet<V> implements StreamletDefaults<FltObjPair<V>, FltO
 
 	public FltObjPair<V> uniqueResult() {
 		var pair = spawn().opt();
-		if (pair.t0 != FltFunUtil.EMPTYVALUE)
+		if (pair.k != FltFunUtil.EMPTYVALUE)
 			return pair;
 		else
 			return fail("no result");

@@ -63,7 +63,7 @@ public class Profiler {
 			sb.append("METHODS\n\n");
 			sb.append(Read //
 					.from2(records) //
-					.sort((p0, p1) -> p1.t1.count - p0.t1.count) //
+					.sort((p0, p1) -> p1.v.count - p0.v.count) //
 					.map((name, record) -> String.format("%d\t%s", record.count, name)) //
 					.toLines());
 			sb.append("\n\n");
@@ -77,7 +77,7 @@ public class Profiler {
 		if (call != null)
 			Read //
 					.from2(call.callees) //
-					.sort((e0, e1) -> -Integer.compare(e0.t1.count, e1.t1.count)) //
+					.sort((e0, e1) -> -Integer.compare(e0.v.count, e1.v.count)) //
 					.sink((callee, call1) -> {
 						sb.append(String.format("%d\t%s%s\n", call1.count, indent, callee));
 						dumpCalls(sb, indent + "| ", call1);

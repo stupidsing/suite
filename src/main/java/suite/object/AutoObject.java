@@ -42,7 +42,7 @@ public class AutoObject<T extends AutoObject<T>> extends BaseObject<T> implement
 						return v1;
 					} else if (v0 instanceof Pair) {
 						var pair = (Pair<?, ?>) v0;
-						return Pair.of(c_(pair.t0), c_(pair.t1));
+						return Pair.of(c_(pair.k), c_(pair.v));
 					} else
 						return v0;
 				}

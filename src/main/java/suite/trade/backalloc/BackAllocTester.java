@@ -113,7 +113,7 @@ public class BackAllocTester {
 					var valuation_ = valuations_[i] = up.valuation0;
 
 					for (var e : up.val0.streamlet())
-						holdBySymbol_.compute(e.t0, (s, h) -> e.t1 / (valuation_ * size) + (h != null ? h : 0d));
+						holdBySymbol_.compute(e.k, (s, h) -> e.v / (valuation_ * size) + (h != null ? h : 0d));
 
 					var actions = play(up.trades);
 

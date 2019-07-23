@@ -52,7 +52,7 @@ public class HtmlUtilTest {
 					if (!h.attrs.isEmpty()) {
 						sb.append(".attrsf(vm => { ");
 						for (var kv : h.attrs)
-							sb.append(kv.t0 + ": '" + kv.t1 + "', ");
+							sb.append(kv.k + ": '" + kv.v + "', ");
 						sb.append("})");
 					}
 

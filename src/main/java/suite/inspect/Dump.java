@@ -95,21 +95,21 @@ public class Dump {
 						sink.f("}");
 					}).doIf(Pair.class, pair -> {
 						sink.f("<");
-						d(pair.t0, "|");
-						d(pair.t1, ">");
+						d(pair.k, "|");
+						d(pair.v, ">");
 					}).doIf(Object.class, o -> {
 						sink.f(o.getClass().getSimpleName());
 						sink.f("{");
 						for (var pair : readers(object)) {
 							Object value;
 							try {
-								value = pair.t1.call();
+								value = pair.v.call();
 							} catch (Throwable ex) {
 								value = "<" + ex.getClass() + ">";
 							}
 
 							if (value != null) {
-								sink.f(pair.t0 + ":");
+								sink.f(pair.k + ":");
 								d(value, ",");
 							}
 						}
@@ -236,14 +236,14 @@ public class Dump {
 						d(prefix + "." + i++, object1);
 				} else if (Pair.class.isAssignableFrom(clazz)) {
 					var pair = (Pair<?, ?>) object;
-					d(prefix + ".fst", pair.t0);
-					d(prefix + ".snd", pair.t1);
+					d(prefix + ".fst", pair.k);
+					d(prefix + ".snd", pair.v);
 				} else
 					for (var pair : readers(object)) {
-						var k = prefix + "." + pair.t0;
+						var k = prefix + "." + pair.k;
 
 						try {
-							d(k, pair.t1.call());
+							d(k, pair.v.call());
 						} catch (Throwable ex) {
 							sink.f(k + "()");
 							sink.f(" caught " + ex + "\n");

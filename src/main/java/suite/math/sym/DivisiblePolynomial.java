@@ -125,9 +125,9 @@ public class DivisiblePolynomial<N> {
 		var sum = format_.apply(n0);
 
 		for (var pair : poly.streamlet().sortByKey(Integer::compare)) {
-			var p = pair.t0;
+			var p = pair.k;
 			var power = p < 0 ? mul.inverse(powerFun.apply(-p)) : powerFun.apply(p);
-			sum = add.apply(mul.apply(format_.apply(pair.t1), power), sum);
+			sum = add.apply(mul.apply(format_.apply(pair.v), power), sum);
 		}
 
 		return sum;
@@ -149,9 +149,9 @@ public class DivisiblePolynomial<N> {
 			return Opt.of(num);
 		else if (0 < depth) {
 			var divMod = divMod(num, denom);
-			var f = divMod.t0; // divIntegral(num, denom);
+			var f = divMod.k; // divIntegral(num, denom);
 			var df = mul(denom, f);
-			var ndf = divMod.t1; // add(num, neg(df));
+			var ndf = divMod.v; // add(num, neg(df));
 			return div(ndf, df, depth - 1).map(r -> mul(add(r, p1), f));
 		} else
 			return Opt.none();

@@ -99,8 +99,8 @@ public class Bl<T> {
 			var ts = new Object[size];
 			for (var i = 0; i < size; i++) {
 				var pair = list.get(i);
-				bitmap |= 1l << (pair.t0 & 0xFFFFFC00);
-				ts[i] = pair.t1;
+				bitmap |= 1l << (pair.k & 0xFFFFFC00);
+				ts[i] = pair.v;
 			}
 			return new Bl<>(bitmap, ts);
 		} else

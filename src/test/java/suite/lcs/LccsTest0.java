@@ -13,10 +13,10 @@ public class LccsTest0 {
 		var lccs = new Lccs0();
 		var result = lccs.lccs(To.bytes("abczzzzz"), To.bytes("zzzzzabc"));
 
-		assertEquals(3, result.t0.start);
-		assertEquals(8, result.t0.end);
-		assertEquals(0, result.t1.start);
-		assertEquals(5, result.t1.end);
+		assertEquals(3, result.k.start);
+		assertEquals(8, result.k.end);
+		assertEquals(0, result.v.start);
+		assertEquals(5, result.v.end);
 	}
 
 }

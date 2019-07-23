@@ -175,7 +175,7 @@ public class StatisticalArbitrageTest {
 		var dctDataSources = dctDataSources();
 
 		for (var e : dctDataSources.dctByKey) {
-			var dct = e.t1;
+			var dct = e.v;
 			var max = IntFltPair.of(Integer.MIN_VALUE, Float.MIN_VALUE);
 
 			for (var i = minPeriod; i < dct.length; i++) {
@@ -184,7 +184,7 @@ public class StatisticalArbitrageTest {
 					max = IntFltPair.of(i, f);
 			}
 
-			Log_.info(e.t0 + " has period " + max.t0);
+			Log_.info(e.k + " has period " + max.t0);
 		}
 	}
 
@@ -244,7 +244,7 @@ public class StatisticalArbitrageTest {
 			return Read //
 					.from2(probabilities) //
 					.sortByValue((p0, p1) -> Double.compare(p1, p0)) //
-					.first().t0.floatValue();
+					.first().k.floatValue();
 		};
 
 		for (var t = maxTor + 1; t < prices.length; t++) {

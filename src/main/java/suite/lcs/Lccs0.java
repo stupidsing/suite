@@ -29,7 +29,7 @@ public class Lccs0 {
 		if (0 < rollingSize) {
 			var longest = IntObjPair.<Pair<Segment, Segment>> of(Integer.MIN_VALUE, null);
 
-			while (longest.t1 == null) {
+			while (longest.v == null) {
 				var segments0 = hashSegments(bytes0, rollingSize);
 				var segments1 = hashSegments(bytes1, rollingSize);
 				var keys0 = segments0.streamlet().keys().toSet();
@@ -49,7 +49,7 @@ public class Lccs0 {
 						int p0, p1;
 						while ((p0 = end0 + i) < size0 && (p1 = end1 + i) < size1 && b0.get(p0) == b1.get(p1))
 							i++;
-						if (longest.t0 < i)
+						if (longest.k < i)
 							longest.update(i, Pair.of(segment0, segment1));
 					}
 				}
@@ -57,7 +57,7 @@ public class Lccs0 {
 				rollingSize--;
 			}
 
-			return longest.t1;
+			return longest.v;
 		} else
 			return Pair.of(Segment.of(0, 0), Segment.of(0, 0));
 	}

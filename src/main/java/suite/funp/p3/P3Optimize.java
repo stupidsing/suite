@@ -57,9 +57,9 @@ public class P3Optimize {
 			return optimize(pointer).sw( //
 			).applyIf(FunpData.class, g -> g.apply(pairs -> {
 				for (var pair : pairs) {
-					var range = pair.t1;
+					var range = pair.v;
 					if (start == range.s && end == range.e)
-						return pair.t0;
+						return pair.k;
 				}
 				return null;
 			})).applyIf(FunpReference.class, g -> {

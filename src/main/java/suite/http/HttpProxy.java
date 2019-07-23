@@ -37,7 +37,7 @@ public class HttpProxy {
 
 			var url = line.split(" ")[1];
 			var pp = String_.split2(url, "://");
-			var path = pp != null ? String_.split2l(pp.t1, "/").t1 : url;
+			var path = pp != null ? String_.split2l(pp.v, "/").v : url;
 
 			try (var socket1 = connect(path); //
 					var is0 = is; //

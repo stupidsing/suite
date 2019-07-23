@@ -32,14 +32,14 @@ public class NelderMead {
 		}
 
 		for (var iter = 0; iter < 1024; iter++) {
-			pairs.sort(Comparator.comparing(pair -> pair.t0));
+			pairs.sort(Comparator.comparing(pair -> pair.k));
 
 			var centroid = new float[dim];
 			var ps_1 = pairs.size() - 1;
 
 			for (var i = 0; i < ps_1; i++) {
 				var pair = pairs.get(i);
-				vec.addOn(centroid, pair.t1);
+				vec.addOn(centroid, pair.v);
 			}
 
 			vec.scaleOn(centroid, 1d / ps_1);
@@ -49,7 +49,7 @@ public class NelderMead {
 			var last1 = pairs.get(ps_1 - 1);
 
 			Dbl_Obj<DblObjPair<float[]>> pairFun = factor -> {
-				var xs_ = vec.add(centroid, vec.scaleOn(vec.sub(centroid, last0.t1), factor));
+				var xs_ = vec.add(centroid, vec.scaleOn(vec.sub(centroid, last0.v), factor));
 				return DblObjPair.of(fun.apply(xs_), xs_);
 			};
 
@@ -58,24 +58,24 @@ public class NelderMead {
 			DblObjPair<float[]> contractPair;
 
 			if ((reflectPair = pairFun.apply(reflectFactor)) != null //
-					&& first.t0 <= reflectPair.t0 //
-					&& reflectPair.t0 < last1.t0) // reflection
+					&& first.k <= reflectPair.k //
+					&& reflectPair.k < last1.k) // reflection
 				pairs.set(ps_1, reflectPair);
-			else if (reflectPair.t0 < first.t0) // expansion
-				if ((expandPair = pairFun.apply(expandFactor)) != null && expandPair.t0 < reflectPair.t0)
+			else if (reflectPair.k < first.k) // expansion
+				if ((expandPair = pairFun.apply(expandFactor)) != null && expandPair.k < reflectPair.k)
 					pairs.set(ps_1, expandPair);
 				else
 					pairs.set(ps_1, reflectPair);
-			else if ((contractPair = pairFun.apply(contractFactor)) != null && contractPair.t0 < last0.t0) // contraction
+			else if ((contractPair = pairFun.apply(contractFactor)) != null && contractPair.k < last0.k) // contraction
 				pairs.set(ps_1, contractPair);
 			else
 				pairs = new ArrayList<>(Read.from(pairs).map(pair -> { // reduction
-					var reduce = vec.add(centroid, vec.scaleOn(vec.sub(centroid, pair.t1), reduceFactor));
+					var reduce = vec.add(centroid, vec.scaleOn(vec.sub(centroid, pair.v), reduceFactor));
 					return DblObjPair.of(fun.apply(reduce), reduce);
 				}).toList());
 		}
 
-		return pairs.get(0).t1;
+		return pairs.get(0).v;
 	}
 
 }

@@ -25,7 +25,7 @@ public class Breakdown {
 		if (1 < (list = ParseUtil.searchn(s, " | ", Assoc.RIGHT)).size())
 			eg = new Grammar(GrammarType.OR____, breakdown(list));
 		else if ((pair = ParseUtil.search(s, " /except/ ", Assoc.RIGHT)) != null)
-			eg = new Grammar(GrammarType.EXCEPT, List.of(breakdown(pair.t0), breakdown(pair.t1)));
+			eg = new Grammar(GrammarType.EXCEPT, List.of(breakdown(pair.k), breakdown(pair.v)));
 		else if (1 < (list = ParseUtil.searchn(s, " ", Assoc.RIGHT)).size())
 			eg = new Grammar(GrammarType.AND___, breakdown(list));
 		else if (s.equals(""))

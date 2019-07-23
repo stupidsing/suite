@@ -18,7 +18,7 @@ public class Union implements RtObject {
 
 	@Override
 	public List<RayHit> hit(Ray ray) {
-		return RayHit_.join(objects, ray, pair -> pair.t0 || pair.t1);
+		return RayHit_.join(objects, ray, pair -> pair.k || pair.v);
 	}
 
 }

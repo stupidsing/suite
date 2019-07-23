@@ -10,86 +10,86 @@ import suite.primitive.Int_Int;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil.Iterate;
 
-public class IntObjPair<T> {
+public class IntObjPair<V> {
 
 	private static IntObjPair<?> none_ = IntObjPair.of(IntFunUtil.EMPTYVALUE, null);
 
-	public int t0;
-	public T t1;
+	public int k;
+	public V v;
 
 	public static <V> Iterate<IntObjPair<V>> mapFst(Int_Int fun) {
-		return pair -> of(fun.apply(pair.t0), pair.t1);
+		return pair -> of(fun.apply(pair.k), pair.v);
 	}
 
 	public static <V0, V1> Fun<IntObjPair<V0>, IntObjPair<V1>> mapSnd(Fun<V0, V1> fun) {
-		return pair -> of(pair.t0, fun.apply(pair.t1));
+		return pair -> of(pair.k, fun.apply(pair.v));
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <T> IntObjPair<T> none() {
-		return (IntObjPair<T>) none_;
+	public static <V> IntObjPair<V> none() {
+		return (IntObjPair<V>) none_;
 	}
 
-	public static <T> IntObjPair<T> of(int t0, T t1) {
-		return new IntObjPair<>(t0, t1);
+	public static <V> IntObjPair<V> of(int k, V v) {
+		return new IntObjPair<>(k, v);
 	}
 
-	protected IntObjPair(int t0, T t1) {
-		this.t0 = t0;
-		this.t1 = t1;
+	protected IntObjPair(int k, V v) {
+		this.k = k;
+		this.v = v;
 	}
 
-	public static <T extends Comparable<? super T>> Comparator<IntObjPair<T>> comparator() {
+	public static <V extends Comparable<? super V>> Comparator<IntObjPair<V>> comparator() {
 		return (pair0, pair1) -> {
 			var c = Boolean.compare(pair0 != null, pair1 != null);
-			c = c == 0 ? Integer.compare(pair0.t0, pair1.t0) : c;
-			c = c == 0 ? Object_.compare(pair0.t1, pair1.t1) : c;
+			c = c == 0 ? Integer.compare(pair0.k, pair1.k) : c;
+			c = c == 0 ? Object_.compare(pair0.v, pair1.v) : c;
 			return c;
 		};
 	}
 
-	public static <T> Comparator<IntObjPair<T>> comparatorByFirst() {
+	public static <V> Comparator<IntObjPair<V>> comparatorByFirst() {
 		return (pair0, pair1) -> {
 			var c = Boolean.compare(pair0 != null, pair1 != null);
-			c = c == 0 ? Integer.compare(pair0.t0, pair1.t0) : c;
+			c = c == 0 ? Integer.compare(pair0.k, pair1.k) : c;
 			return c;
 		};
 	}
 
 	public static int fst(IntObjPair<?> pair) {
-		return pair.t0;
+		return pair.k;
 	}
 
 	public static <T> T snd(IntObjPair<T> pair) {
-		return pair != null ? pair.t1 : null;
+		return pair != null ? pair.v : null;
 	}
 
-	public <O> O map(IntObj_Obj<T, O> fun) {
-		return fun.apply(t0, t1);
+	public <O> O map(IntObj_Obj<V, O> fun) {
+		return fun.apply(k, v);
 	}
 
-	public void update(int t0_, T t1_) {
-		t0 = t0_;
-		t1 = t1_;
+	public void update(int k_, V v_) {
+		k = k_;
+		v = v_;
 	}
 
 	@Override
 	public boolean equals(Object object) {
 		if (Object_.clazz(object) == IntObjPair.class) {
 			var other = (IntObjPair<?>) object;
-			return t0 == other.t0 && Objects.equals(t1, other.t1);
+			return k == other.k && Objects.equals(v, other.v);
 		} else
 			return false;
 	}
 
 	@Override
 	public int hashCode() {
-		return Integer.hashCode(t0) + 31 * Objects.hashCode(t1);
+		return Integer.hashCode(k) + 31 * Objects.hashCode(v);
 	}
 
 	@Override
 	public String toString() {
-		return t0 + ":" + t1;
+		return k + ":" + v;
 	}
 
 }

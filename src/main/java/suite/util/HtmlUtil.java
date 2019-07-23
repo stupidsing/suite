@@ -100,7 +100,7 @@ public class HtmlUtil {
 
 			prevp = getNameFun.apply(tag).map((d, name) -> {
 				if (d == -1)
-					while (!deque.isEmpty() && !String_.equals(getNameFun.apply(deque.pop().tag).t1, name))
+					while (!deque.isEmpty() && !String_.equals(getNameFun.apply(deque.pop().tag).v, name))
 						;
 				else {
 					var htmlNode1 = new HtmlNode(name, tag);
@@ -122,7 +122,7 @@ public class HtmlUtil {
 				if (node_.name != null) {
 					sb.append("<" + node_.name);
 					for (var attr : node_.attrs)
-						sb.append(" " + attr.t0 + "='" + attr.t1 + "'");
+						sb.append(" " + attr.k + "='" + attr.v + "'");
 					sb.append(">");
 					for (var child : node_.children)
 						f(child);

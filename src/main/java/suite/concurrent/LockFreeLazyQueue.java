@@ -40,8 +40,8 @@ public class LockFreeLazyQueue<T> {
 		list.add(null);
 		cas.apply(backFront -> {
 			var pair = dequeue_(backFront);
-			list.set(0, pair.t0);
-			return pair.t1;
+			list.set(0, pair.k);
+			return pair.v;
 		});
 		return list.get(0);
 	}
@@ -61,7 +61,7 @@ public class LockFreeLazyQueue<T> {
 		if (1 < bf0.size) {
 			var pair = dequeue_(bf0.front);
 			t = bf0.t;
-			bf1 = make(bf0.back, pair.t1, pair.t0);
+			bf1 = make(bf0.back, pair.v, pair.k);
 		} else {
 			t = bf0.t;
 			bf1 = empty;
@@ -75,7 +75,7 @@ public class LockFreeLazyQueue<T> {
 			return new BackFront(size, back, front, t);
 		else {
 			var pair = dequeue_(back);
-			return new BackFront(size, pair.t1, enqueue_(pair.t0, front), t);
+			return new BackFront(size, pair.v, enqueue_(pair.k, front), t);
 		}
 	}
 

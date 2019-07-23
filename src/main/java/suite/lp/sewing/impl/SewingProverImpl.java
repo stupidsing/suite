@@ -213,8 +213,8 @@ public class SewingProverImpl implements ProverFactory {
 		isHasCutByPrototype = rules.listEntries().mapValue(this::isHasCut).toMap();
 
 		for (var e : rules.listEntries()) {
-			var prototype = e.t0;
-			var rules = new ArrayList<>(e.t1);
+			var prototype = e.k;
+			var rules = new ArrayList<>(e.v);
 			var traceLevel = traceLevel(prototype);
 
 			// second-level indexing optimization

@@ -90,8 +90,8 @@ public class EigenTest {
 
 	private void verify(float[][] m, List<DblObjPair<float[]>> pairs) {
 		for (var pair : pairs) {
-			var eigenValue = pair.t0;
-			var eigenVector = pair.t1;
+			var eigenValue = pair.k;
+			var eigenVector = pair.v;
 			System.out.println("eigen pair = " + To.string(eigenValue) + " :: " + mtx.toString(eigenVector));
 			var n0 = vec.scale(eigenVector, eigenValue);
 			var n1 = mtx.mul(m, eigenVector);

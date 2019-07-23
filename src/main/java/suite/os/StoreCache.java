@@ -109,13 +109,13 @@ public class StoreCache {
 
 			var pair = match(key);
 
-			if (!reget.get() && pair.t0) {
-				var vis = Files.newInputStream(pair.t1);
+			if (!reget.get() && pair.k) {
+				var vis = Files.newInputStream(pair.v);
 				var vdis = new DataInputStream(vis);
 				return read(vdis).closeAtEnd(vis);
 			} else {
 				var puller = source.g();
-				var vos = FileUtil.out(pair.t1);
+				var vos = FileUtil.out(pair.v);
 				var vdo = SerOutput.of(vos);
 
 				return Puller //

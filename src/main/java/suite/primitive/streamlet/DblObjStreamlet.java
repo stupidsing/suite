@@ -277,7 +277,7 @@ public class DblObjStreamlet<V> implements StreamletDefaults<DblObjPair<V>, DblO
 
 	public DblObjPair<V> uniqueResult() {
 		var pair = spawn().opt();
-		if (pair.t0 != DblFunUtil.EMPTYVALUE)
+		if (pair.k != DblFunUtil.EMPTYVALUE)
 			return pair;
 		else
 			return fail("no result");

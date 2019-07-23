@@ -137,8 +137,8 @@ public class Trade_ {
 		var sum = 0f;
 
 		for (var pair : trades.toMultimap(trade -> trade.symbol).listEntries()) {
-			var dividends = fun.apply(pair.t0);
-			var puller = Puller.of(pair.t1);
+			var dividends = fun.apply(pair.k);
+			var puller = Puller.of(pair.v);
 			LngIntPair tn = LngIntPair.of(0l, 0);
 
 			Source<LngIntPair> tradeSource = () -> {
@@ -252,7 +252,7 @@ public class Trade_ {
 								|| buySell < 0 && priceSell <= eod.nextHigh;
 
 						return isTradeable && isMatch;
-					}).t0 //
+					}).k //
 							.sortBy(trade -> trade.buySell) // sell first
 							.toList();
 

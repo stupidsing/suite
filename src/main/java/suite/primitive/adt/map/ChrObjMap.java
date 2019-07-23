@@ -31,7 +31,7 @@ public class ChrObjMap<V> {
 		var map = new ChrObjMap<V>();
 		var pair = ChrObjPair.<V> of((char) 0, null);
 		while (puller.source().source2(pair))
-			map.put(pair.t0, pair.t1);
+			map.put(pair.k, pair.v);
 		return map;
 	}
 
@@ -56,7 +56,7 @@ public class ChrObjMap<V> {
 			var other = (ChrObjMap<?>) object;
 			var b = size == other.size;
 			for (var pair : streamlet())
-				b &= other.get(pair.t0).equals(pair.t1);
+				b &= other.get(pair.k).equals(pair.v);
 			return b;
 		} else
 			return false;
@@ -66,7 +66,7 @@ public class ChrObjMap<V> {
 		var pair = ChrObjPair.<V> of((char) 0, null);
 		var source = source_();
 		while (source.source2(pair))
-			sink.sink2(pair.t0, pair.t1);
+			sink.sink2(pair.k, pair.v);
 	}
 
 	public V get(char key) {
@@ -80,8 +80,8 @@ public class ChrObjMap<V> {
 	public int hashCode() {
 		var h = 7;
 		for (var pair : streamlet()) {
-			h = h * 31 + Character.hashCode(pair.t0);
-			h = h * 31 + Objects.hashCode(pair.t1);
+			h = h * 31 + Character.hashCode(pair.k);
+			h = h * 31 + Objects.hashCode(pair.v);
 		}
 		return h;
 	}

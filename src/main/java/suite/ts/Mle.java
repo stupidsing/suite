@@ -12,11 +12,11 @@ public class Mle {
 		for (var iter = 0; iter < 10000; iter++) {
 			var t = source.g();
 			var pair = DblObjPair.of(t.g(), t);
-			if (max == null || max.t0 < pair.t0)
+			if (max == null || max.k < pair.k)
 				max = pair;
 		}
 
-		return max.t1;
+		return max.v;
 	}
 
 }

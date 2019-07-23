@@ -68,7 +68,7 @@ public class ChrDblMap {
 			var other = (ChrDblMap) object;
 			var b = size == other.size;
 			for (var pair : streamlet())
-				b &= other.get(pair.t0) == pair.t1;
+				b &= other.get(pair.k) == pair.v;
 			return b;
 		} else
 			return false;
@@ -85,8 +85,8 @@ public class ChrDblMap {
 	public int hashCode() {
 		var h = 7;
 		for (var pair : streamlet()) {
-			h = h * 31 + Character.hashCode(pair.t0);
-			h = h * 31 + Objects.hashCode(pair.t1);
+			h = h * 31 + Character.hashCode(pair.k);
+			h = h * 31 + Objects.hashCode(pair.v);
 		}
 		return h;
 	}

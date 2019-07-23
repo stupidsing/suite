@@ -39,7 +39,7 @@ public class Lister {
 			st = Read //
 					.from(nr.children) //
 					.index() //
-					.map((i, p) -> leaves(p.t1, PerList.cons(Int.of(i), prefix))) //
+					.map((i, p) -> leaves(p.v, PerList.cons(Int.of(i), prefix))) //
 					.collect(As::concat);
 		else if (nr.type != ReadType.TERM)
 			st = nr.children.concatMap((k, v) -> leaves(v, PerList.cons(k, prefix)));

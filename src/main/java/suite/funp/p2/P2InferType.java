@@ -224,7 +224,7 @@ public class P2InferType {
 				var vns = pairs_.map(Pair::fst);
 				var env1 = vns.fold(env, (e, vn) -> e.put(vn, Pair.of(fdt, new Reference())));
 				var map = vns //
-						.<Node, Reference> map2(Atom::of, vn -> Reference.of(env1.get(vn).t1)) //
+						.<Node, Reference> map2(Atom::of, vn -> Reference.of(env1.get(vn).v)) //
 						.toMap();
 				var ts = typeStructOf( //
 						Reference.of(Atom.TRUE), //
@@ -233,7 +233,7 @@ public class P2InferType {
 				var infer1 = new Infer(env1, checks, ts);
 
 				for (var pair : pairs_)
-					pair.map((vn, v) -> unify(n, env1.get(vn).t1, infer1.infer(v, vn)));
+					pair.map((vn, v) -> unify(n, env1.get(vn).v, infer1.infer(v, vn)));
 
 				return infer1.infer(expr);
 			})).applyIf(FunpDeref.class, f -> f.apply(pointer -> {
@@ -254,7 +254,7 @@ public class P2InferType {
 				};
 
 				for (var assign : assigns)
-					opType.test(assign.t0, infer(assign.t1));
+					opType.test(assign.k, infer(assign.v));
 
 				var tr = new Reference();
 				opType.test(opResult, tr);
@@ -340,7 +340,7 @@ public class P2InferType {
 				pos.put(gcclazz, i++);
 
 				for (var pair : pairs)
-					pos.put(pair.t0, i++);
+					pos.put(pair.k, i++);
 
 				var types0 = Read //
 						.from2(pairs) //
@@ -364,14 +364,14 @@ public class P2InferType {
 							list = Read //
 									.from2(types2) //
 									.sort((p0, p1) -> {
-										var b0 = isReference(p0.t1);
-										var b1 = isReference(p1.t1);
-										var typeSize0 = getTypeSize(p0.t1);
-										var typeSize1 = getTypeSize(p1.t1);
+										var b0 = isReference(p0.v);
+										var b1 = isReference(p1.v);
+										var typeSize0 = getTypeSize(p0.v);
+										var typeSize1 = getTypeSize(p1.v);
 										var a0 = typeSize0 % ps == 0;
 										var a1 = typeSize1 % ps == 0;
-										var o0 = pos.get(Atom.name(p0.t0));
-										var o1 = pos.get(Atom.name(p1.t0));
+										var o0 = pos.get(Atom.name(p0.k));
+										var o1 = pos.get(Atom.name(p1.k));
 										var c = -Boolean.compare(b0, b1);
 										c = c == 0 ? -Boolean.compare(a0, a1) : c;
 										c = c == 0 ? -Integer.compare(typeSize0, typeSize1) : c;
@@ -380,7 +380,7 @@ public class P2InferType {
 									}) //
 									.keys();
 						else {
-							var fs0 = Read.from(pairs).<Node> map(pair -> Atom.of(pair.t0));
+							var fs0 = Read.from(pairs).<Node> map(pair -> Atom.of(pair.k));
 							var fs1 = Read.from2(types2).keys();
 							list = Streamlet.concat(fs0, fs1).distinct();
 						}
@@ -516,8 +516,8 @@ public class P2InferType {
 					var address = Mutable.<Operand> nil();
 
 					for (var pair : pairs) {
-						var vn = pair.t0;
-						var value = pair.t1;
+						var vn = pair.k;
+						var value = pair.v;
 						var offset0 = offset;
 						var var = global(address, offset0, offset += getTypeSize(typeOf(value)));
 						env1 = env1.replace(vn, var);
@@ -530,8 +530,8 @@ public class P2InferType {
 					var offsetStack = IntMutable.nil();
 
 					for (var pair : pairs) {
-						var vn = pair.t0;
-						var value = pair.t1;
+						var vn = pair.k;
+						var value = pair.v;
 						var offset0 = offset;
 						var var = localStack(scope, offsetStack, offset0, offset += getTypeSize(typeOf(value)));
 						env1 = env1.replace(vn, var);
@@ -643,8 +643,8 @@ public class P2InferType {
 				var clazz = 0;
 
 				for (var pair : pairs) {
-					var field = pair.t0;
-					var type = pair.t1;
+					var field = pair.k;
+					var type = pair.v;
 					var offset0 = offset;
 					Funp value;
 
@@ -814,8 +814,8 @@ public class P2InferType {
 			var struct = isCompletedStructList(ts);
 			if (struct != null)
 				for (var pair : struct) {
-					var offset1 = offset + getTypeSize(pair.t1);
-					if (!String_.equals(Atom.name(pair.t0), n.field))
+					var offset1 = offset + getTypeSize(pair.v);
+					if (!String_.equals(Atom.name(pair.k), n.field))
 						offset = offset1;
 					else
 						return IntIntPair.of(offset, offset1);

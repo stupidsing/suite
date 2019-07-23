@@ -78,7 +78,7 @@ public class ListMultimap<K, V> {
 		return String_.build(sb -> {
 			sb.append("{");
 			for (var e : listEntries())
-				sb.append(e.t0 + "=" + e.t1 + ", ");
+				sb.append(e.k + "=" + e.v + ", ");
 			sb.append("}");
 		});
 	}

@@ -26,7 +26,7 @@ public class ImperativeCompiler {
 
 	public Bytes compile(int org, Path path) {
 		var s0 = FileUtil.read(path);
-		var s1 = Preprocess.transform(List.of(new IncludePreprocessor(path.getParent())::preprocess), s0).t0;
+		var s1 = Preprocess.transform(List.of(new IncludePreprocessor(path.getParent())::preprocess), s0).k;
 		return compile(org, s1);
 	}
 

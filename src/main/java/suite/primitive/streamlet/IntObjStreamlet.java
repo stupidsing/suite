@@ -277,7 +277,7 @@ public class IntObjStreamlet<V> implements StreamletDefaults<IntObjPair<V>, IntO
 
 	public IntObjPair<V> uniqueResult() {
 		var pair = spawn().opt();
-		if (pair.t0 != IntFunUtil.EMPTYVALUE)
+		if (pair.k != IntFunUtil.EMPTYVALUE)
 			return pair;
 		else
 			return fail("no result");

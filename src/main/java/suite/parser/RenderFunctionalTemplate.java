@@ -21,7 +21,7 @@ public class RenderFunctionalTemplate {
 
 		var fps = "id " + new TemplateRenderer(wrapText, wrapExpression).apply(template);
 		var fp0 = Suite.substitute("() | .0", Suite.parse(fps));
-		var fp1 = Read.from2(inputs).pairs().fold(fp0, (fp_, p) -> Suite.substitute("let .1 := .2 ~ .0", fp_, Atom.of(p.t0), p.t1));
+		var fp1 = Read.from2(inputs).pairs().fold(fp0, (fp_, p) -> Suite.substitute("let .1 := .2 ~ .0", fp_, Atom.of(p.k), p.v));
 		var fp2 = Suite.applyWriter(fp1);
 
 		try (var sw = new StringWriter()) {

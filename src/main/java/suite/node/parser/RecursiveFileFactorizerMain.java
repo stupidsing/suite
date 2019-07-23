@@ -28,7 +28,7 @@ public class RecursiveFileFactorizerMain {
 						var recursiveFactorizer = new RecursiveFactorizer(TermOp.values());
 
 						var bs = fts //
-								.fold(FileUtil.read(path), (s_, ft) -> recursiveFactorizer.rewrite(ft.t0, ft.t1, s_)) //
+								.fold(FileUtil.read(path), (s_, ft) -> recursiveFactorizer.rewrite(ft.k, ft.v, s_)) //
 								.getBytes(Defaults.charset);
 
 						rethrow(() -> Files.write(path, bs));

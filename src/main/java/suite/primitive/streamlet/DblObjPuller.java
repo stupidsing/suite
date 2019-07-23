@@ -64,7 +64,7 @@ public class DblObjPuller<V> implements PullerDefaults<DblObjPair<V>> {
 			var b = iter.hasNext();
 			if (b) {
 				var pair1 = iter.next();
-				pair.update(pair1.t0, pair1.t1);
+				pair.update(pair1.k, pair1.v);
 			}
 			return b;
 		});
@@ -83,7 +83,7 @@ public class DblObjPuller<V> implements PullerDefaults<DblObjPair<V>> {
 				var b = i < kvs.length;
 				if (b) {
 					DblObjPair<V> kv = kvs[i];
-					pair.update(kv.t0, kv.t1);
+					pair.update(kv.k, kv.v);
 				}
 				return b;
 
@@ -98,7 +98,7 @@ public class DblObjPuller<V> implements PullerDefaults<DblObjPair<V>> {
 				var b = iter.hasNext();
 				if (b) {
 					DblObjPair<V> pair1 = iter.next();
-					pair.update(pair1.t0, pair1.t1);
+					pair.update(pair1.k, pair1.v);
 				}
 				return b;
 			}
@@ -171,7 +171,7 @@ public class DblObjPuller<V> implements PullerDefaults<DblObjPair<V>> {
 		var set = new HashSet<>();
 		return of(pair -> {
 			boolean b;
-			while ((b = pull(pair)) && !set.add(DblObjPair.of(pair.t0, pair.t1)))
+			while ((b = pull(pair)) && !set.add(DblObjPair.of(pair.k, pair.v)))
 				;
 			return b;
 		});
@@ -258,7 +258,7 @@ public class DblObjPuller<V> implements PullerDefaults<DblObjPair<V>> {
 	public DblPuller keys() {
 		return DblPuller.of(() -> {
 			var pair = DblObjPair.of(empty, (V) null);
-			return pull(pair) ? pair.t0 : empty;
+			return pull(pair) ? pair.k : empty;
 		});
 	}
 
@@ -302,7 +302,7 @@ public class DblObjPuller<V> implements PullerDefaults<DblObjPair<V>> {
 		if (pull(pair)) {
 			while (pull(pair1))
 				if (0 < comparator.compare(pair, pair1))
-					pair.update(pair1.t0, pair1.t1);
+					pair.update(pair1.k, pair1.v);
 			return pair;
 		} else
 			return null;
@@ -325,7 +325,7 @@ public class DblObjPuller<V> implements PullerDefaults<DblObjPair<V>> {
 			var b = queue.poll(mutable);
 			if (b) {
 				var p = mutable.value();
-				pair.update(p.t0, p.t1);
+				pair.update(p.k, p.v);
 			} else
 				pair.update(k0, v0);
 			return b;
@@ -362,7 +362,7 @@ public class DblObjPuller<V> implements PullerDefaults<DblObjPair<V>> {
 		var sink1 = sink0.rethrow();
 		var pair = DblObjPair.of(empty, (V) null);
 		while (pull(pair))
-			sink1.sink2(pair.t0, pair.t1);
+			sink1.sink2(pair.k, pair.v);
 	}
 
 	public DblObjPuller<V> skip(int n) {
@@ -386,15 +386,15 @@ public class DblObjPuller<V> implements PullerDefaults<DblObjPair<V>> {
 	}
 
 	public <O extends Comparable<? super O>> DblObjPuller<V> sortBy(DblObj_Obj<V, O> fun) {
-		return sort((e0, e1) -> Object_.compare(fun.apply(e0.t0, e0.t1), fun.apply(e1.t0, e1.t1)));
+		return sort((e0, e1) -> Object_.compare(fun.apply(e0.k, e0.v), fun.apply(e1.k, e1.v)));
 	}
 
 	public DblObjPuller<V> sortByKey(Comparator<Double> comparator) {
-		return sort((e0, e1) -> comparator.compare(e0.t0, e1.t0));
+		return sort((e0, e1) -> comparator.compare(e0.k, e1.k));
 	}
 
 	public DblObjPuller<V> sortByValue(Comparator<V> comparator) {
-		return sort((e0, e1) -> comparator.compare(e0.t1, e1.t1));
+		return sort((e0, e1) -> comparator.compare(e0.v, e1.v));
 	}
 
 	public DblObjSource<V> source() {
@@ -434,7 +434,7 @@ public class DblObjPuller<V> implements PullerDefaults<DblObjPair<V>> {
 		var map = new DblObjMap<List<V>>();
 		var pair = DblObjPair.of(empty, (V) null);
 		while (pull(pair))
-			map.computeIfAbsent(pair.t0, k_ -> new ArrayList<>()).add(pair.t1);
+			map.computeIfAbsent(pair.k, k_ -> new ArrayList<>()).add(pair.v);
 		return map;
 	}
 
@@ -442,7 +442,7 @@ public class DblObjPuller<V> implements PullerDefaults<DblObjPair<V>> {
 		var map = new DblObjMap<V>();
 		var pair = DblObjPair.of(empty, (V) null);
 		while (source.source2(pair))
-			map.put(pair.t0, pair.t1);
+			map.put(pair.k, pair.v);
 		return map;
 	}
 
@@ -456,7 +456,7 @@ public class DblObjPuller<V> implements PullerDefaults<DblObjPair<V>> {
 		var pair = DblObjPair.of(empty, (V) null);
 		var map = new ObjDblMap<V>();
 		while (source.source2(pair))
-			map.put(pair.t1, pair.t0);
+			map.put(pair.v, pair.k);
 		return map;
 	}
 

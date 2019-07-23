@@ -488,14 +488,14 @@ public class P4GenerateCode {
 				return out;
 			})).applyIf(FunpSaveRegisters1.class, f -> f.apply((expr, saves) -> {
 				for (var pair : saves.value())
-					em.mov(compileFrame(pair.t1, pair.t0.size), pair.t0);
+					em.mov(compileFrame(pair.v, pair.k.size), pair.k);
 
 				var out = compile(expr);
 
 				if (isOutSpec) {
 					for (var pair : saves.value())
-						if (pair.t0 != pop0 && pair.t0 != pop1)
-							em.mov(pair.t0, compileFrame(pair.t1, pair.t0.size));
+						if (pair.k != pop0 && pair.k != pop1)
+							em.mov(pair.k, compileFrame(pair.v, pair.k.size));
 					return out;
 				} else {
 					var op0 = out.op0;
@@ -505,7 +505,7 @@ public class P4GenerateCode {
 					if (op1 != null)
 						op1 = em.mov(rs.contains(op1) ? rs.mask(op0).get(op1.size) : op1, op1);
 					for (var pair : saves.value())
-						em.mov(pair.t0, compileFrame(pair.t1, pair.t0.size));
+						em.mov(pair.k, compileFrame(pair.v, pair.k.size));
 					return new CompileOut(op0, op1);
 				}
 			})).applyIf(FunpOp.class, f -> f.apply((opSize, op, lhs, rhs) -> {
@@ -748,12 +748,12 @@ public class P4GenerateCode {
 					opResult = compileDivMod(lhs, rhs, _dx, _ax);
 				else if (operator == TermOp.MINUS_) {
 					var pair = compileCommutativeTree(size, Insn.SUB, assoc, lhs, rhs);
-					opResult = pair.t1;
-					if (pair.t0 == rhs)
+					opResult = pair.v;
+					if (pair.k == rhs)
 						em.emit(Insn.NEG, opResult);
 				} else if (setInsn != null) {
 					var pair = compileCommutativeTree(size, Insn.CMP, assoc, lhs, rhs);
-					em.emit(pair.t0 == lhs ? setInsn : setRevInsn, opResult = isOutSpec ? pop0 : rs.get(bs));
+					em.emit(pair.k == lhs ? setInsn : setRevInsn, opResult = isOutSpec ? pop0 : rs.get(bs));
 				} else if (shInsn != null) {
 					var op0 = compileLoad(size, lhs);
 					if (numRhs != null)
@@ -765,7 +765,7 @@ public class P4GenerateCode {
 						}, ecx);
 					opResult = op0;
 				} else if (insn != null)
-					opResult = compileCommutativeTree(size, insn, assoc, lhs, rhs).t1;
+					opResult = compileCommutativeTree(size, insn, assoc, lhs, rhs).v;
 				else
 					Funp_.fail(n, "unknown operator " + operator);
 
@@ -794,7 +794,7 @@ public class P4GenerateCode {
 		private FixieFun5<Integer, Insn, Insn, Funp, Funp, Boolean> compileCmpJmp(Operand label) {
 			return (opSize, insn, revInsn, lhs, rhs) -> {
 				var pair = compileCommutativeTree(opSize, Insn.CMP, Assoc.RIGHT, lhs, rhs);
-				em.emit(pair.t0 == lhs ? insn : revInsn, label);
+				em.emit(pair.k == lhs ? insn : revInsn, label);
 				return true;
 			};
 		}
@@ -864,10 +864,10 @@ public class P4GenerateCode {
 					})).applyIf(FunpData.class, f -> f.apply(pairs -> {
 						var offset = 0;
 						var b = true;
-						for (var pair : Read.from(pairs).sort((p0, p1) -> Integer.compare(p0.t1.s, p1.t1.s))) {
-							var pos = pair.t1;
+						for (var pair : Read.from(pairs).sort((p0, p1) -> Integer.compare(p0.v.s, p1.v.s))) {
+							var pos = pair.v;
 							b &= fill(pos.s - offset, FunpDontCare.of());
-							b &= fill(pos.length(), pair.t0);
+							b &= fill(pos.length(), pair.k);
 							offset = pos.e;
 						}
 						return b && fill(size - offset, FunpDontCare.of());

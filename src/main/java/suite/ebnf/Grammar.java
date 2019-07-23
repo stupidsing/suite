@@ -40,7 +40,7 @@ public class Grammar {
 				.map(line -> String_.split2(line, " ::= ")) //
 				.filter(lr -> lr != null) //
 				.collect(As::streamlet) //
-				.map2(lr -> lr.t0, lr -> lr.map(breakdown::breakdown)) //
+				.map2(lr -> lr.k, lr -> lr.map(breakdown::breakdown)) //
 				.toMap();
 	}
 

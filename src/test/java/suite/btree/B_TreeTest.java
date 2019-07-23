@@ -136,8 +136,8 @@ public class B_TreeTest {
 
 		for (var e : b_tree.range(0, nKeys)) {
 			var key = count++;
-			assertEquals(key, e.t0.intValue());
-			assertEquals(Integer.toString(key), e.t1);
+			assertEquals(key, e.k.intValue());
+			assertEquals(Integer.toString(key), e.v);
 		}
 	}
 

@@ -13,7 +13,7 @@ public class PerHashMap<K, V> {
 	private PerHashSet<Pair<K, V>> set;
 
 	public static <K, V> PerHashMap<K, V> meld(PerHashMap<K, V> map0, PerHashMap<K, V> map1, BinOp<V> f) {
-		return new PerHashMap<>(PerHashSet.meld(map0.set, map1.set, (e0, e1) -> Pair.of(e0.t0, f.apply(e0.t1, e1.t1))));
+		return new PerHashMap<>(PerHashSet.meld(map0.set, map1.set, (e0, e1) -> Pair.of(e0.k, f.apply(e0.v, e1.v))));
 	}
 
 	public PerHashMap() {
@@ -31,7 +31,7 @@ public class PerHashMap<K, V> {
 				public boolean source2(Pair<K, V> pair) {
 					var pair1 = source.g();
 					if (pair1 != null) {
-						pair.update(pair1.t0, pair1.t1);
+						pair.update(pair1.k, pair1.v);
 						return true;
 					} else
 						return false;
@@ -42,8 +42,8 @@ public class PerHashMap<K, V> {
 
 	public V get(K key) {
 		for (var e : set.get(key.hashCode()))
-			if (Objects.equals(key, e.t0))
-				return e.t1;
+			if (Objects.equals(key, e.k))
+				return e.v;
 		return null;
 	}
 

@@ -64,7 +64,7 @@ public class Assembler {
 		var whitespaces = Collections.singleton('\n');
 		Fun<String, List<Run>> gct = CommentPreprocessor.ofGroupComment(whitespaces)::preprocess;
 		Fun<String, List<Run>> lct = CommentPreprocessor.ofLineComment(whitespaces)::preprocess;
-		var in1 = Preprocess.transform(List.of(gct, lct), in0).t0;
+		var in1 = Preprocess.transform(List.of(gct, lct), in0).k;
 
 		var generalizer = new Generalizer();
 		var lines = List.of(in1.split("\n"));
@@ -72,7 +72,7 @@ public class Assembler {
 		var start = 0;
 
 		while ((pe = String_.split2(lines.get(start), "=")) != null) {
-			generalizer.getVariable(Atom.of(pe.t0)).bound(Suite.parse(pe.t1));
+			generalizer.getVariable(Atom.of(pe.k)).bound(Suite.parse(pe.v));
 			start++;
 		}
 
@@ -133,7 +133,7 @@ public class Assembler {
 
 			if (isPass2)
 				for (var lni : lnis)
-					lni.t0.unbound();
+					lni.k.unbound();
 		}
 
 		return out.toBytes();

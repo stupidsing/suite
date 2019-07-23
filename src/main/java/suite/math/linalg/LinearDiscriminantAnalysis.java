@@ -55,7 +55,7 @@ public class LinearDiscriminantAnalysis {
 		var w = new float[k][];
 
 		for (var i = 0; i < k; i++)
-			w[i] = vec.normalizeOn(eigens.get(i).t1);
+			w[i] = vec.normalizeOn(eigens.get(i).v);
 
 		return x -> mtx.mul(w, x);
 	}

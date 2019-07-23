@@ -119,13 +119,13 @@ public class Grapher {
 				break;
 			case TREE:
 				var tree = (Tree) node;
-				Tree.forceSetLeft(tree, children.get(0).t1);
-				Tree.forceSetRight(tree, children.get(1).t1);
+				Tree.forceSetLeft(tree, children.get(0).v);
+				Tree.forceSetRight(tree, children.get(1).v);
 				break;
 			case TUPLE:
 				var list = Tuple.t(node);
 				for (var j = 0; j < children.size(); j++)
-					list[j] = children.get(j).t1;
+					list[j] = children.get(j).v;
 			}
 		}
 
@@ -143,9 +143,9 @@ public class Grapher {
 		var mapi0 = new IntObjMap<IdentityKey<Node>>();
 		var mapi1 = new IntObjMap<IdentityKey<Node>>();
 		for (var e : mapn0.streamlet())
-			mapi0.put(e.t0, e.t1);
+			mapi0.put(e.k, e.v);
 		for (var e : mapn1.streamlet())
-			mapi1.put(e.t0, e.t1);
+			mapi1.put(e.k, e.v);
 
 		var set = new HashSet<>();
 		var deque = new ArrayDeque<IntIntPair>();

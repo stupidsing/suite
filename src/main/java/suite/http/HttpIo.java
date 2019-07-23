@@ -40,7 +40,7 @@ public class HttpIo {
 					});
 
 			var pp = String_.split2(url, "://");
-			return pp != null ? String_.split2l(pp.t1, "/").map(requestFun) : requestFun.apply("", url);
+			return pp != null ? String_.split2l(pp.v, "/").map(requestFun) : requestFun.apply("", url);
 		});
 	}
 

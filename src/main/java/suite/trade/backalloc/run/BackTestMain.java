@@ -47,7 +47,7 @@ public class BackTestMain {
 				.concatMap(s -> {
 					var pair = ParseUtil.search(s, "-", Assoc.RIGHT);
 					return pair != null //
-							? forInt(Integer.valueOf(pair.t0), Integer.valueOf(pair.t1)).map(i -> i) //
+							? forInt(Integer.valueOf(pair.k), Integer.valueOf(pair.v)).map(i -> i) //
 							: Read.each(Integer.valueOf(s));
 				}) //
 				: forInt(2007, Trade_.thisYear).map(i -> i);
@@ -63,8 +63,8 @@ public class BackTestMain {
 				.filterKey(n -> strategyMatches == null || strategyMatches.isAny(sm -> Wildcard.match(sm, n) != null)) //
 				.map(Pair::of) //
 				.join2(years.sort(Object_::compare).map(TimeRange::ofYear)) //
-				.map2((pair, period) -> pair.t0, (pair, period) -> {
-					var bac = pair.t1;
+				.map2((pair, period) -> pair.k, (pair, period) -> {
+					var bac = pair.v;
 					var instruments = bac.instrumentsFun.apply(period.from);
 					return runner.backTest(bac.backAllocator, period, instruments);
 				}) //

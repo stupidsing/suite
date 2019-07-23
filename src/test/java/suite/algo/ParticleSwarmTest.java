@@ -35,7 +35,7 @@ public class ParticleSwarmTest {
 				var xs = particle.xs;
 				var fitness = 1d / schwefel(xs);
 
-				if (globalBest.t0 < fitness)
+				if (globalBest.k < fitness)
 					globalBest.update(fitness, vec.copyOf(xs));
 
 				particle.updateLocal(fitness);
@@ -43,10 +43,10 @@ public class ParticleSwarmTest {
 				particle.move(delta *= .9999d);
 			}
 
-		System.out.println(globalBest.t0);
-		System.out.println(Arrays.toString(globalBest.t1));
+		System.out.println(globalBest.k);
+		System.out.println(Arrays.toString(globalBest.v));
 
-		assertTrue(globalBest.t0 < .01d);
+		assertTrue(globalBest.k < .01d);
 	}
 
 	private class Particle {
@@ -68,7 +68,7 @@ public class ParticleSwarmTest {
 		}
 
 		private void updateLocal(double fitness) {
-			if (best.t0 < fitness)
+			if (best.k < fitness)
 				best.update(fitness, vec.copyOf(xs));
 		}
 
@@ -76,8 +76,8 @@ public class ParticleSwarmTest {
 			var memoryInfluence = .1d;
 			var socialInfluence = .1d;
 			vec.scaleOn(velocity, 1d - memoryInfluence - socialInfluence);
-			vec.addOn(velocity, vec.scaleOn(vec.sub(best.t1, xs), memoryInfluence));
-			vec.addOn(velocity, vec.scaleOn(vec.sub(globalBest.t1, xs), socialInfluence));
+			vec.addOn(velocity, vec.scaleOn(vec.sub(best.v, xs), memoryInfluence));
+			vec.addOn(velocity, vec.scaleOn(vec.sub(globalBest.v, xs), socialInfluence));
 			vec.normalizeOn(velocity);
 		}
 

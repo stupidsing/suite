@@ -30,7 +30,7 @@ public class PackageManager {
 
 		var filenameMappings = Read //
 				.from2(packageManifest.getFilenameMappings()) //
-				.sort((p0, p1) -> p1.t0.length() - p0.t0.length()) //
+				.sort((p0, p1) -> p1.k.length() - p0.k.length()) //
 				.toList();
 
 		var installActions = new ArrayList<InstallAction>();
@@ -42,8 +42,8 @@ public class PackageManager {
 						var filename1 = filename0;
 						for (var filenameMapping : filenameMappings) {
 							String[] match;
-							if ((match = Wildcard.match(filenameMapping.t0, filename1)) != null) {
-								filename1 = Wildcard.apply(filenameMapping.t1, match);
+							if ((match = Wildcard.match(filenameMapping.k, filename1)) != null) {
+								filename1 = Wildcard.apply(filenameMapping.v, match);
 								break;
 							}
 						}

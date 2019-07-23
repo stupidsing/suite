@@ -102,8 +102,8 @@ public class AnalyzeTimeSeriesTest {
 		var mt_ = cr.buySell(d -> holds[d]);
 
 		var bbmv = bb.meanVariances(VirtualVector.of(logReturns), 9, 0);
-		var bbmean = bbmv.t0;
-		var bbvariances = bbmv.t1;
+		var bbmean = bbmv.k;
+		var bbvariances = bbmv.v;
 
 		var ms2 = cr.buySell(d -> {
 			var last = d - 1;

@@ -378,9 +378,9 @@ public class Symbolic {
 			return polyize_(node, coefficientFun).map(map -> {
 				var sum = n0;
 				for (var pair : map.streamlet().sortByKey(Integer::compare)) {
-					var p = pair.t0;
+					var p = pair.k;
 					var power = p < 0 ? inv(powerFun.apply(-p)) : powerFun.apply(p);
-					sum = add(mul(coefficientFun.apply(pair.t1), power), sum);
+					sum = add(mul(coefficientFun.apply(pair.v), power), sum);
 				}
 				return sum;
 			});

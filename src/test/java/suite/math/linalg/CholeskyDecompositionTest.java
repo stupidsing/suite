@@ -40,8 +40,8 @@ public class CholeskyDecompositionTest {
 		float[] expectd = { 4f, 1f, 9f, };
 
 		var ldlt = cholesky.ldlt(mtx.copyOf(m0));
-		var actuall = ldlt.t0;
-		var actuald = ldlt.t1;
+		var actuall = ldlt.k;
+		var actuald = ldlt.v;
 		mtx.verifyEquals(actuall, expectl);
 		vec.verifyEquals(actuald, expectd);
 

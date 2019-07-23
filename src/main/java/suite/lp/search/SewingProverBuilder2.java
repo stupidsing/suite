@@ -30,7 +30,7 @@ public class SewingProverBuilder2 implements Builder {
 
 		if (qr != null) {
 			ruleSet1 = Suite.newRuleSet();
-			qr.rules().entries().forEach(p -> ruleSet1.addRule(p.t1));
+			qr.rules().entries().forEach(p -> ruleSet1.addRule(p.v));
 		} else
 			ruleSet1 = ruleSet;
 
