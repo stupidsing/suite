@@ -57,6 +57,10 @@ public class DblRange {
 		return pair.e;
 	}
 
+	public double length() {
+		return (double) (e - s);
+	}
+
 	public <O> O map(DblDbl_Obj<O> fun) {
 		return fun.apply(s, e);
 	}

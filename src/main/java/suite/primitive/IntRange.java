@@ -57,6 +57,10 @@ public class IntRange {
 		return pair.e;
 	}
 
+	public int length() {
+		return (int) (e - s);
+	}
+
 	public <O> O map(IntInt_Obj<O> fun) {
 		return fun.apply(s, e);
 	}

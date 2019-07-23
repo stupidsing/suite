@@ -19,12 +19,12 @@ import suite.os.Log_;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
 import suite.primitive.IntInt_Obj;
+import suite.primitive.IntRange;
 import suite.primitive.LngLng_Obj;
 import suite.primitive.LngPrimitives.LngSink;
 import suite.primitive.LngPrimitives.Obj_Lng;
+import suite.primitive.LngRange;
 import suite.primitive.adt.map.LngIntMap;
-import suite.primitive.adt.pair.IntIntPair;
-import suite.primitive.adt.pair.LngLngPair;
 import suite.streamlet.FunUtil.Sink;
 import suite.util.String_;
 import suite.util.To;
@@ -34,22 +34,22 @@ public class Amd64Interpret {
 	public int codeStart = 0x00000100;
 	public BytesBuilder out = new BytesBuilder();
 
-	private LngLng_Obj<LngLngPair> fl = (s, p) -> LngLngPair.of(s, s + p);
-	private IntInt_Obj<IntIntPair> fi = (s, p) -> IntIntPair.of(s, s + p);
+	private LngLng_Obj<LngRange> fl = (s, p) -> LngRange.of(s, s + p);
+	private IntInt_Obj<IntRange> fi = (s, p) -> IntRange.of(s, s + p);
 
-	private LngLngPair baseNull = LngLngPair.of(0, codeStart);
-	private LngLngPair baseCode = fl.apply(baseNull.t1, 0x08000000);
-	private LngLngPair baseData = fl.apply(baseCode.t1, 0x08000000);
-	private LngLngPair baseStack = fl.apply(baseData.t1, 0x00040000);
-	// private LngLngPair baseEnd = fl.apply(baseStack.t1, 0);
+	private LngRange baseNull = LngRange.of(0, codeStart);
+	private LngRange baseCode = fl.apply(baseNull.e, 0x08000000);
+	private LngRange baseData = fl.apply(baseCode.e, 0x08000000);
+	private LngRange baseStack = fl.apply(baseData.e, 0x00040000);
+	// private LngRange baseEnd = fl.apply(baseStack.e, 0);
 
-	private IntIntPair posNull = IntIntPair.of(0, 0);
-	private IntIntPair posCode = fi.apply(posNull.t1, 65536);
-	private IntIntPair posData = fi.apply(posCode.t1, 262144);
-	private IntIntPair posStack = fi.apply(posData.t1, 262144);
-	private IntIntPair posEnd = fi.apply(posStack.t1, 0);
+	private IntRange posNull = IntRange.of(0, 0);
+	private IntRange posCode = fi.apply(posNull.e, 65536);
+	private IntRange posData = fi.apply(posCode.e, 262144);
+	private IntRange posStack = fi.apply(posData.e, 262144);
+	private IntRange posEnd = fi.apply(posStack.e, 0);
 
-	private ByteBuffer mem = ByteBuffer.allocate(posEnd.t0);
+	private ByteBuffer mem = ByteBuffer.allocate(posEnd.s);
 	private long[] regs = new long[16];
 	private int c;
 
@@ -102,10 +102,10 @@ public class Amd64Interpret {
 		};
 
 		mem.order(ByteOrder.LITTLE_ENDIAN);
-		mem.position(posCode.t0);
+		mem.position(posCode.s);
 		mem.put(code.bs);
 		eip = 0;
-		regs[esp] = baseStack.t1 - 16;
+		regs[esp] = baseStack.e - 16;
 
 		var labelAddressByInsnIndex = new LngIntMap();
 
@@ -218,7 +218,7 @@ public class Amd64Interpret {
 							rc = io.write(p1, p2, p3);
 						else if (p0 == 0x5A) { // map
 							var size = mem.getInt(index(p1) + 4);
-							rc = size < posData.t1 - posData.t0 ? baseData.t0 : fail();
+							rc = size < posData.length() ? baseData.s : fail();
 						} else
 							rc = fail("invalid int 80h call " + regs[eax]);
 					else
@@ -362,7 +362,7 @@ public class Amd64Interpret {
 					else if (p0 == 0x01)
 						rc = io.write(p1, p2, p3);
 					else if (p0 == 0x09) // map
-						rc = p2 < posData.t1 - posData.t0 ? baseData.t0 : fail();
+						rc = p2 < posData.length() ? baseData.s : fail();
 					else if (p0 == 0x3C) // exit
 						return (int) p1;
 					else
@@ -482,12 +482,12 @@ public class Amd64Interpret {
 	}
 
 	private int index(long address) {
-		if (address < baseCode.t1)
-			return posCode.t0 + (int) (address - baseCode.t0);
-		else if (address < baseData.t1)
-			return posData.t0 + (int) (address - baseData.t0);
-		else if (address < baseStack.t1)
-			return posStack.t0 + (int) (address - baseStack.t0);
+		if (address < baseCode.e)
+			return posCode.s + (int) (address - baseCode.s);
+		else if (address < baseData.e)
+			return posData.s + (int) (address - baseData.s);
+		else if (address < baseStack.e)
+			return posStack.s + (int) (address - baseStack.s);
 		else
 			return fail("address gone wild: " + Long.toHexString(address));
 	}

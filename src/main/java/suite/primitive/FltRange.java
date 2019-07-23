@@ -57,6 +57,10 @@ public class FltRange {
 		return pair.e;
 	}
 
+	public float length() {
+		return (float) (e - s);
+	}
+
 	public <O> O map(FltFlt_Obj<O> fun) {
 		return fun.apply(s, e);
 	}

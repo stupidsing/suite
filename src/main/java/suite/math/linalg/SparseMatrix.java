@@ -3,6 +3,7 @@ package suite.math.linalg;
 import static suite.util.Friends.forInt;
 
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 import suite.adt.PriorityQueue;
@@ -57,7 +58,7 @@ public class SparseMatrix {
 	}
 
 	public SparseMatrix transpose() {
-		var pq = new PriorityQueue<>(IntIntPair.class, height, (p0, p1) -> Integer.compare(p0.t1, p1.t1));
+		var pq = new PriorityQueue<>(IntIntPair.class, height, Comparator.comparingInt(IntIntPair::snd));
 		var matrix1 = forInt(width_).map(i -> new Spans()).toList();
 		var js = new int[height];
 

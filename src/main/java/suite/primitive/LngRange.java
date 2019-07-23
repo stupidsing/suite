@@ -57,6 +57,10 @@ public class LngRange {
 		return pair.e;
 	}
 
+	public long length() {
+		return (long) (e - s);
+	}
+
 	public <O> O map(LngLng_Obj<O> fun) {
 		return fun.apply(s, e);
 	}

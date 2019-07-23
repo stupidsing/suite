@@ -57,6 +57,10 @@ public class ChrRange {
 		return pair.e;
 	}
 
+	public char length() {
+		return (char) (e - s);
+	}
+
 	public <O> O map(ChrChr_Obj<O> fun) {
 		return fun.apply(s, e);
 	}
