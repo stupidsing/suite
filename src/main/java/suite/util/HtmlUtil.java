@@ -9,7 +9,7 @@ import java.util.Set;
 import suite.adt.map.BiHashMap;
 import suite.adt.map.BiMap;
 import suite.adt.pair.Pair;
-import suite.primitive.adt.pair.IntIntPair;
+import suite.primitive.IntRange;
 import suite.primitive.adt.pair.IntObjPair;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.Read;
@@ -47,13 +47,13 @@ public class HtmlUtil {
 	}
 
 	public HtmlNode parse(String in) {
-		var pairs = new ArrayList<IntIntPair>();
+		var pairs = new ArrayList<IntRange>();
 		int pos0, posx = 0;
 
 		while (0 <= (pos0 = in.indexOf("<", posx)))
 			if ((posx = pos0 + 1) < in.length() && !Character.isWhitespace(in.charAt(posx)))
 				if (0 <= (posx = in.indexOf(">", posx)))
-					pairs.add(IntIntPair.of(pos0, ++posx));
+					pairs.add(IntRange.of(pos0, ++posx));
 				else
 					break;
 
@@ -87,8 +87,8 @@ public class HtmlUtil {
 
 		for (var pair : pairs) {
 			var htmlNode = deque.element();
-			var p0 = pair.t0;
-			var px = pair.t1;
+			var p0 = pair.s;
+			var px = pair.e;
 
 			if (prevp != p0) {
 				var s = decode(in.substring(prevp, p0)).trim();
