@@ -15,7 +15,7 @@ import suite.util.Util;
 
 public class Plotty {
 
-	private String[] browsers = { "C:/Program Files (x86)/Google/Chrome/Application/chrome.exe", "/usr/bin/chromium", };
+	private String[] browsers = { "C:/Program Files (x86)/Google/Chrome/Application/chrome.exe", "/usr/bin/chromium-browser", };
 
 	public boolean plot(Streamlet<float[]> xyts) {
 		var data = xyts //
