@@ -48,18 +48,18 @@ public class AdaBoost {
 					min.update(error, p);
 			});
 
-			var error = min.t0;
-			var p = min.t1;
-			var alpha = Math.log((1d - error) / error) * .5d;
+			return min.map((error, p) -> {
+				var alpha = Math.log((1d - error) / error) * .5d;
 
-			for (var i = 0; i < n; i++) {
-				var xy = xys.get(i);
-				ws[i] *= Math.exp(-(xy.y ? 1d : -1d) * alpha * d(xy.xs[p]));
-			}
+				for (var i = 0; i < n; i++) {
+					var xy = xys.get(i);
+					ws[i] *= Math.exp(-(xy.y ? 1d : -1d) * alpha * d(xy.xs[p]));
+				}
 
-			vec.scaleOn(ws, 1d / Floats.of(ws).streamlet().sum()); // renormalize
+				vec.scaleOn(ws, 1d / Floats.of(ws).streamlet().sum()); // renormalize
 
-			return DblIntPair.of(alpha, p);
+				return DblIntPair.of(alpha, p);
+			});
 		}).collect();
 
 		return xs -> p_alphas.toDouble(Obj_Dbl.sum(pair -> pair.map((alpha, p) -> alpha * d(xs[p]))));

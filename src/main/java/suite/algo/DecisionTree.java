@@ -11,7 +11,6 @@ import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.Int_Dbl;
 import suite.primitive.adt.pair.DblIntPair;
 import suite.primitive.adt.pair.IntObjPair;
-import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 
 public class DecisionTree {
@@ -26,12 +25,11 @@ public class DecisionTree {
 		var size = list.size();
 
 		var classifiers = forInt(n).map(i -> {
-			var input1 = forInt(nr).map(ir -> list.get(random.nextInt(size))).collect();
-			return DecisionTree.of(input1).classifier;
-		});
+			var input_ = forInt(nr).map(ir -> list.get(random.nextInt(size))).collect();
+			return DecisionTree.of(input_).classifier;
+		}).collect();
 
-		Obj_Int<Object[]> classifier = xs -> Read //
-				.from(classifiers) //
+		Obj_Int<Object[]> classifier = xs -> classifiers //
 				.map(classifier_ -> classifier_.apply(xs)) //
 				.groupBy(y -> y, Streamlet::size) //
 				.sortByValue(Integer::compareTo) //
@@ -43,7 +41,7 @@ public class DecisionTree {
 	public static DecisionTree of(Streamlet<IntObjPair<Object[]>> input) {
 		var default_ = majority(input);
 
-		Obj_Int<Object[]> classifier = new Object() {
+		var object = new Object() {
 			private Obj_Int<Object[]> id3(Streamlet<IntObjPair<Object[]>> data) {
 				var first = data.first();
 
@@ -67,22 +65,22 @@ public class DecisionTree {
 							max.update(informationGain, p);
 					});
 
-					var p = max.t1;
+					return max.map((informationGain, p) -> {
+						if (0 < informationGain) {
+							var funs = data //
+									.groupBy(datum -> datum.v[p], data_ -> data_) //
+									.mapValue(this::id3) //
+									.toMap();
 
-					if (0 < p) {
-						var funs = data //
-								.groupBy(datum -> datum.v[p], data_ -> data_) //
-								.mapValue(this::id3) //
-								.toMap();
-
-						return xs -> funs.get(xs[p]).apply(xs);
-					} else
-						return xs -> majority(data);
+							return xs -> funs.get(xs[p]).apply(xs);
+						} else
+							return xs -> majority(data);
+					});
 				}
 			}
-		}.id3(input);
+		};
 
-		return new DecisionTree(input, classifier);
+		return new DecisionTree(input, object.id3(input));
 	}
 
 	private static double entropy(Iterable<IntObjPair<Object[]>> data) {
