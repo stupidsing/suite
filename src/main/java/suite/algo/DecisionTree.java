@@ -70,8 +70,10 @@ public class DecisionTree {
 									.toMap();
 
 							return xs -> funs.get(xs[p]).apply(xs);
-						} else
-							return xs -> majority(data);
+						} else {
+							var y = majority(data);
+							return xs -> y;
+						}
 					});
 				}
 			}
