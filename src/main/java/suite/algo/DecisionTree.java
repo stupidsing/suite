@@ -15,30 +15,27 @@ import suite.streamlet.Streamlet;
 
 public class DecisionTree {
 
-	private static Random random = new Random();
+	private Random random = new Random();
 
-	public final Streamlet<IntObjPair<Object[]>> input;
-	public final Obj_Int<Object[]> classifier;
-
-	public static DecisionTree bag(Streamlet<IntObjPair<Object[]>> input, int n, int nr) { // bootstrap aggregating
+	public Classifier bag(Streamlet<IntObjPair<Object[]>> input, int n, int nr) { // bootstrap aggregating
 		var list = input.toList();
 		var size = list.size();
 
-		var classifiers = forInt(n).map(i -> {
+		var classifyList = forInt(n).map(i -> {
 			var input_ = forInt(nr).map(ir -> list.get(random.nextInt(size))).collect();
-			return DecisionTree.of(input_).classifier;
+			return of(input_).classify;
 		}).collect();
 
-		Obj_Int<Object[]> classifier = xs -> classifiers //
-				.map(classifier_ -> classifier_.apply(xs)) //
+		Obj_Int<Object[]> classify = xs -> classifyList //
+				.map(cl -> cl.apply(xs)) //
 				.groupBy(y -> y, Streamlet::size) //
 				.sortByValue(Integer::compareTo) //
 				.first().k;
 
-		return new DecisionTree(input, classifier);
+		return new Classifier(input, classify);
 	}
 
-	public static DecisionTree of(Streamlet<IntObjPair<Object[]>> input) {
+	public Classifier of(Streamlet<IntObjPair<Object[]>> input) {
 		var default_ = majority(input);
 
 		var object = new Object() {
@@ -80,10 +77,25 @@ public class DecisionTree {
 			}
 		};
 
-		return new DecisionTree(input, object.id3(input));
+		return new Classifier(input, object.id3(input));
 	}
 
-	private static double entropy(Iterable<IntObjPair<Object[]>> data) {
+	public class Classifier {
+		public final Streamlet<IntObjPair<Object[]>> input;
+		public final Obj_Int<Object[]> classify;
+
+		private Classifier(Streamlet<IntObjPair<Object[]>> input, Obj_Int<Object[]> classify) {
+			this.input = input;
+			this.classify = classify;
+		}
+
+		public double error() {
+			var correct = input.toInt(Obj_Int.sum(datum -> datum.map((y, xs) -> classify.apply(xs) == y ? 1 : 0)));
+			return correct / (double) input.size();
+		}
+	}
+
+	private double entropy(Iterable<IntObjPair<Object[]>> data) {
 		var hist0 = new IntIntMap1();
 		for (var datum : data)
 			hist0.update(datum.k, v -> (v != IntFunUtil.EMPTYVALUE ? v : 0) + 1);
@@ -92,18 +104,8 @@ public class DecisionTree {
 		return hist1.toDouble(Int_Dbl.sum(c -> Math.log(c / sum)));
 	}
 
-	private static int majority(Streamlet<IntObjPair<Object[]>> data) {
+	private int majority(Streamlet<IntObjPair<Object[]>> data) {
 		return data.groupBy(IntObjPair::fst, Streamlet::size).sortByValue(Integer::compareTo).first().k;
-	}
-
-	private DecisionTree(Streamlet<IntObjPair<Object[]>> input, Obj_Int<Object[]> classifier) {
-		this.input = input;
-		this.classifier = classifier;
-	}
-
-	public double error() {
-		var correct = input.toInt(Obj_Int.sum(datum -> datum.map((y, xs) -> classifier.apply(xs) == y ? 1 : 0)));
-		return correct / (double) input.size();
 	}
 
 }
