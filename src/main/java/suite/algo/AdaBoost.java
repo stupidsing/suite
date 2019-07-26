@@ -41,7 +41,7 @@ public class AdaBoost {
 			forInt(xys.get(0).xs.length).sink(p -> {
 				var error = Read //
 						.from(xys) //
-						.map(xy -> xy.y == xy.xs[p] ? 0d : ws[p]) //
+						.map(xy -> xy.xs[p] == xy.y ? 0d : ws[p]) //
 						.toDouble(Obj_Dbl.sum(e -> e));
 
 				if (error < min.t0)
