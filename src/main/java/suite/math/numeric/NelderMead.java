@@ -26,7 +26,7 @@ public class NelderMead {
 		var pairs = new ArrayList<>(List.of(DblObjPair.of(fun.apply(xs), xs)));
 
 		for (var i = 0; i < dim; i++) {
-			var xs1 = vec.of(xs);
+			var xs1 = vec.copyOf(xs);
 			xs1[i] += step;
 			pairs.add(DblObjPair.of(fun.apply(xs1), xs1));
 		}
@@ -70,7 +70,7 @@ public class NelderMead {
 				pairs.set(ps_1, contractPair);
 			else
 				pairs = new ArrayList<>(Read.from(pairs).map(pair -> { // reduction
-					var reduce = vec.add(centroid, vec.scaleOn(vec.sub(centroid, pair.v), reduceFactor));
+					var reduce = vec.add(first.v, vec.scaleOn(vec.sub(pair.v, first.v), reduceFactor));
 					return DblObjPair.of(fun.apply(reduce), reduce);
 				}).toList());
 		}
