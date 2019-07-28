@@ -130,7 +130,7 @@ public class WalkForwardAllocTester {
 				+ " sharpe:" + To.string(rs.sharpeRatio()) //
 				+ " skew:" + To.string(stat.skewness(valuations_)) //
 				+ " " + account.transactionSummary(cfg::transactionFee).out0() //
-				+ " holds::" + holds + "...";
+				+ " holds:" + holds + "...";
 	}
 
 	private String play(List<Trade> trades_) {

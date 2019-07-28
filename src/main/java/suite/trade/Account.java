@@ -95,7 +95,7 @@ public class Account {
 		}
 
 		public String out0() {
-			return "txnFee:" + To.string(transactionFee) + "/" + nTransactions;
+			return "txFee:" + To.string(transactionFee) + "/" + nTransactions;
 		}
 
 		public String out1() {
