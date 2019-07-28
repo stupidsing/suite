@@ -15,7 +15,7 @@ public class NelderMead {
 
 	private Vector vec = new Vector();
 
-	public float[] nm(int dim, Obj_Dbl<float[]> fun) {
+	public float[] nm(Obj_Dbl<float[]> fun, int dim) {
 		var step = .1d;
 		var reflectFactor = 1d; // alpha
 		var expandFactor = 2d; // gamma

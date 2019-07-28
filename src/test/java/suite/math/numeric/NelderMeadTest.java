@@ -15,7 +15,8 @@ public class NelderMeadTest {
 
 	@Test
 	public void test() {
-		var xs = nm.nm(1, x -> x[0] * x[0]);
+		var xs = nm.nm(x -> x[0] * x[0], 1);
+
 		System.out.println(Arrays.toString(xs));
 		Math_.verifyEquals(xs[0], 0f, .05f);
 	}
@@ -27,8 +28,7 @@ public class NelderMeadTest {
 		var b = 1d;
 
 		// global minimum (a, a * a)
-		var rosenbrock = rb.rosenbrock(a, b);
-		var xs = nm.nm(2, rosenbrock);
+		var xs = nm.nm(rb.rosenbrock(a, b), 2);
 
 		System.out.println(Arrays.toString(xs));
 		vec.verifyEquals(xs, vec.of(a, a), .05f);
