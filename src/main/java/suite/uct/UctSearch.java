@@ -1,10 +1,10 @@
 package suite.uct;
 
-import static suite.util.Friends.forInt;
 import static suite.util.Friends.log1p;
 import static suite.util.Friends.max;
 import static suite.util.Friends.min;
 import static suite.util.Friends.sqrt;
+import static suite.util.Streamlet_.forInt;
 
 import java.text.DecimalFormat;
 import java.util.HashMap;

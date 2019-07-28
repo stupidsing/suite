@@ -1,7 +1,5 @@
 package suite.util;
 
-import suite.primitive.Ints_;
-import suite.primitive.streamlet.IntStreamlet;
 import suite.util.Rethrow.SourceEx;
 
 public class Friends {
@@ -40,14 +38,6 @@ public class Friends {
 
 	public static <T> T fail(String m, Throwable th) {
 		return Fail.t(m, th);
-	}
-
-	public static IntStreamlet forInt(int n) {
-		return forInt(0, n);
-	}
-
-	public static IntStreamlet forInt(int s, int e) {
-		return Ints_.for_(s, e);
 	}
 
 	public static double log(double a) {

@@ -1,6 +1,6 @@
 package suite.trade.analysis;
 
-import static suite.util.Friends.forInt;
+import static suite.util.Streamlet_.forInt;
 
 import java.util.List;
 import java.util.Map;

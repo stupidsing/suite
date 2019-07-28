@@ -1,6 +1,6 @@
 package suite.trade.backalloc.strategy;
 
-import static suite.util.Friends.forInt;
+import static suite.util.Streamlet_.forInt;
 
 import java.util.Map;
 import java.util.Random;

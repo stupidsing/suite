@@ -1,6 +1,6 @@
 package suite.trade.backalloc.run;
 
-import static suite.util.Friends.forInt;
+import static suite.util.Streamlet_.forInt;
 
 import java.nio.file.Paths;
 

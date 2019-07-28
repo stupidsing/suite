@@ -1,6 +1,6 @@
 package suite.funp.p0;
 
-import static suite.util.Friends.forInt;
+import static suite.util.Streamlet_.forInt;
 
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.FunpArray;

@@ -1,8 +1,8 @@
 package suite.ts;
 
-import static suite.util.Friends.forInt;
 import static suite.util.Friends.log;
 import static suite.util.Friends.max;
+import static suite.util.Streamlet_.forInt;
 
 import java.util.Arrays;
 import java.util.Random;

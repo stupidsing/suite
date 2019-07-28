@@ -1,7 +1,7 @@
 package suite.trade.analysis;
 
 import static suite.util.Friends.abs;
-import static suite.util.Friends.forInt;
+import static suite.util.Streamlet_.forInt;
 
 import java.util.Arrays;
 import java.util.HashMap;

@@ -1,8 +1,8 @@
 package suite.funp.p2;
 
 import static suite.util.Friends.fail;
-import static suite.util.Friends.forInt;
 import static suite.util.Friends.max;
+import static suite.util.Streamlet_.forInt;
 
 import java.util.ArrayList;
 import java.util.Collection;

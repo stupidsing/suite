@@ -1,7 +1,7 @@
 package suite.sample;
 
-import static suite.util.Friends.forInt;
 import static suite.util.Friends.rethrow;
+import static suite.util.Streamlet_.forInt;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;

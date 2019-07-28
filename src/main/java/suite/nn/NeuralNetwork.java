@@ -1,9 +1,9 @@
 package suite.nn;
 
-import static suite.util.Friends.forInt;
 import static suite.util.Friends.max;
 import static suite.util.Friends.min;
 import static suite.util.Friends.sqrt;
+import static suite.util.Streamlet_.forInt;
 
 import java.lang.reflect.Array;
 import java.util.Random;

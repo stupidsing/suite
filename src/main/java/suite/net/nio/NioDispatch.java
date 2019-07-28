@@ -1,9 +1,9 @@
 package suite.net.nio;
 
-import static suite.util.Friends.forInt;
 import static suite.util.Friends.max;
 import static suite.util.Friends.min;
 import static suite.util.Friends.rethrow;
+import static suite.util.Streamlet_.forInt;
 
 import java.io.Closeable;
 import java.io.IOException;

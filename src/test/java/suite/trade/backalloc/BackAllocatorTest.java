@@ -1,7 +1,7 @@
 package suite.trade.backalloc;
 
 import static org.junit.Assert.assertEquals;
-import static suite.util.Friends.forInt;
+import static suite.util.Streamlet_.forInt;
 
 import java.util.List;
 

@@ -1,6 +1,6 @@
 package suite.trade.data;
 
-import static suite.util.Friends.forInt;
+import static suite.util.Streamlet_.forInt;
 
 import suite.http.HttpUtil;
 import suite.primitive.Chars_;

@@ -1,7 +1,7 @@
 package suite.algo;
 
 import static suite.util.Friends.exp;
-import static suite.util.Friends.forInt;
+import static suite.util.Streamlet_.forInt;
 
 import java.util.List;
 

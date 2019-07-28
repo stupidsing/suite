@@ -2,8 +2,8 @@ package suite.net.cluster;
 
 import static org.junit.Assert.assertEquals;
 import static suite.util.Friends.fail;
-import static suite.util.Friends.forInt;
 import static suite.util.Friends.rethrow;
+import static suite.util.Streamlet_.forInt;
 
 import java.io.IOException;
 import java.net.InetAddress;

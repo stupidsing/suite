@@ -1,7 +1,7 @@
 package suite.trade.data;
 
 import static org.junit.Assert.assertTrue;
-import static suite.util.Friends.forInt;
+import static suite.util.Streamlet_.forInt;
 
 import java.util.HashSet;
 

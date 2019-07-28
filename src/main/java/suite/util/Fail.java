@@ -1,7 +1,5 @@
 package suite.util;
 
-import static suite.util.Friends.fail;
-
 public class Fail {
 
 	public static class InterruptedRuntimeException extends RuntimeException {
@@ -26,7 +24,7 @@ public class Fail {
 	}
 
 	public static boolean v(boolean b) {
-		return b ? b : fail();
+		return b ? b : t(null, null);
 	}
 
 }

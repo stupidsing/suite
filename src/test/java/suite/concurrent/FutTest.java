@@ -2,7 +2,7 @@ package suite.concurrent;
 
 import static org.junit.Assert.assertEquals;
 import static suite.util.Friends.fail;
-import static suite.util.Friends.forInt;
+import static suite.util.Streamlet_.forInt;
 
 import java.util.concurrent.atomic.AtomicInteger;
 

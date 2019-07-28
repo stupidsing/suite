@@ -2,7 +2,7 @@ package suite.algo;
 
 import static java.util.Map.entry;
 import static org.junit.Assert.assertEquals;
-import static suite.util.Friends.forInt;
+import static suite.util.Streamlet_.forInt;
 
 import java.util.Map;
 import java.util.Random;

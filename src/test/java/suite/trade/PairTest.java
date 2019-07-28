@@ -1,7 +1,7 @@
 package suite.trade;
 
 import static org.junit.Assert.assertTrue;
-import static suite.util.Friends.forInt;
+import static suite.util.Streamlet_.forInt;
 
 import org.junit.Test;
 

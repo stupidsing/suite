@@ -1,7 +1,7 @@
 package suite.funp;
 
 import static suite.util.Friends.fail;
-import static suite.util.Friends.forInt;
+import static suite.util.Streamlet_.forInt;
 
 import suite.assembler.Amd64;
 import suite.assembler.Amd64.OpMem;

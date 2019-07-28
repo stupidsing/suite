@@ -1,7 +1,7 @@
 package suite.inspect;
 
-import static suite.util.Friends.forInt;
 import static suite.util.Friends.rethrow;
+import static suite.util.Streamlet_.forInt;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;

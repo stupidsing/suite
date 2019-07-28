@@ -1,8 +1,8 @@
 package suite.math.linalg;
 
 import static suite.util.Friends.fail;
-import static suite.util.Friends.forInt;
 import static suite.util.Friends.min;
+import static suite.util.Streamlet_.forInt;
 
 import suite.primitive.IntInt_Flt;
 import suite.primitive.Int_Dbl;

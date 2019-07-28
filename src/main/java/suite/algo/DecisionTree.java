@@ -1,6 +1,6 @@
 package suite.algo;
 
-import static suite.util.Friends.forInt;
+import static suite.util.Streamlet_.forInt;
 
 import java.util.Random;
 

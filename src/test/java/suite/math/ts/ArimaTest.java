@@ -1,6 +1,6 @@
 package suite.math.ts;
 
-import static suite.util.Friends.forInt;
+import static suite.util.Streamlet_.forInt;
 
 import java.util.Arrays;
 import java.util.Random;

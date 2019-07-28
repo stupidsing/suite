@@ -1,6 +1,6 @@
 package suite.util;
 
-import static suite.util.Friends.forInt;
+import static suite.util.Streamlet_.forInt;
 
 import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.Int_Int;
