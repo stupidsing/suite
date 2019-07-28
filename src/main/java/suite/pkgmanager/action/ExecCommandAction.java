@@ -1,6 +1,6 @@
 package suite.pkgmanager.action;
 
-import static suite.util.Friends.fail;
+import static suite.util.Fail.fail;
 
 import suite.os.Execute;
 

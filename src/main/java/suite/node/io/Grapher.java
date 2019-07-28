@@ -1,6 +1,6 @@
 package suite.node.io;
 
-import static suite.util.Friends.fail;
+import static suite.util.Fail.fail;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;

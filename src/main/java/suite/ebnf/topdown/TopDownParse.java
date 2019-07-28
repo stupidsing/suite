@@ -1,6 +1,6 @@
 package suite.ebnf.topdown;
 
-import static suite.util.Friends.fail;
+import static suite.util.Fail.fail;
 
 import java.util.ArrayDeque;
 import java.util.Deque;

@@ -1,6 +1,6 @@
 package suite.trade.data;
 
-import static suite.util.Friends.fail;
+import static suite.util.Fail.fail;
 import static suite.util.Friends.rethrow;
 
 import java.util.Map;

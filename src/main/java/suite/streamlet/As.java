@@ -1,6 +1,7 @@
 package suite.streamlet;
 
-import static suite.util.Friends.fail;
+import static suite.util.Fail.fail;
+import static suite.util.Fail.failBool;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -25,7 +26,6 @@ import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil.Sink;
 import suite.streamlet.FunUtil.Source;
 import suite.streamlet.FunUtil2.Fun2;
-import suite.util.Fail;
 import suite.util.String_;
 import suite.util.Thread_;
 import suite.util.To;
@@ -98,7 +98,7 @@ public class As {
 
 	public static <K, V> Map<K, V> map(Puller2<K, V> puller) {
 		var map = new HashMap<K, V>();
-		return puller.isAll((k, v) -> map.put(k, v) == null || Fail.b("duplicate key " + k)) ? map : null;
+		return puller.isAll((k, v) -> map.put(k, v) == null || failBool("duplicate key " + k)) ? map : null;
 	}
 
 	public static <T> Fun<Puller<T>, Integer> min(Obj_Int<T> fun) {

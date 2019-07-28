@@ -1,6 +1,6 @@
 package suite.math.transform;
 
-import static suite.util.Friends.fail;
+import static suite.util.Fail.fail;
 
 import java.util.HashMap;
 import java.util.Map;

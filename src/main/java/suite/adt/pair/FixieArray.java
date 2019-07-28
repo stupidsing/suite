@@ -1,4 +1,4 @@
-package suite.adt.pair; import static suite.util.Friends.fail;
+package suite.adt.pair; import static suite.util.Fail.fail;
 
 import java.util.List;
 

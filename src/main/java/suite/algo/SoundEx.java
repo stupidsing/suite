@@ -1,6 +1,6 @@
 package suite.algo;
 
-import static suite.util.Friends.fail;
+import static suite.util.Fail.fail;
 
 import suite.util.String_;
 

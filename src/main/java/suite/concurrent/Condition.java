@@ -1,6 +1,6 @@
 package suite.concurrent;
 
-import static suite.util.Friends.fail;
+import static suite.util.Fail.fail;
 
 import suite.streamlet.FunUtil.Source;
 

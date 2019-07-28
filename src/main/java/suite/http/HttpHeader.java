@@ -1,6 +1,6 @@
 package suite.http;
 
-import static suite.util.Friends.fail;
+import static suite.util.Fail.fail;
 
 import suite.persistent.PerList;
 import suite.persistent.PerMap;

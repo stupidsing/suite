@@ -1,6 +1,6 @@
 package suite.primitive;
 
-import static suite.util.Friends.fail;
+import static suite.util.Fail.fail;
 
 public interface ChrFlt_Dbl {
 

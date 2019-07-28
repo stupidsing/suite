@@ -2,7 +2,7 @@ package suite.assembler;
 
 import static java.lang.Math.min;
 import static java.util.Map.entry;
-import static suite.util.Friends.fail;
+import static suite.util.Fail.fail;
 
 import java.util.Arrays;
 import java.util.List;

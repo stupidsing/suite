@@ -2,7 +2,7 @@ package suite.algo;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static suite.util.Friends.fail;
+import static suite.util.Fail.fail;
 
 import java.util.ArrayList;
 import java.util.List;

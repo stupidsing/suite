@@ -1,6 +1,6 @@
 package suite.util;
 
-import static suite.util.Friends.fail;
+import static suite.util.Fail.fail;
 
 import java.io.BufferedReader;
 import java.io.IOException;

@@ -1,7 +1,8 @@
 package suite.trade;
 
 import static java.lang.Math.abs;
-import static suite.util.Friends.fail;
+import static suite.util.Fail.fail;
+import static suite.util.Fail.failBool;
 
 import java.util.HashMap;
 import java.util.List;
@@ -12,7 +13,6 @@ import suite.primitive.Dbl_Dbl;
 import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
-import suite.util.Fail;
 import suite.util.String_;
 import suite.util.To;
 
@@ -112,9 +112,9 @@ public class Account {
 
 	public boolean validate() {
 		var cash = cash_();
-		return (Trade_.isValidCash(cash) || Fail.b("too much leverage: " + cash)) //
+		return (Trade_.isValidCash(cash) || failBool("too much leverage: " + cash)) //
 				&& (Read.from2(assets).isAll((symbol, nShares) -> {
-					return Trade_.isValidStock(symbol, nShares) || Fail.b("no short-selling " + symbol + " " + nShares);
+					return Trade_.isValidStock(symbol, nShares) || failBool("no short-selling " + symbol + " " + nShares);
 				}));
 	}
 

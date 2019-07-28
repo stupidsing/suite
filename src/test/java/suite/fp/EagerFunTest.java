@@ -2,7 +2,7 @@ package suite.fp;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static suite.util.Friends.fail;
+import static suite.util.Fail.fail;
 
 import org.junit.Test;
 

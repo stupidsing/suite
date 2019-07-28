@@ -1,7 +1,8 @@
 package suite.funp.p2;
 
 import static java.lang.Math.max;
-import static suite.util.Friends.fail;
+import static suite.util.Fail.fail;
+import static suite.util.Fail.failBool;
 import static suite.util.Streamlet_.forInt;
 
 import java.util.ArrayList;
@@ -107,7 +108,6 @@ import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
-import suite.util.Fail;
 import suite.util.String_;
 import suite.util.Switch;
 import suite.util.Util;
@@ -156,8 +156,8 @@ public class P2InferType {
 
 		if (unify(t, new Infer(PerMap.empty(), checks, null).infer(n2))) {
 			var b = true //
-					&& (Read.from(checks).isAll(Source<Boolean>::g) || Fail.b("fail type-checks")) //
-					&& (getTypeSize(t) == is || Fail.b("invalid return type"));
+					&& (Read.from(checks).isAll(Source<Boolean>::g) || failBool("fail type-checks")) //
+					&& (getTypeSize(t) == is || failBool("invalid return type"));
 
 			if (b) {
 				var erase = new Erase(0, PerMap.empty(), null);

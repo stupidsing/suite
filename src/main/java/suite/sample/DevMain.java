@@ -2,7 +2,7 @@ package suite.sample;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
-import static suite.util.Friends.fail;
+import static suite.util.Fail.fail;
 import static suite.util.Streamlet_.forInt;
 
 import java.util.function.Predicate;

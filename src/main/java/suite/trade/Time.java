@@ -1,6 +1,6 @@
 package suite.trade;
 
-import static suite.util.Friends.fail;
+import static suite.util.Fail.fail;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;

@@ -1,7 +1,7 @@
 package suite.math;
 
 import static java.lang.Math.abs;
-import static suite.util.Friends.fail;
+import static suite.util.Fail.fail;
 
 import suite.util.To;
 

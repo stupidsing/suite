@@ -2,7 +2,7 @@ package suite.file;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static suite.util.Friends.fail;
+import static suite.util.Fail.fail;
 
 import java.io.IOException;
 

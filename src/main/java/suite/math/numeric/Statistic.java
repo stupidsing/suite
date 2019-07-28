@@ -3,7 +3,7 @@ package suite.math.numeric;
 import static java.lang.Math.exp;
 import static java.lang.Math.log;
 import static java.lang.Math.sqrt;
-import static suite.util.Friends.fail;
+import static suite.util.Fail.fail;
 
 import java.util.List;
 

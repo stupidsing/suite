@@ -1,6 +1,6 @@
 package suite.weiqi;
 
-import static suite.util.Friends.fail;
+import static suite.util.Fail.fail;
 
 import suite.object.Object_;
 import suite.primitive.adt.set.IntSet;

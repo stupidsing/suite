@@ -32,7 +32,7 @@ public class Rethrow {
 			try {
 				return fun0.test(k, v);
 			} catch (Exception ex) {
-				return Fail.t("for key " + k, ex);
+				return Fail.fail("for key " + k, ex);
 			}
 		};
 	}
@@ -41,7 +41,7 @@ public class Rethrow {
 		try {
 			return source.g();
 		} catch (Exception ex) {
-			return Fail.t(null, ex);
+			return Fail.fail(null, ex);
 		}
 	}
 
@@ -50,7 +50,7 @@ public class Rethrow {
 			try {
 				return predicate.test(t);
 			} catch (Exception ex) {
-				return Fail.t("for " + t, ex);
+				return Fail.fail("for " + t, ex);
 			}
 		};
 	}

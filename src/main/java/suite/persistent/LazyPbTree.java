@@ -1,6 +1,7 @@
 package suite.persistent;
 
-import static suite.util.Friends.fail;
+import static suite.util.Fail.fail;
+import static suite.util.Fail.failBool;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -10,7 +11,6 @@ import suite.streamlet.FunUtil.Iterate;
 import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
-import suite.util.Fail;
 import suite.util.List_;
 import suite.util.String_;
 
@@ -94,14 +94,14 @@ public class LazyPbTree<T> implements PerTree<T> {
 		T p = null;
 
 		var b = size == 0 || true //
-				&& (minBranchFactor <= size || Fail.b("too few branches")) //
-				&& (size < maxBranchFactor || Fail.b("too many branches"));
+				&& (minBranchFactor <= size || failBool("too few branches")) //
+				&& (size < maxBranchFactor || failBool("too many branches"));
 
 		for (var slot_ : slots) {
 			b = b //
-					&& (comparator.compare(slot.pivot, slot_.pivot) <= 0 || Fail.b("wrong slot")) //
+					&& (comparator.compare(slot.pivot, slot_.pivot) <= 0 || failBool("wrong slot")) //
 					&& validate(slot_) //
-					&& (p == null || comparator.compare(p, slot_.pivot) < 0 || Fail.b("wrong key order"));
+					&& (p == null || comparator.compare(p, slot_.pivot) < 0 || failBool("wrong key order"));
 			p = slot_.pivot;
 		}
 

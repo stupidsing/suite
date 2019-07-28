@@ -1,6 +1,7 @@
 package suite.asm;
 
-import static suite.util.Friends.fail;
+import static suite.util.Fail.fail;
+import static suite.util.Fail.failBool;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -32,7 +33,6 @@ import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.Read;
 import suite.text.Preprocess;
 import suite.text.Preprocess.Run;
-import suite.util.Fail;
 import suite.util.List_;
 import suite.util.String_;
 import suite.util.To;
@@ -97,7 +97,7 @@ public class Assembler {
 		for (var node : Tree.read(input))
 			new SwitchNode<Boolean>(generalizer.generalize(node) //
 			).match(".0 = .1", (l, r) -> {
-				return Binder.bind(l, r, trail) || Fail.b("bind failed");
+				return Binder.bind(l, r, trail) || failBool("bind failed");
 			}).match(".0 .1", (l, r) -> {
 				return lnis.add(Pair.of((Reference) l, r));
 			}).nonNullResult();

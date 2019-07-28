@@ -2,7 +2,7 @@ package suite.os;
 
 import static java.nio.file.StandardCopyOption.ATOMIC_MOVE;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
-import static suite.util.Friends.fail;
+import static suite.util.Fail.fail;
 import static suite.util.Friends.rethrow;
 
 import java.io.BufferedReader;

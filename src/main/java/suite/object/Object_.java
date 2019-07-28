@@ -1,6 +1,6 @@
 package suite.object;
 
-import static suite.util.Friends.fail;
+import static suite.util.Fail.fail;
 import static suite.util.Friends.rethrow;
 
 import java.io.Closeable;

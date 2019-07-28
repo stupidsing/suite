@@ -2,7 +2,7 @@ package suite.lp.doer;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static suite.util.Friends.fail;
+import static suite.util.Fail.fail;
 
 import java.io.IOException;
 

@@ -1,6 +1,6 @@
 package suite.asm;
 
-import static suite.util.Friends.fail;
+import static suite.util.Fail.fail;
 
 import java.nio.file.Paths;
 

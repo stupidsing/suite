@@ -1,6 +1,6 @@
 package suite.streamlet;
 
-import static suite.util.Friends.fail;
+import static suite.util.Fail.fail;
 
 import java.util.Collections;
 import java.util.Iterator;

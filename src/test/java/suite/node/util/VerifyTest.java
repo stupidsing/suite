@@ -1,6 +1,6 @@
 package suite.node.util;
 
-import static suite.util.Friends.fail;
+import static suite.util.Fail.fail;
 
 import org.junit.Test;
 

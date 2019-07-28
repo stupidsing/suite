@@ -3,7 +3,7 @@ package suite.jdk.gen;
 import static org.apache.bcel.Const.ACC_PUBLIC;
 import static org.apache.bcel.Const.ACC_STATIC;
 import static org.apache.bcel.Const.ACC_SUPER;
-import static suite.util.Friends.fail;
+import static suite.util.Fail.fail;
 import static suite.util.Friends.rethrow;
 
 import java.util.ArrayList;

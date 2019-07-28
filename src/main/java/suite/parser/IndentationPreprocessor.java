@@ -2,7 +2,7 @@ package suite.parser;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
-import static suite.util.Friends.fail;
+import static suite.util.Fail.fail;
 
 import java.util.ArrayList;
 import java.util.List;
