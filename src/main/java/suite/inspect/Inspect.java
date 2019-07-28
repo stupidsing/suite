@@ -1,6 +1,6 @@
 package suite.inspect;
 
-import static suite.util.Friends.rethrow;
+import static suite.util.Rethrow.ex;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -47,7 +47,7 @@ public class Inspect {
 
 	public List<?> values(Object object) {
 		return fields(object.getClass()) //
-				.map(field -> rethrow(() -> field.get(object))) //
+				.map(field -> ex(() -> field.get(object))) //
 				.toList();
 	}
 
@@ -144,11 +144,11 @@ public class Inspect {
 					var setMethod = setMethods.get(propertyName);
 					return new Property() {
 						public Object get(Object object) {
-							return rethrow(() -> getMethod.invoke(object));
+							return ex(() -> getMethod.invoke(object));
 						}
 
 						public void set(Object object, Object value) {
-							rethrow(() -> setMethod.invoke(object, value));
+							ex(() -> setMethod.invoke(object, value));
 						}
 					};
 				}) //
@@ -162,7 +162,7 @@ public class Inspect {
 	public <T> T rewrite(T t0, Class<T> baseClass, Iterate<T> fun) {
 		return new Object() {
 			private T rewrite(T t0) {
-				return rethrow(() -> {
+				return ex(() -> {
 					var t1 = fun.apply(t0);
 					return t1 != null ? t1 : mapFields(t0, this::rewriteField);
 				});

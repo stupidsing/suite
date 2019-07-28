@@ -1,7 +1,7 @@
 package suite.trade.data;
 
 import static suite.util.Fail.fail;
-import static suite.util.Friends.rethrow;
+import static suite.util.Rethrow.ex;
 
 import java.net.URLEncoder;
 import java.nio.file.Files;
@@ -97,7 +97,7 @@ public class Yahoo {
 
 		if (Files.exists(path))
 			try {
-				var lines = rethrow(() -> Files.readAllLines(path));
+				var lines = ex(() -> Files.readAllLines(path));
 				stockHistory0 = StockHistory.of(Read.from(lines).puller());
 			} catch (Exception ex) {
 				stockHistory0 = StockHistory.new_();
@@ -277,7 +277,7 @@ public class Yahoo {
 	}
 
 	private String encode(String s) {
-		return rethrow(() -> URLEncoder.encode(s, Defaults.charset.name()));
+		return ex(() -> URLEncoder.encode(s, Defaults.charset.name()));
 	}
 
 }

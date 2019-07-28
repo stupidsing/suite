@@ -1,6 +1,6 @@
 package suite.os;
 
-import static suite.util.Friends.rethrow;
+import static suite.util.Rethrow.ex;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -47,7 +47,7 @@ public class WriteElf {
 			}
 		});
 
-		rethrow(() -> Files.setPosixFilePermissions(path, new HashSet<>(List.of( //
+		ex(() -> Files.setPosixFilePermissions(path, new HashSet<>(List.of( //
 				PosixFilePermission.GROUP_EXECUTE, //
 				PosixFilePermission.GROUP_READ, //
 				PosixFilePermission.OTHERS_EXECUTE, //

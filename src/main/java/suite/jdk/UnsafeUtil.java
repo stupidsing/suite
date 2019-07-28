@@ -1,6 +1,6 @@
 package suite.jdk;
 
-import static suite.util.Friends.rethrow;
+import static suite.util.Rethrow.ex;
 
 import java.lang.reflect.Method;
 
@@ -13,14 +13,14 @@ public class UnsafeUtil {
 	public <T> Class<? extends T> defineClass(Class<T> interfaceClazz, String className, byte[] bytes, Object[] array) {
 		var unsafe = unsafe();
 		@SuppressWarnings("unchecked")
-		var clazz = (Class<? extends T>) rethrow(() -> defineAnonClass.invoke(unsafe, interfaceClazz, bytes, array));
+		var clazz = (Class<? extends T>) ex(() -> defineAnonClass.invoke(unsafe, interfaceClazz, bytes, array));
 		return clazz;
 	}
 
 	private Object unsafe() {
-		var unsafeClazz = rethrow(() -> Class.forName("sun.misc.Unsafe"));
+		var unsafeClazz = ex(() -> Class.forName("sun.misc.Unsafe"));
 		if (unsafe == null)
-			rethrow(() -> {
+			ex(() -> {
 				var f = unsafeClazz.getDeclaredField("theUnsafe");
 				f.setAccessible(true);
 				defineAnonClass = (unsafe = f.get(null)) //

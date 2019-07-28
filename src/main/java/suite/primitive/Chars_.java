@@ -1,6 +1,6 @@
 package suite.primitive;
 
-import static suite.util.Friends.rethrow;
+import static suite.util.Rethrow.ex;
 
 import suite.primitive.Chars.CharsBuilder;
 import suite.primitive.Chars.WriteChar;
@@ -68,7 +68,7 @@ public class Chars_ {
 	}
 
 	public static void copy(Puller<Chars> puller, WriteChar writer) {
-		rethrow(() -> {
+		ex(() -> {
 			Chars chars;
 			while ((chars = puller.pull()) != null)
 				writer.write(chars.cs, chars.start, chars.end - chars.start);

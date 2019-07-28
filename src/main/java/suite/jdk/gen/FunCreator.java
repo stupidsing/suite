@@ -4,7 +4,7 @@ import static org.apache.bcel.Const.ACC_PUBLIC;
 import static org.apache.bcel.Const.ACC_STATIC;
 import static org.apache.bcel.Const.ACC_SUPER;
 import static suite.util.Fail.fail;
-import static suite.util.Friends.rethrow;
+import static suite.util.Rethrow.ex;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -214,7 +214,7 @@ public class FunCreator<I> extends FunFactory {
 		private I create(Map<String, Object> fieldValues) {
 			var t = Object_.new_(clazz);
 
-			return rethrow(() -> {
+			return ex(() -> {
 				for (var field : clazz.getDeclaredFields()) {
 					var fieldName = field.getName();
 					Pair<Type, Object> typeValue;

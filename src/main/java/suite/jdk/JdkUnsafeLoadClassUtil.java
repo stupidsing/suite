@@ -1,6 +1,6 @@
 package suite.jdk;
 
-import static suite.util.Friends.rethrow;
+import static suite.util.Rethrow.ex;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -20,7 +20,7 @@ public class JdkUnsafeLoadClassUtil extends JdkUtil {
 
 	private <T> Class<? extends T> load(Class<T> interfaceClazz, String canonicalName, Path path) {
 		Log_.info("Loading class " + canonicalName);
-		var bytes = rethrow(() -> Files.readAllBytes(path));
+		var bytes = ex(() -> Files.readAllBytes(path));
 		return new UnsafeUtil().defineClass(interfaceClazz, canonicalName, bytes);
 	}
 

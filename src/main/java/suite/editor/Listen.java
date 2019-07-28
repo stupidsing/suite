@@ -1,6 +1,6 @@
 package suite.editor;
 
-import static suite.util.Friends.rethrow;
+import static suite.util.Rethrow.ex;
 
 import java.awt.Component;
 import java.awt.Window;
@@ -51,7 +51,7 @@ public class Listen {
 	}
 
 	public static <T, Ex extends Exception> Sink<T> catchAll(SinkEx<T, Ex> sink) {
-		return t -> rethrow(() -> {
+		return t -> ex(() -> {
 			sink.f(t);
 			return t;
 		});

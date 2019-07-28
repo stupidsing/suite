@@ -1,6 +1,6 @@
 package suite.streamlet;
 
-import static suite.util.Friends.rethrow;
+import static suite.util.Rethrow.ex;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -32,7 +32,7 @@ public class Read {
 		var file = path.toFile();
 
 		return new Streamlet<>(() -> {
-			InputStream is = rethrow(() -> new FileInputStream(file));
+			InputStream is = ex(() -> new FileInputStream(file));
 			return To.puller(is).closeAtEnd(is);
 		});
 	}
@@ -100,7 +100,7 @@ public class Read {
 	}
 
 	public static Streamlet<String> lines(File file) {
-		return new Streamlet<>(() -> lines(rethrow(() -> new FileInputStream(file))));
+		return new Streamlet<>(() -> lines(ex(() -> new FileInputStream(file))));
 	}
 
 	public static Puller<String> lines(InputStream is) {
@@ -109,7 +109,7 @@ public class Read {
 
 	public static Puller<String> lines(Reader reader) {
 		var br = new BufferedReader(reader);
-		return Puller.of(() -> rethrow(() -> Util.readLine(br))).closeAtEnd(br).closeAtEnd(reader);
+		return Puller.of(() -> ex(() -> Util.readLine(br))).closeAtEnd(br).closeAtEnd(reader);
 	}
 
 	public static Streamlet<Bytes> url(String url) {

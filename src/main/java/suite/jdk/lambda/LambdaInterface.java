@@ -1,6 +1,6 @@
 package suite.jdk.lambda;
 
-import static suite.util.Friends.rethrow;
+import static suite.util.Rethrow.ex;
 
 import java.lang.reflect.Method;
 
@@ -31,7 +31,7 @@ public class LambdaInterface<I> {
 
 	public Method method() {
 		if (method == null) {
-			var methods = rethrow(interfaceClass::getMethods);
+			var methods = ex(interfaceClass::getMethods);
 			method = Read.from(methods).filter(m -> String_.equals(m.getName(), methodName)).uniqueResult();
 		}
 		return method;

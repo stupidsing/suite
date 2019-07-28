@@ -1,7 +1,7 @@
 package suite.jdk.gen;
 
 import static suite.util.Fail.fail;
-import static suite.util.Friends.rethrow;
+import static suite.util.Rethrow.ex;
 
 import java.util.Arrays;
 
@@ -24,7 +24,7 @@ public class Type_ {
 		else
 			return fail();
 
-		return rethrow(() -> {
+		return ex(() -> {
 			for (var clazz : Arrays.asList( //
 					byte.class, //
 					boolean.class, //

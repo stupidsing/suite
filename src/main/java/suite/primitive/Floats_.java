@@ -1,6 +1,6 @@
 package suite.primitive;
 
-import static suite.util.Friends.rethrow;
+import static suite.util.Rethrow.ex;
 
 import suite.primitive.Floats.FloatsBuilder;
 import suite.primitive.Floats.WriteChar;
@@ -68,7 +68,7 @@ public class Floats_ {
 	}
 
 	public static void copy(Puller<Floats> puller, WriteChar writer) {
-		rethrow(() -> {
+		ex(() -> {
 			Floats floats;
 			while ((floats = puller.pull()) != null)
 				writer.write(floats.cs, floats.start, floats.end - floats.start);

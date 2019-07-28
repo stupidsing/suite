@@ -1,6 +1,6 @@
 package suite.ebnf;
 
-import static suite.util.Friends.rethrow;
+import static suite.util.Rethrow.ex;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -17,7 +17,7 @@ public class Dump {
 
 	public Dump(Ast ast, String in) {
 		this.in = in;
-		rethrow(() -> {
+		ex(() -> {
 			prettyPrint(ast, "");
 			return ast;
 		});

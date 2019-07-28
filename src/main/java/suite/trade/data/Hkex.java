@@ -1,6 +1,6 @@
 package suite.trade.data;
 
-import static suite.util.Friends.rethrow;
+import static suite.util.Rethrow.ex;
 
 import java.util.HashSet;
 import java.util.List;
@@ -449,7 +449,7 @@ public class Hkex {
 			json = Singleton.me.storeCache.http(url).collect(To::inputStream).doRead(om::readTree);
 		else {
 			var execute = new Execute(new String[] { "curl", url, });
-			json = rethrow(() -> om.readTree(execute.out));
+			json = ex(() -> om.readTree(execute.out));
 		}
 
 		return json;

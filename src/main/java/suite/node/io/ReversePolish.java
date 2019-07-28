@@ -1,7 +1,7 @@
 package suite.node.io;
 
 import static suite.util.Fail.fail;
-import static suite.util.Friends.rethrow;
+import static suite.util.Rethrow.ex;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -26,7 +26,7 @@ import suite.util.String_;
 public class ReversePolish {
 
 	public Node fromRpn(String s) {
-		return rethrow(() -> fromRpn(new StringReader(s)));
+		return ex(() -> fromRpn(new StringReader(s)));
 	}
 
 	public Node fromRpn(Reader reader) throws IOException {

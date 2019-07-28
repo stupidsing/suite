@@ -1,7 +1,7 @@
 package suite.util;
 
 import static suite.util.Fail.fail;
-import static suite.util.Friends.rethrow;
+import static suite.util.Rethrow.ex;
 
 import suite.primitive.IoSink;
 import suite.streamlet.FunUtil.Fun;
@@ -24,7 +24,7 @@ public class Switch<R> {
 	public <T> Switch<R> doIf(Class<T> c, IoSink<T> fun) {
 		return applyIf(c, t -> {
 			@SuppressWarnings("unchecked")
-			var r = (R) rethrow(() -> {
+			var r = (R) ex(() -> {
 				fun.f(t);
 				return t;
 			});

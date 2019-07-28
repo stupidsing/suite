@@ -1,7 +1,7 @@
 package suite.net.cluster;
 
 import static org.junit.Assert.assertEquals;
-import static suite.util.Friends.rethrow;
+import static suite.util.Rethrow.ex;
 import static suite.util.Streamlet_.forInt;
 
 import java.io.IOException;
@@ -30,7 +30,7 @@ public class ClusterProbeTest {
 		var probes = Read //
 				.from2(peers) //
 				.keys() //
-				.<String, ClusterProbe> map2(name -> name, name -> rethrow(() -> new ClusterProbeImpl(name, peers))) //
+				.<String, ClusterProbe> map2(name -> name, name -> ex(() -> new ClusterProbeImpl(name, peers))) //
 				.toMap();
 
 		for (var probe : probes.values())

@@ -1,7 +1,7 @@
 package suite.util;
 
 import static suite.util.Fail.fail;
-import static suite.util.Friends.rethrow;
+import static suite.util.Rethrow.ex;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -44,7 +44,7 @@ public class XmlUtil {
 	}
 
 	public XmlUtil() {
-		rethrow(() -> {
+		ex(() -> {
 			documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 			di = (DOMImplementationLS) DOMImplementationRegistry.newInstance().getDOMImplementation("LS");
 			lss = di.createLSSerializer();
@@ -67,7 +67,7 @@ public class XmlUtil {
 	}
 
 	public XmlNode read(InputStream is) throws SAXException {
-		return node(rethrow(() -> {
+		return node(ex(() -> {
 			var document = documentBuilder.parse(is);
 			document.normalize();
 			return document;

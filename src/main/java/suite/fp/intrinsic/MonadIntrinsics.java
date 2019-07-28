@@ -1,6 +1,6 @@
 package suite.fp.intrinsic;
 
-import static suite.util.Friends.rethrow;
+import static suite.util.Rethrow.ex;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -38,10 +38,10 @@ public class MonadIntrinsics {
 
 		var in = inputs.get(1);
 
-		return rethrow(() -> {
+		return ex(() -> {
 			var process = Runtime.getRuntime().exec(array);
 
-			var n0 = Intrinsics.enclose(callback, new Suspend(() -> rethrow(() -> Int.of(process.waitFor()))));
+			var n0 = Intrinsics.enclose(callback, new Suspend(() -> ex(() -> Int.of(process.waitFor()))));
 
 			var n1 = newReader(callback, process.getInputStream());
 			var n2 = newReader(callback, process.getErrorStream());

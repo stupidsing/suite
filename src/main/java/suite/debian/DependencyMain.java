@@ -1,6 +1,6 @@
 package suite.debian;
 
-import static suite.util.Friends.rethrow;
+import static suite.util.Rethrow.ex;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -149,7 +149,7 @@ public class DependencyMain {
 				.filter(m -> m.getName().startsWith("list") && m.getParameters().length == 0) //
 				.sink(m -> {
 					System.out.println(m.getName() + "()");
-					for (var object : rethrow(() -> (List<?>) m.invoke(this, new Object[] {})))
+					for (var object : ex(() -> (List<?>) m.invoke(this, new Object[] {})))
 						System.out.println(object);
 					System.out.println();
 					System.out.println();
@@ -174,7 +174,7 @@ public class DependencyMain {
 				, "amd64");
 		var packageName = "dkms";
 
-		var packages = rethrow(() -> aptUtil.readRepoPackages(repo));
+		var packages = ex(() -> aptUtil.readRepoPackages(repo));
 		var required = new HashSet<>(List.of(packageName));
 		var required1 = dpkgUtil.getDependeeSet(packages, required);
 

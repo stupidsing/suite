@@ -1,6 +1,6 @@
 package suite.text;
 
-import static suite.util.Friends.rethrow;
+import static suite.util.Rethrow.ex;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -103,7 +103,7 @@ class Impl implements Snapshot {
 		var list = new ArrayList<BytesPair>();
 		String line;
 		while (!String_.equals(line = Util.readLine(is), "EOF"))
-			list.add(FixieArray.of(line.split(" ")).map((f, s0, s1) -> rethrow(() -> {
+			list.add(FixieArray.of(line.split(" ")).map((f, s0, s1) -> ex(() -> {
 				var size0 = !String_.equals(s0, "N") ? Integer.valueOf(s0) : null;
 				var size1 = !String_.equals(s1, "N") ? Integer.valueOf(s1) : null;
 				Bytes bs0, bs1;
@@ -118,7 +118,7 @@ class Impl implements Snapshot {
 	}
 
 	public void writePatch(OutputStream os, List<BytesPair> list) {
-		rethrow(() -> {
+		ex(() -> {
 			for (var pair : list) {
 				var bs0 = pair.t0;
 				var bs1 = pair.t1;

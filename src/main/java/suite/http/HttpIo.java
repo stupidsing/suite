@@ -3,7 +3,7 @@ package suite.http;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static suite.util.Fail.fail;
-import static suite.util.Friends.rethrow;
+import static suite.util.Rethrow.ex;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,7 +32,7 @@ public class HttpIo {
 					.map((path0, query) -> {
 						var is1 = getContentStream(is0, headers);
 						var path1 = path0.startsWith("/") ? path0 : "/" + path0;
-						var path2 = rethrow(() -> URLDecoder.decode(path1, Defaults.charset));
+						var path2 = ex(() -> URLDecoder.decode(path1, Defaults.charset));
 
 						return String_.equals(protocol, "HTTP/1.1") //
 								? new HttpRequest(method, host, path2, query, headers, is1) //

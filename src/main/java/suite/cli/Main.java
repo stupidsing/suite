@@ -1,7 +1,7 @@
 package suite.cli;
 
 import static suite.util.Fail.fail;
-import static suite.util.Friends.rethrow;
+import static suite.util.Rethrow.ex;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -84,7 +84,7 @@ public class Main implements AutoCloseable {
 				new ServeSocket().run();
 			else if (verb != null && verb.startsWith("suite.")) {
 				var verb_ = verb;
-				rethrow(() -> {
+				ex(() -> {
 					var c = Class.forName(verb_);
 					return c.getMethod("main", String[].class).invoke(null);
 				});

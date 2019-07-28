@@ -1,6 +1,6 @@
 package suite.primitive;
 
-import static suite.util.Friends.rethrow;
+import static suite.util.Rethrow.ex;
 
 import suite.primitive.Longs.LongsBuilder;
 import suite.primitive.Longs.WriteChar;
@@ -68,7 +68,7 @@ public class Longs_ {
 	}
 
 	public static void copy(Puller<Longs> puller, WriteChar writer) {
-		rethrow(() -> {
+		ex(() -> {
 			Longs longs;
 			while ((longs = puller.pull()) != null)
 				writer.write(longs.cs, longs.start, longs.end - longs.start);

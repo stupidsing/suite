@@ -1,7 +1,7 @@
 package suite.persistent;
 
 import static java.lang.Math.max;
-import static suite.util.Friends.rethrow;
+import static suite.util.Rethrow.ex;
 
 import java.io.IOException;
 import java.util.Comparator;
@@ -163,7 +163,7 @@ public class LazyPbTreeExtentFilePersister<T> implements LazyPbTreePersister<Ext
 	}
 
 	private PersistSlot<T> loadSlot(Extent extent) {
-		return rethrow(() -> serializer.read(SerInput.of(extentFile.load(extent).collect(As::inputStream))));
+		return ex(() -> serializer.read(SerInput.of(extentFile.load(extent).collect(As::inputStream))));
 	}
 
 	private Extent saveSlot(int start, PersistSlot<T> value) {

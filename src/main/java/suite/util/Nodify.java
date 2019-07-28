@@ -1,7 +1,7 @@
 package suite.util;
 
 import static suite.util.Fail.fail;
-import static suite.util.Friends.rethrow;
+import static suite.util.Rethrow.ex;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
@@ -128,7 +128,7 @@ public class Nodify {
 				}, n -> {
 					var tree = Tree.decompose(n, TermOp.COLON_);
 					if (tree != null) {
-						var clazz1 = rethrow(() -> Class.forName(Atom.name(tree.getLeft())));
+						var clazz1 = ex(() -> Class.forName(Atom.name(tree.getLeft())));
 						return apply_(tree.getRight(), getNodifier(clazz1));
 					} else
 						// happens when an enum implements an interface
@@ -141,7 +141,7 @@ public class Nodify {
 						.map(f -> Pair.of(Atom.of(f.name), f)) //
 						.toList();
 
-				return new Nodifier(o -> rethrow(() -> {
+				return new Nodifier(o -> ex(() -> {
 					var map = new HashMap<Node, Reference>();
 					for (var pair : pairs) {
 						var fieldInfo = pair.v;
@@ -149,7 +149,7 @@ public class Nodify {
 						map.put(pair.k, Reference.of(value));
 					}
 					return Dict.of(map);
-				}), n -> rethrow(() -> {
+				}), n -> ex(() -> {
 					var map = Dict.m(n);
 					var o1 = Object_.new_(clazz);
 					for (var pair : pairs) {

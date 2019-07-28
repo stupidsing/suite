@@ -1,6 +1,6 @@
 package suite.telegram;
 
-import static suite.util.Friends.rethrow;
+import static suite.util.Rethrow.ex;
 
 import java.nio.file.Files;
 
@@ -22,7 +22,7 @@ public class TelegramBot {
 	}
 
 	public void bot(FoldOp<Integer, String> fun) {
-		rethrow(() -> {
+		ex(() -> {
 			return new TelegramBotsApi().registerBot(new TelegramLongPollingBot() {
 				public String getBotUsername() {
 					return "Kowloonbot";
@@ -30,7 +30,7 @@ public class TelegramBot {
 
 				public String getBotToken() {
 					var path = Defaults.tmp("kowloonbot.token");
-					return rethrow(() -> Files.readAllLines(path)).iterator().next();
+					return ex(() -> Files.readAllLines(path)).iterator().next();
 				}
 
 				public void onUpdateReceived(Update update) {
@@ -41,7 +41,7 @@ public class TelegramBot {
 						sendMessage.setChatId(message.getChat().getId().toString());
 						sendMessage.setText(fun.apply(message.getFrom().getId(), message.getText()));
 
-						rethrow(() -> sendApiMethod(sendMessage));
+						ex(() -> sendApiMethod(sendMessage));
 					}
 				}
 			});

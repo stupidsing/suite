@@ -1,6 +1,6 @@
 package suite.parser;
 
-import static suite.util.Friends.rethrow;
+import static suite.util.Rethrow.ex;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -30,7 +30,7 @@ public class IncludePreprocessor {
 	}
 
 	public List<Run> preprocess(String in) {
-		return rethrow(() -> {
+		return ex(() -> {
 			var runs = new ArrayList<Run>();
 			doIncludes(dir, in, true, runs);
 			return runs;

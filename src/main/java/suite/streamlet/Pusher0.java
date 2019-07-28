@@ -1,6 +1,6 @@
 package suite.streamlet;
 
-import static suite.util.Friends.rethrow;
+import static suite.util.Rethrow.ex;
 
 import java.util.HashSet;
 import java.util.Objects;
@@ -143,7 +143,7 @@ public class Pusher0<T> {
 	public Puller<T> pushee() {
 		var queue = new NullableSyncQueue<T>();
 		wire_(queue::offerQuietly);
-		return Puller.of(() -> rethrow(queue::take));
+		return Puller.of(() -> ex(queue::take));
 	}
 
 	public <U> Pusher0<U> redirect(Redirector<T, U> redirector) {

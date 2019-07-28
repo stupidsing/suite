@@ -1,6 +1,6 @@
 package suite.jdk;
 
-import static suite.util.Friends.rethrow;
+import static suite.util.Rethrow.ex;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -72,7 +72,7 @@ public class DependencyTest {
 				.from(sourceDirs) //
 				.map(sourceDir -> Paths.get(sourceDir + "/" + p)) //
 				.filter(path -> Files.exists(path)) //
-				.concatMap(path -> rethrow(() -> Read.from(Files.readAllLines(path)))) //
+				.concatMap(path -> ex(() -> Read.from(Files.readAllLines(path)))) //
 				.filter(line -> line.startsWith("import ")) //
 				.map(line -> line.split(" ")[1].replace(";", "")) //
 				.toList();

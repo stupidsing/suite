@@ -1,7 +1,7 @@
 package suite.util;
 
 import static suite.util.Fail.fail;
-import static suite.util.Friends.rethrow;
+import static suite.util.Rethrow.ex;
 
 import java.io.InputStream;
 import java.io.Reader;
@@ -43,17 +43,17 @@ public class Util {
 
 	public static Method methodOf(Class<?> clazz) {
 		if (clazz == BiPredicate.class)
-			return rethrow(() -> clazz.getMethod("test", Object.class, Object.class));
+			return ex(() -> clazz.getMethod("test", Object.class, Object.class));
 		else if (clazz == Fun.class || clazz == Function.class)
-			return rethrow(() -> clazz.getMethod("apply", Object.class));
+			return ex(() -> clazz.getMethod("apply", Object.class));
 		else if (clazz == Fun2.class)
-			return rethrow(() -> clazz.getMethod("apply", Object.class, Object.class));
+			return ex(() -> clazz.getMethod("apply", Object.class, Object.class));
 		else if (clazz == Predicate.class)
-			return rethrow(() -> clazz.getMethod("test", Object.class));
+			return ex(() -> clazz.getMethod("test", Object.class));
 		else if (clazz == Sink.class)
-			return rethrow(() -> clazz.getMethod("sink", Object.class));
+			return ex(() -> clazz.getMethod("sink", Object.class));
 		else if (clazz == Source.class)
-			return rethrow(() -> clazz.getMethod("g"));
+			return ex(() -> clazz.getMethod("g"));
 		else
 			try {
 				return Read //
@@ -71,7 +71,7 @@ public class Util {
 	 * with non-ASCII encoding characters.
 	 */
 	public static String readLine(InputStream is) {
-		return rethrow(() -> {
+		return ex(() -> {
 			var sb = new StringBuilder();
 			int c;
 			while (0 <= (c = is.read()) && c != 10) {
@@ -84,7 +84,7 @@ public class Util {
 	}
 
 	public static String readLine(Reader reader) {
-		return rethrow(() -> {
+		return ex(() -> {
 			var sb = new StringBuilder();
 			int c;
 			while (0 <= (c = reader.read()) && c != 10) {

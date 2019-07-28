@@ -1,7 +1,7 @@
 package suite.jdk.gen.pass;
 
 import static suite.util.Fail.fail;
-import static suite.util.Friends.rethrow;
+import static suite.util.Rethrow.ex;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -136,7 +136,7 @@ public class FunRewrite extends FunFactory {
 			var set = e1 instanceof FieldSetFunExpr ? ((FieldSetFunExpr) e1).value : null;
 			var object0 = rewrite(object);
 			var clazz = fti.classOf(object0);
-			var field = rethrow(() -> clazz.getField(fieldName));
+			var field = ex(() -> clazz.getField(fieldName));
 			var object1 = object0.cast_(field.getDeclaringClass());
 			var fieldType = Type.getType(field.getType());
 			return set == null ? object1.field(fieldName, fieldType) : object1.fieldSet(fieldName, fieldType, set);

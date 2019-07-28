@@ -1,6 +1,6 @@
 package suite.fp.intrinsic;
 
-import static suite.util.Friends.rethrow;
+import static suite.util.Rethrow.ex;
 
 import java.io.Reader;
 import java.util.HashMap;
@@ -82,7 +82,7 @@ public class Intrinsics {
 	}
 
 	public static PerPointer<Chars> read(Reader reader) {
-		return IndexedSourceReader.of(() -> rethrow(() -> {
+		return IndexedSourceReader.of(() -> ex(() -> {
 			var buffer = new char[Defaults.bufferSize];
 			var nCharsRead = reader.read(buffer);
 			if (0 <= nCharsRead)
@@ -107,7 +107,7 @@ public class Intrinsics {
 			for (var field : clazz.getFields())
 				if (Intrinsic.class.isAssignableFrom(field.getType())) {
 					var name = clazz.getSimpleName() + "." + field.getName();
-					rethrow(() -> intrinsics.put(name, (Intrinsic) field.get(instance)));
+					ex(() -> intrinsics.put(name, (Intrinsic) field.get(instance)));
 				}
 		}
 	}

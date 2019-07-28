@@ -1,6 +1,6 @@
 package suite.object;
 
-import static suite.util.Friends.rethrow;
+import static suite.util.Rethrow.ex;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -21,7 +21,7 @@ public class AutoObject<T extends AutoObject<T>> extends BaseObject<T> implement
 	public T clone() {
 		var map = new HashMap<IdentityKey<?>, AutoObject<?>>();
 
-		return rethrow(() -> {
+		return ex(() -> {
 			@SuppressWarnings("unchecked")
 			var object = (T) new Object() {
 				private Object c_(Object v0) throws IllegalAccessException {

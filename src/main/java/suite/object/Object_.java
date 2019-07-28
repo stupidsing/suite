@@ -1,7 +1,7 @@
 package suite.object;
 
 import static suite.util.Fail.fail;
-import static suite.util.Friends.rethrow;
+import static suite.util.Rethrow.ex;
 
 import java.io.Closeable;
 import java.lang.reflect.Array;
@@ -41,7 +41,7 @@ public class Object_ {
 	public static void closeQuietly(Closeable... os) {
 		for (var o : os)
 			if (o != null)
-				rethrow(() -> {
+				ex(() -> {
 					o.close();
 					return o;
 				});
@@ -126,7 +126,7 @@ public class Object_ {
 					if (object instanceof Map) {
 						var map = (Map<?, ?>) object;
 						var className = map.get("@class").toString();
-						var clazz1 = rethrow(() -> Class.forName(className));
+						var clazz1 = ex(() -> Class.forName(className));
 						return apply_(mapper(clazz1).unmap, object);
 					} else
 						// happens when an enum implements an interface
@@ -140,12 +140,12 @@ public class Object_ {
 						.map(field -> Pair.of(field.getName(), field)) //
 						.toList();
 
-				mapper = new Mapper(object -> rethrow(() -> {
+				mapper = new Mapper(object -> ex(() -> {
 					var map = new HashMap<>();
 					for (var sf : sfs)
 						map.put(sf.k, sf.v.get(object));
 					return map;
-				}), object -> rethrow(() -> {
+				}), object -> ex(() -> {
 					var map = (Map<?, ?>) object;
 					var object1 = new_(clazz);
 					for (var sf : sfs)
@@ -188,7 +188,7 @@ public class Object_ {
 	}
 
 	public static <T> T new_(Class<T> clazz) {
-		return rethrow(() -> {
+		return ex(() -> {
 			var ctor = clazz.getDeclaredConstructor();
 			ctor.setAccessible(true);
 			return ctor.newInstance();
@@ -200,7 +200,7 @@ public class Object_ {
 	}
 
 	public static void wait(Object object, int timeOut) {
-		rethrow(() -> {
+		ex(() -> {
 			object.wait(timeOut);
 			return object;
 		});

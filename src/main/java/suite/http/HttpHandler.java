@@ -3,7 +3,7 @@ package suite.http;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static suite.util.Fail.fail;
-import static suite.util.Friends.rethrow;
+import static suite.util.Rethrow.ex;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,7 +35,7 @@ public interface HttpHandler {
 	}
 
 	public static HttpHandler ofPath(Path root) {
-		return request -> rethrow(() -> {
+		return request -> ex(() -> {
 			var path = root;
 			long size;
 

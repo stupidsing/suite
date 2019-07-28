@@ -2,7 +2,7 @@ package suite.serialize;
 
 import static java.lang.Math.min;
 import static suite.util.Fail.fail;
-import static suite.util.Friends.rethrow;
+import static suite.util.Rethrow.ex;
 
 import java.io.IOException;
 import java.lang.reflect.Modifier;
@@ -140,7 +140,7 @@ public class Serialize {
 
 		return new Serializer<>() {
 			public T read(SerInput si) throws IOException {
-				return rethrow(() -> {
+				return ex(() -> {
 					Object object;
 					if (defaultCtor != null) {
 						object = defaultCtor.newInstance();
@@ -164,7 +164,7 @@ public class Serialize {
 				for (var pair : pairs) {
 					@SuppressWarnings("unchecked")
 					var serializer1 = (Serializer<Object>) pair.v;
-					serializer1.write(so, rethrow(() -> pair.k.get(t)));
+					serializer1.write(so, ex(() -> pair.k.get(t)));
 				}
 
 			}
@@ -451,7 +451,7 @@ public class Serialize {
 	private <T> Serializer<T> poly(Class<T> interface_) {
 		return new Serializer<>() {
 			public T read(SerInput si) throws IOException {
-				var c = rethrow(() -> Class.forName(si.readUTF()));
+				var c = ex(() -> Class.forName(si.readUTF()));
 				if (interface_.isAssignableFrom(c)) {
 					@SuppressWarnings("unchecked")
 					var t = (T) auto(c).read(si);

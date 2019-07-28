@@ -1,6 +1,6 @@
 package suite.primitive;
 
-import static suite.util.Friends.rethrow;
+import static suite.util.Rethrow.ex;
 
 import suite.primitive.Doubles.DoublesBuilder;
 import suite.primitive.Doubles.WriteChar;
@@ -68,7 +68,7 @@ public class Doubles_ {
 	}
 
 	public static void copy(Puller<Doubles> puller, WriteChar writer) {
-		rethrow(() -> {
+		ex(() -> {
 			Doubles doubles;
 			while ((doubles = puller.pull()) != null)
 				writer.write(doubles.cs, doubles.start, doubles.end - doubles.start);

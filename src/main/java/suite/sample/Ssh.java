@@ -1,6 +1,6 @@
 package suite.sample;
 
-import static suite.util.Friends.rethrow;
+import static suite.util.Rethrow.ex;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
@@ -72,7 +72,7 @@ public class Ssh {
 	private <T> T session(SshFun<Session, T> fun) {
 		return Defaults //
 				.bindSecrets("ssh") //
-				.map((host, portString, username, password) -> rethrow(() -> {
+				.map((host, portString, username, password) -> ex(() -> {
 					return session(host, Integer.valueOf(portString), username, password, fun);
 				}));
 	}

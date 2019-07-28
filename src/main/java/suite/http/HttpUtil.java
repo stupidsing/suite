@@ -1,7 +1,7 @@
 package suite.http;
 
 import static java.lang.Math.max;
-import static suite.util.Friends.rethrow;
+import static suite.util.Rethrow.ex;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -133,7 +133,7 @@ public class HttpUtil {
 	}
 
 	public static Map<String, URI> resolveLinks(URI uri) {
-		var out = get(rethrow(() -> uri.toURL())).utf8().collect(As::joined);
+		var out = get(ex(() -> uri.toURL())).utf8().collect(As::joined);
 		var links = new HashMap<String, URI>();
 		FixieArray<String> m;
 		while ((m = ParseUtil.fitCaseInsensitive(out, "<a", "href=\"", "\"", ">", "</a>")) != null) {
@@ -156,7 +156,7 @@ public class HttpUtil {
 
 		Thread_.sleepQuietly(start - current);
 
-		return rethrow(() -> Boolean.TRUE ? httpApache(method, url, in, headers) : httpJre(method, url, in, headers));
+		return ex(() -> Boolean.TRUE ? httpApache(method, url, in, headers) : httpJre(method, url, in, headers));
 	}
 
 	// keep timestamps to avoid overloading servers

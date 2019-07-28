@@ -1,6 +1,6 @@
 package suite.jdk;
 
-import static suite.util.Friends.rethrow;
+import static suite.util.Rethrow.ex;
 
 import suite.http.HttpUtil;
 import suite.util.XmlUtil;
@@ -14,7 +14,7 @@ public class Maven {
 	public String getLatestUrl(String m2repo, String groupId, String artifactId) {
 		var url = m2repo + groupId.replace('.', '/') + "/" + artifactId + "/maven-metadata.xml";
 
-		var version = HttpUtil.get(url).inputStream().doRead(is -> rethrow(() -> new XmlUtil() //
+		var version = HttpUtil.get(url).inputStream().doRead(is -> ex(() -> new XmlUtil() //
 				.read(is) //
 				.children("metadata") //
 				.uniqueResult() //

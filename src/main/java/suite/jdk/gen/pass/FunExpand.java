@@ -1,6 +1,6 @@
 package suite.jdk.gen.pass;
 
-import static suite.util.Friends.rethrow;
+import static suite.util.Rethrow.ex;
 
 import org.apache.bcel.generic.Type;
 
@@ -85,7 +85,7 @@ public class FunExpand extends FunFactory {
 			return inspect //
 					.fields(e0.getClass()) //
 					.toInt(Obj_Int.sum(field -> {
-						var e1 = rethrow(() -> field.get(e0));
+						var e1 = ex(() -> field.get(e0));
 						if (e1 instanceof FunExpr)
 							return weight_(e1);
 						else if (e1 instanceof Iterable<?>)

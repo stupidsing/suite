@@ -1,6 +1,6 @@
 package suite.funp.p0;
 
-import static suite.util.Friends.rethrow;
+import static suite.util.Rethrow.ex;
 
 import java.io.IOException;
 
@@ -56,7 +56,7 @@ public class P00Consult {
 	}
 
 	private Node consult_(String url, Fun<ReadStream, Node> r0) {
-		Fun<SourceEx<ReadStream, IOException>, Node> r1 = source -> rethrow(source::g).doRead(r0::apply);
+		Fun<SourceEx<ReadStream, IOException>, Node> r1 = source -> ex(source::g).doRead(r0::apply);
 
 		if (url.startsWith("file://"))
 			return r1.apply(() -> FileUtil.in(url.substring(7)));

@@ -1,7 +1,7 @@
 package suite.trade.data;
 
 import static suite.util.Fail.fail;
-import static suite.util.Friends.rethrow;
+import static suite.util.Rethrow.ex;
 
 import java.io.ByteArrayInputStream;
 import java.util.Map;
@@ -35,7 +35,7 @@ public class Hsbc {
 							+ "&lang=en'";
 
 					var is = new ByteArrayInputStream(Execute.shell(command).getBytes(Defaults.charset));
-					var xml = rethrow(() -> xmlUtil.read(is));
+					var xml = ex(() -> xmlUtil.read(is));
 
 					var quote = Read //
 							.each(xml) //

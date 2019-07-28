@@ -1,7 +1,7 @@
 package suite.object;
 
 import static suite.util.Fail.fail;
-import static suite.util.Friends.rethrow;
+import static suite.util.Rethrow.ex;
 
 import java.util.List;
 
@@ -22,7 +22,7 @@ import suite.util.String_;
 public class MapObject_ {
 
 	public static <T extends MapObject<T>> MapObject<T> construct(Class<?> clazz, List<?> list) {
-		return rethrow(() -> {
+		return ex(() -> {
 			var size = list.size();
 			var m = Read //
 					.from(clazz.getMethods()) //
@@ -70,7 +70,7 @@ public class MapObject_ {
 		else
 			p = fail();
 
-		return (List<?>) rethrow(() -> m.invoke(object, p));
+		return (List<?>) ex(() -> m.invoke(object, p));
 	}
 
 }

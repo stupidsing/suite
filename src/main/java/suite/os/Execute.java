@@ -1,7 +1,7 @@
 package suite.os;
 
 import static suite.util.Fail.fail;
-import static suite.util.Friends.rethrow;
+import static suite.util.Rethrow.ex;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -51,7 +51,7 @@ public class Execute {
 		var bos0 = new ByteArrayOutputStream();
 		var bos1 = new ByteArrayOutputStream();
 
-		var process = rethrow(() -> Runtime.getRuntime().exec(command));
+		var process = ex(() -> Runtime.getRuntime().exec(command));
 
 		try {
 			var pis = process.getInputStream();

@@ -1,7 +1,7 @@
 package suite.http;
 
 import static suite.util.Fail.fail;
-import static suite.util.Friends.rethrow;
+import static suite.util.Rethrow.ex;
 
 import java.nio.charset.Charset;
 import java.util.Arrays;
@@ -31,7 +31,7 @@ public class Jwt {
 		var payload = decodeUrl(array[1]);
 		var hash1 = urlDecoder.decode(array[2]);
 
-		var json = rethrow(() -> om.readTree(header));
+		var json = ex(() -> om.readTree(header));
 		var b = String_.equals(json.path("typ").textValue(), "JWT") && String_.equals(json.path("alg").textValue(), "HS256");
 		var data = encodeUrl(header) + "." + encodeUrl(payload);
 		var hash = sha2.sha256(data.getBytes(charset)); // sha2.hmac(secret, data.getBytes(charset))

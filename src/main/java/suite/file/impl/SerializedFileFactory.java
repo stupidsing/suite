@@ -1,6 +1,6 @@
 package suite.file.impl;
 
-import static suite.util.Friends.rethrow;
+import static suite.util.Rethrow.ex;
 
 import java.io.IOException;
 
@@ -24,7 +24,7 @@ public class SerializedFileFactory {
 			}
 
 			public V load(int pointer) {
-				return rethrow(() -> serializer.read(SerInput.of(pageFile.load(pointer).collect(As::inputStream))));
+				return ex(() -> serializer.read(SerInput.of(pageFile.load(pointer).collect(As::inputStream))));
 			}
 
 			public void save(int pointer, V value) {

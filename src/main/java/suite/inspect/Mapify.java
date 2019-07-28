@@ -1,6 +1,6 @@
 package suite.inspect;
 
-import static suite.util.Friends.rethrow;
+import static suite.util.Rethrow.ex;
 import static suite.util.Streamlet_.forInt;
 
 import java.lang.reflect.Array;
@@ -117,7 +117,7 @@ public class Mapify {
 					if (o instanceof Map) {
 						var map = (Map<?, ?>) o;
 						var className = map.get("@class").toString();
-						var clazz1 = rethrow(() -> Class.forName(className));
+						var clazz1 = ex(() -> Class.forName(className));
 						return apply_(o, getMapifier(clazz1).unmapify);
 					} else
 						// happens when an enum implements an interface
@@ -132,9 +132,9 @@ public class Mapify {
 				return new Mapifier(o -> {
 					return Read //
 							.from(fis) //
-							.map2(fi -> fi.name, fi -> apply_(rethrow(() -> fi.field.get(o)), fi.mapifier.mapify)) //
+							.map2(fi -> fi.name, fi -> apply_(ex(() -> fi.field.get(o)), fi.mapifier.mapify)) //
 							.toMap();
-				}, o -> rethrow(() -> {
+				}, o -> ex(() -> {
 					var map = (Map<?, ?>) o;
 					var object1 = Object_.new_(clazz);
 					for (var fi : fis)

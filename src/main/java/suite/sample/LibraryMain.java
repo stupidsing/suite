@@ -1,6 +1,6 @@
 package suite.sample;
 
-import static suite.util.Friends.rethrow;
+import static suite.util.Rethrow.ex;
 import static suite.util.Streamlet_.forInt;
 
 import java.nio.file.Files;
@@ -44,7 +44,7 @@ public class LibraryMain {
 		var partition = FileUtil //
 				.findPaths(Paths.get(inputDir)) //
 				.filter(path -> fileExtensions.contains(FileUtil.getFileExtension(path))) //
-				.map2(path -> rethrow(() -> Files.size(path))) //
+				.map2(path -> ex(() -> Files.size(path))) //
 				.partition((path, size) -> 0 < size);
 
 		// remove empty files
@@ -53,7 +53,7 @@ public class LibraryMain {
 		// get all file information
 		var path_fileInfos = partition.k //
 				.map2((path, size) -> {
-					var attrs = rethrow(() -> Files.readAttributes(path, BasicFileAttributes.class));
+					var attrs = ex(() -> Files.readAttributes(path, BasicFileAttributes.class));
 
 					var tags = forInt(path.getNameCount()) //
 							.map(i -> path.getName(i).toString()) //
@@ -61,7 +61,7 @@ public class LibraryMain {
 							.collect();
 
 					var fileInfo = new FileInfo();
-					fileInfo.md5 = Md5Crypt.md5Crypt(rethrow(() -> Files.readAllBytes(path)));
+					fileInfo.md5 = Md5Crypt.md5Crypt(ex(() -> Files.readAllBytes(path)));
 					fileInfo.tags = tags;
 					return fileInfo;
 				});
@@ -78,14 +78,14 @@ public class LibraryMain {
 					// move file to library, by md5
 					var path1 = Paths.get(libraryDir, fileInfo.md5.substring(0, 2), fileInfo.md5);
 					FileUtil.mkdir(path1.getParent());
-					rethrow(() -> Files.move(path, path1, StandardCopyOption.REPLACE_EXISTING));
+					ex(() -> Files.move(path, path1, StandardCopyOption.REPLACE_EXISTING));
 					return fileInfo;
 				}) //
 				.concatMap((path, fileInfo) -> fileInfo.tags.map(tag -> {
 
 					// add to tag indices
 					var path1 = Paths.get(tagsDir, tag, fileInfo.md5);
-					return rethrow(() -> {
+					return ex(() -> {
 						Files.newOutputStream(path1).close();
 						return Pair.of(tag, fileInfo);
 					});

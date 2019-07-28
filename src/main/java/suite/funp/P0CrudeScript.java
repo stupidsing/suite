@@ -1,7 +1,7 @@
 package suite.funp;
 
 import static suite.util.Fail.fail;
-import static suite.util.Friends.rethrow;
+import static suite.util.Rethrow.ex;
 
 import java.io.FileReader;
 import java.util.ArrayList;
@@ -40,7 +40,7 @@ import suite.util.To;
 public class P0CrudeScript {
 
 	public Funp parse(String in) { // "{ return 1 + 2 * 3; }"
-		var ebnf = rethrow(() -> new Ebnf(new FileReader("src/main/ebnf/crude-script.ebnf")));
+		var ebnf = ex(() -> new Ebnf(new FileReader("src/main/ebnf/crude-script.ebnf")));
 		var ast = ebnf.parse("crude-script", in);
 
 		var node = new Object() {

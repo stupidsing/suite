@@ -2,7 +2,7 @@ package suite.primitive;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
-import static suite.util.Friends.rethrow;
+import static suite.util.Rethrow.ex;
 
 import java.io.IOException;
 import java.nio.DoubleBuffer;
@@ -215,7 +215,7 @@ public class Doubles implements Iterable<Double> {
 	}
 
 	public void write(WriteChar out) {
-		rethrow(() -> {
+		ex(() -> {
 			out.write(cs, start, end - start);
 			return out;
 		});

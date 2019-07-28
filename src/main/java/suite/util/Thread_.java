@@ -1,6 +1,6 @@
 package suite.util;
 
-import static suite.util.Friends.rethrow;
+import static suite.util.Rethrow.ex;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -28,7 +28,7 @@ public class Thread_ {
 		}
 
 		public void join_() {
-			rethrow(() -> {
+			ex(() -> {
 				join();
 				return this;
 			});

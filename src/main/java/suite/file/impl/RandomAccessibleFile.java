@@ -1,6 +1,6 @@
 package suite.file.impl;
 
-import static suite.util.Friends.rethrow;
+import static suite.util.Rethrow.ex;
 
 import java.io.Closeable;
 import java.io.RandomAccessFile;
@@ -19,7 +19,7 @@ public class RandomAccessibleFile implements Closeable {
 
 	public RandomAccessibleFile(Path path) {
 		FileUtil.mkdir(path.getParent());
-		file = rethrow(() -> new RandomAccessFile(path.toFile(), "rw"));
+		file = ex(() -> new RandomAccessFile(path.toFile(), "rw"));
 		channel = file.getChannel();
 	}
 
@@ -29,14 +29,14 @@ public class RandomAccessibleFile implements Closeable {
 	}
 
 	public void sync() {
-		rethrow(() -> {
+		ex(() -> {
 			channel.force(true);
 			return channel;
 		});
 	}
 
 	public Bytes load(int start, int end) {
-		return rethrow(() -> {
+		return ex(() -> {
 			var size = end - start;
 			var bb = ByteBuffer.allocate(size);
 			channel.read(bb, start);
@@ -46,7 +46,7 @@ public class RandomAccessibleFile implements Closeable {
 	}
 
 	public void save(int start, Bytes bytes) {
-		rethrow(() -> {
+		ex(() -> {
 			channel.write(bytes.toByteBuffer(), start);
 			return channel;
 		});

@@ -2,7 +2,7 @@ package suite.trade.data;
 
 import static java.lang.Math.max;
 import static suite.util.Fail.fail;
-import static suite.util.Friends.rethrow;
+import static suite.util.Rethrow.ex;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -37,7 +37,7 @@ public class TextDatabase {
 
 	public void join() {
 		var thread = saveThread;
-		rethrow(() -> {
+		ex(() -> {
 			if (thread != null)
 				thread.join();
 			return thread;

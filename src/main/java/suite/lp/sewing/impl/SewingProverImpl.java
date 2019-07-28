@@ -2,7 +2,7 @@ package suite.lp.sewing.impl;
 
 import static java.lang.Math.max;
 import static suite.util.Fail.fail;
-import static suite.util.Friends.rethrow;
+import static suite.util.Rethrow.ex;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -462,7 +462,7 @@ public class SewingProverImpl implements ProverFactory {
 		} else if ((m = Suite.pattern("builtin:.0:.1 .2").match(node)) != null) {
 			var className = Atom.name(m[0]);
 			var fieldName = Atom.name(m[1]);
-			BuiltinPredicate predicate = rethrow(() -> {
+			BuiltinPredicate predicate = ex(() -> {
 				var clazz = Class.forName(className);
 				return (BuiltinPredicate) clazz.getField(fieldName).get(Object_.new_(clazz));
 			});

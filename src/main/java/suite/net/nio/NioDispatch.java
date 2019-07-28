@@ -2,7 +2,7 @@ package suite.net.nio;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
-import static suite.util.Friends.rethrow;
+import static suite.util.Rethrow.ex;
 import static suite.util.Streamlet_.forInt;
 
 import java.io.Closeable;
@@ -345,7 +345,7 @@ public class NioDispatch implements Closeable {
 			var tdw = td0.time;
 			var wait = max(0l, min(500l, tdw - now));
 
-			rethrow(() -> selector.select(key -> {
+			ex(() -> selector.select(key -> {
 				try {
 					processKey(key);
 				} catch (Exception ex) {

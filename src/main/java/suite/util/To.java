@@ -1,7 +1,7 @@
 package suite.util;
 
 import static suite.util.Fail.fail;
-import static suite.util.Friends.rethrow;
+import static suite.util.Rethrow.ex;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
@@ -167,7 +167,7 @@ public class To {
 		var bis = new BufferedInputStream(is);
 		return Puller.of(() -> {
 			var bs = new byte[Defaults.bufferSize];
-			var nBytesRead = rethrow(() -> bis.read(bs));
+			var nBytesRead = ex(() -> bis.read(bs));
 			return 0 <= nBytesRead ? Bytes.of(bs, 0, nBytesRead) : null;
 		}).closeAtEnd(bis).closeAtEnd(is);
 	}
@@ -199,7 +199,7 @@ public class To {
 	public static Source<Bytes> source(InputStream is) {
 		return () -> {
 			var bs = new byte[Defaults.bufferSize];
-			var nBytesRead = rethrow(() -> is.read(bs));
+			var nBytesRead = ex(() -> is.read(bs));
 
 			if (0 <= nBytesRead)
 				return Bytes.of(bs, 0, nBytesRead);
@@ -257,7 +257,7 @@ public class To {
 	}
 
 	public static URL url(String s) {
-		return rethrow(() -> new URL(s));
+		return ex(() -> new URL(s));
 	}
 
 	public static float[] vector(float[] fs, Flt_Dbl fun) {

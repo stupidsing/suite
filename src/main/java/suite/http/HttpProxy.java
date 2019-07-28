@@ -1,6 +1,6 @@
 package suite.http;
 
-import static suite.util.Friends.rethrow;
+import static suite.util.Rethrow.ex;
 
 import java.net.Socket;
 
@@ -81,7 +81,7 @@ public class HttpProxy {
 	}
 
 	private Socket connect(String path) {
-		return target.apply(path).map((port1, host1) -> rethrow(() -> new Socket(host1, port1)));
+		return target.apply(path).map((port1, host1) -> ex(() -> new Socket(host1, port1)));
 	}
 
 }

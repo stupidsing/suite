@@ -1,6 +1,6 @@
 package suite.fp;
 
-import static suite.util.Friends.rethrow;
+import static suite.util.Rethrow.ex;
 
 import suite.BindMapUtil;
 import suite.node.Node;
@@ -110,7 +110,7 @@ public class Matcher<T> {
 
 	public T match(Node node) {
 		var map = bindMapUtil.pattern(p).match(node);
-		return rethrow(() -> {
+		return ex(() -> {
 			if (map != null) {
 				var t = ctor.g();
 				var clazz = t.getClass();

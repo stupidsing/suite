@@ -1,6 +1,6 @@
 package suite.util;
 
-import static suite.util.Friends.rethrow;
+import static suite.util.Rethrow.ex;
 
 import java.util.concurrent.SynchronousQueue;
 
@@ -19,7 +19,7 @@ public class NullableSyncQueue<T> {
 	private Object nullObject = new Object();
 
 	public void offerQuietly(T t) {
-		rethrow(() -> {
+		ex(() -> {
 			offer(t);
 			return t;
 		});
@@ -37,7 +37,7 @@ public class NullableSyncQueue<T> {
 	}
 
 	public T takeQuietly() {
-		return rethrow(this::take);
+		return ex(this::take);
 	}
 
 	public void offer(T t) throws InterruptedException {

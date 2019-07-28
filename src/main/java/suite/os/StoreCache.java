@@ -1,6 +1,6 @@
 package suite.os;
 
-import static suite.util.Friends.rethrow;
+import static suite.util.Rethrow.ex;
 
 import java.io.DataInputStream;
 import java.io.IOException;
@@ -89,7 +89,7 @@ public class StoreCache {
 	}
 
 	public Puller<Bytes> getPuller(Bytes key, Source<Puller<Bytes>> source) {
-		return rethrow(() -> {
+		return ex(() -> {
 			var current = System.currentTimeMillis();
 			Path path;
 			var i = 0;
@@ -119,7 +119,7 @@ public class StoreCache {
 				var vdo = SerOutput.of(vos);
 
 				return Puller //
-						.of(() -> rethrow(() -> {
+						.of(() -> ex(() -> {
 							var value = puller.pull();
 							if (value != null)
 								vdo.writeBytes(value);
@@ -132,7 +132,7 @@ public class StoreCache {
 	}
 
 	private Pair<Boolean, Path> match(Bytes key) {
-		return rethrow(() -> {
+		return ex(() -> {
 			var current = System.currentTimeMillis();
 			var i = 0;
 			Path path;
@@ -178,7 +178,7 @@ public class StoreCache {
 			private boolean cont = true;
 
 			public Bytes g() {
-				return rethrow(() -> {
+				return ex(() -> {
 					if (cont) {
 						var vb = new byte[Defaults.bufferSize];
 						int n, nBytesRead = 0;
@@ -195,7 +195,7 @@ public class StoreCache {
 	}
 
 	private boolean isUpToDate(Path path, long current) {
-		return current - rethrow(() -> Files.getLastModifiedTime(path)).toMillis() < 1000l * 86400 * documentAge;
+		return current - ex(() -> Files.getLastModifiedTime(path)).toMillis() < 1000l * 86400 * documentAge;
 	}
 
 	private Path path(Bytes key, int i, String suffix) {

@@ -1,7 +1,7 @@
 package suite.fs.impl;
 
 import static java.lang.Math.min;
-import static suite.util.Friends.rethrow;
+import static suite.util.Rethrow.ex;
 
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
@@ -116,7 +116,7 @@ public class FileSystemKeyUtil {
 	}
 
 	public Bytes hash(Bytes bytes) {
-		var md = rethrow(() -> MessageDigest.getInstance("SHA-256"));
+		var md = ex(() -> MessageDigest.getInstance("SHA-256"));
 		md.update(bytes.toArray());
 		return Bytes.of(md.digest());
 	}

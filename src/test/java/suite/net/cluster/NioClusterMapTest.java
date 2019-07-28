@@ -2,7 +2,7 @@ package suite.net.cluster;
 
 import static org.junit.Assert.assertEquals;
 import static suite.util.Fail.fail;
-import static suite.util.Friends.rethrow;
+import static suite.util.Rethrow.ex;
 import static suite.util.Streamlet_.forInt;
 
 import java.io.IOException;
@@ -42,7 +42,7 @@ public class NioClusterMapTest {
 		var clusters = Read //
 				.from2(peers) //
 				.keys() //
-				.map2(name -> name, name -> rethrow(() -> new NioCluster(name, peers))) //
+				.map2(name -> name, name -> ex(() -> new NioCluster(name, peers))) //
 				.toMap();
 
 		for (var cluster : clusters.values())

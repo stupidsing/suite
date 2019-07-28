@@ -1,6 +1,6 @@
 package suite.jdk;
 
-import static suite.util.Friends.rethrow;
+import static suite.util.Rethrow.ex;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -37,7 +37,7 @@ public class JdkLoadClassUtil extends JdkUtil implements Closeable {
 	private <T> Class<? extends T> load(String canonicalName) {
 		Log_.info("Loading class " + canonicalName);
 
-		return rethrow(() -> {
+		return ex(() -> {
 			@SuppressWarnings("unchecked")
 			var clazz = (Class<? extends T>) classLoader.loadClass(canonicalName);
 			return clazz;

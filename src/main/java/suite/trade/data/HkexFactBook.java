@@ -1,7 +1,7 @@
 package suite.trade.data;
 
 import static suite.util.Fail.fail;
-import static suite.util.Friends.rethrow;
+import static suite.util.Rethrow.ex;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -129,7 +129,7 @@ public class HkexFactBook {
 
 	@SuppressWarnings("unused")
 	private String getUrl0(int year, String section) {
-		var uri0 = rethrow(() -> new URI("https://www.hkex.com.hk/eng/stat/statrpt/factbook/factbook.htm"));
+		var uri0 = ex(() -> new URI("https://www.hkex.com.hk/eng/stat/statrpt/factbook/factbook.htm"));
 		var links0 = HttpUtil.resolveLinks(uri0);
 		var uri1 = links0.get(Integer.toString(year));
 		var links1 = HttpUtil.resolveLinks(uri1);

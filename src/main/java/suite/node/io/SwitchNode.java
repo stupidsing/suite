@@ -1,7 +1,7 @@
 package suite.node.io;
 
 import static suite.util.Fail.fail;
-import static suite.util.Friends.rethrow;
+import static suite.util.Rethrow.ex;
 
 import java.util.List;
 
@@ -49,7 +49,7 @@ public class SwitchNode<R> {
 	public <T extends Node> SwitchNode<R> doIf(Class<T> c, IoSink<T> sink) {
 		return applyIf(c, t -> {
 			@SuppressWarnings("unchecked")
-			var r = (R) rethrow(() -> {
+			var r = (R) ex(() -> {
 				sink.f(t);
 				return t;
 			});
@@ -186,7 +186,7 @@ public class SwitchNode<R> {
 	}
 
 	private List<Node> nodes(Object m) {
-		return Read.from(m.getClass().getFields()).map(field -> (Node) rethrow(() -> field.get(m))).toList();
+		return Read.from(m.getClass().getFields()).map(field -> (Node) ex(() -> field.get(m))).toList();
 	}
 
 }

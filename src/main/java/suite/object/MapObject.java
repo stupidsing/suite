@@ -1,6 +1,6 @@
 package suite.object;
 
-import static suite.util.Friends.rethrow;
+import static suite.util.Rethrow.ex;
 
 import java.util.HashMap;
 
@@ -13,7 +13,7 @@ public class MapObject<T extends MapObject<T>> extends BaseObject<T> implements 
 	public T clone() {
 		var map = new HashMap<IdentityKey<?>, MapObject<?>>();
 
-		return rethrow(() -> {
+		return ex(() -> {
 			@SuppressWarnings("unchecked")
 			var object = (T) new Object() {
 				private MapObject<?> clone(MapObject<?> t0) {

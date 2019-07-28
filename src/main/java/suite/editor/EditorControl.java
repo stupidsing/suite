@@ -1,6 +1,6 @@
 package suite.editor;
 
-import static suite.util.Friends.rethrow;
+import static suite.util.Rethrow.ex;
 
 import java.io.File;
 import java.io.OutputStreamWriter;
@@ -183,7 +183,7 @@ public class EditorControl {
 
 		var text0 = editor.getText();
 
-		var text1 = rethrow(() -> {
+		var text1 = ex(() -> {
 			var process = Runtime.getRuntime().exec(command);
 
 			try (var pos = process.getOutputStream(); var writer = new OutputStreamWriter(pos, Defaults.charset)) {
