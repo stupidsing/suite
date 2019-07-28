@@ -24,8 +24,4 @@ public class Friends {
 		return Rethrow.ex(source);
 	}
 
-	public static double sqrt(double a) {
-		return Math.sqrt(a);
-	}
-
 }
