@@ -1,8 +1,8 @@
 package suite.rt;
 
-import static suite.util.Friends.abs;
-import static suite.util.Friends.max;
-import static suite.util.Friends.min;
+import static java.lang.Math.abs;
+import static java.lang.Math.max;
+import static java.lang.Math.min;
 
 import java.util.Collection;
 import java.util.List;

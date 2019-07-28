@@ -1,7 +1,7 @@
 package suite.trade.analysis;
 
-import static suite.util.Friends.log;
-import static suite.util.Friends.max;
+import static java.lang.Math.log;
+import static java.lang.Math.max;
 
 import suite.trade.data.DataSource;
 import suite.util.To;

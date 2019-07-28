@@ -1,6 +1,6 @@
 package suite.math.numeric;
 
-import static suite.util.Friends.abs;
+import static java.lang.Math.abs;
 
 import suite.math.FiniteDifference;
 import suite.math.linalg.Matrix;

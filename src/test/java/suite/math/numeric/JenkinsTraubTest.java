@@ -1,7 +1,7 @@
 package suite.math.numeric;
 
+import static java.lang.Math.max;
 import static suite.util.Friends.fail;
-import static suite.util.Friends.max;
 
 import org.junit.Test;
 

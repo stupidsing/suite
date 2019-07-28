@@ -1,6 +1,6 @@
 package suite.math;
 
-import static suite.util.Friends.exp;
+import static java.lang.Math.exp;
 
 public class Sigmoid {
 

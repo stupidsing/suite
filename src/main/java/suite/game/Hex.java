@@ -1,7 +1,7 @@
 package suite.game;
 
-import static suite.util.Friends.abs;
-import static suite.util.Friends.min;
+import static java.lang.Math.abs;
+import static java.lang.Math.min;
 
 import java.util.List;
 

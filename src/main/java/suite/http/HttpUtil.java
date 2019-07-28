@@ -1,6 +1,6 @@
 package suite.http;
 
-import static suite.util.Friends.max;
+import static java.lang.Math.max;
 import static suite.util.Friends.rethrow;
 
 import java.io.IOException;

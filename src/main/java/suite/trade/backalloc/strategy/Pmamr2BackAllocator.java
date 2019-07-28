@@ -1,7 +1,7 @@
 package suite.trade.backalloc.strategy;
 
-import static suite.util.Friends.log;
-import static suite.util.Friends.log1p;
+import static java.lang.Math.log;
+import static java.lang.Math.log1p;
 
 import suite.math.numeric.Statistic.LinearRegression;
 import suite.streamlet.Read;

@@ -1,6 +1,6 @@
 package suite.gpu;
 
-import static suite.util.Friends.min;
+import static java.lang.Math.min;
 
 import org.bridj.Pointer;
 import org.junit.Test;

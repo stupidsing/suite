@@ -1,9 +1,9 @@
 package suite.uct;
 
-import static suite.util.Friends.log1p;
-import static suite.util.Friends.max;
-import static suite.util.Friends.min;
-import static suite.util.Friends.sqrt;
+import static java.lang.Math.log1p;
+import static java.lang.Math.max;
+import static java.lang.Math.min;
+import static java.lang.Math.sqrt;
 import static suite.util.Streamlet_.forInt;
 
 import java.text.DecimalFormat;

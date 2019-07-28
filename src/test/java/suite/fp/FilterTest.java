@@ -1,7 +1,7 @@
 package suite.fp;
 
+import static java.lang.Math.min;
 import static org.junit.Assert.assertEquals;
-import static suite.util.Friends.min;
 
 import java.io.Reader;
 import java.io.Writer;

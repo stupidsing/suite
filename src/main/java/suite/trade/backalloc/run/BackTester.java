@@ -1,7 +1,7 @@
 package suite.trade.backalloc.run;
 
-import static suite.util.Friends.expm1;
-import static suite.util.Friends.log1p;
+import static java.lang.Math.expm1;
+import static java.lang.Math.log1p;
 
 import suite.math.numeric.Statistic;
 import suite.object.Object_;

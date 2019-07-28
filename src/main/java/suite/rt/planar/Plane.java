@@ -1,6 +1,6 @@
 package suite.rt.planar;
 
-import static suite.util.Friends.abs;
+import static java.lang.Math.abs;
 
 import java.util.List;
 

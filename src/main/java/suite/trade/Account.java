@@ -1,6 +1,6 @@
 package suite.trade;
 
-import static suite.util.Friends.abs;
+import static java.lang.Math.abs;
 import static suite.util.Friends.fail;
 
 import java.util.HashMap;

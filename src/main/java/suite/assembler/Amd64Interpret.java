@@ -1,7 +1,7 @@
 package suite.assembler;
 
+import static java.lang.Math.min;
 import static suite.util.Friends.fail;
-import static suite.util.Friends.min;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;

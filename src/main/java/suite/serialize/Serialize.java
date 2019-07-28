@@ -1,7 +1,7 @@
 package suite.serialize;
 
+import static java.lang.Math.min;
 import static suite.util.Friends.fail;
-import static suite.util.Friends.min;
 import static suite.util.Friends.rethrow;
 
 import java.io.IOException;

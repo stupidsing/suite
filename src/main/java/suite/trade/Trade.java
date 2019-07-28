@@ -1,6 +1,6 @@
 package suite.trade;
 
-import static suite.util.Friends.abs;
+import static java.lang.Math.abs;
 
 import suite.math.Math_;
 import suite.object.Object_;

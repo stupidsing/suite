@@ -1,6 +1,6 @@
 package suite.rt;
 
-import static suite.util.Friends.sqrt;
+import static java.lang.Math.sqrt;
 
 import java.awt.image.BufferedImage;
 import java.util.Collection;

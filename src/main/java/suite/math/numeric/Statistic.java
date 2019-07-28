@@ -1,9 +1,9 @@
 package suite.math.numeric;
 
-import static suite.util.Friends.exp;
+import static java.lang.Math.exp;
+import static java.lang.Math.log;
+import static java.lang.Math.sqrt;
 import static suite.util.Friends.fail;
-import static suite.util.Friends.log;
-import static suite.util.Friends.sqrt;
 
 import java.util.List;
 

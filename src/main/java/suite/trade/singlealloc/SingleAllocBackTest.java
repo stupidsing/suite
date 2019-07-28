@@ -1,6 +1,6 @@
 package suite.trade.singlealloc;
 
-import static suite.util.Friends.sqrt;
+import static java.lang.Math.sqrt;
 
 import suite.math.numeric.Statistic;
 import suite.streamlet.FunUtil.Sink;

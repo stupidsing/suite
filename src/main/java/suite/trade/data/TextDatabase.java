@@ -1,7 +1,7 @@
 package suite.trade.data;
 
+import static java.lang.Math.max;
 import static suite.util.Friends.fail;
-import static suite.util.Friends.max;
 import static suite.util.Friends.rethrow;
 
 import java.nio.file.Files;

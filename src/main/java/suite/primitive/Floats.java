@@ -1,7 +1,7 @@
 package suite.primitive;
 
-import static suite.util.Friends.max;
-import static suite.util.Friends.min;
+import static java.lang.Math.max;
+import static java.lang.Math.min;
 import static suite.util.Friends.rethrow;
 
 import java.io.IOException;

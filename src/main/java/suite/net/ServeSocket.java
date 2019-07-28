@@ -1,7 +1,7 @@
 package suite.net;
 
+import static java.lang.Math.min;
 import static suite.util.Friends.fail;
-import static suite.util.Friends.min;
 
 import java.io.IOException;
 import java.io.InputStream;

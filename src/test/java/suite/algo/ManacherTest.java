@@ -1,7 +1,7 @@
 package suite.algo;
 
+import static java.lang.Math.min;
 import static org.junit.Assert.assertEquals;
-import static suite.util.Friends.min;
 
 import java.util.ArrayList;
 import java.util.List;

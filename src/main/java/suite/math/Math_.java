@@ -1,6 +1,6 @@
 package suite.math;
 
-import static suite.util.Friends.abs;
+import static java.lang.Math.abs;
 import static suite.util.Friends.fail;
 
 import suite.util.To;

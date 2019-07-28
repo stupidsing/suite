@@ -1,7 +1,7 @@
 package suite.trade.analysis;
 
-import static suite.util.Friends.abs;
-import static suite.util.Friends.max;
+import static java.lang.Math.abs;
+import static java.lang.Math.max;
 import static suite.util.Streamlet_.forInt;
 
 import suite.math.numeric.Statistic;

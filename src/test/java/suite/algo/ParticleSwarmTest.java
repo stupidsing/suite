@@ -1,10 +1,10 @@
 package suite.algo;
 
+import static java.lang.Math.abs;
+import static java.lang.Math.max;
+import static java.lang.Math.min;
+import static java.lang.Math.sqrt;
 import static org.junit.Assert.assertTrue;
-import static suite.util.Friends.abs;
-import static suite.util.Friends.max;
-import static suite.util.Friends.min;
-import static suite.util.Friends.sqrt;
 import static suite.util.Streamlet_.forInt;
 
 import java.util.Arrays;

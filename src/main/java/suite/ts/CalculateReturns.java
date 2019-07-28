@@ -1,8 +1,8 @@
 package suite.ts;
 
-import static suite.util.Friends.expm1;
-import static suite.util.Friends.log1p;
-import static suite.util.Friends.max;
+import static java.lang.Math.expm1;
+import static java.lang.Math.log1p;
+import static java.lang.Math.max;
 
 import suite.math.numeric.Statistic;
 import suite.math.numeric.Statistic.MeanVariance;

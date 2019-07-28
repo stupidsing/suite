@@ -1,6 +1,6 @@
 package suite.persistent;
 
-import static suite.util.Friends.max;
+import static java.lang.Math.max;
 
 import java.io.IOException;
 import java.util.Comparator;

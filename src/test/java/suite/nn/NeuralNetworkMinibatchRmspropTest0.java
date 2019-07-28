@@ -1,7 +1,7 @@
 package suite.nn;
 
+import static java.lang.Math.sqrt;
 import static org.junit.Assert.assertTrue;
-import static suite.util.Friends.sqrt;
 import static suite.util.Streamlet_.forInt;
 
 import java.util.Random;

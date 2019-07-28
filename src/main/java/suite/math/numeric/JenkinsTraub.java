@@ -1,8 +1,8 @@
 package suite.math.numeric;
 
-import static suite.util.Friends.abs;
+import static java.lang.Math.abs;
+import static java.lang.Math.sqrt;
 import static suite.util.Friends.fail;
-import static suite.util.Friends.sqrt;
 
 import java.util.Arrays;
 import java.util.Random;

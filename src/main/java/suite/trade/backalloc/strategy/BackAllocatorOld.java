@@ -1,7 +1,7 @@
 package suite.trade.backalloc.strategy;
 
-import static suite.util.Friends.abs;
-import static suite.util.Friends.max;
+import static java.lang.Math.abs;
+import static java.lang.Math.max;
 
 import java.util.Arrays;
 import java.util.List;

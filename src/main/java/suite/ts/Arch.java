@@ -1,7 +1,7 @@
 package suite.ts;
 
-import static suite.util.Friends.log;
-import static suite.util.Friends.max;
+import static java.lang.Math.log;
+import static java.lang.Math.max;
 import static suite.util.Streamlet_.forInt;
 
 import java.util.Arrays;

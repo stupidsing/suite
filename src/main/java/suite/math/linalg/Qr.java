@@ -1,6 +1,6 @@
 package suite.math.linalg;
 
-import static suite.util.Friends.sqrt;
+import static java.lang.Math.sqrt;
 
 import suite.adt.pair.Pair;
 

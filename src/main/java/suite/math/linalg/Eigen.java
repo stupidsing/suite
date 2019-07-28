@@ -1,6 +1,6 @@
 package suite.math.linalg;
 
-import static suite.util.Friends.abs;
+import static java.lang.Math.abs;
 import static suite.util.Streamlet_.forInt;
 
 import java.util.ArrayList;

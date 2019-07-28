@@ -1,6 +1,6 @@
 package suite.file.impl;
 
-import static suite.util.Friends.min;
+import static java.lang.Math.min;
 
 import java.io.IOException;
 

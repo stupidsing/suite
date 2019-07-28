@@ -1,7 +1,7 @@
 package suite.util;
 
-import static suite.util.Friends.max;
-import static suite.util.Friends.min;
+import static java.lang.Math.max;
+import static java.lang.Math.min;
 
 import java.util.Map;
 

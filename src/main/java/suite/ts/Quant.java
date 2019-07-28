@@ -1,8 +1,8 @@
 package suite.ts;
 
-import static suite.util.Friends.log1p;
-import static suite.util.Friends.max;
-import static suite.util.Friends.min;
+import static java.lang.Math.log1p;
+import static java.lang.Math.max;
+import static java.lang.Math.min;
 
 import java.util.function.IntPredicate;
 

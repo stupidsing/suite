@@ -1,6 +1,6 @@
 package suite.node.util;
 
-import static suite.util.Friends.max;
+import static java.lang.Math.max;
 
 import suite.node.Node;
 import suite.node.Tree;

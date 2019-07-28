@@ -1,11 +1,11 @@
 package suite.ts;
 
-import static suite.util.Friends.abs;
-import static suite.util.Friends.expm1;
-import static suite.util.Friends.log;
-import static suite.util.Friends.max;
-import static suite.util.Friends.min;
-import static suite.util.Friends.sqrt;
+import static java.lang.Math.abs;
+import static java.lang.Math.expm1;
+import static java.lang.Math.log;
+import static java.lang.Math.max;
+import static java.lang.Math.min;
+import static java.lang.Math.sqrt;
 import static suite.util.Streamlet_.forInt;
 
 import java.util.ArrayList;

@@ -1,6 +1,6 @@
 package suite.ebnf.topdown;
 
-import static suite.util.Friends.min;
+import static java.lang.Math.min;
 
 import suite.os.UnicodeData;
 import suite.util.String_;

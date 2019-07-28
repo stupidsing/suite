@@ -1,6 +1,6 @@
 package suite.trade.backalloc.strategy;
 
-import static suite.util.Friends.abs;
+import static java.lang.Math.abs;
 
 import suite.math.numeric.Statistic;
 import suite.trade.backalloc.BackAllocator;

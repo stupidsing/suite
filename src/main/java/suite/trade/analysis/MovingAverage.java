@@ -1,8 +1,8 @@
 package suite.trade.analysis;
 
-import static suite.util.Friends.exp;
-import static suite.util.Friends.log;
-import static suite.util.Friends.max;
+import static java.lang.Math.exp;
+import static java.lang.Math.log;
+import static java.lang.Math.max;
 
 import java.util.Arrays;
 

@@ -1,6 +1,6 @@
 package suite.math;
 
-import static suite.util.Friends.sqrt;
+import static java.lang.Math.sqrt;
 
 import suite.object.Object_;
 

@@ -1,6 +1,6 @@
 package suite.game;
 
-import static suite.util.Friends.exp;
+import static java.lang.Math.exp;
 
 import org.junit.Test;
 

@@ -1,6 +1,6 @@
 package suite.fs.impl;
 
-import static suite.util.Friends.min;
+import static java.lang.Math.min;
 import static suite.util.Friends.rethrow;
 
 import java.nio.ByteBuffer;
