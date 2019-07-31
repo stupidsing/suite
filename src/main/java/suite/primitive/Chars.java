@@ -2,7 +2,7 @@ package suite.primitive;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
-import static suite.util.Rethrow.ex;
+import static primal.statics.Rethrow.ex;
 
 import java.io.IOException;
 import java.nio.CharBuffer;
@@ -10,8 +10,8 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
 
+import primal.Ob;
 import suite.cfg.Defaults;
-import suite.object.Object_;
 import suite.primitive.ChrPrimitives.ChrSource;
 import suite.primitive.streamlet.ChrPuller;
 import suite.primitive.streamlet.ChrStreamlet;
@@ -238,7 +238,7 @@ public class Chars implements Iterable<Character> {
 
 	@Override
 	public boolean equals(Object object) {
-		if (Object_.clazz(object) == Chars.class) {
+		if (Ob.clazz(object) == Chars.class) {
 			var other = (Chars) object;
 
 			if (size_() == other.size_()) {

@@ -1,14 +1,14 @@
 package suite.util;
 
-import static suite.util.Fail.fail;
+import static primal.statics.Fail.fail;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 
+import primal.statics.Rethrow.SinkIo;
 import suite.cfg.Defaults;
-import suite.util.Rethrow.SinkIo;
 
 /**
  * Extends output stream to provide additional functionality.

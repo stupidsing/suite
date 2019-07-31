@@ -1,7 +1,7 @@
 package suite.text;
 
 import static java.util.Map.entry;
-import static suite.util.Fail.fail;
+import static primal.statics.Fail.fail;
 
 import java.time.Instant;
 import java.time.ZoneId;

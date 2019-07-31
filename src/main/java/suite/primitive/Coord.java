@@ -2,7 +2,7 @@ package suite.primitive;
 
 import java.util.Comparator;
 
-import suite.object.Object_;
+import primal.Ob;
 import suite.streamlet.FunUtil.Iterate;
 
 public class Coord {
@@ -68,7 +68,7 @@ public class Coord {
 
 	@Override
 	public boolean equals(Object object) {
-		if (Object_.clazz(object) == Coord.class) {
+		if (Ob.clazz(object) == Coord.class) {
 			var other = (Coord) object;
 			return x == other.x && y == other.y;
 		} else

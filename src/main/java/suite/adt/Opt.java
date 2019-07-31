@@ -1,11 +1,11 @@
 package suite.adt;
 
-import static suite.util.Fail.fail;
+import static primal.statics.Fail.fail;
 
 import java.util.Objects;
 import java.util.function.Predicate;
 
-import suite.object.Object_;
+import primal.Ob;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil.Source;
 import suite.streamlet.FunUtil2.Fun2;
@@ -32,7 +32,7 @@ public class Opt<T> {
 
 	@Override
 	public boolean equals(Object object) {
-		return Object_.clazz(object) == Opt.class && Objects.equals(value, ((Opt<?>) object).value);
+		return Ob.clazz(object) == Opt.class && Ob.equals(value, ((Opt<?>) object).value);
 	}
 
 	public Opt<T> filter(Predicate<T> pred) {

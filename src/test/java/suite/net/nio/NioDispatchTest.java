@@ -14,12 +14,12 @@ import java.nio.charset.Charset;
 
 import org.junit.Test;
 
+import primal.os.Log_;
+import primal.statics.Rethrow;
 import suite.cfg.Defaults;
 import suite.net.nio.NioDispatch.AsyncRw;
-import suite.os.Log_;
 import suite.primitive.Bytes;
 import suite.streamlet.FunUtil.Sink;
-import suite.util.Rethrow;
 import suite.util.Thread_;
 
 public class NioDispatchTest {

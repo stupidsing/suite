@@ -1,13 +1,13 @@
 package suite.trade.data;
 
-import static suite.util.Fail.fail;
+import static primal.statics.Fail.fail;
 import static suite.util.Streamlet_.forInt;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import suite.object.Object_;
+import primal.Ob;
 import suite.primitive.Int_Flt;
 import suite.primitive.adt.pair.LngFltPair;
 import suite.streamlet.As;
@@ -181,7 +181,7 @@ public class StockHistory {
 			var date = TimeRange.min;
 			for (var pair : pairs0) {
 				var date1 = Time.ofEpochSec(pair.t0).startOfDay();
-				if (Object_.compare(date, date1) < 0)
+				if (Ob.compare(date, date1) < 0)
 					pairs1.add(pair);
 				date = date1;
 			}

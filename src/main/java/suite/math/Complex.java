@@ -1,6 +1,6 @@
 package suite.math;
 
-import suite.object.Object_;
+import primal.Ob;
 
 public class Complex {
 
@@ -63,7 +63,7 @@ public class Complex {
 
 	@Override
 	public boolean equals(Object object) {
-		if (Object_.clazz(object) == Complex.class) {
+		if (Ob.clazz(object) == Complex.class) {
 			var other = (Complex) object;
 			return r == other.r && i == other.i;
 		} else

@@ -1,7 +1,7 @@
 package suite.http;
 
 import static java.lang.Math.max;
-import static suite.util.Rethrow.ex;
+import static primal.statics.Rethrow.ex;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -15,10 +15,10 @@ import org.apache.http.Header;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.HttpClients;
 
+import primal.os.Log_;
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.FixieArray;
 import suite.concurrent.Backoff;
-import suite.os.Log_;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes_;
 import suite.primitive.Chars;

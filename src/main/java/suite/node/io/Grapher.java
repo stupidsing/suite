@@ -1,6 +1,6 @@
 package suite.node.io;
 
-import static suite.util.Fail.fail;
+import static primal.statics.Fail.fail;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -9,8 +9,8 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 
+import primal.Ob;
 import suite.adt.IdentityKey;
 import suite.adt.pair.Pair;
 import suite.lp.Trail;
@@ -165,7 +165,7 @@ public class Grapher {
 						&& gn1.terminal instanceof Reference //
 						&& Binder.bind(gn1.terminal, mapi0.get(pair.t0).key, trail))
 					;
-				else if (gn0.type == gn1.type && Objects.equals(gn0.terminal, gn1.terminal) && gn0.op == gn1.op) {
+				else if (gn0.type == gn1.type && Ob.equals(gn0.terminal, gn1.terminal) && gn0.op == gn1.op) {
 					var children0 = gn0.children;
 					var children1 = gn1.children;
 					var size0 = children0.size();

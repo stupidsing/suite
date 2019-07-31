@@ -1,10 +1,9 @@
 package suite.trade;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
+import primal.Ob;
 import suite.adt.Range;
-import suite.object.Object_;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 
@@ -69,9 +68,9 @@ public class TimeRange extends Range<Time> {
 
 	@Override
 	public boolean equals(Object object) {
-		if (Object_.clazz(object) == TimeRange.class) {
+		if (Ob.clazz(object) == TimeRange.class) {
 			var other = (TimeRange) object;
-			return Objects.equals(from, other.from) && Objects.equals(to, other.to);
+			return Ob.equals(from, other.from) && Ob.equals(to, other.to);
 		} else
 			return false;
 	}

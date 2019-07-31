@@ -3,8 +3,8 @@ package suite.jdk.gen;
 import static org.apache.bcel.Const.ACC_PUBLIC;
 import static org.apache.bcel.Const.ACC_STATIC;
 import static org.apache.bcel.Const.ACC_SUPER;
-import static suite.util.Fail.fail;
-import static suite.util.Rethrow.ex;
+import static primal.statics.Fail.fail;
+import static primal.statics.Rethrow.ex;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,6 +23,8 @@ import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.Type;
 
+import primal.Ob;
+import primal.os.Log_;
 import suite.adt.pair.Pair;
 import suite.jdk.UnsafeUtil;
 import suite.jdk.gen.FunExprM.FieldStaticFunExpr;
@@ -31,8 +33,6 @@ import suite.jdk.gen.pass.FunExpand;
 import suite.jdk.gen.pass.FunGenerateBytecode;
 import suite.jdk.gen.pass.FunRewrite;
 import suite.jdk.lambda.LambdaInterface;
-import suite.object.Object_;
-import suite.os.Log_;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil.Iterate;
 import suite.streamlet.FunUtil.Source;
@@ -212,7 +212,7 @@ public class FunCreator<I> extends FunFactory {
 		}
 
 		private I create(Map<String, Object> fieldValues) {
-			var t = Object_.new_(clazz);
+			var t = Ob.new_(clazz);
 
 			return ex(() -> {
 				for (var field : clazz.getDeclaredFields()) {

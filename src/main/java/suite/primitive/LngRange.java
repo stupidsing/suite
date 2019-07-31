@@ -2,7 +2,7 @@ package suite.primitive;
 
 import java.util.Comparator;
 
-import suite.object.Object_;
+import primal.Ob;
 import suite.streamlet.FunUtil.Iterate;
 
 public class LngRange {
@@ -72,7 +72,7 @@ public class LngRange {
 
 	@Override
 	public boolean equals(Object object) {
-		if (Object_.clazz(object) == LngRange.class) {
+		if (Ob.clazz(object) == LngRange.class) {
 			var other = (LngRange) object;
 			return s == other.s && e == other.e;
 		} else

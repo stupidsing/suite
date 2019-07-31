@@ -1,9 +1,9 @@
 package suite.node.tree;
 
+import primal.Ob;
 import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.Operator;
-import suite.object.Object_;
 
 public class TreeOp extends Tree {
 
@@ -16,7 +16,7 @@ public class TreeOp extends Tree {
 
 	@Override
 	public boolean equals(Object object) {
-		if (Object_.clazz(object) == TreeOp.class) {
+		if (Ob.clazz(object) == TreeOp.class) {
 			var t = (TreeOp) object;
 			return operator == t.operator && childrenEquals(t);
 		} else

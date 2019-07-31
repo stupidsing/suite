@@ -1,7 +1,7 @@
 package suite.node.util;
 
 import static java.util.Map.entry;
-import static suite.util.Fail.fail;
+import static primal.statics.Fail.fail;
 
 import java.util.ArrayList;
 import java.util.List;

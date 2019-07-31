@@ -1,14 +1,16 @@
 package suite.lp.sewing.impl;
 
 import static java.lang.Math.max;
-import static suite.util.Fail.fail;
-import static suite.util.Rethrow.ex;
+import static primal.statics.Fail.fail;
+import static primal.statics.Rethrow.ex;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import primal.Ob;
+import primal.os.Log_;
 import suite.Suite;
 import suite.adt.Mutable;
 import suite.adt.map.ListMultimap;
@@ -42,8 +44,6 @@ import suite.node.io.TermOp;
 import suite.node.util.Rewrite;
 import suite.node.util.SuiteException;
 import suite.node.util.TreeUtil;
-import suite.object.Object_;
-import suite.os.Log_;
 import suite.persistent.PerList;
 import suite.streamlet.As;
 import suite.streamlet.FunUtil.Sink;
@@ -464,7 +464,7 @@ public class SewingProverImpl implements ProverFactory {
 			var fieldName = Atom.name(m[1]);
 			BuiltinPredicate predicate = ex(() -> {
 				var clazz = Class.forName(className);
-				return (BuiltinPredicate) clazz.getField(fieldName).get(Object_.new_(clazz));
+				return (BuiltinPredicate) clazz.getField(fieldName).get(Ob.new_(clazz));
 			});
 			tr = compileTrCallPredicate(bf, predicate, m[2]);
 		} else if ((m = Suite.pattern("find.all .0 .1 .2").match(node)) != null) {

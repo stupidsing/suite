@@ -1,10 +1,11 @@
 package suite.primitive.adt.map;
 
-import static suite.util.Fail.fail;
+import static primal.statics.Fail.fail;
 
 import java.util.Arrays;
 import java.util.Objects;
 
+import primal.Ob;
 import suite.primitive.FltFunUtil;
 import suite.primitive.FltPrimitives.FltObjSink;
 import suite.primitive.FltPrimitives.FltObjSource;
@@ -74,7 +75,7 @@ public class ObjFltMap<K> {
 
 	public float get(K key) {
 		var index = index(key);
-		return Objects.equals(ks[index], key) ? vs[index] : empty;
+		return Ob.equals(ks[index], key) ? vs[index] : empty;
 	}
 
 	@Override

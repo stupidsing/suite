@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import primal.os.Log_;
 import suite.adt.pair.Pair;
 import suite.math.Math_;
 import suite.node.util.Singleton;
-import suite.os.Log_;
 import suite.os.SerializedStoreCache;
 import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.serialize.Serialize;

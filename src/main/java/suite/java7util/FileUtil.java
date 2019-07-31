@@ -1,6 +1,6 @@
 package suite.java7util;
 
-import static suite.util.Fail.fail;
+import static primal.statics.Fail.fail;
 
 import java.io.File;
 import java.io.FileInputStream;

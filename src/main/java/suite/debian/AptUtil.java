@@ -4,9 +4,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.zip.GZIPInputStream;
 
+import primal.Ob;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.String_;
@@ -60,7 +60,7 @@ public class AptUtil {
 
 	public Streamlet<String> readManuallyInstalled() {
 		return debianUtil.readDpkgConfiguration(new File(aptDir + "/extended_states")) //
-				.filter(pm -> Objects.equals(pm.get("Auto-Installed"), "0")) //
+				.filter(pm -> Ob.equals(pm.get("Auto-Installed"), "0")) //
 				.map(pm -> pm.get("Package"));
 	}
 

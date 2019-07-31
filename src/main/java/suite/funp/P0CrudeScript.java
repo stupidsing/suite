@@ -1,11 +1,12 @@
 package suite.funp;
 
-import static suite.util.Fail.fail;
-import static suite.util.Rethrow.ex;
+import static primal.statics.Fail.fail;
+import static primal.statics.Rethrow.ex;
 
 import java.io.FileReader;
 import java.util.ArrayList;
 
+import primal.statics.Fail;
 import suite.Suite;
 import suite.adt.pair.Pair;
 import suite.ebnf.Ebnf;
@@ -34,7 +35,6 @@ import suite.node.io.TermOp;
 import suite.node.tree.TreeTuple;
 import suite.primitive.IntPrimitives.Obj_Int;
 import suite.streamlet.Read;
-import suite.util.Fail;
 import suite.util.To;
 
 public class P0CrudeScript {

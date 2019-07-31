@@ -1,6 +1,6 @@
 package suite.fp;
 
-import static suite.util.Rethrow.ex;
+import static primal.statics.Rethrow.ex;
 
 import suite.BindMapUtil;
 import suite.node.Node;

@@ -1,7 +1,7 @@
 package suite.fp;
 
 import static org.junit.Assert.assertEquals;
-import static suite.util.Fail.fail;
+import static primal.statics.Fail.fail;
 
 import java.io.IOException;
 import java.io.StringWriter;

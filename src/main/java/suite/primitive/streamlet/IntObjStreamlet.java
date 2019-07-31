@@ -1,18 +1,17 @@
 package suite.primitive.streamlet;
 
-import static suite.util.Fail.fail;
+import static primal.statics.Fail.fail;
 
 import java.io.Closeable;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
 
+import primal.Ob;
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.Pair;
-import suite.object.Object_;
 import suite.primitive.IntFunUtil;
 import suite.primitive.IntObjFunUtil;
 import suite.primitive.IntObj_Int;
@@ -101,7 +100,7 @@ public class IntObjStreamlet<V> implements StreamletDefaults<IntObjPair<V>, IntO
 
 	@Override
 	public boolean equals(Object object) {
-		return Object_.clazz(object) == IntObjStreamlet.class ? Objects.equals(spawn(), ((IntObjStreamlet<?>) object).spawn())
+		return Ob.clazz(object) == IntObjStreamlet.class ? Ob.equals(spawn(), ((IntObjStreamlet<?>) object).spawn())
 				: false;
 	}
 

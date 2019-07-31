@@ -1,11 +1,11 @@
 package suite.primitive;
 
-import static suite.util.Fail.fail;
+import static primal.statics.Fail.fail;
 
 import java.util.Objects;
 
+import primal.Ob;
 import suite.adt.Opt;
-import suite.object.Object_;
 import suite.primitive.FltPrimitives.FltTest;
 import suite.primitive.FltPrimitives.Flt_Obj;
 
@@ -44,7 +44,7 @@ public class FltOpt {
 
 	@Override
 	public boolean equals(Object object) {
-		return Object_.clazz(object) == FltOpt.class && Objects.equals(value, ((FltOpt) object).value);
+		return Ob.clazz(object) == FltOpt.class && Ob.equals(value, ((FltOpt) object).value);
 	}
 
 	@Override

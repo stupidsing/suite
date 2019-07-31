@@ -3,7 +3,7 @@ package suite.primitive.adt.pair;
 import java.util.Comparator;
 import java.util.Objects;
 
-import suite.object.Object_;
+import primal.Ob;
 import suite.primitive.LngFunUtil;
 import suite.primitive.LngPrimitives.LngObj_Obj;
 import suite.primitive.Lng_Lng;
@@ -43,7 +43,7 @@ public class LngObjPair<V> {
 		return (pair0, pair1) -> {
 			var c = Boolean.compare(pair0 != null, pair1 != null);
 			c = c == 0 ? Long.compare(pair0.k, pair1.k) : c;
-			c = c == 0 ? Object_.compare(pair0.v, pair1.v) : c;
+			c = c == 0 ? Ob.compare(pair0.v, pair1.v) : c;
 			return c;
 		};
 	}
@@ -75,9 +75,9 @@ public class LngObjPair<V> {
 
 	@Override
 	public boolean equals(Object object) {
-		if (Object_.clazz(object) == LngObjPair.class) {
+		if (Ob.clazz(object) == LngObjPair.class) {
 			var other = (LngObjPair<?>) object;
-			return k == other.k && Objects.equals(v, other.v);
+			return k == other.k && Ob.equals(v, other.v);
 		} else
 			return false;
 	}

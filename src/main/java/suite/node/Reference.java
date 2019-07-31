@@ -1,6 +1,6 @@
 package suite.node;
 
-import static suite.util.Fail.fail;
+import static primal.statics.Fail.fail;
 
 import suite.lp.doer.ProverConstant;
 import suite.util.Util;

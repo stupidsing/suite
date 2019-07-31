@@ -2,7 +2,7 @@ package suite.primitive.adt.pair;
 
 import java.util.Comparator;
 
-import suite.object.Object_;
+import primal.Ob;
 import suite.primitive.DblFunUtil;
 import suite.primitive.DblInt_Obj;
 import suite.primitive.Dbl_Dbl;
@@ -73,7 +73,7 @@ public class DblIntPair {
 
 	@Override
 	public boolean equals(Object object) {
-		if (Object_.clazz(object) == DblIntPair.class) {
+		if (Ob.clazz(object) == DblIntPair.class) {
 			var other = (DblIntPair) object;
 			return t0 == other.t0 && t1 == other.t1;
 		} else

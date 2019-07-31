@@ -1,6 +1,6 @@
 package suite.streamlet;
 
-import static suite.util.Rethrow.ex;
+import static primal.statics.Rethrow.ex;
 
 import java.io.BufferedReader;
 import java.io.File;

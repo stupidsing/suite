@@ -4,9 +4,9 @@ import static suite.util.Streamlet_.forInt;
 
 import java.nio.file.Paths;
 
+import primal.Ob;
 import suite.adt.pair.Pair;
 import suite.node.io.Operator.Assoc;
-import suite.object.Object_;
 import suite.parser.Wildcard;
 import suite.streamlet.As;
 import suite.streamlet.FunUtil.Fun;
@@ -62,7 +62,7 @@ public class BackTestMain {
 		var simulationByKey = bacByTag //
 				.filterKey(n -> strategyMatches == null || strategyMatches.isAny(sm -> Wildcard.match(sm, n) != null)) //
 				.map(Pair::of) //
-				.join2(years.sort(Object_::compare).map(TimeRange::ofYear)) //
+				.join2(years.sort(Ob::compare).map(TimeRange::ofYear)) //
 				.map2((pair, period) -> pair.k, (pair, period) -> {
 					var bac = pair.v;
 					var instruments = bac.instrumentsFun.apply(period.from);

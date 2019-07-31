@@ -1,6 +1,6 @@
 package suite.editor;
 
-import static suite.util.Rethrow.ex;
+import static primal.statics.Rethrow.ex;
 
 import java.awt.Component;
 import java.awt.Window;
@@ -24,9 +24,9 @@ import javax.swing.event.DocumentListener;
 import javax.swing.text.Document;
 import javax.swing.text.JTextComponent;
 
+import primal.statics.Rethrow.SinkEx;
 import suite.streamlet.FunUtil.Sink;
 import suite.streamlet.Pusher;
-import suite.util.Rethrow.SinkEx;
 
 public class Listen {
 

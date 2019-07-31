@@ -1,6 +1,6 @@
 package suite.weiqi;
 
-import static suite.util.Fail.fail;
+import static primal.statics.Fail.fail;
 
 import java.util.HashSet;
 import java.util.Set;

@@ -1,6 +1,6 @@
 package suite.lp.predicate;
 
-import static suite.util.Fail.fail;
+import static primal.statics.Fail.fail;
 
 import java.util.HashMap;
 import java.util.Objects;
@@ -10,6 +10,7 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
+import primal.os.Log_;
 import suite.Suite;
 import suite.adt.IdentityKey;
 import suite.lp.doer.Cloner;
@@ -31,7 +32,6 @@ import suite.node.util.Complexity;
 import suite.node.util.Cyclic;
 import suite.node.util.Rewrite;
 import suite.node.util.TreeUtil;
-import suite.os.Log_;
 import suite.streamlet.FunUtil.Fun;
 import suite.util.Memoize;
 

@@ -4,12 +4,12 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.nio.file.Path;
 
+import primal.Ob;
 import suite.file.JournalledPageFile;
 import suite.file.PageFile;
 import suite.fs.KeyValueMutator;
 import suite.fs.impl.TransactionManager;
 import suite.node.util.Singleton;
-import suite.object.Object_;
 import suite.persistent.LazyPbTreeStore;
 import suite.serialize.Serialize;
 import suite.streamlet.FunUtil.Fun;
@@ -34,7 +34,7 @@ public class Database implements Closeable {
 
 		transactionManager = new TransactionManager<>(() -> LazyPbTreeStore.ofExtent( //
 				journalledPageFile, //
-				Object_::compare, //
+				Ob::compare, //
 				ser.int_, //
 				ser.variableLengthString));
 	}

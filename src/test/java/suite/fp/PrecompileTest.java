@@ -8,7 +8,7 @@ import org.junit.Test;
 
 import suite.Suite;
 import suite.lp.Configuration.ProverCfg;
-import suite.os.Log_;
+import suite.os.LogUtil;
 import suite.sample.Profiler;
 import suite.streamlet.Read;
 
@@ -39,7 +39,7 @@ public class PrecompileTest {
 	public void testThreeTimes() {
 		new Profiler().profile(() -> {
 			for (var i = 0; i < 3; i++)
-				Log_.duration("", () -> {
+				LogUtil.duration("", () -> {
 					var b = Suite.precompile("STANDARD", new ProverCfg());
 					assertTrue(b);
 					return b;

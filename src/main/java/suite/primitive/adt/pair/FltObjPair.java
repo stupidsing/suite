@@ -3,7 +3,7 @@ package suite.primitive.adt.pair;
 import java.util.Comparator;
 import java.util.Objects;
 
-import suite.object.Object_;
+import primal.Ob;
 import suite.primitive.FltFunUtil;
 import suite.primitive.FltPrimitives.FltObj_Obj;
 import suite.primitive.Flt_Flt;
@@ -43,7 +43,7 @@ public class FltObjPair<V> {
 		return (pair0, pair1) -> {
 			var c = Boolean.compare(pair0 != null, pair1 != null);
 			c = c == 0 ? Float.compare(pair0.k, pair1.k) : c;
-			c = c == 0 ? Object_.compare(pair0.v, pair1.v) : c;
+			c = c == 0 ? Ob.compare(pair0.v, pair1.v) : c;
 			return c;
 		};
 	}
@@ -75,9 +75,9 @@ public class FltObjPair<V> {
 
 	@Override
 	public boolean equals(Object object) {
-		if (Object_.clazz(object) == FltObjPair.class) {
+		if (Ob.clazz(object) == FltObjPair.class) {
 			var other = (FltObjPair<?>) object;
-			return k == other.k && Objects.equals(v, other.v);
+			return k == other.k && Ob.equals(v, other.v);
 		} else
 			return false;
 	}

@@ -1,8 +1,8 @@
 package suite.trade.data;
 
 import static java.lang.Math.max;
-import static suite.util.Fail.fail;
-import static suite.util.Rethrow.ex;
+import static primal.statics.Fail.fail;
+import static primal.statics.Rethrow.ex;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -10,8 +10,8 @@ import java.util.Objects;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import primal.Ob;
 import suite.cfg.HomeDir;
-import suite.object.Object_;
 import suite.os.FileUtil;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes_;
@@ -91,9 +91,9 @@ public class TextDatabase {
 
 	private void merge(Datum datum) {
 		var datum0 = data.ceiling(datum);
-		if (datum0 == null || !Objects.equals(datum, datum0))
+		if (datum0 == null || !Ob.equals(datum, datum0))
 			data.add(datum);
-		else if (!Objects.equals(datum0.value, datum.value))
+		else if (!Ob.equals(datum0.value, datum.value))
 			fail("value mismatch for key " + datum.key + ": " + datum0.value + " != " + datum.value);
 	}
 
@@ -120,7 +120,7 @@ public class TextDatabase {
 		}
 
 		public int compareTo(Datum other) {
-			return Object_.compare(key, other.key);
+			return Ob.compare(key, other.key);
 		}
 
 		public boolean equals(Object object) {

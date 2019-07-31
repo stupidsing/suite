@@ -2,7 +2,7 @@ package suite.node;
 
 import java.util.Objects;
 
-import suite.object.Object_;
+import primal.Ob;
 
 public class Data<T> extends Node {
 
@@ -20,7 +20,7 @@ public class Data<T> extends Node {
 
 	@Override
 	public boolean equals(Object object) {
-		return Object_.clazz(object) == Data.class && Objects.equals(data, ((Data<?>) object).data);
+		return Ob.clazz(object) == Data.class && Ob.equals(data, ((Data<?>) object).data);
 	}
 
 	@Override

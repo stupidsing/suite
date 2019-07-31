@@ -1,7 +1,7 @@
 package suite.util;
 
-import static suite.util.Fail.fail;
-import static suite.util.Rethrow.ex;
+import static primal.statics.Fail.fail;
+import static primal.statics.Rethrow.ex;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
@@ -21,8 +21,8 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
+import primal.Ob;
 import suite.cfg.Defaults;
-import suite.object.Object_;
 import suite.os.FileUtil;
 import suite.primitive.Bytes;
 import suite.primitive.Chars;
@@ -204,7 +204,7 @@ public class To {
 			if (0 <= nBytesRead)
 				return Bytes.of(bs, 0, nBytesRead);
 			else {
-				Object_.closeQuietly(is);
+				Ob.closeQuietly(is);
 				return null;
 			}
 		};

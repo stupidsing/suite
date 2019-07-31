@@ -4,8 +4,8 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+import primal.os.Log_;
 import suite.inspect.Dump;
-import suite.os.Log_;
 import suite.trade.Time;
 import suite.trade.TimeRange;
 

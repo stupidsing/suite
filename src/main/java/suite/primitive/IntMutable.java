@@ -1,8 +1,8 @@
 package suite.primitive;
 
-import static suite.util.Fail.fail;
+import static primal.statics.Fail.fail;
 
-import suite.object.Object_;
+import primal.Ob;
 
 /**
  * An indirect reference to a primitive int. Integer.MIN_VALUE is not allowed
@@ -47,7 +47,7 @@ public class IntMutable {
 
 	@Override
 	public boolean equals(Object object) {
-		return Object_.clazz(object) == IntMutable.class && value == ((IntMutable) object).value;
+		return Ob.clazz(object) == IntMutable.class && value == ((IntMutable) object).value;
 	}
 
 	@Override

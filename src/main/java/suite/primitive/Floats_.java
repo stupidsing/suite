@@ -1,6 +1,6 @@
 package suite.primitive;
 
-import static suite.util.Rethrow.ex;
+import static primal.statics.Rethrow.ex;
 
 import suite.primitive.Floats.FloatsBuilder;
 import suite.primitive.Floats.WriteChar;

@@ -2,8 +2,8 @@ package suite.lp.kb;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
+import primal.Ob;
 import suite.lp.doer.Cloner;
 import suite.node.Node;
 
@@ -40,7 +40,7 @@ public class LinearRuleSet implements RuleSet {
 
 	@Override
 	public boolean equals(Object object) {
-		return object instanceof LinearRuleSet && Objects.equals(rules, ((LinearRuleSet) object).rules);
+		return object instanceof LinearRuleSet && Ob.equals(rules, ((LinearRuleSet) object).rules);
 	}
 
 	@Override

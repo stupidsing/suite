@@ -3,9 +3,9 @@ package suite.node;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import primal.Ob;
 import suite.node.io.Operator;
 import suite.node.io.SwitchNode;
-import suite.object.Object_;
 
 /**
  * Tree that only have a single copy. Saves memory footprint.
@@ -33,7 +33,7 @@ public class TreeIntern {
 		}
 
 		public boolean equals(Object object) {
-			if (Object_.clazz(object) == NodeKey.class) {
+			if (Ob.clazz(object) == NodeKey.class) {
 				var key = (NodeKey) object;
 				return hashCode == key.hashCode && node == key.node;
 			} else
@@ -58,7 +58,7 @@ public class TreeIntern {
 		}
 
 		public boolean equals(Object object) {
-			if (Object_.clazz(object) == TreeKey.class) {
+			if (Ob.clazz(object) == TreeKey.class) {
 				var key = (TreeKey) object;
 				return hashCode == key.hashCode && operator == key.operator && left == key.left && right == key.right;
 			} else

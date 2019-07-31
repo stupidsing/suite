@@ -2,7 +2,7 @@ package suite.trade.backalloc;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
-import static suite.util.Fail.fail;
+import static primal.statics.Fail.fail;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -11,14 +11,13 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.function.IntPredicate;
 import java.util.function.Predicate;
 
+import primal.Ob;
 import suite.adt.Mutable;
 import suite.adt.pair.Pair;
 import suite.math.numeric.Statistic;
-import suite.object.Object_;
 import suite.primitive.DblDbl_Dbl;
 import suite.primitive.DblPrimitives.ObjObj_Dbl;
 import suite.primitive.DblPrimitives.Obj_Dbl;
@@ -180,7 +179,7 @@ public interface BackAllocator {
 					var time_ = Time.ofEpochSec(akds.ts[index - 1]);
 					var time1 = time_.addDays(-(time_.epochDay() % freq));
 
-					if (!Objects.equals(time0, time1)) {
+					if (!Ob.equals(time0, time1)) {
 						time0 = time1;
 						result0 = onDateTime.onDateTime(index);
 					}
@@ -247,7 +246,7 @@ public interface BackAllocator {
 
 			return index -> Read //
 					.from2(onDateTime.onDateTime(index)) //
-					.sortByValue((r0, r1) -> Object_.compare(r1, r0)) //
+					.sortByValue((r0, r1) -> Ob.compare(r1, r0)) //
 					.take(top) //
 					.toList();
 		};

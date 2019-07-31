@@ -1,14 +1,14 @@
 package suite.util;
 
-import static suite.util.Fail.fail;
+import static primal.statics.Fail.fail;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import primal.Ob;
 import suite.adt.PriorityQueue;
 import suite.adt.pair.Pair;
-import suite.object.Object_;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil.Source;
 import suite.streamlet.FunUtil2.Fun2;
@@ -72,7 +72,7 @@ public class Memoize {
 							notifyAll();
 						} else
 							while (result == null)
-								Object_.wait(this);
+								Ob.wait(this);
 					}
 				return result;
 			}

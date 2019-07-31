@@ -1,7 +1,7 @@
 package suite.lp.predicate;
 
 import static java.lang.Math.min;
-import static suite.util.Fail.fail;
+import static primal.statics.Fail.fail;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;

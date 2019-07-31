@@ -1,9 +1,11 @@
 package suite.funp.p0;
 
-import static suite.util.Rethrow.ex;
+import static primal.statics.Rethrow.ex;
 
 import java.io.IOException;
 
+import primal.statics.Rethrow.FunIo;
+import primal.statics.Rethrow.SourceEx;
 import suite.Suite;
 import suite.funp.Funp_;
 import suite.funp.Funp_.Funp;
@@ -17,8 +19,6 @@ import suite.node.io.TermOp;
 import suite.os.FileUtil;
 import suite.streamlet.FunUtil.Fun;
 import suite.util.ReadStream;
-import suite.util.Rethrow.FunIo;
-import suite.util.Rethrow.SourceEx;
 
 public class P00Consult {
 

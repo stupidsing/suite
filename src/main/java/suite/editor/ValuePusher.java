@@ -1,7 +1,6 @@
 package suite.editor;
 
-import java.util.Objects;
-
+import primal.Ob;
 import suite.streamlet.Pusher;
 
 public class ValuePusher<T> {
@@ -18,7 +17,7 @@ public class ValuePusher<T> {
 	}
 
 	public void change(T value_) {
-		if (!Objects.equals(value, value_)) {
+		if (!Ob.equals(value, value_)) {
 			value = value_;
 			changed.push(value_);
 		}

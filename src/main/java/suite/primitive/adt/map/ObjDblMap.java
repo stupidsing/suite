@@ -1,10 +1,11 @@
 package suite.primitive.adt.map;
 
-import static suite.util.Fail.fail;
+import static primal.statics.Fail.fail;
 
 import java.util.Arrays;
 import java.util.Objects;
 
+import primal.Ob;
 import suite.primitive.DblFunUtil;
 import suite.primitive.DblPrimitives.DblObjSink;
 import suite.primitive.DblPrimitives.DblObjSource;
@@ -74,7 +75,7 @@ public class ObjDblMap<K> {
 
 	public double get(K key) {
 		var index = index(key);
-		return Objects.equals(ks[index], key) ? vs[index] : empty;
+		return Ob.equals(ks[index], key) ? vs[index] : empty;
 	}
 
 	@Override

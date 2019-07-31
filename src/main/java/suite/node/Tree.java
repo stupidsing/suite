@@ -2,6 +2,7 @@ package suite.node;
 
 import java.util.Objects;
 
+import primal.Ob;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
 import suite.node.tree.TreeAnd;
@@ -88,7 +89,7 @@ public abstract class Tree extends Node {
 	}
 
 	public boolean childrenEquals(Tree t) {
-		return Objects.equals(getLeft(), t.getLeft()) && Objects.equals(getRight(), t.getRight());
+		return Ob.equals(getLeft(), t.getLeft()) && Ob.equals(getRight(), t.getRight());
 	}
 
 	@Override

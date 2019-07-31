@@ -2,7 +2,7 @@ package suite.primitive.adt.pair;
 
 import java.util.Comparator;
 
-import suite.object.Object_;
+import primal.Ob;
 import suite.primitive.FltFlt_Obj;
 import suite.primitive.FltFunUtil;
 import suite.primitive.Flt_Flt;
@@ -71,7 +71,7 @@ public class FltFltPair {
 
 	@Override
 	public boolean equals(Object object) {
-		if (Object_.clazz(object) == FltFltPair.class) {
+		if (Ob.clazz(object) == FltFltPair.class) {
 			var other = (FltFltPair) object;
 			return t0 == other.t0 && t1 == other.t1;
 		} else

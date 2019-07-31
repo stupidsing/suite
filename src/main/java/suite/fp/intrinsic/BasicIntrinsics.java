@@ -1,5 +1,6 @@
 package suite.fp.intrinsic;
 
+import primal.os.Log_;
 import suite.fp.intrinsic.Intrinsics.Intrinsic;
 import suite.instructionexecutor.thunk.ThunkUtil;
 import suite.node.Atom;
@@ -10,7 +11,6 @@ import suite.node.Tree;
 import suite.node.Tuple;
 import suite.node.io.Formatter;
 import suite.node.io.SwitchNode;
-import suite.os.Log_;
 
 public class BasicIntrinsics {
 

@@ -1,5 +1,6 @@
 package suite.lp.kb;
 
+import primal.Ob;
 import suite.lp.doer.GeneralizerFactory.Generalize_;
 import suite.lp.doer.ProverConstant;
 import suite.lp.sewing.impl.SewingGeneralizerImpl;
@@ -7,7 +8,6 @@ import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.TermOp;
-import suite.object.Object_;
 
 public class Rule {
 
@@ -54,7 +54,7 @@ public class Rule {
 
 	@Override
 	public boolean equals(Object object) {
-		if (Object_.clazz(object) == Rule.class) {
+		if (Ob.clazz(object) == Rule.class) {
 			var other = (Rule) object;
 			return head.equals(other.head) && tail.equals(other.tail);
 		} else

@@ -10,11 +10,11 @@ import java.util.Random;
 
 import org.junit.Test;
 
+import primal.os.Log_;
 import suite.adt.pair.Pair;
 import suite.algo.KmeansCluster;
 import suite.math.numeric.Statistic;
 import suite.math.transform.DiscreteCosineTransform;
-import suite.os.Log_;
 import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Int_Flt;
 import suite.primitive.adt.pair.FltObjPair;

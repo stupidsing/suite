@@ -1,13 +1,14 @@
 package suite.os;
 
-import static suite.util.Fail.fail;
-import static suite.util.Rethrow.ex;
+import static primal.statics.Fail.fail;
+import static primal.statics.Rethrow.ex;
 
 import java.io.ByteArrayInputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 
+import primal.os.Log_;
 import suite.cfg.Defaults;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;

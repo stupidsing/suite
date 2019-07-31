@@ -2,7 +2,7 @@ package suite.assembler;
 
 import static java.lang.Math.min;
 import static java.util.Map.entry;
-import static suite.util.Fail.fail;
+import static primal.statics.Fail.fail;
 
 import java.util.Arrays;
 import java.util.List;
@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
 
+import primal.os.Log_;
 import suite.assembler.Amd64.Instruction;
 import suite.assembler.Amd64.OpImm;
 import suite.assembler.Amd64.OpImmLabel;
@@ -22,7 +23,6 @@ import suite.assembler.Amd64.OpRegXmm;
 import suite.assembler.Amd64.OpRegYmm;
 import suite.assembler.Amd64.Operand;
 import suite.inspect.Dump;
-import suite.os.Log_;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
 import suite.primitive.Bytes_;

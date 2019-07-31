@@ -2,7 +2,7 @@ package suite.primitive;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
-import static suite.util.Rethrow.ex;
+import static primal.statics.Rethrow.ex;
 
 import java.io.IOException;
 import java.nio.DoubleBuffer;
@@ -10,8 +10,8 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
 
+import primal.Ob;
 import suite.cfg.Defaults;
-import suite.object.Object_;
 import suite.primitive.DblPrimitives.DblSource;
 import suite.primitive.streamlet.DblPuller;
 import suite.primitive.streamlet.DblStreamlet;
@@ -238,7 +238,7 @@ public class Doubles implements Iterable<Double> {
 
 	@Override
 	public boolean equals(Object object) {
-		if (Object_.clazz(object) == Doubles.class) {
+		if (Ob.clazz(object) == Doubles.class) {
 			var other = (Doubles) object;
 
 			if (size_() == other.size_()) {

@@ -11,9 +11,9 @@ import java.util.Map;
 
 import org.junit.Test;
 
+import primal.os.Log_;
+import primal.statics.Rethrow;
 import suite.net.cluster.impl.NioCluster;
-import suite.os.Log_;
-import suite.util.Rethrow;
 import suite.util.Thread_;
 
 public class NioClusterTest {

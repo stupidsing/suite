@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
-import suite.object.Object_;
+import primal.Ob;
 import suite.util.To;
 
 public class Ranges<T extends Comparable<? super T>> {
@@ -29,7 +29,7 @@ public class Ranges<T extends Comparable<? super T>> {
 				range1 = source1.g();
 			}
 
-			add.test(Range.of(Object_.min(range0.from, range0.from), to));
+			add.test(Range.of(Ob.min(range0.from, range0.from), to));
 		}
 
 		return new Ranges<>(intersects);

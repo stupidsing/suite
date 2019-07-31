@@ -1,6 +1,6 @@
 package suite.jdk;
 
-import static suite.util.Rethrow.ex;
+import static primal.statics.Rethrow.ex;
 
 import suite.http.HttpUtil;
 import suite.util.XmlUtil;

@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import suite.os.Log_;
+import primal.os.Log_;
 import suite.os.SocketUtil;
 import suite.os.SocketUtil.Io;
 import suite.primitive.BooMutable;

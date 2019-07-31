@@ -1,6 +1,6 @@
 package suite.jdk;
 
-import static suite.util.Fail.fail;
+import static primal.statics.Fail.fail;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -8,9 +8,9 @@ import java.util.List;
 
 import javax.tools.ToolProvider;
 
+import primal.os.Log_;
 import suite.cfg.Defaults;
 import suite.os.FileUtil;
-import suite.os.Log_;
 
 public class JdkUtil {
 

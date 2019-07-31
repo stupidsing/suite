@@ -14,11 +14,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import primal.os.Log_;
 import suite.cfg.Defaults;
 import suite.net.NetUtil;
 import suite.net.ThreadService;
 import suite.net.cluster.ClusterProbe;
-import suite.os.Log_;
 import suite.primitive.adt.pair.IntIntPair;
 import suite.streamlet.As;
 import suite.streamlet.Pusher;

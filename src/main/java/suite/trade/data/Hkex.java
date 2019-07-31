@@ -1,6 +1,6 @@
 package suite.trade.data;
 
-import static suite.util.Rethrow.ex;
+import static primal.statics.Rethrow.ex;
 
 import java.util.HashSet;
 import java.util.List;

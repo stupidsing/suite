@@ -1,6 +1,6 @@
 package suite.fp.intrinsic;
 
-import static suite.util.Rethrow.ex;
+import static primal.statics.Rethrow.ex;
 
 import java.io.Reader;
 import java.util.HashMap;
@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.IntFunction;
 
+import primal.Ob;
 import suite.cfg.Defaults;
 import suite.instructionexecutor.thunk.IndexedReader;
 import suite.instructionexecutor.thunk.IndexedSourceReader;
@@ -15,7 +16,6 @@ import suite.node.Atom;
 import suite.node.Data;
 import suite.node.Node;
 import suite.node.Tree;
-import suite.object.Object_;
 import suite.persistent.PerPointer;
 import suite.primitive.Chars;
 
@@ -88,7 +88,7 @@ public class Intrinsics {
 			if (0 <= nCharsRead)
 				return Chars.of(buffer, 0, nCharsRead);
 			else {
-				Object_.closeQuietly(reader);
+				Ob.closeQuietly(reader);
 				return null;
 			}
 		}));
@@ -102,7 +102,7 @@ public class Intrinsics {
 				, MonadIntrinsics.class //
 				, SeqIntrinsics.class //
 				, SuiteIntrinsics.class)) {
-			var instance = Object_.new_(clazz);
+			var instance = Ob.new_(clazz);
 
 			for (var field : clazz.getFields())
 				if (Intrinsic.class.isAssignableFrom(field.getType())) {

@@ -1,10 +1,9 @@
 package suite.persistent;
 
 import java.util.Iterator;
-import java.util.Objects;
 
+import primal.Ob;
 import suite.adt.pair.Pair;
-import suite.object.Object_;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
@@ -59,7 +58,7 @@ public class PerMap<K extends Comparable<K>, V> implements Iterable<Pair<K, V>> 
 
 	@Override
 	public boolean equals(Object object) {
-		return Object_.clazz(object) == PerMap.class && Objects.equals(streamlet(), ((PerMap<?, ?>) object).streamlet());
+		return Ob.clazz(object) == PerMap.class && Ob.equals(streamlet(), ((PerMap<?, ?>) object).streamlet());
 	}
 
 	@Override

@@ -1,11 +1,11 @@
 package suite.http;
 
-import static suite.util.Rethrow.ex;
+import static primal.statics.Rethrow.ex;
 
 import java.net.Socket;
 
+import primal.os.Log_;
 import suite.cfg.Defaults;
-import suite.os.Log_;
 import suite.os.SocketUtil;
 import suite.primitive.adt.pair.IntObjPair;
 import suite.streamlet.FunUtil.Fun;

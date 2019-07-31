@@ -4,7 +4,12 @@
   <groupId>suite</groupId>
   <artifactId>suite</artifactId>
   <version>1.0</version>
-  <repositories/>
+  <repositories>
+    <repository>
+      <id>ywsing.onedse.com</id>
+      <url>https://ywsing.onedse.com/m2_repo/</url>
+    </repository>
+  </repositories>
   <dependencies>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
@@ -65,6 +70,11 @@
       <groupId>org.telegram</groupId>
       <artifactId>telegrambots</artifactId>
       <version>LATEST</version>
+    </dependency>
+    <dependency>
+      <groupId>primal</groupId>
+      <artifactId>primal</artifactId>
+      <version>1.0</version>
     </dependency>
   </dependencies>
   <build>

@@ -1,6 +1,6 @@
 package suite.math.linalg;
 
-import static suite.util.Fail.fail;
+import static primal.statics.Fail.fail;
 
 import suite.primitive.IntInt_Flt;
 

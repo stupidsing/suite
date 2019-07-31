@@ -1,21 +1,20 @@
 package suite.streamlet;
 
-import static suite.util.Fail.fail;
+import static primal.statics.Fail.fail;
 
 import java.io.Closeable;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
+import primal.Ob;
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.Fixie_.FixieFun3;
 import suite.adt.pair.Pair;
-import suite.object.Object_;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil.Source;
 import suite.streamlet.FunUtil2.Fun2;
@@ -93,7 +92,7 @@ public class Streamlet2<K, V> implements StreamletDefaults<Pair<K, V>, Puller2<K
 
 	@Override
 	public boolean equals(Object object) {
-		return Object_.clazz(object) == Streamlet2.class ? Objects.equals(spawn(), ((Streamlet2<?, ?>) object).spawn()) : false;
+		return Ob.clazz(object) == Streamlet2.class ? Ob.equals(spawn(), ((Streamlet2<?, ?>) object).spawn()) : false;
 	}
 
 	public Streamlet2<K, V> filter(BiPredicate<K, V> fun) {

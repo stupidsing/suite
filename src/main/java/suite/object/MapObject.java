@@ -1,6 +1,6 @@
 package suite.object;
 
-import static suite.util.Rethrow.ex;
+import static primal.statics.Rethrow.ex;
 
 import java.util.HashMap;
 

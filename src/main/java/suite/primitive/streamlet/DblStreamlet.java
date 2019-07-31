@@ -3,12 +3,11 @@ package suite.primitive.streamlet;
 import java.io.Closeable;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 
+import primal.Ob;
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.Pair;
-import suite.object.Object_;
 import suite.primitive.DblOpt;
 import suite.primitive.DblPrimitives.DblComparator;
 import suite.primitive.DblPrimitives.DblObj_Obj;
@@ -94,7 +93,7 @@ public class DblStreamlet implements StreamletDefaults<Double, DblPuller> {
 
 	@Override
 	public boolean equals(Object object) {
-		return Object_.clazz(object) == DblStreamlet.class ? Objects.equals(spawn(), ((DblStreamlet) object).spawn()) : false;
+		return Ob.clazz(object) == DblStreamlet.class ? Ob.equals(spawn(), ((DblStreamlet) object).spawn()) : false;
 	}
 
 	public DblStreamlet filter(DblTest fun) {

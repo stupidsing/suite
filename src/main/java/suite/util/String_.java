@@ -2,10 +2,8 @@ package suite.util;
 
 import static java.lang.Math.min;
 
-import java.util.Objects;
-
+import primal.Ob;
 import suite.adt.pair.Pair;
-import suite.object.Object_;
 import suite.streamlet.FunUtil.Sink;
 import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Puller;
@@ -36,11 +34,11 @@ public class String_ {
 	}
 
 	public static int compare(String s0, String s1) {
-		return Object_.compare(s0, s1);
+		return Ob.compare(s0, s1);
 	}
 
 	public static boolean equals(String s0, String s1) {
-		return Objects.equals(s0, s1);
+		return Ob.equals(s0, s1);
 	}
 
 	public static boolean isBlank(String s) {

@@ -2,16 +2,16 @@ package suite.algo;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static suite.util.Fail.fail;
+import static primal.statics.Fail.fail;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
 
 import org.junit.Test;
 
+import primal.Ob;
 import suite.primitive.Coord;
 import suite.primitive.adt.pair.IntDblPair;
 
@@ -93,12 +93,12 @@ public class Q_LearningTest {
 				else
 					return new Result(this, -1);
 			else if (action == 4) // pickup
-				if (passenger != onTaxi && Objects.equals(taxi, locations.get(passenger)))
+				if (passenger != onTaxi && Ob.equals(taxi, locations.get(passenger)))
 					return new Result(new State(taxi, onTaxi, destination), -1);
 				else
 					return new Result(this, -10);
 			else if (action == 5) // drop-off
-				if (passenger == onTaxi && Objects.equals(taxi, locations.get(destination)))
+				if (passenger == onTaxi && Ob.equals(taxi, locations.get(destination)))
 					return new Result(this, 20, true);
 				else
 					return new Result(this, -10);

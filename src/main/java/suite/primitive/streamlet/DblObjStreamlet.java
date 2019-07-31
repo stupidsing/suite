@@ -1,18 +1,17 @@
 package suite.primitive.streamlet;
 
-import static suite.util.Fail.fail;
+import static primal.statics.Fail.fail;
 
 import java.io.Closeable;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
 
+import primal.Ob;
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.Pair;
-import suite.object.Object_;
 import suite.primitive.DblFunUtil;
 import suite.primitive.DblObjFunUtil;
 import suite.primitive.DblObj_Dbl;
@@ -101,7 +100,7 @@ public class DblObjStreamlet<V> implements StreamletDefaults<DblObjPair<V>, DblO
 
 	@Override
 	public boolean equals(Object object) {
-		return Object_.clazz(object) == DblObjStreamlet.class ? Objects.equals(spawn(), ((DblObjStreamlet<?>) object).spawn())
+		return Ob.clazz(object) == DblObjStreamlet.class ? Ob.equals(spawn(), ((DblObjStreamlet<?>) object).spawn())
 				: false;
 	}
 

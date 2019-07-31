@@ -1,6 +1,6 @@
 package suite.persistent;
 
-import static suite.util.Fail.fail;
+import static primal.statics.Fail.fail;
 
 import java.util.ArrayDeque;
 import java.util.Comparator;

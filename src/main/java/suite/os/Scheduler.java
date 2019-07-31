@@ -5,7 +5,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import suite.object.Object_;
+import primal.Ob;
+import primal.os.Log_;
 import suite.streamlet.Read;
 import suite.util.Thread_;
 
@@ -29,7 +30,7 @@ public class Scheduler {
 			var nextWakeUpDateTime = Read //
 					.from(schedules) //
 					.map(schedule -> schedule.nextRunDateTime) //
-					.min(Object_::compare);
+					.min(Ob::compare);
 
 			Thread_.sleepQuietly(Duration.between(now, nextWakeUpDateTime).toMillis());
 

@@ -3,9 +3,8 @@ package suite.lcs;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
-import suite.object.Object_;
+import primal.Ob;
 import suite.search.Search;
 import suite.search.Search.Traverser;
 
@@ -28,7 +27,7 @@ public class LcsBfs<T> {
 		}
 
 		public boolean equals(Object object) {
-			if (Object_.clazz(object) == Node.class) {
+			if (Ob.clazz(object) == Node.class) {
 				LcsBfs<?>.Node node = (LcsBfs<?>.Node) object;
 				return pos0 == node.pos0 && pos1 == node.pos1;
 			} else
@@ -64,7 +63,7 @@ public class LcsBfs<T> {
 			private Node jump(Node node) {
 				while (node.pos0 < size0 //
 						&& node.pos1 < size1 //
-						&& Objects.equals(l0.get(node.pos0), l1.get(node.pos1))) {
+						&& Ob.equals(l0.get(node.pos0), l1.get(node.pos1))) {
 					node.pos0++;
 					node.pos1++;
 				}

@@ -1,14 +1,14 @@
 package suite.trade.data;
 
 import static java.lang.Math.min;
-import static suite.util.Fail.fail;
+import static primal.statics.Fail.fail;
 
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import suite.os.Log_;
+import primal.os.Log_;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil2.Fun2;
 import suite.streamlet.Read;

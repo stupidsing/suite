@@ -1,6 +1,6 @@
 package suite.jdk;
 
-import static suite.util.Rethrow.ex;
+import static primal.statics.Rethrow.ex;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -9,8 +9,8 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Path;
 
-import suite.object.Object_;
-import suite.os.Log_;
+import primal.Ob;
+import primal.os.Log_;
 import suite.util.To;
 
 public class JdkLoadClassUtil extends JdkUtil implements Closeable {
@@ -31,7 +31,7 @@ public class JdkLoadClassUtil extends JdkUtil implements Closeable {
 	public <T> T newInstance(Class<T> interfaceClazz, String canonicalName, String java) {
 		compile(canonicalName, java);
 		Class<? extends T> clazz = load(canonicalName);
-		return Object_.new_(clazz);
+		return Ob.new_(clazz);
 	}
 
 	private <T> Class<? extends T> load(String canonicalName) {

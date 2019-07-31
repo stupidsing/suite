@@ -5,8 +5,8 @@ import java.nio.file.Paths;
 
 import org.junit.Test;
 
+import primal.Ob;
 import suite.cli.Main;
-import suite.object.Object_;
 
 public class UnsafeUtilTest {
 
@@ -15,7 +15,7 @@ public class UnsafeUtilTest {
 		var className = "suite.cli.Main";
 		var bytes = Files.readAllBytes(Paths.get("target/classes/" + className.replace(".", "/") + ".class"));
 		Class<? extends AutoCloseable> clazz = new UnsafeUtil().defineClass(Main.class, className, bytes);
-		Object_.new_(clazz).close();
+		Ob.new_(clazz).close();
 	}
 
 }

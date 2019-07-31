@@ -1,7 +1,7 @@
 package suite.util;
 
-import static suite.util.Fail.fail;
-import static suite.util.Rethrow.ex;
+import static primal.statics.Fail.fail;
+import static primal.statics.Rethrow.ex;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import primal.Ob;
 import suite.adt.pair.Pair;
 import suite.inspect.Inspect;
 import suite.node.Atom;
@@ -26,7 +27,6 @@ import suite.node.Reference;
 import suite.node.Str;
 import suite.node.Tree;
 import suite.node.io.TermOp;
-import suite.object.Object_;
 import suite.primitive.Chars;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.Read;
@@ -151,7 +151,7 @@ public class Nodify {
 					return Dict.of(map);
 				}), n -> ex(() -> {
 					var map = Dict.m(n);
-					var o1 = Object_.new_(clazz);
+					var o1 = Ob.new_(clazz);
 					for (var pair : pairs) {
 						var fieldInfo = pair.v;
 						var value = map.get(pair.k).finalNode();
@@ -177,7 +177,7 @@ public class Nodify {
 					return start.getRight();
 				}, n -> {
 					var list = Tree.read(n, TermOp.OR____).map(n_ -> apply_(n_, nodifier1)).toList();
-					var o1 = (Collection<Object>) Object_.instantiate(clazz);
+					var o1 = (Collection<Object>) Ob.instantiate(clazz);
 					o1.addAll(list);
 					return o1;
 				});
@@ -191,7 +191,7 @@ public class Nodify {
 					return Dict.of(map);
 				}, n -> {
 					var map = Dict.m(n);
-					var object1 = (Map<Object, Object>) Object_.instantiate(clazz);
+					var object1 = (Map<Object, Object>) Ob.instantiate(clazz);
 					for (var e : map.entrySet())
 						object1.put(apply_(e.getKey(), kn), apply_(e.getValue().finalNode(), vn));
 					return object1;

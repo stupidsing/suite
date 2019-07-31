@@ -2,7 +2,7 @@ package suite.primitive;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
-import static suite.util.Fail.fail;
+import static primal.statics.Fail.fail;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -10,8 +10,8 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
 
+import primal.Ob;
 import suite.cfg.Defaults;
-import suite.object.Object_;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.Puller;
 import suite.util.Compare;
@@ -211,7 +211,7 @@ public class Bytes implements Iterable<Byte> {
 
 	@Override
 	public boolean equals(Object object) {
-		if (Object_.clazz(object) == Bytes.class) {
+		if (Ob.clazz(object) == Bytes.class) {
 			var other = (Bytes) object;
 
 			if (size_() == other.size_()) {

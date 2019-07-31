@@ -1,6 +1,6 @@
 package suite.jdk;
 
-import static suite.util.Rethrow.ex;
+import static primal.statics.Rethrow.ex;
 
 import java.lang.reflect.Method;
 

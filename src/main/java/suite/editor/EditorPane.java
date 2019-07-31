@@ -13,10 +13,10 @@ import javax.swing.text.Document;
 import javax.swing.text.Segment;
 import javax.swing.undo.UndoManager;
 
+import primal.statics.Rethrow.SinkEx;
 import suite.adt.pair.Pair;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.Pusher;
-import suite.util.Rethrow.SinkEx;
 import suite.util.String_;
 
 public class EditorPane extends JEditorPane {

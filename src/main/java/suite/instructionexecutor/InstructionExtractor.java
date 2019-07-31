@@ -1,6 +1,6 @@
 package suite.instructionexecutor;
 
-import static suite.util.Fail.fail;
+import static primal.statics.Fail.fail;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -8,8 +8,8 @@ import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
+import primal.Ob;
 import suite.adt.IdentityKey;
 import suite.adt.map.BiMap;
 import suite.instructionexecutor.InstructionUtil.Insn;
@@ -90,7 +90,7 @@ public class InstructionExtractor implements AutoCloseable {
 		var insnName = Atom.name(rs.get(0));
 		Insn insn;
 
-		if (Objects.equals(insnName, "EVALUATE")) {
+		if (Ob.equals(insnName, "EVALUATE")) {
 			var operator = TermOp.find(Atom.name(rs.remove(3)));
 			insn = InstructionUtil.getEvalInsn(operator);
 		} else

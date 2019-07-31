@@ -1,7 +1,7 @@
 package suite.net.cluster;
 
 import static org.junit.Assert.assertEquals;
-import static suite.util.Rethrow.ex;
+import static primal.statics.Rethrow.ex;
 import static suite.util.Streamlet_.forInt;
 
 import java.io.IOException;
@@ -12,9 +12,9 @@ import java.util.Map;
 
 import org.junit.Test;
 
+import primal.statics.Rethrow;
 import suite.net.cluster.impl.ClusterProbeImpl;
 import suite.streamlet.Read;
-import suite.util.Rethrow;
 import suite.util.Thread_;
 
 public class ClusterProbeTest {

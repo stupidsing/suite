@@ -1,8 +1,8 @@
 package suite.net.cluster;
 
 import static org.junit.Assert.assertEquals;
-import static suite.util.Fail.fail;
-import static suite.util.Rethrow.ex;
+import static primal.statics.Fail.fail;
+import static primal.statics.Rethrow.ex;
 import static suite.util.Streamlet_.forInt;
 
 import java.io.IOException;
@@ -14,16 +14,16 @@ import java.util.Random;
 
 import org.junit.Test;
 
+import primal.os.Log_;
+import primal.statics.Rethrow;
 import suite.net.cluster.impl.NioCluster;
 import suite.net.cluster.impl.NioClusterMap;
-import suite.os.Log_;
 import suite.primitive.IntPrimitives.Int_Obj;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil.Sink;
 import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
-import suite.util.Rethrow;
 import suite.util.Thread_;
 
 public class NioClusterMapTest {

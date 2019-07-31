@@ -1,6 +1,6 @@
 package suite.jdk;
 
-import static suite.util.Rethrow.ex;
+import static primal.statics.Rethrow.ex;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -10,7 +10,7 @@ import java.util.List;
 
 import org.junit.Test;
 
-import suite.object.Object_;
+import primal.Ob;
 import suite.os.FileUtil;
 import suite.persistent.PerSet;
 import suite.search.DirectedGraph;
@@ -24,7 +24,7 @@ public class DependencyTest {
 
 	@Test
 	public void testDependency() {
-		dumpDependencies(PerSet.empty(), "", "suite.util.Rethrow");
+		dumpDependencies(PerSet.empty(), "", "primal.statics.Rethrow");
 	}
 
 	@Test
@@ -51,7 +51,7 @@ public class DependencyTest {
 		var scc = new StronglyConnectedComponents<>(DirectedGraph.of(vertices, edges));
 
 		for (var layer : scc.group().layers()) {
-			Read.from(layer).flatMap(iterable -> iterable).sort(Object_::compare).forEach(System.out::println);
+			Read.from(layer).flatMap(iterable -> iterable).sort(Ob::compare).forEach(System.out::println);
 			System.out.println();
 		}
 	}

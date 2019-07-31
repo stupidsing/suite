@@ -1,7 +1,7 @@
 package suite.trade.data;
 
-import static suite.util.Fail.fail;
-import static suite.util.Rethrow.ex;
+import static primal.statics.Fail.fail;
+import static primal.statics.Rethrow.ex;
 
 import java.net.URLEncoder;
 import java.nio.file.Files;
@@ -14,13 +14,13 @@ import java.util.function.Predicate;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import primal.Ob;
 import suite.cfg.Defaults;
 import suite.cfg.HomeDir;
 import suite.http.HttpUtil;
 import suite.node.util.Singleton;
-import suite.object.Object_;
 import suite.os.FileUtil;
-import suite.os.Log_;
+import suite.os.LogUtil;
 import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.primitive.LngPrimitives.Obj_Lng;
 import suite.primitive.adt.pair.LngFltPair;
@@ -48,7 +48,7 @@ public class Yahoo {
 				.http(urlString) //
 				.collect(As::csv) //
 				.skip(1) //
-				.sort((a0, a1) -> Object_.compare(a0[0], a1[0])) //
+				.sort((a0, a1) -> Ob.compare(a0[0], a1[0])) //
 				.collect();
 
 		var ts = arrays.collect(Obj_Lng.lift(array -> closeTs(array[0]))).toArray();
@@ -193,7 +193,7 @@ public class Yahoo {
 				: stockHistory1.splits;
 
 		var stockHistory2 = stockHistory1.create(stockHistory1.data, stockHistory1.dividends, splits2);
-		var stockHistory3 = Log_.prefix("for " + symbol + ": ", () -> stockHistory2.cleanse());
+		var stockHistory3 = LogUtil.prefix("for " + symbol + ": ", () -> stockHistory2.cleanse());
 		return stockHistory3;
 	}
 
@@ -230,7 +230,7 @@ public class Yahoo {
 	private Map<String, Float> quote_(Streamlet<String> symbols, String field) {
 		if (0 < symbols.size()) {
 			var url = "https://download.finance.yahoo.com/d/quotes.csv" //
-					+ "?s=" + symbols.sort(Object_::compare).map(this::encode).collect(As.joinedBy("+")) //
+					+ "?s=" + symbols.sort(Ob::compare).map(this::encode).collect(As.joinedBy("+")) //
 					+ "&f=s" + field;
 
 			return HttpUtil.get(url).out().collect(As::csv).toMap(array -> array[0], array -> Float.parseFloat(array[1]));

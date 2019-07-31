@@ -3,6 +3,7 @@ package suite.adt.pair;
 import java.util.Comparator;
 import java.util.Objects;
 
+import primal.Ob;
 import suite.adt.pair.Fixie_.Fixie0;
 import suite.adt.pair.Fixie_.Fixie1;
 import suite.adt.pair.Fixie_.Fixie2;
@@ -25,7 +26,6 @@ import suite.adt.pair.Fixie_.FixieFun7;
 import suite.adt.pair.Fixie_.FixieFun8;
 import suite.adt.pair.Fixie_.FixieFun9;
 import suite.adt.pair.Fixie_.FixieFunA;
-import suite.object.Object_;
 import suite.util.String_;
 
 public class Fixie<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9> implements FixieA<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9> {
@@ -183,35 +183,35 @@ public class Fixie<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9> implements FixieA<T0,
 	Comparator<Fixie<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9>> comparator() {
 		return (fixie0, fixie1) -> {
 			var c = 0;
-			c = c == 0 ? Object_.compare(fixie0.t0, fixie1.t0) : c;
-			c = c == 0 ? Object_.compare(fixie0.t1, fixie1.t1) : c;
-			c = c == 0 ? Object_.compare(fixie0.t2, fixie1.t2) : c;
-			c = c == 0 ? Object_.compare(fixie0.t3, fixie1.t3) : c;
-			c = c == 0 ? Object_.compare(fixie0.t4, fixie1.t4) : c;
-			c = c == 0 ? Object_.compare(fixie0.t5, fixie1.t5) : c;
-			c = c == 0 ? Object_.compare(fixie0.t6, fixie1.t6) : c;
-			c = c == 0 ? Object_.compare(fixie0.t7, fixie1.t7) : c;
-			c = c == 0 ? Object_.compare(fixie0.t8, fixie1.t8) : c;
-			c = c == 0 ? Object_.compare(fixie0.t9, fixie1.t9) : c;
+			c = c == 0 ? Ob.compare(fixie0.t0, fixie1.t0) : c;
+			c = c == 0 ? Ob.compare(fixie0.t1, fixie1.t1) : c;
+			c = c == 0 ? Ob.compare(fixie0.t2, fixie1.t2) : c;
+			c = c == 0 ? Ob.compare(fixie0.t3, fixie1.t3) : c;
+			c = c == 0 ? Ob.compare(fixie0.t4, fixie1.t4) : c;
+			c = c == 0 ? Ob.compare(fixie0.t5, fixie1.t5) : c;
+			c = c == 0 ? Ob.compare(fixie0.t6, fixie1.t6) : c;
+			c = c == 0 ? Ob.compare(fixie0.t7, fixie1.t7) : c;
+			c = c == 0 ? Ob.compare(fixie0.t8, fixie1.t8) : c;
+			c = c == 0 ? Ob.compare(fixie0.t9, fixie1.t9) : c;
 			return c;
 		};
 	}
 
 	@Override
 	public boolean equals(Object object) {
-		if (Object_.clazz(object) == Fixie.class) {
+		if (Ob.clazz(object) == Fixie.class) {
 			var other = (Fixie<?, ?, ?, ?, ?, ?, ?, ?, ?, ?>) object;
 			return true //
-					&& Objects.equals(t0, other.t0) //
-					&& Objects.equals(t1, other.t1) //
-					&& Objects.equals(t2, other.t2) //
-					&& Objects.equals(t3, other.t3) //
-					&& Objects.equals(t4, other.t4) //
-					&& Objects.equals(t5, other.t5) //
-					&& Objects.equals(t6, other.t6) //
-					&& Objects.equals(t7, other.t7) //
-					&& Objects.equals(t8, other.t8) //
-					&& Objects.equals(t9, other.t9) //
+					&& Ob.equals(t0, other.t0) //
+					&& Ob.equals(t1, other.t1) //
+					&& Ob.equals(t2, other.t2) //
+					&& Ob.equals(t3, other.t3) //
+					&& Ob.equals(t4, other.t4) //
+					&& Ob.equals(t5, other.t5) //
+					&& Ob.equals(t6, other.t6) //
+					&& Ob.equals(t7, other.t7) //
+					&& Ob.equals(t8, other.t8) //
+					&& Ob.equals(t9, other.t9) //
 			;
 		} else
 			return false;

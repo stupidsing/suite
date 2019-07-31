@@ -8,11 +8,11 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
+import primal.os.Log_;
 import suite.math.Tanh;
 import suite.math.linalg.VirtualVector;
 import suite.math.numeric.Statistic;
 import suite.math.transform.DiscreteCosineTransform;
-import suite.os.Log_;
 import suite.primitive.Floats_;
 import suite.primitive.IntPrimitives.Int_Obj;
 import suite.primitive.Ints_;

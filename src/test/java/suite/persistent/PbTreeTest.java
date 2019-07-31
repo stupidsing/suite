@@ -8,13 +8,13 @@ import java.util.Comparator;
 
 import org.junit.Test;
 
-import suite.object.Object_;
+import primal.Ob;
 
 public class PbTreeTest {
 
 	private int max = 32;
 
-	private Comparator<Integer> comparator = Object_::compare;
+	private Comparator<Integer> comparator = Ob::compare;
 
 	@Test
 	public void test0() {

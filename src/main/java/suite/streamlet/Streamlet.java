@@ -5,14 +5,13 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
 
+import primal.Ob;
 import suite.adt.Opt;
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.Pair;
-import suite.object.Object_;
 import suite.primitive.streamlet.IntObjStreamlet;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil.Sink;
@@ -85,7 +84,7 @@ public class Streamlet<T> implements StreamletDefaults<T, Puller<T>> {
 
 	@Override
 	public boolean equals(Object object) {
-		return Object_.clazz(object) == Streamlet.class ? Objects.equals(spawn(), ((Streamlet<?>) object).spawn()) : false;
+		return Ob.clazz(object) == Streamlet.class ? Ob.equals(spawn(), ((Streamlet<?>) object).spawn()) : false;
 	}
 
 	public Streamlet<T> filter(Predicate<T> fun) {

@@ -7,7 +7,7 @@ import java.util.Collections;
 
 import org.junit.Test;
 
-import suite.object.Object_;
+import primal.Ob;
 
 public class PerBinPriorityQueueTest {
 
@@ -20,7 +20,7 @@ public class PerBinPriorityQueueTest {
 			list.add(i);
 		Collections.shuffle(list);
 
-		var pq = new PerBinPriorityQueue<Integer>(Object_::compare);
+		var pq = new PerBinPriorityQueue<Integer>(Ob::compare);
 
 		for (var i : list)
 			pq = pq.add(i);

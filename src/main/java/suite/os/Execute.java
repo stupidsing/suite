@@ -1,7 +1,7 @@
 package suite.os;
 
-import static suite.util.Fail.fail;
-import static suite.util.Rethrow.ex;
+import static primal.statics.Fail.fail;
+import static primal.statics.Rethrow.ex;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -9,10 +9,11 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 
+import primal.os.Log_;
+import primal.statics.Fail.InterruptedRuntimeException;
 import suite.cfg.Defaults;
 import suite.streamlet.Read;
 import suite.util.Copy;
-import suite.util.Fail.InterruptedRuntimeException;
 import suite.util.Thread_.Th;
 import suite.util.To;
 

@@ -1,6 +1,6 @@
 package suite.adt;
 
-import suite.object.Object_;
+import primal.Ob;
 
 public class IdentityKey<K> implements Comparable<IdentityKey<K>> {
 
@@ -21,7 +21,7 @@ public class IdentityKey<K> implements Comparable<IdentityKey<K>> {
 
 	@Override
 	public boolean equals(Object object) {
-		return Object_.clazz(object) == IdentityKey.class && key == ((IdentityKey<?>) object).key;
+		return Ob.clazz(object) == IdentityKey.class && key == ((IdentityKey<?>) object).key;
 	}
 
 	@Override

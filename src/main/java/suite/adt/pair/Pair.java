@@ -3,7 +3,7 @@ package suite.adt.pair;
 import java.util.Comparator;
 import java.util.Objects;
 
-import suite.object.Object_;
+import primal.Ob;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil2.Fun2;
 
@@ -38,14 +38,14 @@ public class Pair<K, V> {
 	public static <K extends Comparable<? super K>, V extends Comparable<? super V>> Comparator<Pair<K, V>> comparator() {
 		return (pair0, pair1) -> {
 			var c = Boolean.compare(pair0 != null, pair1 != null);
-			c = c == 0 ? Object_.compare(pair0.k, pair1.k) : c;
-			c = c == 0 ? Object_.compare(pair0.v, pair1.v) : c;
+			c = c == 0 ? Ob.compare(pair0.k, pair1.k) : c;
+			c = c == 0 ? Ob.compare(pair0.v, pair1.v) : c;
 			return c;
 		};
 	}
 
 	public static <K extends Comparable<? super K>, V> Comparator<Pair<K, V>> comparatorByFirst() {
-		return Comparator.comparing(pair -> fst(pair), Object_::compare);
+		return Comparator.comparing(pair -> fst(pair), Ob::compare);
 	}
 
 	public static <K> K fst(Pair<K, ?> pair) {
@@ -67,9 +67,9 @@ public class Pair<K, V> {
 
 	@Override
 	public boolean equals(Object object) {
-		if (Object_.clazz(object) == Pair.class) {
+		if (Ob.clazz(object) == Pair.class) {
 			var other = (Pair<?, ?>) object;
-			return Objects.equals(k, other.k) && Objects.equals(v, other.v);
+			return Ob.equals(k, other.k) && Ob.equals(v, other.v);
 		} else
 			return false;
 	}

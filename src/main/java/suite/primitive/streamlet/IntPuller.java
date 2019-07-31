@@ -1,6 +1,6 @@
 package suite.primitive.streamlet;
 
-import static suite.util.Fail.fail;
+import static primal.statics.Fail.fail;
 
 import java.io.Closeable;
 import java.util.ArrayList;
@@ -14,10 +14,10 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.IntPredicate;
 
+import primal.Ob;
 import suite.adt.Mutable;
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.Pair;
-import suite.object.Object_;
 import suite.primitive.IntFunUtil;
 import suite.primitive.IntOpt;
 import suite.primitive.IntPrimitives.IntComparator;
@@ -124,7 +124,7 @@ public class IntPuller implements PullerDefaults<Integer> {
 		return of(() -> {
 			var next = pull();
 			if (next == empty)
-				Object_.closeQuietly(c);
+				Ob.closeQuietly(c);
 			return next;
 		});
 	}
@@ -190,10 +190,10 @@ public class IntPuller implements PullerDefaults<Integer> {
 
 	@Override
 	public boolean equals(Object object) {
-		if (Object_.clazz(object) == IntPuller.class) {
+		if (Ob.clazz(object) == IntPuller.class) {
 			var source1 = ((IntPuller) object).source;
 			int o0, o1;
-			while (Objects.equals(o0 = source.g(), o1 = source1.g()))
+			while (Ob.equals(o0 = source.g(), o1 = source1.g()))
 				if (o0 == empty && o1 == empty)
 					return true;
 			return false;

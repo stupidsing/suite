@@ -2,7 +2,7 @@ package suite.primitive.adt.pair;
 
 import java.util.Comparator;
 
-import suite.object.Object_;
+import primal.Ob;
 import suite.primitive.IntFunUtil;
 import suite.primitive.IntInt_Obj;
 import suite.primitive.Int_Int;
@@ -71,7 +71,7 @@ public class IntIntPair {
 
 	@Override
 	public boolean equals(Object object) {
-		if (Object_.clazz(object) == IntIntPair.class) {
+		if (Ob.clazz(object) == IntIntPair.class) {
 			var other = (IntIntPair) object;
 			return t0 == other.t0 && t1 == other.t1;
 		} else

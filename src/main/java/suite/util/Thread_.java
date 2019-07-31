@@ -1,12 +1,12 @@
 package suite.util;
 
-import static suite.util.Rethrow.ex;
+import static primal.statics.Rethrow.ex;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import suite.os.Log_;
+import primal.os.Log_;
 import suite.streamlet.Puller;
 import suite.streamlet.Read;
 

@@ -6,7 +6,7 @@ import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 
-import suite.os.Log_;
+import primal.os.Log_;
 
 public class ClipboardUtil {
 

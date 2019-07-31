@@ -1,9 +1,8 @@
 package suite.ansi;
 
-import java.util.Objects;
-
 import com.sun.jna.Native;
 
+import primal.Ob;
 import suite.adt.pair.Pair;
 import suite.ansi.Keyboard.VK;
 import suite.util.RunUtil;
@@ -17,7 +16,7 @@ public class ReadLineMain {
 			var keys = keyboard.pusher().pushee();
 			Pair<VK, Character> pair;
 
-			while (!Objects.equals(pair = keys.pull(), Pair.of(null, 'q')))
+			while (!Ob.equals(pair = keys.pull(), Pair.of(null, 'q')))
 				System.out.println(pair);
 
 			return true;

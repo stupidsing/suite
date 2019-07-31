@@ -1,6 +1,6 @@
 package suite.lp.check;
 
-import static suite.util.Fail.fail;
+import static primal.statics.Fail.fail;
 
 import java.util.HashMap;
 import java.util.List;

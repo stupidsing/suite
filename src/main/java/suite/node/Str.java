@@ -1,6 +1,6 @@
 package suite.node;
 
-import suite.object.Object_;
+import primal.Ob;
 import suite.util.String_;
 
 public class Str extends Node {
@@ -17,7 +17,7 @@ public class Str extends Node {
 
 	@Override
 	public boolean equals(Object object) {
-		return Object_.clazz(object) == Str.class ? String_.equals(value, ((Str) object).value) : false;
+		return Ob.clazz(object) == Str.class ? String_.equals(value, ((Str) object).value) : false;
 	}
 
 	@Override

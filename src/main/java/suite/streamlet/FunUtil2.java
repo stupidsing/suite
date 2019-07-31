@@ -1,20 +1,20 @@
 package suite.streamlet;
 
-import static suite.util.Fail.fail;
+import static primal.statics.Fail.fail;
 
 import java.util.Iterator;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
+import primal.os.Log_;
+import primal.statics.Fail.InterruptedRuntimeException;
+import primal.statics.Rethrow;
 import suite.adt.pair.Pair;
-import suite.os.Log_;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil.Sink;
 import suite.streamlet.FunUtil.Source;
-import suite.util.Fail.InterruptedRuntimeException;
 import suite.util.NullableSyncQueue;
-import suite.util.Rethrow;
 import suite.util.Thread_;
 
 public class FunUtil2 {

@@ -10,7 +10,7 @@ import suite.node.io.Formatter;
 import suite.node.io.TermOp;
 import suite.node.pp.PrettyPrinter;
 import suite.os.FileUtil;
-import suite.os.Log_;
+import suite.os.LogUtil;
 import suite.streamlet.FunUtil.Source;
 
 public class IterativeParserTest {
@@ -80,7 +80,7 @@ public class IterativeParserTest {
 			return true;
 		};
 		test.g(); // warm-up
-		Log_.duration("parse", test);
+		LogUtil.duration("parse", test);
 	}
 
 	@Test

@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.junit.Test;
 
-import suite.object.Object_;
+import primal.Ob;
 import suite.os.Execute;
 import suite.os.FileUtil;
 import suite.streamlet.As;
@@ -81,7 +81,7 @@ public class OtfTest {
 				}) //
 
 				// sort the script... looks nicer.
-				.sort(Object_::compare) //
+				.sort(Ob::compare) //
 
 				// formality - this is actually a toList() and makes the data "stable."
 				.collect(As::joined);

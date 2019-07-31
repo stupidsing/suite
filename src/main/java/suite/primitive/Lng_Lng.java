@@ -1,6 +1,6 @@
 package suite.primitive;
 
-import static suite.util.Fail.fail;
+import static primal.statics.Fail.fail;
 
 import suite.primitive.LngPrimitives.Obj_Lng;
 import suite.primitive.Longs.LongsBuilder;

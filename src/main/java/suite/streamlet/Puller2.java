@@ -1,6 +1,6 @@
 package suite.streamlet;
 
-import static suite.util.Fail.fail;
+import static primal.statics.Fail.fail;
 
 import java.io.Closeable;
 import java.util.ArrayList;
@@ -11,16 +11,15 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.Set;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
+import primal.Ob;
 import suite.adt.Mutable;
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.Fixie_.FixieFun3;
 import suite.adt.pair.Pair;
-import suite.object.Object_;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil2.Fun2;
 import suite.streamlet.FunUtil2.Sink2;
@@ -116,7 +115,7 @@ public class Puller2<K, V> implements PullerDefaults<Pair<K, V>> {
 		return of(pair -> {
 			var b = pull(pair);
 			if (!b)
-				Object_.closeQuietly(c);
+				Ob.closeQuietly(c);
 			return b;
 		});
 	}
@@ -178,7 +177,7 @@ public class Puller2<K, V> implements PullerDefaults<Pair<K, V>> {
 
 	@Override
 	public boolean equals(Object object) {
-		if (Object_.clazz(object) == Puller2.class) {
+		if (Ob.clazz(object) == Puller2.class) {
 			@SuppressWarnings("unchecked")
 			var outlet = (Puller2<K, V>) (Puller2<?, ?>) object;
 			var source2 = outlet.source2;
@@ -188,7 +187,7 @@ public class Puller2<K, V> implements PullerDefaults<Pair<K, V>> {
 			while ((b = (b0 = source2.source2(pair0)) == (b1 = source2.source2(pair1))) //
 					&& b0 //
 					&& b1 //
-					&& (b = Objects.equals(pair0, pair1)))
+					&& (b = Ob.equals(pair0, pair1)))
 				;
 			return b;
 		} else
@@ -378,7 +377,7 @@ public class Puller2<K, V> implements PullerDefaults<Pair<K, V>> {
 	}
 
 	public <O extends Comparable<? super O>> Puller2<K, V> sortBy(Fun2<K, V, O> fun) {
-		return sort((e0, e1) -> Object_.compare(fun.apply(e0.k, e0.v), fun.apply(e1.k, e1.v)));
+		return sort((e0, e1) -> Ob.compare(fun.apply(e0.k, e0.v), fun.apply(e1.k, e1.v)));
 	}
 
 	public Puller2<K, V> sortByKey(Comparator<K> comparator) {

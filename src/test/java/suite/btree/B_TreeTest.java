@@ -11,11 +11,11 @@ import java.util.Random;
 import org.junit.Before;
 import org.junit.Test;
 
+import primal.Ob;
 import suite.btree.impl.B_TreeBuilder;
 import suite.cfg.Defaults;
 import suite.file.impl.JournalledFileFactory;
 import suite.node.util.Singleton;
-import suite.object.Object_;
 import suite.primitive.Ints_;
 import suite.sample.Profiler;
 import suite.serialize.Serialize;
@@ -25,7 +25,7 @@ public class B_TreeTest {
 
 	private static int nKeys = 1024;
 
-	private Comparator<Integer> cmp = Object_::compare;
+	private Comparator<Integer> cmp = Ob::compare;
 	private Random random = new Random();
 	private Serialize ser = Singleton.me.serialize;
 	private int[] keys;

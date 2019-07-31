@@ -1,12 +1,13 @@
 package suite.assembler;
 
 import static java.lang.Math.min;
-import static suite.util.Fail.fail;
+import static primal.statics.Fail.fail;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.List;
 
+import primal.os.Log_;
 import suite.adt.pair.Pair;
 import suite.assembler.Amd64.Insn;
 import suite.assembler.Amd64.Instruction;
@@ -15,7 +16,6 @@ import suite.assembler.Amd64.OpMem;
 import suite.assembler.Amd64.OpReg;
 import suite.assembler.Amd64.Operand;
 import suite.funp.Funp_;
-import suite.os.Log_;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
 import suite.primitive.IntInt_Obj;

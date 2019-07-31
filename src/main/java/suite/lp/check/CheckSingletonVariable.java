@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import primal.os.Log_;
 import suite.lp.doer.ProverConstant;
 import suite.lp.kb.Prototype;
 import suite.lp.kb.Rule;
@@ -11,7 +12,6 @@ import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.Rewrite_.NodeRead;
-import suite.os.Log_;
 
 public class CheckSingletonVariable {
 

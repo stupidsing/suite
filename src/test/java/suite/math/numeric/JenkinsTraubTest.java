@@ -1,7 +1,7 @@
 package suite.math.numeric;
 
 import static java.lang.Math.max;
-import static suite.util.Fail.fail;
+import static primal.statics.Fail.fail;
 
 import org.junit.Test;
 

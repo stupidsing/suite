@@ -1,6 +1,6 @@
 package suite.file.impl;
 
-import static suite.util.Rethrow.ex;
+import static primal.statics.Rethrow.ex;
 
 import java.io.Closeable;
 import java.io.RandomAccessFile;
@@ -8,7 +8,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.file.Path;
 
-import suite.object.Object_;
+import primal.Ob;
 import suite.os.FileUtil;
 import suite.primitive.Bytes;
 
@@ -25,7 +25,7 @@ public class RandomAccessibleFile implements Closeable {
 
 	@Override
 	public void close() {
-		Object_.closeQuietly(channel, file);
+		Ob.closeQuietly(channel, file);
 	}
 
 	public void sync() {

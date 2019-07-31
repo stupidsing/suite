@@ -6,6 +6,7 @@ import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 
+import primal.Ob;
 import suite.inspect.Dump;
 import suite.inspect.Inspect;
 import suite.jdk.gen.FunExprL.ApplyFunExpr;
@@ -21,7 +22,6 @@ import suite.jdk.gen.FunExprM.InstanceOfFunExpr;
 import suite.jdk.gen.FunExprM.InvokeMethodFunExpr;
 import suite.node.util.Singleton;
 import suite.object.AutoInterface;
-import suite.object.Object_;
 
 public class FunExpression {
 
@@ -124,7 +124,7 @@ public class FunExpression {
 
 		@Override
 		public boolean equals(Object object) {
-			return Object_.clazz(object) == getClass() && inspect.equals(this, object);
+			return Ob.clazz(object) == getClass() && inspect.equals(this, object);
 		}
 
 		@Override

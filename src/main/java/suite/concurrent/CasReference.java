@@ -1,6 +1,6 @@
 package suite.concurrent;
 
-import static suite.util.Fail.fail;
+import static primal.statics.Fail.fail;
 
 import java.util.concurrent.atomic.AtomicStampedReference;
 

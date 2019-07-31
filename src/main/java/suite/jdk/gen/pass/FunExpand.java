@@ -1,6 +1,6 @@
 package suite.jdk.gen.pass;
 
-import static suite.util.Rethrow.ex;
+import static primal.statics.Rethrow.ex;
 
 import org.apache.bcel.generic.Type;
 

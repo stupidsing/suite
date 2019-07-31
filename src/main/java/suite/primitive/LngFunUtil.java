@@ -1,11 +1,12 @@
 package suite.primitive;
 
-import static suite.util.Fail.fail;
+import static primal.statics.Fail.fail;
 
 import java.util.Collections;
 import java.util.Iterator;
 
-import suite.os.Log_;
+import primal.os.Log_;
+import primal.statics.Fail.InterruptedRuntimeException;
 import suite.primitive.LngPrimitives.LngObjSource;
 import suite.primitive.LngPrimitives.LngSink;
 import suite.primitive.LngPrimitives.LngSource;
@@ -16,7 +17,6 @@ import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil.Sink;
 import suite.streamlet.FunUtil.Source;
 import suite.streamlet.FunUtil2.Source2;
-import suite.util.Fail.InterruptedRuntimeException;
 import suite.util.NullableSyncQueue;
 import suite.util.Thread_;
 

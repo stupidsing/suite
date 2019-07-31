@@ -1,6 +1,6 @@
 package suite.streamlet;
 
-import static suite.util.Fail.fail;
+import static primal.statics.Fail.fail;
 
 import java.io.Closeable;
 import java.util.ArrayList;
@@ -15,13 +15,13 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
 
+import primal.Ob;
 import suite.adt.Mutable;
 import suite.adt.Opt;
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.Fixie;
 import suite.adt.pair.Fixie_.FixieA;
 import suite.adt.pair.Pair;
-import suite.object.Object_;
 import suite.primitive.IntPrimitives.IntObjSource;
 import suite.primitive.adt.pair.IntObjPair;
 import suite.primitive.streamlet.IntObjPuller;
@@ -85,7 +85,7 @@ public class Puller<T> implements PullerDefaults<T> {
 		return of(() -> {
 			var next = pull();
 			if (next == null)
-				Object_.closeQuietly(c);
+				Ob.closeQuietly(c);
 			return next;
 		});
 	}
@@ -147,10 +147,10 @@ public class Puller<T> implements PullerDefaults<T> {
 
 	@Override
 	public boolean equals(Object object) {
-		if (Object_.clazz(object) == Puller.class) {
+		if (Ob.clazz(object) == Puller.class) {
 			var source1 = ((Puller<?>) object).source;
 			Object o0, o1;
-			while (Objects.equals(o0 = source.g(), o1 = source1.g()))
+			while (Ob.equals(o0 = source.g(), o1 = source1.g()))
 				if (o0 == null && o1 == null)
 					return true;
 			return false;
@@ -315,7 +315,7 @@ public class Puller<T> implements PullerDefaults<T> {
 	}
 
 	public <O extends Comparable<? super O>> Puller<T> sortBy(Fun<T, O> fun) {
-		return sort((e0, e1) -> Object_.compare(fun.apply(e0), fun.apply(e1)));
+		return sort((e0, e1) -> Ob.compare(fun.apply(e0), fun.apply(e1)));
 	}
 
 	public Puller<Puller<T>> split(Predicate<T> fun) {

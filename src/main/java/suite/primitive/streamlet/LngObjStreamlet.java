@@ -1,18 +1,17 @@
 package suite.primitive.streamlet;
 
-import static suite.util.Fail.fail;
+import static primal.statics.Fail.fail;
 
 import java.io.Closeable;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
 
+import primal.Ob;
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.Pair;
-import suite.object.Object_;
 import suite.primitive.LngFunUtil;
 import suite.primitive.LngObjFunUtil;
 import suite.primitive.LngObj_Lng;
@@ -101,7 +100,7 @@ public class LngObjStreamlet<V> implements StreamletDefaults<LngObjPair<V>, LngO
 
 	@Override
 	public boolean equals(Object object) {
-		return Object_.clazz(object) == LngObjStreamlet.class ? Objects.equals(spawn(), ((LngObjStreamlet<?>) object).spawn())
+		return Ob.clazz(object) == LngObjStreamlet.class ? Ob.equals(spawn(), ((LngObjStreamlet<?>) object).spawn())
 				: false;
 	}
 

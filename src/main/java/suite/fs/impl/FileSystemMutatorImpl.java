@@ -3,8 +3,8 @@ package suite.fs.impl;
 import static java.lang.Math.min;
 
 import java.util.List;
-import java.util.Objects;
 
+import primal.Ob;
 import suite.file.PageFile;
 import suite.fs.FileSystemMutator;
 import suite.fs.KeyDataStore;
@@ -59,7 +59,7 @@ public class FileSystemMutatorImpl implements FileSystemMutator {
 		var sizeKey = key(hash, SIZEID, 0);
 
 		var nameBytes0 = fsNameKeySet.list(name, null).first();
-		var isRemove = Objects.equals(nameBytes0, name);
+		var isRemove = Ob.equals(nameBytes0, name);
 		var isCreate = bytes != null;
 
 		if (isRemove) {

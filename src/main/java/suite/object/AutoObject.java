@@ -1,12 +1,13 @@
 package suite.object;
 
-import static suite.util.Rethrow.ex;
+import static primal.statics.Rethrow.ex;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 
+import primal.Ob;
 import suite.adt.IdentityKey;
 import suite.adt.pair.Pair;
 import suite.inspect.Inspect;
@@ -30,7 +31,7 @@ public class AutoObject<T extends AutoObject<T>> extends BaseObject<T> implement
 						var key = IdentityKey.of(v1);
 						var vx = map.get(key);
 						if (vx == null) {
-							map.put(key, vx = Object_.new_(v1.getClass()));
+							map.put(key, vx = Ob.new_(v1.getClass()));
 							for (var field : v1.fields())
 								field.set(vx, c_(field.get(v1)));
 						}

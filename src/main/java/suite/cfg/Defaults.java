@@ -1,6 +1,6 @@
 package suite.cfg;
 
-import static suite.util.Fail.fail;
+import static primal.statics.Fail.fail;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;

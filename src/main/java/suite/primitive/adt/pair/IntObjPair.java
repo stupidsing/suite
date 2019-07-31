@@ -3,7 +3,7 @@ package suite.primitive.adt.pair;
 import java.util.Comparator;
 import java.util.Objects;
 
-import suite.object.Object_;
+import primal.Ob;
 import suite.primitive.IntFunUtil;
 import suite.primitive.IntPrimitives.IntObj_Obj;
 import suite.primitive.Int_Int;
@@ -43,7 +43,7 @@ public class IntObjPair<V> {
 		return (pair0, pair1) -> {
 			var c = Boolean.compare(pair0 != null, pair1 != null);
 			c = c == 0 ? Integer.compare(pair0.k, pair1.k) : c;
-			c = c == 0 ? Object_.compare(pair0.v, pair1.v) : c;
+			c = c == 0 ? Ob.compare(pair0.v, pair1.v) : c;
 			return c;
 		};
 	}
@@ -75,9 +75,9 @@ public class IntObjPair<V> {
 
 	@Override
 	public boolean equals(Object object) {
-		if (Object_.clazz(object) == IntObjPair.class) {
+		if (Ob.clazz(object) == IntObjPair.class) {
 			var other = (IntObjPair<?>) object;
-			return k == other.k && Objects.equals(v, other.v);
+			return k == other.k && Ob.equals(v, other.v);
 		} else
 			return false;
 	}

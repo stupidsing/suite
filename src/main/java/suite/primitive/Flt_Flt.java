@@ -1,6 +1,6 @@
 package suite.primitive;
 
-import static suite.util.Fail.fail;
+import static primal.statics.Fail.fail;
 
 import suite.primitive.Floats.FloatsBuilder;
 import suite.primitive.FltPrimitives.Obj_Flt;

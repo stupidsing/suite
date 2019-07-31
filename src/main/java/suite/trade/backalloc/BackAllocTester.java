@@ -7,8 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import primal.os.Log_;
 import suite.math.numeric.Statistic;
-import suite.os.Log_;
 import suite.streamlet.FunUtil.Sink;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;

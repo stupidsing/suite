@@ -1,6 +1,6 @@
 package suite.primitive.streamlet;
 
-import static suite.util.Fail.fail;
+import static primal.statics.Fail.fail;
 
 import java.io.Closeable;
 import java.util.ArrayList;
@@ -14,10 +14,10 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.IntPredicate;
 
+import primal.Ob;
 import suite.adt.Mutable;
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.Pair;
-import suite.object.Object_;
 import suite.primitive.Chars;
 import suite.primitive.Chars.CharsBuilder;
 import suite.primitive.ChrFunUtil;
@@ -124,7 +124,7 @@ public class ChrPuller implements PullerDefaults<Character> {
 		return of(() -> {
 			var next = pull();
 			if (next == empty)
-				Object_.closeQuietly(c);
+				Ob.closeQuietly(c);
 			return next;
 		});
 	}
@@ -190,10 +190,10 @@ public class ChrPuller implements PullerDefaults<Character> {
 
 	@Override
 	public boolean equals(Object object) {
-		if (Object_.clazz(object) == ChrPuller.class) {
+		if (Ob.clazz(object) == ChrPuller.class) {
 			var source1 = ((ChrPuller) object).source;
 			char o0, o1;
-			while (Objects.equals(o0 = source.g(), o1 = source1.g()))
+			while (Ob.equals(o0 = source.g(), o1 = source1.g()))
 				if (o0 == empty && o1 == empty)
 					return true;
 			return false;

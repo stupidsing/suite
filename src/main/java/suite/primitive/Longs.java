@@ -2,7 +2,7 @@ package suite.primitive;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
-import static suite.util.Rethrow.ex;
+import static primal.statics.Rethrow.ex;
 
 import java.io.IOException;
 import java.nio.LongBuffer;
@@ -10,8 +10,8 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
 
+import primal.Ob;
 import suite.cfg.Defaults;
-import suite.object.Object_;
 import suite.primitive.LngPrimitives.LngSource;
 import suite.primitive.streamlet.LngPuller;
 import suite.primitive.streamlet.LngStreamlet;
@@ -238,7 +238,7 @@ public class Longs implements Iterable<Long> {
 
 	@Override
 	public boolean equals(Object object) {
-		if (Object_.clazz(object) == Longs.class) {
+		if (Ob.clazz(object) == Longs.class) {
 			var other = (Longs) object;
 
 			if (size_() == other.size_()) {

@@ -3,12 +3,11 @@ package suite.primitive.streamlet;
 import java.io.Closeable;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 
+import primal.Ob;
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.Pair;
-import suite.object.Object_;
 import suite.primitive.LngOpt;
 import suite.primitive.LngPrimitives.LngComparator;
 import suite.primitive.LngPrimitives.LngObj_Obj;
@@ -94,7 +93,7 @@ public class LngStreamlet implements StreamletDefaults<Long, LngPuller> {
 
 	@Override
 	public boolean equals(Object object) {
-		return Object_.clazz(object) == LngStreamlet.class ? Objects.equals(spawn(), ((LngStreamlet) object).spawn()) : false;
+		return Ob.clazz(object) == LngStreamlet.class ? Ob.equals(spawn(), ((LngStreamlet) object).spawn()) : false;
 	}
 
 	public LngStreamlet filter(LngTest fun) {

@@ -2,8 +2,8 @@ package suite.concurrent;
 
 import java.util.ArrayDeque;
 import java.util.Iterator;
-import java.util.Objects;
 
+import primal.Ob;
 import suite.persistent.PerList;
 
 public class Bag<S> implements Iterable<S> {
@@ -18,7 +18,7 @@ public class Bag<S> implements Iterable<S> {
 		cr.apply(list0 -> {
 			var queue = new ArrayDeque<S>();
 			for (var s_ : list0)
-				if (!Objects.equals(s, s_))
+				if (!Ob.equals(s, s_))
 					queue.addLast(s_);
 			var list1 = PerList.<S> end();
 			S s_;

@@ -2,10 +2,10 @@ package suite.trade.analysis;
 
 import java.util.List;
 
+import primal.Ob;
 import suite.adt.pair.Pair;
 import suite.math.linalg.Vector;
 import suite.math.numeric.Statistic;
-import suite.object.Object_;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.trade.Instrument;
@@ -49,7 +49,7 @@ public class Factor {
 
 		return instruments //
 				.map2(instrument -> project(ids, cfg.dataSource(instrument.symbol), period)) //
-				.sortByValue(Object_::compare) //
+				.sortByValue(Ob::compare) //
 				.toList();
 	}
 

@@ -1,6 +1,6 @@
 package suite.parser;
 
-import static suite.util.Rethrow.ex;
+import static primal.statics.Rethrow.ex;
 
 import java.nio.file.Path;
 import java.util.ArrayList;

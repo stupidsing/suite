@@ -1,6 +1,6 @@
 package suite.trade.data;
 
-import suite.os.Log_;
+import primal.os.Log_;
 import suite.primitive.IntFlt_Flt;
 import suite.primitive.Int_Flt;
 import suite.primitive.adt.pair.LngFltPair;

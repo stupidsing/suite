@@ -3,6 +3,7 @@ package suite.lp.doer;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import primal.os.Log_;
 import suite.Suite;
 import suite.lp.Configuration.ProverCfg;
 import suite.lp.Trail;
@@ -16,7 +17,6 @@ import suite.node.Node;
 import suite.node.Suspend;
 import suite.node.Tree;
 import suite.node.io.TermOp;
-import suite.os.Log_;
 import suite.streamlet.FunUtil.Source;
 import suite.util.List_;
 

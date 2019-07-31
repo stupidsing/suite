@@ -2,8 +2,8 @@ package suite.http;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
-import static suite.util.Fail.fail;
-import static suite.util.Rethrow.ex;
+import static primal.statics.Fail.fail;
+import static primal.statics.Rethrow.ex;
 
 import java.io.IOException;
 import java.io.InputStream;

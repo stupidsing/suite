@@ -4,8 +4,9 @@ import java.util.concurrent.Callable;
 
 import org.apache.log4j.Level;
 
+import primal.os.Log_;
 import suite.os.Execute;
-import suite.os.Log_;
+import suite.os.LogUtil;
 
 public class RunUtil {
 
@@ -28,7 +29,7 @@ public class RunUtil {
 	}
 
 	public static void run(Callable<Boolean> callable) {
-		Log_.initLogging(Level.INFO);
+		LogUtil.initLogging(Level.INFO);
 		int code;
 
 		try {

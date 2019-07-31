@@ -1,6 +1,6 @@
 package suite.lp.predicate;
 
-import static suite.util.Rethrow.ex;
+import static primal.statics.Rethrow.ex;
 
 import java.io.IOException;
 import java.io.PrintStream;
@@ -9,6 +9,7 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.concurrent.TimeUnit;
 
+import primal.os.Log_;
 import suite.cfg.Defaults;
 import suite.lp.doer.Cloner;
 import suite.lp.predicate.PredicateUtil.BuiltinPredicate;
@@ -18,7 +19,6 @@ import suite.node.Tree;
 import suite.node.io.Formatter;
 import suite.node.util.SuiteException;
 import suite.os.FileUtil;
-import suite.os.Log_;
 import suite.primitive.Bytes.BytesBuilder;
 import suite.util.To;
 

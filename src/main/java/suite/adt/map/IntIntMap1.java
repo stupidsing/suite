@@ -1,6 +1,6 @@
 package suite.adt.map;
 
-import static suite.util.Fail.fail;
+import static primal.statics.Fail.fail;
 
 import java.util.Arrays;
 

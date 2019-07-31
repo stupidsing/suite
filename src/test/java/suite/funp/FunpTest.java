@@ -4,8 +4,8 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
+import primal.os.Log_;
 import suite.assembler.Amd64Interpret;
-import suite.os.Log_;
 import suite.primitive.Bytes;
 
 public class FunpTest {

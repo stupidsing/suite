@@ -7,13 +7,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
+import primal.os.Log_;
 import suite.adt.pair.Pair;
 import suite.node.Tree;
 import suite.node.io.Operator.Assoc;
 import suite.node.util.Singleton;
 import suite.object.MapInterface;
 import suite.object.MapObject_;
-import suite.os.Log_;
 import suite.streamlet.As;
 import suite.streamlet.FunUtil.Sink;
 import suite.streamlet.Read;

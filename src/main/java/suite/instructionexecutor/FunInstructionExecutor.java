@@ -1,6 +1,6 @@
 package suite.instructionexecutor;
 
-import static suite.util.Fail.fail;
+import static primal.statics.Fail.fail;
 
 import java.io.IOException;
 import java.io.Writer;

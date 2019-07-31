@@ -1,6 +1,6 @@
 package suite.trade;
 
-import static suite.util.Fail.fail;
+import static primal.statics.Fail.fail;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -11,7 +11,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.Objects;
 
-import suite.object.Object_;
+import primal.Ob;
 import suite.util.To;
 
 /**
@@ -188,7 +188,7 @@ public class Time implements Comparable<Time> {
 
 	@Override
 	public boolean equals(Object object) {
-		return Object_.clazz(object) == Time.class ? Objects.equals(dateTime, ((Time) object).dateTime) : false;
+		return Ob.clazz(object) == Time.class ? Ob.equals(dateTime, ((Time) object).dateTime) : false;
 	}
 
 	@Override

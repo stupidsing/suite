@@ -1,11 +1,11 @@
 package suite.primitive;
 
-import static suite.util.Fail.fail;
+import static primal.statics.Fail.fail;
 
 import java.util.Objects;
 
+import primal.Ob;
 import suite.adt.Opt;
-import suite.object.Object_;
 import suite.primitive.LngPrimitives.LngTest;
 import suite.primitive.LngPrimitives.Lng_Obj;
 
@@ -44,7 +44,7 @@ public class LngOpt {
 
 	@Override
 	public boolean equals(Object object) {
-		return Object_.clazz(object) == LngOpt.class && Objects.equals(value, ((LngOpt) object).value);
+		return Ob.clazz(object) == LngOpt.class && Ob.equals(value, ((LngOpt) object).value);
 	}
 
 	@Override

@@ -1,14 +1,14 @@
 package suite.ebnf.lr;
 
-import static suite.util.Fail.fail;
+import static primal.statics.Fail.fail;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 
+import primal.Ob;
 import suite.adt.pair.Pair;
 import suite.ebnf.Grammar;
 import suite.ebnf.Grammar.GrammarType;
@@ -69,7 +69,7 @@ public class BuildLr {
 			if (order0 < order1) {
 				put(key, value1);
 				return true;
-			} else if (order1 < order0 || Objects.equals(value0, value1))
+			} else if (order1 < order0 || Ob.equals(value0, value1))
 				return false;
 			else if (value0.k != null && value1.k != null) {
 

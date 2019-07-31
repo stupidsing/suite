@@ -1,6 +1,6 @@
 package suite.sample;
 
-import static suite.util.Fail.fail;
+import static primal.statics.Fail.fail;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -9,7 +9,7 @@ import java.io.OutputStream;
 import java.util.HashSet;
 import java.util.Set;
 
-import suite.os.Log_;
+import primal.os.Log_;
 import suite.os.SocketUtil;
 import suite.streamlet.Read;
 import suite.util.Copy;

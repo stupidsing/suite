@@ -3,11 +3,11 @@ package suite.lp.check;
 import java.util.List;
 import java.util.Map;
 
+import primal.os.Log_;
 import suite.lp.kb.Prototype;
 import suite.lp.kb.Rule;
 import suite.node.Node;
 import suite.node.util.TreeUtil;
-import suite.os.Log_;
 import suite.streamlet.Read;
 
 public class CheckPredicateCall {

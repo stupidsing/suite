@@ -1,19 +1,19 @@
 package suite.file.impl;
 
-import static suite.util.Fail.fail;
+import static primal.statics.Fail.fail;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
+import primal.Ob;
+import primal.os.Log_;
 import suite.file.ExtentAllocator.Extent;
 import suite.file.ExtentFile;
 import suite.file.PageFile;
 import suite.node.util.Singleton;
 import suite.os.FileUtil;
-import suite.os.Log_;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
 import suite.serialize.SerInput;
@@ -64,7 +64,7 @@ public class FileFactory {
 				var bb = new BytesBuilder();
 				for (var pointer = extent.start; pointer < extent.end; pointer++) {
 					var block = pageFile.load(pointer);
-					Util.assert_(Objects.equals(block.extent, extent));
+					Util.assert_(Ob.equals(block.extent, extent));
 					bb.append(block.bytes);
 				}
 				return bb.toBytes();

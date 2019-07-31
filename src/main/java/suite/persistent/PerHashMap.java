@@ -1,7 +1,6 @@
 package suite.persistent;
 
-import java.util.Objects;
-
+import primal.Ob;
 import suite.adt.pair.Pair;
 import suite.streamlet.FunUtil2.BinOp;
 import suite.streamlet.FunUtil2.Source2;
@@ -42,7 +41,7 @@ public class PerHashMap<K, V> {
 
 	public V get(K key) {
 		for (var e : set.get(key.hashCode()))
-			if (Objects.equals(key, e.k))
+			if (Ob.equals(key, e.k))
 				return e.v;
 		return null;
 	}

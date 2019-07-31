@@ -3,12 +3,11 @@ package suite.primitive.streamlet;
 import java.io.Closeable;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 
+import primal.Ob;
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.Pair;
-import suite.object.Object_;
 import suite.primitive.IntOpt;
 import suite.primitive.IntPrimitives.IntComparator;
 import suite.primitive.IntPrimitives.IntObj_Obj;
@@ -94,7 +93,7 @@ public class IntStreamlet implements StreamletDefaults<Integer, IntPuller> {
 
 	@Override
 	public boolean equals(Object object) {
-		return Object_.clazz(object) == IntStreamlet.class ? Objects.equals(spawn(), ((IntStreamlet) object).spawn()) : false;
+		return Ob.clazz(object) == IntStreamlet.class ? Ob.equals(spawn(), ((IntStreamlet) object).spawn()) : false;
 	}
 
 	public IntStreamlet filter(IntTest fun) {

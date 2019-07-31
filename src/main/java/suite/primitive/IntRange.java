@@ -2,7 +2,7 @@ package suite.primitive;
 
 import java.util.Comparator;
 
-import suite.object.Object_;
+import primal.Ob;
 import suite.streamlet.FunUtil.Iterate;
 
 public class IntRange {
@@ -72,7 +72,7 @@ public class IntRange {
 
 	@Override
 	public boolean equals(Object object) {
-		if (Object_.clazz(object) == IntRange.class) {
+		if (Ob.clazz(object) == IntRange.class) {
 			var other = (IntRange) object;
 			return s == other.s && e == other.e;
 		} else

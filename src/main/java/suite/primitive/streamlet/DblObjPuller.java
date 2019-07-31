@@ -1,6 +1,6 @@
 package suite.primitive.streamlet;
 
-import static suite.util.Fail.fail;
+import static primal.statics.Fail.fail;
 
 import java.io.Closeable;
 import java.util.ArrayList;
@@ -8,14 +8,13 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
 
+import primal.Ob;
 import suite.adt.Mutable;
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.Pair;
-import suite.object.Object_;
 import suite.primitive.DblFunUtil;
 import suite.primitive.DblObjFunUtil;
 import suite.primitive.DblObj_Dbl;
@@ -121,7 +120,7 @@ public class DblObjPuller<V> implements PullerDefaults<DblObjPair<V>> {
 		return of(pair -> {
 			var b = pull(pair);
 			if (!b)
-				Object_.closeQuietly(c);
+				Ob.closeQuietly(c);
 			return b;
 		});
 	}
@@ -187,7 +186,7 @@ public class DblObjPuller<V> implements PullerDefaults<DblObjPair<V>> {
 
 	@Override
 	public boolean equals(Object object) {
-		if (Object_.clazz(object) == DblObjPuller.class) {
+		if (Ob.clazz(object) == DblObjPuller.class) {
 			@SuppressWarnings("unchecked")
 			var outlet = (DblObjPuller<V>) (DblObjPuller<?>) object;
 			var source2 = outlet.source;
@@ -197,7 +196,7 @@ public class DblObjPuller<V> implements PullerDefaults<DblObjPair<V>> {
 			while ((b = (b0 = source2.source2(pair0)) == (b1 = source2.source2(pair1))) //
 					&& b0 //
 					&& b1 //
-					&& (b = Objects.equals(pair0, pair1)))
+					&& (b = Ob.equals(pair0, pair1)))
 				;
 			return b;
 		} else
@@ -386,7 +385,7 @@ public class DblObjPuller<V> implements PullerDefaults<DblObjPair<V>> {
 	}
 
 	public <O extends Comparable<? super O>> DblObjPuller<V> sortBy(DblObj_Obj<V, O> fun) {
-		return sort((e0, e1) -> Object_.compare(fun.apply(e0.k, e0.v), fun.apply(e1.k, e1.v)));
+		return sort((e0, e1) -> Ob.compare(fun.apply(e0.k, e0.v), fun.apply(e1.k, e1.v)));
 	}
 
 	public DblObjPuller<V> sortByKey(Comparator<Double> comparator) {

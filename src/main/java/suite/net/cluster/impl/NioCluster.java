@@ -7,12 +7,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import primal.Ob;
+import primal.os.Log_;
 import suite.net.NetUtil;
 import suite.net.cluster.ClusterProbe;
 import suite.net.nio.NioDispatch;
 import suite.net.nio.NioDispatch.AsyncRw;
-import suite.object.Object_;
-import suite.os.Log_;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil.Sink;
 import suite.streamlet.Pusher;
@@ -71,7 +71,7 @@ public class NioCluster implements Closeable {
 			rw.close();
 
 		probe.stop();
-		Object_.closeQuietly(unlisten);
+		Ob.closeQuietly(unlisten);
 		nd.stop();
 	}
 

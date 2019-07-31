@@ -1,15 +1,15 @@
 package suite.trade.data;
 
-import static suite.util.Fail.fail;
-import static suite.util.Rethrow.ex;
+import static primal.statics.Fail.fail;
+import static primal.statics.Rethrow.ex;
 
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
+import primal.Ob;
 import suite.http.HttpUtil;
 import suite.node.util.Singleton;
-import suite.object.Object_;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 
@@ -101,7 +101,7 @@ public class HkexFactBook {
 				.pipe("egrep '^0'") //
 				.read() //
 				.map(line -> HkexUtil.toSymbol(line.substring(0, 5))) //
-				.sort(Object_::compare) //
+				.sort(Ob::compare) //
 				.collect();
 	}
 
@@ -115,7 +115,7 @@ public class HkexFactBook {
 				.pipe("egrep '^0'") //
 				.read() //
 				.map(line -> HkexUtil.toSymbol(line.substring(0, 5))) //
-				.sort(Object_::compare) //
+				.sort(Ob::compare) //
 				.collect();
 	}
 

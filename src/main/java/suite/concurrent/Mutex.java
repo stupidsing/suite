@@ -1,14 +1,14 @@
 package suite.concurrent;
 
-import static suite.util.Fail.fail;
+import static primal.statics.Fail.fail;
 
 import java.io.Closeable;
 import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.concurrent.atomic.AtomicReference;
 
+import primal.Ob;
 import suite.concurrent.Concurrent.DeadlockException;
-import suite.object.Object_;
 
 /**
  * Mutual exclusion lock with deadlock detection.
@@ -52,7 +52,7 @@ public class Mutex {
 							throw new DeadlockException();
 					}
 
-					Object_.wait(bigLock);
+					Ob.wait(bigLock);
 				}
 
 				depth++;

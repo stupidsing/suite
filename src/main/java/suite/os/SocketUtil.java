@@ -1,6 +1,6 @@
 package suite.os;
 
-import static suite.util.Fail.fail;
+import static primal.statics.Fail.fail;
 
 import java.io.BufferedReader;
 import java.io.Closeable;
@@ -12,8 +12,9 @@ import java.io.PrintWriter;
 import java.io.Reader;
 import java.net.ServerSocket;
 
+import primal.Ob;
+import primal.os.Log_;
 import suite.cfg.Defaults;
-import suite.object.Object_;
 import suite.util.Thread_;
 
 public class SocketUtil {
@@ -51,7 +52,7 @@ public class SocketUtil {
 					} catch (Exception ex) {
 						Log_.error(ex);
 					} finally {
-						Object_.closeQuietly(socket);
+						Ob.closeQuietly(socket);
 					}
 				});
 			}

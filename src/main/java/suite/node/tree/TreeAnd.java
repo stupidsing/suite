@@ -1,10 +1,10 @@
 package suite.node.tree;
 
+import primal.Ob;
 import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
-import suite.object.Object_;
 
 public class TreeAnd extends Tree {
 
@@ -16,7 +16,7 @@ public class TreeAnd extends Tree {
 
 	@Override
 	public boolean equals(Object object) {
-		return Object_.clazz(object) == getClass() ? childrenEquals((Tree) object) : false;
+		return Ob.clazz(object) == getClass() ? childrenEquals((Tree) object) : false;
 	}
 
 	@Override

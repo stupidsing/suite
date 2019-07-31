@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import primal.Ob;
 import suite.adt.pair.Pair;
 import suite.node.Node;
 import suite.node.Reference;
 import suite.node.io.Rewrite_.NodeHead;
 import suite.node.io.Rewrite_.NodeRead;
-import suite.object.Object_;
 import suite.primitive.IntPrimitives.IntSink;
 import suite.primitive.adt.map.IntObjMap;
 import suite.primitive.adt.pair.IntObjPair;
@@ -71,7 +71,7 @@ public class TermKey implements Comparable<TermKey> {
 		}
 
 		public boolean equals(Object object) {
-			var b = Object_.clazz(object) == TermLister.class;
+			var b = Ob.clazz(object) == TermLister.class;
 
 			if (b) {
 				var list1 = ((TermLister) object).list;
@@ -83,7 +83,7 @@ public class TermKey implements Comparable<TermKey> {
 					for (var i = 0; b && i < size0; i++) {
 						var p0 = list.get(i);
 						var p1 = list1.get(i);
-						b &= Objects.equals(p0.k, p1.k);
+						b &= Ob.equals(p0.k, p1.k);
 
 						var nh0 = p0.v;
 						var nh1 = p1.v;
@@ -91,9 +91,9 @@ public class TermKey implements Comparable<TermKey> {
 						var b1 = nh1 != null;
 						b &= b0 == b1;
 						if (b0 && b1)
-							b &= Objects.equals(nh0.type, nh1.type) //
-									&& Objects.equals(nh0.terminal, nh1.terminal) //
-									&& Objects.equals(nh0.op, nh1.op);
+							b &= Ob.equals(nh0.type, nh1.type) //
+									&& Ob.equals(nh0.terminal, nh1.terminal) //
+									&& Ob.equals(nh0.op, nh1.op);
 					}
 			}
 
@@ -127,11 +127,11 @@ public class TermKey implements Comparable<TermKey> {
 
 	@Override
 	public boolean equals(Object object) {
-		if (Object_.clazz(object) == TermKey.class) {
+		if (Ob.clazz(object) == TermKey.class) {
 			var node1 = ((TermKey) object).node;
 			var tl0 = new TermLister(node);
 			var tl1 = new TermLister(node1);
-			return Objects.equals(tl0, tl1);
+			return Ob.equals(tl0, tl1);
 		} else
 			return false;
 	}

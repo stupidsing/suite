@@ -1,8 +1,8 @@
 package suite.serialize;
 
 import static java.lang.Math.min;
-import static suite.util.Fail.fail;
-import static suite.util.Rethrow.ex;
+import static primal.statics.Fail.fail;
+import static primal.statics.Rethrow.ex;
 
 import java.io.IOException;
 import java.lang.reflect.Modifier;
@@ -14,8 +14,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
+import primal.Ob;
 import suite.adt.pair.Pair;
 import suite.cfg.Defaults;
 import suite.file.ExtentAllocator.Extent;
@@ -84,19 +84,19 @@ public class Serialize {
 		Serializer<?> serializer;
 		if (type instanceof Class) {
 			var clazz = (Class<?>) type;
-			if (Objects.equals(clazz, boolean.class) || Objects.equals(clazz, Boolean.class))
+			if (Ob.equals(clazz, boolean.class) || Ob.equals(clazz, Boolean.class))
 				serializer = boolean_;
-			else if (Objects.equals(clazz, Bytes.class))
+			else if (Ob.equals(clazz, Bytes.class))
 				serializer = variableLengthBytes;
-			else if (Objects.equals(clazz, double.class) || Objects.equals(clazz, Double.class))
+			else if (Ob.equals(clazz, double.class) || Ob.equals(clazz, Double.class))
 				serializer = double_;
-			else if (Objects.equals(clazz, float.class) || Objects.equals(clazz, Float.class))
+			else if (Ob.equals(clazz, float.class) || Ob.equals(clazz, Float.class))
 				serializer = float_;
-			else if (Objects.equals(clazz, float[].class))
+			else if (Ob.equals(clazz, float[].class))
 				serializer = vector;
-			else if (Objects.equals(clazz, int.class) || Objects.equals(clazz, Integer.class))
+			else if (Ob.equals(clazz, int.class) || Ob.equals(clazz, Integer.class))
 				serializer = int_;
-			else if (Objects.equals(clazz, String.class))
+			else if (Ob.equals(clazz, String.class))
 				serializer = variableLengthString;
 			else if (clazz.isArray()) {
 				@SuppressWarnings("unchecked")

@@ -1,11 +1,11 @@
 package suite.primitive;
 
-import static suite.util.Fail.fail;
+import static primal.statics.Fail.fail;
 
 import java.util.Objects;
 
+import primal.Ob;
 import suite.adt.Opt;
-import suite.object.Object_;
 import suite.primitive.IntPrimitives.IntTest;
 import suite.primitive.IntPrimitives.Int_Obj;
 
@@ -44,7 +44,7 @@ public class IntOpt {
 
 	@Override
 	public boolean equals(Object object) {
-		return Object_.clazz(object) == IntOpt.class && Objects.equals(value, ((IntOpt) object).value);
+		return Ob.clazz(object) == IntOpt.class && Ob.equals(value, ((IntOpt) object).value);
 	}
 
 	@Override

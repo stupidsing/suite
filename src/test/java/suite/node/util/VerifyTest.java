@@ -1,9 +1,10 @@
 package suite.node.util;
 
-import static suite.util.Fail.fail;
+import static primal.statics.Fail.fail;
 
 import org.junit.Test;
 
+import primal.os.Log_;
 import suite.Suite;
 import suite.lp.Trail;
 import suite.lp.doer.Binder;
@@ -15,7 +16,6 @@ import suite.node.Tree;
 import suite.node.io.Formatter;
 import suite.node.io.SwitchNode;
 import suite.node.io.TermOp;
-import suite.os.Log_;
 import suite.persistent.PerList;
 import suite.persistent.PerMap;
 import suite.streamlet.FunUtil.Fun;

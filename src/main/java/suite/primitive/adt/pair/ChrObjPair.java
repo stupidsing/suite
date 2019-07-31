@@ -3,7 +3,7 @@ package suite.primitive.adt.pair;
 import java.util.Comparator;
 import java.util.Objects;
 
-import suite.object.Object_;
+import primal.Ob;
 import suite.primitive.ChrFunUtil;
 import suite.primitive.ChrPrimitives.ChrObj_Obj;
 import suite.primitive.Chr_Chr;
@@ -43,7 +43,7 @@ public class ChrObjPair<V> {
 		return (pair0, pair1) -> {
 			var c = Boolean.compare(pair0 != null, pair1 != null);
 			c = c == 0 ? Character.compare(pair0.k, pair1.k) : c;
-			c = c == 0 ? Object_.compare(pair0.v, pair1.v) : c;
+			c = c == 0 ? Ob.compare(pair0.v, pair1.v) : c;
 			return c;
 		};
 	}
@@ -75,9 +75,9 @@ public class ChrObjPair<V> {
 
 	@Override
 	public boolean equals(Object object) {
-		if (Object_.clazz(object) == ChrObjPair.class) {
+		if (Ob.clazz(object) == ChrObjPair.class) {
 			var other = (ChrObjPair<?>) object;
-			return k == other.k && Objects.equals(v, other.v);
+			return k == other.k && Ob.equals(v, other.v);
 		} else
 			return false;
 	}

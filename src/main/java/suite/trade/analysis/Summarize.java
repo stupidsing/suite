@@ -3,9 +3,9 @@ package suite.trade.analysis;
 import java.time.LocalDate;
 import java.util.Map;
 
+import primal.Ob;
 import suite.adt.pair.Fixie;
 import suite.adt.pair.Fixie_.Fixie3;
-import suite.object.Object_;
 import suite.primitive.Dbl_Dbl;
 import suite.primitive.adt.pair.LngFltPair;
 import suite.streamlet.As;
@@ -102,7 +102,7 @@ public class Summarize {
 
 			var outs = summaryByKey //
 					.mapValue(Summarize_::out0) //
-					.sortByKey(Object_::compareAnyway) //
+					.sortByKey(Ob::compareAnyway) //
 					.map((k, v) -> "\nFor strategy " + k + ":" + v);
 
 			for (var out : outs)
@@ -149,7 +149,7 @@ public class Summarize {
 							+ " = " + ((long) (nShares * price)) //
 							+ (info != null ? " \t(" + info + ")" : "");
 				}) //
-				.sort(Object_::compare) //
+				.sort(Ob::compare) //
 				.collect();
 
 		return new Summarize_(details, trades0, trades1);

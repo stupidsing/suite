@@ -1,6 +1,6 @@
 package suite.sample;
 
-import static suite.util.Fail.fail;
+import static primal.statics.Fail.fail;
 
 import java.util.ArrayList;
 import java.util.Collection;

@@ -1,6 +1,6 @@
 package suite.jdk;
 
-import static suite.util.Fail.fail;
+import static primal.statics.Fail.fail;
 
 import java.io.IOException;
 

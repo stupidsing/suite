@@ -1,14 +1,14 @@
 package suite.util;
 
-import static suite.util.Fail.fail;
+import static primal.statics.Fail.fail;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+import primal.statics.Rethrow.FunIo;
 import suite.cfg.Defaults;
-import suite.util.Rethrow.FunIo;
 
 /**
  * Extends input stream to provide additional functionality.

@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
+import primal.Ob;
 import suite.node.Atom;
 import suite.node.Dict;
 import suite.node.Int;
@@ -19,7 +20,6 @@ import suite.node.tree.TreeAnd;
 import suite.node.tree.TreeOp;
 import suite.node.tree.TreeOr;
 import suite.node.tree.TreeTuple;
-import suite.object.Object_;
 import suite.streamlet.Read;
 
 public class Comparer implements Comparator<Node> {
@@ -58,7 +58,7 @@ public class Comparer implements Comparator<Node> {
 				keys.addAll(m0.keySet());
 				keys.addAll(m1.keySet());
 				for (var key : Read.from(keys).sort(this::compare))
-					c = c != 0 ? c : Object_.compare(m0.get(key), m1.get(key));
+					c = c != 0 ? c : Ob.compare(m0.get(key), m1.get(key));
 				return c;
 			} else if (clazz0 == Int.class)
 				return Integer.compare(Int.num(n0), Int.num(n1));

@@ -1,10 +1,10 @@
 package suite.adt;
 
-import static suite.util.Fail.fail;
+import static primal.statics.Fail.fail;
 
 import java.util.Objects;
 
-import suite.object.Object_;
+import primal.Ob;
 
 public class Mutable<T> {
 
@@ -37,7 +37,7 @@ public class Mutable<T> {
 
 	@Override
 	public boolean equals(Object object) {
-		return Object_.clazz(object) == Mutable.class && Objects.equals(value, ((Mutable<?>) object).value);
+		return Ob.clazz(object) == Mutable.class && Ob.equals(value, ((Mutable<?>) object).value);
 	}
 
 	@Override

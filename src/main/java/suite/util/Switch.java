@@ -1,7 +1,7 @@
 package suite.util;
 
-import static suite.util.Fail.fail;
-import static suite.util.Rethrow.ex;
+import static primal.statics.Fail.fail;
+import static primal.statics.Rethrow.ex;
 
 import suite.primitive.IoSink;
 import suite.streamlet.FunUtil.Fun;

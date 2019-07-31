@@ -1,6 +1,6 @@
 package suite;
 
-import static suite.util.Fail.fail;
+import static primal.statics.Fail.fail;
 
 import java.io.IOException;
 
@@ -20,7 +20,7 @@ import suite.lp.search.ProverBuilder.Finder;
 import suite.lp.search.SewingProverBuilder;
 import suite.node.Atom;
 import suite.node.Node;
-import suite.os.Log_;
+import suite.os.LogUtil;
 import suite.primitive.IoSink;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil.Source;
@@ -108,7 +108,7 @@ public class EvaluateUtil {
 	}
 
 	private Node doFcc(Node compileNode, FunCompilerCfg fcc) {
-		return Log_.duration("Code compiled", () -> {
+		return LogUtil.duration("Code compiled", () -> {
 			var pc = fcc.getProverConfig();
 			var finder = fccFinderFun.apply(Pair.of(pc, compileNode));
 			return finder.collectSingle(appendLibraries(fcc));

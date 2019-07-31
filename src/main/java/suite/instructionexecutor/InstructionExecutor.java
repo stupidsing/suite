@@ -1,10 +1,11 @@
 package suite.instructionexecutor;
 
-import static suite.util.Fail.fail;
+import static primal.statics.Fail.fail;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import primal.os.Log_;
 import suite.Suite;
 import suite.adt.map.BiHashMap;
 import suite.adt.map.BiMap;
@@ -20,7 +21,6 @@ import suite.node.Reference;
 import suite.node.Tree;
 import suite.node.io.TermOp;
 import suite.node.util.Comparer;
-import suite.os.Log_;
 
 public class InstructionExecutor implements AutoCloseable {
 

@@ -2,7 +2,7 @@ package suite.primitive;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
-import static suite.util.Rethrow.ex;
+import static primal.statics.Rethrow.ex;
 
 import java.io.IOException;
 import java.nio.FloatBuffer;
@@ -10,8 +10,8 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
 
+import primal.Ob;
 import suite.cfg.Defaults;
-import suite.object.Object_;
 import suite.primitive.FltPrimitives.FltSource;
 import suite.primitive.streamlet.FltPuller;
 import suite.primitive.streamlet.FltStreamlet;
@@ -238,7 +238,7 @@ public class Floats implements Iterable<Float> {
 
 	@Override
 	public boolean equals(Object object) {
-		if (Object_.clazz(object) == Floats.class) {
+		if (Ob.clazz(object) == Floats.class) {
 			var other = (Floats) object;
 
 			if (size_() == other.size_()) {

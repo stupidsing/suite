@@ -2,14 +2,14 @@ package suite.trade.data;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
-import static suite.util.Fail.fail;
+import static primal.statics.Fail.fail;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import suite.object.Object_;
+import primal.Ob;
 import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.primitive.LngPrimitives.Obj_Lng;
 import suite.primitive.Longs_;
@@ -72,7 +72,7 @@ public class DataSource {
 			tradeTimes = Read.from(Set_.intersect(dataSources // intersect
 					.<Collection<Long>> map(ds -> Longs_.of(ds.ts).map(t -> t).toList()) //
 					.toList()));
-		return tradeTimes.sort(Object_::compare).collect(Obj_Lng.lift(t -> t)).toArray();
+		return tradeTimes.sort(Ob::compare).collect(Obj_Lng.lift(t -> t)).toArray();
 	}
 
 	public static DataSource of(Streamlet<Datum> data) {

@@ -1,6 +1,6 @@
 package suite.inspect;
 
-import static suite.util.Rethrow.ex;
+import static primal.statics.Rethrow.ex;
 import static suite.util.Streamlet_.forInt;
 
 import java.lang.reflect.Array;
@@ -17,7 +17,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import suite.object.Object_;
+import primal.Ob;
 import suite.streamlet.FunUtil.Iterate;
 import suite.streamlet.Read;
 import suite.util.Switch;
@@ -136,7 +136,7 @@ public class Mapify {
 							.toMap();
 				}, o -> ex(() -> {
 					var map = (Map<?, ?>) o;
-					var object1 = Object_.new_(clazz);
+					var object1 = Ob.new_(clazz);
 					for (var fi : fis)
 						fi.field.set(object1, apply_(map.get(fi.name), fi.mapifier.unmapify));
 					return object1;
@@ -157,7 +157,7 @@ public class Mapify {
 					return map;
 				}, o -> {
 					var map = (Map<?, ?>) o;
-					var object1 = (Collection<Object>) Object_.instantiate(clazz);
+					var object1 = (Collection<Object>) Ob.instantiate(clazz);
 					var i = 0;
 					while (map.containsKey(i))
 						object1.add(apply_(map.get(i++), mapifier1.unmapify));
@@ -172,7 +172,7 @@ public class Mapify {
 							.map2((k, v) -> apply_(k, km.unmapify), (k, v) -> apply_(v, vm.mapify)) //
 							.toMap();
 				}, o -> {
-					var object1 = (Map<Object, Object>) Object_.instantiate(clazz);
+					var object1 = (Map<Object, Object>) Ob.instantiate(clazz);
 					((Map<?, ?>) o).forEach((k, v) -> object1.put(apply_(k, km.unmapify), apply_(v, vm.unmapify)));
 					return object1;
 				});

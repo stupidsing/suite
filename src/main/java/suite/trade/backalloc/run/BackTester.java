@@ -3,8 +3,8 @@ package suite.trade.backalloc.run;
 import static java.lang.Math.expm1;
 import static java.lang.Math.log1p;
 
+import primal.Ob;
 import suite.math.numeric.Statistic;
-import suite.object.Object_;
 import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Floats_;
 import suite.primitive.FltPrimitives.Obj_Flt;
@@ -59,7 +59,7 @@ public class BackTester {
 				}) //
 				.map((key, summary) -> "TEST = " + key + " " + summary);
 
-		return Streamlet.concat(results0, results1).sort(Object_::compare).toString();
+		return Streamlet.concat(results0, results1).sort(Ob::compare).toString();
 	}
 
 }

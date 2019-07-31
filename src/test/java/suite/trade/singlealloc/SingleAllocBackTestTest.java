@@ -5,7 +5,7 @@ import java.util.Map;
 
 import org.junit.Test;
 
-import suite.os.Log_;
+import primal.os.Log_;
 import suite.streamlet.Read;
 import suite.trade.Forex;
 import suite.trade.Instrument;

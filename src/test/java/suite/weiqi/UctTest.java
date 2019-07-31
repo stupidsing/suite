@@ -8,8 +8,8 @@ import java.util.Random;
 import org.junit.Before;
 import org.junit.Test;
 
+import primal.Ob;
 import suite.cfg.Defaults;
-import suite.object.Object_;
 import suite.os.Stopwatch;
 import suite.sample.Profiler;
 import suite.uct.ShuffleUtil;
@@ -39,8 +39,8 @@ public class UctTest {
 				+ ", CENTER: " + center);
 
 		// the corner move must be the worst
-		assertTrue(Object_.compare(corner, faraway) < 0);
-		assertTrue(Object_.compare(faraway, center) < 0);
+		assertTrue(Ob.compare(corner, faraway) < 0);
+		assertTrue(Ob.compare(faraway, center) < 0);
 	}
 
 	private String evaluateRandomOutcome(Coordinate move) {

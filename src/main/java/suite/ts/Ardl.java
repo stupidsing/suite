@@ -1,6 +1,6 @@
 package suite.ts;
 
-import static suite.util.Fail.fail;
+import static primal.statics.Fail.fail;
 import static suite.util.Streamlet_.forInt;
 
 import suite.math.numeric.Statistic;

@@ -5,12 +5,12 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Map;
 
+import primal.Ob;
 import suite.adt.pair.Pair;
 import suite.ebnf.Ebnf.Ast;
 import suite.ebnf.Grammar;
 import suite.ebnf.lr.BuildLr.Reduce;
 import suite.ebnf.lr.BuildLr.State;
-import suite.object.Object_;
 import suite.parser.Lexer;
 import suite.persistent.PerList;
 import suite.streamlet.As;
@@ -93,7 +93,7 @@ public class LrParse {
 		return Read //
 				.from2(map) //
 				.map2((k, v) -> k.toString(), (k, v) -> v) //
-				.sortByKey(Object_::compare) //
+				.sortByKey(Ob::compare) //
 				.map((k, v) -> k + " = " + v + "\n") //
 				.collect(As.joinedBy("{\n", "", "}\n"));
 	}

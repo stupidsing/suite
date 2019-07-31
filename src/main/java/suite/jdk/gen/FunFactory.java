@@ -2,12 +2,12 @@ package suite.jdk.gen;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 
 import org.apache.bcel.Const;
 import org.apache.bcel.generic.BasicType;
 import org.apache.bcel.generic.Type;
 
+import primal.Ob;
 import suite.adt.Mutable;
 import suite.inspect.Inspect;
 import suite.jdk.gen.FunExprK.Declare0ParameterFunExpr;
@@ -136,7 +136,7 @@ public class FunFactory {
 
 	public FunExpr ifEquals(FunExpr left, FunExpr right, FunExpr then_, FunExpr else_) {
 		var expr = new If2FunExpr();
-		expr.opcode = t -> !Objects.equals(t, Type.INT) ? Const.IF_ACMPNE : Const.IF_ICMPNE;
+		expr.opcode = t -> !Ob.equals(t, Type.INT) ? Const.IF_ACMPNE : Const.IF_ICMPNE;
 		expr.left = left;
 		expr.right = right;
 		expr.then = then_;

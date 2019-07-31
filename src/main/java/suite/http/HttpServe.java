@@ -1,6 +1,6 @@
 package suite.http;
 
-import suite.os.Log_;
+import primal.os.Log_;
 import suite.os.SocketUtil;
 import suite.primitive.IoSink;
 

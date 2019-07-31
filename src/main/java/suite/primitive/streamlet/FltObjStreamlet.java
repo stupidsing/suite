@@ -1,18 +1,17 @@
 package suite.primitive.streamlet;
 
-import static suite.util.Fail.fail;
+import static primal.statics.Fail.fail;
 
 import java.io.Closeable;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
 
+import primal.Ob;
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.Pair;
-import suite.object.Object_;
 import suite.primitive.FltFunUtil;
 import suite.primitive.FltObjFunUtil;
 import suite.primitive.FltObj_Flt;
@@ -101,7 +100,7 @@ public class FltObjStreamlet<V> implements StreamletDefaults<FltObjPair<V>, FltO
 
 	@Override
 	public boolean equals(Object object) {
-		return Object_.clazz(object) == FltObjStreamlet.class ? Objects.equals(spawn(), ((FltObjStreamlet<?>) object).spawn())
+		return Ob.clazz(object) == FltObjStreamlet.class ? Ob.equals(spawn(), ((FltObjStreamlet<?>) object).spawn())
 				: false;
 	}
 

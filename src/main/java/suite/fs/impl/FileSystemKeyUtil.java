@@ -1,7 +1,7 @@
 package suite.fs.impl;
 
 import static java.lang.Math.min;
-import static suite.util.Rethrow.ex;
+import static primal.statics.Rethrow.ex;
 
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;

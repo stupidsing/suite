@@ -1,7 +1,7 @@
 package suite.cli;
 
-import static suite.util.Fail.fail;
-import static suite.util.Rethrow.ex;
+import static primal.statics.Fail.fail;
+import static primal.statics.Rethrow.ex;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -14,12 +14,12 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
+import primal.Ob;
+import primal.os.Log_;
 import suite.Suite;
 import suite.cfg.Defaults;
 import suite.net.ServeSocket;
-import suite.object.Object_;
 import suite.os.FileUtil;
-import suite.os.Log_;
 import suite.util.ParseUtil;
 import suite.util.RunUtil;
 import suite.util.String_;
@@ -146,7 +146,7 @@ public class Main implements AutoCloseable {
 
 	@Override
 	public void close() {
-		Object_.closeQuietly(reader, writer);
+		Ob.closeQuietly(reader, writer);
 	}
 
 }

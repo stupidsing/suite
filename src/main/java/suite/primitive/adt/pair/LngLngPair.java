@@ -2,7 +2,7 @@ package suite.primitive.adt.pair;
 
 import java.util.Comparator;
 
-import suite.object.Object_;
+import primal.Ob;
 import suite.primitive.LngFunUtil;
 import suite.primitive.LngLng_Obj;
 import suite.primitive.Lng_Lng;
@@ -71,7 +71,7 @@ public class LngLngPair {
 
 	@Override
 	public boolean equals(Object object) {
-		if (Object_.clazz(object) == LngLngPair.class) {
+		if (Ob.clazz(object) == LngLngPair.class) {
 			var other = (LngLngPair) object;
 			return t0 == other.t0 && t1 == other.t1;
 		} else

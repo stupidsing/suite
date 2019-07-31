@@ -1,10 +1,10 @@
 package suite.http;
 
 import java.security.SecureRandom;
-import java.util.Objects;
 import java.util.Random;
 import java.util.function.BiPredicate;
 
+import primal.Ob;
 import suite.persistent.PerList;
 import suite.primitive.LngMutable;
 import suite.streamlet.As;
@@ -62,7 +62,7 @@ public class HttpSessionControl {
 			var session = sessionId != null ? sessionManager.get(sessionId) : null;
 			HttpResponse response;
 
-			if (Objects.equals(request.paths, PerList.of("login"))) {
+			if (Ob.equals(request.paths, PerList.of("login"))) {
 				var attrs = HttpHeaderUtil.getPostedAttrs(request.inputStream);
 				var username = attrs.get("username");
 				var password = attrs.get("password");
@@ -82,7 +82,7 @@ public class HttpSessionControl {
 					response = showProtectedPage(request1, sessionId);
 				} else
 					response = showLoginPage(paths, true);
-			} else if (Objects.equals(request.paths, PerList.of("logout"))) {
+			} else if (Ob.equals(request.paths, PerList.of("logout"))) {
 				if (sessionId != null)
 					sessionManager.remove(sessionId);
 

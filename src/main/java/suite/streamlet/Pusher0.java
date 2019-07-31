@@ -1,15 +1,15 @@
 package suite.streamlet;
 
-import static suite.util.Rethrow.ex;
+import static primal.statics.Rethrow.ex;
 
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Predicate;
 
+import primal.Ob;
 import suite.adt.Mutable;
 import suite.adt.pair.Pair;
 import suite.concurrent.Bag;
@@ -110,7 +110,7 @@ public class Pusher0<T> {
 			private T previous = null;
 
 			public void accept(T t, Sink<T> push) {
-				if (previous == null || !Objects.equals(previous, t))
+				if (previous == null || !Ob.equals(previous, t))
 					push.f(t);
 			}
 		});

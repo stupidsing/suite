@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
+import primal.Ob;
 import suite.adt.map.ListMultimap;
 import suite.lp.doer.ProverConstant;
 import suite.node.Atom;
@@ -12,7 +13,6 @@ import suite.node.Reference;
 import suite.node.Tree;
 import suite.node.Tuple;
 import suite.node.tree.TreeTuple;
-import suite.object.Object_;
 import suite.streamlet.Read;
 
 /**
@@ -80,7 +80,7 @@ public class Prototype implements Comparable<Prototype> {
 
 	@Override
 	public boolean equals(Object object) {
-		return Object_.clazz(object) == Prototype.class ? Objects.equals(head, ((Prototype) object).head) : false;
+		return Ob.clazz(object) == Prototype.class ? Ob.equals(head, ((Prototype) object).head) : false;
 	}
 
 	@Override

@@ -1,8 +1,8 @@
 package suite.funp.p2;
 
 import static java.lang.Math.max;
-import static suite.util.Fail.fail;
-import static suite.util.Fail.failBool;
+import static primal.statics.Fail.fail;
+import static primal.statics.Fail.failBool;
 import static suite.util.Streamlet_.forInt;
 
 import java.util.ArrayList;

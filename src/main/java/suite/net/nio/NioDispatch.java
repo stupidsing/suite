@@ -2,7 +2,7 @@ package suite.net.nio;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
-import static suite.util.Rethrow.ex;
+import static primal.statics.Rethrow.ex;
 import static suite.util.Streamlet_.forInt;
 
 import java.io.Closeable;
@@ -19,13 +19,13 @@ import java.nio.channels.SocketChannel;
 import java.util.HashMap;
 import java.util.Map;
 
+import primal.Ob;
+import primal.os.Log_;
 import suite.adt.PriorityQueue;
 import suite.cfg.Defaults;
 import suite.concurrent.Backoff;
 import suite.concurrent.Pool;
 import suite.net.NetUtil;
-import suite.object.Object_;
-import suite.os.Log_;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
 import suite.streamlet.FunUtil.Iterate;
@@ -330,7 +330,7 @@ public class NioDispatch implements Closeable {
 			ssc.configureBlocking(false);
 			ssc.socket().bind(new InetSocketAddress(port));
 			reg(ssc, SelectionKey.OP_ACCEPT, accept, fail);
-			return () -> Object_.closeQuietly(ssc);
+			return () -> Ob.closeQuietly(ssc);
 		} catch (IOException ex) {
 			fail.f(ex);
 			return null;

@@ -1,6 +1,6 @@
 package suite.sample;
 
-import static suite.util.Rethrow.ex;
+import static primal.statics.Rethrow.ex;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;

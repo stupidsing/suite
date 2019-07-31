@@ -12,9 +12,9 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
+import primal.os.Log_;
 import suite.cfg.Defaults;
 import suite.math.R3;
-import suite.os.Log_;
 import suite.primitive.IntInt_Obj;
 import suite.primitive.Ints_;
 import suite.streamlet.As;

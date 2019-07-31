@@ -1,11 +1,11 @@
 package suite.primitive;
 
-import static suite.util.Fail.fail;
+import static primal.statics.Fail.fail;
 
 import java.util.Objects;
 
+import primal.Ob;
 import suite.adt.Opt;
-import suite.object.Object_;
 import suite.primitive.DblPrimitives.DblTest;
 import suite.primitive.DblPrimitives.Dbl_Obj;
 
@@ -44,7 +44,7 @@ public class DblOpt {
 
 	@Override
 	public boolean equals(Object object) {
-		return Object_.clazz(object) == DblOpt.class && Objects.equals(value, ((DblOpt) object).value);
+		return Ob.clazz(object) == DblOpt.class && Ob.equals(value, ((DblOpt) object).value);
 	}
 
 	@Override

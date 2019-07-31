@@ -13,7 +13,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import suite.object.Object_;
+import primal.Ob;
 import suite.streamlet.FunUtil.Fun;
 
 @Deprecated
@@ -33,10 +33,10 @@ public class CacheUtil {
 		}
 
 		public boolean equals(Object object) {
-			if (Object_.clazz(object) == Key.class) {
+			if (Ob.clazz(object) == Key.class) {
 				var other = (Key) object;
 				return bean == other.bean //
-						&& Objects.equals(method, other.method) //
+						&& Ob.equals(method, other.method) //
 						&& Arrays.deepEquals(arguments, other.arguments);
 			} else
 				return false;

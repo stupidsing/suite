@@ -1,7 +1,7 @@
 package suite.persistent;
 
-import static suite.util.Fail.fail;
-import static suite.util.Fail.failBool;
+import static primal.statics.Fail.fail;
+import static primal.statics.Fail.failBool;
 
 import java.util.ArrayList;
 import java.util.Comparator;

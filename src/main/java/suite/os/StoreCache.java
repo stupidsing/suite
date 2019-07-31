@@ -1,6 +1,6 @@
 package suite.os;
 
-import static suite.util.Rethrow.ex;
+import static primal.statics.Rethrow.ex;
 
 import java.io.DataInputStream;
 import java.io.IOException;

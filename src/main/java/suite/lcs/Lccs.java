@@ -5,8 +5,8 @@ import static java.lang.Math.min;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
+import primal.Ob;
 import suite.adt.pair.Pair;
 import suite.primitive.Bytes;
 import suite.primitive.adt.map.IntObjMap;
@@ -45,7 +45,7 @@ public class Lccs {
 						var b0 = bytes0.range(start0, end0);
 						var b1 = bytes1.range(start1, end1);
 
-						if (Objects.equals(b0, b1)) {
+						if (Ob.equals(b0, b1)) {
 							var ix = min(size0 - start0, size1 - start1);
 							var i = rollingSize;
 							while (i < ix && bytes0.get(start0 + i) == bytes1.get(start1 + i))
