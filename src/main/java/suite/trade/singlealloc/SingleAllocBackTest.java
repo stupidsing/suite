@@ -2,8 +2,8 @@ package suite.trade.singlealloc;
 
 import static java.lang.Math.sqrt;
 
+import primal.fp.Funs.Sink;
 import suite.math.numeric.Statistic;
-import suite.streamlet.FunUtil.Sink;
 import suite.trade.Account;
 import suite.trade.Time;
 import suite.trade.Trade;

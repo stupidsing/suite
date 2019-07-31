@@ -10,14 +10,14 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URLDecoder;
 
+import primal.String_;
+import primal.adt.FixieArray;
+import primal.fp.Funs2.Fun2;
 import suite.adt.Opt;
-import suite.adt.pair.FixieArray;
 import suite.cfg.Defaults;
 import suite.streamlet.As;
-import suite.streamlet.FunUtil2.Fun2;
 import suite.util.Copy;
 import suite.util.ReadStream;
-import suite.util.String_;
 import suite.util.To;
 import suite.util.Util;
 

@@ -3,8 +3,8 @@ package suite.util;
 import static primal.statics.Fail.fail;
 import static primal.statics.Rethrow.ex;
 
+import primal.fp.Funs.Fun;
 import suite.primitive.IoSink;
-import suite.streamlet.FunUtil.Fun;
 
 public class Switch<R> {
 

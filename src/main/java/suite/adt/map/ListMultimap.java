@@ -8,7 +8,7 @@ import java.util.Set;
 
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
-import suite.util.String_;
+import suite.util.To;
 
 public class ListMultimap<K, V> {
 
@@ -75,7 +75,7 @@ public class ListMultimap<K, V> {
 
 	@Override
 	public String toString() {
-		return String_.build(sb -> {
+		return To.string(sb -> {
 			sb.append("{");
 			for (var e : listEntries())
 				sb.append(e.k + "=" + e.v + ", ");

@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import suite.streamlet.As;
-import suite.util.String_;
+import suite.util.To;
 import suite.weiqi.Weiqi;
 
 /**
@@ -182,7 +182,7 @@ public class UctSearch<Move> {
 	private static DecimalFormat df3 = new DecimalFormat("0.000");
 
 	public void dumpSearch() {
-		System.out.println(String_.build(sb -> dumpSearch(sb, 0, null, root)));
+		System.out.println(To.string(sb -> dumpSearch(sb, 0, null, root)));
 	}
 
 	private void dumpSearch(StringBuilder sb, int indent, UctNode<Move> parent, UctNode<Move> child) {

@@ -11,7 +11,7 @@ import java.util.List;
 
 import org.apache.commons.codec.digest.Md5Crypt;
 
-import suite.adt.pair.Pair;
+import primal.adt.Pair;
 import suite.os.FileUtil;
 import suite.streamlet.Streamlet;
 import suite.util.RunUtil;

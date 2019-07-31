@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import primal.adt.Pair;
 import suite.adt.map.ListMultimap;
-import suite.adt.pair.Pair;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;

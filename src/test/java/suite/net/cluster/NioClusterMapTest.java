@@ -14,14 +14,14 @@ import java.util.Random;
 
 import org.junit.Test;
 
+import primal.fp.Funs.Fun;
+import primal.fp.Funs.Sink;
+import primal.fp.Funs.Source;
 import primal.os.Log_;
 import primal.statics.Rethrow;
 import suite.net.cluster.impl.NioCluster;
 import suite.net.cluster.impl.NioClusterMap;
 import suite.primitive.IntPrimitives.Int_Obj;
-import suite.streamlet.FunUtil.Fun;
-import suite.streamlet.FunUtil.Sink;
-import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.Thread_;

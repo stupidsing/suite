@@ -4,11 +4,11 @@ import java.util.Comparator;
 import java.util.Objects;
 
 import primal.Ob;
+import primal.fp.Funs.Fun;
+import primal.fp.Funs.Iterate;
 import suite.primitive.DblFunUtil;
 import suite.primitive.DblPrimitives.DblObj_Obj;
 import suite.primitive.Dbl_Dbl;
-import suite.streamlet.FunUtil.Fun;
-import suite.streamlet.FunUtil.Iterate;
 
 public class DblObjPair<V> {
 

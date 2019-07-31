@@ -3,7 +3,7 @@ package suite.trade.analysis;
 import java.util.List;
 
 import primal.Ob;
-import suite.adt.pair.Pair;
+import primal.adt.Pair;
 import suite.math.linalg.Vector;
 import suite.math.numeric.Statistic;
 import suite.streamlet.Read;

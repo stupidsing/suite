@@ -1,5 +1,6 @@
 package suite.lp.search;
 
+import primal.fp.Funs.Fun;
 import suite.Suite;
 import suite.lp.Configuration.ProverCfg;
 import suite.lp.kb.Prototype;
@@ -8,7 +9,6 @@ import suite.lp.search.ProverBuilder.Builder;
 import suite.lp.search.ProverBuilder.Finder;
 import suite.lp.sewing.impl.QueryRewriter;
 import suite.node.Node;
-import suite.streamlet.FunUtil.Fun;
 
 public class SewingProverBuilder2 implements Builder {
 

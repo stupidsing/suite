@@ -3,8 +3,8 @@ package suite.trade;
 import static java.lang.Math.abs;
 
 import primal.Ob;
+import primal.String_;
 import suite.math.Math_;
-import suite.util.String_;
 import suite.util.To;
 
 public class Trade {

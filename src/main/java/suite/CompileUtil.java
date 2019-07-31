@@ -2,10 +2,10 @@ package suite;
 
 import java.util.List;
 
+import primal.fp.Funs.Fun;
 import suite.lp.Configuration.ProverCfg;
 import suite.lp.kb.RuleSet;
 import suite.lp.search.SewingProverBuilder;
-import suite.streamlet.FunUtil.Fun;
 import suite.util.Memoize;
 
 public class CompileUtil {

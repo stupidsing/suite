@@ -7,7 +7,7 @@ import java.util.List;
 
 import org.junit.Test;
 
-import suite.adt.pair.Pair;
+import primal.adt.Pair;
 import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Ints_;
 import suite.primitive.Longs_;

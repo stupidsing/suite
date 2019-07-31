@@ -1,7 +1,7 @@
 package suite.trade.backalloc;
 
-import suite.adt.pair.Pair;
-import suite.streamlet.FunUtil.Fun;
+import primal.adt.Pair;
+import primal.fp.Funs.Fun;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;

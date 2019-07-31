@@ -5,9 +5,9 @@ import static primal.statics.Fail.fail;
 
 import java.util.Random;
 
-import suite.adt.pair.Fixie;
-import suite.adt.pair.Fixie_.Fixie3;
-import suite.streamlet.FunUtil.Fun;
+import primal.adt.Fixie;
+import primal.adt.Fixie_.Fixie3;
+import primal.fp.Funs.Fun;
 import suite.util.To;
 
 public class SingularValueDecomposition {

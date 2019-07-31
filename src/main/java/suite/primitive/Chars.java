@@ -11,15 +11,15 @@ import java.util.Comparator;
 import java.util.Iterator;
 
 import primal.Ob;
+import primal.fp.Funs.Fun;
 import suite.cfg.Defaults;
 import suite.primitive.ChrPrimitives.ChrSource;
 import suite.primitive.streamlet.ChrPuller;
 import suite.primitive.streamlet.ChrStreamlet;
-import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.Puller;
 import suite.util.Compare;
 import suite.util.ParseUtil;
-import suite.util.String_;
+import suite.util.To;
 
 public class Chars implements Iterable<Character> {
 
@@ -263,7 +263,7 @@ public class Chars implements Iterable<Character> {
 
 	@Override
 	public String toString() {
-		return String_.build(sb -> {
+		return To.string(sb -> {
 			for (var i = start; i < end; i++)
 				sb.append(cs[i]);
 		});

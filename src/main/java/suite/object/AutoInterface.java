@@ -1,6 +1,6 @@
 package suite.object;
 
-import suite.streamlet.FunUtil.Fun;
+import primal.fp.Funs.Fun;
 import suite.util.Switch;
 
 public interface AutoInterface<T> {

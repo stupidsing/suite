@@ -2,9 +2,9 @@ package suite.fp;
 
 import static primal.statics.Rethrow.ex;
 
+import primal.fp.Funs.Source;
 import suite.BindMapUtil;
 import suite.node.Node;
-import suite.streamlet.FunUtil.Source;
 
 public class Matcher<T> {
 

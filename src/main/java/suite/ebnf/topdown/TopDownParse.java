@@ -7,16 +7,16 @@ import java.util.Deque;
 import java.util.List;
 import java.util.Map;
 
+import primal.String_;
+import primal.fp.Funs.Source;
 import primal.os.Log_;
 import suite.ebnf.Ebnf.Ast;
 import suite.ebnf.Grammar;
 import suite.ebnf.Grammar.GrammarType;
 import suite.ebnf.topdown.Expect.ExpectFun;
 import suite.primitive.Coord;
-import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Puller;
 import suite.streamlet.Read;
-import suite.util.String_;
 
 /**
  * Backtracking LL parser for Backus-Naur form grammars.

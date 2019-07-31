@@ -7,10 +7,11 @@ import java.io.InputStreamReader;
 import java.net.URLDecoder;
 import java.util.Map;
 
+import primal.String_;
 import suite.cfg.Defaults;
 import suite.persistent.PerList;
 import suite.streamlet.Read;
-import suite.util.String_;
+import suite.util.To;
 
 public class HttpHeaderUtil {
 
@@ -32,7 +33,7 @@ public class HttpHeaderUtil {
 	public static Map<String, String> getPostedAttrs(InputStream is) {
 		var reader = new InputStreamReader(is, Defaults.charset);
 
-		var query = String_.build(sb -> {
+		var query = To.string(sb -> {
 			var buffer = new char[Defaults.bufferSize];
 			int nCharsRead;
 

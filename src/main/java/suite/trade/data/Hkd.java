@@ -5,11 +5,11 @@ import static primal.statics.Fail.fail;
 import java.util.Map;
 import java.util.Set;
 
+import primal.String_;
 import suite.math.linalg.Vector;
 import suite.streamlet.Read;
 import suite.trade.Instrument;
 import suite.trade.TimeRange;
-import suite.util.String_;
 
 public class Hkd {
 

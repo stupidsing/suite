@@ -9,12 +9,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.IntFunction;
 
-import suite.adt.pair.Fixie;
-import suite.adt.pair.Pair;
+import primal.String_;
+import primal.adt.Fixie;
+import primal.adt.Pair;
+import primal.fp.Funs.Fun;
 import suite.primitive.IntInt_Obj;
 import suite.primitive.Ints_;
 import suite.primitive.adt.pair.FltFltPair;
-import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
@@ -27,7 +28,6 @@ import suite.trade.singlealloc.Strategos;
 import suite.ts.BollingerBands;
 import suite.ts.Quant;
 import suite.ts.TimeSeries;
-import suite.util.String_;
 
 public class BackAllocatorGeneral {
 

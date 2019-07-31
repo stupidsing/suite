@@ -3,7 +3,7 @@ package suite.nntp;
 import java.util.List;
 import java.util.Map;
 
-import suite.adt.pair.Pair;
+import primal.adt.Pair;
 
 public interface Nntp {
 

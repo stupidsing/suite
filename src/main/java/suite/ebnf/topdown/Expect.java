@@ -2,8 +2,8 @@ package suite.ebnf.topdown;
 
 import static java.lang.Math.min;
 
+import primal.String_;
 import suite.os.UnicodeData;
-import suite.util.String_;
 
 public class Expect {
 

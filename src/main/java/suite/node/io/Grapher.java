@@ -11,8 +11,8 @@ import java.util.HashSet;
 import java.util.List;
 
 import primal.Ob;
+import primal.adt.Pair;
 import suite.adt.IdentityKey;
-import suite.adt.pair.Pair;
 import suite.lp.Trail;
 import suite.lp.doer.Binder;
 import suite.lp.doer.ProverConstant;
@@ -33,7 +33,7 @@ import suite.primitive.adt.map.ObjIntMap;
 import suite.primitive.adt.pair.IntIntPair;
 import suite.streamlet.As;
 import suite.streamlet.Read;
-import suite.util.String_;
+import suite.util.To;
 
 /**
  * Converts a node into graph representation. The nodes link to other nodes via
@@ -325,7 +325,7 @@ public class Grapher {
 	}
 
 	public String toString() {
-		return String_.build(sb -> {
+		return To.string(sb -> {
 			for (var gn : gns) {
 				String s;
 				switch (gn.type) {

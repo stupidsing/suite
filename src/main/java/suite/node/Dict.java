@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import primal.Ob;
-import suite.adt.pair.Pair;
+import primal.adt.Pair;
 
 public class Dict extends Node {
 

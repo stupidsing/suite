@@ -7,8 +7,9 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.List;
 
+import primal.adt.Pair;
+import primal.fp.Funs.Sink;
 import primal.os.Log_;
-import suite.adt.pair.Pair;
 import suite.assembler.Amd64.Insn;
 import suite.assembler.Amd64.Instruction;
 import suite.assembler.Amd64.OpImm;
@@ -25,8 +26,6 @@ import suite.primitive.LngPrimitives.LngSink;
 import suite.primitive.LngPrimitives.Obj_Lng;
 import suite.primitive.LngRange;
 import suite.primitive.adt.map.LngIntMap;
-import suite.streamlet.FunUtil.Sink;
-import suite.util.String_;
 import suite.util.To;
 
 public class Amd64Interpret {
@@ -493,7 +492,7 @@ public class Amd64Interpret {
 	}
 
 	private String state(int eip, Instruction instruction) {
-		return String_.build(sb -> {
+		return To.string(sb -> {
 			for (var i = 0; i < 8; i++)
 				sb.append((i % 2 == 0 ? "\n" : " ") //
 						+ amd64.regByName.inverse().get(amd64.reg32[i]) //

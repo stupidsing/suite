@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import primal.String_;
 import primal.os.Log_;
 import suite.cfg.Defaults;
 import suite.net.NetUtil;
@@ -23,7 +24,6 @@ import suite.primitive.adt.pair.IntIntPair;
 import suite.streamlet.As;
 import suite.streamlet.Pusher;
 import suite.streamlet.Read;
-import suite.util.String_;
 import suite.util.To;
 
 /**

@@ -7,8 +7,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import primal.String_;
+import primal.adt.Pair;
+import primal.fp.Funs.Fun;
 import suite.Suite;
-import suite.adt.pair.Pair;
 import suite.asm.Assembler.Asm;
 import suite.assembler.Amd64Assemble;
 import suite.assembler.Amd64Parse;
@@ -29,12 +31,10 @@ import suite.node.io.SwitchNode;
 import suite.parser.CommentPreprocessor;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
-import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.Read;
 import suite.text.Preprocess;
 import suite.text.Preprocess.Run;
 import suite.util.List_;
-import suite.util.String_;
 import suite.util.To;
 
 public class Assembler {

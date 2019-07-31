@@ -2,9 +2,12 @@ package suite.math.sym;
 
 import java.util.function.Predicate;
 
+import primal.adt.Pair;
+import primal.fp.Funs.Fun;
+import primal.fp.Funs.Iterate;
+import primal.fp.Funs2.Fun2;
 import suite.BindArrayUtil.Pattern;
 import suite.adt.Opt;
-import suite.adt.pair.Pair;
 import suite.math.sym.Polynomial.Poly;
 import suite.math.sym.Sym.Field;
 import suite.math.sym.Sym.Ring;
@@ -13,9 +16,6 @@ import suite.node.Node;
 import suite.node.io.SwitchNode;
 import suite.primitive.IntPrimitives.Int_Obj;
 import suite.primitive.IntPrimitives.Obj_Int;
-import suite.streamlet.FunUtil.Fun;
-import suite.streamlet.FunUtil.Iterate;
-import suite.streamlet.FunUtil2.Fun2;
 
 public class DivisiblePolynomial<N> {
 

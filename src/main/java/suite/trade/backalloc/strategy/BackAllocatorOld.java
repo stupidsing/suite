@@ -6,7 +6,8 @@ import static java.lang.Math.max;
 import java.util.Arrays;
 import java.util.List;
 
-import suite.adt.pair.Pair;
+import primal.String_;
+import primal.adt.Pair;
 import suite.math.numeric.Statistic;
 import suite.trade.analysis.MovingAverage;
 import suite.trade.backalloc.BackAllocator;
@@ -14,7 +15,6 @@ import suite.trade.data.TradeCfg;
 import suite.ts.BollingerBands;
 import suite.ts.Quant;
 import suite.ts.TimeSeries;
-import suite.util.String_;
 
 public class BackAllocatorOld {
 

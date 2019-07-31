@@ -2,9 +2,9 @@ package suite.math.linalg;
 
 import org.junit.Test;
 
-import suite.adt.pair.Pair;
+import primal.adt.Pair;
+import primal.fp.Funs.Fun;
 import suite.math.Math_;
-import suite.streamlet.FunUtil.Fun;
 
 public class QrTest {
 

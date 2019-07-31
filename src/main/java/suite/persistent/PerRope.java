@@ -7,10 +7,10 @@ import static primal.statics.Fail.fail;
 import java.util.ArrayDeque;
 import java.util.List;
 
+import primal.fp.Funs.Iterate;
 import suite.primitive.IntInt_Obj;
 import suite.primitive.IntPrimitives.Int_Obj;
 import suite.primitive.IntPrimitives.Obj_Int;
-import suite.streamlet.FunUtil.Iterate;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.List_;

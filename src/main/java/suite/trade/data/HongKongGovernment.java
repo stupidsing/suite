@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import primal.String_;
 import suite.node.util.Singleton;
 import suite.primitive.Floats.FloatsBuilder;
 import suite.primitive.Longs.LongsBuilder;
@@ -15,7 +16,6 @@ import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.trade.Time;
 import suite.util.ParseUtil;
-import suite.util.String_;
 
 public class HongKongGovernment {
 

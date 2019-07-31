@@ -2,11 +2,11 @@ package suite.primitive;
 
 import static primal.statics.Fail.fail;
 
+import primal.fp.Funs.Fun;
 import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.Ints.IntsBuilder;
 import suite.primitive.streamlet.DblPuller;
 import suite.primitive.streamlet.IntStreamlet;
-import suite.streamlet.FunUtil.Fun;
 
 public interface Dbl_Int {
 

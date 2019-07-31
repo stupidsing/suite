@@ -5,12 +5,12 @@ import static java.lang.Math.min;
 import java.util.List;
 
 import primal.Ob;
+import primal.fp.Funs.Source;
 import suite.file.PageFile;
 import suite.fs.FileSystemMutator;
 import suite.fs.KeyDataStore;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
-import suite.streamlet.FunUtil.Source;
 
 public class FileSystemMutatorImpl implements FileSystemMutator {
 

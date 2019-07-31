@@ -1,11 +1,11 @@
 package suite.lp.doer;
 
+import primal.fp.Funs.Source;
 import suite.lp.sewing.Env;
 import suite.lp.sewing.VariableMapper;
 import suite.lp.sewing.VariableMapper.NodeEnv;
 import suite.node.Atom;
 import suite.node.Node;
-import suite.streamlet.FunUtil.Source;
 
 public interface GeneralizerFactory {
 

@@ -8,7 +8,7 @@ import suite.primitive.ChrPrimitives.ChrSink;
 import suite.primitive.ChrPrimitives.ChrSource;
 import suite.primitive.streamlet.ChrPuller;
 import suite.primitive.streamlet.ChrStreamlet;
-import suite.util.String_;
+import suite.util.To;
 
 /**
  * Set with character elements. Character.MIN_VALUE is not allowed. Not
@@ -141,7 +141,7 @@ public class ChrSet {
 
 	@Override
 	public String toString() {
-		return String_.build(sb -> streamlet().forEach(sb::append));
+		return To.string(sb -> streamlet().forEach(sb::append));
 	}
 
 	private boolean add_(char c) {

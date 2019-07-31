@@ -4,11 +4,11 @@ import static primal.statics.Fail.fail;
 
 import java.util.ArrayList;
 
-import suite.adt.pair.FixieArray;
-import suite.adt.pair.Pair;
+import primal.adt.FixieArray;
+import primal.adt.Pair;
+import primal.fp.Funs.Iterate;
 import suite.node.io.Operator;
 import suite.node.io.Operator.Assoc;
-import suite.streamlet.FunUtil.Iterate;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.text.Segment;
@@ -151,7 +151,7 @@ public class ParseUtil {
 		int quote = 0, depth = 0;
 
 		// shows warning if the atom has mismatched quotes or brackets
-		for (var c : String_.chars(s)) {
+		for (var c : Read.chars(s)) {
 			quote = getQuoteChange(quote, c);
 			if (quote == 0)
 				depth = checkDepth(depth, c);

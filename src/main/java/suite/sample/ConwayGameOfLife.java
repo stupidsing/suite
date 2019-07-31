@@ -1,6 +1,7 @@
 package suite.sample;
 
-import suite.util.String_;
+import suite.streamlet.Read;
+import suite.util.To;
 
 public class ConwayGameOfLife {
 
@@ -12,7 +13,7 @@ public class ConwayGameOfLife {
 		var x = 0;
 		for (var line : s.split("\n")) {
 			var y = 0;
-			for (var ch : String_.chars(line))
+			for (var ch : Read.chars(line))
 				game[x][y++] = !Character.isWhitespace(ch);
 			x++;
 		}
@@ -56,7 +57,7 @@ public class ConwayGameOfLife {
 
 	@Override
 	public String toString() {
-		return String_.build(sb -> {
+		return To.string(sb -> {
 			for (var y = 1; y < size; y++)
 				sb.append((char) 65309);
 			sb.append('\n');

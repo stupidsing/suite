@@ -18,7 +18,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import primal.Ob;
-import suite.streamlet.FunUtil.Iterate;
+import primal.fp.Funs.Iterate;
 import suite.streamlet.Read;
 import suite.util.Switch;
 import suite.util.To;

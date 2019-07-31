@@ -6,11 +6,11 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Map;
 
+import primal.fp.Funs.Iterate;
 import suite.Suite;
 import suite.node.Atom;
 import suite.node.Node;
 import suite.node.io.Escaper;
-import suite.streamlet.FunUtil.Iterate;
 import suite.streamlet.Read;
 
 public class RenderFunctionalTemplate {

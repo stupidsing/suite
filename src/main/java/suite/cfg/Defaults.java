@@ -10,8 +10,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Locale;
 
+import primal.adt.FixieArray;
+import primal.fp.Funs.Source;
 import suite.Suite;
-import suite.adt.pair.FixieArray;
 import suite.lp.doer.Generalizer;
 import suite.lp.doer.Prover;
 import suite.node.Atom;
@@ -19,7 +20,6 @@ import suite.node.Node;
 import suite.node.Reference;
 import suite.node.io.Formatter;
 import suite.os.FileUtil;
-import suite.streamlet.FunUtil.Source;
 import suite.util.Memoize;
 
 public class Defaults {

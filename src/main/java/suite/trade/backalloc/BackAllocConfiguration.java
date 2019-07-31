@@ -1,6 +1,6 @@
 package suite.trade.backalloc;
 
-import suite.streamlet.FunUtil.Fun;
+import primal.fp.Funs.Fun;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.trade.Instrument;

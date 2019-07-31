@@ -5,15 +5,15 @@ import static primal.statics.Fail.fail;
 import java.io.IOException;
 import java.io.Writer;
 
+import primal.fp.Funs.Iterate;
+import primal.fp.Funs.Source;
 import suite.node.Atom;
 import suite.node.Int;
 import suite.node.Node;
 import suite.node.Tree;
 import suite.primitive.IoSink;
-import suite.streamlet.FunUtil.Iterate;
-import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Puller;
-import suite.util.String_;
+import suite.util.To;
 
 public class ThunkUtil {
 
@@ -23,7 +23,7 @@ public class ThunkUtil {
 	 */
 	public static String yawnString(Iterate<Node> yawn, Node node) {
 		var st = yawnList(yawn, node, false);
-		return String_.build(sb -> {
+		return To.string(sb -> {
 			Node n;
 
 			while ((n = st.pull()) != null)

@@ -4,6 +4,7 @@ import static primal.statics.Fail.fail;
 
 import java.util.Map;
 
+import primal.fp.Funs.Fun;
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.Fdt;
 import suite.funp.P0.FunpApply;
@@ -31,7 +32,6 @@ import suite.funp.P0.FunpVariable;
 import suite.node.io.TermOp;
 import suite.node.util.TreeUtil;
 import suite.persistent.PerMap;
-import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.Read;
 import suite.util.To;
 import suite.util.Util;

@@ -2,7 +2,7 @@ package suite.node.io;
 
 import java.util.List;
 
-import suite.util.String_;
+import primal.String_;
 
 public enum TermOp implements Operator {
 

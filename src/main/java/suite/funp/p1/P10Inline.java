@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import primal.String_;
+import primal.fp.Funs.Iterate;
 import suite.funp.Funp_;
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.Fdt;
@@ -26,10 +28,8 @@ import suite.inspect.Inspect;
 import suite.node.util.Singleton;
 import suite.persistent.PerMap;
 import suite.primitive.IntMutable;
-import suite.streamlet.FunUtil.Iterate;
 import suite.streamlet.Read;
 import suite.util.List_;
-import suite.util.String_;
 
 public class P10Inline {
 

@@ -2,11 +2,11 @@ package suite.primitive;
 
 import static primal.statics.Fail.fail;
 
+import primal.fp.Funs.Fun;
 import suite.primitive.LngPrimitives.Obj_Lng;
 import suite.primitive.Longs.LongsBuilder;
 import suite.primitive.streamlet.ChrPuller;
 import suite.primitive.streamlet.LngStreamlet;
-import suite.streamlet.FunUtil.Fun;
 
 public interface Chr_Lng {
 

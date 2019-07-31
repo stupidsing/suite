@@ -2,6 +2,8 @@ package suite.node.util;
 
 import java.util.function.Predicate;
 
+import primal.fp.Funs.Iterate;
+import primal.fp.Funs.Source;
 import suite.lp.Trail;
 import suite.lp.doer.Binder;
 import suite.lp.doer.Cloner;
@@ -9,8 +11,6 @@ import suite.node.Node;
 import suite.node.Reference;
 import suite.node.io.Rewrite_;
 import suite.node.io.Rewrite_.NodeRead;
-import suite.streamlet.FunUtil.Iterate;
-import suite.streamlet.FunUtil.Source;
 
 public class Rewrite {
 

@@ -4,14 +4,14 @@ import static primal.statics.Rethrow.ex;
 
 import java.net.Socket;
 
+import primal.String_;
+import primal.fp.Funs.Fun;
 import primal.os.Log_;
 import suite.cfg.Defaults;
 import suite.os.SocketUtil;
 import suite.primitive.adt.pair.IntObjPair;
-import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.Read;
 import suite.util.Copy;
-import suite.util.String_;
 import suite.util.Thread_;
 import suite.util.Util;
 

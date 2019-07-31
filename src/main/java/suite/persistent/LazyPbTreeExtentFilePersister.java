@@ -10,10 +10,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import primal.adt.Pair;
+import primal.fp.Funs.Sink;
 import suite.adt.IdentityKey;
 import suite.adt.map.BiHashMap;
 import suite.adt.map.BiMap;
-import suite.adt.pair.Pair;
 import suite.file.ExtentAllocator.Extent;
 import suite.file.ExtentFile;
 import suite.file.PageFile;
@@ -27,7 +28,6 @@ import suite.serialize.SerOutput;
 import suite.serialize.Serialize;
 import suite.serialize.Serialize.Serializer;
 import suite.streamlet.As;
-import suite.streamlet.FunUtil.Sink;
 import suite.streamlet.Read;
 import suite.util.To;
 

@@ -4,8 +4,8 @@ import java.lang.ref.WeakReference;
 import java.util.Map;
 import java.util.WeakHashMap;
 
+import primal.fp.Funs.Fun;
 import suite.node.Atom;
-import suite.streamlet.FunUtil.Fun;
 
 public class AtomContext {
 

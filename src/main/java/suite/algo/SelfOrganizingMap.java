@@ -6,10 +6,10 @@ import static java.lang.Math.log;
 import java.util.List;
 import java.util.Random;
 
+import primal.fp.Funs.Sink;
 import suite.math.linalg.Vector;
 import suite.primitive.DblMutable;
 import suite.primitive.Ints_;
-import suite.streamlet.FunUtil.Sink;
 import suite.util.To;
 
 public class SelfOrganizingMap {

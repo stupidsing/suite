@@ -1,7 +1,7 @@
 package suite.parser;
 
-import suite.streamlet.FunUtil.Iterate;
-import suite.util.String_;
+import primal.fp.Funs.Iterate;
+import suite.util.To;
 
 /**
  * Render template into pages.
@@ -23,7 +23,7 @@ public class TemplateRenderer implements Iterate<String> {
 
 	@Override
 	public String apply(String in) {
-		return String_.build(sb -> {
+		return To.string(sb -> {
 			var start = 0;
 
 			while (true) {

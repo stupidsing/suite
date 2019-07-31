@@ -4,12 +4,12 @@ import static primal.statics.Fail.fail;
 
 import java.util.ArrayList;
 
-import suite.adt.pair.Pair;
+import primal.adt.Pair;
+import primal.fp.Funs.Fun;
 import suite.primitive.Longs.LongsBuilder;
 import suite.primitive.adt.pair.LngObjPair;
 import suite.primitive.streamlet.LngPuller;
 import suite.primitive.streamlet.LngStreamlet;
-import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.Puller;
 import suite.streamlet.Puller2;
 import suite.streamlet.Read;

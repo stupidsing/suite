@@ -3,7 +3,7 @@ package suite.lcs;
 import static java.lang.Math.min;
 
 import primal.Ob;
-import suite.adt.pair.Pair;
+import primal.adt.Pair;
 import suite.primitive.Bytes;
 import suite.primitive.adt.map.IntObjMap;
 import suite.primitive.adt.pair.IntObjPair;

@@ -12,6 +12,7 @@ import java.io.Reader;
 import java.io.Writer;
 import java.net.SocketException;
 
+import primal.String_;
 import suite.cfg.Defaults;
 import suite.util.Thread_.Th;
 

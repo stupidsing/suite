@@ -3,8 +3,8 @@ package suite.asm;
 import java.util.ArrayList;
 import java.util.List;
 
+import primal.adt.Pair;
 import suite.Suite;
-import suite.adt.pair.Pair;
 import suite.node.Atom;
 import suite.node.Int;
 import suite.node.Node;

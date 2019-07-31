@@ -4,6 +4,7 @@ import static primal.statics.Rethrow.ex;
 
 import java.io.IOException;
 
+import primal.fp.Funs.Fun;
 import primal.statics.Rethrow.FunIo;
 import primal.statics.Rethrow.SourceEx;
 import suite.Suite;
@@ -17,7 +18,6 @@ import suite.node.Tree;
 import suite.node.io.SwitchNode;
 import suite.node.io.TermOp;
 import suite.os.FileUtil;
-import suite.streamlet.FunUtil.Fun;
 import suite.util.ReadStream;
 
 public class P00Consult {

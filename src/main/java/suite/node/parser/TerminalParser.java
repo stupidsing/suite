@@ -1,5 +1,6 @@
 package suite.node.parser;
 
+import primal.String_;
 import primal.os.Log_;
 import suite.node.Atom;
 import suite.node.Int;
@@ -7,7 +8,6 @@ import suite.node.Node;
 import suite.node.Str;
 import suite.node.io.Escaper;
 import suite.util.ParseUtil;
-import suite.util.String_;
 
 public class TerminalParser {
 

@@ -9,10 +9,10 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
-import suite.adt.pair.Pair;
+import primal.adt.Pair;
+import primal.fp.Funs.Fun;
+import primal.fp.Funs.Iterate;
 import suite.object.ObjectSupport;
-import suite.streamlet.FunUtil.Fun;
-import suite.streamlet.FunUtil.Iterate;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.Memoize;

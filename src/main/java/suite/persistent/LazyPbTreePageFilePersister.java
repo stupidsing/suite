@@ -8,10 +8,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import primal.adt.Pair;
+import primal.fp.Funs.Sink;
 import suite.adt.IdentityKey;
 import suite.adt.map.BiHashMap;
 import suite.adt.map.BiMap;
-import suite.adt.pair.Pair;
 import suite.file.PageFile;
 import suite.file.SerializedPageFile;
 import suite.file.impl.FileFactory;
@@ -22,7 +23,6 @@ import suite.serialize.SerInput;
 import suite.serialize.SerOutput;
 import suite.serialize.Serialize;
 import suite.serialize.Serialize.Serializer;
-import suite.streamlet.FunUtil.Sink;
 import suite.streamlet.Read;
 
 public class LazyPbTreePageFilePersister<T> implements LazyPbTreePersister<Integer, T> {

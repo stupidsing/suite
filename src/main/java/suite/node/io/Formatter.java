@@ -3,6 +3,7 @@ package suite.node.io;
 import java.util.HashSet;
 import java.util.Set;
 
+import primal.String_;
 import suite.lp.doer.ProverConstant;
 import suite.node.Atom;
 import suite.node.Data;
@@ -15,7 +16,7 @@ import suite.node.Tree;
 import suite.node.Tuple;
 import suite.parser.CommentPreprocessor;
 import suite.primitive.Chars;
-import suite.util.String_;
+import suite.streamlet.Read;
 
 /**
  * Formats a node for human-readable purpose (display), or for
@@ -210,7 +211,7 @@ public class Formatter {
 				quote |= s0.startsWith(ProverConstant.variablePrefix) //
 						|| s0.startsWith(ProverConstant.wildcardPrefix);
 
-				for (var c : String_.chars(s0))
+				for (var c : Read.chars(s0))
 					quote |= !('0' <= c && c <= '9') //
 							&& !('a' <= c && c <= 'z') //
 							&& !('A' <= c && c <= 'Z') //

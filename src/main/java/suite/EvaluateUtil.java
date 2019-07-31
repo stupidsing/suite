@@ -4,7 +4,10 @@ import static primal.statics.Fail.fail;
 
 import java.io.IOException;
 
-import suite.adt.pair.Pair;
+import primal.String_;
+import primal.adt.Pair;
+import primal.fp.Funs.Fun;
+import primal.fp.Funs.Source;
 import suite.fp.FunCompilerCfg;
 import suite.instructionexecutor.EagerFunInstructionExecutor;
 import suite.instructionexecutor.FunInstructionExecutor;
@@ -22,10 +25,7 @@ import suite.node.Atom;
 import suite.node.Node;
 import suite.os.LogUtil;
 import suite.primitive.IoSink;
-import suite.streamlet.FunUtil.Fun;
-import suite.streamlet.FunUtil.Source;
 import suite.util.Memoize;
-import suite.util.String_;
 
 public class EvaluateUtil {
 

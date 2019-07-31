@@ -7,11 +7,11 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import primal.Ob;
+import primal.adt.Pair;
+import primal.fp.Funs.Fun;
+import primal.fp.Funs.Source;
+import primal.fp.Funs2.Fun2;
 import suite.adt.PriorityQueue;
-import suite.adt.pair.Pair;
-import suite.streamlet.FunUtil.Fun;
-import suite.streamlet.FunUtil.Source;
-import suite.streamlet.FunUtil2.Fun2;
 
 public class Memoize {
 

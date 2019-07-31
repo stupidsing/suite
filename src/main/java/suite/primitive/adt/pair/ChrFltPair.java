@@ -3,12 +3,12 @@ package suite.primitive.adt.pair;
 import java.util.Comparator;
 
 import primal.Ob;
+import primal.fp.Funs.Iterate;
 import suite.primitive.ChrFlt_Obj;
 import suite.primitive.ChrFunUtil;
 import suite.primitive.Chr_Chr;
 import suite.primitive.FltFunUtil;
 import suite.primitive.Flt_Flt;
-import suite.streamlet.FunUtil.Iterate;
 
 public class ChrFltPair {
 

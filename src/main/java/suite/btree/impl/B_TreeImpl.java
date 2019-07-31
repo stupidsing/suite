@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Stack;
 
 import primal.Ob;
-import suite.adt.pair.Pair;
+import primal.adt.Pair;
 import suite.btree.B_Tree;
 import suite.file.PageAllocator;
 import suite.file.SerializedPageFile;

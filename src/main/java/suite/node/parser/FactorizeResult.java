@@ -3,6 +3,8 @@ package suite.node.parser;
 import java.util.ArrayList;
 import java.util.List;
 
+import primal.fp.Funs.Fun;
+import primal.fp.Funs.Iterate;
 import suite.Suite;
 import suite.inspect.Inspect;
 import suite.lp.doer.Generalizer;
@@ -15,8 +17,6 @@ import suite.node.util.Rewrite;
 import suite.node.util.Singleton;
 import suite.primitive.Chars;
 import suite.primitive.Chars.CharsBuilder;
-import suite.streamlet.FunUtil.Fun;
-import suite.streamlet.FunUtil.Iterate;
 import suite.util.List_;
 import suite.util.Nodify;
 import suite.util.To;

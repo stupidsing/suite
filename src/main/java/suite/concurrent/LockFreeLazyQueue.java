@@ -2,7 +2,7 @@ package suite.concurrent;
 
 import java.util.ArrayList;
 
-import suite.adt.pair.Pair;
+import primal.adt.Pair;
 
 public class LockFreeLazyQueue<T> {
 

@@ -9,8 +9,8 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
+import primal.String_;
 import suite.util.RunUtil;
-import suite.util.String_;
 
 /**
  * Starts program using a JavaScript script. Perhaps you can avoid using Spring

@@ -2,11 +2,11 @@ package suite.primitive;
 
 import static primal.statics.Fail.fail;
 
+import primal.fp.Funs.Fun;
 import suite.primitive.Chars.CharsBuilder;
 import suite.primitive.ChrPrimitives.Obj_Chr;
 import suite.primitive.streamlet.ChrStreamlet;
 import suite.primitive.streamlet.DblPuller;
-import suite.streamlet.FunUtil.Fun;
 
 public interface Dbl_Chr {
 

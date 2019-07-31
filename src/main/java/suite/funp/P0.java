@@ -3,12 +3,12 @@ package suite.funp;
 import java.util.ArrayList;
 import java.util.List;
 
-import suite.adt.pair.Fixie_.FixieFun0;
-import suite.adt.pair.Fixie_.FixieFun1;
-import suite.adt.pair.Fixie_.FixieFun2;
-import suite.adt.pair.Fixie_.FixieFun3;
-import suite.adt.pair.Fixie_.FixieFun4;
-import suite.adt.pair.Pair;
+import primal.adt.Fixie_.FixieFun0;
+import primal.adt.Fixie_.FixieFun1;
+import primal.adt.Fixie_.FixieFun2;
+import primal.adt.Fixie_.FixieFun3;
+import primal.adt.Fixie_.FixieFun4;
+import primal.adt.Pair;
 import suite.assembler.Amd64.OpReg;
 import suite.funp.Funp_.Funp;
 import suite.node.Atom;

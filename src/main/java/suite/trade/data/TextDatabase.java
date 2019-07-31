@@ -11,6 +11,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import primal.Ob;
+import primal.String_;
 import suite.cfg.HomeDir;
 import suite.os.FileUtil;
 import suite.primitive.Bytes;
@@ -18,7 +19,6 @@ import suite.primitive.Bytes_;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
-import suite.util.String_;
 import suite.util.Thread_;
 import suite.util.To;
 

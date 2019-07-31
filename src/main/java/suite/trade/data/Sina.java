@@ -14,7 +14,7 @@ import suite.streamlet.Puller;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.ParseUtil;
-import suite.util.String_;
+import suite.util.To;
 
 public class Sina {
 
@@ -73,7 +73,7 @@ public class Sina {
 				in = HttpUtil.get(url).out();
 
 			return in //
-					.map(bytes -> String_.build(sb -> {
+					.map(bytes -> To.string(sb -> {
 						for (var i = 0; i < bytes.size(); i++)
 							sb.append((char) bytes.get(i));
 					})) //

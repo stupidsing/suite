@@ -5,9 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import primal.fp.Funs.Sink;
+import primal.fp.Funs.Source;
 import suite.streamlet.FunUtil;
-import suite.streamlet.FunUtil.Sink;
-import suite.streamlet.FunUtil.Source;
 import suite.util.List_;
 
 /**

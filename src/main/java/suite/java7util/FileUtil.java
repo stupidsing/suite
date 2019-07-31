@@ -8,7 +8,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayDeque;
 
-import suite.streamlet.FunUtil.Source;
+import primal.fp.Funs.Source;
 import suite.util.Copy;
 
 public class FileUtil {

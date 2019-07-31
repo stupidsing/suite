@@ -4,7 +4,7 @@ import java.util.Iterator;
 
 import primal.Ob;
 import suite.streamlet.Streamlet;
-import suite.util.String_;
+import suite.util.To;
 
 public class PerSet<V extends Comparable<V>> implements Iterable<V> {
 
@@ -65,7 +65,7 @@ public class PerSet<V extends Comparable<V>> implements Iterable<V> {
 
 	@Override
 	public String toString() {
-		return String_.build(sb -> {
+		return To.string(sb -> {
 			sb.append("(");
 
 			for (var v : this)

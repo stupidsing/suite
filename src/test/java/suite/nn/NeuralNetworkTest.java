@@ -6,10 +6,10 @@ import java.util.Random;
 
 import org.junit.Test;
 
-import suite.adt.pair.Pair;
+import primal.adt.Pair;
+import primal.fp.Funs2.BinOp;
 import suite.math.linalg.Vector;
 import suite.nn.NeuralNetwork.Layer;
-import suite.streamlet.FunUtil2.BinOp;
 import suite.streamlet.Read;
 
 public class NeuralNetworkTest {

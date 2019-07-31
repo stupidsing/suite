@@ -12,12 +12,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.function.BiPredicate;
 
+import primal.String_;
+import primal.fp.Funs.Sink;
 import suite.persistent.PerList;
 import suite.persistent.PerMap;
 import suite.primitive.Bytes;
 import suite.primitive.LngMutable;
-import suite.streamlet.FunUtil.Sink;
-import suite.util.String_;
 import suite.util.To;
 
 public interface HttpHandler {

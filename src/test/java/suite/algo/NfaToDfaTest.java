@@ -8,9 +8,9 @@ import java.util.Set;
 
 import org.junit.Test;
 
+import primal.fp.Funs.Fun;
 import suite.adt.map.ListMultimap;
 import suite.streamlet.As;
-import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 

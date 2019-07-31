@@ -24,8 +24,12 @@ import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.Type;
 
 import primal.Ob;
+import primal.adt.Pair;
+import primal.fp.Funs.Fun;
+import primal.fp.Funs.Iterate;
+import primal.fp.Funs.Source;
+import primal.fp.Funs2.BinOp;
 import primal.os.Log_;
-import suite.adt.pair.Pair;
 import suite.jdk.UnsafeUtil;
 import suite.jdk.gen.FunExprM.FieldStaticFunExpr;
 import suite.jdk.gen.FunExpression.FunExpr;
@@ -33,10 +37,6 @@ import suite.jdk.gen.pass.FunExpand;
 import suite.jdk.gen.pass.FunGenerateBytecode;
 import suite.jdk.gen.pass.FunRewrite;
 import suite.jdk.lambda.LambdaInterface;
-import suite.streamlet.FunUtil.Fun;
-import suite.streamlet.FunUtil.Iterate;
-import suite.streamlet.FunUtil.Source;
-import suite.streamlet.FunUtil2.BinOp;
 import suite.streamlet.Read;
 import suite.util.Util;
 

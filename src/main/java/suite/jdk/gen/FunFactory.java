@@ -8,6 +8,10 @@ import org.apache.bcel.generic.BasicType;
 import org.apache.bcel.generic.Type;
 
 import primal.Ob;
+import primal.fp.Funs.Iterate;
+import primal.fp.Funs.Source;
+import primal.fp.Funs2.BinOp;
+import primal.fp.Funs2.Fun2;
 import suite.adt.Mutable;
 import suite.inspect.Inspect;
 import suite.jdk.gen.FunExprK.Declare0ParameterFunExpr;
@@ -38,10 +42,6 @@ import suite.jdk.gen.FunExprM.VoidFunExpr;
 import suite.jdk.gen.FunExpression.FunExpr;
 import suite.jdk.lambda.LambdaInstance;
 import suite.node.util.Singleton;
-import suite.streamlet.FunUtil.Iterate;
-import suite.streamlet.FunUtil.Source;
-import suite.streamlet.FunUtil2.BinOp;
-import suite.streamlet.FunUtil2.Fun2;
 import suite.streamlet.Read;
 
 public class FunFactory {

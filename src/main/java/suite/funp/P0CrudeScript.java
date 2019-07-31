@@ -6,9 +6,9 @@ import static primal.statics.Rethrow.ex;
 import java.io.FileReader;
 import java.util.ArrayList;
 
+import primal.adt.Pair;
 import primal.statics.Fail;
 import suite.Suite;
-import suite.adt.pair.Pair;
 import suite.ebnf.Ebnf;
 import suite.ebnf.Ebnf.Ast;
 import suite.funp.Funp_.Funp;

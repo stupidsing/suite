@@ -2,12 +2,12 @@ package suite.parser;
 
 import java.util.List;
 
-import suite.adt.pair.Pair;
+import primal.adt.Pair;
+import primal.fp.Funs.Source;
 import suite.persistent.PerList;
-import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
-import suite.util.String_;
+import suite.util.To;
 
 public class Wildcard {
 
@@ -36,9 +36,9 @@ public class Wildcard {
 					|| h0 == h1 && isMatch2(t0, t1);
 		} else {
 			var isWildcardPatterns = true;
-			for (var c0 : String_.chars(p0))
+			for (var c0 : Read.chars(p0))
 				isWildcardPatterns &= c0 == '*';
-			for (var c1 : String_.chars(p1))
+			for (var c1 : Read.chars(p1))
 				isWildcardPatterns &= c1 == '*';
 			return isWildcardPatterns;
 		}
@@ -58,9 +58,9 @@ public class Wildcard {
 	}
 
 	public static String apply(String pattern, String[] input) {
-		return String_.build(sb -> {
+		return To.string(sb -> {
 			var i = 0;
-			for (var ch : String_.chars(pattern))
+			for (var ch : Read.chars(pattern))
 				switch (ch) {
 				case '*':
 				case '?':
@@ -115,7 +115,7 @@ class Matcher {
 	private Streamlet<State> applyPattern(String pattern, String input) {
 		var st = Read.each(new State(input));
 
-		for (var ch : String_.chars(pattern))
+		for (var ch : Read.chars(pattern))
 			switch (ch) {
 			case '*':
 				st = st.concatMap(state -> Read.from(() -> new Source<State>() {

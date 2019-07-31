@@ -11,8 +11,8 @@ import suite.node.io.Formatter;
 import suite.node.io.Operator;
 import suite.node.io.Operator.Assoc;
 import suite.node.io.TermOp;
+import suite.streamlet.Read;
 import suite.util.FormatUtil;
-import suite.util.String_;
 
 public class PrettyPrinter {
 
@@ -220,7 +220,7 @@ public class PrettyPrinter {
 	private boolean isLineBegin() {
 		var b = true;
 		var l = sb.substring(getLineBeginPosition(), getCurrentPosition());
-		for (var c : String_.chars(l))
+		for (var c : Read.chars(l))
 			b &= Character.isWhitespace(c);
 		return b;
 	}

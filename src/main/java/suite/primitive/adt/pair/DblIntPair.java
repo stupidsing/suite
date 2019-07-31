@@ -3,12 +3,12 @@ package suite.primitive.adt.pair;
 import java.util.Comparator;
 
 import primal.Ob;
+import primal.fp.Funs.Iterate;
 import suite.primitive.DblFunUtil;
 import suite.primitive.DblInt_Obj;
 import suite.primitive.Dbl_Dbl;
 import suite.primitive.IntFunUtil;
 import suite.primitive.Int_Int;
-import suite.streamlet.FunUtil.Iterate;
 
 public class DblIntPair {
 

@@ -2,10 +2,10 @@ package suite.primitive;
 
 import static primal.statics.Rethrow.ex;
 
+import primal.fp.Funs.Iterate;
+import primal.fp.Funs.Source;
 import suite.primitive.Bytes.BytesBuilder;
 import suite.primitive.Bytes.WriteByte;
-import suite.streamlet.FunUtil.Iterate;
-import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Puller;
 
 public class Bytes_ {

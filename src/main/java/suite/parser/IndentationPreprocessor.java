@@ -7,12 +7,12 @@ import static primal.statics.Fail.fail;
 import java.util.ArrayList;
 import java.util.List;
 
+import primal.String_;
 import suite.node.io.Operator;
 import suite.node.io.Operator.Assoc;
 import suite.text.Preprocess.Run;
 import suite.text.Segment;
 import suite.util.ParseUtil;
-import suite.util.String_;
 
 /**
  * Turns indent patterns into parentheses, to provide Python-like parsing.

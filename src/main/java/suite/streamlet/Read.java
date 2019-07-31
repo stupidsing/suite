@@ -14,12 +14,12 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Map;
 
-import suite.adt.pair.Pair;
+import primal.adt.Pair;
+import primal.fp.Funs.Source;
+import primal.fp.Funs2.Source2;
 import suite.cfg.Defaults;
 import suite.http.HttpUtil;
 import suite.primitive.Bytes;
-import suite.streamlet.FunUtil.Source;
-import suite.streamlet.FunUtil2.Source2;
 import suite.util.To;
 import suite.util.Util;
 
@@ -43,6 +43,16 @@ public class Read {
 
 	public static Streamlet<Bytes> bytes(InputStream is) {
 		return new Streamlet<>(() -> To.puller(is));
+	}
+
+	public static Streamlet<Character> chars(CharSequence s) {
+		return new Streamlet<>(() -> Puller.of(new Source<>() {
+			private int index = 0;
+
+			public Character g() {
+				return index < s.length() ? s.charAt(index++) : null;
+			}
+		}));
 	}
 
 	public static <T> Streamlet<T> empty() {

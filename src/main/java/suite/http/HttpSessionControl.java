@@ -9,7 +9,6 @@ import suite.persistent.PerList;
 import suite.primitive.LngMutable;
 import suite.streamlet.As;
 import suite.util.HtmlUtil;
-import suite.util.String_;
 import suite.util.To;
 
 public class HttpSessionControl {
@@ -126,7 +125,7 @@ public class HttpSessionControl {
 		var bytes = new byte[16];
 		random.nextBytes(bytes);
 
-		return String_.build(sb -> {
+		return To.string(sb -> {
 			for (var b : bytes)
 				sb.append(String.format("%02x", b));
 		});

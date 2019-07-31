@@ -1,9 +1,9 @@
 package suite.persistent;
 
+import primal.adt.Pair;
+import primal.fp.Funs.Iterate;
 import suite.adt.Mutable;
-import suite.adt.pair.Pair;
 import suite.fs.KeyValueMutator;
-import suite.streamlet.FunUtil.Iterate;
 import suite.streamlet.Streamlet;
 
 public class LazyPbTreeMutator<K, V> implements KeyValueMutator<K, V> {

@@ -4,12 +4,12 @@ import static java.lang.Math.expm1;
 import static java.lang.Math.log1p;
 
 import primal.Ob;
+import primal.fp.Funs.Sink;
 import suite.math.numeric.Statistic;
 import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Floats_;
 import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.streamlet.FunUtil;
-import suite.streamlet.FunUtil.Sink;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 import suite.trade.Instrument;

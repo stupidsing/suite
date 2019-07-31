@@ -7,8 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import suite.adt.pair.Fixie;
-import suite.adt.pair.Fixie_.Fixie3;
+import primal.adt.Fixie;
+import primal.adt.Fixie_.Fixie3;
 import suite.node.util.Singleton;
 import suite.streamlet.As;
 

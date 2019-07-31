@@ -9,11 +9,11 @@ import java.util.Map;
 import java.util.Set;
 
 import primal.Ob;
-import suite.adt.pair.Pair;
+import primal.adt.Pair;
+import primal.fp.Funs.Fun;
 import suite.ebnf.Grammar;
 import suite.ebnf.Grammar.GrammarType;
 import suite.persistent.PerList;
-import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
 import suite.util.List_;

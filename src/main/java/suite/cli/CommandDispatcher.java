@@ -6,6 +6,9 @@ import java.io.Reader;
 import java.io.Writer;
 import java.util.List;
 
+import primal.String_;
+import primal.fp.Funs.Sink;
+import primal.fp.Funs.Source;
 import suite.Suite;
 import suite.fp.InterpretFunEager;
 import suite.fp.InterpretFunLazy;
@@ -27,11 +30,8 @@ import suite.node.Tree;
 import suite.node.io.Formatter;
 import suite.node.pp.PrettyPrinter;
 import suite.streamlet.As;
-import suite.streamlet.FunUtil.Sink;
-import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Read;
 import suite.util.CommandUtil;
-import suite.util.String_;
 import suite.util.To;
 
 /**

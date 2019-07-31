@@ -3,9 +3,9 @@ package suite.ansi;
 import java.util.ArrayList;
 import java.util.List;
 
+import primal.adt.Pair;
+import primal.fp.Funs.Sink;
 import suite.adt.Trie;
-import suite.adt.pair.Pair;
-import suite.streamlet.FunUtil.Sink;
 import suite.streamlet.Pusher;
 import suite.streamlet.Pusher.Redirector;
 import suite.streamlet.Read;

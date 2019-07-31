@@ -2,7 +2,8 @@ package suite.funp.p1;
 
 import java.util.List;
 
-import suite.adt.pair.Pair;
+import primal.String_;
+import primal.adt.Pair;
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.Fdt;
 import suite.funp.P0.FunpApply;
@@ -20,7 +21,6 @@ import suite.funp.P0.FunpStruct;
 import suite.funp.P0.FunpVariable;
 import suite.inspect.Inspect;
 import suite.node.util.Singleton;
-import suite.util.String_;
 import suite.util.Switch;
 import suite.util.Util;
 

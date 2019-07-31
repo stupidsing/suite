@@ -3,7 +3,7 @@ package suite.primitive;
 import java.util.Comparator;
 
 import primal.Ob;
-import suite.streamlet.FunUtil.Iterate;
+import primal.fp.Funs.Iterate;
 
 public class LngRange {
 

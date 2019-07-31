@@ -2,7 +2,7 @@ package suite.trade.backalloc.strategy;
 
 import java.util.List;
 
-import suite.adt.pair.Pair;
+import primal.adt.Pair;
 import suite.streamlet.Read;
 import suite.trade.backalloc.BackAllocator;
 import suite.trade.data.DataSource.AlignKeyDataSource;

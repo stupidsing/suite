@@ -17,7 +17,8 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import primal.Ob;
-import suite.adt.pair.Pair;
+import primal.adt.Pair;
+import primal.fp.Funs.Fun;
 import suite.inspect.Inspect;
 import suite.node.Atom;
 import suite.node.Dict;
@@ -28,7 +29,6 @@ import suite.node.Str;
 import suite.node.Tree;
 import suite.node.io.TermOp;
 import suite.primitive.Chars;
-import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.Read;
 
 /**

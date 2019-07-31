@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 
 import primal.Ob;
+import primal.fp.Funs.Fun;
 import suite.file.JournalledPageFile;
 import suite.file.PageFile;
 import suite.fs.KeyValueMutator;
@@ -12,7 +13,6 @@ import suite.fs.impl.TransactionManager;
 import suite.node.util.Singleton;
 import suite.persistent.LazyPbTreeStore;
 import suite.serialize.Serialize;
-import suite.streamlet.FunUtil.Fun;
 
 public class Database implements Closeable {
 

@@ -1,9 +1,9 @@
 package suite.persistent;
 
 import primal.Ob;
-import suite.adt.pair.Pair;
-import suite.streamlet.FunUtil2.BinOp;
-import suite.streamlet.FunUtil2.Source2;
+import primal.adt.Pair;
+import primal.fp.Funs2.BinOp;
+import primal.fp.Funs2.Source2;
 import suite.streamlet.Puller2;
 import suite.streamlet.Streamlet2;
 

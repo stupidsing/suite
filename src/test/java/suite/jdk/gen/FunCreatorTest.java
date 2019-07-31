@@ -9,6 +9,9 @@ import java.util.function.BiPredicate;
 import org.apache.bcel.generic.Type;
 import org.junit.Test;
 
+import primal.fp.Funs.Fun;
+import primal.fp.Funs.Iterate;
+import primal.fp.Funs.Source;
 import suite.Suite;
 import suite.inspect.Dump;
 import suite.jdk.gen.FunExprM.PrintlnFunExpr;
@@ -24,9 +27,6 @@ import suite.node.io.TermOp;
 import suite.primitive.Flt_Flt;
 import suite.primitive.IntPrimitives.IntSource;
 import suite.primitive.Int_Int;
-import suite.streamlet.FunUtil.Fun;
-import suite.streamlet.FunUtil.Iterate;
-import suite.streamlet.FunUtil.Source;
 
 public class FunCreatorTest {
 

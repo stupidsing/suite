@@ -5,6 +5,10 @@ import static primal.statics.Fail.fail;
 import java.util.Collections;
 import java.util.Iterator;
 
+import primal.fp.Funs.Fun;
+import primal.fp.Funs.Sink;
+import primal.fp.Funs.Source;
+import primal.fp.Funs2.Source2;
 import primal.os.Log_;
 import primal.statics.Fail.InterruptedRuntimeException;
 import suite.primitive.LngPrimitives.LngObjSource;
@@ -13,10 +17,6 @@ import suite.primitive.LngPrimitives.LngSource;
 import suite.primitive.LngPrimitives.LngTest;
 import suite.primitive.LngPrimitives.Lng_Obj;
 import suite.primitive.adt.pair.LngObjPair;
-import suite.streamlet.FunUtil.Fun;
-import suite.streamlet.FunUtil.Sink;
-import suite.streamlet.FunUtil.Source;
-import suite.streamlet.FunUtil2.Source2;
 import suite.util.NullableSyncQueue;
 import suite.util.Thread_;
 

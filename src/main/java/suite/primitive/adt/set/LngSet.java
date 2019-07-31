@@ -8,7 +8,7 @@ import suite.primitive.LngPrimitives.LngSource;
 import suite.primitive.Longs_;
 import suite.primitive.streamlet.LngPuller;
 import suite.primitive.streamlet.LngStreamlet;
-import suite.util.String_;
+import suite.util.To;
 
 /**
  * Set with longacter elements. Long.MIN_VALUE is not allowed. Not
@@ -141,7 +141,7 @@ public class LngSet {
 
 	@Override
 	public String toString() {
-		return String_.build(sb -> streamlet().forEach(sb::append));
+		return To.string(sb -> streamlet().forEach(sb::append));
 	}
 
 	private boolean add_(long c) {

@@ -22,6 +22,9 @@ import java.util.Enumeration;
 import java.util.List;
 
 import primal.Ob;
+import primal.fp.Funs.Fun;
+import primal.fp.Funs.Sink;
+import primal.fp.Funs.Source;
 import suite.cfg.Defaults;
 import suite.os.FileUtil;
 import suite.primitive.Bytes;
@@ -34,9 +37,6 @@ import suite.primitive.Int_Dbl;
 import suite.primitive.IoSink;
 import suite.serialize.SerOutput;
 import suite.streamlet.As;
-import suite.streamlet.FunUtil.Fun;
-import suite.streamlet.FunUtil.Sink;
-import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Puller;
 
 public class To {
@@ -239,6 +239,10 @@ public class To {
 
 	public static String string(LocalDateTime time) {
 		return ymdHms(time);
+	}
+
+	public static String string(Sink<StringBuilder> sink) {
+		return To.string(sink);
 	}
 
 	public static String string(Throwable th) {

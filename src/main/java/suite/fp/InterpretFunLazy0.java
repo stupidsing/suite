@@ -2,6 +2,8 @@ package suite.fp;
 
 import static primal.statics.Fail.fail;
 
+import primal.fp.Funs.Fun;
+import primal.fp.Funs.Iterate;
 import suite.Suite;
 import suite.adt.Mutable;
 import suite.lp.Trail;
@@ -14,8 +16,6 @@ import suite.node.io.SwitchNode;
 import suite.node.io.TermOp;
 import suite.node.util.TreeUtil;
 import suite.persistent.PerMap;
-import suite.streamlet.FunUtil.Fun;
-import suite.streamlet.FunUtil.Iterate;
 import suite.streamlet.Read;
 
 public class InterpretFunLazy0 {

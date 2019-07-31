@@ -4,7 +4,7 @@ import static java.lang.Math.max;
 
 import java.util.Arrays;
 
-import suite.adt.pair.Pair;
+import primal.adt.Pair;
 import suite.math.linalg.VirtualVector;
 import suite.math.numeric.Statistic;
 

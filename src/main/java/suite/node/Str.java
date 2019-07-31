@@ -1,7 +1,7 @@
 package suite.node;
 
 import primal.Ob;
-import suite.util.String_;
+import primal.String_;
 
 public class Str extends Node {
 

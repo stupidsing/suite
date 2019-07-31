@@ -1,7 +1,7 @@
 package suite.math.sym;
 
-import suite.streamlet.FunUtil.Iterate;
-import suite.streamlet.FunUtil2.Fun2;
+import primal.fp.Funs.Iterate;
+import primal.fp.Funs2.Fun2;
 
 public class Sym {
 

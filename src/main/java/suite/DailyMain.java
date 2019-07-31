@@ -4,15 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import primal.String_;
+import primal.adt.Pair;
+import primal.fp.Funs.Sink;
 import primal.os.Log_;
-import suite.adt.pair.Pair;
 import suite.math.Math_;
 import suite.node.util.Singleton;
 import suite.os.SerializedStoreCache;
 import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.serialize.Serialize;
 import suite.smtp.SmtpSslGmail;
-import suite.streamlet.FunUtil.Sink;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.trade.Account;
@@ -35,7 +36,6 @@ import suite.trade.singlealloc.SingleAllocBackTest;
 import suite.trade.singlealloc.Strategos;
 import suite.util.RunUtil;
 import suite.util.Set_;
-import suite.util.String_;
 import suite.util.To;
 
 // mvn compile exec:java -Dexec.mainClass=suite.DailyMain

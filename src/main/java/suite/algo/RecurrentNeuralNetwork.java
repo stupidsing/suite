@@ -9,7 +9,7 @@ import suite.math.Tanh;
 import suite.math.linalg.Matrix;
 import suite.math.linalg.Vector;
 import suite.primitive.Floats_;
-import suite.util.String_;
+import suite.util.To;
 
 public class RecurrentNeuralNetwork {
 
@@ -62,7 +62,7 @@ public class RecurrentNeuralNetwork {
 
 		@Override
 		public String toString() {
-			return String_.build(sb -> {
+			return To.string(sb -> {
 				sb.append("weights = " + mtx.toString(weights));
 				sb.append("memory = " + mtx.toString(memory) + "\n");
 			});

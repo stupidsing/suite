@@ -2,8 +2,8 @@ package suite.persistent;
 
 import java.util.List;
 
+import primal.fp.Funs2.BinOp;
 import suite.primitive.adt.pair.IntObjPair;
-import suite.streamlet.FunUtil2.BinOp;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.Array_;

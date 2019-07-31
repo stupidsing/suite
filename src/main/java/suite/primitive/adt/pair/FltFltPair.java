@@ -3,10 +3,10 @@ package suite.primitive.adt.pair;
 import java.util.Comparator;
 
 import primal.Ob;
+import primal.fp.Funs.Iterate;
 import suite.primitive.FltFlt_Obj;
 import suite.primitive.FltFunUtil;
 import suite.primitive.Flt_Flt;
-import suite.streamlet.FunUtil.Iterate;
 
 public class FltFltPair {
 

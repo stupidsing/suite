@@ -4,51 +4,20 @@ import static primal.statics.Fail.fail;
 
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.function.Function;
 import java.util.function.Predicate;
 
+import primal.adt.Pair;
+import primal.fp.Funs.Fun;
+import primal.fp.Funs.Sink;
+import primal.fp.Funs.Source;
+import primal.fp.Funs2.Source2;
 import primal.os.Log_;
 import primal.statics.Fail.InterruptedRuntimeException;
 import primal.statics.Rethrow;
-import suite.adt.pair.Pair;
-import suite.streamlet.FunUtil2.Source2;
 import suite.util.NullableSyncQueue;
 import suite.util.Thread_;
 
 public class FunUtil {
-
-	public interface Iterate<T> extends Fun<T, T> {
-	}
-
-	public interface Sink<I> {
-		public void f(I i);
-
-		public default Sink<I> rethrow() {
-			return t -> {
-				try {
-					f(t);
-				} catch (Exception ex) {
-					fail("for " + t, ex);
-				}
-			};
-		}
-	}
-
-	public interface Source<O> {
-		public O g();
-	}
-
-	public interface Fun<I, O> extends Function<I, O> {
-		public default Fun<I, O> rethrow() {
-			return i -> {
-				try {
-					return apply(i);
-				} catch (Exception ex) {
-					return fail("for " + i, ex);
-				}
-			};
-		}
-	}
 
 	public static <T> Source<Source<T>> chunk(int n, Source<T> source) {
 		return new Source<>() {

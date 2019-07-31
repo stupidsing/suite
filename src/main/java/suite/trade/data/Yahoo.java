@@ -15,6 +15,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import primal.Ob;
+import primal.String_;
+import primal.fp.Funs2.FoldOp;
 import suite.cfg.Defaults;
 import suite.cfg.HomeDir;
 import suite.http.HttpUtil;
@@ -25,13 +27,11 @@ import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.primitive.LngPrimitives.Obj_Lng;
 import suite.primitive.adt.pair.LngFltPair;
 import suite.streamlet.As;
-import suite.streamlet.FunUtil2.FoldOp;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 import suite.trade.Time;
 import suite.trade.TimeRange;
-import suite.util.String_;
 import suite.util.To;
 
 public class Yahoo {

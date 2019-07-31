@@ -5,7 +5,8 @@ import java.util.List;
 import java.util.Objects;
 
 import primal.Ob;
-import suite.adt.pair.Pair;
+import primal.adt.Pair;
+import primal.fp.Funs.Sink;
 import suite.node.Node;
 import suite.node.Reference;
 import suite.node.io.Rewrite_.NodeHead;
@@ -13,7 +14,6 @@ import suite.node.io.Rewrite_.NodeRead;
 import suite.primitive.IntPrimitives.IntSink;
 import suite.primitive.adt.map.IntObjMap;
 import suite.primitive.adt.pair.IntObjPair;
-import suite.streamlet.FunUtil.Sink;
 
 /**
  * The Node.hashCode() method would not permit taking hash code of terms with

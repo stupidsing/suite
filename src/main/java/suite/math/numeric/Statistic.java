@@ -7,6 +7,7 @@ import static primal.statics.Fail.fail;
 
 import java.util.List;
 
+import primal.fp.Funs.Fun;
 import suite.math.linalg.CholeskyDecomposition;
 import suite.math.linalg.Matrix;
 import suite.math.linalg.Vector;
@@ -17,9 +18,7 @@ import suite.primitive.Int_Flt;
 import suite.primitive.adt.map.IntObjMap;
 import suite.primitive.adt.pair.FltObjPair;
 import suite.primitive.adt.pair.IntObjPair;
-import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.Streamlet;
-import suite.util.String_;
 import suite.util.To;
 
 public class Statistic {
@@ -168,7 +167,7 @@ public class Statistic {
 		}
 
 		public String toString() {
-			return String_.build(sb -> {
+			return To.string(sb -> {
 				var tStatistic = tStatistic();
 				for (var i = 0; i < nDepVariables; i++)
 					sb.append("\n" + coefficientNames[i] + " = " + To.string(coefficients[i]) //

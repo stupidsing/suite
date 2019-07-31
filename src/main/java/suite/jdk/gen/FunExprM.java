@@ -6,12 +6,12 @@ import java.util.Map;
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 
+import primal.adt.Fixie_.FixieFun0;
+import primal.adt.Fixie_.FixieFun1;
+import primal.adt.Fixie_.FixieFun2;
+import primal.adt.Fixie_.FixieFun3;
+import primal.adt.Fixie_.FixieFun4;
 import suite.adt.Mutable;
-import suite.adt.pair.Fixie_.FixieFun0;
-import suite.adt.pair.Fixie_.FixieFun1;
-import suite.adt.pair.Fixie_.FixieFun2;
-import suite.adt.pair.Fixie_.FixieFun3;
-import suite.adt.pair.Fixie_.FixieFun4;
 import suite.jdk.gen.FunExpression.FunExpr;
 import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.Ints.IntsBuilder;

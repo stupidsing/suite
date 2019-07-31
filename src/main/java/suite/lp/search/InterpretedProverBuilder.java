@@ -1,5 +1,6 @@
 package suite.lp.search;
 
+import primal.fp.Funs.Fun;
 import suite.lp.Configuration.ProverCfg;
 import suite.lp.doer.Prover;
 import suite.lp.kb.RuleSet;
@@ -7,7 +8,6 @@ import suite.lp.search.ProverBuilder.Builder;
 import suite.lp.search.ProverBuilder.Finder;
 import suite.lp.sewing.impl.SewingGeneralizerImpl;
 import suite.node.Node;
-import suite.streamlet.FunUtil.Fun;
 
 public class InterpretedProverBuilder implements Builder {
 

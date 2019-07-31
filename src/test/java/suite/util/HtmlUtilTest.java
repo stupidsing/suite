@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
+import primal.String_;
 import suite.inspect.Dump;
 import suite.os.FileUtil;
 import suite.util.HtmlUtil.HtmlNode;

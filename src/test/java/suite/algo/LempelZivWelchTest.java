@@ -7,10 +7,10 @@ import java.util.List;
 
 import org.junit.Test;
 
+import primal.fp.Funs.Source;
 import suite.cfg.Defaults;
 import suite.os.FileUtil;
 import suite.primitive.Bytes.BytesBuilder;
-import suite.streamlet.FunUtil.Source;
 import suite.util.To;
 
 public class LempelZivWelchTest {

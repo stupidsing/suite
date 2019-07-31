@@ -2,10 +2,13 @@ package suite.math.sym;
 
 import java.util.function.Predicate;
 
+import primal.adt.Fixie;
+import primal.adt.Fixie_.Fixie3;
+import primal.fp.Funs.Fun;
+import primal.fp.Funs.Iterate;
+import primal.fp.Funs2.Fun2;
 import suite.BindArrayUtil.Pattern;
 import suite.adt.Opt;
-import suite.adt.pair.Fixie;
-import suite.adt.pair.Fixie_.Fixie3;
 import suite.math.sym.Sym.Ring;
 import suite.node.Int;
 import suite.node.Node;
@@ -15,9 +18,6 @@ import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.adt.map.IntObjMap;
 import suite.primitive.streamlet.IntObjStreamlet;
 import suite.streamlet.As;
-import suite.streamlet.FunUtil.Fun;
-import suite.streamlet.FunUtil.Iterate;
-import suite.streamlet.FunUtil2.Fun2;
 
 public class Polynomial<N> {
 

@@ -2,13 +2,13 @@ package suite;
 
 import java.util.ArrayList;
 
+import primal.fp.Funs.Fun;
 import suite.lp.compile.impl.CompileBinderImpl;
 import suite.lp.doer.BinderFactory.BindEnv;
 import suite.lp.sewing.impl.SewingGeneralizerImpl;
 import suite.node.Atom;
 import suite.node.Node;
 import suite.primitive.Ints_;
-import suite.streamlet.FunUtil.Fun;
 import suite.util.Memoize;
 import suite.util.To;
 

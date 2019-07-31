@@ -7,8 +7,8 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.List;
 
+import primal.String_;
 import suite.ebnf.Ebnf.Ast;
-import suite.util.String_;
 
 public class Dump {
 

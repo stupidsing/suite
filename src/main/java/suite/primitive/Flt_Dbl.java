@@ -2,11 +2,11 @@ package suite.primitive;
 
 import static primal.statics.Fail.fail;
 
+import primal.fp.Funs.Fun;
 import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Doubles.DoublesBuilder;
 import suite.primitive.streamlet.DblStreamlet;
 import suite.primitive.streamlet.FltPuller;
-import suite.streamlet.FunUtil.Fun;
 
 public interface Flt_Dbl {
 

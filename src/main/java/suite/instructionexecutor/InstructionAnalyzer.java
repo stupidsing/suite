@@ -6,12 +6,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import primal.fp.Funs.Source;
 import suite.instructionexecutor.InstructionUtil.Insn;
 import suite.instructionexecutor.InstructionUtil.Instruction;
 import suite.instructionexecutor.InstructionUtil.Thunk;
 import suite.node.Node;
 import suite.node.Tree;
-import suite.streamlet.FunUtil.Source;
 
 public class InstructionAnalyzer {
 

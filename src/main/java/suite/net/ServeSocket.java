@@ -6,11 +6,11 @@ import static primal.statics.Fail.fail;
 import java.io.IOException;
 import java.io.InputStream;
 
+import primal.fp.Funs.Fun;
 import suite.cfg.Defaults;
 import suite.os.SocketUtil;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
-import suite.streamlet.FunUtil.Fun;
 
 public class ServeSocket {
 

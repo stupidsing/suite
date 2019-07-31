@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import suite.streamlet.Read;
 import suite.text.Preprocess.Run;
 import suite.util.ParseUtil;
-import suite.util.String_;
 
 /**
  * Remove comments.
@@ -59,10 +59,7 @@ public class CommentPreprocessor {
 	}
 
 	private boolean isWhitespaces(String in) {
-		var b = true;
-		for (var ch : String_.chars(in))
-			b &= whitespaces.contains(ch);
-		return b;
+		return Read.chars(in).isAll(whitespaces::contains);
 	}
 
 }

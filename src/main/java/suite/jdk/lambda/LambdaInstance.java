@@ -2,11 +2,11 @@ package suite.jdk.lambda;
 
 import java.util.Map;
 
+import primal.fp.Funs.Iterate;
+import primal.fp.Funs.Source;
+import primal.fp.Funs2.BinOp;
 import suite.jdk.gen.FunExpression.FunExpr;
 import suite.jdk.gen.FunFactory;
-import suite.streamlet.FunUtil.Iterate;
-import suite.streamlet.FunUtil.Source;
-import suite.streamlet.FunUtil2.BinOp;
 
 public class LambdaInstance<I> {
 

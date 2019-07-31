@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import suite.adt.pair.Pair;
+import primal.adt.Pair;
 import suite.primitive.Int_Dbl;
 import suite.primitive.adt.pair.DblObjPair;
 import suite.util.To;

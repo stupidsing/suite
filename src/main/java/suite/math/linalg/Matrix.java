@@ -10,7 +10,6 @@ import suite.math.Math_;
 import suite.math.R3;
 import suite.primitive.Dbl_Dbl;
 import suite.primitive.Int_Dbl;
-import suite.util.String_;
 import suite.util.To;
 
 public class Matrix {
@@ -425,11 +424,11 @@ public class Matrix {
 	}
 
 	public String toString(float[] m) {
-		return String_.build(sb -> dump(sb, m));
+		return To.string(sb -> dump(sb, m));
 	}
 
 	public String toString(float[][] m) {
-		return String_.build(sb -> {
+		return To.string(sb -> {
 			for (var row : m) {
 				dump(sb, row);
 				sb.append("\n");

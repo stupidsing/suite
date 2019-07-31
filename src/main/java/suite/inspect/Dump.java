@@ -7,21 +7,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
+import primal.String_;
+import primal.adt.Pair;
+import primal.fp.Funs.Sink;
 import primal.os.Log_;
-import suite.adt.pair.Pair;
 import suite.node.Tree;
 import suite.node.io.Operator.Assoc;
 import suite.node.util.Singleton;
 import suite.object.MapInterface;
 import suite.object.MapObject_;
 import suite.streamlet.As;
-import suite.streamlet.FunUtil.Sink;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.ParseUtil;
-import suite.util.String_;
 import suite.util.Switch;
 import suite.util.Thread_;
+import suite.util.To;
 import suite.util.Util;
 
 public class Dump {
@@ -42,7 +43,7 @@ public class Dump {
 	}
 
 	public static String toLine(Object node) {
-		return String_.build(sb -> toLine(node, sb::append));
+		return To.string(sb -> toLine(node, sb::append));
 	}
 
 	private static void toLine(Object node, Sink<String> sink) {
@@ -132,7 +133,7 @@ public class Dump {
 	 * with a descriptive name which you gave.
 	 */
 	public static void details(String name, Object object) {
-		Log_.info(String_.build(sb -> {
+		Log_.info(To.string(sb -> {
 			sb.append("Dumping ");
 			sb.append(name);
 			Dump.toDetails("", object, sb);
@@ -155,7 +156,7 @@ public class Dump {
 	 *                   The monster.
 	 */
 	public static String toDetails(String prefix, Object object) {
-		return String_.build(sb -> toDetails(prefix, object, sb));
+		return To.string(sb -> toDetails(prefix, object, sb));
 	}
 
 	public static void toDetails(String prefix, Object object, StringBuilder sb) {
@@ -211,7 +212,7 @@ public class Dump {
 				// simple listings for simple classes
 				if (clazz.isArray())
 					if (Util.isSimple(clazz.getComponentType()))
-						d(prefix, String_.build(sb -> {
+						d(prefix, To.string(sb -> {
 							sb.append("[");
 							for (var i = 0; i < Array.getLength(object); i++)
 								sb.append(Array.get(object, i) + ", ");

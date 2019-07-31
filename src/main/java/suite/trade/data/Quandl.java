@@ -2,7 +2,8 @@ package suite.trade.data;
 
 import java.util.List;
 
-import suite.adt.pair.Pair;
+import primal.String_;
+import primal.adt.Pair;
 import suite.cfg.Defaults;
 import suite.node.util.Singleton;
 import suite.primitive.FltPrimitives.Obj_Flt;
@@ -11,7 +12,6 @@ import suite.streamlet.As;
 import suite.streamlet.Streamlet;
 import suite.trade.Time;
 import suite.trade.TimeRange;
-import suite.util.String_;
 
 public class Quandl {
 

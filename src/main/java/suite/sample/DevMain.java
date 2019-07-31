@@ -9,8 +9,9 @@ import java.util.function.Predicate;
 
 import com.sun.jna.Native;
 
-import suite.adt.pair.Fixie_.FixieFun3;
-import suite.adt.pair.Fixie_.FixieFun6;
+import primal.adt.Fixie_.FixieFun3;
+import primal.adt.Fixie_.FixieFun6;
+import primal.fp.Funs.Sink;
 import suite.ansi.Keyboard;
 import suite.ansi.Keyboard.VK;
 import suite.ansi.LibcJna;
@@ -22,7 +23,6 @@ import suite.primitive.Coord;
 import suite.primitive.IntMutable;
 import suite.primitive.IntPrimitives.IntSink;
 import suite.primitive.Ints.IntsBuilder;
-import suite.streamlet.FunUtil.Sink;
 
 // mvn compile exec:java -Dexec.mainClass=suite.sample.DevMain -Dexec.args="${COLUMNS} ${LINES}"
 public class DevMain {

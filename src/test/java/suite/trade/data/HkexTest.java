@@ -5,8 +5,8 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+import primal.String_;
 import suite.streamlet.Read;
-import suite.util.String_;
 
 public class HkexTest {
 

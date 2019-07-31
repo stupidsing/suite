@@ -3,60 +3,22 @@ package suite.streamlet;
 import static primal.statics.Fail.fail;
 
 import java.util.Iterator;
-import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
+import primal.adt.Pair;
+import primal.fp.Funs.Fun;
+import primal.fp.Funs.Sink;
+import primal.fp.Funs.Source;
+import primal.fp.Funs2.Fun2;
+import primal.fp.Funs2.Source2;
 import primal.os.Log_;
 import primal.statics.Fail.InterruptedRuntimeException;
 import primal.statics.Rethrow;
-import suite.adt.pair.Pair;
-import suite.streamlet.FunUtil.Fun;
-import suite.streamlet.FunUtil.Sink;
-import suite.streamlet.FunUtil.Source;
 import suite.util.NullableSyncQueue;
 import suite.util.Thread_;
 
 public class FunUtil2 {
-
-	public interface BinOp<T> extends BiFun<T, T> {
-	}
-
-	public interface FoldOp<I, O> extends Fun2<I, O, O> {
-	}
-
-	public interface BiFun<I, O> extends Fun2<I, I, O> {
-	}
-
-	public interface Source2<K, V> {
-		public boolean source2(Pair<K, V> pair);
-	}
-
-	public interface Sink2<K, V> {
-		public void sink2(K key, V value);
-
-		public default Sink2<K, V> rethrow() {
-			return (k, v) -> {
-				try {
-					sink2(k, v);
-				} catch (Exception ex) {
-					fail("for " + k + ", " + v, ex);
-				}
-			};
-		}
-	}
-
-	public interface Fun2<X, Y, Z> extends BiFunction<X, Y, Z> {
-		public default Fun2<X, Y, Z> rethrow() {
-			return (x, y) -> {
-				try {
-					return apply(x, y);
-				} catch (Exception ex) {
-					return fail("for " + x + ":" + y, ex);
-				}
-			};
-		}
-	}
 
 	public static <K, V> Source<Source2<K, V>> chunk(int n, Source2<K, V> source2) {
 		return new Source<>() {
@@ -198,7 +160,8 @@ public class FunUtil2 {
 		return () -> source2.source2(pair) ? fun1.apply(pair.k, pair.v) : null;
 	}
 
-	public static <K, V, K1, V1, T> Source2<K1, V1> map2(Fun2<K, V, K1> kf0, Fun2<K, V, V1> vf0, Source2<K, V> source2) {
+	public static <K, V, K1, V1, T> Source2<K1, V1> map2(Fun2<K, V, K1> kf0, Fun2<K, V, V1> vf0,
+			Source2<K, V> source2) {
 		var kf1 = kf0.rethrow();
 		var vf1 = vf0.rethrow();
 		Pair<K, V> pair1 = Pair.of(null, null);
@@ -247,7 +210,8 @@ public class FunUtil2 {
 		return new Source<>() {
 			private Pair<K, V> pair = Pair.of(null, null);
 			private boolean isAvailable;
-			private Source2<K, V> source2_ = pair_ -> (isAvailable &= source2.source2(pair_)) && !fun1.test(pair.k, pair.v);
+			private Source2<K, V> source2_ = pair_ -> (isAvailable &= source2.source2(pair_))
+					&& !fun1.test(pair.k, pair.v);
 
 			{
 				isAvailable = source2.source2(pair);

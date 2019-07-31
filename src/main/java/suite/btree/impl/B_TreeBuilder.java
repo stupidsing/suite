@@ -6,8 +6,8 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Comparator;
 
-import suite.adt.pair.FixieArray;
-import suite.adt.pair.Pair;
+import primal.adt.FixieArray;
+import primal.adt.Pair;
 import suite.btree.B_Tree;
 import suite.file.PageFile;
 import suite.file.impl.AllocatorImpl;

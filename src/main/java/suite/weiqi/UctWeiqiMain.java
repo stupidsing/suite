@@ -5,13 +5,13 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.DecimalFormat;
 
+import primal.String_;
 import primal.os.Log_;
 import suite.cfg.Defaults;
 import suite.os.Stopwatch;
 import suite.uct.ShuffleUtil;
 import suite.uct.UctSearch;
 import suite.uct.UctWeiqi;
-import suite.util.String_;
 import suite.weiqi.Weiqi.Occupation;
 
 /**

@@ -5,7 +5,7 @@ import static primal.statics.Rethrow.ex;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-import suite.adt.pair.Pair;
+import primal.adt.Pair;
 import suite.cfg.Defaults;
 import suite.node.io.TermOp;
 import suite.os.FileUtil;

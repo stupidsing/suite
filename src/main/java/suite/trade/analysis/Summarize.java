@@ -4,14 +4,15 @@ import java.time.LocalDate;
 import java.util.Map;
 
 import primal.Ob;
-import suite.adt.pair.Fixie;
-import suite.adt.pair.Fixie_.Fixie3;
+import primal.String_;
+import primal.adt.Fixie;
+import primal.adt.Fixie_.Fixie3;
+import primal.fp.Funs.Fun;
+import primal.fp.Funs.Iterate;
+import primal.fp.Funs.Sink;
 import suite.primitive.Dbl_Dbl;
 import suite.primitive.adt.pair.LngFltPair;
 import suite.streamlet.As;
-import suite.streamlet.FunUtil.Fun;
-import suite.streamlet.FunUtil.Iterate;
-import suite.streamlet.FunUtil.Sink;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.trade.Account;
@@ -25,7 +26,6 @@ import suite.trade.data.TradeCfg;
 import suite.trade.data.Yahoo;
 import suite.ts.Quant;
 import suite.util.FormatUtil;
-import suite.util.String_;
 import suite.util.To;
 
 public class Summarize {
@@ -97,7 +97,7 @@ public class Summarize {
 					+ (!keys.isEmpty() ? ", " + keys : "");
 		});
 
-		var text = String_.build(sb -> {
+		var text = To.string(sb -> {
 			Sink<String> log = sb::append;
 
 			var outs = summaryByKey //

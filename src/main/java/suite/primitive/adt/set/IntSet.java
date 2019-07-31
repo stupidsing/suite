@@ -8,7 +8,7 @@ import suite.primitive.IntPrimitives.IntSource;
 import suite.primitive.Ints_;
 import suite.primitive.streamlet.IntPuller;
 import suite.primitive.streamlet.IntStreamlet;
-import suite.util.String_;
+import suite.util.To;
 
 /**
  * Set with intacter elements. Integer.MIN_VALUE is not allowed. Not
@@ -141,7 +141,7 @@ public class IntSet {
 
 	@Override
 	public String toString() {
-		return String_.build(sb -> streamlet().forEach(sb::append));
+		return To.string(sb -> streamlet().forEach(sb::append));
 	}
 
 	private boolean add_(int c) {

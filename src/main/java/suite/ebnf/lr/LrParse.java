@@ -6,7 +6,8 @@ import java.util.Deque;
 import java.util.Map;
 
 import primal.Ob;
-import suite.adt.pair.Pair;
+import primal.adt.Pair;
+import primal.fp.Funs.Source;
 import suite.ebnf.Ebnf.Ast;
 import suite.ebnf.Grammar;
 import suite.ebnf.lr.BuildLr.Reduce;
@@ -14,7 +15,6 @@ import suite.ebnf.lr.BuildLr.State;
 import suite.parser.Lexer;
 import suite.persistent.PerList;
 import suite.streamlet.As;
-import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Puller;
 import suite.streamlet.Read;
 

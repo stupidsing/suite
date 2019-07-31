@@ -14,7 +14,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import primal.Ob;
-import suite.streamlet.FunUtil.Fun;
+import primal.fp.Funs.Fun;
 
 @Deprecated
 public class CacheUtil {

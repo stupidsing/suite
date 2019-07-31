@@ -8,6 +8,8 @@ import static suite.util.Streamlet_.forInt;
 import java.lang.reflect.Array;
 import java.util.Random;
 
+import primal.fp.Funs.Fun;
+import primal.fp.Funs.Iterate;
 import suite.math.Sigmoid;
 import suite.math.Tanh;
 import suite.math.linalg.Matrix;
@@ -16,8 +18,6 @@ import suite.primitive.Dbl_Dbl;
 import suite.primitive.Floats_;
 import suite.primitive.IntPrimitives.Int_Obj;
 import suite.primitive.Int_Dbl;
-import suite.streamlet.FunUtil.Fun;
-import suite.streamlet.FunUtil.Iterate;
 import suite.streamlet.Puller;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;

@@ -7,12 +7,12 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-import suite.streamlet.FunUtil.Iterate;
-import suite.streamlet.FunUtil.Source;
+import primal.fp.Funs.Iterate;
+import primal.fp.Funs.Source;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.List_;
-import suite.util.String_;
+import suite.util.To;
 
 public class LazyPbTree<T> implements PerTree<T> {
 
@@ -249,7 +249,7 @@ public class LazyPbTree<T> implements PerTree<T> {
 
 	@Override
 	public String toString() {
-		return String_.build(sb -> new Object() {
+		return To.string(sb -> new Object() {
 			private void dump(List<Slot<T>> node, String indent) {
 				if (node != null)
 					for (var slot : node) {

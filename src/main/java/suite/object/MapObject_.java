@@ -5,19 +5,19 @@ import static primal.statics.Rethrow.ex;
 
 import java.util.List;
 
-import suite.adt.pair.Fixie_.FixieFun0;
-import suite.adt.pair.Fixie_.FixieFun1;
-import suite.adt.pair.Fixie_.FixieFun2;
-import suite.adt.pair.Fixie_.FixieFun3;
-import suite.adt.pair.Fixie_.FixieFun4;
-import suite.adt.pair.Fixie_.FixieFun5;
-import suite.adt.pair.Fixie_.FixieFun6;
-import suite.adt.pair.Fixie_.FixieFun7;
-import suite.adt.pair.Fixie_.FixieFun8;
-import suite.adt.pair.Fixie_.FixieFun9;
-import suite.adt.pair.Fixie_.FixieFunA;
+import primal.String_;
+import primal.adt.Fixie_.FixieFun0;
+import primal.adt.Fixie_.FixieFun1;
+import primal.adt.Fixie_.FixieFun2;
+import primal.adt.Fixie_.FixieFun3;
+import primal.adt.Fixie_.FixieFun4;
+import primal.adt.Fixie_.FixieFun5;
+import primal.adt.Fixie_.FixieFun6;
+import primal.adt.Fixie_.FixieFun7;
+import primal.adt.Fixie_.FixieFun8;
+import primal.adt.Fixie_.FixieFun9;
+import primal.adt.Fixie_.FixieFunA;
 import suite.streamlet.Read;
-import suite.util.String_;
 
 public class MapObject_ {
 

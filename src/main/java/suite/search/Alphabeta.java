@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 
+import primal.fp.Funs.Fun;
 import suite.primitive.adt.pair.IntObjPair;
-import suite.streamlet.FunUtil.Fun;
 
 public class Alphabeta<State> {
 

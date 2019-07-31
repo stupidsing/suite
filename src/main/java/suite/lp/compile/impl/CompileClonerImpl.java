@@ -2,7 +2,8 @@ package suite.lp.compile.impl;
 
 import java.util.Map;
 
-import suite.adt.pair.Pair;
+import primal.adt.Pair;
+import primal.fp.Funs.Iterate;
 import suite.jdk.gen.FunCreator;
 import suite.jdk.gen.FunExpression.FunExpr;
 import suite.jdk.gen.FunFactory;
@@ -17,7 +18,6 @@ import suite.node.Str;
 import suite.node.Tree;
 import suite.node.Tuple;
 import suite.node.io.SwitchNode;
-import suite.streamlet.FunUtil.Iterate;
 import suite.streamlet.Read;
 
 public class CompileClonerImpl implements ClonerFactory {

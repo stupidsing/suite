@@ -1,15 +1,16 @@
 package suite.node.io;
 
 import primal.os.Log_;
-import suite.util.String_;
+import suite.streamlet.Read;
+import suite.util.To;
 
 public class Escaper {
 
 	public static String escape(String s, char quote) {
-		return String_.build(sb -> {
+		return To.string(sb -> {
 			sb.append(quote);
 
-			for (var ch : String_.chars(s))
+			for (var ch : Read.chars(s))
 				if (Character.isWhitespace(ch) && ch != ' ')
 					if (256 <= ch)
 						sb.append(encodeHex16(ch >> 8));

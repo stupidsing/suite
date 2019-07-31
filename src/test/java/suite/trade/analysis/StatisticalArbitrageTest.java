@@ -10,8 +10,10 @@ import java.util.Random;
 
 import org.junit.Test;
 
+import primal.String_;
+import primal.adt.Pair;
+import primal.fp.Funs.Fun;
 import primal.os.Log_;
-import suite.adt.pair.Pair;
 import suite.algo.KmeansCluster;
 import suite.math.numeric.Statistic;
 import suite.math.transform.DiscreteCosineTransform;
@@ -20,7 +22,6 @@ import suite.primitive.Int_Flt;
 import suite.primitive.adt.pair.FltObjPair;
 import suite.primitive.adt.pair.IntFltPair;
 import suite.streamlet.As;
-import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
 import suite.trade.Instrument;
@@ -34,7 +35,6 @@ import suite.trade.data.TradeCfgImpl;
 import suite.ts.BollingerBands;
 import suite.ts.Quant;
 import suite.ts.TimeSeries;
-import suite.util.String_;
 import suite.util.To;
 
 public class StatisticalArbitrageTest {

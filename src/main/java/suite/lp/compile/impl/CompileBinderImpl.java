@@ -2,6 +2,7 @@ package suite.lp.compile.impl;
 
 import java.util.Map;
 
+import primal.fp.Funs2.BinOp;
 import suite.jdk.gen.FunCreator;
 import suite.jdk.gen.FunExpression.FunExpr;
 import suite.jdk.gen.FunFactory;
@@ -15,7 +16,6 @@ import suite.node.Str;
 import suite.node.Tree;
 import suite.node.Tuple;
 import suite.node.io.SwitchNode;
-import suite.streamlet.FunUtil2.BinOp;
 
 public class CompileBinderImpl extends CompileClonerImpl implements BinderFactory {
 

@@ -18,8 +18,9 @@ import org.w3c.dom.ls.DOMImplementationLS;
 import org.w3c.dom.ls.LSSerializer;
 import org.xml.sax.SAXException;
 
+import primal.String_;
+import primal.fp.Funs.Source;
 import suite.cfg.Defaults;
-import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 

@@ -2,7 +2,7 @@ package suite.concurrent;
 
 import static primal.statics.Fail.fail;
 
-import suite.streamlet.FunUtil.Source;
+import primal.fp.Funs.Source;
 
 public class Condition {
 

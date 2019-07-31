@@ -4,9 +4,9 @@ import static primal.statics.Rethrow.ex;
 
 import java.lang.reflect.Method;
 
-import suite.adt.pair.Fixie_.FixieFun2;
+import primal.String_;
+import primal.adt.Fixie_.FixieFun2;
 import suite.streamlet.Read;
-import suite.util.String_;
 import suite.util.Util;
 
 public class LambdaInterface<I> {

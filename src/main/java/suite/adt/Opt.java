@@ -6,9 +6,9 @@ import java.util.Objects;
 import java.util.function.Predicate;
 
 import primal.Ob;
-import suite.streamlet.FunUtil.Fun;
-import suite.streamlet.FunUtil.Source;
-import suite.streamlet.FunUtil2.Fun2;
+import primal.fp.Funs.Fun;
+import primal.fp.Funs.Source;
+import primal.fp.Funs2.Fun2;
 
 public class Opt<T> {
 

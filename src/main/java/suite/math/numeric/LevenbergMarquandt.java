@@ -1,10 +1,10 @@
 package suite.math.numeric;
 
+import primal.fp.Funs.Fun;
 import suite.math.FiniteDifference;
 import suite.math.linalg.GaussSeidel;
 import suite.math.linalg.Matrix;
 import suite.math.linalg.Vector;
-import suite.streamlet.FunUtil.Fun;
 
 /**
  * https://en.wikipedia.org/wiki/Levenberg%E2%80%93Marquardt_algorithm

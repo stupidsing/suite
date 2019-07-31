@@ -2,6 +2,7 @@ package suite.lp.compile.impl;
 
 import java.util.Map;
 
+import primal.fp.Funs.Iterate;
 import suite.jdk.gen.FunCreator;
 import suite.jdk.gen.FunExpression.FunExpr;
 import suite.jdk.gen.FunFactory;
@@ -11,7 +12,6 @@ import suite.node.Int;
 import suite.node.Node;
 import suite.node.io.SwitchNode;
 import suite.node.util.TreeUtil;
-import suite.streamlet.FunUtil.Iterate;
 
 public class CompileExpressionImpl implements EvaluatorFactory {
 

@@ -1,6 +1,6 @@
 package suite.weiqi;
 
-import suite.util.String_;
+import primal.String_;
 import suite.weiqi.Weiqi.Occupation;
 
 public class UserInterface {

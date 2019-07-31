@@ -2,9 +2,9 @@ package suite.text;
 
 import java.util.List;
 
-import suite.adt.pair.Pair;
-import suite.streamlet.FunUtil.Fun;
-import suite.util.String_;
+import primal.adt.Pair;
+import primal.fp.Funs.Fun;
+import suite.util.To;
 
 public class Preprocess {
 
@@ -42,7 +42,7 @@ public class Preprocess {
 	}
 
 	private static String forward(String in, List<Run> runs) {
-		return String_.build(sb -> {
+		return To.string(sb -> {
 			for (var run : runs)
 				sb.append(run.segment != null ? in.substring(run.segment.start, run.segment.end) : run.text);
 		});

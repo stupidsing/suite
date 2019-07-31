@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import suite.streamlet.FunUtil2.Fun2;
+import primal.fp.Funs2.Fun2;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.trade.Trade_;

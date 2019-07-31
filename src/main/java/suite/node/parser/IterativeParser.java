@@ -6,6 +6,8 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.List;
 
+import primal.String_;
+import primal.fp.Funs.Sink;
 import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Tree;
@@ -14,9 +16,7 @@ import suite.node.io.Operator.Assoc;
 import suite.node.io.TermOp;
 import suite.node.parser.Lexer.Token;
 import suite.node.tree.TreeTuple;
-import suite.streamlet.FunUtil.Sink;
 import suite.text.Preprocess;
-import suite.util.String_;
 
 /**
  * Non-recursive, near O(length) parser for operator-based languages.

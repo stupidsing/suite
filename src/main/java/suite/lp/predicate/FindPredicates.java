@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.Stack;
 import java.util.concurrent.ConcurrentHashMap;
 
+import primal.fp.Funs.Source;
 import suite.lp.doer.Cloner;
 import suite.lp.doer.Prover;
 import suite.lp.predicate.PredicateUtil.BuiltinPredicate;
@@ -15,7 +16,6 @@ import suite.node.Suspend;
 import suite.node.Tree;
 import suite.node.io.TermOp;
 import suite.node.util.TermKey;
-import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Read;
 import suite.util.Memoize;
 

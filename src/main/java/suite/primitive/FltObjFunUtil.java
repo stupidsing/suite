@@ -5,19 +5,19 @@ import static primal.statics.Fail.fail;
 import java.util.Iterator;
 import java.util.function.Predicate;
 
+import primal.adt.Pair;
+import primal.fp.Funs.Fun;
+import primal.fp.Funs.Sink;
+import primal.fp.Funs.Source;
+import primal.fp.Funs2.Source2;
 import primal.os.Log_;
 import primal.statics.Fail.InterruptedRuntimeException;
 import primal.statics.Rethrow;
-import suite.adt.pair.Pair;
 import suite.primitive.FltPrimitives.FltObjPredicate;
 import suite.primitive.FltPrimitives.FltObjSource;
 import suite.primitive.FltPrimitives.FltObj_Obj;
 import suite.primitive.FltPrimitives.FltTest;
 import suite.primitive.adt.pair.FltObjPair;
-import suite.streamlet.FunUtil.Fun;
-import suite.streamlet.FunUtil.Sink;
-import suite.streamlet.FunUtil.Source;
-import suite.streamlet.FunUtil2.Source2;
 import suite.util.NullableSyncQueue;
 import suite.util.Thread_;
 

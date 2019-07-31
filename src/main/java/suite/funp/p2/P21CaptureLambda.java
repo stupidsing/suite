@@ -6,7 +6,8 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Set;
 
-import suite.adt.pair.Pair;
+import primal.adt.Pair;
+import primal.fp.Funs2.Fun2;
 import suite.funp.Funp_;
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.Fdt;
@@ -24,7 +25,6 @@ import suite.funp.P0.FunpVariable;
 import suite.funp.P2.FunpLambdaCapture;
 import suite.inspect.Inspect;
 import suite.node.util.Singleton;
-import suite.streamlet.FunUtil2.Fun2;
 import suite.streamlet.Read;
 import suite.util.Util;
 

@@ -10,6 +10,9 @@ import java.util.List;
 import java.util.Map;
 
 import primal.Ob;
+import primal.String_;
+import primal.fp.Funs.Sink;
+import primal.fp.Funs.Source;
 import primal.os.Log_;
 import suite.Suite;
 import suite.adt.Mutable;
@@ -46,12 +49,9 @@ import suite.node.util.SuiteException;
 import suite.node.util.TreeUtil;
 import suite.persistent.PerList;
 import suite.streamlet.As;
-import suite.streamlet.FunUtil.Sink;
-import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.List_;
-import suite.util.String_;
 
 /**
  * Compile logical rules into lambda-sews and run them. Supposed to be faster

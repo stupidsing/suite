@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import primal.fp.Funs.Source;
 import suite.Suite;
 import suite.lp.Configuration.ProverCfg;
 import suite.lp.search.CompiledProverBuilder;
@@ -12,7 +13,6 @@ import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.TermOp;
 import suite.node.util.TreeUtil;
-import suite.streamlet.FunUtil.Source;
 import suite.util.List_;
 import suite.util.To;
 

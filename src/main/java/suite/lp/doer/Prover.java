@@ -3,6 +3,7 @@ package suite.lp.doer;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import primal.fp.Funs.Source;
 import primal.os.Log_;
 import suite.Suite;
 import suite.lp.Configuration.ProverCfg;
@@ -17,7 +18,6 @@ import suite.node.Node;
 import suite.node.Suspend;
 import suite.node.Tree;
 import suite.node.io.TermOp;
-import suite.streamlet.FunUtil.Source;
 import suite.util.List_;
 
 public class Prover {

@@ -5,23 +5,23 @@ import static primal.statics.Rethrow.ex;
 
 import java.util.List;
 
+import primal.adt.FixieArray;
+import primal.adt.Fixie_.FixieFun0;
+import primal.adt.Fixie_.FixieFun1;
+import primal.adt.Fixie_.FixieFun2;
+import primal.adt.Fixie_.FixieFun3;
+import primal.adt.Fixie_.FixieFun4;
+import primal.adt.Fixie_.FixieFun5;
+import primal.adt.Fixie_.FixieFun6;
+import primal.fp.Funs.Fun;
+import primal.fp.Funs.Source;
 import suite.BindArrayUtil.Pattern;
 import suite.Suite;
-import suite.adt.pair.FixieArray;
-import suite.adt.pair.Fixie_.FixieFun0;
-import suite.adt.pair.Fixie_.FixieFun1;
-import suite.adt.pair.Fixie_.FixieFun2;
-import suite.adt.pair.Fixie_.FixieFun3;
-import suite.adt.pair.Fixie_.FixieFun4;
-import suite.adt.pair.Fixie_.FixieFun5;
-import suite.adt.pair.Fixie_.FixieFun6;
 import suite.fp.Matcher;
 import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Tree;
 import suite.primitive.IoSink;
-import suite.streamlet.FunUtil.Fun;
-import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Read;
 
 public class SwitchNode<R> {

@@ -3,7 +3,6 @@ package suite.math.linalg;
 import static primal.statics.Fail.fail;
 
 import suite.primitive.Int_Flt;
-import suite.util.String_;
 import suite.util.To;
 
 public class VirtualVector {
@@ -50,7 +49,7 @@ public class VirtualVector {
 	}
 
 	public String dump() {
-		return String_.build(sb -> {
+		return To.string(sb -> {
 			sb.append("[ ");
 			for (var i = 0; i < length; i++)
 				sb.append(To.string(get.apply(i)) + " ");

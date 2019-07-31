@@ -5,10 +5,10 @@ import static java.lang.Math.min;
 
 import java.nio.file.Files;
 
+import primal.fp.Funs.Source;
 import suite.cfg.Defaults;
 import suite.cfg.HomeDir;
 import suite.streamlet.As;
-import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.trade.Trade;

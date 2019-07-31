@@ -5,8 +5,8 @@ import static primal.statics.Fail.fail;
 import java.util.ArrayList;
 import java.util.List;
 
+import primal.fp.Funs.Source;
 import suite.persistent.PerPointer;
-import suite.streamlet.FunUtil.Source;
 import suite.util.List_;
 
 public class IndexedSourceReader<T> {

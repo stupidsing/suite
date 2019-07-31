@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
 
-import suite.adt.pair.Pair;
+import primal.adt.Pair;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 

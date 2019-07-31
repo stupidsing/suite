@@ -8,11 +8,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import primal.Ob;
+import primal.String_;
+import primal.fp.Funs.Iterate;
+import primal.fp.Funs2.BinOp;
 import suite.primitive.Int_Flt;
 import suite.primitive.adt.pair.LngFltPair;
 import suite.streamlet.As;
-import suite.streamlet.FunUtil.Iterate;
-import suite.streamlet.FunUtil2.BinOp;
 import suite.streamlet.Puller;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
@@ -20,7 +21,6 @@ import suite.trade.Time;
 import suite.trade.TimeRange;
 import suite.trade.data.DataSource.Datum;
 import suite.util.Set_;
-import suite.util.String_;
 
 public class StockHistory {
 

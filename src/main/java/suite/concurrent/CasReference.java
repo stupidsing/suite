@@ -4,7 +4,7 @@ import static primal.statics.Fail.fail;
 
 import java.util.concurrent.atomic.AtomicStampedReference;
 
-import suite.streamlet.FunUtil.Iterate;
+import primal.fp.Funs.Iterate;
 
 /**
  * A compare-and-set atomic reference that also uses stamp to resolve ABA

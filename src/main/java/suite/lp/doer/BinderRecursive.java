@@ -4,8 +4,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import primal.Ob;
+import primal.adt.Pair;
 import suite.adt.IdentityKey;
-import suite.adt.pair.Pair;
 import suite.lp.Trail;
 import suite.node.Dict;
 import suite.node.Int;

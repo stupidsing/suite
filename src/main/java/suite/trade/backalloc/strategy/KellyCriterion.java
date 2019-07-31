@@ -4,7 +4,7 @@ import static suite.util.Streamlet_.forInt;
 
 import java.util.List;
 
-import suite.adt.pair.Pair;
+import primal.adt.Pair;
 import suite.math.linalg.CholeskyDecomposition;
 import suite.math.numeric.Statistic;
 import suite.streamlet.Read;

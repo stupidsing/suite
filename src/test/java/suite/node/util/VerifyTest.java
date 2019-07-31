@@ -4,6 +4,8 @@ import static primal.statics.Fail.fail;
 
 import org.junit.Test;
 
+import primal.fp.Funs.Fun;
+import primal.fp.Funs2.Fun2;
 import primal.os.Log_;
 import suite.Suite;
 import suite.lp.Trail;
@@ -18,8 +20,6 @@ import suite.node.io.SwitchNode;
 import suite.node.io.TermOp;
 import suite.persistent.PerList;
 import suite.persistent.PerMap;
-import suite.streamlet.FunUtil.Fun;
-import suite.streamlet.FunUtil2.Fun2;
 
 /**
  * TODO ZFC

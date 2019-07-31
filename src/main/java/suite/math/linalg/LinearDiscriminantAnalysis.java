@@ -1,6 +1,6 @@
 package suite.math.linalg;
 
-import suite.streamlet.FunUtil.Fun;
+import primal.fp.Funs.Fun;
 import suite.util.To;
 
 // https://sebastianraschka.com/Articles/2014_python_lda.html

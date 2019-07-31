@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+import primal.fp.Funs.Source;
 import suite.Suite;
 import suite.lp.Configuration.ProverCfg;
 import suite.lp.doer.Generalizer;
@@ -16,7 +17,6 @@ import suite.node.Tree;
 import suite.node.io.TermOp;
 import suite.node.tree.TreeTuple;
 import suite.os.Stopwatch;
-import suite.streamlet.FunUtil.Source;
 
 public class SewingProverTest {
 

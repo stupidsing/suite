@@ -2,7 +2,7 @@ package suite.concurrent;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import suite.streamlet.FunUtil.Source;
+import primal.fp.Funs.Source;
 
 public class Fut<T> {
 

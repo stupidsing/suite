@@ -9,6 +9,9 @@ import java.util.List;
 
 import org.junit.Test;
 
+import primal.fp.Funs.Fun;
+import primal.fp.Funs.Iterate;
+import primal.fp.Funs.Source;
 import suite.node.Atom;
 import suite.node.Dict;
 import suite.node.Node;
@@ -25,9 +28,6 @@ import suite.node.util.Rewrite;
 import suite.node.util.Singleton;
 import suite.node.util.TreeUtil;
 import suite.os.FileUtil;
-import suite.streamlet.FunUtil.Fun;
-import suite.streamlet.FunUtil.Iterate;
-import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Read;
 import suite.util.Nodify;
 import suite.util.To;

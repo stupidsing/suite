@@ -5,6 +5,7 @@ import static primal.statics.Fail.fail;
 import java.util.Arrays;
 import java.util.Objects;
 
+import primal.fp.Funs.Fun;
 import suite.primitive.ChrFunUtil;
 import suite.primitive.ChrPrimitives.Obj_Chr;
 import suite.primitive.Chr_Chr;
@@ -18,7 +19,6 @@ import suite.primitive.adt.pair.DblObjPair;
 import suite.primitive.streamlet.DblObjPuller;
 import suite.primitive.streamlet.DblObjStreamlet;
 import suite.streamlet.As;
-import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.Puller;
 
 /**

@@ -1,6 +1,6 @@
 package suite.node;
 
-import suite.streamlet.FunUtil.Source;
+import primal.fp.Funs.Source;
 
 public class Suspend extends Node {
 

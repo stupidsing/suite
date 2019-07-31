@@ -5,11 +5,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import primal.fp.Funs.Sink;
 import suite.math.numeric.Statistic;
 import suite.primitive.Floats.FloatsBuilder;
 import suite.primitive.Floats_;
 import suite.primitive.Longs_;
-import suite.streamlet.FunUtil.Sink;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.trade.Account;
@@ -22,7 +22,6 @@ import suite.trade.data.DataSource.AlignKeyDataSource;
 import suite.trade.data.DataSource.Eod;
 import suite.trade.data.TradeCfg;
 import suite.ts.TimeSeries;
-import suite.util.String_;
 import suite.util.To;
 
 public class WalkForwardAllocTester {
@@ -119,7 +118,7 @@ public class WalkForwardAllocTester {
 		var deltaMs = (start - System.currentTimeMillis()) / length;
 		var rs = ts.returnsStat(valuations_, deltaMs);
 
-		var holds = String_.build(sb -> {
+		var holds = To.string(sb -> {
 			for (var e : Read.from2(holdBySymbol).sortBy((symbol, value) -> -value).take(5))
 				sb.append(e.<String> map((symbol, hold) -> symbol + ":" + To.percent(hold / length) + ","));
 		});

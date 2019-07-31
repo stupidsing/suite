@@ -4,11 +4,11 @@ import java.util.Comparator;
 import java.util.Objects;
 
 import primal.Ob;
+import primal.fp.Funs.Fun;
+import primal.fp.Funs.Iterate;
 import suite.primitive.LngFunUtil;
 import suite.primitive.LngPrimitives.LngObj_Obj;
 import suite.primitive.Lng_Lng;
-import suite.streamlet.FunUtil.Fun;
-import suite.streamlet.FunUtil.Iterate;
 
 public class LngObjPair<V> {
 

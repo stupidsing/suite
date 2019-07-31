@@ -6,7 +6,7 @@ import java.util.ArrayDeque;
 import java.util.Comparator;
 import java.util.Deque;
 
-import suite.streamlet.FunUtil.Source;
+import primal.fp.Funs.Source;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 

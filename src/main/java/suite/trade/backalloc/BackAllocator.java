@@ -15,14 +15,15 @@ import java.util.function.IntPredicate;
 import java.util.function.Predicate;
 
 import primal.Ob;
+import primal.String_;
+import primal.adt.Pair;
+import primal.fp.Funs.Fun;
 import suite.adt.Mutable;
-import suite.adt.pair.Pair;
 import suite.math.numeric.Statistic;
 import suite.primitive.DblDbl_Dbl;
 import suite.primitive.DblPrimitives.ObjObj_Dbl;
 import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.adt.pair.DblFltPair;
-import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.trade.Instrument;
@@ -36,7 +37,6 @@ import suite.trade.data.TradeCfg;
 import suite.trade.walkforwardalloc.WalkForwardAllocator;
 import suite.ts.Quant;
 import suite.util.Set_;
-import suite.util.String_;
 
 /**
  * Strategy that advise you how to divide your money into different investments,

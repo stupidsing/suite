@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.junit.Test;
 
-import suite.adt.pair.Pair;
+import primal.adt.Pair;
 import suite.node.Node;
 import suite.node.Str;
 import suite.node.io.TermOp;

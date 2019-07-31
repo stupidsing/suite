@@ -6,9 +6,9 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
 
+import primal.adt.Pair;
 import suite.BindArrayUtil.Pattern;
 import suite.Suite;
-import suite.adt.pair.Pair;
 import suite.lp.Trail;
 import suite.lp.doer.Binder;
 import suite.node.Atom;

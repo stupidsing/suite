@@ -7,7 +7,7 @@ import java.util.Set;
 
 import org.junit.Test;
 
-import suite.adt.pair.Pair;
+import primal.adt.Pair;
 import suite.streamlet.Read;
 
 public class StronglyConnectedComponentsTest {

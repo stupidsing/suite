@@ -5,7 +5,7 @@ import static java.lang.Math.min;
 
 import java.util.Map;
 
-import suite.adt.pair.Pair;
+import primal.adt.Pair;
 import suite.streamlet.Read;
 
 public class CommandUtil<Command> {

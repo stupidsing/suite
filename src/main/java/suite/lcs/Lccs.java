@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import primal.Ob;
-import suite.adt.pair.Pair;
+import primal.adt.Pair;
 import suite.primitive.Bytes;
 import suite.primitive.adt.map.IntObjMap;
 import suite.primitive.adt.pair.IntObjPair;

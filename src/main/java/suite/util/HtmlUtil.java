@@ -6,12 +6,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import primal.String_;
+import primal.adt.Pair;
+import primal.fp.Funs.Fun;
 import suite.adt.map.BiHashMap;
 import suite.adt.map.BiMap;
-import suite.adt.pair.Pair;
 import suite.primitive.IntRange;
 import suite.primitive.adt.pair.IntObjPair;
-import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.Read;
 
 public class HtmlUtil {
@@ -117,7 +118,7 @@ public class HtmlUtil {
 	}
 
 	public String format(HtmlNode node) {
-		return String_.build(sb -> new Object() {
+		return To.string(sb -> new Object() {
 			private void f(HtmlNode node_) {
 				if (node_.name != null) {
 					sb.append("<" + node_.name);
@@ -139,7 +140,7 @@ public class HtmlUtil {
 		String decoded;
 
 		if (in != null)
-			decoded = String_.build(sb -> {
+			decoded = To.string(sb -> {
 				var index = 0;
 
 				while (index < in.length()) {
@@ -173,7 +174,7 @@ public class HtmlUtil {
 		String encoded;
 
 		if (in != null)
-			encoded = String_.build(sb -> {
+			encoded = To.string(sb -> {
 				for (var index = 0; index < in.length(); index++) {
 					var ch = in.charAt(index);
 					var escaped = escapeTokenByChar.get(Character.toString(ch));

@@ -7,6 +7,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import primal.fp.Funs.Fun;
+import primal.fp.Funs.Iterate;
+import primal.fp.Funs2.BiFun;
 import suite.Suite;
 import suite.adt.Mutable;
 import suite.lp.Trail;
@@ -25,9 +28,6 @@ import suite.node.io.TermOp;
 import suite.node.util.Comparer;
 import suite.node.util.TreeUtil;
 import suite.persistent.PerMap;
-import suite.streamlet.FunUtil.Fun;
-import suite.streamlet.FunUtil.Iterate;
-import suite.streamlet.FunUtil2.BiFun;
 import suite.streamlet.Read;
 import suite.util.To;
 

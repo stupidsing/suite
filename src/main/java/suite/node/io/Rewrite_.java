@@ -5,7 +5,8 @@ import static primal.statics.Fail.fail;
 import java.util.ArrayList;
 import java.util.List;
 
-import suite.adt.pair.Pair;
+import primal.adt.Pair;
+import primal.fp.Funs.Iterate;
 import suite.node.Atom;
 import suite.node.Dict;
 import suite.node.Node;
@@ -13,7 +14,6 @@ import suite.node.Reference;
 import suite.node.Tree;
 import suite.node.Tuple;
 import suite.node.util.Comparer;
-import suite.streamlet.FunUtil.Iterate;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
 

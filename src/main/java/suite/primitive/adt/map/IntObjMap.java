@@ -4,6 +4,7 @@ import static primal.statics.Fail.fail;
 
 import java.util.Objects;
 
+import primal.fp.Funs.Iterate;
 import suite.primitive.IntPrimitives.IntObjSink;
 import suite.primitive.IntPrimitives.IntObjSource;
 import suite.primitive.IntPrimitives.Int_Obj;
@@ -11,7 +12,6 @@ import suite.primitive.adt.pair.IntObjPair;
 import suite.primitive.streamlet.IntObjPuller;
 import suite.primitive.streamlet.IntObjStreamlet;
 import suite.streamlet.As;
-import suite.streamlet.FunUtil.Iterate;
 
 /**
  * Map with primitive integer key and a generic object value. Null values are

@@ -6,7 +6,6 @@ import static suite.util.Streamlet_.forInt;
 
 import suite.primitive.IntInt_Flt;
 import suite.primitive.Int_Dbl;
-import suite.util.String_;
 import suite.util.To;
 
 public class VirtualMatrix {
@@ -83,7 +82,7 @@ public class VirtualMatrix {
 	}
 
 	public String dump() {
-		return String_.build(sb -> {
+		return To.string(sb -> {
 			sb.append("[ ");
 			for (var i = 0; i < height; i++) {
 				for (var j = 0; i < width_; j++)

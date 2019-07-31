@@ -8,13 +8,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 
-import suite.adt.pair.Pair;
+import primal.adt.Pair;
+import primal.fp.Funs.Source;
 import suite.cfg.Defaults;
 import suite.cfg.HomeDir;
 import suite.http.HttpUtil;
 import suite.primitive.Bytes;
 import suite.serialize.SerOutput;
-import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Puller;
 import suite.streamlet.Streamlet;
 import suite.util.To;

@@ -10,12 +10,12 @@ import java.nio.file.Paths;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
+import primal.fp.Funs.Iterate;
 import suite.Suite;
 import suite.cfg.Defaults;
 import suite.node.io.Formatter;
 import suite.node.pp.PrettyPrinter;
 import suite.os.FileUtil;
-import suite.streamlet.FunUtil.Iterate;
 import suite.util.Thread_;
 import suite.util.To;
 

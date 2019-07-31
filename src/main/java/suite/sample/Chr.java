@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.function.Predicate;
 
+import primal.fp.Funs.Fun;
 import suite.Suite;
 import suite.lp.Trail;
 import suite.lp.doer.Binder;
@@ -20,7 +21,6 @@ import suite.node.io.TermOp;
 import suite.node.util.Rewrite;
 import suite.persistent.PerMap;
 import suite.persistent.PerSet;
-import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.To;

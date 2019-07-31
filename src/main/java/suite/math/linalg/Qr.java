@@ -2,7 +2,7 @@ package suite.math.linalg;
 
 import static java.lang.Math.sqrt;
 
-import suite.adt.pair.Pair;
+import primal.adt.Pair;
 
 public class Qr {
 

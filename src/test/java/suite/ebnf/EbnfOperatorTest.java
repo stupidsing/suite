@@ -8,7 +8,7 @@ import org.junit.Test;
 import suite.ebnf.lr.LrParse;
 import suite.node.io.Operator.Assoc;
 import suite.node.io.TermOp;
-import suite.util.String_;
+import suite.util.To;
 
 public class EbnfOperatorTest {
 
@@ -25,7 +25,7 @@ public class EbnfOperatorTest {
 	}
 
 	private String ebnf() {
-		var s = String_.build(sb -> {
+		var s = To.string(sb -> {
 			var i = 0;
 
 			for (var operator : TermOp.values()) {

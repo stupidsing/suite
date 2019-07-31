@@ -1,5 +1,6 @@
 package suite.math.numeric;
 
+import primal.fp.Funs.Fun;
 import suite.math.linalg.CholeskyDecomposition;
 import suite.math.linalg.Matrix;
 import suite.math.linalg.Vector;
@@ -7,7 +8,6 @@ import suite.math.sym.Symbolic;
 import suite.node.Node;
 import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Dbl_Dbl;
-import suite.streamlet.FunUtil.Fun;
 import suite.util.Array_;
 
 /**

@@ -2,12 +2,12 @@ package suite;
 
 import java.util.Map;
 
+import primal.fp.Funs.Fun;
 import suite.lp.compile.impl.CompileBinderImpl;
 import suite.lp.doer.BinderFactory.BindEnv;
 import suite.lp.sewing.impl.SewingGeneralizerImpl;
 import suite.node.Node;
 import suite.node.io.Formatter;
-import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.Read;
 import suite.util.Memoize;
 

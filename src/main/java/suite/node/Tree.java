@@ -3,14 +3,14 @@ package suite.node;
 import java.util.Objects;
 
 import primal.Ob;
+import primal.fp.Funs.Fun;
+import primal.fp.Funs.Source;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
 import suite.node.tree.TreeAnd;
 import suite.node.tree.TreeOp;
 import suite.node.tree.TreeOr;
 import suite.node.tree.TreeTuple;
-import suite.streamlet.FunUtil.Fun;
-import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Puller;
 import suite.streamlet.Streamlet;
 

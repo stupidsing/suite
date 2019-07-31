@@ -19,7 +19,7 @@ public class FormatUtil {
 						.collect(Obj_Int.lift(row -> row[column].length())).max())) //
 				.toArray();
 
-		return String_.build(sb -> {
+		return To.string(sb -> {
 			for (var row : rows) {
 				for (var column = 0; column < nColumns; column++) {
 					var cell = row[column];

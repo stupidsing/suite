@@ -4,9 +4,10 @@ import java.io.Reader;
 import java.util.List;
 import java.util.Map;
 
+import primal.String_;
 import suite.streamlet.As;
 import suite.streamlet.Read;
-import suite.util.String_;
+import suite.util.To;
 
 public class Grammar {
 
@@ -79,7 +80,7 @@ public class Grammar {
 
 	@Override
 	public String toString() {
-		return String_.build(sb -> toString("", sb));
+		return To.string(sb -> toString("", sb));
 	}
 
 	private void toString(String indent, StringBuilder sb) {

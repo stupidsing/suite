@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import suite.streamlet.FunUtil.Source;
+import primal.fp.Funs.Source;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 

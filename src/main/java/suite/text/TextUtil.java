@@ -11,7 +11,6 @@ import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
 import suite.streamlet.Read;
 import suite.util.List_;
-import suite.util.String_;
 import suite.util.To;
 
 public class TextUtil {
@@ -147,7 +146,7 @@ public class TextUtil {
 	}
 
 	public String toString(List<BytesPair> pairs) {
-		return String_.build(sb -> {
+		return To.string(sb -> {
 			for (var pair : pairs)
 				if (pair.t0 == pair.t1)
 					sb.append(To.string(pair.t0));

@@ -9,7 +9,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import suite.streamlet.FunUtil.Source;
+import primal.fp.Funs.Source;
 
 /**
  * Lexical analyzer.

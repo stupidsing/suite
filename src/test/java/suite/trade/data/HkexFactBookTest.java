@@ -7,8 +7,8 @@ import java.util.HashSet;
 
 import org.junit.Test;
 
+import primal.String_;
 import suite.trade.Trade_;
-import suite.util.String_;
 
 public class HkexFactBookTest {
 

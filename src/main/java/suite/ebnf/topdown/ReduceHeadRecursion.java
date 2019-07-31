@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import primal.String_;
+import primal.fp.Funs.Iterate;
 import suite.ebnf.Grammar;
 import suite.ebnf.Grammar.GrammarType;
-import suite.streamlet.FunUtil.Iterate;
 import suite.streamlet.Read;
 import suite.util.List_;
-import suite.util.String_;
 
 /**
  * Transform head-recursion rule as follows:

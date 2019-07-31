@@ -7,9 +7,9 @@ import java.util.Map;
 import java.util.zip.GZIPInputStream;
 
 import primal.Ob;
+import primal.String_;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
-import suite.util.String_;
 import suite.util.To;
 
 public class AptUtil {

@@ -3,11 +3,11 @@ package suite.node.parser;
 import java.util.List;
 import java.util.Set;
 
+import primal.fp.Funs.Fun;
 import suite.node.io.Operator;
 import suite.parser.CommentPreprocessor;
 import suite.parser.IndentationPreprocessor;
 import suite.parser.WhitespacePreprocessor;
-import suite.streamlet.FunUtil.Fun;
 import suite.text.Preprocess.Run;
 
 public class PreprocessorFactory {

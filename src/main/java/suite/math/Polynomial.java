@@ -6,7 +6,7 @@ import static suite.util.Streamlet_.forInt;
 
 import java.util.Arrays;
 
-import suite.adt.pair.Pair;
+import primal.adt.Pair;
 import suite.math.linalg.Vector;
 import suite.primitive.Int_Dbl;
 import suite.util.To;

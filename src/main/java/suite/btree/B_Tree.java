@@ -3,7 +3,7 @@ package suite.btree;
 import java.io.Closeable;
 import java.io.PrintStream;
 
-import suite.adt.pair.Pair;
+import primal.adt.Pair;
 import suite.fs.KeyDataMutator;
 import suite.fs.KeyValueMutator;
 import suite.streamlet.Streamlet;

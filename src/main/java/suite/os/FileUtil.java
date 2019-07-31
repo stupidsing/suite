@@ -21,7 +21,6 @@ import suite.cfg.Defaults;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.ReadStream;
-import suite.util.String_;
 import suite.util.To;
 import suite.util.WriteStream;
 
@@ -103,7 +102,7 @@ public class FileUtil {
 	}
 
 	public static String read(InputStream in) {
-		return String_.build(sb -> {
+		return To.string(sb -> {
 			try (var is = in; var isr = new InputStreamReader(is, Defaults.charset); var br = new BufferedReader(isr)) {
 				var buffer = new char[Defaults.bufferSize];
 

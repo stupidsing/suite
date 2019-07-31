@@ -3,12 +3,12 @@ package suite.primitive.adt.pair;
 import java.util.Comparator;
 
 import primal.Ob;
+import primal.fp.Funs.Iterate;
 import suite.primitive.ChrDbl_Obj;
 import suite.primitive.ChrFunUtil;
 import suite.primitive.Chr_Chr;
 import suite.primitive.DblFunUtil;
 import suite.primitive.Dbl_Dbl;
-import suite.streamlet.FunUtil.Iterate;
 
 public class ChrDblPair {
 

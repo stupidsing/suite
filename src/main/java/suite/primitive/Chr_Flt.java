@@ -2,11 +2,11 @@ package suite.primitive;
 
 import static primal.statics.Fail.fail;
 
+import primal.fp.Funs.Fun;
 import suite.primitive.Floats.FloatsBuilder;
 import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.primitive.streamlet.ChrPuller;
 import suite.primitive.streamlet.FltStreamlet;
-import suite.streamlet.FunUtil.Fun;
 
 public interface Chr_Flt {
 

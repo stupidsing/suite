@@ -3,10 +3,10 @@ package suite.primitive.adt.pair;
 import java.util.Comparator;
 
 import primal.Ob;
+import primal.fp.Funs.Iterate;
 import suite.primitive.IntFunUtil;
 import suite.primitive.IntInt_Obj;
 import suite.primitive.Int_Int;
-import suite.streamlet.FunUtil.Iterate;
 
 public class IntIntPair {
 

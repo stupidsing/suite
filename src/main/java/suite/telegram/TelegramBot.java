@@ -10,8 +10,8 @@ import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
+import primal.fp.Funs2.FoldOp;
 import suite.cfg.Defaults;
-import suite.streamlet.FunUtil2.FoldOp;
 import suite.util.Thread_;
 
 public class TelegramBot {

@@ -10,7 +10,7 @@ import org.apache.bcel.generic.BasicType;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.Type;
 
-import suite.util.String_;
+import primal.String_;
 
 public class Type_ {
 

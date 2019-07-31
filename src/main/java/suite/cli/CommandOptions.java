@@ -8,15 +8,15 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import primal.String_;
+import primal.fp.Funs.Source;
 import suite.Suite;
 import suite.editor.EditorMain;
 import suite.fp.FunCompilerCfg;
 import suite.lp.Configuration.ProverCfg;
 import suite.lp.kb.RuleSet;
 import suite.node.Node;
-import suite.streamlet.FunUtil.Source;
 import suite.util.List_;
-import suite.util.String_;
 
 /**
  * Command line interface environment.

@@ -24,8 +24,8 @@ import javax.swing.event.DocumentListener;
 import javax.swing.text.Document;
 import javax.swing.text.JTextComponent;
 
+import primal.fp.Funs.Sink;
 import primal.statics.Rethrow.SinkEx;
-import suite.streamlet.FunUtil.Sink;
 import suite.streamlet.Pusher;
 
 public class Listen {

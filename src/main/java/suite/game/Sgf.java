@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.IntPredicate;
 
-import suite.adt.pair.Pair;
+import primal.adt.Pair;
 import suite.os.FileUtil;
 
 // curl http://www.flygo.net/mjxj/WeiQiTianDi/dlxs_sdl.sgf | iconv -c -f CN-GB -t UTF-8

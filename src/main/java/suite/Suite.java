@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import primal.fp.Funs.Source;
 import suite.BindArrayUtil.Pattern;
 import suite.fp.FunCompilerCfg;
 import suite.fp.intrinsic.Intrinsics;
@@ -31,7 +32,6 @@ import suite.node.io.TermOp;
 import suite.node.parser.IterativeParser;
 import suite.node.util.TreeUtil;
 import suite.primitive.IoSink;
-import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Read;
 
 public class Suite {

@@ -5,11 +5,11 @@ import static suite.util.Streamlet_.forInt;
 import java.nio.file.Paths;
 
 import primal.Ob;
-import suite.adt.pair.Pair;
+import primal.adt.Pair;
+import primal.fp.Funs.Fun;
 import suite.node.io.Operator.Assoc;
 import suite.parser.Wildcard;
 import suite.streamlet.As;
-import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.trade.Instrument;

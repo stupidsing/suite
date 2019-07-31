@@ -4,8 +4,9 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 
+import primal.adt.Pair;
+import primal.fp.Funs.Source;
 import suite.Suite;
-import suite.adt.pair.Pair;
 import suite.assembler.Amd64;
 import suite.assembler.Amd64.Instruction;
 import suite.assembler.Amd64.OpReg;
@@ -27,7 +28,6 @@ import suite.node.util.Singleton;
 import suite.object.AutoInterface;
 import suite.persistent.PerMap;
 import suite.primitive.Bytes;
-import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Read;
 import suite.util.RunUtil;
 

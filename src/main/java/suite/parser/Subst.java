@@ -2,8 +2,8 @@ package suite.parser;
 
 import java.util.Map;
 
-import suite.streamlet.FunUtil.Iterate;
-import suite.util.String_;
+import primal.fp.Funs.Iterate;
+import suite.util.To;
 
 public class Subst {
 
@@ -24,7 +24,7 @@ public class Subst {
 	}
 
 	public String subst(String s, Iterate<String> fun) {
-		return String_.build(sb -> subst(s, fun, sb));
+		return To.string(sb -> subst(s, fun, sb));
 	}
 
 	public void subst(String s, Iterate<String> fun, StringBuilder sb) {

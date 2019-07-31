@@ -7,7 +7,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
 
-import suite.util.String_;
+import primal.String_;
 
 public class Handler extends URLStreamHandler {
 

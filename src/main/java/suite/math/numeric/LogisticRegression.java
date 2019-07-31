@@ -1,8 +1,8 @@
 package suite.math.numeric;
 
+import primal.fp.Funs.Fun;
 import suite.math.Sigmoid;
 import suite.math.linalg.Vector;
-import suite.streamlet.FunUtil.Fun;
 
 /**
  * https://medium.com/@edwinvarghese4442/logistic-regression-with-gradient-descent-tutorial-part-1-theory-529c93866001

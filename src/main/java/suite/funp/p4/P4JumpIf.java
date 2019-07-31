@@ -4,13 +4,13 @@ import static java.util.Map.entry;
 
 import java.util.Map;
 
-import suite.adt.pair.Fixie_.FixieFun5;
+import primal.adt.Fixie_.FixieFun5;
+import primal.fp.Funs.Source;
 import suite.assembler.Amd64.Insn;
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.FunpBoolean;
 import suite.funp.P2.FunpOp;
 import suite.node.io.TermOp;
-import suite.streamlet.FunUtil.Source;
 
 public class P4JumpIf {
 

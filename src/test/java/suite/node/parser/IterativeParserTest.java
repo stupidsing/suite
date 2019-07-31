@@ -5,13 +5,13 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 
+import primal.fp.Funs.Source;
 import suite.node.Tree;
 import suite.node.io.Formatter;
 import suite.node.io.TermOp;
 import suite.node.pp.PrettyPrinter;
 import suite.os.FileUtil;
 import suite.os.LogUtil;
-import suite.streamlet.FunUtil.Source;
 
 public class IterativeParserTest {
 

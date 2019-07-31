@@ -5,7 +5,7 @@ import static suite.util.Streamlet_.forInt;
 
 import java.util.List;
 
-import suite.adt.pair.Pair;
+import primal.adt.Pair;
 import suite.primitive.Int_Dbl;
 import suite.primitive.Int_Flt;
 import suite.primitive.Ints_;

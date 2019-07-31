@@ -1,7 +1,7 @@
 package suite.instructionexecutor.thunk;
 
+import primal.fp.Funs.Fun;
 import suite.persistent.PerPointer;
-import suite.streamlet.FunUtil.Fun;
 
 public class IPointerMapper<T0, T1> {
 

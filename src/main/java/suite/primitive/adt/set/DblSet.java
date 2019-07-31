@@ -8,7 +8,7 @@ import suite.primitive.DblPrimitives.DblSource;
 import suite.primitive.Doubles_;
 import suite.primitive.streamlet.DblPuller;
 import suite.primitive.streamlet.DblStreamlet;
-import suite.util.String_;
+import suite.util.To;
 
 /**
  * Set with doubleacter elements. Double.MIN_VALUE is not allowed. Not
@@ -141,7 +141,7 @@ public class DblSet {
 
 	@Override
 	public String toString() {
-		return String_.build(sb -> streamlet().forEach(sb::append));
+		return To.string(sb -> streamlet().forEach(sb::append));
 	}
 
 	private boolean add_(double c) {

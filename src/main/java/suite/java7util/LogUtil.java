@@ -8,7 +8,7 @@ import org.apache.commons.logging.LogFactory;
 
 import suite.inspect.Dump;
 import suite.util.Array_;
-import suite.util.String_;
+import suite.util.To;
 
 @Deprecated
 public class LogUtil {
@@ -24,7 +24,7 @@ public class LogUtil {
 			var methodName = method.getName();
 			var prefix = methodName + "()\n";
 
-			log.info(String_.build(sb -> {
+			log.info(To.string(sb -> {
 				sb.append(prefix);
 
 				if (ps != null)

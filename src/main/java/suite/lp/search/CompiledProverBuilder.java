@@ -1,5 +1,6 @@
 package suite.lp.search;
 
+import primal.fp.Funs.Fun;
 import suite.Suite;
 import suite.instructionexecutor.LogicInstructionExecutor;
 import suite.lp.Configuration.ProverCfg;
@@ -8,7 +9,6 @@ import suite.lp.search.ProverBuilder.Builder;
 import suite.lp.search.ProverBuilder.Finder;
 import suite.node.Node;
 import suite.os.LogUtil;
-import suite.streamlet.FunUtil.Fun;
 
 public class CompiledProverBuilder implements Builder {
 

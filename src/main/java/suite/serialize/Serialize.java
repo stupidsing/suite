@@ -16,12 +16,12 @@ import java.util.List;
 import java.util.Map;
 
 import primal.Ob;
-import suite.adt.pair.Pair;
+import primal.adt.Pair;
+import primal.fp.Funs.Fun;
 import suite.cfg.Defaults;
 import suite.file.ExtentAllocator.Extent;
 import suite.inspect.Inspect;
 import suite.primitive.Bytes;
-import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.Read;
 import suite.util.Array_;
 import suite.util.Memoize;

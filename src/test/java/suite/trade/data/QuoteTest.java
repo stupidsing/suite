@@ -4,7 +4,7 @@ import java.util.Map;
 
 import org.junit.Test;
 
-import suite.streamlet.FunUtil.Fun;
+import primal.fp.Funs.Fun;
 import suite.streamlet.Read;
 import suite.trade.Trade;
 import suite.trade.analysis.Summarize;

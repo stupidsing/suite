@@ -20,6 +20,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import primal.Ob;
+import primal.fp.Funs.Iterate;
+import primal.fp.Funs.Sink;
+import primal.fp.Funs2.Sink2;
 import primal.os.Log_;
 import suite.adt.PriorityQueue;
 import suite.cfg.Defaults;
@@ -28,9 +31,6 @@ import suite.concurrent.Pool;
 import suite.net.NetUtil;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
-import suite.streamlet.FunUtil.Iterate;
-import suite.streamlet.FunUtil.Sink;
-import suite.streamlet.FunUtil2.Sink2;
 import suite.util.Util;
 
 public class NioDispatch implements Closeable {

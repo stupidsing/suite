@@ -4,11 +4,11 @@ import java.util.Comparator;
 import java.util.Objects;
 
 import primal.Ob;
+import primal.fp.Funs.Fun;
+import primal.fp.Funs.Iterate;
 import suite.primitive.ChrFunUtil;
 import suite.primitive.ChrPrimitives.ChrObj_Obj;
 import suite.primitive.Chr_Chr;
-import suite.streamlet.FunUtil.Fun;
-import suite.streamlet.FunUtil.Iterate;
 
 public class ChrObjPair<V> {
 

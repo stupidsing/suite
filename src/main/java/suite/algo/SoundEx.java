@@ -2,7 +2,8 @@ package suite.algo;
 
 import static primal.statics.Fail.fail;
 
-import suite.util.String_;
+import suite.streamlet.Read;
+import suite.util.To;
 
 public class SoundEx {
 
@@ -17,7 +18,7 @@ public class SoundEx {
 	public String american(String word0) {
 		var word1 = word0.toUpperCase();
 
-		var word2 = String_.build(sb -> {
+		var word2 = To.string(sb -> {
 			var a = word1.toCharArray();
 			var len = a.length;
 			var p = 0;
@@ -60,8 +61,8 @@ public class SoundEx {
 	}
 
 	private String replace(String word, String match, String replace) {
-		return String_.build(sb -> {
-			for (var ch : String_.chars(word))
+		return To.string(sb -> {
+			for (var ch : Read.chars(word))
 				sb.append(match.indexOf(ch) < 0 ? ch : replace);
 		});
 	}

@@ -4,11 +4,11 @@ import java.util.Comparator;
 import java.util.Objects;
 
 import primal.Ob;
+import primal.fp.Funs.Fun;
+import primal.fp.Funs.Iterate;
 import suite.primitive.IntFunUtil;
 import suite.primitive.IntPrimitives.IntObj_Obj;
 import suite.primitive.Int_Int;
-import suite.streamlet.FunUtil.Fun;
-import suite.streamlet.FunUtil.Iterate;
 
 public class IntObjPair<V> {
 

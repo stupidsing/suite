@@ -15,15 +15,15 @@ import org.apache.http.Header;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.HttpClients;
 
+import primal.adt.FixieArray;
+import primal.fp.Funs.Fun;
 import primal.os.Log_;
 import suite.adt.map.ListMultimap;
-import suite.adt.pair.FixieArray;
 import suite.concurrent.Backoff;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes_;
 import suite.primitive.Chars;
 import suite.streamlet.As;
-import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.Puller;
 import suite.streamlet.Read;
 import suite.util.Memoize;

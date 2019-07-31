@@ -10,15 +10,15 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 
+import primal.String_;
+import primal.fp.Funs.Fun;
 import suite.Suite;
 import suite.editor.ClipboardUtil;
 import suite.editor.FontUtil;
 import suite.editor.LayoutCalculator;
 import suite.editor.Listen;
 import suite.os.Execute;
-import suite.streamlet.FunUtil.Fun;
 import suite.util.RunUtil;
-import suite.util.String_;
 
 /**
  * Volume up: Alt-A

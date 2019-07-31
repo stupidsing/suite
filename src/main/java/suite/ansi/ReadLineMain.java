@@ -3,7 +3,7 @@ package suite.ansi;
 import com.sun.jna.Native;
 
 import primal.Ob;
-import suite.adt.pair.Pair;
+import primal.adt.Pair;
 import suite.ansi.Keyboard.VK;
 import suite.util.RunUtil;
 

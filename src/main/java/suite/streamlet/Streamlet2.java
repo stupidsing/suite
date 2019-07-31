@@ -12,14 +12,14 @@ import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
 import primal.Ob;
+import primal.adt.Fixie_.FixieFun3;
+import primal.adt.Pair;
+import primal.fp.Funs.Fun;
+import primal.fp.Funs.Source;
+import primal.fp.Funs2.Fun2;
+import primal.fp.Funs2.Sink2;
+import primal.fp.Funs2.Source2;
 import suite.adt.map.ListMultimap;
-import suite.adt.pair.Fixie_.FixieFun3;
-import suite.adt.pair.Pair;
-import suite.streamlet.FunUtil.Fun;
-import suite.streamlet.FunUtil.Source;
-import suite.streamlet.FunUtil2.Fun2;
-import suite.streamlet.FunUtil2.Sink2;
-import suite.streamlet.FunUtil2.Source2;
 
 public class Streamlet2<K, V> implements StreamletDefaults<Pair<K, V>, Puller2<K, V>> {
 

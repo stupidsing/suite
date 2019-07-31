@@ -7,9 +7,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import primal.adt.Pair;
+import primal.fp.Funs.Source;
 import suite.adt.PriorityQueue;
-import suite.adt.pair.Pair;
-import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Read;
 import suite.util.To;
 

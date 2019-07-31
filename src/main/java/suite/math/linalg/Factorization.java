@@ -2,7 +2,7 @@ package suite.math.linalg;
 
 import java.util.Random;
 
-import suite.adt.pair.Pair;
+import primal.adt.Pair;
 import suite.util.To;
 
 public class Factorization {

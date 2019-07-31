@@ -3,6 +3,8 @@ package suite.math.sym;
 import java.util.ArrayList;
 import java.util.List;
 
+import primal.fp.Funs.Fun;
+import primal.fp.Funs2.Fun2;
 import suite.BindArrayUtil.Pattern;
 import suite.Suite;
 import suite.adt.Opt;
@@ -23,8 +25,6 @@ import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Dbl_Dbl;
 import suite.primitive.IntPrimitives.Int_Obj;
 import suite.primitive.IntPrimitives.Obj_Int;
-import suite.streamlet.FunUtil.Fun;
-import suite.streamlet.FunUtil2.Fun2;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.List_;

@@ -11,14 +11,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import suite.adt.pair.FixieArray;
+import primal.String_;
+import primal.adt.FixieArray;
 import suite.cfg.Defaults;
 import suite.os.FileUtil;
 import suite.primitive.Bytes;
 import suite.streamlet.Read;
 import suite.text.TextUtil.BytesPair;
 import suite.util.Set_;
-import suite.util.String_;
 import suite.util.Util;
 
 public interface Snapshot {

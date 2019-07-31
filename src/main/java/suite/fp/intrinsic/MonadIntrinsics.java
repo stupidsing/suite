@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 
+import primal.fp.Funs.Iterate;
 import suite.cfg.Defaults;
 import suite.fp.intrinsic.Intrinsics.Intrinsic;
 import suite.fp.intrinsic.Intrinsics.IntrinsicCallback;
@@ -21,7 +22,6 @@ import suite.node.Int;
 import suite.node.Node;
 import suite.node.Suspend;
 import suite.node.Tree;
-import suite.streamlet.FunUtil.Iterate;
 import suite.util.Thread_;
 
 public class MonadIntrinsics {

@@ -4,8 +4,8 @@ import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Deque;
 
+import primal.fp.Funs.Fun;
 import suite.adt.Mutable;
-import suite.streamlet.FunUtil.Fun;
 
 public class Pool<T> {
 

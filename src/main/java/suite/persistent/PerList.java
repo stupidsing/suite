@@ -6,11 +6,11 @@ import java.util.Iterator;
 import java.util.Objects;
 
 import primal.Ob;
+import primal.fp.Funs.Source;
 import suite.streamlet.FunUtil;
-import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Puller;
 import suite.streamlet.Streamlet;
-import suite.util.String_;
+import suite.util.To;
 
 /**
  * Persistent linked list.
@@ -139,7 +139,7 @@ public class PerList<T> implements Iterable<T> {
 
 	@Override
 	public String toString() {
-		return String_.build(sb -> {
+		return To.string(sb -> {
 			var node = this;
 			while (!node.isEmpty()) {
 				sb.append(node.head + ", ");

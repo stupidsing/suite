@@ -11,15 +11,15 @@ import java.util.Comparator;
 import java.util.Iterator;
 
 import primal.Ob;
+import primal.fp.Funs.Fun;
 import suite.cfg.Defaults;
 import suite.primitive.IntPrimitives.IntSource;
 import suite.primitive.streamlet.IntPuller;
 import suite.primitive.streamlet.IntStreamlet;
-import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.Puller;
 import suite.util.Compare;
 import suite.util.ParseUtil;
-import suite.util.String_;
+import suite.util.To;
 
 public class Ints implements Iterable<Integer> {
 
@@ -263,7 +263,7 @@ public class Ints implements Iterable<Integer> {
 
 	@Override
 	public String toString() {
-		return String_.build(sb -> {
+		return To.string(sb -> {
 			for (var i = start; i < end; i++)
 				sb.append(cs[i]);
 		});

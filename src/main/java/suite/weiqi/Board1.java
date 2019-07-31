@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
 
-import suite.streamlet.FunUtil.Fun;
+import primal.fp.Funs.Fun;
 import suite.weiqi.Weiqi.Occupation;
 
 /**

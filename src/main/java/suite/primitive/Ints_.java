@@ -2,13 +2,13 @@ package suite.primitive;
 
 import static primal.statics.Rethrow.ex;
 
+import primal.fp.Funs.Iterate;
+import primal.fp.Funs.Source;
 import suite.primitive.Ints.IntsBuilder;
 import suite.primitive.Ints.WriteChar;
 import suite.primitive.streamlet.IntPuller;
 import suite.primitive.streamlet.IntStreamlet;
 import suite.streamlet.FunUtil;
-import suite.streamlet.FunUtil.Iterate;
-import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Puller;
 import suite.streamlet.Read;
 

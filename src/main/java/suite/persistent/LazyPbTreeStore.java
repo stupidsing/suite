@@ -4,7 +4,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import primal.Ob;
-import suite.adt.pair.Pair;
+import primal.adt.Pair;
 import suite.file.ExtentAllocator.Extent;
 import suite.file.PageFile;
 import suite.file.SerializedPageFile;

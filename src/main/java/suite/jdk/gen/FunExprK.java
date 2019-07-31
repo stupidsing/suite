@@ -1,9 +1,9 @@
 package suite.jdk.gen;
 
-import suite.adt.pair.Fixie_.FixieFun0;
-import suite.adt.pair.Fixie_.FixieFun1;
-import suite.adt.pair.Fixie_.FixieFun2;
-import suite.adt.pair.Fixie_.FixieFun3;
+import primal.adt.Fixie_.FixieFun0;
+import primal.adt.Fixie_.FixieFun1;
+import primal.adt.Fixie_.FixieFun2;
+import primal.adt.Fixie_.FixieFun3;
 import suite.jdk.gen.FunExpression.FunExpr;
 import suite.util.Util;
 

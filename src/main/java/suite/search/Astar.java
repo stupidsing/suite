@@ -8,9 +8,9 @@ import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Set;
 
+import primal.fp.Funs.Fun;
+import primal.fp.Funs.Source;
 import suite.primitive.IntPrimitives.Obj_Int;
-import suite.streamlet.FunUtil.Fun;
-import suite.streamlet.FunUtil.Source;
 
 public class Astar<Node> {
 

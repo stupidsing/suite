@@ -2,8 +2,8 @@ package suite.math.linalg;
 
 import static java.lang.Math.sqrt;
 
-import suite.adt.pair.Pair;
-import suite.streamlet.FunUtil.Iterate;
+import primal.adt.Pair;
+import primal.fp.Funs.Iterate;
 import suite.util.To;
 
 public class CholeskyDecomposition {

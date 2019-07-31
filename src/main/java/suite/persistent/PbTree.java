@@ -7,11 +7,11 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-import suite.streamlet.FunUtil.Iterate;
+import primal.fp.Funs.Iterate;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.List_;
-import suite.util.String_;
+import suite.util.To;
 
 public class PbTree<T> implements PerTree<T> {
 
@@ -263,7 +263,7 @@ public class PbTree<T> implements PerTree<T> {
 
 	@Override
 	public String toString() {
-		return String_.build(sb -> new Object() {
+		return To.string(sb -> new Object() {
 			private void dump(List<Slot> node, String indent) {
 				if (node != null)
 					for (var slot : node) {

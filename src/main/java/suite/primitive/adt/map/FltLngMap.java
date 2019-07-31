@@ -5,6 +5,7 @@ import static primal.statics.Fail.fail;
 import java.util.Arrays;
 import java.util.Objects;
 
+import primal.fp.Funs.Fun;
 import suite.primitive.FltLngSink;
 import suite.primitive.FltLngSource;
 import suite.primitive.FltPrimitives.FltObjSource;
@@ -18,7 +19,6 @@ import suite.primitive.adt.pair.FltObjPair;
 import suite.primitive.streamlet.FltObjPuller;
 import suite.primitive.streamlet.FltObjStreamlet;
 import suite.streamlet.As;
-import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.Puller;
 
 /**

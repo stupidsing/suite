@@ -2,13 +2,13 @@ package suite.ebnf;
 
 import java.util.List;
 
-import suite.adt.pair.Pair;
+import primal.String_;
+import primal.adt.Pair;
 import suite.ebnf.Grammar.GrammarType;
 import suite.node.io.Escaper;
 import suite.node.io.Operator.Assoc;
 import suite.streamlet.Streamlet;
 import suite.util.ParseUtil;
-import suite.util.String_;
 
 public class Breakdown {
 

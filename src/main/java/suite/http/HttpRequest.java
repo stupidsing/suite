@@ -2,7 +2,7 @@ package suite.http;
 
 import java.io.InputStream;
 
-import suite.adt.pair.Pair;
+import primal.adt.Pair;
 import suite.persistent.PerList;
 import suite.streamlet.As;
 

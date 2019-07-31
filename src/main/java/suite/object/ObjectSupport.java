@@ -4,9 +4,10 @@ import java.util.List;
 import java.util.Objects;
 
 import primal.Ob;
+import primal.String_;
+import primal.fp.Funs.Fun;
 import suite.persistent.PerList;
-import suite.streamlet.FunUtil.Fun;
-import suite.util.String_;
+import suite.util.To;
 
 public class ObjectSupport<T> {
 
@@ -72,7 +73,7 @@ public class ObjectSupport<T> {
 		if (!recurse0.containsId(t))
 			try {
 				recurse.set(PerList.cons(t, recurse0));
-				return String_.build(sb -> {
+				return To.string(sb -> {
 					sb.append(t.getClass().getSimpleName() + "(");
 					for (var value : listFun.apply(t))
 						sb.append(value + ",");

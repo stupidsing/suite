@@ -11,15 +11,15 @@ import java.util.Comparator;
 import java.util.Iterator;
 
 import primal.Ob;
+import primal.fp.Funs.Fun;
 import suite.cfg.Defaults;
 import suite.primitive.LngPrimitives.LngSource;
 import suite.primitive.streamlet.LngPuller;
 import suite.primitive.streamlet.LngStreamlet;
-import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.Puller;
 import suite.util.Compare;
 import suite.util.ParseUtil;
-import suite.util.String_;
+import suite.util.To;
 
 public class Longs implements Iterable<Long> {
 
@@ -263,7 +263,7 @@ public class Longs implements Iterable<Long> {
 
 	@Override
 	public String toString() {
-		return String_.build(sb -> {
+		return To.string(sb -> {
 			for (var i = start; i < end; i++)
 				sb.append(cs[i]);
 		});

@@ -10,6 +10,7 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
+import primal.fp.Funs.Fun;
 import primal.os.Log_;
 import suite.Suite;
 import suite.adt.IdentityKey;
@@ -32,7 +33,6 @@ import suite.node.util.Complexity;
 import suite.node.util.Cyclic;
 import suite.node.util.Rewrite;
 import suite.node.util.TreeUtil;
-import suite.streamlet.FunUtil.Fun;
 import suite.util.Memoize;
 
 public class EvalPredicates {

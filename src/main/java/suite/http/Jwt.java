@@ -11,9 +11,9 @@ import java.util.Base64.Encoder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import primal.String_;
 import suite.cfg.Defaults;
 import suite.math.Sha2;
-import suite.util.String_;
 
 public class Jwt {
 
