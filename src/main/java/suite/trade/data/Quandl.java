@@ -41,7 +41,7 @@ public class Quandl {
 
 	public Pair<String[], List<String[]>> dataSourceCsvV3(String qn, TimeRange period) {
 		var urlString = "https://www.quandl.com/api/v3/datasets/" + qn + ".csv" //
-				+ "?start_date=" + period.from.ymd() //
+				+ "?start_date=" + period.fr.ymd() //
 				+ "&end_date=" + period.to.ymd() //
 				+ "&order=asc";
 		// + "&collapse=annual"

@@ -2,12 +2,12 @@ package suite.math.sym;
 
 import java.util.function.Predicate;
 
+import primal.adt.Opt;
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Iterate;
 import primal.fp.Funs2.Fun2;
 import suite.BindArrayUtil.Pattern;
-import suite.adt.Opt;
 import suite.math.sym.Polynomial.Poly;
 import suite.math.sym.Sym.Field;
 import suite.math.sym.Sym.Ring;

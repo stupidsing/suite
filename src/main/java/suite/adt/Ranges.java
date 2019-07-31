@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.function.Predicate;
 
 import primal.Ob;
+import primal.adt.Range;
 import suite.util.To;
 
 public class Ranges<T extends Comparable<? super T>> {
@@ -29,7 +30,7 @@ public class Ranges<T extends Comparable<? super T>> {
 				range1 = source1.g();
 			}
 
-			add.test(Range.of(Ob.min(range0.from, range0.from), to));
+			add.test(Range.of(Ob.min(range0.fr, range0.fr), to));
 		}
 
 		return new Ranges<>(intersects);
@@ -57,7 +58,7 @@ public class Ranges<T extends Comparable<? super T>> {
 		var t = min;
 
 		for (var range : ranges) {
-			ranges.add(Range.of(t, range.from));
+			ranges.add(Range.of(t, range.fr));
 			t = range.to;
 		}
 

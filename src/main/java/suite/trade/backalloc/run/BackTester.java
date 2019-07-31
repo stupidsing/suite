@@ -29,7 +29,7 @@ public class BackTester {
 	private Statistic stat = new Statistic();
 
 	public Simulate backTest(BackAllocator backAllocator, TimeRange period) {
-		var instruments0 = cfg.queryCompaniesByMarketCap(period.from); // hkex.getCompanies()
+		var instruments0 = cfg.queryCompaniesByMarketCap(period.fr); // hkex.getCompanies()
 		return backTest(backAllocator, period, instruments0);
 	}
 

@@ -1,7 +1,7 @@
 package suite.math.sym;
 
+import primal.adt.Opt;
 import primal.adt.Pair;
-import suite.adt.Opt;
 import suite.math.sym.Sym.Ring;
 import suite.node.Int;
 import suite.node.Node;

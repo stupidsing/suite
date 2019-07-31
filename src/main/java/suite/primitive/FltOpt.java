@@ -5,7 +5,7 @@ import static primal.statics.Fail.fail;
 import java.util.Objects;
 
 import primal.Ob;
-import suite.adt.Opt;
+import primal.adt.Opt;
 import suite.primitive.FltPrimitives.FltTest;
 import suite.primitive.FltPrimitives.Flt_Obj;
 

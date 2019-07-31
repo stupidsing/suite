@@ -12,8 +12,8 @@ import java.net.URLDecoder;
 
 import primal.String_;
 import primal.adt.FixieArray;
+import primal.adt.Opt;
 import primal.fp.Funs2.Fun2;
-import suite.adt.Opt;
 import suite.cfg.Defaults;
 import suite.streamlet.As;
 import suite.util.Copy;

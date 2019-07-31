@@ -65,7 +65,7 @@ public class BackTestMain {
 				.join2(years.sort(Ob::compare).map(TimeRange::ofYear)) //
 				.map2((pair, period) -> pair.k, (pair, period) -> {
 					var bac = pair.v;
-					var instruments = bac.instrumentsFun.apply(period.from);
+					var instruments = bac.instrumentsFun.apply(period.fr);
 					return runner.backTest(bac.backAllocator, period, instruments);
 				}) //
 				.collect();

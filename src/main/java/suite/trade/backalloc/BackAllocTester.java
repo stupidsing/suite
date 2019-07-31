@@ -77,12 +77,12 @@ public class BackAllocTester {
 			var instrumentBySymbol = instruments.toMap(instrument -> instrument.symbol);
 			var holdBySymbol_ = new HashMap<String, Double>();
 			var symbols = instrumentBySymbol.keySet();
-			var historyPeriod = TimeRange.of(period.from.addYears(-1), period.to);
+			var historyPeriod = TimeRange.of(period.fr.addYears(-1), period.to);
 
 			var akds = cfg.dataSources(historyPeriod, Read.from(symbols));
 			var dsBySymbol = akds.dsByKey;
 			var tradeTs = akds.ts;
-			var t0 = period.from.epochSec();
+			var t0 = period.fr.epochSec();
 			var tx = period.to.epochSec();
 
 			var indices = forInt(tradeTs.length) //

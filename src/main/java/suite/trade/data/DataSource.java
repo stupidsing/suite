@@ -275,7 +275,7 @@ public class DataSource {
 	}
 
 	private DataSource range_(TimeRange period) {
-		var t0 = period.from.epochSec();
+		var t0 = period.fr.epochSec();
 		var tx = period.to.epochSec();
 		return range_(t0, tx);
 	}

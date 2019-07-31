@@ -4,11 +4,11 @@ import java.util.function.Predicate;
 
 import primal.adt.Fixie;
 import primal.adt.Fixie_.Fixie3;
+import primal.adt.Opt;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Iterate;
 import primal.fp.Funs2.Fun2;
 import suite.BindArrayUtil.Pattern;
-import suite.adt.Opt;
 import suite.math.sym.Sym.Ring;
 import suite.node.Int;
 import suite.node.Node;

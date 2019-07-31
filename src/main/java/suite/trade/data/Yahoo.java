@@ -201,7 +201,7 @@ public class Yahoo {
 		var url = "" //
 				+ "https://l1-query.finance.yahoo.com/v7/finance/chart/" //
 				+ encode(symbol) //
-				+ "?period1=" + period.from.epochSec() //
+				+ "?period1=" + period.fr.epochSec() //
 				+ "&period2=" + period.to.epochSec() //
 				+ "&interval=1d" //
 				+ "&indicators=quote" //
@@ -239,7 +239,7 @@ public class Yahoo {
 	}
 
 	public String tableUrl(String symbol, TimeRange period) {
-		var frDate = period.from;
+		var frDate = period.fr;
 		var toDate = period.to;
 		return "https://chart.finance.yahoo.com/table.csv" //
 				+ "?s=" + encode(symbol) //

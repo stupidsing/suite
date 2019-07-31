@@ -128,7 +128,7 @@ public class StockHistory {
 	}
 
 	public StockHistory filter(TimeRange period) {
-		var t0 = period.from.epochSec();
+		var t0 = period.fr.epochSec();
 		var tx = period.to.epochSec();
 
 		Iterate<LngFltPair[]> filter_ = pairs0 -> Read //

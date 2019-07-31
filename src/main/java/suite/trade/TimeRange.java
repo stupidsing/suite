@@ -3,7 +3,7 @@ package suite.trade;
 import java.util.ArrayList;
 
 import primal.Ob;
-import suite.adt.Range;
+import primal.adt.Range;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 
@@ -59,25 +59,25 @@ public class TimeRange extends Range<Time> {
 	}
 
 	public TimeRange addDays(int n) {
-		return of_(from.addDays(n), to.addDays(n));
+		return of_(fr.addDays(n), to.addDays(n));
 	}
 
 	public Streamlet<TimeRange> backTestDaysBefore(int nDays, int alignment) {
-		return backTestDaysBefore_(from, to, nDays, alignment);
+		return backTestDaysBefore_(fr, to, nDays, alignment);
 	}
 
 	@Override
 	public boolean equals(Object object) {
 		if (Ob.clazz(object) == TimeRange.class) {
 			var other = (TimeRange) object;
-			return Ob.equals(from, other.from) && Ob.equals(to, other.to);
+			return Ob.equals(fr, other.fr) && Ob.equals(to, other.to);
 		} else
 			return false;
 	}
 
 	@Override
 	public String toString() {
-		return from.brief() + "~" + to.brief();
+		return fr.brief() + "~" + to.brief();
 	}
 
 	private static Streamlet<TimeRange> backTestDaysBefore_(Time frDate, Time toDate, int nDays, int alignment) {

@@ -5,7 +5,7 @@ import static primal.statics.Fail.fail;
 import java.util.Objects;
 
 import primal.Ob;
-import suite.adt.Opt;
+import primal.adt.Opt;
 import suite.primitive.LngPrimitives.LngTest;
 import suite.primitive.LngPrimitives.Lng_Obj;
 

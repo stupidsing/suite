@@ -3,11 +3,11 @@ package suite.math.sym;
 import java.util.ArrayList;
 import java.util.List;
 
+import primal.adt.Opt;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs2.Fun2;
 import suite.BindArrayUtil.Pattern;
 import suite.Suite;
-import suite.adt.Opt;
 import suite.jdk.gen.FunExpression.FunExpr;
 import suite.jdk.gen.FunFactory;
 import suite.jdk.lambda.LambdaInstance;
