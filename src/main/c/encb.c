@@ -12,7 +12,7 @@ int main(int argc, char **argv) {
 	char output[4096];
 	while(!feof(stdin)) {
 		int size = fread(input, 1, 1024, stdin);
-		if(size >= 0) {
+		if(0 <= size) {
 			int o = 0;
 			for(int i = 0; i < size; i++) {
 				char *hex = "0123456789ABCDEF";

@@ -73,7 +73,13 @@ public class ElfTest {
 	public void testNumbers() {
 		test(0, "" //
 				+ "let { !get.number: !gn, !put.number: !pn, } := consult \"io.fp\" ~ \n" //
-				+ "do! (let n := type number !gn {} ~ !pn (n + 1) ~ 0)", "235\n", "236");
+				+ "do! ( \n" //
+				+ "let m := type number !gn {} ~ \n" //
+				+ "let n := type number !gn {} ~ \n" //
+				+ "!pn (m + n) ~ 0 \n" //
+				+ ")", //
+				"25\n57\n", //
+				"82");
 	}
 
 	@Test

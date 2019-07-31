@@ -16,7 +16,7 @@ int main(int argc, char **argv) {
 	char output[1024];
 	while(!feof(stdin)) {
 		int count = fread(input, 3, 1024, stdin);
-		if(count >= 0) {
+		if(0 <= count) {
 			int size = 3 * count;
 			int o = 0;
 			for(int i = 0; i < size; i += 3)

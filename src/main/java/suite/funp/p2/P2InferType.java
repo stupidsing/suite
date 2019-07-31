@@ -962,7 +962,8 @@ public class P2InferType {
 						return typePatDecor.subst(cloner.clone(a), cloneType(b));
 					}).match(typePatLambda, (a, b) -> {
 						return typePatLambda.subst(cloneType(a), cloneType(b));
-					}).match(typePatStruct, (a, b, c) -> { // clone the dict but not the completion flag or the member list
+					}).match(typePatStruct, (a, b, c) -> {
+						// clone the dict but not the completion flag or the member list
 						return typePatStruct.subst(a, cloneDict(b), c);
 					}).match(typePatTag, a -> {
 						return typePatTag.subst(cloneDict(a));

@@ -218,10 +218,7 @@ public class CommandDispatcher {
 	}
 
 	public boolean dispatchPrecompile(List<String> filenames) {
-		var b = true;
-		for (var filename : filenames)
-			b &= Suite.precompile(filename, opt.pc(null));
-		return b;
+		return Read.from(filenames).map(filename -> Suite.precompile(filename, opt.pc(null))).isAll(b -> b);
 	}
 
 	public boolean dispatchProve(List<String> inputs) throws IOException {
