@@ -10,7 +10,7 @@ import primal.adt.Fixie_.FixieFun3;
 import primal.adt.Fixie_.FixieFun4;
 import primal.adt.Fixie_.FixieFun5;
 import primal.adt.Pair;
-import suite.adt.Mutable;
+import primal.adt.Mutable;
 import suite.assembler.Amd64.OpReg;
 import suite.assembler.Amd64.Operand;
 import suite.funp.Funp_.Funp;

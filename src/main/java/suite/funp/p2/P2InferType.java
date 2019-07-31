@@ -22,7 +22,7 @@ import primal.fp.Funs.Fun;
 import primal.fp.Funs.Source;
 import suite.BindArrayUtil.Pattern;
 import suite.Suite;
-import suite.adt.Mutable;
+import primal.adt.Mutable;
 import suite.assembler.Amd64.OpReg;
 import suite.assembler.Amd64.Operand;
 import suite.funp.Funp_;

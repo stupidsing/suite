@@ -2,7 +2,7 @@ package suite.persistent;
 
 import primal.adt.Pair;
 import primal.fp.Funs.Iterate;
-import suite.adt.Mutable;
+import primal.adt.Mutable;
 import suite.fs.KeyValueMutator;
 import suite.streamlet.Streamlet;
 

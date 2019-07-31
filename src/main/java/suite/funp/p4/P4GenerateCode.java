@@ -16,7 +16,7 @@ import primal.fp.Funs.Sink;
 import primal.fp.Funs.Source;
 import primal.fp.Funs2.Sink2;
 import suite.Suite;
-import suite.adt.Mutable;
+import primal.adt.Mutable;
 import suite.assembler.Amd64;
 import suite.assembler.Amd64.Insn;
 import suite.assembler.Amd64.Instruction;

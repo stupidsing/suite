@@ -3,7 +3,7 @@ package suite.lp.doer;
 import java.util.HashMap;
 import java.util.Map;
 
-import suite.adt.IdentityKey;
+import primal.adt.IdentityKey;
 import suite.lp.kb.Rule;
 import suite.node.Node;
 import suite.node.Reference;

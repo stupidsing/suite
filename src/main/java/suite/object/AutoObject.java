@@ -9,7 +9,7 @@ import java.util.HashMap;
 
 import primal.Ob;
 import primal.adt.Pair;
-import suite.adt.IdentityKey;
+import primal.adt.IdentityKey;
 import suite.inspect.Inspect;
 import suite.node.util.Singleton;
 import suite.streamlet.Streamlet;

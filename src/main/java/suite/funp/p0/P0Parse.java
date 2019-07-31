@@ -9,7 +9,7 @@ import primal.fp.Funs.Fun;
 import primal.fp.Funs.Iterate;
 import primal.fp.Funs.Source;
 import suite.Suite;
-import suite.adt.Mutable;
+import primal.adt.Mutable;
 import suite.assembler.Amd64;
 import suite.funp.Funp_;
 import suite.funp.Funp_.Funp;

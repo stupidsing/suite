@@ -18,7 +18,7 @@ import primal.Ob;
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Source;
-import suite.adt.Mutable;
+import primal.adt.Mutable;
 import suite.adt.map.ListMultimap;
 import suite.primitive.LngFunUtil;
 import suite.primitive.LngOpt;

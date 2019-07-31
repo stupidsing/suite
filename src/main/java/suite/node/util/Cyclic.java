@@ -3,7 +3,7 @@ package suite.node.util;
 import java.util.HashSet;
 import java.util.Set;
 
-import suite.adt.IdentityKey;
+import primal.adt.IdentityKey;
 import suite.node.Node;
 import suite.node.Tree;
 

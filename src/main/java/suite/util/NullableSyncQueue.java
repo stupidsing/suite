@@ -4,7 +4,7 @@ import static primal.statics.Rethrow.ex;
 
 import java.util.concurrent.SynchronousQueue;
 
-import suite.adt.Mutable;
+import primal.adt.Mutable;
 
 /**
  * The synchronous queue class do not support nulls; in this class, we have to

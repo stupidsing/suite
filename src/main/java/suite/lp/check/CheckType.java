@@ -8,7 +8,7 @@ import java.util.Map;
 
 import primal.adt.Pair;
 import suite.Suite;
-import suite.adt.IdentityKey;
+import primal.adt.IdentityKey;
 import suite.lp.Trail;
 import suite.lp.doer.Binder;
 import suite.lp.doer.Generalizer;

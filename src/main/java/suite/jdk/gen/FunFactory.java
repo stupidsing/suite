@@ -12,7 +12,7 @@ import primal.fp.Funs.Iterate;
 import primal.fp.Funs.Source;
 import primal.fp.Funs2.BinOp;
 import primal.fp.Funs2.Fun2;
-import suite.adt.Mutable;
+import primal.adt.Mutable;
 import suite.inspect.Inspect;
 import suite.jdk.gen.FunExprK.Declare0ParameterFunExpr;
 import suite.jdk.gen.FunExprK.Declare1ParameterFunExpr;

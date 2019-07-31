@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.Deque;
 
 import primal.fp.Funs.Fun;
-import suite.adt.Mutable;
+import primal.adt.Mutable;
 
 public class Pool<T> {
 

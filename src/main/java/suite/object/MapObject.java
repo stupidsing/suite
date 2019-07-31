@@ -4,7 +4,7 @@ import static primal.statics.Rethrow.ex;
 
 import java.util.HashMap;
 
-import suite.adt.IdentityKey;
+import primal.adt.IdentityKey;
 import suite.streamlet.Read;
 
 public class MapObject<T extends MapObject<T>> extends BaseObject<T> implements Cloneable, MapInterface<T> {

@@ -3,7 +3,7 @@ package suite.lp.predicate;
 import java.util.HashMap;
 import java.util.Map;
 
-import suite.adt.IdentityKey;
+import primal.adt.IdentityKey;
 import suite.lp.predicate.PredicateUtil.BuiltinPredicate;
 import suite.node.Atom;
 import suite.node.Node;

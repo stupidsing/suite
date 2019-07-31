@@ -13,7 +13,7 @@ import javax.script.ScriptException;
 import primal.fp.Funs.Fun;
 import primal.os.Log_;
 import suite.Suite;
-import suite.adt.IdentityKey;
+import primal.adt.IdentityKey;
 import suite.lp.doer.Cloner;
 import suite.lp.doer.Specializer;
 import suite.lp.predicate.PredicateUtil.BuiltinPredicate;

@@ -5,7 +5,7 @@ import static primal.statics.Fail.fail;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Iterate;
 import suite.Suite;
-import suite.adt.Mutable;
+import primal.adt.Mutable;
 import suite.lp.Trail;
 import suite.lp.doer.Binder;
 import suite.node.Atom;

@@ -11,7 +11,7 @@ import primal.fp.Funs.Fun;
 import primal.fp.Funs.Iterate;
 import primal.fp.Funs2.BiFun;
 import suite.Suite;
-import suite.adt.Mutable;
+import primal.adt.Mutable;
 import suite.lp.Trail;
 import suite.lp.doer.Binder;
 import suite.lp.doer.Prover;

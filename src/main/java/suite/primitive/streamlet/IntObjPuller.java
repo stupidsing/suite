@@ -15,7 +15,7 @@ import primal.Ob;
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs2.Sink2;
-import suite.adt.Mutable;
+import primal.adt.Mutable;
 import suite.adt.map.ListMultimap;
 import suite.primitive.IntFunUtil;
 import suite.primitive.IntObjFunUtil;

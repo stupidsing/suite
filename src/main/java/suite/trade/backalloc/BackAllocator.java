@@ -18,7 +18,7 @@ import primal.Ob;
 import primal.String_;
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
-import suite.adt.Mutable;
+import primal.adt.Mutable;
 import suite.math.numeric.Statistic;
 import suite.primitive.DblDbl_Dbl;
 import suite.primitive.DblPrimitives.ObjObj_Dbl;

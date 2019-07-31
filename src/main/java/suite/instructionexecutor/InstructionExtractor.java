@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import primal.Ob;
-import suite.adt.IdentityKey;
+import primal.adt.IdentityKey;
 import suite.adt.map.BiMap;
 import suite.instructionexecutor.InstructionUtil.Insn;
 import suite.instructionexecutor.InstructionUtil.Instruction;
