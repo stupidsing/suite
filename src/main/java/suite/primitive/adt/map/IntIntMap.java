@@ -6,8 +6,8 @@ import java.util.Arrays;
 import java.util.Objects;
 
 import primal.fp.Funs.Fun;
+import primal.primitive.IntIntSink;
 import primal.primitive.IntPrim;
-import suite.primitive.IntIntSink;
 import suite.primitive.IntIntSource;
 import suite.primitive.IntPrimitives.IntObjSource;
 import suite.primitive.IntPrimitives.Obj_Int;

@@ -7,9 +7,9 @@ import java.util.Objects;
 
 import primal.fp.Funs.Fun;
 import primal.primitive.DblPrim;
+import primal.primitive.IntDblSink;
 import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Dbl_Dbl;
-import suite.primitive.IntDblSink;
 import suite.primitive.IntDblSource;
 import suite.primitive.IntPrimitives.IntObjSource;
 import suite.primitive.IntPrimitives.Obj_Int;

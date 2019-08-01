@@ -10,6 +10,7 @@ import primal.fp.Funs.Sink;
 import primal.fp.Funs.Source;
 import primal.fp.Funs2.Source2;
 import primal.os.Log_;
+import primal.primitive.ChrDblPredicate;
 import primal.primitive.ChrPrim.ChrTest;
 import primal.primitive.DblPrim.DblTest;
 import primal.statics.Fail.InterruptedRuntimeException;

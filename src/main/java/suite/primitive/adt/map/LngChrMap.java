@@ -7,9 +7,9 @@ import java.util.Objects;
 
 import primal.fp.Funs.Fun;
 import primal.primitive.ChrPrim;
+import primal.primitive.LngChrSink;
 import suite.primitive.ChrPrimitives.Obj_Chr;
 import suite.primitive.Chr_Chr;
-import suite.primitive.LngChrSink;
 import suite.primitive.LngChrSource;
 import suite.primitive.LngPrimitives.LngObjSource;
 import suite.primitive.LngPrimitives.Obj_Lng;

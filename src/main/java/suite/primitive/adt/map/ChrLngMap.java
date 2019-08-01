@@ -6,8 +6,8 @@ import java.util.Arrays;
 import java.util.Objects;
 
 import primal.fp.Funs.Fun;
+import primal.primitive.ChrLngSink;
 import primal.primitive.LngPrim;
-import suite.primitive.ChrLngSink;
 import suite.primitive.ChrLngSource;
 import suite.primitive.ChrPrimitives.ChrObjSource;
 import suite.primitive.ChrPrimitives.Obj_Chr;

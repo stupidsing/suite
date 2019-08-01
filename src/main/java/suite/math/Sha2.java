@@ -3,8 +3,8 @@ package suite.math;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
+import primal.primitive.IntLngSink;
 import suite.primitive.Bytes;
-import suite.primitive.IntLngSink;
 import suite.primitive.Ints_;
 
 /**

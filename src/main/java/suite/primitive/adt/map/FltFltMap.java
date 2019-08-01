@@ -6,8 +6,8 @@ import java.util.Arrays;
 import java.util.Objects;
 
 import primal.fp.Funs.Fun;
+import primal.primitive.FltFltSink;
 import primal.primitive.FltPrim;
-import suite.primitive.FltFltSink;
 import suite.primitive.FltFltSource;
 import suite.primitive.FltPrimitives.FltObjSource;
 import suite.primitive.FltPrimitives.Obj_Flt;

@@ -6,7 +6,7 @@ import static java.lang.Math.min;
 
 import java.util.function.IntPredicate;
 
-import suite.primitive.IntFltPredicate;
+import primal.primitive.IntFltPredicate;
 import suite.primitive.IntFlt_Flt;
 import suite.primitive.Int_Dbl;
 import suite.trade.Trade_;
