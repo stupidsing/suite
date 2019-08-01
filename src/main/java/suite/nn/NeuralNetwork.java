@@ -11,14 +11,14 @@ import java.util.Random;
 import primal.Verbs.New;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Iterate;
-import primal.primitive.DblPrim.Dbl_Dbl;
+import primal.primitive.Dbl_Dbl;
 import primal.primitive.IntPrim.Int_Obj;
 import suite.math.Sigmoid;
 import suite.math.Tanh;
 import suite.math.linalg.Matrix;
 import suite.primitive.DblMutable;
 import suite.primitive.Floats_;
-import suite.primitive.Int_Dbl;
+import suite.streamlet.As;
 import suite.streamlet.Puller;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
@@ -214,7 +214,7 @@ public class NeuralNetwork {
 						derivatives[i][j] *= (float) Tanh.tanhGradient(outputs[i][j]);
 
 				var deltas = To.matrix(nInputs, nOutputs, (i, o) -> forInt(nPoints) //
-						.toDouble(Int_Dbl.sum(p -> inputs[p][i] * derivatives[p][o])));
+						.toDouble(As.sum(p -> inputs[p][i] * derivatives[p][o])));
 
 				var deltaSqs = mtx.map(deltas, delta -> delta * delta);
 				mtx.addOn(mtx.scaleOn(rmsProps, .99d), mtx.scaleOn(deltaSqs, .01d));

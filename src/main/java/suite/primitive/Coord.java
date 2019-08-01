@@ -6,6 +6,7 @@ import primal.Verbs.Get;
 import primal.fp.Funs.Iterate;
 import primal.primitive.IntInt_Obj;
 import primal.primitive.IntPrim;
+import primal.primitive.Int_Int;
 
 public class Coord {
 

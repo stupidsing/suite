@@ -9,7 +9,7 @@ import primal.fp.Funs.Fun;
 import suite.math.linalg.CholeskyDecomposition;
 import suite.math.linalg.Matrix;
 import suite.math.linalg.Vector;
-import suite.primitive.Int_Flt;
+import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.util.To;
 
@@ -59,7 +59,7 @@ public class RadialBasisFunctionNetwork {
 
 	private float[] evaluateRbfs(float[] in) {
 		return forInt(nHiddens) //
-				.collect(Int_Flt.lift(cl -> (float) exp(-.5d * vec.dotDiff(in, centers[cl]) * invVariances[cl]))) //
+				.collect(As.floats(cl -> (float) exp(-.5d * vec.dotDiff(in, centers[cl]) * invVariances[cl]))) //
 				.toArray();
 	}
 

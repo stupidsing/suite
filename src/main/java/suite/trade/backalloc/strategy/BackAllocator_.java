@@ -4,8 +4,8 @@ import java.util.List;
 
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
+import primal.primitive.Int_Dbl;
 import suite.primitive.DblPrimitives.Obj_Dbl;
-import suite.primitive.Int_Dbl;
 import suite.streamlet.Read;
 import suite.trade.backalloc.BackAllocator;
 import suite.trade.data.DataSource;

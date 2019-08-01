@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.Map;
 
 import primal.String_;
+import primal.primitive.Dbl_Dbl;
 import suite.primitive.DblPrimitives.ObjObj_Dbl;
-import suite.primitive.Dbl_Dbl;
 import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;

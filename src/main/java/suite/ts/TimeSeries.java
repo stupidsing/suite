@@ -17,8 +17,8 @@ import suite.math.linalg.Vector;
 import suite.math.numeric.Statistic;
 import suite.math.numeric.Statistic.LinearRegression;
 import suite.primitive.Floats;
-import suite.primitive.Int_Dbl;
 import suite.primitive.Ints_;
+import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.trade.Trade_;
 import suite.util.To;
@@ -36,7 +36,7 @@ public class TimeSeries {
 		var length = ys.length;
 		var meany = stat.mean(ys);
 		var ydevs = To.vector(length, i -> ys[i] - meany);
-		var acovs = To.vector(length, k -> forInt(length - k).toDouble(Int_Dbl.sum(i -> (ydevs[i] * ydevs[i + k]))));
+		var acovs = To.vector(length, k -> forInt(length - k).toDouble(As.sum(i -> (ydevs[i] * ydevs[i + k]))));
 		var inv = 1d / acovs[0];
 		return To.vector(acovs.length, k -> acovs[k] * inv);
 	}

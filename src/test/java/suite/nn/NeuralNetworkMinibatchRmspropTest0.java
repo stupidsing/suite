@@ -10,7 +10,7 @@ import org.junit.Test;
 
 import suite.math.Tanh;
 import suite.math.linalg.Matrix;
-import suite.primitive.Int_Dbl;
+import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.util.To;
 
@@ -90,7 +90,7 @@ public class NeuralNetworkMinibatchRmspropTest0 {
 			var derivatives = To.matrix(nPoints, nOutputs, (i, j) -> errors[i][j] * Tanh.tanhGradient(outputs[i][j]));
 
 			var deltas = To.matrix(nInputs, nOutputs, (i, o) -> forInt(nPoints) //
-					.toDouble(Int_Dbl.sum(p -> inputs[p][i] * derivatives[p][o])));
+					.toDouble(As.sum(p -> inputs[p][i] * derivatives[p][o])));
 
 			var deltaSqs = mtx.map(deltas, delta -> delta * delta);
 			rmsProps = mtx.addOn(mtx.scaleOn(rmsProps, .99d), mtx.scaleOn(deltaSqs, .01d));

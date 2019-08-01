@@ -8,7 +8,7 @@ import java.util.Map;
 import suite.math.linalg.Matrix;
 import suite.math.numeric.Statistic;
 import suite.math.numeric.Statistic.LinearRegression;
-import suite.primitive.Int_Flt;
+import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.trade.Instrument;
@@ -60,7 +60,7 @@ public class FactorLr {
 
 			return index -> {
 				var xs = forInt(indexSymbols.size()) //
-						.collect(Int_Flt.lift(i -> {
+						.collect(As.floats(i -> {
 							var indexPrices_ = indexPrices.get(i);
 							return (float) Quant.return_(indexPrices_[index - 2], indexPrices_[index - 1]);
 						})) //

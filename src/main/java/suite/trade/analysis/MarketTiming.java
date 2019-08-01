@@ -5,7 +5,7 @@ import static java.lang.Math.max;
 import static suite.util.Streamlet_.forInt;
 
 import suite.math.numeric.Statistic;
-import suite.primitive.Int_Flt;
+import suite.streamlet.As;
 
 public class MarketTiming {
 
@@ -85,8 +85,8 @@ public class MarketTiming {
 
 			var isRangeBound___ = true // non-trending
 					&& 2d / 3d <= r && r <= 3d / 2d //
-					&& stat.meanVariance(past_i.collect(Int_Flt.lift(j -> ma50[j])).toArray()).volatility() < .02d //
-					&& .02d < stat.meanVariance(past_i.collect(Int_Flt.lift(j -> ma20[j])).toArray()).volatility() //
+					&& stat.meanVariance(past_i.collect(As.floats(j -> ma50[j])).toArray()).volatility() < .02d //
+					&& .02d < stat.meanVariance(past_i.collect(As.floats(j -> ma20[j])).toArray()).volatility() //
 					&& (ma20[i] + ma50[i]) * .02d <= abs(ma20[i] - ma50[i]);
 
 			var flag = 0 //

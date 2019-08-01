@@ -5,6 +5,7 @@ import static primal.statics.Rethrow.ex;
 import primal.fp.FunUtil;
 import primal.fp.Funs.Iterate;
 import primal.fp.Funs.Source;
+import primal.primitive.Int_Lng;
 import primal.primitive.LngPrim;
 import primal.primitive.fp.LngFunUtil;
 import suite.primitive.Longs.LongsBuilder;

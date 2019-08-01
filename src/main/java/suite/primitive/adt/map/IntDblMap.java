@@ -7,15 +7,15 @@ import java.util.Objects;
 
 import primal.fp.Funs.Fun;
 import primal.primitive.DblPrim;
+import primal.primitive.Dbl_Dbl;
 import primal.primitive.IntDblSink;
 import primal.primitive.IntDblSource;
 import primal.primitive.IntPrim.IntObjSource;
+import primal.primitive.Int_Dbl;
 import primal.primitive.adt.pair.IntDblPair;
 import primal.primitive.adt.pair.IntObjPair;
 import suite.primitive.DblPrimitives.Obj_Dbl;
-import suite.primitive.Dbl_Dbl;
 import suite.primitive.IntPrimitives.Obj_Int;
-import suite.primitive.Int_Dbl;
 import suite.primitive.streamlet.IntObjPuller;
 import suite.primitive.streamlet.IntObjStreamlet;
 import suite.streamlet.As;

@@ -2,7 +2,7 @@ package suite.math.linalg;
 
 import static primal.statics.Fail.fail;
 
-import suite.primitive.Int_Flt;
+import primal.primitive.Int_Flt;
 import suite.util.To;
 
 public class VirtualVector {

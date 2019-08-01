@@ -10,7 +10,7 @@ import org.junit.Test;
 import primal.primitive.adt.pair.DblObjPair;
 import suite.math.linalg.Vector;
 import suite.primitive.Floats_;
-import suite.primitive.Int_Dbl;
+import suite.streamlet.As;
 import suite.ts.Arima;
 import suite.ts.Arima.Arima_;
 import suite.util.To;
@@ -63,8 +63,8 @@ public class ArimaTest {
 			int tp = t + p, tpm1 = tp - 1;
 			int tq = t + q, tqm1 = tq - 1;
 			xsp[tp++] = (float) (epq[tq] //
-					+ forInt(p).toDouble(Int_Dbl.sum(i -> ars[i] * xsp[tpm1 - i])) //
-					+ forInt(q).toDouble(Int_Dbl.sum(i -> mas[i] * epq[tqm1 - i])));
+					+ forInt(p).toDouble(As.sum(i -> ars[i] * xsp[tpm1 - i])) //
+					+ forInt(q).toDouble(As.sum(i -> mas[i] * epq[tqm1 - i])));
 		}
 
 		return Arrays.copyOfRange(xsp, p, xsp.length);

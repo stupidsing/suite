@@ -8,7 +8,7 @@ import static suite.util.Streamlet_.forInt;
 import java.util.Arrays;
 
 import suite.primitive.Floats_;
-import suite.primitive.Int_Flt;
+import suite.streamlet.As;
 import suite.trade.data.DataSource;
 import suite.ts.Quant;
 import suite.util.To;
@@ -23,7 +23,7 @@ public class Oscillator {
 		var length = ds.ts.length;
 		var trs = trueRange(ds);
 		var atrs = new float[length];
-		var atr = atrs[0] = forInt(n).collect(Int_Flt.lift(i -> trs[i])).sum() / n;
+		var atr = atrs[0] = forInt(n).collect(As.floats(i -> trs[i])).sum() / n;
 		var invn = 1d / n;
 
 		for (var i = 1; i < length; i++)

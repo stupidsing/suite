@@ -7,7 +7,7 @@ import static suite.util.Streamlet_.forInt;
 import java.util.Arrays;
 
 import suite.math.Math_;
-import suite.primitive.Int_Dbl;
+import suite.streamlet.As;
 
 public class Vector {
 
@@ -43,7 +43,7 @@ public class Vector {
 
 	public double convolute(int l, float[] m, int pm, float[] n, int pn) {
 		var d = pm + pn - 1;
-		return forInt(pm, pm + l).toDouble(Int_Dbl.sum(i -> m[i] * n[d - i]));
+		return forInt(pm, pm + l).toDouble(As.sum(i -> m[i] * n[d - i]));
 	}
 
 	public float[] copyOf(float[] m) {

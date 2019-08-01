@@ -6,6 +6,7 @@ import primal.fp.FunUtil;
 import primal.fp.Funs.Iterate;
 import primal.fp.Funs.Source;
 import primal.primitive.FltPrim;
+import primal.primitive.Int_Flt;
 import primal.primitive.fp.FltFunUtil;
 import suite.primitive.Floats.FloatsBuilder;
 import suite.primitive.Floats.WriteChar;

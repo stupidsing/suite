@@ -9,7 +9,7 @@ import java.util.Random;
 
 import primal.adt.Pair;
 import primal.primitive.adt.pair.DblObjPair;
-import suite.primitive.Int_Dbl;
+import suite.streamlet.As;
 import suite.util.To;
 
 public class Eigen {
@@ -33,7 +33,7 @@ public class Eigen {
 
 			// adjust m1 to the mean
 			forInt(nParameters).sink(j -> {
-				var mean = forInt(nSamples).toDouble(Int_Dbl.sum(i -> m1[i][j])) / nSamples;
+				var mean = forInt(nSamples).toDouble(As.sum(i -> m1[i][j])) / nSamples;
 				for (var i = 0; i < nSamples; i++)
 					m1[i][j] -= mean;
 			});

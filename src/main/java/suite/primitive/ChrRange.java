@@ -6,6 +6,7 @@ import primal.Verbs.Get;
 import primal.fp.Funs.Iterate;
 import primal.primitive.ChrChr_Obj;
 import primal.primitive.ChrPrim;
+import primal.primitive.Chr_Chr;
 
 public class ChrRange {
 

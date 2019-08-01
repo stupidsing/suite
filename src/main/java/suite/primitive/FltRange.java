@@ -6,6 +6,7 @@ import primal.Verbs.Get;
 import primal.fp.Funs.Iterate;
 import primal.primitive.FltFlt_Obj;
 import primal.primitive.FltPrim;
+import primal.primitive.Flt_Flt;
 
 public class FltRange {
 

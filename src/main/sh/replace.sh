@@ -46,7 +46,6 @@ replace src/main/java/suite/primitive/adt/map/ObjChrMap.java
 replace src/main/java/suite/primitive/adt/set/ChrSet.java
 replace src/main/java/suite/primitive/Chars.java
 replace src/main/java/suite/primitive/Chars_.java
-replace src/main/java/suite/primitive/Chr_Dbl.java
 replace src/main/java/suite/primitive/ChrMutable.java
 replace src/main/java/suite/primitive/ChrPrimitives.java
 replace src/main/java/suite/primitive/ChrRange.java

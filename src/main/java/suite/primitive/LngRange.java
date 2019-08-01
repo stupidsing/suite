@@ -6,6 +6,7 @@ import primal.Verbs.Get;
 import primal.fp.Funs.Iterate;
 import primal.primitive.LngLng_Obj;
 import primal.primitive.LngPrim;
+import primal.primitive.Lng_Lng;
 
 public class LngRange {
 

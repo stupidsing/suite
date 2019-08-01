@@ -10,7 +10,7 @@ import primal.primitive.adt.pair.IntObjPair;
 import suite.adt.map.IntIntMap1;
 import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.IntPrimitives.Obj_Int;
-import suite.primitive.Int_Dbl;
+import suite.streamlet.As;
 import suite.streamlet.Streamlet;
 
 public class DecisionTree {
@@ -103,7 +103,7 @@ public class DecisionTree {
 			hist0.update(datum.k, v -> (v != IntPrim.EMPTYVALUE ? v : 0) + 1);
 		var hist1 = hist0.values();
 		var sum = (double) hist1.sum();
-		return hist1.toDouble(Int_Dbl.sum(c -> Math.log(c / sum)));
+		return hist1.toDouble(As.sum(c -> Math.log(c / sum)));
 	}
 
 	private int majority(Streamlet<IntObjPair<Object[]>> data) {

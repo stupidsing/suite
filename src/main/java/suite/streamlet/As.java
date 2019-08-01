@@ -18,16 +18,25 @@ import primal.fp.Funs.Fun;
 import primal.fp.Funs.Sink;
 import primal.fp.Funs.Source;
 import primal.fp.Funs2.Fun2;
+import primal.primitive.IntPrim;
 import primal.primitive.IntPrim.IntSink;
+import primal.primitive.Int_Dbl;
+import primal.primitive.Int_Flt;
+import primal.primitive.Int_Int;
 import suite.adt.map.ListMultimap;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
 import suite.primitive.Bytes_;
 import suite.primitive.Chars;
 import suite.primitive.Chars.CharsBuilder;
+import suite.primitive.DblPrimitives.Obj_Dbl;
+import suite.primitive.Floats.FloatsBuilder;
 import suite.primitive.IntPrimitives.Obj_Int;
+import suite.primitive.Ints.IntsBuilder;
 import suite.primitive.adt.map.ObjIntMap;
+import suite.primitive.streamlet.FltStreamlet;
 import suite.primitive.streamlet.IntPuller;
+import suite.primitive.streamlet.IntStreamlet;
 import suite.util.Thread_;
 import suite.util.To;
 
@@ -69,8 +78,30 @@ public class As {
 		return puller -> puller.map(t -> New.thread(() -> sink.f(t))).collect(Thread_::startJoin);
 	}
 
+	public static Fun<IntPuller, FltStreamlet> floats(Int_Flt fun0) {
+		var fun1 = fun0.rethrow();
+		return ts -> {
+			var b = new FloatsBuilder();
+			int c;
+			while ((c = ts.pull()) != IntPrim.EMPTYVALUE)
+				b.append(fun1.apply(c));
+			return b.toFloats().streamlet();
+		};
+	}
+
 	public static InputStream inputStream(Bytes bytes) {
 		return new ByteArrayInputStream(bytes.bs, bytes.start, bytes.end - bytes.start);
+	}
+
+	public static Fun<IntPuller, IntStreamlet> ints(Int_Int fun0) {
+		var fun1 = fun0.rethrow();
+		return ts -> {
+			var b = new IntsBuilder();
+			int c;
+			while ((c = ts.pull()) != IntPrim.EMPTYVALUE)
+				b.append(fun1.apply(c));
+			return b.toInts().streamlet();
+		};
 	}
 
 	public static <T> String joined(Puller<T> puller) {
@@ -156,6 +187,18 @@ public class As {
 
 	public static String string(Puller<Bytes> puller) {
 		return To.string(Bytes.of(puller));
+	}
+
+	public static Obj_Dbl<IntPuller> sum(Int_Dbl fun0) {
+		var fun1 = fun0.rethrow();
+		return puller -> {
+			var source = puller.source();
+			int c;
+			var result = (double) 0;
+			while ((c = source.g()) != IntPrim.EMPTYVALUE)
+				result += fun1.apply(c);
+			return result;
+		};
 	}
 
 	public static Streamlet<String[]> table(Puller<Bytes> puller) {

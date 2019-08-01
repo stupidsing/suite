@@ -8,7 +8,7 @@ import java.util.function.IntPredicate;
 
 import primal.primitive.IntFltPredicate;
 import primal.primitive.IntFlt_Flt;
-import suite.primitive.Int_Dbl;
+import primal.primitive.Int_Dbl;
 import suite.trade.Trade_;
 
 public class Quant {

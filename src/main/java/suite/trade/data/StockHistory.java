@@ -12,7 +12,6 @@ import primal.Verbs.Compare;
 import primal.fp.Funs.Iterate;
 import primal.fp.Funs2.BinOp;
 import primal.primitive.adt.pair.LngFltPair;
-import suite.primitive.Int_Flt;
 import suite.streamlet.As;
 import suite.streamlet.Puller;
 import suite.streamlet.Read;
@@ -217,9 +216,9 @@ public class StockHistory {
 					t + DataSource.tickDuration, //
 					opPairs[io_].t1, //
 					clPairs[ic - 1].t1, //
-					forInt(il_, il = scan(loPairs, il_, t)).collect(Int_Flt.lift(i_ -> loPairs[i_].t1)).min(), //
-					forInt(ih_, ih = scan(hiPairs, ih_, t)).collect(Int_Flt.lift(i_ -> hiPairs[i_].t1)).max(), //
-					forInt(iv_, iv = scan(vlPairs, iv_, t)).collect(Int_Flt.lift(i_ -> vlPairs[i_].t1)).sum());
+					forInt(il_, il = scan(loPairs, il_, t)).collect(As.floats(i_ -> loPairs[i_].t1)).min(), //
+					forInt(ih_, ih = scan(hiPairs, ih_, t)).collect(As.floats(i_ -> hiPairs[i_].t1)).max(), //
+					forInt(iv_, iv = scan(vlPairs, iv_, t)).collect(As.floats(i_ -> vlPairs[i_].t1)).sum());
 		}
 
 		return DataSource.of(Read.from(data));

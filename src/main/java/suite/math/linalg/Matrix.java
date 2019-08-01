@@ -6,10 +6,10 @@ import static suite.util.Streamlet_.forInt;
 
 import java.util.Arrays;
 
+import primal.primitive.Dbl_Dbl;
 import suite.math.Math_;
 import suite.math.R3;
-import suite.primitive.Dbl_Dbl;
-import suite.primitive.Int_Dbl;
+import suite.streamlet.As;
 import suite.util.To;
 
 public class Matrix {
@@ -49,8 +49,8 @@ public class Matrix {
 	public float[][] covariance(float[][] vs) {
 		var h = h(vs);
 		var w = w(vs);
-		var means = To.vector(vs, v -> forInt(w).toDouble(Int_Dbl.sum(j -> v[j])) / w);
-		return To.matrix(h, h, (i0, i1) -> forInt(w).toDouble(Int_Dbl.sum(j -> vs[i0][j] * vs[i1][j])) / w - means[i0] * means[i1]);
+		var means = To.vector(vs, v -> forInt(w).toDouble(As.sum(j -> v[j])) / w);
+		return To.matrix(h, h, (i0, i1) -> forInt(w).toDouble(As.sum(j -> vs[i0][j] * vs[i1][j])) / w - means[i0] * means[i1]);
 	}
 
 	public float[][] copyOf(float[][] m) {

@@ -6,6 +6,7 @@ import primal.Verbs.Get;
 import primal.fp.Funs.Iterate;
 import primal.primitive.DblDbl_Obj;
 import primal.primitive.DblPrim;
+import primal.primitive.Dbl_Dbl;
 
 public class DblRange {
 

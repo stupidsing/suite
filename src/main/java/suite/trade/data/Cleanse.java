@@ -2,8 +2,8 @@ package suite.trade.data;
 
 import primal.os.Log_;
 import primal.primitive.IntFlt_Flt;
+import primal.primitive.Int_Flt;
 import primal.primitive.adt.pair.LngFltPair;
-import suite.primitive.Int_Flt;
 import suite.util.To;
 
 /**

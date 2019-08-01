@@ -6,9 +6,8 @@ import static suite.util.Streamlet_.forInt;
 import java.util.List;
 
 import primal.adt.Pair;
-import suite.primitive.Int_Dbl;
-import suite.primitive.Int_Flt;
 import suite.primitive.Ints_;
+import suite.streamlet.As;
 import suite.util.To;
 
 // Introduction to Machine Learning, page 24
@@ -42,12 +41,12 @@ public class NaiveBayes {
 		ps = To.array(nCategories, float[].class, i -> {
 			var range = forInt(length_);
 			var is_ = is[i];
-			return range.collect(Int_Flt.lift(j -> (float) (is_[j] / ws[i]))).toArray();
+			return range.collect(As.floats(j -> (float) (is_[j] / ws[i]))).toArray();
 		});
 	}
 
 	public boolean classify(int[] record) {
-		return forInt(length).toDouble(Int_Dbl.sum(j -> record[j] * (log(ps[i(false)][j]) - log(ps[i(true)][j])))) <= b;
+		return forInt(length).toDouble(As.sum(j -> record[j] * (log(ps[i(false)][j]) - log(ps[i(true)][j])))) <= b;
 	}
 
 	private int i(boolean b) {

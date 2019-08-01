@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import suite.primitive.Int_Int;
+import primal.primitive.Int_Int;
 import suite.primitive.Ints_;
 
 public class BinarySearchTest {

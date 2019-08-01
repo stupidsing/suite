@@ -8,7 +8,7 @@ import java.util.Arrays;
 
 import primal.adt.Pair;
 import suite.math.linalg.Vector;
-import suite.primitive.Int_Dbl;
+import suite.streamlet.As;
 import suite.util.To;
 
 public class Polynomial {
@@ -35,7 +35,7 @@ public class Polynomial {
 		var length0 = ps0.length;
 		var length1 = ps1.length;
 		return To.vector(length0 + length1,
-				i -> forInt(max(0, i - length1 + 1), min(i + 1, length0)).toDouble(Int_Dbl.sum(j -> ps0[j] * ps1[i - j])));
+				i -> forInt(max(0, i - length1 + 1), min(i + 1, length0)).toDouble(As.sum(j -> ps0[j] * ps1[i - j])));
 	}
 
 	public Pair<float[], float[]> div(float[] num, float[] denom) {
