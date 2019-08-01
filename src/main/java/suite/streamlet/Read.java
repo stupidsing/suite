@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Map;
 
+import primal.Verbs.ReadLine;
 import primal.adt.Pair;
 import primal.fp.Funs.Source;
 import primal.fp.Funs2.Source2;
@@ -21,7 +22,6 @@ import suite.cfg.Defaults;
 import suite.http.HttpUtil;
 import suite.primitive.Bytes;
 import suite.util.To;
-import suite.util.Util;
 
 public class Read {
 
@@ -119,7 +119,7 @@ public class Read {
 
 	public static Puller<String> lines(Reader reader) {
 		var br = new BufferedReader(reader);
-		return Puller.of(() -> ex(() -> Util.readLine(br))).closeAtEnd(br).closeAtEnd(reader);
+		return Puller.of(() -> ex(() -> ReadLine.from(br))).closeAtEnd(br).closeAtEnd(reader);
 	}
 
 	public static Streamlet<Bytes> url(String url) {

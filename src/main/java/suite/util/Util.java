@@ -3,8 +3,6 @@ package suite.util;
 import static primal.statics.Fail.fail;
 import static primal.statics.Rethrow.ex;
 
-import java.io.InputStream;
-import java.io.Reader;
 import java.lang.reflect.Method;
 import java.sql.Timestamp;
 import java.util.Date;
@@ -18,7 +16,6 @@ import primal.fp.Funs.Fun;
 import primal.fp.Funs.Sink;
 import primal.fp.Funs.Source;
 import primal.fp.Funs2.Fun2;
-import suite.cfg.Defaults;
 import suite.streamlet.Read;
 
 public class Util {
@@ -65,37 +62,6 @@ public class Util {
 			}
 	}
 
-	/**
-	 * Reads a line from a stream with a maximum line length limit. Removes carriage
-	 * return if it is DOS-mode line feed (CR-LF). Unknown behaviour when dealing
-	 * with non-ASCII encoding characters.
-	 */
-	public static String readLine(InputStream is) {
-		return ex(() -> {
-			var sb = new StringBuilder();
-			int c;
-			while (0 <= (c = is.read()) && c != 10) {
-				sb.append((char) c);
-				if (Defaults.bufferLimit <= sb.length())
-					fail("line too long");
-			}
-			return 0 <= c ? strip(sb) : null;
-		});
-	}
-
-	public static String readLine(Reader reader) {
-		return ex(() -> {
-			var sb = new StringBuilder();
-			int c;
-			while (0 <= (c = reader.read()) && c != 10) {
-				sb.append((char) c);
-				if (Defaults.bufferLimit <= sb.length())
-					fail("line too long");
-			}
-			return 0 <= c ? strip(sb) : null;
-		});
-	}
-
 	public static int temp() {
 		return counter.getAndIncrement();
 	}
@@ -104,13 +70,6 @@ public class Util {
 		@SuppressWarnings("unchecked")
 		var t = (T) ex;
 		throw t;
-	}
-
-	private static String strip(StringBuilder sb) {
-		var length = sb.length();
-		if (0 < length && sb.charAt(length - 1) == 13)
-			sb.deleteCharAt(length - 1);
-		return sb.toString();
 	}
 
 }

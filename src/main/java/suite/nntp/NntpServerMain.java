@@ -11,10 +11,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import primal.String_;
+import primal.Verbs.ReadLine;
 import suite.os.SocketUtil;
 import suite.util.CommandUtil;
 import suite.util.RunUtil;
-import suite.util.Util;
 import suite.util.WriteStream;
 
 public class NntpServerMain {
@@ -41,7 +41,7 @@ public class NntpServerMain {
 				Map<String, String> article;
 				String line;
 
-				while (!(line = Util.readLine(sis)).isEmpty()) {
+				while (!(line = ReadLine.from(sis)).isEmpty()) {
 					var pair = new CommandUtil<>(NntpCommand.values()).recognize(line.toUpperCase());
 					var options = pair.v;
 
@@ -103,7 +103,7 @@ public class NntpServerMain {
 						pw.println("340 Okay");
 						var size = 0;
 						var lines = new ArrayList<String>();
-						while (!String_.equals(line = Util.readLine(sis), ".") && size < 1048576) {
+						while (!String_.equals(line = ReadLine.from(sis), ".") && size < 1048576) {
 							lines.add(line);
 							size += line.length();
 						}

@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 import primal.String_;
+import primal.Verbs.ReadLine;
 import primal.adt.FixieArray;
 import suite.cfg.Defaults;
 import suite.os.FileUtil;
@@ -19,7 +20,6 @@ import suite.primitive.Bytes;
 import suite.streamlet.Read;
 import suite.text.TextUtil.BytesPair;
 import suite.util.Set_;
-import suite.util.Util;
 
 public interface Snapshot {
 
@@ -102,7 +102,7 @@ class Impl implements Snapshot {
 	public List<BytesPair> readPatch(InputStream is) {
 		var list = new ArrayList<BytesPair>();
 		String line;
-		while (!String_.equals(line = Util.readLine(is), "EOF"))
+		while (!String_.equals(line = ReadLine.from(is), "EOF"))
 			list.add(FixieArray.of(line.split(" ")).map((f, s0, s1) -> ex(() -> {
 				var size0 = !String_.equals(s0, "N") ? Integer.valueOf(s0) : null;
 				var size1 = !String_.equals(s1, "N") ? Integer.valueOf(s1) : null;

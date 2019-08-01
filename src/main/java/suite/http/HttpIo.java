@@ -11,6 +11,7 @@ import java.io.OutputStream;
 import java.net.URLDecoder;
 
 import primal.String_;
+import primal.Verbs.ReadLine;
 import primal.adt.FixieArray;
 import primal.adt.Opt;
 import primal.fp.Funs2.Fun2;
@@ -19,12 +20,11 @@ import suite.streamlet.As;
 import suite.util.Copy;
 import suite.util.ReadStream;
 import suite.util.To;
-import suite.util.Util;
 
 public class HttpIo {
 
 	public HttpRequest readRequest(InputStream is0) {
-		var ls = Util.readLine(is0).split(" ");
+		var ls = ReadLine.from(is0).split(" ");
 		var headers = readHeaders(is0);
 
 		return FixieArray.of(ls).map((method, url, protocol) -> {
@@ -45,7 +45,7 @@ public class HttpIo {
 	}
 
 	public HttpResponse readResponse(InputStream is0) {
-		var ls = Util.readLine(is0).split(" ");
+		var ls = ReadLine.from(is0).split(" ");
 		var headers = readHeaders(is0);
 
 		return FixieArray.of(ls).map((protocol, status) -> {
@@ -100,7 +100,7 @@ public class HttpIo {
 	private HttpHeader readHeaders(InputStream is) {
 		var headers = new HttpHeader();
 		String line;
-		while (!(line = Util.readLine(is)).isEmpty()) {
+		while (!(line = ReadLine.from(is)).isEmpty()) {
 			var headers0 = headers;
 			headers = String_.split2l(line, ":").map((k, v) -> headers0.put(k, v));
 		}

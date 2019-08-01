@@ -5,6 +5,7 @@ import static primal.statics.Rethrow.ex;
 import java.net.Socket;
 
 import primal.String_;
+import primal.Verbs.ReadLine;
 import primal.fp.Funs.Fun;
 import primal.os.Log_;
 import suite.cfg.Defaults;
@@ -13,7 +14,6 @@ import suite.primitive.adt.pair.IntObjPair;
 import suite.streamlet.Read;
 import suite.util.Copy;
 import suite.util.Thread_;
-import suite.util.Util;
 
 /**
  * A very crude HTTP proxy.
@@ -32,7 +32,7 @@ public class HttpProxy {
 
 	public void serve0() {
 		new SocketUtil().listenIo(port, (is, os) -> {
-			var line = Util.readLine(is);
+			var line = ReadLine.from(is);
 			Log_.info("PROXY " + line);
 
 			var url = line.split(" ")[1];
