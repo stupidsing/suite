@@ -19,6 +19,7 @@ import primal.primitive.DblPrim.DblSource;
 import primal.primitive.DblPrim.DblTest;
 import primal.primitive.DblPrim.Dbl_Obj;
 import primal.primitive.Dbl_Dbl;
+import primal.streamlet.StreamletDefaults;
 import suite.adt.map.ListMultimap;
 import suite.primitive.Doubles;
 import suite.primitive.Doubles.DoublesBuilder;
@@ -29,7 +30,6 @@ import suite.primitive.adt.set.DblSet;
 import suite.streamlet.Puller;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
-import suite.streamlet.StreamletDefaults;
 
 public class DblStreamlet implements StreamletDefaults<Double, DblPuller> {
 

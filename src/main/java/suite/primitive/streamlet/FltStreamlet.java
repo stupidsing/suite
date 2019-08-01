@@ -19,6 +19,7 @@ import primal.primitive.FltPrim.FltSource;
 import primal.primitive.FltPrim.FltTest;
 import primal.primitive.FltPrim.Flt_Obj;
 import primal.primitive.Flt_Flt;
+import primal.streamlet.StreamletDefaults;
 import suite.adt.map.ListMultimap;
 import suite.primitive.Floats;
 import suite.primitive.Floats.FloatsBuilder;
@@ -29,7 +30,6 @@ import suite.primitive.adt.set.FltSet;
 import suite.streamlet.Puller;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
-import suite.streamlet.StreamletDefaults;
 
 public class FltStreamlet implements StreamletDefaults<Float, FltPuller> {
 

@@ -19,6 +19,7 @@ import primal.primitive.IntPrim.IntSource;
 import primal.primitive.IntPrim.IntTest;
 import primal.primitive.IntPrim.Int_Obj;
 import primal.primitive.Int_Int;
+import primal.streamlet.StreamletDefaults;
 import suite.adt.map.ListMultimap;
 import suite.primitive.Ints;
 import suite.primitive.Ints.IntsBuilder;
@@ -29,7 +30,6 @@ import suite.primitive.adt.set.IntSet;
 import suite.streamlet.Puller;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
-import suite.streamlet.StreamletDefaults;
 
 public class IntStreamlet implements StreamletDefaults<Integer, IntPuller> {
 

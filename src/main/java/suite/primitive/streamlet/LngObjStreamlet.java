@@ -24,6 +24,7 @@ import primal.primitive.LngPrim.LngObj_Obj;
 import primal.primitive.LngPrim.LngTest;
 import primal.primitive.adt.pair.LngObjPair;
 import primal.primitive.fp.LngObjFunUtil;
+import primal.streamlet.StreamletDefaults;
 import suite.adt.map.ListMultimap;
 import suite.primitive.adt.map.LngObjMap;
 import suite.primitive.adt.map.ObjLngMap;
@@ -32,7 +33,6 @@ import suite.streamlet.Puller2;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
-import suite.streamlet.StreamletDefaults;
 
 public class LngObjStreamlet<V> implements StreamletDefaults<LngObjPair<V>, LngObjPuller<V>> {
 

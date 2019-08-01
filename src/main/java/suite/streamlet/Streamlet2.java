@@ -22,6 +22,7 @@ import primal.fp.Funs.Source;
 import primal.fp.Funs2.Fun2;
 import primal.fp.Funs2.Sink2;
 import primal.fp.Funs2.Source2;
+import primal.streamlet.StreamletDefaults;
 import suite.adt.map.ListMultimap;
 
 public class Streamlet2<K, V> implements StreamletDefaults<Pair<K, V>, Puller2<K, V>> {

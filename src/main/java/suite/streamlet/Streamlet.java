@@ -17,6 +17,7 @@ import primal.fp.Funs.Fun;
 import primal.fp.Funs.Sink;
 import primal.fp.Funs.Source;
 import primal.fp.Funs2.Fun2;
+import primal.streamlet.StreamletDefaults;
 import suite.adt.map.ListMultimap;
 import suite.primitive.streamlet.IntObjStreamlet;
 

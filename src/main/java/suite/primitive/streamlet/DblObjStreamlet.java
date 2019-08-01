@@ -24,6 +24,7 @@ import primal.primitive.DblPrim.DblObj_Obj;
 import primal.primitive.DblPrim.DblTest;
 import primal.primitive.adt.pair.DblObjPair;
 import primal.primitive.fp.DblObjFunUtil;
+import primal.streamlet.StreamletDefaults;
 import suite.adt.map.ListMultimap;
 import suite.primitive.adt.map.DblObjMap;
 import suite.primitive.adt.map.ObjDblMap;
@@ -32,7 +33,6 @@ import suite.streamlet.Puller2;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
-import suite.streamlet.StreamletDefaults;
 
 public class DblObjStreamlet<V> implements StreamletDefaults<DblObjPair<V>, DblObjPuller<V>> {
 

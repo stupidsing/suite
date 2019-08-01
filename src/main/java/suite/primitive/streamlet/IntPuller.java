@@ -36,6 +36,7 @@ import primal.primitive.IntPrim.Int_Obj;
 import primal.primitive.Int_Int;
 import primal.primitive.adt.pair.IntObjPair;
 import primal.primitive.fp.IntFunUtil;
+import primal.streamlet.PullerDefaults;
 import suite.adt.map.ListMultimap;
 import suite.primitive.Ints;
 import suite.primitive.Ints.IntsBuilder;
@@ -45,7 +46,6 @@ import suite.primitive.adt.set.IntSet;
 import suite.streamlet.As;
 import suite.streamlet.Puller;
 import suite.streamlet.Puller2;
-import suite.streamlet.PullerDefaults;
 import suite.streamlet.Read;
 import suite.util.To;
 

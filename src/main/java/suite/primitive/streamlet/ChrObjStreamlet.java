@@ -24,6 +24,7 @@ import primal.primitive.ChrPrim.ChrObj_Obj;
 import primal.primitive.ChrPrim.ChrTest;
 import primal.primitive.adt.pair.ChrObjPair;
 import primal.primitive.fp.ChrObjFunUtil;
+import primal.streamlet.StreamletDefaults;
 import suite.adt.map.ListMultimap;
 import suite.primitive.adt.map.ChrObjMap;
 import suite.primitive.adt.map.ObjChrMap;
@@ -32,7 +33,6 @@ import suite.streamlet.Puller2;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
-import suite.streamlet.StreamletDefaults;
 
 public class ChrObjStreamlet<V> implements StreamletDefaults<ChrObjPair<V>, ChrObjPuller<V>> {
 

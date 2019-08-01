@@ -36,6 +36,7 @@ import primal.primitive.FltPrim.Flt_Obj;
 import primal.primitive.Flt_Flt;
 import primal.primitive.adt.pair.FltObjPair;
 import primal.primitive.fp.FltFunUtil;
+import primal.streamlet.PullerDefaults;
 import suite.adt.map.ListMultimap;
 import suite.primitive.Floats;
 import suite.primitive.Floats.FloatsBuilder;
@@ -45,7 +46,6 @@ import suite.primitive.adt.set.FltSet;
 import suite.streamlet.As;
 import suite.streamlet.Puller;
 import suite.streamlet.Puller2;
-import suite.streamlet.PullerDefaults;
 import suite.streamlet.Read;
 import suite.util.To;
 

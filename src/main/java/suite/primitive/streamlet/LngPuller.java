@@ -36,6 +36,7 @@ import primal.primitive.LngPrim.Lng_Obj;
 import primal.primitive.Lng_Lng;
 import primal.primitive.adt.pair.LngObjPair;
 import primal.primitive.fp.LngFunUtil;
+import primal.streamlet.PullerDefaults;
 import suite.adt.map.ListMultimap;
 import suite.primitive.Longs;
 import suite.primitive.Longs.LongsBuilder;
@@ -45,7 +46,6 @@ import suite.primitive.adt.set.LngSet;
 import suite.streamlet.As;
 import suite.streamlet.Puller;
 import suite.streamlet.Puller2;
-import suite.streamlet.PullerDefaults;
 import suite.streamlet.Read;
 import suite.util.To;
 

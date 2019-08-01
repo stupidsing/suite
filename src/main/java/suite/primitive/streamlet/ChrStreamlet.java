@@ -19,6 +19,7 @@ import primal.primitive.ChrPrim.ChrSource;
 import primal.primitive.ChrPrim.ChrTest;
 import primal.primitive.ChrPrim.Chr_Obj;
 import primal.primitive.Chr_Chr;
+import primal.streamlet.StreamletDefaults;
 import suite.adt.map.ListMultimap;
 import suite.primitive.Chars;
 import suite.primitive.Chars.CharsBuilder;
@@ -29,7 +30,6 @@ import suite.primitive.adt.set.ChrSet;
 import suite.streamlet.Puller;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
-import suite.streamlet.StreamletDefaults;
 
 public class ChrStreamlet implements StreamletDefaults<Character, ChrPuller> {
 

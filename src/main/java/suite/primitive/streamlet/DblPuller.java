@@ -36,6 +36,7 @@ import primal.primitive.DblPrim.Dbl_Obj;
 import primal.primitive.Dbl_Dbl;
 import primal.primitive.adt.pair.DblObjPair;
 import primal.primitive.fp.DblFunUtil;
+import primal.streamlet.PullerDefaults;
 import suite.adt.map.ListMultimap;
 import suite.primitive.Doubles;
 import suite.primitive.Doubles.DoublesBuilder;
@@ -45,7 +46,6 @@ import suite.primitive.adt.set.DblSet;
 import suite.streamlet.As;
 import suite.streamlet.Puller;
 import suite.streamlet.Puller2;
-import suite.streamlet.PullerDefaults;
 import suite.streamlet.Read;
 import suite.util.To;
 

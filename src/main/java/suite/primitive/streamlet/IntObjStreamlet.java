@@ -24,6 +24,7 @@ import primal.primitive.IntPrim.IntObj_Obj;
 import primal.primitive.IntPrim.IntTest;
 import primal.primitive.adt.pair.IntObjPair;
 import primal.primitive.fp.IntObjFunUtil;
+import primal.streamlet.StreamletDefaults;
 import suite.adt.map.ListMultimap;
 import suite.primitive.adt.map.IntObjMap;
 import suite.primitive.adt.map.ObjIntMap;
@@ -32,7 +33,6 @@ import suite.streamlet.Puller2;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
-import suite.streamlet.StreamletDefaults;
 
 public class IntObjStreamlet<V> implements StreamletDefaults<IntObjPair<V>, IntObjPuller<V>> {
 

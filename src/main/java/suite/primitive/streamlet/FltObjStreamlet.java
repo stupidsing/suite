@@ -24,6 +24,7 @@ import primal.primitive.FltPrim.FltObj_Obj;
 import primal.primitive.FltPrim.FltTest;
 import primal.primitive.adt.pair.FltObjPair;
 import primal.primitive.fp.FltObjFunUtil;
+import primal.streamlet.StreamletDefaults;
 import suite.adt.map.ListMultimap;
 import suite.primitive.adt.map.FltObjMap;
 import suite.primitive.adt.map.ObjFltMap;
@@ -32,7 +33,6 @@ import suite.streamlet.Puller2;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
-import suite.streamlet.StreamletDefaults;
 
 public class FltObjStreamlet<V> implements StreamletDefaults<FltObjPair<V>, FltObjPuller<V>> {
 

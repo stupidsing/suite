@@ -36,6 +36,7 @@ import primal.primitive.ChrPrim.Chr_Obj;
 import primal.primitive.Chr_Chr;
 import primal.primitive.adt.pair.ChrObjPair;
 import primal.primitive.fp.ChrFunUtil;
+import primal.streamlet.PullerDefaults;
 import suite.adt.map.ListMultimap;
 import suite.primitive.Chars;
 import suite.primitive.Chars.CharsBuilder;
@@ -45,7 +46,6 @@ import suite.primitive.adt.set.ChrSet;
 import suite.streamlet.As;
 import suite.streamlet.Puller;
 import suite.streamlet.Puller2;
-import suite.streamlet.PullerDefaults;
 import suite.streamlet.Read;
 import suite.util.To;
 
