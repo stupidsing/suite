@@ -8,6 +8,8 @@ import static primal.statics.Fail.fail;
 import java.util.List;
 
 import primal.fp.Funs.Fun;
+import primal.primitive.adt.pair.FltObjPair;
+import primal.primitive.adt.pair.IntObjPair;
 import suite.math.linalg.CholeskyDecomposition;
 import suite.math.linalg.Matrix;
 import suite.math.linalg.Vector;
@@ -16,8 +18,6 @@ import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.Int_Dbl;
 import suite.primitive.Int_Flt;
 import suite.primitive.adt.map.IntObjMap;
-import suite.primitive.adt.pair.FltObjPair;
-import suite.primitive.adt.pair.IntObjPair;
 import suite.streamlet.Streamlet;
 import suite.util.To;
 

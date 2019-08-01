@@ -5,12 +5,12 @@ import static suite.util.Streamlet_.forInt;
 import java.util.Random;
 
 import primal.primitive.IntPrim;
+import primal.primitive.adt.pair.DblIntPair;
+import primal.primitive.adt.pair.IntObjPair;
 import suite.adt.map.IntIntMap1;
 import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.Int_Dbl;
-import suite.primitive.adt.pair.DblIntPair;
-import suite.primitive.adt.pair.IntObjPair;
 import suite.streamlet.Streamlet;
 
 public class DecisionTree {

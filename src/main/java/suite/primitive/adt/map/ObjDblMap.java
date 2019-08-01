@@ -7,11 +7,11 @@ import java.util.Objects;
 
 import primal.Verbs.Equals;
 import primal.primitive.DblPrim;
+import primal.primitive.adt.pair.DblObjPair;
 import suite.primitive.DblPrimitives.DblObjSink;
 import suite.primitive.DblPrimitives.DblObjSource;
 import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Dbl_Dbl;
-import suite.primitive.adt.pair.DblObjPair;
 import suite.primitive.streamlet.DblObjPuller;
 import suite.primitive.streamlet.DblObjStreamlet;
 import suite.streamlet.As;

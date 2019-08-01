@@ -1,6 +1,6 @@
 package suite.primitive;
 
-import suite.primitive.adt.pair.IntChrPair;
+import primal.primitive.adt.pair.IntChrPair;
 
 public interface IntChrSource {
 

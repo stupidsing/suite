@@ -4,10 +4,10 @@ import static suite.util.Streamlet_.forInt;
 
 import java.util.List;
 
+import primal.primitive.adt.pair.DblIntPair;
 import suite.math.linalg.Vector;
 import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Floats;
-import suite.primitive.adt.pair.DblIntPair;
 import suite.streamlet.Read;
 import suite.util.To;
 

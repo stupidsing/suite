@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.Random;
 
 import primal.adt.Pair;
+import primal.primitive.adt.pair.DblObjPair;
 import suite.primitive.Int_Dbl;
-import suite.primitive.adt.pair.DblObjPair;
 import suite.util.To;
 
 public class Eigen {

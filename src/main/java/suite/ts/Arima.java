@@ -8,6 +8,8 @@ import java.util.Arrays;
 import java.util.Random;
 
 import primal.primitive.DblPrim.DblSource;
+import primal.primitive.adt.pair.DblObjPair;
+import primal.primitive.adt.pair.FltObjPair;
 import suite.math.linalg.Vector;
 import suite.math.numeric.Statistic;
 import suite.math.numeric.Statistic.LinearRegression;
@@ -15,8 +17,6 @@ import suite.primitive.Floats;
 import suite.primitive.Floats_;
 import suite.primitive.Int_Dbl;
 import suite.primitive.Int_Flt;
-import suite.primitive.adt.pair.DblObjPair;
-import suite.primitive.adt.pair.FltObjPair;
 import suite.util.To;
 
 public class Arima {

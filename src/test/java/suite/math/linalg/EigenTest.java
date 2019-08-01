@@ -4,8 +4,8 @@ import java.util.List;
 
 import org.junit.Test;
 
+import primal.primitive.adt.pair.DblObjPair;
 import suite.math.Math_;
-import suite.primitive.adt.pair.DblObjPair;
 import suite.util.To;
 
 public class EigenTest {

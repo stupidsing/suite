@@ -17,6 +17,7 @@ import primal.fp.Funs.Sink;
 import primal.fp.Funs.Source;
 import primal.fp.Funs2.Sink2;
 import primal.primitive.IntPrim;
+import primal.primitive.adt.pair.IntIntPair;
 import suite.Suite;
 import suite.assembler.Amd64;
 import suite.assembler.Amd64.Insn;
@@ -68,7 +69,6 @@ import suite.node.io.TermOp;
 import suite.node.util.TreeUtil;
 import suite.primitive.Bytes;
 import suite.primitive.IntPrimitives.IntObj_Obj;
-import suite.primitive.adt.pair.IntIntPair;
 import suite.streamlet.Read;
 import suite.util.Switch;
 

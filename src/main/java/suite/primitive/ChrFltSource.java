@@ -1,6 +1,6 @@
 package suite.primitive;
 
-import suite.primitive.adt.pair.ChrFltPair;
+import primal.primitive.adt.pair.ChrFltPair;
 
 public interface ChrFltSource {
 

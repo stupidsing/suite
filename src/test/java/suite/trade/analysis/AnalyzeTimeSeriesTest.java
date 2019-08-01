@@ -9,6 +9,7 @@ import java.util.Arrays;
 import org.junit.Test;
 
 import primal.os.Log_;
+import primal.primitive.adt.pair.IntFltPair;
 import suite.math.Tanh;
 import suite.math.linalg.VirtualVector;
 import suite.math.numeric.Statistic;
@@ -16,7 +17,6 @@ import suite.math.transform.DiscreteCosineTransform;
 import suite.primitive.Floats_;
 import suite.primitive.IntPrimitives.Int_Obj;
 import suite.primitive.Ints_;
-import suite.primitive.adt.pair.IntFltPair;
 import suite.trade.Time;
 import suite.trade.TimeRange;
 import suite.trade.Trade_;

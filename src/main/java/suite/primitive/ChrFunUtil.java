@@ -15,10 +15,10 @@ import primal.primitive.ChrPrim;
 import primal.primitive.ChrPrim.ChrSink;
 import primal.primitive.ChrPrim.ChrSource;
 import primal.primitive.ChrPrim.ChrTest;
+import primal.primitive.adt.pair.ChrObjPair;
 import primal.statics.Fail.InterruptedRuntimeException;
 import suite.primitive.ChrPrimitives.ChrObjSource;
 import suite.primitive.ChrPrimitives.Chr_Obj;
-import suite.primitive.adt.pair.ChrObjPair;
 import suite.util.Thread_;
 
 public class ChrFunUtil {

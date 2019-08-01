@@ -7,10 +7,10 @@ import java.util.Random;
 
 import org.junit.Test;
 
+import primal.primitive.adt.pair.DblObjPair;
 import suite.math.linalg.Vector;
 import suite.primitive.Floats_;
 import suite.primitive.Int_Dbl;
-import suite.primitive.adt.pair.DblObjPair;
 import suite.ts.Arima;
 import suite.ts.Arima.Arima_;
 import suite.util.To;

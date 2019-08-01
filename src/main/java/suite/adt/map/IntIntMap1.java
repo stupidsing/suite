@@ -6,11 +6,11 @@ import java.util.Arrays;
 
 import primal.primitive.IntIntSink;
 import primal.primitive.IntPrim;
+import primal.primitive.adt.pair.IntIntPair;
+import primal.primitive.adt.pair.IntObjPair;
 import suite.primitive.IntIntSource;
 import suite.primitive.IntPrimitives.IntObjSource;
 import suite.primitive.Int_Int;
-import suite.primitive.adt.pair.IntIntPair;
-import suite.primitive.adt.pair.IntObjPair;
 import suite.primitive.streamlet.IntObjPuller;
 import suite.primitive.streamlet.IntObjStreamlet;
 import suite.primitive.streamlet.IntPuller;

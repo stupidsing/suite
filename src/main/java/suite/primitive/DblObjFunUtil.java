@@ -13,12 +13,12 @@ import primal.fp.Funs.Source;
 import primal.fp.Funs2.Source2;
 import primal.os.Log_;
 import primal.primitive.DblPrim.DblTest;
+import primal.primitive.adt.pair.DblObjPair;
 import primal.statics.Fail.InterruptedRuntimeException;
 import primal.statics.Rethrow;
 import suite.primitive.DblPrimitives.DblObjPredicate;
 import suite.primitive.DblPrimitives.DblObjSource;
 import suite.primitive.DblPrimitives.DblObj_Obj;
-import suite.primitive.adt.pair.DblObjPair;
 import suite.util.Thread_;
 
 public class DblObjFunUtil {

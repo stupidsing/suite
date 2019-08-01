@@ -2,7 +2,7 @@ package suite.ts;
 
 import primal.fp.Funs.Source;
 import primal.primitive.DblPrim.DblSource;
-import suite.primitive.adt.pair.DblObjPair;
+import primal.primitive.adt.pair.DblObjPair;
 
 public class Mle {
 

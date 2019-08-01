@@ -5,7 +5,7 @@ import java.util.List;
 
 import primal.fp.Funs.Iterate;
 import primal.fp.Funs2.BinOp;
-import suite.primitive.adt.pair.IntObjPair;
+import primal.primitive.adt.pair.IntObjPair;
 import suite.streamlet.Streamlet;
 
 public class PerIntMap<V> {

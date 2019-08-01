@@ -14,8 +14,8 @@ import primal.os.Log_;
 import primal.primitive.ChrDblPredicate;
 import primal.primitive.ChrPrim.ChrTest;
 import primal.primitive.DblPrim.DblTest;
+import primal.primitive.adt.pair.ChrDblPair;
 import primal.statics.Fail.InterruptedRuntimeException;
-import suite.primitive.adt.pair.ChrDblPair;
 import suite.util.Thread_;
 
 public class ChrDblFunUtil {

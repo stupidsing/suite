@@ -1,6 +1,6 @@
 package suite.primitive;
 
-import suite.primitive.adt.pair.FltIntPair;
+import primal.primitive.adt.pair.FltIntPair;
 
 public interface FltIntSource {
 

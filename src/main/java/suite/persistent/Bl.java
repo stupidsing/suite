@@ -3,7 +3,7 @@ package suite.persistent;
 import java.util.List;
 
 import primal.fp.Funs2.BinOp;
-import suite.primitive.adt.pair.IntObjPair;
+import primal.primitive.adt.pair.IntObjPair;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.Array_;

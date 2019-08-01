@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+import primal.primitive.adt.pair.DblObjPair;
 import suite.math.linalg.Vector;
 import suite.primitive.DblPrimitives.Dbl_Obj;
 import suite.primitive.DblPrimitives.Obj_Dbl;
-import suite.primitive.adt.pair.DblObjPair;
 import suite.streamlet.Read;
 
 // https://github.com/fchollet/nelder-mead/blob/master/nelder_mead.py#L83

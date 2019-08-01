@@ -5,12 +5,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import primal.primitive.adt.pair.DblObjPair;
+import primal.primitive.adt.pair.IntDblPair;
 import suite.math.linalg.Vector;
 import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.adt.map.IntObjMap;
 import suite.primitive.adt.map.ObjIntMap;
-import suite.primitive.adt.pair.DblObjPair;
-import suite.primitive.adt.pair.IntDblPair;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.util.List_;

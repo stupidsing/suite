@@ -11,6 +11,7 @@ import static suite.util.Streamlet_.forInt;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import primal.primitive.adt.pair.FltObjPair;
 import suite.math.linalg.CholeskyDecomposition;
 import suite.math.linalg.Vector;
 import suite.math.numeric.Statistic;
@@ -18,7 +19,6 @@ import suite.math.numeric.Statistic.LinearRegression;
 import suite.primitive.Floats;
 import suite.primitive.Int_Dbl;
 import suite.primitive.Ints_;
-import suite.primitive.adt.pair.FltObjPair;
 import suite.streamlet.Read;
 import suite.trade.Trade_;
 import suite.util.To;

@@ -1,6 +1,6 @@
 package suite.primitive;
 
-import suite.primitive.adt.pair.DblLngPair;
+import primal.primitive.adt.pair.DblLngPair;
 
 public interface DblLngSource {
 

@@ -16,11 +16,11 @@ import java.util.Set;
 
 import primal.String_;
 import primal.os.Log_;
+import primal.primitive.adt.pair.IntIntPair;
 import suite.cfg.Defaults;
 import suite.net.NetUtil;
 import suite.net.ThreadService;
 import suite.net.cluster.ClusterProbe;
-import suite.primitive.adt.pair.IntIntPair;
 import suite.streamlet.As;
 import suite.streamlet.Pusher;
 import suite.streamlet.Read;

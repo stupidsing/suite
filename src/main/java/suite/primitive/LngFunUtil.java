@@ -15,10 +15,10 @@ import primal.primitive.LngPrim;
 import primal.primitive.LngPrim.LngSink;
 import primal.primitive.LngPrim.LngSource;
 import primal.primitive.LngPrim.LngTest;
+import primal.primitive.adt.pair.LngObjPair;
 import primal.statics.Fail.InterruptedRuntimeException;
 import suite.primitive.LngPrimitives.LngObjSource;
 import suite.primitive.LngPrimitives.Lng_Obj;
-import suite.primitive.adt.pair.LngObjPair;
 import suite.util.Thread_;
 
 public class LngFunUtil {

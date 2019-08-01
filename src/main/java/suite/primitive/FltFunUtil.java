@@ -15,10 +15,10 @@ import primal.primitive.FltPrim;
 import primal.primitive.FltPrim.FltSink;
 import primal.primitive.FltPrim.FltSource;
 import primal.primitive.FltPrim.FltTest;
+import primal.primitive.adt.pair.FltObjPair;
 import primal.statics.Fail.InterruptedRuntimeException;
 import suite.primitive.FltPrimitives.FltObjSource;
 import suite.primitive.FltPrimitives.Flt_Obj;
-import suite.primitive.adt.pair.FltObjPair;
 import suite.util.Thread_;
 
 public class FltFunUtil {

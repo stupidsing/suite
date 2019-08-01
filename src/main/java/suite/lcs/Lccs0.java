@@ -4,9 +4,9 @@ import static java.lang.Math.min;
 
 import primal.Verbs.Equals;
 import primal.adt.Pair;
+import primal.primitive.adt.pair.IntObjPair;
 import suite.primitive.Bytes;
 import suite.primitive.adt.map.IntObjMap;
-import suite.primitive.adt.pair.IntObjPair;
 import suite.primitive.adt.set.IntSet;
 import suite.text.RollingHash;
 import suite.text.Segment;

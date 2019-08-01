@@ -9,12 +9,12 @@ import primal.Verbs.Get;
 import primal.adt.Pair;
 import primal.fp.Funs.Sink;
 import primal.primitive.IntPrim.IntSink;
+import primal.primitive.adt.pair.IntObjPair;
 import suite.node.Node;
 import suite.node.Reference;
 import suite.node.io.Rewrite_.NodeHead;
 import suite.node.io.Rewrite_.NodeRead;
 import suite.primitive.adt.map.IntObjMap;
-import suite.primitive.adt.pair.IntObjPair;
 
 /**
  * The Node.hashCode() method would not permit taking hash code of terms with

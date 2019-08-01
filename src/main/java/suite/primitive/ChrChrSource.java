@@ -1,6 +1,6 @@
 package suite.primitive;
 
-import suite.primitive.adt.pair.ChrChrPair;
+import primal.primitive.adt.pair.ChrChrPair;
 
 public interface ChrChrSource {
 

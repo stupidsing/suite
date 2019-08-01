@@ -1,6 +1,6 @@
 package suite.primitive;
 
-import suite.primitive.adt.pair.LngChrPair;
+import primal.primitive.adt.pair.LngChrPair;
 
 public interface LngChrSource {
 

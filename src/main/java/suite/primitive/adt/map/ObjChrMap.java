@@ -7,11 +7,11 @@ import java.util.Objects;
 
 import primal.Verbs.Equals;
 import primal.primitive.ChrPrim;
+import primal.primitive.adt.pair.ChrObjPair;
 import suite.primitive.ChrPrimitives.ChrObjSink;
 import suite.primitive.ChrPrimitives.ChrObjSource;
 import suite.primitive.ChrPrimitives.Obj_Chr;
 import suite.primitive.Chr_Chr;
-import suite.primitive.adt.pair.ChrObjPair;
 import suite.primitive.streamlet.ChrObjPuller;
 import suite.primitive.streamlet.ChrObjStreamlet;
 import suite.streamlet.As;

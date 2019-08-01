@@ -3,10 +3,10 @@ package suite.ts;
 import static primal.statics.Fail.fail;
 import static suite.util.Streamlet_.forInt;
 
+import primal.primitive.adt.pair.FltObjPair;
 import suite.math.numeric.Statistic;
 import suite.math.numeric.Statistic.LinearRegression;
 import suite.primitive.Floats_;
-import suite.primitive.adt.pair.FltObjPair;
 import suite.util.To;
 
 /**

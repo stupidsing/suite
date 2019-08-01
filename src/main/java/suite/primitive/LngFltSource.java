@@ -1,6 +1,6 @@
 package suite.primitive;
 
-import suite.primitive.adt.pair.LngFltPair;
+import primal.primitive.adt.pair.LngFltPair;
 
 public interface LngFltSource {
 

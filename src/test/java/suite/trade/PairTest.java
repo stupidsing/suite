@@ -5,10 +5,10 @@ import static suite.util.Streamlet_.forInt;
 
 import org.junit.Test;
 
+import primal.primitive.adt.pair.FltObjPair;
 import suite.math.linalg.Vector;
 import suite.math.numeric.Statistic;
 import suite.primitive.Longs_;
-import suite.primitive.adt.pair.FltObjPair;
 import suite.trade.data.TradeCfg;
 import suite.trade.data.TradeCfgImpl;
 

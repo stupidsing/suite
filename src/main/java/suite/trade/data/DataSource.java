@@ -10,10 +10,10 @@ import java.util.Collection;
 import java.util.List;
 
 import primal.Verbs.Compare;
+import primal.primitive.adt.pair.LngFltPair;
 import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.primitive.LngPrimitives.Obj_Lng;
 import suite.primitive.Longs_;
-import suite.primitive.adt.pair.LngFltPair;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;

@@ -7,11 +7,11 @@ import java.util.Objects;
 
 import primal.Verbs.Equals;
 import primal.primitive.LngPrim;
+import primal.primitive.adt.pair.LngObjPair;
 import suite.primitive.LngPrimitives.LngObjSink;
 import suite.primitive.LngPrimitives.LngObjSource;
 import suite.primitive.LngPrimitives.Obj_Lng;
 import suite.primitive.Lng_Lng;
-import suite.primitive.adt.pair.LngObjPair;
 import suite.primitive.streamlet.LngObjPuller;
 import suite.primitive.streamlet.LngObjStreamlet;
 import suite.streamlet.As;

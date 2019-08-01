@@ -9,10 +9,10 @@ import java.util.Set;
 import primal.String_;
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
+import primal.primitive.adt.pair.IntObjPair;
 import suite.adt.map.BiHashMap;
 import suite.adt.map.BiMap;
 import suite.primitive.IntRange;
-import suite.primitive.adt.pair.IntObjPair;
 import suite.streamlet.Read;
 
 public class HtmlUtil {

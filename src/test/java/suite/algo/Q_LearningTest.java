@@ -12,8 +12,8 @@ import java.util.Set;
 import org.junit.Test;
 
 import primal.Verbs.Equals;
+import primal.primitive.adt.pair.IntDblPair;
 import suite.primitive.Coord;
-import suite.primitive.adt.pair.IntDblPair;
 
 // https://towardsdatascience.com/reinforcement-learning-with-python-8ef0242a2fa2
 public class Q_LearningTest {

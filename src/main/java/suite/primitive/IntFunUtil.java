@@ -15,10 +15,10 @@ import primal.primitive.IntPrim;
 import primal.primitive.IntPrim.IntSink;
 import primal.primitive.IntPrim.IntSource;
 import primal.primitive.IntPrim.IntTest;
+import primal.primitive.adt.pair.IntObjPair;
 import primal.statics.Fail.InterruptedRuntimeException;
 import suite.primitive.IntPrimitives.IntObjSource;
 import suite.primitive.IntPrimitives.Int_Obj;
-import suite.primitive.adt.pair.IntObjPair;
 import suite.util.Thread_;
 
 public class IntFunUtil {
