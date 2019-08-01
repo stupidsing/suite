@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
 
+import primal.Verbs.Compare;
 import primal.Verbs.Get;
 import primal.fp.Funs.Fun;
 import primal.primitive.LngPrim;
@@ -18,7 +19,6 @@ import suite.cfg.Defaults;
 import suite.primitive.streamlet.LngPuller;
 import suite.primitive.streamlet.LngStreamlet;
 import suite.streamlet.Puller;
-import suite.util.Compare;
 import suite.util.ParseUtil;
 import suite.util.To;
 
