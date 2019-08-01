@@ -14,13 +14,13 @@ import java.nio.charset.Charset;
 
 import org.junit.Test;
 
+import primal.Verbs.Start;
 import primal.fp.Funs.Sink;
 import primal.os.Log_;
 import primal.statics.Rethrow;
 import suite.cfg.Defaults;
 import suite.net.nio.NioDispatch.AsyncRw;
 import suite.primitive.Bytes;
-import suite.util.Thread_;
 
 public class NioDispatchTest {
 
@@ -45,7 +45,7 @@ public class NioDispatchTest {
 				var isr = new InputStreamReader(is);
 				var br = new BufferedReader(isr);
 				var pw = new PrintWriter(os)) {
-			Thread_.startThread(() -> {
+			Start.thread(() -> {
 				pw.print(hello + lineFeed);
 				pw.flush();
 				assertEquals(hello, br.readLine());

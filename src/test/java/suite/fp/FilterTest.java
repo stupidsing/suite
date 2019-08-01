@@ -8,10 +8,10 @@ import java.io.Writer;
 
 import org.junit.Test;
 
+import primal.Verbs.Sleep;
 import suite.Suite;
 import suite.cfg.Defaults;
 import suite.os.FileUtil;
-import suite.util.Thread_;
 
 public class FilterTest {
 
@@ -72,7 +72,7 @@ public class FilterTest {
 							+ "jmap -histo " + FileUtil.getPid() //
 							+ " | tee " + Defaults.tmp("jmap") //
 							+ " | less");
-					Thread_.sleepQuietly(10 * 1000l);
+					Sleep.quietly(10 * 1000l);
 				}
 			}
 

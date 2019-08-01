@@ -11,6 +11,7 @@ import java.util.Map;
 
 import org.junit.Test;
 
+import primal.Verbs.Sleep;
 import primal.os.Log_;
 import primal.statics.Rethrow;
 import suite.net.cluster.impl.NioCluster;
@@ -34,7 +35,7 @@ public class NioClusterTest {
 			cluster0.start();
 			cluster1.start();
 
-			Thread_.sleepQuietly(2 * 1000);
+			Sleep.quietly(2 * 1000);
 
 			System.out.println("=== CLUSTER FORMED (" + LocalDateTime.now() + ") ===\n");
 

@@ -13,9 +13,9 @@ import java.io.Reader;
 import java.net.ServerSocket;
 
 import primal.Verbs.Close;
+import primal.Verbs.New;
 import primal.os.Log_;
 import suite.cfg.Defaults;
-import suite.util.Thread_;
 
 public class SocketUtil {
 
@@ -40,7 +40,7 @@ public class SocketUtil {
 	}
 
 	public void listenIo(int port, Io io) {
-		var executor = Thread_.newExecutor();
+		var executor = New.executor();
 
 		try (var server = new ServerSocket(port)) {
 			while (true) {
@@ -64,7 +64,7 @@ public class SocketUtil {
 	}
 
 	public void listenIoAsync(int port, IoAsync io) {
-		var executor = Thread_.newExecutor();
+		var executor = New.executor();
 
 		try (var server = new ServerSocket(port)) {
 			while (true) {

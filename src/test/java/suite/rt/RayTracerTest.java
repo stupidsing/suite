@@ -9,6 +9,7 @@ import javax.imageio.ImageIO;
 
 import org.junit.Test;
 
+import primal.Verbs.Get;
 import suite.cfg.Defaults;
 import suite.editor.ImageViewer;
 import suite.math.R3;
@@ -20,7 +21,6 @@ import suite.rt.composite.Minus;
 import suite.rt.composite.Union;
 import suite.rt.planar.Plane;
 import suite.rt.planar.Triangle;
-import suite.util.Thread_;
 
 public class RayTracerTest {
 
@@ -198,7 +198,7 @@ public class RayTracerTest {
 	}
 
 	private void rasterize(RayTracer rayTracer) throws IOException {
-		var path = Defaults.tmp(Thread_.getStackTrace(3).getMethodName() + ".png");
+		var path = Defaults.tmp(Get.stackTrace(3).getMethodName() + ".png");
 		var bufferedImage = rayTracer.trace(640, 480, 640);
 		if (Boolean.TRUE)
 			FileUtil.out(path).doWrite(os -> ImageIO.write(bufferedImage, "png", os));

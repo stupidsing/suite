@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.Iterator;
 
 import primal.NullableSyncQueue;
+import primal.Verbs.Start;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Sink;
 import primal.fp.Funs.Source;
@@ -19,7 +20,6 @@ import primal.primitive.adt.pair.FltObjPair;
 import primal.statics.Fail.InterruptedRuntimeException;
 import suite.primitive.FltPrimitives.FltObjSource;
 import suite.primitive.FltPrimitives.Flt_Obj;
-import suite.util.Thread_;
 
 public class FltFunUtil {
 
@@ -239,7 +239,7 @@ public class FltFunUtil {
 		var queue = new NullableSyncQueue<Float>();
 		FltSink enqueue = c -> enqueue(queue, c);
 
-		var thread = Thread_.startThread(() -> {
+		var thread = Start.thread(() -> {
 			try {
 				fun.f(enqueue);
 			} finally {

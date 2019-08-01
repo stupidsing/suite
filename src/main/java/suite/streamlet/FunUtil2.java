@@ -7,6 +7,7 @@ import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
 import primal.NullableSyncQueue;
+import primal.Verbs.Start;
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Sink;
@@ -16,7 +17,6 @@ import primal.fp.Funs2.Source2;
 import primal.os.Log_;
 import primal.statics.Fail.InterruptedRuntimeException;
 import primal.statics.Rethrow;
-import suite.util.Thread_;
 
 public class FunUtil2 {
 
@@ -230,7 +230,7 @@ public class FunUtil2 {
 		var queue = new NullableSyncQueue<Pair<K, V>>();
 		Sink<Pair<K, V>> enqueue = pair -> enqueue(queue, pair);
 
-		var thread = Thread_.startThread(() -> {
+		var thread = Start.thread(() -> {
 			try {
 				fun.f(enqueue);
 			} finally {

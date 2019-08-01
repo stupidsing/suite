@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import primal.Verbs.New;
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Sink;
@@ -61,11 +62,11 @@ public class As {
 	}
 
 	public static <T> Fun<Puller<T>, Void> executeThreads(Sink<T> sink) {
-		return puller -> puller.map(t -> Thread_.newThread(() -> sink.f(t))).collect(Thread_::startJoin);
+		return puller -> puller.map(t -> New.thread(() -> sink.f(t))).collect(Thread_::startJoin);
 	}
 
 	public static <T> Fun<IntPuller, Void> executeThreadsByInt(IntSink sink) {
-		return puller -> puller.map(t -> Thread_.newThread(() -> sink.f(t))).collect(Thread_::startJoin);
+		return puller -> puller.map(t -> New.thread(() -> sink.f(t))).collect(Thread_::startJoin);
 	}
 
 	public static InputStream inputStream(Bytes bytes) {

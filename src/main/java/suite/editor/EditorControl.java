@@ -10,13 +10,13 @@ import java.nio.file.Paths;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
+import primal.Verbs.Start;
 import primal.fp.Funs.Iterate;
 import suite.Suite;
 import suite.cfg.Defaults;
 import suite.node.io.Formatter;
 import suite.node.pp.PrettyPrinter;
 import suite.os.FileUtil;
-import suite.util.Thread_;
 import suite.util.To;
 
 public class EditorControl {
@@ -234,7 +234,7 @@ public class EditorControl {
 		var text = selectedText != null ? selectedText : editor.getText();
 
 		if (runThread == null || !runThread.isAlive())
-			runThread = Thread_.startThread(() -> {
+			runThread = Start.thread(() -> {
 				view.showMessageRunning();
 				view.showMessage(fun.apply(text));
 				view.getEditor().requestFocusInWindow();

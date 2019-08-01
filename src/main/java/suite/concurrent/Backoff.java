@@ -2,7 +2,7 @@ package suite.concurrent;
 
 import java.util.Random;
 
-import suite.util.Thread_;
+import primal.Verbs.Sleep;
 
 public class Backoff {
 
@@ -10,7 +10,7 @@ public class Backoff {
 	private int duration = 50;
 
 	public boolean exponentially() {
-		Thread_.sleepQuietly(duration());
+		Sleep.quietly(duration());
 		return false;
 	}
 

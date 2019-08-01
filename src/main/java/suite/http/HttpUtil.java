@@ -15,6 +15,7 @@ import org.apache.http.Header;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.HttpClients;
 
+import primal.Verbs.Sleep;
 import primal.adt.FixieArray;
 import primal.fp.Funs.Fun;
 import primal.os.Log_;
@@ -29,7 +30,6 @@ import suite.streamlet.Read;
 import suite.util.Memoize;
 import suite.util.ParseUtil;
 import suite.util.ReadStream;
-import suite.util.Thread_;
 import suite.util.To;
 
 public class HttpUtil {
@@ -154,7 +154,7 @@ public class HttpUtil {
 			next = 3000l + (start = max(last = al.get(), current = System.currentTimeMillis()));
 		while (!al.compareAndSet(last, next) || backoff.exponentially());
 
-		Thread_.sleepQuietly(start - current);
+		Sleep.quietly(start - current);
 
 		return ex(() -> Boolean.TRUE ? httpApache(method, url, in, headers) : httpJre(method, url, in, headers));
 	}

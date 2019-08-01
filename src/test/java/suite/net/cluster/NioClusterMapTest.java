@@ -14,6 +14,8 @@ import java.util.Random;
 
 import org.junit.Test;
 
+import primal.Verbs.New;
+import primal.Verbs.Sleep;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Sink;
 import primal.fp.Funs.Source;
@@ -56,7 +58,7 @@ public class NioClusterMapTest {
 				.map2(name -> name, name -> new NioClusterMap<Integer, String>(clusters.get(name))) //
 				.toMap();
 
-		Thread_.sleepQuietly(5 * 1000);
+		Sleep.quietly(5 * 1000);
 
 		System.out.println("=== CLUSTER FORMED (" + LocalDateTime.now() + ") ===\n");
 
@@ -91,7 +93,7 @@ public class NioClusterMapTest {
 			}
 		}.run(0);
 
-		Read.from2(clusters).values().map(cluster -> Thread_.newThread(cluster::run)).collect(Thread_::startJoin);
+		Read.from2(clusters).values().map(cluster -> New.thread(cluster::run)).collect(Thread_::startJoin);
 
 		for (var cluster : clusters.values())
 			cluster.close();

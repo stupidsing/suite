@@ -10,9 +10,9 @@ import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
+import primal.Verbs.Sleep;
 import primal.fp.Funs2.FoldOp;
 import suite.cfg.Defaults;
-import suite.util.Thread_;
 
 public class TelegramBot {
 
@@ -48,7 +48,7 @@ public class TelegramBot {
 		});
 
 		while (true)
-			Thread_.sleepQuietly(10000);
+			Sleep.quietly(10000);
 	}
 
 }

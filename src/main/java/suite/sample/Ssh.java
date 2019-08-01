@@ -15,9 +15,9 @@ import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpException;
 import com.jcraft.jsch.UserInfo;
 
+import primal.Verbs.Sleep;
 import suite.cfg.Defaults;
 import suite.util.Copy;
-import suite.util.Thread_;
 
 public class Ssh {
 
@@ -28,7 +28,7 @@ public class Ssh {
 	public int execute(String command) throws JSchException, SftpException, IOException {
 		return session(session -> channelExec(session, command, channel -> {
 			while (!channel.isClosed())
-				Thread_.sleepQuietly(100);
+				Sleep.quietly(100);
 
 			var baos = new ByteArrayOutputStream();
 			Copy.stream(channel.getInputStream(), baos);

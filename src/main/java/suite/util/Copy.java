@@ -13,8 +13,9 @@ import java.io.Writer;
 import java.net.SocketException;
 
 import primal.String_;
+import primal.Verbs.New;
+import primal.Verbs.Th;
 import suite.cfg.Defaults;
-import suite.util.Thread_.Th;
 
 public class Copy {
 
@@ -47,7 +48,7 @@ public class Copy {
 	}
 
 	public static Th streamByThread(InputStream is, OutputStream os) {
-		return Thread_.newThread(() -> {
+		return New.thread(() -> {
 			try (var is_ = is; var os_ = os) {
 				stream(is_, os_);
 			} catch (InterruptedIOException ex) {

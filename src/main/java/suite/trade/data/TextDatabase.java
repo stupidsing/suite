@@ -13,6 +13,7 @@ import java.util.TreeSet;
 import primal.String_;
 import primal.Verbs.Compare;
 import primal.Verbs.Equals;
+import primal.Verbs.Sleep;
 import suite.cfg.HomeDir;
 import suite.os.FileUtil;
 import suite.primitive.Bytes;
@@ -20,7 +21,6 @@ import suite.primitive.Bytes_;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
-import suite.util.Thread_;
 import suite.util.To;
 
 public class TextDatabase {
@@ -60,7 +60,7 @@ public class TextDatabase {
 			saveThread = new Thread(() -> {
 				long now;
 				while ((now = System.currentTimeMillis()) < saveTime)
-					Thread_.sleepQuietly(saveTime - now);
+					Sleep.quietly(saveTime - now);
 				synchronized (TextDatabase.this) {
 					save();
 					saveThread = null;

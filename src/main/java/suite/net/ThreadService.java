@@ -2,9 +2,9 @@ package suite.net;
 
 import java.io.Closeable;
 
+import primal.Verbs.RunnableEx;
+import primal.Verbs.Start;
 import primal.Verbs.Wait;
-import suite.util.Thread_;
-import suite.util.Thread_.RunnableEx;
 
 public class ThreadService {
 
@@ -19,7 +19,7 @@ public class ThreadService {
 
 	public synchronized void start() {
 		running = true;
-		thread = Thread_.startThread(serve);
+		thread = Start.thread(serve);
 
 		while (!started)
 			Wait.object(this);

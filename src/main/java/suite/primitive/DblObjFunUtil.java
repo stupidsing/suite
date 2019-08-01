@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.function.Predicate;
 
 import primal.NullableSyncQueue;
+import primal.Verbs.Start;
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Sink;
@@ -20,7 +21,6 @@ import primal.statics.Rethrow;
 import suite.primitive.DblPrimitives.DblObjPredicate;
 import suite.primitive.DblPrimitives.DblObjSource;
 import suite.primitive.DblPrimitives.DblObj_Obj;
-import suite.util.Thread_;
 
 public class DblObjFunUtil {
 
@@ -240,7 +240,7 @@ public class DblObjFunUtil {
 		var queue = new NullableSyncQueue<DblObjPair<V>>();
 		Sink<DblObjPair<V>> enqueue = pair -> enqueue(queue, pair);
 
-		var thread = Thread_.startThread(() -> {
+		var thread = Start.thread(() -> {
 			try {
 				fun.f(enqueue);
 			} finally {

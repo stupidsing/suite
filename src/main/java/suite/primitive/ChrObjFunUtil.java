@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.function.Predicate;
 
 import primal.NullableSyncQueue;
+import primal.Verbs.Start;
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Sink;
@@ -20,7 +21,6 @@ import primal.statics.Rethrow;
 import suite.primitive.ChrPrimitives.ChrObjPredicate;
 import suite.primitive.ChrPrimitives.ChrObjSource;
 import suite.primitive.ChrPrimitives.ChrObj_Obj;
-import suite.util.Thread_;
 
 public class ChrObjFunUtil {
 
@@ -240,7 +240,7 @@ public class ChrObjFunUtil {
 		var queue = new NullableSyncQueue<ChrObjPair<V>>();
 		Sink<ChrObjPair<V>> enqueue = pair -> enqueue(queue, pair);
 
-		var thread = Thread_.startThread(() -> {
+		var thread = Start.thread(() -> {
 			try {
 				fun.f(enqueue);
 			} finally {

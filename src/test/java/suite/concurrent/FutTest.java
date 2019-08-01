@@ -8,6 +8,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 
+import primal.Verbs.New;
+import primal.Verbs.Sleep;
 import suite.util.Thread_;
 
 public class FutTest {
@@ -17,7 +19,7 @@ public class FutTest {
 		var value = 1;
 
 		var fut = Fut.of(() -> {
-			Thread_.sleepQuietly(1000l);
+			Sleep.quietly(1000l);
 			System.out.println("Evaluated");
 			return value;
 		});
@@ -25,7 +27,7 @@ public class FutTest {
 		var nc = new AtomicInteger();
 		var count = 128;
 
-		forInt(count).map(i -> Thread_.newThread(() -> {
+		forInt(count).map(i -> New.thread(() -> {
 			if (fut.get() == value)
 				nc.incrementAndGet();
 			else

@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.Iterator;
 
 import primal.NullableSyncQueue;
+import primal.Verbs.Start;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Sink;
 import primal.fp.Funs.Source;
@@ -19,7 +20,6 @@ import primal.primitive.adt.pair.ChrObjPair;
 import primal.statics.Fail.InterruptedRuntimeException;
 import suite.primitive.ChrPrimitives.ChrObjSource;
 import suite.primitive.ChrPrimitives.Chr_Obj;
-import suite.util.Thread_;
 
 public class ChrFunUtil {
 
@@ -239,7 +239,7 @@ public class ChrFunUtil {
 		var queue = new NullableSyncQueue<Character>();
 		ChrSink enqueue = c -> enqueue(queue, c);
 
-		var thread = Thread_.startThread(() -> {
+		var thread = Start.thread(() -> {
 			try {
 				fun.f(enqueue);
 			} finally {

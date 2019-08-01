@@ -6,9 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import primal.Verbs.Compare;
+import primal.Verbs.Sleep;
 import primal.os.Log_;
 import suite.streamlet.Read;
-import suite.util.Thread_;
 
 public class Scheduler {
 
@@ -32,7 +32,7 @@ public class Scheduler {
 					.map(schedule -> schedule.nextRunDateTime) //
 					.min(Compare::objects);
 
-			Thread_.sleepQuietly(Duration.between(now, nextWakeUpDateTime).toMillis());
+			Sleep.quietly(Duration.between(now, nextWakeUpDateTime).toMillis());
 
 			for (var schedule : schedules)
 				if (now.isBefore(schedule.nextRunDateTime))

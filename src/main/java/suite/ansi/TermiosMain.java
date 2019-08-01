@@ -2,8 +2,8 @@ package suite.ansi;
 
 import com.sun.jna.Native;
 
+import primal.Verbs.Sleep;
 import suite.ansi.Termios.AnsiColor;
-import suite.util.Thread_;
 
 // mvn compile exec:java -Dexec.mainClass=suite.ansi.TermiosMain
 public class TermiosMain {
@@ -39,7 +39,7 @@ public class TermiosMain {
 
 				termios.gotoxy(i, i + 8);
 				termios.puts("string is moving on its way\n");
-				Thread_.sleepQuietly(300l);
+				Sleep.quietly(300l);
 			}
 
 			termios.resetColors();

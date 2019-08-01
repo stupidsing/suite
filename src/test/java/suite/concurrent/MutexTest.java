@@ -5,13 +5,13 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+import primal.Verbs.Sleep;
 import suite.concurrent.Concurrent.DeadlockException;
 import suite.concurrent.Mutex.MutexLock;
 import suite.persistent.PerList;
 import suite.primitive.BooMutable;
 import suite.streamlet.As;
 import suite.streamlet.Read;
-import suite.util.Thread_;
 
 public class MutexTest {
 
@@ -45,7 +45,7 @@ public class MutexTest {
 			private void run(PerList<Mutex> ms) {
 				if (!ms.isEmpty())
 					try (var mla = new MutexLock(ms.head)) {
-						Thread_.sleepQuietly(500);
+						Sleep.quietly(500);
 						run(ms.tail);
 					}
 			}

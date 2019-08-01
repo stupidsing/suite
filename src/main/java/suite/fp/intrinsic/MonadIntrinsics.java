@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 
+import primal.Verbs.Start;
 import primal.fp.Funs.Iterate;
 import suite.cfg.Defaults;
 import suite.fp.intrinsic.Intrinsics.Intrinsic;
@@ -22,7 +23,6 @@ import suite.node.Int;
 import suite.node.Node;
 import suite.node.Suspend;
 import suite.node.Tree;
-import suite.util.Thread_;
 
 public class MonadIntrinsics {
 
@@ -50,7 +50,7 @@ public class MonadIntrinsics {
 			// and write occur at the same time and would not block up.
 			// the input stream is also closed by this thread.
 			// have to make sure the executors are thread-safe!
-			Thread_.startThread(() -> {
+			Start.thread(() -> {
 				try (var pos = process.getOutputStream(); var writer = new OutputStreamWriter(pos)) {
 					ThunkUtil.yawnWriter(yawn, in, writer);
 				}

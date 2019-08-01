@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 
 import primal.String_;
+import primal.Verbs.Get;
 import primal.adt.Pair;
 import primal.fp.Funs.Sink;
 import primal.os.Log_;
@@ -21,7 +22,6 @@ import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.ParseUtil;
 import suite.util.Switch;
-import suite.util.Thread_;
 import suite.util.To;
 import suite.util.Util;
 
@@ -124,7 +124,7 @@ public class Dump {
 	 * Dumps object content (public data and getters) through Reflection to a log4j.
 	 */
 	public static void details(Object object) {
-		var trace = Thread_.getStackTrace(3);
+		var trace = Get.stackTrace(3);
 		details(trace.getClassName() + "." + trace.getMethodName(), object);
 	}
 

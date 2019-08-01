@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiPredicate;
 
+import primal.Verbs.Sleep;
+import primal.Verbs.Start;
 import suite.cfg.Defaults;
 import suite.http.HttpHandler;
 import suite.http.HttpHeader;
@@ -22,7 +24,6 @@ import suite.persistent.PerMap;
 import suite.primitive.Bytes;
 import suite.telegram.TelegramBot;
 import suite.util.RunUtil;
-import suite.util.Thread_;
 import suite.util.To;
 
 // mvn compile exec:java -Dexec.mainClass=suite.ServerMain
@@ -36,9 +37,9 @@ public class ServerMain {
 	}
 
 	private boolean run() {
-		Thread_.startThread(this::runHttpServer);
-		Thread_.startThread(this::runScheduler);
-		Thread_.startThread(this::runTelegramBot);
+		Start.thread(this::runHttpServer);
+		Start.thread(this::runScheduler);
+		Start.thread(this::runTelegramBot);
 		return true;
 	}
 
@@ -63,7 +64,7 @@ public class ServerMain {
 
 		HttpHandler handlerSse = request -> HttpResponse.ofWriter(HttpResponse.HTTP200, sseHeaders, writer -> {
 			for (var i = 0; i < 8; i++) {
-				Thread_.sleepQuietly(1000l);
+				Sleep.quietly(1000l);
 				var event = "event: number\ndata: { \"i\": " + i + " }\n\n";
 				writer.f(Bytes.of(event.getBytes(Defaults.charset)));
 			}

@@ -5,6 +5,7 @@ import static primal.statics.Fail.fail;
 import java.util.Iterator;
 
 import primal.NullableSyncQueue;
+import primal.Verbs.Start;
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Sink;
@@ -17,7 +18,6 @@ import primal.primitive.ChrPrim.ChrTest;
 import primal.primitive.DblPrim.DblTest;
 import primal.primitive.adt.pair.ChrDblPair;
 import primal.statics.Fail.InterruptedRuntimeException;
-import suite.util.Thread_;
 
 public class ChrDblFunUtil {
 
@@ -237,7 +237,7 @@ public class ChrDblFunUtil {
 		var queue = new NullableSyncQueue<ChrDblPair>();
 		Sink<ChrDblPair> enqueue = pair -> enqueue(queue, pair);
 
-		var thread = Thread_.startThread(() -> {
+		var thread = Start.thread(() -> {
 			try {
 				fun.f(enqueue);
 			} finally {

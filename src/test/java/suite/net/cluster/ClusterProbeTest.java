@@ -12,10 +12,10 @@ import java.util.Map;
 
 import org.junit.Test;
 
+import primal.Verbs.Sleep;
 import primal.statics.Rethrow;
 import suite.net.cluster.impl.ClusterProbeImpl;
 import suite.streamlet.Read;
-import suite.util.Thread_;
 
 public class ClusterProbeTest {
 
@@ -36,7 +36,7 @@ public class ClusterProbeTest {
 		for (var probe : probes.values())
 			probe.start();
 
-		Thread_.sleepQuietly(10 * 1000);
+		Sleep.quietly(10 * 1000);
 
 		System.out.println("=== CLUSTER FORMED (" + LocalDateTime.now() + ") ===\n");
 		dumpActivePeers(probes);
@@ -45,7 +45,7 @@ public class ClusterProbeTest {
 		for (var probe : probes.values())
 			probe.stop();
 
-		Thread_.sleepQuietly(5 * 1000);
+		Sleep.quietly(5 * 1000);
 
 		System.out.println("=== CLUSTER STOPPED (" + LocalDateTime.now() + ") ===\n");
 		dumpActivePeers(probes);

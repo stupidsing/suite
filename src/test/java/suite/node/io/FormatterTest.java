@@ -4,11 +4,11 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
+import primal.Verbs.Current;
 import suite.Suite;
 import suite.inspect.Dump;
 import suite.node.Int;
 import suite.node.Reference;
-import suite.util.Thread_;
 
 public class FormatterTest {
 
@@ -23,7 +23,7 @@ public class FormatterTest {
 		testDisplay("a - b - c");
 		testDisplay("a - (b - c)");
 		testDisplay("(a, b) = (c, d)");
-		Dump.details(Thread_.currentMethod(), Formatter.display(new Reference()));
+		Dump.details(Current.method(), Formatter.display(new Reference()));
 	}
 
 	@Test

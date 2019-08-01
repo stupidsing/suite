@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.function.Predicate;
 
 import primal.NullableSyncQueue;
+import primal.Verbs.Start;
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Sink;
@@ -15,7 +16,6 @@ import primal.fp.Funs2.Source2;
 import primal.os.Log_;
 import primal.statics.Fail.InterruptedRuntimeException;
 import primal.statics.Rethrow;
-import suite.util.Thread_;
 
 public class FunUtil {
 
@@ -213,7 +213,7 @@ public class FunUtil {
 		var queue = new NullableSyncQueue<T>();
 		Sink<T> enqueue = t -> enqueue(queue, t);
 
-		var thread = Thread_.startThread(() -> {
+		var thread = Start.thread(() -> {
 			try {
 				fun.f(enqueue);
 			} finally {
