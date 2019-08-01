@@ -1,7 +1,7 @@
 package suite.assembler;
 
-import suite.adt.map.BiHashMap;
-import suite.adt.map.BiMap;
+import primal.adt.map.BiHashMap;
+import primal.adt.map.BiMap;
 import suite.node.Atom;
 import suite.object.ToStringObject;
 import suite.util.To;

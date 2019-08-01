@@ -10,9 +10,9 @@ import java.util.Map;
 
 import primal.adt.IdentityKey;
 import primal.adt.Pair;
+import primal.adt.map.BiHashMap;
+import primal.adt.map.BiMap;
 import primal.fp.Funs.Sink;
-import suite.adt.map.BiHashMap;
-import suite.adt.map.BiMap;
 import suite.file.PageFile;
 import suite.file.SerializedPageFile;
 import suite.file.impl.FileFactory;

@@ -5,10 +5,10 @@ import static primal.statics.Fail.fail;
 import java.util.ArrayList;
 import java.util.List;
 
+import primal.adt.map.BiHashMap;
+import primal.adt.map.BiMap;
 import primal.os.Log_;
 import suite.Suite;
-import suite.adt.map.BiHashMap;
-import suite.adt.map.BiMap;
 import suite.instructionexecutor.InstructionUtil.Activation;
 import suite.instructionexecutor.InstructionUtil.Frame;
 import suite.instructionexecutor.InstructionUtil.Insn;

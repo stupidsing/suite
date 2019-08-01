@@ -5,10 +5,10 @@ import static primal.statics.Fail.fail;
 import java.util.HashMap;
 import java.util.Map;
 
+import primal.adt.map.BiHashMap;
+import primal.adt.map.BiMap;
 import primal.fp.Funs.Iterate;
 import suite.Suite;
-import suite.adt.map.BiHashMap;
-import suite.adt.map.BiMap;
 import suite.node.Node;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;

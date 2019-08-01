@@ -12,7 +12,7 @@ import java.util.Map;
 import primal.Verbs.Equals;
 import primal.Verbs.Right;
 import primal.adt.IdentityKey;
-import suite.adt.map.BiMap;
+import primal.adt.map.BiMap;
 import suite.instructionexecutor.InstructionUtil.Insn;
 import suite.instructionexecutor.InstructionUtil.Instruction;
 import suite.lp.Trail;

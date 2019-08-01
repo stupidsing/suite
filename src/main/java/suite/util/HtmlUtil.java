@@ -8,10 +8,10 @@ import java.util.Set;
 
 import primal.String_;
 import primal.adt.Pair;
+import primal.adt.map.BiHashMap;
+import primal.adt.map.BiMap;
 import primal.fp.Funs.Fun;
 import primal.primitive.adt.pair.IntObjPair;
-import suite.adt.map.BiHashMap;
-import suite.adt.map.BiMap;
 import suite.primitive.IntRange;
 import suite.streamlet.Read;
 
