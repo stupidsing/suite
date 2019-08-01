@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
+import primal.String_;
 import primal.Verbs.Close;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Sink;
@@ -242,7 +243,7 @@ public class To {
 	}
 
 	public static String string(Sink<StringBuilder> sink) {
-		return To.string(sink);
+		return String_.build(sink);
 	}
 
 	public static String string(Throwable th) {
