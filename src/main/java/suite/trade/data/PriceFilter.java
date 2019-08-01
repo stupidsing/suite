@@ -5,8 +5,8 @@ import static primal.statics.Fail.fail;
 import java.util.Map;
 import java.util.Set;
 
+import primal.primitive.FltPrim.Flt_Flt;
 import suite.primitive.Floats_;
-import suite.primitive.Flt_Flt;
 import suite.streamlet.Read;
 import suite.trade.Instrument;
 import suite.trade.TimeRange;

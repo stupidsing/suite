@@ -6,6 +6,7 @@ import primal.fp.FunUtil;
 import primal.fp.Funs.Iterate;
 import primal.fp.Funs.Source;
 import primal.primitive.ChrPrim;
+import primal.primitive.fp.ChrFunUtil;
 import suite.primitive.Chars.CharsBuilder;
 import suite.primitive.Chars.WriteChar;
 import suite.primitive.streamlet.ChrPuller;
