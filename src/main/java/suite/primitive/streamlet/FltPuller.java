@@ -14,6 +14,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.IntPredicate;
 
+import primal.NullableSyncQueue;
 import primal.Verbs.Close;
 import primal.Verbs.Equals;
 import primal.Verbs.Get;
@@ -46,7 +47,6 @@ import suite.streamlet.Puller;
 import suite.streamlet.Puller2;
 import suite.streamlet.PullerDefaults;
 import suite.streamlet.Read;
-import suite.util.NullableSyncQueue;
 import suite.util.To;
 
 public class FltPuller implements PullerDefaults<Float> {

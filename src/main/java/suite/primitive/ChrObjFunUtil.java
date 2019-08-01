@@ -5,6 +5,7 @@ import static primal.statics.Fail.fail;
 import java.util.Iterator;
 import java.util.function.Predicate;
 
+import primal.NullableSyncQueue;
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Sink;
@@ -18,7 +19,6 @@ import suite.primitive.ChrPrimitives.ChrObjPredicate;
 import suite.primitive.ChrPrimitives.ChrObjSource;
 import suite.primitive.ChrPrimitives.ChrObj_Obj;
 import suite.primitive.adt.pair.ChrObjPair;
-import suite.util.NullableSyncQueue;
 import suite.util.Thread_;
 
 public class ChrObjFunUtil {

@@ -15,6 +15,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
 
+import primal.NullableSyncQueue;
 import primal.Verbs.Close;
 import primal.Verbs.Compare;
 import primal.Verbs.Equals;
@@ -34,7 +35,6 @@ import suite.primitive.adt.pair.IntObjPair;
 import suite.primitive.streamlet.IntObjPuller;
 import suite.util.Array_;
 import suite.util.List_;
-import suite.util.NullableSyncQueue;
 import suite.util.To;
 
 /**

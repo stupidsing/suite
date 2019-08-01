@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.function.Predicate;
 
+import primal.NullableSyncQueue;
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Sink;
@@ -14,7 +15,6 @@ import primal.fp.Funs2.Source2;
 import primal.os.Log_;
 import primal.statics.Fail.InterruptedRuntimeException;
 import primal.statics.Rethrow;
-import suite.util.NullableSyncQueue;
 import suite.util.Thread_;
 
 public class FunUtil {

@@ -15,6 +15,7 @@ import java.util.Set;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
+import primal.NullableSyncQueue;
 import primal.Verbs.Close;
 import primal.Verbs.Compare;
 import primal.Verbs.Equals;
@@ -29,7 +30,6 @@ import primal.fp.Funs2.Source2;
 import suite.adt.map.ListMultimap;
 import suite.util.Array_;
 import suite.util.List_;
-import suite.util.NullableSyncQueue;
 import suite.util.To;
 
 public class Puller2<K, V> implements PullerDefaults<Pair<K, V>> {

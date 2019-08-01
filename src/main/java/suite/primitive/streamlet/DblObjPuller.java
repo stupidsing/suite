@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
 
+import primal.NullableSyncQueue;
 import primal.Verbs.Close;
 import primal.Verbs.Compare;
 import primal.Verbs.Equals;
@@ -39,7 +40,6 @@ import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.Array_;
 import suite.util.List_;
-import suite.util.NullableSyncQueue;
 import suite.util.To;
 
 public class DblObjPuller<V> implements PullerDefaults<DblObjPair<V>> {

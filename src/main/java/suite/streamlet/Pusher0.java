@@ -9,6 +9,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Predicate;
 
+import primal.NullableSyncQueue;
 import primal.Verbs.Equals;
 import primal.adt.Mutable;
 import primal.adt.Pair;
@@ -18,7 +19,6 @@ import primal.fp.Funs.Source;
 import primal.fp.Funs2.Fun2;
 import suite.concurrent.Bag;
 import suite.concurrent.CasReference;
-import suite.util.NullableSyncQueue;
 
 /**
  * A push-based functional reactive programming class.

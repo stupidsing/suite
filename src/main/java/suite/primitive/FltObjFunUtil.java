@@ -5,6 +5,7 @@ import static primal.statics.Fail.fail;
 import java.util.Iterator;
 import java.util.function.Predicate;
 
+import primal.NullableSyncQueue;
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Sink;
@@ -18,7 +19,6 @@ import suite.primitive.FltPrimitives.FltObjPredicate;
 import suite.primitive.FltPrimitives.FltObjSource;
 import suite.primitive.FltPrimitives.FltObj_Obj;
 import suite.primitive.adt.pair.FltObjPair;
-import suite.util.NullableSyncQueue;
 import suite.util.Thread_;
 
 public class FltObjFunUtil {

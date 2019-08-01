@@ -4,6 +4,7 @@ import static primal.statics.Fail.fail;
 
 import java.util.Iterator;
 
+import primal.NullableSyncQueue;
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Sink;
@@ -15,7 +16,6 @@ import primal.primitive.ChrPrim.ChrTest;
 import primal.primitive.DblPrim.DblTest;
 import primal.statics.Fail.InterruptedRuntimeException;
 import suite.primitive.adt.pair.ChrDblPair;
-import suite.util.NullableSyncQueue;
 import suite.util.Thread_;
 
 public class ChrDblFunUtil {

@@ -5,6 +5,7 @@ import static primal.statics.Fail.fail;
 import java.util.Iterator;
 import java.util.function.Predicate;
 
+import primal.NullableSyncQueue;
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Sink;
@@ -18,7 +19,6 @@ import suite.primitive.IntPrimitives.IntObjPredicate;
 import suite.primitive.IntPrimitives.IntObjSource;
 import suite.primitive.IntPrimitives.IntObj_Obj;
 import suite.primitive.adt.pair.IntObjPair;
-import suite.util.NullableSyncQueue;
 import suite.util.Thread_;
 
 public class IntObjFunUtil {
