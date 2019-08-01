@@ -2,45 +2,14 @@ package suite.primitive;
 
 import static primal.statics.Fail.fail;
 
-import java.util.ArrayList;
-
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
-import primal.primitive.IntPrim;
 import suite.primitive.Ints.IntsBuilder;
-import suite.primitive.streamlet.IntPuller;
 import suite.primitive.streamlet.IntStreamlet;
 import suite.streamlet.Puller;
 import suite.streamlet.Puller2;
-import suite.streamlet.Read;
-import suite.streamlet.Streamlet;
 
 public class IntPrimitives {
-
-	public interface Int_Obj<T> {
-		public T apply(int c);
-
-		public static <T> Fun<IntPuller, Streamlet<T>> lift(Int_Obj<T> fun0) {
-			var fun1 = fun0.rethrow();
-			return s -> {
-				var ts = new ArrayList<T>();
-				int c;
-				while ((c = s.pull()) != IntPrim.EMPTYVALUE)
-					ts.add(fun1.apply(c));
-				return Read.from(ts);
-			};
-		}
-
-		public default Int_Obj<T> rethrow() {
-			return i -> {
-				try {
-					return apply(i);
-				} catch (Exception ex) {
-					return fail("for " + i, ex);
-				}
-			};
-		}
-	}
 
 	public interface Obj_Int<T> {
 		public int apply(T t);

@@ -2,45 +2,14 @@ package suite.primitive;
 
 import static primal.statics.Fail.fail;
 
-import java.util.ArrayList;
-
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
-import primal.primitive.ChrPrim;
 import suite.primitive.Chars.CharsBuilder;
-import suite.primitive.streamlet.ChrPuller;
 import suite.primitive.streamlet.ChrStreamlet;
 import suite.streamlet.Puller;
 import suite.streamlet.Puller2;
-import suite.streamlet.Read;
-import suite.streamlet.Streamlet;
 
 public class ChrPrimitives {
-
-	public interface Chr_Obj<T> {
-		public T apply(char c);
-
-		public static <T> Fun<ChrPuller, Streamlet<T>> lift(Chr_Obj<T> fun0) {
-			var fun1 = fun0.rethrow();
-			return s -> {
-				var ts = new ArrayList<T>();
-				char c;
-				while ((c = s.pull()) != ChrPrim.EMPTYVALUE)
-					ts.add(fun1.apply(c));
-				return Read.from(ts);
-			};
-		}
-
-		public default Chr_Obj<T> rethrow() {
-			return i -> {
-				try {
-					return apply(i);
-				} catch (Exception ex) {
-					return fail("for " + i, ex);
-				}
-			};
-		}
-	}
 
 	public interface Obj_Chr<T> {
 		public char apply(T t);

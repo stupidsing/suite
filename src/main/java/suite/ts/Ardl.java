@@ -34,8 +34,7 @@ public class Ardl {
 			var fs = fsList[it];
 
 			return length == fs.length
-					? stat.linearRegression(
-							forInt(length - maxLag).map(t -> FltObjPair.of(fs[t], getExplanatoryVariables(fsList, it, t))))
+					? stat.linearRegression(forInt(length - maxLag).map(t -> FltObjPair.of(fs[t], getExplanatoryVariables(fsList, it, t))))
 					: fail("wrong input sizes");
 		});
 	}

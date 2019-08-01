@@ -4,13 +4,13 @@ import static java.lang.Math.min;
 
 import java.io.IOException;
 
+import primal.primitive.IntPrim.Int_Obj;
 import suite.file.ExtentAllocator;
 import suite.file.PageAllocator;
 import suite.file.PageFile;
 import suite.file.SerializedPageFile;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
-import suite.primitive.IntPrimitives.Int_Obj;
 
 /**
  * Manage B-tree pages on disk.

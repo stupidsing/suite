@@ -2,45 +2,14 @@ package suite.primitive;
 
 import static primal.statics.Fail.fail;
 
-import java.util.ArrayList;
-
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
-import primal.primitive.FltPrim;
 import suite.primitive.Floats.FloatsBuilder;
-import suite.primitive.streamlet.FltPuller;
 import suite.primitive.streamlet.FltStreamlet;
 import suite.streamlet.Puller;
 import suite.streamlet.Puller2;
-import suite.streamlet.Read;
-import suite.streamlet.Streamlet;
 
 public class FltPrimitives {
-
-	public interface Flt_Obj<T> {
-		public T apply(float c);
-
-		public static <T> Fun<FltPuller, Streamlet<T>> lift(Flt_Obj<T> fun0) {
-			var fun1 = fun0.rethrow();
-			return s -> {
-				var ts = new ArrayList<T>();
-				float c;
-				while ((c = s.pull()) != FltPrim.EMPTYVALUE)
-					ts.add(fun1.apply(c));
-				return Read.from(ts);
-			};
-		}
-
-		public default Flt_Obj<T> rethrow() {
-			return i -> {
-				try {
-					return apply(i);
-				} catch (Exception ex) {
-					return fail("for " + i, ex);
-				}
-			};
-		}
-	}
 
 	public interface Obj_Flt<T> {
 		public float apply(T t);

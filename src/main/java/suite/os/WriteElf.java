@@ -10,10 +10,10 @@ import java.util.HashSet;
 import java.util.List;
 
 import primal.Verbs.Get;
+import primal.primitive.IntPrim.Int_Obj;
 import suite.cfg.Defaults;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
-import suite.primitive.IntPrimitives.Int_Obj;
 import suite.serialize.SerOutput;
 
 // http://www.muppetlabs.com/~breadbox/software/tiny/teensy.html

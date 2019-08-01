@@ -9,7 +9,7 @@ import java.util.List;
 
 import primal.fp.Funs.Iterate;
 import primal.primitive.IntInt_Obj;
-import suite.primitive.IntPrimitives.Int_Obj;
+import primal.primitive.IntPrim.Int_Obj;
 import suite.primitive.IntPrimitives.Obj_Int;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
