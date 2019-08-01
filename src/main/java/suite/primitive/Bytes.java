@@ -10,11 +10,11 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
 
+import primal.Verbs.Compare;
 import primal.Verbs.Get;
 import primal.fp.Funs.Fun;
 import suite.cfg.Defaults;
 import suite.streamlet.Puller;
-import suite.util.Compare;
 import suite.util.To;
 
 public class Bytes implements Iterable<Byte> {
