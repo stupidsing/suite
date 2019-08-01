@@ -23,7 +23,7 @@ import primal.fp.Funs.Fun;
 import primal.primitive.DblDbl_Dbl;
 import primal.primitive.adt.pair.DblFltPair;
 import suite.math.numeric.Statistic;
-import suite.primitive.AsDbl;
+import suite.primitive.DblVerbs.AsDbl;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.trade.Instrument;

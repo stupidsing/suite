@@ -11,8 +11,8 @@ import java.util.List;
 
 import primal.Verbs.Compare;
 import primal.primitive.adt.pair.LngFltPair;
-import suite.primitive.AsFlt;
-import suite.primitive.AsLng;
+import suite.primitive.FltVerbs.AsFlt;
+import suite.primitive.LngVerbs.AsLng;
 import suite.primitive.Longs_;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;

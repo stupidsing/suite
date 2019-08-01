@@ -2,7 +2,7 @@ package suite.util;
 
 import static suite.util.Streamlet_.forInt;
 
-import suite.primitive.AsInt;
+import suite.primitive.IntVerbs.AsInt;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 

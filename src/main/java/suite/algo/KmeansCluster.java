@@ -10,7 +10,7 @@ import primal.primitive.IntPrim.Obj_Int;
 import primal.primitive.adt.pair.DblObjPair;
 import primal.primitive.adt.pair.IntDblPair;
 import suite.math.linalg.Vector;
-import suite.primitive.AsInt;
+import suite.primitive.IntVerbs.AsInt;
 import suite.primitive.adt.map.IntObjMap;
 import suite.primitive.adt.map.ObjIntMap;
 import suite.streamlet.As;

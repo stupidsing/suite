@@ -20,7 +20,7 @@ import primal.primitive.adt.pair.IntFltPair;
 import suite.algo.KmeansCluster;
 import suite.math.numeric.Statistic;
 import suite.math.transform.DiscreteCosineTransform;
-import suite.primitive.AsDbl;
+import suite.primitive.DblVerbs.AsDbl;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;

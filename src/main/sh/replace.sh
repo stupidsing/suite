@@ -47,8 +47,8 @@ replace src/main/java/suite/primitive/adt/set/ChrSet.java
 replace src/main/java/suite/primitive/Chars.java
 replace src/main/java/suite/primitive/Chars_.java
 replace src/main/java/suite/primitive/ChrMutable.java
-replace src/main/java/suite/primitive/ChrPrimitives.java
 replace src/main/java/suite/primitive/ChrRange.java
+replace src/main/java/suite/primitive/ChrVerbs.java
 replace src/main/java/suite/primitive/streamlet/ChrObjPuller.java
 replace src/main/java/suite/primitive/streamlet/ChrObjStreamlet.java
 replace src/main/java/suite/primitive/streamlet/ChrPuller.java
