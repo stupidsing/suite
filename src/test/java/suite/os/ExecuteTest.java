@@ -5,7 +5,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import suite.util.To;
+import primal.Verbs.Build;
 
 public class ExecuteTest {
 
@@ -21,7 +21,7 @@ public class ExecuteTest {
 
 	@Test
 	public void test1() {
-		var in = To.string(sb -> {
+		var in = Build.string(sb -> {
 			for (var i = 0; i < 1024; i++)
 				sb.append("01234567890123456789012345678901234567890123456789012345678901234567890123456789\n");
 		});

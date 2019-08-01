@@ -4,10 +4,10 @@ import primal.adt.Pair;
 import primal.fp.Funs.Fun;
 import primal.primitive.DblPrim.ObjObj_Dbl;
 import primal.primitive.DblPrim.Obj_Dbl;
+import primal.puller.Puller;
+import primal.puller.Puller2;
 import suite.primitive.Doubles.DoublesBuilder;
 import suite.primitive.streamlet.DblStreamlet;
-import suite.streamlet.Puller;
-import suite.streamlet.Puller2;
 
 public class DblVerbs {
 

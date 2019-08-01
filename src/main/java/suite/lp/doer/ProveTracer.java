@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import primal.Verbs.Build;
 import primal.fp.Funs.Iterate;
 import primal.fp.Funs.Source;
 import suite.Suite;
@@ -13,7 +14,6 @@ import suite.node.Data;
 import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.Formatter;
-import suite.util.To;
 
 public class ProveTracer {
 
@@ -139,7 +139,7 @@ public class ProveTracer {
 		// this method could be invoked in shutdown hook and the prover might
 		// still be running. Do not use iterator/for-each loop access, those
 		// would cause ConcurrentModificationException.
-		return To.string(sb -> {
+		return Build.string(sb -> {
 			for (var i = 0; i < size; i++)
 				records.get(i).appendTo(sb);
 		});

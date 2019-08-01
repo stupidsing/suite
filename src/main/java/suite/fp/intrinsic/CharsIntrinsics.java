@@ -1,5 +1,6 @@
 package suite.fp.intrinsic;
 
+import primal.puller.Puller;
 import suite.fp.intrinsic.Intrinsics.Intrinsic;
 import suite.instructionexecutor.thunk.IPointerMapper;
 import suite.instructionexecutor.thunk.IndexedSourceReader;
@@ -10,7 +11,6 @@ import suite.node.Node;
 import suite.persistent.PerPointer;
 import suite.primitive.Chars;
 import suite.primitive.Chars_;
-import suite.streamlet.Puller;
 import suite.util.To;
 
 public class CharsIntrinsics {

@@ -8,11 +8,11 @@ import primal.fp.Funs.Source;
 import primal.primitive.FltPrim;
 import primal.primitive.Int_Flt;
 import primal.primitive.fp.FltFunUtil;
+import primal.puller.Puller;
 import suite.primitive.Floats.FloatsBuilder;
 import suite.primitive.Floats.WriteChar;
 import suite.primitive.streamlet.FltPuller;
 import suite.primitive.streamlet.FltStreamlet;
-import suite.streamlet.Puller;
 import suite.streamlet.Read;
 
 public class Floats_ {

@@ -5,6 +5,7 @@ import static primal.statics.Fail.fail;
 import java.util.ArrayList;
 import java.util.List;
 
+import primal.Verbs.Take;
 import primal.fp.FunUtil;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Sink;
@@ -12,7 +13,6 @@ import primal.fp.Funs.Source;
 import suite.lp.doer.Cloner;
 import suite.lp.kb.RuleSet;
 import suite.node.Node;
-import suite.util.To;
 
 public class ProverBuilder {
 
@@ -34,12 +34,12 @@ public class ProverBuilder {
 
 		public default List<Node> collectList(Node in) {
 			var nodes = new ArrayList<Node>();
-			find(To.source(in), node -> nodes.add(new Cloner().clone(node)));
+			find(Take.from(in), node -> nodes.add(new Cloner().clone(node)));
 			return nodes;
 		}
 
 		public default Source<Node> collect(Node in) {
-			var source = To.source(in);
+			var source = Take.from(in);
 			return FunUtil.suck(sink0 -> find(source, node -> sink0.f(new Cloner().clone(node))));
 		}
 	}

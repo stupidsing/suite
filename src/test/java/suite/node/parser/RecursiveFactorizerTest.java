@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.junit.Test;
 
+import primal.Verbs.Take;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Iterate;
 import primal.fp.Funs.Source;
@@ -109,7 +110,7 @@ public class RecursiveFactorizerTest {
 				r[i] = new Reference();
 
 			Fun<String, Fun<Boolean, Node>> fun = hs -> b -> {
-				Source<Node> g = To.source(r);
+				Source<Node> g = Take.from(r);
 				var head = terminalNode(hs);
 				var n0 = !b ? g.g() : operatorNode(TermOp.TUPLE_, List.of(g.g(), terminalNode(" "), terminalNode(newArgument)));
 				var n1 = operatorNode(g, TermOp.TUPLE_, g.g(), n0);

@@ -6,9 +6,9 @@ import java.lang.reflect.Proxy;
 
 import org.apache.commons.logging.LogFactory;
 
+import primal.Verbs.Build;
 import primal.Verbs.Copy;
 import suite.inspect.Dump;
-import suite.util.To;
 
 @Deprecated
 public class LogUtil {
@@ -24,7 +24,7 @@ public class LogUtil {
 			var methodName = method.getName();
 			var prefix = methodName + "()\n";
 
-			log.info(To.string(sb -> {
+			log.info(Build.string(sb -> {
 				sb.append(prefix);
 
 				if (ps != null)

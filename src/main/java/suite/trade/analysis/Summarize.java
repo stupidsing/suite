@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.Map;
 
 import primal.String_;
+import primal.Verbs.Build;
 import primal.Verbs.Compare;
 import primal.adt.Fixie;
 import primal.adt.Fixie_.Fixie3;
@@ -97,7 +98,7 @@ public class Summarize {
 					+ (!keys.isEmpty() ? ", " + keys : "");
 		});
 
-		var text = To.string(sb -> {
+		var text = Build.string(sb -> {
 			Sink<String> log = sb::append;
 
 			var outs = summaryByKey //

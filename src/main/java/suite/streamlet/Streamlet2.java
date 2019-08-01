@@ -22,6 +22,8 @@ import primal.fp.Funs.Source;
 import primal.fp.Funs2.Fun2;
 import primal.fp.Funs2.Sink2;
 import primal.fp.Funs2.Source2;
+import primal.puller.Puller;
+import primal.puller.Puller2;
 import primal.streamlet.StreamletDefaults;
 import suite.adt.map.ListMultimap;
 
@@ -128,7 +130,7 @@ public class Streamlet2<K, V> implements StreamletDefaults<Pair<K, V>, Puller2<K
 	}
 
 	public <V1> Streamlet2<K, V1> groupBy(Fun<Streamlet<V>, V1> fun) {
-		return new Streamlet2<>(() -> spawn().groupBy(fun));
+		return new Streamlet2<>(() -> spawn().groupBy().mapValue(list -> fun.apply(Read.from(list))));
 	}
 
 	@Override
@@ -254,7 +256,9 @@ public class Streamlet2<K, V> implements StreamletDefaults<Pair<K, V>, Puller2<K
 	}
 
 	public ListMultimap<K, V> toMultimap() {
-		return spawn().toMultimap();
+		var map = new ListMultimap<K, V>();
+		spawn().groupBy().concatMapValue(Puller::of).sink(map::put);
+		return map;
 	}
 
 	public Set<Pair<K, V>> toSet() {
@@ -262,7 +266,7 @@ public class Streamlet2<K, V> implements StreamletDefaults<Pair<K, V>, Puller2<K
 	}
 
 	public Map<K, Set<V>> toSetMap() {
-		return spawn().toSetMap();
+		return spawn().groupBy().mapValue(values -> Read.from(values).toSet()).toMap();
 	}
 
 	public Pair<K, V> uniqueResult() {

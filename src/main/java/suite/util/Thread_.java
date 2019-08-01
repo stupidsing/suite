@@ -3,7 +3,7 @@ package suite.util;
 import primal.Verbs.RunnableEx;
 import primal.Verbs.Start;
 import primal.Verbs.Th;
-import suite.streamlet.Puller;
+import primal.puller.Puller;
 import suite.streamlet.Read;
 
 public class Thread_ {

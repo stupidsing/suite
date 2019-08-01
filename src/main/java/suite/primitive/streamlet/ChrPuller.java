@@ -11,13 +11,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.function.IntPredicate;
 
 import primal.NullableSyncQueue;
 import primal.Verbs.Close;
 import primal.Verbs.Equals;
 import primal.Verbs.Get;
+import primal.Verbs.Take;
 import primal.adt.Mutable;
 import primal.adt.Pair;
 import primal.fp.FunUtil;
@@ -27,27 +27,21 @@ import primal.fp.Funs.Source;
 import primal.primitive.ChrOpt;
 import primal.primitive.ChrPrim;
 import primal.primitive.ChrPrim.ChrComparator;
-import primal.primitive.ChrPrim.ChrObjSource;
 import primal.primitive.ChrPrim.ChrObj_Obj;
 import primal.primitive.ChrPrim.ChrSink;
 import primal.primitive.ChrPrim.ChrSource;
 import primal.primitive.ChrPrim.ChrTest;
 import primal.primitive.ChrPrim.Chr_Obj;
 import primal.primitive.Chr_Chr;
-import primal.primitive.adt.pair.ChrObjPair;
 import primal.primitive.fp.ChrFunUtil;
-import primal.streamlet.PullerDefaults;
-import suite.adt.map.ListMultimap;
+import primal.puller.Puller;
+import primal.puller.Puller2;
+import primal.puller.PullerDefaults;
 import suite.primitive.Chars;
 import suite.primitive.Chars.CharsBuilder;
 import suite.primitive.adt.map.ChrObjMap;
 import suite.primitive.adt.map.ObjChrMap;
 import suite.primitive.adt.set.ChrSet;
-import suite.streamlet.As;
-import suite.streamlet.Puller;
-import suite.streamlet.Puller2;
-import suite.streamlet.Read;
-import suite.util.To;
 
 public class ChrPuller implements PullerDefaults<Character> {
 
@@ -60,7 +54,7 @@ public class ChrPuller implements PullerDefaults<Character> {
 		var sources = new ArrayList<ChrSource>();
 		for (var outlet : outlets)
 			sources.add(outlet.source);
-		return of(ChrFunUtil.concat(To.source(sources)));
+		return of(ChrFunUtil.concat(Take.from(sources)));
 	}
 
 	public static ChrPuller empty() {
@@ -87,11 +81,11 @@ public class ChrPuller implements PullerDefaults<Character> {
 	}
 
 	public static ChrPuller of(Enumeration<Character> en) {
-		return of(To.source(en));
+		return of(Take.from(en));
 	}
 
 	public static ChrPuller of(Iterable<Character> col) {
-		return of(To.source(col));
+		return of(Take.from(col));
 	}
 
 	public static ChrPuller of(Source<Character> source) {
@@ -240,21 +234,6 @@ public class ChrPuller implements PullerDefaults<Character> {
 		return h;
 	}
 
-	public ChrObjPuller<Integer> index() {
-		return ChrObjPuller.of(new ChrObjSource<>() {
-			private int i = 0;
-
-			public boolean source2(ChrObjPair<Integer> pair) {
-				var c = pull();
-				if (c != empty) {
-					pair.update(c, i++);
-					return true;
-				} else
-					return false;
-			}
-		});
-	}
-
 	public boolean isAll(ChrTest pred) {
 		return ChrFunUtil.isAll(pred, source);
 	}
@@ -280,7 +259,7 @@ public class ChrPuller implements PullerDefaults<Character> {
 	}
 
 	public <K, V> Puller2<K, V> map2(Chr_Obj<K> kf0, Chr_Obj<V> vf0) {
-		return map2_(kf0, vf0);
+		return Puller2.of(ChrFunUtil.map2(kf0, vf0, source));
 	}
 
 	public ChrPuller mapChr(Chr_Chr fun0) {
@@ -452,14 +431,6 @@ public class ChrPuller implements PullerDefaults<Character> {
 		return map;
 	}
 
-	public <K> ListMultimap<K, Character> toMultimap(Chr_Obj<K> keyFun) {
-		return toMultimap(keyFun, value -> value);
-	}
-
-	public <K, V> ListMultimap<K, V> toMultimap(Chr_Obj<K> keyFun, Chr_Obj<V> valueFun) {
-		return map2_(keyFun, valueFun).groupBy().collect(As::multimap);
-	}
-
 	public ChrSet toSet() {
 		var set = new ChrSet();
 		char c;
@@ -468,20 +439,12 @@ public class ChrPuller implements PullerDefaults<Character> {
 		return set;
 	}
 
-	public <K, V> Map<K, Set<V>> toSetMap(Chr_Obj<K> keyFun, Chr_Obj<V> valueFun) {
-		return map2_(keyFun, valueFun).groupBy().mapValue(values -> Read.from(values).toSet()).toMap();
-	}
-
 	public <U, R> Puller<R> zip(Puller<U> outlet1, ChrObj_Obj<U, R> fun) {
 		return Puller.of(() -> {
 			var t = pull();
 			var u = outlet1.pull();
 			return t != empty && u != null ? fun.apply(t, u) : null;
 		});
-	}
-
-	private <K, V> Puller2<K, V> map2_(Chr_Obj<K> kf0, Chr_Obj<V> vf0) {
-		return Puller2.of(ChrFunUtil.map2(kf0, vf0, source));
 	}
 
 }

@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import primal.Verbs.Build;
 import primal.fp.Funs.Sink;
 import suite.math.numeric.Statistic;
 import suite.primitive.Floats.FloatsBuilder;
@@ -118,7 +119,7 @@ public class WalkForwardAllocTester {
 		var deltaMs = (start - System.currentTimeMillis()) / length;
 		var rs = ts.returnsStat(valuations_, deltaMs);
 
-		var holds = To.string(sb -> {
+		var holds = Build.string(sb -> {
 			for (var e : Read.from2(holdBySymbol).sortBy((symbol, value) -> -value).take(5))
 				sb.append(e.<String> map((symbol, hold) -> symbol + ":" + To.percent(hold / length) + ","));
 		});

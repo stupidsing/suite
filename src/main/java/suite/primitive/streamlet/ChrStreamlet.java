@@ -12,13 +12,17 @@ import primal.fp.Funs.Fun;
 import primal.fp.Funs.Source;
 import primal.fp.Funs2.Fun2;
 import primal.primitive.ChrOpt;
+import primal.primitive.ChrPrim;
 import primal.primitive.ChrPrim.ChrComparator;
+import primal.primitive.ChrPrim.ChrObjSource;
 import primal.primitive.ChrPrim.ChrObj_Obj;
 import primal.primitive.ChrPrim.ChrSink;
 import primal.primitive.ChrPrim.ChrSource;
 import primal.primitive.ChrPrim.ChrTest;
 import primal.primitive.ChrPrim.Chr_Obj;
 import primal.primitive.Chr_Chr;
+import primal.primitive.adt.pair.ChrObjPair;
+import primal.puller.Puller;
 import primal.streamlet.StreamletDefaults;
 import suite.adt.map.ListMultimap;
 import suite.primitive.Chars;
@@ -27,7 +31,8 @@ import suite.primitive.Chars_;
 import suite.primitive.adt.map.ChrObjMap;
 import suite.primitive.adt.map.ObjChrMap;
 import suite.primitive.adt.set.ChrSet;
-import suite.streamlet.Puller;
+import suite.streamlet.As;
+import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 
@@ -131,7 +136,19 @@ public class ChrStreamlet implements StreamletDefaults<Character, ChrPuller> {
 	}
 
 	public ChrObjStreamlet<Integer> index() {
-		return new ChrObjStreamlet<>(() -> spawn().index());
+		return new ChrObjStreamlet<>(() -> ChrObjPuller.of(new ChrObjSource<>() {
+			private ChrPuller puller = spawn();
+			private int i = 0;
+
+			public boolean source2(ChrObjPair<Integer> pair) {
+				var c = puller.pull();
+				if (c != ChrPrim.EMPTYVALUE) {
+					pair.update(c, i++);
+					return true;
+				} else
+					return false;
+			}
+		}));
 	}
 
 	public boolean isAll(ChrTest pred) {
@@ -256,11 +273,11 @@ public class ChrStreamlet implements StreamletDefaults<Character, ChrPuller> {
 	}
 
 	public <K> ListMultimap<K, Character> toMultimap(Chr_Obj<K> keyFun) {
-		return spawn().toMultimap(keyFun);
+		return toMultimap(keyFun);
 	}
 
 	public <K, V> ListMultimap<K, V> toMultimap(Chr_Obj<K> keyFun, Chr_Obj<V> valueFun) {
-		return spawn().toMultimap(keyFun, valueFun);
+		return spawn().map2(keyFun, valueFun).groupBy().collect(As::multimap);
 	}
 
 	public ChrSet toSet() {
@@ -268,7 +285,7 @@ public class ChrStreamlet implements StreamletDefaults<Character, ChrPuller> {
 	}
 
 	public <K, V> Map<K, Set<V>> toSetMap(Chr_Obj<K> keyFun, Chr_Obj<V> valueFun) {
-		return spawn().toSetMap(keyFun, valueFun);
+		return spawn().map2(keyFun, valueFun).groupBy().mapValue(values -> Read.from(values).toSet()).toMap();
 	}
 
 	public char uniqueResult() {

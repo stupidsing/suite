@@ -5,13 +5,13 @@ import java.util.Objects;
 import primal.Verbs.Equals;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Source;
+import primal.puller.Puller;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
 import suite.node.tree.TreeAnd;
 import suite.node.tree.TreeOp;
 import suite.node.tree.TreeOr;
 import suite.node.tree.TreeTuple;
-import suite.streamlet.Puller;
 import suite.streamlet.Streamlet;
 
 public abstract class Tree extends Node {

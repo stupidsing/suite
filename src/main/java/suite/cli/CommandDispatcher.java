@@ -7,6 +7,7 @@ import java.io.Writer;
 import java.util.List;
 
 import primal.String_;
+import primal.Verbs.Take;
 import primal.fp.Funs.Sink;
 import primal.fp.Funs.Source;
 import suite.Suite;
@@ -32,7 +33,6 @@ import suite.node.pp.PrettyPrinter;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.util.CommandUtil;
-import suite.util.To;
 
 /**
  * Command line interface dispatcher.
@@ -146,7 +146,7 @@ public class CommandDispatcher {
 			ruleSet.addRule(Rule.of(node));
 			break;
 		case OPTION:
-			Source<String> source = To.source(("-" + input).split(" "));
+			Source<String> source = Take.from(("-" + input).split(" "));
 			String option;
 			while ((option = source.g()) != null)
 				opt.processOption(option, source);

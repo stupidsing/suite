@@ -7,6 +7,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.List;
 
+import primal.Verbs.Build;
 import primal.adt.Pair;
 import primal.fp.Funs.Sink;
 import primal.os.Log_;
@@ -492,7 +493,7 @@ public class Amd64Interpret {
 	}
 
 	private String state(int eip, Instruction instruction) {
-		return To.string(sb -> {
+		return Build.string(sb -> {
 			for (var i = 0; i < 8; i++)
 				sb.append((i % 2 == 0 ? "\n" : " ") //
 						+ amd64.regByName.inverse().get(amd64.reg32[i]) //

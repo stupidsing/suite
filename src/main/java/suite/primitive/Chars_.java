@@ -8,11 +8,11 @@ import primal.fp.Funs.Source;
 import primal.primitive.ChrPrim;
 import primal.primitive.Int_Chr;
 import primal.primitive.fp.ChrFunUtil;
+import primal.puller.Puller;
 import suite.primitive.Chars.CharsBuilder;
 import suite.primitive.Chars.WriteChar;
 import suite.primitive.streamlet.ChrPuller;
 import suite.primitive.streamlet.ChrStreamlet;
-import suite.streamlet.Puller;
 import suite.streamlet.Read;
 
 public class Chars_ {

@@ -8,11 +8,11 @@ import primal.fp.Funs.Source;
 import primal.primitive.DblPrim;
 import primal.primitive.Int_Dbl;
 import primal.primitive.fp.DblFunUtil;
+import primal.puller.Puller;
 import suite.primitive.Doubles.DoublesBuilder;
 import suite.primitive.Doubles.WriteChar;
 import suite.primitive.streamlet.DblPuller;
 import suite.primitive.streamlet.DblStreamlet;
-import suite.streamlet.Puller;
 import suite.streamlet.Read;
 
 public class Doubles_ {

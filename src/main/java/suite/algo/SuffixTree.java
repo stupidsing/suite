@@ -3,7 +3,7 @@ package suite.algo;
 import java.util.HashMap;
 import java.util.Map;
 
-import suite.util.To;
+import primal.Verbs.Build;
 
 // https://stackoverflow.com/questions/9452701/ukkonens-suffix-tree-algorithm-in-plain-english/9513423#9513423
 public class SuffixTree {
@@ -21,7 +21,7 @@ public class SuffixTree {
 		private Node link; // suffix link
 
 		public String toString() {
-			var s = To.string(sb -> edges.forEach((k, v) -> sb.append(k + ":" + v + ",")));
+			var s = Build.string(sb -> edges.forEach((k, v) -> sb.append(k + ":" + v + ",")));
 			return "{id:" + id + ",link:" + (link != null ? link.id : null) + ",edges:{" + s + "}}";
 		}
 

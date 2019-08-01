@@ -1,7 +1,7 @@
 package suite.parser;
 
+import primal.Verbs.Build;
 import primal.fp.Funs.Iterate;
-import suite.util.To;
 
 public class Template {
 
@@ -9,7 +9,7 @@ public class Template {
 	private static String close = "%>";
 
 	public String render(String in, Iterate<String> fun) {
-		return To.string(sb -> {
+		return Build.string(sb -> {
 			var pos0 = 0;
 			int pos1, pos2;
 

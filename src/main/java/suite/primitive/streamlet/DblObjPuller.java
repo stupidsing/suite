@@ -19,6 +19,7 @@ import primal.Verbs.Get;
 import primal.Verbs.New;
 import primal.Verbs.Reverse;
 import primal.Verbs.Sort;
+import primal.Verbs.Take;
 import primal.adt.Mutable;
 import primal.adt.Pair;
 import primal.fp.FunUtil;
@@ -33,15 +34,14 @@ import primal.primitive.DblPrim.DblObj_Obj;
 import primal.primitive.DblPrim.DblTest;
 import primal.primitive.adt.pair.DblObjPair;
 import primal.primitive.fp.DblObjFunUtil;
-import primal.streamlet.PullerDefaults;
+import primal.puller.Puller;
+import primal.puller.Puller2;
+import primal.puller.PullerDefaults;
 import suite.adt.map.ListMultimap;
 import suite.primitive.adt.map.DblObjMap;
 import suite.primitive.adt.map.ObjDblMap;
-import suite.streamlet.Puller;
-import suite.streamlet.Puller2;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
-import suite.util.To;
 
 public class DblObjPuller<V> implements PullerDefaults<DblObjPair<V>> {
 
@@ -54,7 +54,7 @@ public class DblObjPuller<V> implements PullerDefaults<DblObjPair<V>> {
 		var sources = new ArrayList<DblObjSource<V>>();
 		for (var outlet : outlets)
 			sources.add(outlet.source);
-		return of(DblObjFunUtil.concat(To.source(sources)));
+		return of(DblObjFunUtil.concat(Take.from(sources)));
 	}
 
 	public static <V> DblObjPuller<V> empty() {

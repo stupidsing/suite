@@ -2,13 +2,13 @@ package suite.primitive.adt.set;
 
 import java.util.Arrays;
 
+import primal.Verbs.Build;
 import primal.primitive.DblPrim;
 import primal.primitive.DblPrim.DblSink;
 import primal.primitive.DblPrim.DblSource;
 import suite.primitive.Doubles_;
 import suite.primitive.streamlet.DblPuller;
 import suite.primitive.streamlet.DblStreamlet;
-import suite.util.To;
 
 /**
  * Set with doubleacter elements. Double.MIN_VALUE is not allowed. Not
@@ -141,7 +141,7 @@ public class DblSet {
 
 	@Override
 	public String toString() {
-		return To.string(sb -> streamlet().forEach(sb::append));
+		return Build.string(sb -> streamlet().forEach(sb::append));
 	}
 
 	private boolean add_(double c) {

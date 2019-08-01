@@ -19,6 +19,7 @@ import primal.Verbs.Get;
 import primal.Verbs.New;
 import primal.Verbs.Reverse;
 import primal.Verbs.Sort;
+import primal.Verbs.Take;
 import primal.adt.Mutable;
 import primal.adt.Pair;
 import primal.fp.FunUtil;
@@ -33,15 +34,12 @@ import primal.primitive.ChrPrim.ChrObj_Obj;
 import primal.primitive.ChrPrim.ChrTest;
 import primal.primitive.adt.pair.ChrObjPair;
 import primal.primitive.fp.ChrObjFunUtil;
-import primal.streamlet.PullerDefaults;
+import primal.puller.Puller;
+import primal.puller.Puller2;
+import primal.puller.PullerDefaults;
 import suite.adt.map.ListMultimap;
 import suite.primitive.adt.map.ChrObjMap;
 import suite.primitive.adt.map.ObjChrMap;
-import suite.streamlet.Puller;
-import suite.streamlet.Puller2;
-import suite.streamlet.Read;
-import suite.streamlet.Streamlet;
-import suite.util.To;
 
 public class ChrObjPuller<V> implements PullerDefaults<ChrObjPair<V>> {
 
@@ -54,7 +52,7 @@ public class ChrObjPuller<V> implements PullerDefaults<ChrObjPair<V>> {
 		var sources = new ArrayList<ChrObjSource<V>>();
 		for (var outlet : outlets)
 			sources.add(outlet.source);
-		return of(ChrObjFunUtil.concat(To.source(sources)));
+		return of(ChrObjFunUtil.concat(Take.from(sources)));
 	}
 
 	public static <V> ChrObjPuller<V> empty() {
@@ -230,10 +228,6 @@ public class ChrObjPuller<V> implements PullerDefaults<ChrObjPair<V>> {
 
 	public ChrObjPuller<List<V>> groupBy() {
 		return of(toListMap().source());
-	}
-
-	public <V1> ChrObjPuller<V1> groupBy(Fun<Streamlet<V>, V1> fun) {
-		return groupBy().mapValue(list -> fun.apply(Read.from(list)));
 	}
 
 	@Override
@@ -449,12 +443,6 @@ public class ChrObjPuller<V> implements PullerDefaults<ChrObjPair<V>> {
 		return map;
 	}
 
-	public ListMultimap<Character, V> toMultimap() {
-		var map = new ListMultimap<Character, V>();
-		groupBy().concatMapValue(Puller::of).sink(map::put);
-		return map;
-	}
-
 	public ObjChrMap<V> toObjChrMap() {
 		var pair = ChrObjPair.of(empty, (V) null);
 		var map = new ObjChrMap<V>();
@@ -470,10 +458,6 @@ public class ChrObjPuller<V> implements PullerDefaults<ChrObjPair<V>> {
 			set.add(pair);
 		return set;
 
-	}
-
-	public ChrObjMap<Set<V>> toSetMap() {
-		return groupBy().mapValue(values -> Read.from(values).toSet()).toMap();
 	}
 
 	public Puller<V> values() {

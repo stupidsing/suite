@@ -16,10 +16,10 @@ import primal.primitive.IntPrim.Obj_Int;
 import primal.primitive.Int_Dbl;
 import primal.primitive.adt.pair.IntDblPair;
 import primal.primitive.adt.pair.IntObjPair;
+import primal.puller.Puller;
 import suite.primitive.streamlet.IntObjPuller;
 import suite.primitive.streamlet.IntObjStreamlet;
 import suite.streamlet.As;
-import suite.streamlet.Puller;
 
 /**
  * Map with primitive int key and primitive double value. Double.MIN_VALUE is

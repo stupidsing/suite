@@ -16,10 +16,10 @@ import primal.primitive.LngPrim.Obj_Lng;
 import primal.primitive.Lng_Lng;
 import primal.primitive.adt.pair.ChrLngPair;
 import primal.primitive.adt.pair.ChrObjPair;
+import primal.puller.Puller;
 import suite.primitive.streamlet.ChrObjPuller;
 import suite.primitive.streamlet.ChrObjStreamlet;
 import suite.streamlet.As;
-import suite.streamlet.Puller;
 
 /**
  * Map with primitive char key and primitive long value. Long.MIN_VALUE is

@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+import primal.Verbs.Build;
 import primal.Verbs.Concat;
 import primal.Verbs.First;
 import primal.Verbs.Last;
@@ -15,7 +16,6 @@ import primal.Verbs.Right;
 import primal.fp.Funs.Iterate;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
-import suite.util.To;
 
 public class PbTree<T> implements PerTree<T> {
 
@@ -267,7 +267,7 @@ public class PbTree<T> implements PerTree<T> {
 
 	@Override
 	public String toString() {
-		return To.string(sb -> new Object() {
+		return Build.string(sb -> new Object() {
 			private void dump(List<Slot> node, String indent) {
 				if (node != null)
 					for (var slot : node) {

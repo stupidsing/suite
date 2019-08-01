@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Set;
 
 import primal.String_;
+import primal.Verbs.Union;
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Source;
@@ -23,15 +24,14 @@ import primal.primitive.IntIntSink;
 import primal.primitive.adt.pair.IntFltPair;
 import primal.primitive.adt.pair.LngFltPair;
 import primal.primitive.adt.pair.LngIntPair;
+import primal.puller.Puller;
 import suite.math.Math_;
 import suite.primitive.IntVerbs.AsInt;
 import suite.streamlet.As;
-import suite.streamlet.Puller;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.trade.Account.Valuation;
 import suite.trade.data.DataSource.Eod;
-import suite.util.Set_;
 
 public class Trade_ {
 
@@ -275,7 +275,7 @@ public class Trade_ {
 			Map<String, Integer> instruments0, //
 			Map<String, Integer> instruments1, //
 			Obj_Flt<String> priceFun) {
-		Set<String> symbols = Set_.union(instruments0.keySet(), instruments1.keySet());
+		Set<String> symbols = Union.of(instruments0.keySet(), instruments1.keySet());
 
 		return Read //
 				.from(symbols) //

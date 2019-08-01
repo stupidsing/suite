@@ -4,12 +4,12 @@ import static java.lang.Math.sqrt;
 
 import java.util.Random;
 
+import primal.Verbs.Build;
 import suite.math.Forget;
 import suite.math.Tanh;
 import suite.math.linalg.Matrix;
 import suite.math.linalg.Vector;
 import suite.primitive.Floats_;
-import suite.util.To;
 
 public class RecurrentNeuralNetwork {
 
@@ -62,7 +62,7 @@ public class RecurrentNeuralNetwork {
 
 		@Override
 		public String toString() {
-			return To.string(sb -> {
+			return Build.string(sb -> {
 				sb.append("weights = " + mtx.toString(weights));
 				sb.append("memory = " + mtx.toString(memory) + "\n");
 			});

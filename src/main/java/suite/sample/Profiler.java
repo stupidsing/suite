@@ -10,8 +10,8 @@ import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import primal.String_;
+import primal.Verbs.Build;
 import suite.streamlet.Read;
-import suite.util.To;
 
 public class Profiler {
 
@@ -56,7 +56,7 @@ public class Profiler {
 	}
 
 	public String dump() {
-		return To.string(sb -> {
+		return Build.string(sb -> {
 			sb.append("PROFILING RESULT\n\n");
 			sb.append("TOTAL SAMPLES = " + count.get() + "\n");
 			sb.append("\n\n");

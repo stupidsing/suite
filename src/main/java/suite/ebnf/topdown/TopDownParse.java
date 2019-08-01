@@ -10,12 +10,12 @@ import java.util.Map;
 import primal.String_;
 import primal.fp.Funs.Source;
 import primal.os.Log_;
+import primal.puller.Puller;
 import suite.ebnf.Ebnf.Ast;
 import suite.ebnf.Grammar;
 import suite.ebnf.Grammar.GrammarType;
 import suite.ebnf.topdown.Expect.ExpectFun;
 import suite.primitive.Coord;
-import suite.streamlet.Puller;
 import suite.streamlet.Read;
 
 /**

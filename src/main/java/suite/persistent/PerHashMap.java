@@ -4,7 +4,7 @@ import primal.Verbs.Equals;
 import primal.adt.Pair;
 import primal.fp.Funs2.BinOp;
 import primal.fp.Funs2.Source2;
-import suite.streamlet.Puller2;
+import primal.puller.Puller2;
 import suite.streamlet.Streamlet2;
 
 public class PerHashMap<K, V> {

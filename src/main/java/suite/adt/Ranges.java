@@ -5,16 +5,16 @@ import java.util.List;
 import java.util.function.Predicate;
 
 import primal.Verbs.Min;
+import primal.Verbs.Take;
 import primal.adt.Range;
-import suite.util.To;
 
 public class Ranges<T extends Comparable<? super T>> {
 
 	public final List<Range<T>> ranges;
 
 	public static <T extends Comparable<? super T>> Ranges<T> intersect(Ranges<T> ranges0, Ranges<T> ranges1) {
-		var source0 = To.source(ranges0.ranges);
-		var source1 = To.source(ranges1.ranges);
+		var source0 = Take.from(ranges0.ranges);
+		var source1 = Take.from(ranges1.ranges);
 		var range0 = source0.g();
 		var range1 = source1.g();
 		var intersects = new ArrayList<Range<T>>();

@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import primal.String_;
+import primal.Verbs.Build;
 import primal.adt.Pair;
 import primal.adt.map.BiHashMap;
 import primal.adt.map.BiMap;
@@ -118,7 +119,7 @@ public class HtmlUtil {
 	}
 
 	public String format(HtmlNode node) {
-		return To.string(sb -> new Object() {
+		return Build.string(sb -> new Object() {
 			private void f(HtmlNode node_) {
 				if (node_.name != null) {
 					sb.append("<" + node_.name);
@@ -140,7 +141,7 @@ public class HtmlUtil {
 		String decoded;
 
 		if (in != null)
-			decoded = To.string(sb -> {
+			decoded = Build.string(sb -> {
 				var index = 0;
 
 				while (index < in.length()) {
@@ -174,7 +175,7 @@ public class HtmlUtil {
 		String encoded;
 
 		if (in != null)
-			encoded = To.string(sb -> {
+			encoded = Build.string(sb -> {
 				for (var index = 0; index < in.length(); index++) {
 					var ch = in.charAt(index);
 					var escaped = escapeTokenByChar.get(Character.toString(ch));

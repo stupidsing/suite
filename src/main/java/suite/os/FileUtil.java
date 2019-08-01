@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import primal.Verbs.Build;
 import suite.cfg.Defaults;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
@@ -92,7 +93,7 @@ public class FileUtil {
 	}
 
 	public static String read(InputStream in) {
-		return To.string(sb -> {
+		return Build.string(sb -> {
 			try (var is = in; var isr = new InputStreamReader(is, Defaults.charset); var br = new BufferedReader(isr)) {
 				var buffer = new char[Defaults.bufferSize];
 

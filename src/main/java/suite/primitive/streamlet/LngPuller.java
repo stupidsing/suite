@@ -18,6 +18,7 @@ import primal.NullableSyncQueue;
 import primal.Verbs.Close;
 import primal.Verbs.Equals;
 import primal.Verbs.Get;
+import primal.Verbs.Take;
 import primal.adt.Mutable;
 import primal.adt.Pair;
 import primal.fp.FunUtil;
@@ -36,7 +37,9 @@ import primal.primitive.LngPrim.Lng_Obj;
 import primal.primitive.Lng_Lng;
 import primal.primitive.adt.pair.LngObjPair;
 import primal.primitive.fp.LngFunUtil;
-import primal.streamlet.PullerDefaults;
+import primal.puller.Puller;
+import primal.puller.Puller2;
+import primal.puller.PullerDefaults;
 import suite.adt.map.ListMultimap;
 import suite.primitive.Longs;
 import suite.primitive.Longs.LongsBuilder;
@@ -44,10 +47,7 @@ import suite.primitive.adt.map.LngObjMap;
 import suite.primitive.adt.map.ObjLngMap;
 import suite.primitive.adt.set.LngSet;
 import suite.streamlet.As;
-import suite.streamlet.Puller;
-import suite.streamlet.Puller2;
 import suite.streamlet.Read;
-import suite.util.To;
 
 public class LngPuller implements PullerDefaults<Long> {
 
@@ -60,7 +60,7 @@ public class LngPuller implements PullerDefaults<Long> {
 		var sources = new ArrayList<LngSource>();
 		for (var outlet : outlets)
 			sources.add(outlet.source);
-		return of(LngFunUtil.concat(To.source(sources)));
+		return of(LngFunUtil.concat(Take.from(sources)));
 	}
 
 	public static LngPuller empty() {
@@ -87,11 +87,11 @@ public class LngPuller implements PullerDefaults<Long> {
 	}
 
 	public static LngPuller of(Enumeration<Long> en) {
-		return of(To.source(en));
+		return of(Take.from(en));
 	}
 
 	public static LngPuller of(Iterable<Long> col) {
-		return of(To.source(col));
+		return of(Take.from(col));
 	}
 
 	public static LngPuller of(Source<Long> source) {

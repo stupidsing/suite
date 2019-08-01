@@ -9,17 +9,17 @@ import java.util.Map;
 
 import primal.String_;
 import primal.Verbs.Compare;
+import primal.Verbs.Union;
 import primal.fp.Funs.Iterate;
 import primal.fp.Funs2.BinOp;
 import primal.primitive.adt.pair.LngFltPair;
+import primal.puller.Puller;
 import suite.streamlet.As;
-import suite.streamlet.Puller;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.trade.Time;
 import suite.trade.TimeRange;
 import suite.trade.data.DataSource.Datum;
-import suite.util.Set_;
 
 public class StockHistory {
 
@@ -142,7 +142,7 @@ public class StockHistory {
 
 	public StockHistory merge(StockHistory other) {
 		var isActive_ = isActive && other.isActive;
-		var keys = Set_.union(data.keySet(), other.data.keySet());
+		var keys = Union.of(data.keySet(), other.data.keySet());
 
 		BinOp<LngFltPair[]> merge_ = (pairs0, pairs1) -> {
 			var pairs = new ArrayList<LngFltPair>();

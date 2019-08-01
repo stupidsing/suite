@@ -13,12 +13,12 @@ import javax.swing.text.Document;
 import javax.swing.text.Segment;
 import javax.swing.undo.UndoManager;
 
+import primal.Verbs.Build;
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
 import primal.statics.Rethrow.SinkEx;
 import suite.streamlet.Pusher;
 import suite.streamlet.Read;
-import suite.util.To;
 
 public class EditorPane extends JEditorPane {
 
@@ -31,7 +31,7 @@ public class EditorPane extends JEditorPane {
 
 		SinkEx<ActionEvent, BadLocationException> tabize = event -> {
 			if (isSelectedText())
-				replaceLines(segment -> To.string(sb -> {
+				replaceLines(segment -> Build.string(sb -> {
 					sb.append("\t");
 					for (var ch : Read.chars(segment)) {
 						sb.append(ch);

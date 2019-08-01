@@ -19,6 +19,7 @@ import primal.Verbs.Get;
 import primal.Verbs.New;
 import primal.Verbs.Reverse;
 import primal.Verbs.Sort;
+import primal.Verbs.Take;
 import primal.adt.Mutable;
 import primal.adt.Pair;
 import primal.fp.FunUtil;
@@ -33,15 +34,14 @@ import primal.primitive.FltPrim.FltObj_Obj;
 import primal.primitive.FltPrim.FltTest;
 import primal.primitive.adt.pair.FltObjPair;
 import primal.primitive.fp.FltObjFunUtil;
-import primal.streamlet.PullerDefaults;
+import primal.puller.Puller;
+import primal.puller.Puller2;
+import primal.puller.PullerDefaults;
 import suite.adt.map.ListMultimap;
 import suite.primitive.adt.map.FltObjMap;
 import suite.primitive.adt.map.ObjFltMap;
-import suite.streamlet.Puller;
-import suite.streamlet.Puller2;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
-import suite.util.To;
 
 public class FltObjPuller<V> implements PullerDefaults<FltObjPair<V>> {
 
@@ -54,7 +54,7 @@ public class FltObjPuller<V> implements PullerDefaults<FltObjPair<V>> {
 		var sources = new ArrayList<FltObjSource<V>>();
 		for (var outlet : outlets)
 			sources.add(outlet.source);
-		return of(FltObjFunUtil.concat(To.source(sources)));
+		return of(FltObjFunUtil.concat(Take.from(sources)));
 	}
 
 	public static <V> FltObjPuller<V> empty() {

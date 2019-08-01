@@ -6,15 +6,15 @@ import static primal.statics.Rethrow.ex;
 import java.util.Map;
 import java.util.Set;
 
+import primal.Verbs.Build;
+import primal.puller.Puller;
 import suite.http.HttpUtil;
 import suite.node.util.Singleton;
 import suite.primitive.Bytes;
 import suite.streamlet.As;
-import suite.streamlet.Puller;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.ParseUtil;
-import suite.util.To;
 
 public class Sina {
 
@@ -73,7 +73,7 @@ public class Sina {
 				in = HttpUtil.get(url).out();
 
 			return in //
-					.map(bytes -> To.string(sb -> {
+					.map(bytes -> Build.string(sb -> {
 						for (var i = 0; i < bytes.size(); i++)
 							sb.append((char) bytes.get(i));
 					})) //

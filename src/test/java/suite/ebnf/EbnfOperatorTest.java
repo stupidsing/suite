@@ -5,10 +5,10 @@ import java.io.StringReader;
 
 import org.junit.Test;
 
+import primal.Verbs.Build;
 import suite.ebnf.lr.LrParse;
 import suite.node.io.Operator.Assoc;
 import suite.node.io.TermOp;
-import suite.util.To;
 
 public class EbnfOperatorTest {
 
@@ -25,7 +25,7 @@ public class EbnfOperatorTest {
 	}
 
 	private String ebnf() {
-		var s = To.string(sb -> {
+		var s = Build.string(sb -> {
 			var i = 0;
 
 			for (var operator : TermOp.values()) {

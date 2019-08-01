@@ -4,6 +4,7 @@ import java.security.SecureRandom;
 import java.util.Random;
 import java.util.function.BiPredicate;
 
+import primal.Verbs.Build;
 import primal.Verbs.Equals;
 import suite.persistent.PerList;
 import suite.primitive.LngMutable;
@@ -125,7 +126,7 @@ public class HttpSessionControl {
 		var bytes = new byte[16];
 		random.nextBytes(bytes);
 
-		return To.string(sb -> {
+		return Build.string(sb -> {
 			for (var b : bytes)
 				sb.append(String.format("%02x", b));
 		});

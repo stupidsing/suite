@@ -12,11 +12,11 @@ import java.util.Set;
 
 import primal.Verbs.Compare;
 import primal.Verbs.Equals;
+import primal.Verbs.Union;
 import suite.debian.AptUtil.Repo;
 import suite.os.FileUtil;
 import suite.streamlet.Read;
 import suite.util.RunUtil;
-import suite.util.Set_;
 
 public class DependencyMain {
 
@@ -129,7 +129,7 @@ public class DependencyMain {
 			"iamerican", //
 			"ibritish");
 
-	private Set<String> requiredList = Set_.union( //
+	private Set<String> requiredList = Union.of( //
 			baseList, //
 			debianList, //
 			devList, //

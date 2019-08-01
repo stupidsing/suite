@@ -1,7 +1,7 @@
 package suite.sample;
 
+import primal.Verbs.Build;
 import suite.streamlet.Read;
-import suite.util.To;
 
 public class ConwayGameOfLife {
 
@@ -57,7 +57,7 @@ public class ConwayGameOfLife {
 
 	@Override
 	public String toString() {
-		return To.string(sb -> {
+		return Build.string(sb -> {
 			for (var y = 1; y < size; y++)
 				sb.append((char) 65309);
 			sb.append('\n');

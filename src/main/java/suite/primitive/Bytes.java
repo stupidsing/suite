@@ -10,11 +10,12 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
 
+import primal.Verbs.Build;
 import primal.Verbs.Compare;
 import primal.Verbs.Get;
 import primal.fp.Funs.Fun;
+import primal.puller.Puller;
 import suite.cfg.Defaults;
-import suite.streamlet.Puller;
 import suite.util.To;
 
 public class Bytes implements Iterable<Byte> {
@@ -235,7 +236,7 @@ public class Bytes implements Iterable<Byte> {
 
 	@Override
 	public String toString() {
-		return To.string(sb -> {
+		return Build.string(sb -> {
 			for (var i = start; i < end; i++)
 				sb.append(" " + To.hex2(bs[i]));
 		});

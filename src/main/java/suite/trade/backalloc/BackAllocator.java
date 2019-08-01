@@ -17,6 +17,7 @@ import java.util.function.Predicate;
 import primal.String_;
 import primal.Verbs.Compare;
 import primal.Verbs.Equals;
+import primal.Verbs.Union;
 import primal.adt.Mutable;
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
@@ -36,7 +37,6 @@ import suite.trade.data.DataSource.Datum;
 import suite.trade.data.TradeCfg;
 import suite.trade.walkforwardalloc.WalkForwardAllocator;
 import suite.ts.Quant;
-import suite.util.Set_;
 
 /**
  * Strategy that advise you how to divide your money into different investments,
@@ -323,7 +323,7 @@ public interface BackAllocator {
 
 				// find out the transactions
 				var diffBySymbol = Read //
-						.from(Set_.union(potentialBySymbol0.keySet(), potentialBySymbol1.keySet())) //
+						.from(Union.of(potentialBySymbol0.keySet(), potentialBySymbol1.keySet())) //
 						.map2(symbol -> {
 							var potential0 = potentialBySymbol0.getOrDefault(symbol, 0d);
 							var potential1 = potentialBySymbol1.getOrDefault(symbol, 0d);

@@ -9,6 +9,7 @@ import java.util.List;
 
 import primal.String_;
 import primal.Verbs.Right;
+import primal.Verbs.Take;
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
 import suite.Suite;
@@ -35,7 +36,6 @@ import suite.primitive.Bytes.BytesBuilder;
 import suite.streamlet.Read;
 import suite.text.Preprocess;
 import suite.text.Preprocess.Run;
-import suite.util.To;
 
 public class Assembler {
 
@@ -187,7 +187,7 @@ class AsmSl implements Asm {
 	public Bytes assemble(boolean isPass2, int address, Node instruction) {
 		var ins = Suite.substitute(".0, .1, .2,", Int.of(bits), Int.of(address), instruction);
 		var bytesList = new ArrayList<Bytes>();
-		finder.find(To.source(ins), node -> bytesList.add(convertByteStream(node)));
+		finder.find(Take.from(ins), node -> bytesList.add(convertByteStream(node)));
 		return Read.from(bytesList).min((bytes0, bytes1) -> bytes0.size() - bytes1.size());
 
 	}

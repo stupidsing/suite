@@ -8,6 +8,7 @@ import java.io.DataOutputStream;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
+import primal.Verbs.Build;
 import suite.Suite;
 import suite.lp.predicate.PredicateUtil.BuiltinPredicate;
 import suite.node.Atom;
@@ -20,7 +21,6 @@ import suite.node.io.ReversePolish;
 import suite.node.pp.NewPrettyPrinter;
 import suite.node.pp.PrettyPrinter;
 import suite.os.FileUtil;
-import suite.util.To;
 
 public class FormatPredicates {
 
@@ -33,7 +33,7 @@ public class FormatPredicates {
 
 	public BuiltinPredicate concat = PredicateUtil.ps((prover, nodes) -> {
 		var n = nodes.length;
-		var s = To.string(sb -> {
+		var s = Build.string(sb -> {
 			for (var i = 0; i < n - 1; i++)
 				sb.append(Formatter.display(nodes[i]));
 		});

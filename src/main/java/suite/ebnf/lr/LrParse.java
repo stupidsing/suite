@@ -8,6 +8,7 @@ import java.util.Map;
 import primal.Verbs.Compare;
 import primal.adt.Pair;
 import primal.fp.Funs.Source;
+import primal.puller.Puller;
 import suite.ebnf.Ebnf.Ast;
 import suite.ebnf.Grammar;
 import suite.ebnf.lr.BuildLr.Reduce;
@@ -15,7 +16,6 @@ import suite.ebnf.lr.BuildLr.State;
 import suite.parser.Lexer;
 import suite.persistent.PerList;
 import suite.streamlet.As;
-import suite.streamlet.Puller;
 import suite.streamlet.Read;
 
 public class LrParse {

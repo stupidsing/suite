@@ -2,13 +2,13 @@ package suite.primitive.adt.set;
 
 import java.util.Arrays;
 
+import primal.Verbs.Build;
 import primal.primitive.IntPrim;
 import primal.primitive.IntPrim.IntSink;
 import primal.primitive.IntPrim.IntSource;
 import suite.primitive.Ints_;
 import suite.primitive.streamlet.IntPuller;
 import suite.primitive.streamlet.IntStreamlet;
-import suite.util.To;
 
 /**
  * Set with intacter elements. Integer.MIN_VALUE is not allowed. Not
@@ -141,7 +141,7 @@ public class IntSet {
 
 	@Override
 	public String toString() {
-		return To.string(sb -> streamlet().forEach(sb::append));
+		return Build.string(sb -> streamlet().forEach(sb::append));
 	}
 
 	private boolean add_(int c) {

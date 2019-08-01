@@ -2,13 +2,13 @@ package suite.primitive.adt.set;
 
 import java.util.Arrays;
 
+import primal.Verbs.Build;
 import primal.primitive.LngPrim;
 import primal.primitive.LngPrim.LngSink;
 import primal.primitive.LngPrim.LngSource;
 import suite.primitive.Longs_;
 import suite.primitive.streamlet.LngPuller;
 import suite.primitive.streamlet.LngStreamlet;
-import suite.util.To;
 
 /**
  * Set with longacter elements. Long.MIN_VALUE is not allowed. Not
@@ -141,7 +141,7 @@ public class LngSet {
 
 	@Override
 	public String toString() {
-		return To.string(sb -> streamlet().forEach(sb::append));
+		return Build.string(sb -> streamlet().forEach(sb::append));
 	}
 
 	private boolean add_(long c) {

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 
 import primal.String_;
+import primal.Verbs.Union;
 import primal.adt.Pair;
 import primal.fp.Funs.Sink;
 import primal.os.Log_;
@@ -35,7 +36,6 @@ import suite.trade.data.TradeCfgImpl;
 import suite.trade.singlealloc.SingleAllocBackTest;
 import suite.trade.singlealloc.Strategos;
 import suite.util.RunUtil;
-import suite.util.Set_;
 import suite.util.To;
 
 // mvn compile exec:java -Dexec.mainClass=suite.DailyMain
@@ -66,7 +66,7 @@ public class DailyMain {
 	}
 
 	private boolean run() {
-		Trade_.blackList = Set_.union(Trade_.blackList, blackList);
+		Trade_.blackList = Union.of(Trade_.blackList, blackList);
 
 		var sellPool = "sellpool";
 		var ymd = HkexUtil.getCloseTimeBefore(Time.now()).ymd();
@@ -240,7 +240,7 @@ public class DailyMain {
 		var assets0 = account0.assets();
 		var assets1 = account1.assets();
 
-		var symbols = Set_.union(assets0.keySet(), assets1.keySet());
+		var symbols = Union.of(assets0.keySet(), assets1.keySet());
 		var priceBySymbol = cfg.quote(symbols);
 		var trades = Trade_.diff(Trade.NA, assets0, assets1, priceBySymbol::get).toList();
 

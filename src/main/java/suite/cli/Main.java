@@ -16,6 +16,7 @@ import java.util.List;
 
 import primal.String_;
 import primal.Verbs.Close;
+import primal.Verbs.Take;
 import primal.os.Log_;
 import suite.Suite;
 import suite.cfg.Defaults;
@@ -23,7 +24,6 @@ import suite.net.ServeSocket;
 import suite.os.FileUtil;
 import suite.util.ParseUtil;
 import suite.util.RunUtil;
-import suite.util.To;
 
 /**
  * Logic interpreter and functional interpreter. Likes Prolog and Haskell.
@@ -52,7 +52,7 @@ public class Main implements AutoCloseable {
 
 		var b = true;
 		var inputs = new ArrayList<String>();
-		var source = To.source(args);
+		var source = Take.from(args);
 		String verb = null;
 		String arg;
 

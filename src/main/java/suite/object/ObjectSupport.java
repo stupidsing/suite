@@ -4,11 +4,11 @@ import java.util.List;
 import java.util.Objects;
 
 import primal.String_;
+import primal.Verbs.Build;
 import primal.Verbs.Compare;
 import primal.Verbs.Equals;
 import primal.fp.Funs.Fun;
 import suite.persistent.PerList;
-import suite.util.To;
 
 public class ObjectSupport<T> {
 
@@ -74,7 +74,7 @@ public class ObjectSupport<T> {
 		if (!recurse0.containsId(t))
 			try {
 				recurse.set(PerList.cons(t, recurse0));
-				return To.string(sb -> {
+				return Build.string(sb -> {
 					sb.append(t.getClass().getSimpleName() + "(");
 					for (var value : listFun.apply(t))
 						sb.append(value + ",");

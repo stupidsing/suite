@@ -18,10 +18,8 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.TemporalAccessor;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.List;
 
-import primal.String_;
 import primal.Verbs.Close;
 import primal.Verbs.New;
 import primal.fp.Funs.Fun;
@@ -32,6 +30,7 @@ import primal.primitive.Flt_Dbl;
 import primal.primitive.IntInt_Dbl;
 import primal.primitive.IntPrim.Int_Obj;
 import primal.primitive.Int_Dbl;
+import primal.puller.Puller;
 import suite.cfg.Defaults;
 import suite.os.FileUtil;
 import suite.primitive.Bytes;
@@ -39,7 +38,6 @@ import suite.primitive.Chars;
 import suite.primitive.IoSink;
 import suite.serialize.SerOutput;
 import suite.streamlet.As;
-import suite.streamlet.Puller;
 
 public class To {
 
@@ -178,26 +176,6 @@ public class To {
 		return s -> sb.append("\n" + s);
 	}
 
-	@SafeVarargs
-	public static <T> Source<T> source(T... array) {
-		return new Source<>() {
-			private int i;
-
-			public T g() {
-				return i < array.length ? array[i++] : null;
-			}
-		};
-	}
-
-	public static <T> Source<T> source(Enumeration<T> en) {
-		return () -> en.hasMoreElements() ? en.nextElement() : null;
-	}
-
-	public static <T> Source<T> source(Iterable<T> iterable) {
-		var iterator = iterable.iterator();
-		return () -> iterator.hasNext() ? iterator.next() : null;
-	}
-
 	public static Source<Bytes> source(InputStream is) {
 		return () -> {
 			var bs = new byte[Defaults.bufferSize];
@@ -241,10 +219,6 @@ public class To {
 
 	public static String string(LocalDateTime time) {
 		return ymdHms(time);
-	}
-
-	public static String string(Sink<StringBuilder> sink) {
-		return String_.build(sink);
 	}
 
 	public static String string(Throwable th) {

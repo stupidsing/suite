@@ -1,7 +1,7 @@
 package suite.parser;
 
+import primal.Verbs.Build;
 import primal.fp.Funs.Iterate;
-import suite.util.To;
 
 /**
  * Render template into pages.
@@ -23,7 +23,7 @@ public class TemplateRenderer implements Iterate<String> {
 
 	@Override
 	public String apply(String in) {
-		return To.string(sb -> {
+		return Build.string(sb -> {
 			var start = 0;
 
 			while (true) {

@@ -6,6 +6,7 @@ import static suite.util.Streamlet_.forInt;
 
 import java.util.Arrays;
 
+import primal.Verbs.Build;
 import primal.primitive.Dbl_Dbl;
 import suite.math.Math_;
 import suite.math.R3;
@@ -424,11 +425,11 @@ public class Matrix {
 	}
 
 	public String toString(float[] m) {
-		return To.string(sb -> dump(sb, m));
+		return Build.string(sb -> dump(sb, m));
 	}
 
 	public String toString(float[][] m) {
-		return To.string(sb -> {
+		return Build.string(sb -> {
 			for (var row : m) {
 				dump(sb, row);
 				sb.append("\n");

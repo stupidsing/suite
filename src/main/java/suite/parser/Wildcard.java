@@ -2,12 +2,12 @@ package suite.parser;
 
 import java.util.List;
 
+import primal.Verbs.Build;
 import primal.adt.Pair;
 import primal.fp.Funs.Source;
 import suite.persistent.PerList;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
-import suite.util.To;
 
 public class Wildcard {
 
@@ -58,7 +58,7 @@ public class Wildcard {
 	}
 
 	public static String apply(String pattern, String[] input) {
-		return To.string(sb -> {
+		return Build.string(sb -> {
 			var i = 0;
 			for (var ch : Read.chars(pattern))
 				switch (ch) {

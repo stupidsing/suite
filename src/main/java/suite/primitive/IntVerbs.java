@@ -4,10 +4,10 @@ import primal.adt.Pair;
 import primal.fp.Funs.Fun;
 import primal.primitive.IntPrim.ObjObj_Int;
 import primal.primitive.IntPrim.Obj_Int;
+import primal.puller.Puller;
+import primal.puller.Puller2;
 import suite.primitive.Ints.IntsBuilder;
 import suite.primitive.streamlet.IntStreamlet;
-import suite.streamlet.Puller;
-import suite.streamlet.Puller2;
 
 public class IntVerbs {
 

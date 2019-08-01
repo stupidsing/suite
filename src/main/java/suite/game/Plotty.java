@@ -4,12 +4,12 @@ import java.io.File;
 
 import primal.Verbs.Get;
 import primal.primitive.adt.pair.FltFltPair;
+import primal.puller.Puller;
 import suite.cfg.Defaults;
 import suite.os.Execute;
 import suite.os.FileUtil;
 import suite.primitive.Floats_;
 import suite.streamlet.As;
-import suite.streamlet.Puller;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 

@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import primal.Verbs.Equals;
+import primal.Verbs.Union;
 import primal.adt.IdentityKey;
 import primal.adt.Pair;
 import suite.lp.Trail;
@@ -14,7 +15,6 @@ import suite.node.Reference;
 import suite.node.Str;
 import suite.node.Tree;
 import suite.node.Tuple;
-import suite.util.Set_;
 
 public class BinderRecursive {
 
@@ -71,7 +71,7 @@ public class BinderRecursive {
 			var map1 = dict1.getMap();
 			var b = true;
 
-			for (var key : Set_.union(map0.keySet(), map1.keySet())) {
+			for (var key : Union.of(map0.keySet(), map1.keySet())) {
 				var v0 = map0.computeIfAbsent(key, k -> new Reference());
 				var v1 = map1.computeIfAbsent(key, k -> new Reference());
 				b &= bind(v0, v1);

@@ -5,6 +5,7 @@ import static java.lang.Math.min;
 import java.util.ArrayList;
 import java.util.List;
 
+import primal.Verbs.Build;
 import primal.Verbs.Concat;
 import primal.Verbs.Equals;
 import primal.Verbs.Right;
@@ -147,7 +148,7 @@ public class TextUtil {
 	}
 
 	public String toString(List<BytesPair> pairs) {
-		return To.string(sb -> {
+		return Build.string(sb -> {
 			for (var pair : pairs)
 				if (pair.t0 == pair.t1)
 					sb.append(To.string(pair.t0));

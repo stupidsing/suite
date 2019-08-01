@@ -2,12 +2,12 @@ package suite.sample;
 
 import java.util.zip.ZipFile;
 
+import primal.Verbs.Union;
 import suite.os.FileUtil;
 import suite.primitive.Bytes;
 import suite.streamlet.Read;
 import suite.text.TextUtil;
 import suite.util.RunUtil;
-import suite.util.Set_;
 
 /**
  * Compare contents of two zip files.
@@ -24,7 +24,7 @@ public class CompareZipMain {
 			var zf0 = new ZipFile(filename0);
 			var zf1 = new ZipFile(filename1);
 
-			var names = Set_.union(FileUtil.listZip(zf0), FileUtil.listZip(zf1));
+			var names = Union.of(FileUtil.listZip(zf0), FileUtil.listZip(zf1));
 			var isChanged = false;
 
 			for (var name : names) {

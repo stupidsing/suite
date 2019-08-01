@@ -20,6 +20,8 @@ import primal.fp.FunUtil;
 import primal.fp.FunUtil2;
 import primal.fp.Funs.Source;
 import primal.fp.Funs2.Source2;
+import primal.puller.Puller;
+import primal.puller.Puller2;
 import suite.cfg.Defaults;
 import suite.http.HttpUtil;
 import suite.primitive.Bytes;

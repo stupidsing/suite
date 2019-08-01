@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import primal.Verbs.Build;
 import primal.Verbs.New;
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
@@ -25,6 +26,8 @@ import primal.primitive.IntPrim.Obj_Int;
 import primal.primitive.Int_Dbl;
 import primal.primitive.Int_Flt;
 import primal.primitive.Int_Int;
+import primal.puller.Puller;
+import primal.puller.Puller2;
 import suite.adt.map.ListMultimap;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
@@ -47,7 +50,7 @@ public class As {
 	}
 
 	public static Fun<Puller<String>, String> conc(String delimiter) {
-		return puller -> To.string(sb -> puller.sink(s -> {
+		return puller -> Build.string(sb -> puller.sink(s -> {
 			sb.append(s);
 			sb.append(delimiter);
 		}));
@@ -115,7 +118,7 @@ public class As {
 	public static <T> Fun<Puller<T>, String> joinedBy(String before, String delimiter, String after) {
 		return puller -> "" //
 				+ before //
-				+ To.string(sb -> {
+				+ Build.string(sb -> {
 					puller.sink(s -> {
 						if (0 < sb.length())
 							sb.append(delimiter);

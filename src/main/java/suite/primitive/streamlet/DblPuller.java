@@ -18,6 +18,7 @@ import primal.NullableSyncQueue;
 import primal.Verbs.Close;
 import primal.Verbs.Equals;
 import primal.Verbs.Get;
+import primal.Verbs.Take;
 import primal.adt.Mutable;
 import primal.adt.Pair;
 import primal.fp.FunUtil;
@@ -36,7 +37,9 @@ import primal.primitive.DblPrim.Dbl_Obj;
 import primal.primitive.Dbl_Dbl;
 import primal.primitive.adt.pair.DblObjPair;
 import primal.primitive.fp.DblFunUtil;
-import primal.streamlet.PullerDefaults;
+import primal.puller.Puller;
+import primal.puller.Puller2;
+import primal.puller.PullerDefaults;
 import suite.adt.map.ListMultimap;
 import suite.primitive.Doubles;
 import suite.primitive.Doubles.DoublesBuilder;
@@ -44,10 +47,7 @@ import suite.primitive.adt.map.DblObjMap;
 import suite.primitive.adt.map.ObjDblMap;
 import suite.primitive.adt.set.DblSet;
 import suite.streamlet.As;
-import suite.streamlet.Puller;
-import suite.streamlet.Puller2;
 import suite.streamlet.Read;
-import suite.util.To;
 
 public class DblPuller implements PullerDefaults<Double> {
 
@@ -60,7 +60,7 @@ public class DblPuller implements PullerDefaults<Double> {
 		var sources = new ArrayList<DblSource>();
 		for (var outlet : outlets)
 			sources.add(outlet.source);
-		return of(DblFunUtil.concat(To.source(sources)));
+		return of(DblFunUtil.concat(Take.from(sources)));
 	}
 
 	public static DblPuller empty() {
@@ -87,11 +87,11 @@ public class DblPuller implements PullerDefaults<Double> {
 	}
 
 	public static DblPuller of(Enumeration<Double> en) {
-		return of(To.source(en));
+		return of(Take.from(en));
 	}
 
 	public static DblPuller of(Iterable<Double> col) {
-		return of(To.source(col));
+		return of(Take.from(col));
 	}
 
 	public static DblPuller of(Source<Double> source) {

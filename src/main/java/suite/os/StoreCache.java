@@ -10,12 +10,12 @@ import java.util.Arrays;
 
 import primal.adt.Pair;
 import primal.fp.Funs.Source;
+import primal.puller.Puller;
 import suite.cfg.Defaults;
 import suite.cfg.HomeDir;
 import suite.http.HttpUtil;
 import suite.primitive.Bytes;
 import suite.serialize.SerOutput;
-import suite.streamlet.Puller;
 import suite.streamlet.Streamlet;
 import suite.util.To;
 

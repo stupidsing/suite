@@ -4,6 +4,8 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
+import primal.puller.Puller;
+
 public class StreamletTest {
 
 	@Test

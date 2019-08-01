@@ -9,7 +9,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import primal.Verbs.Build;
 import primal.Verbs.Compare;
+import primal.Verbs.Intersect;
 import primal.primitive.adt.pair.LngFltPair;
 import suite.primitive.FltVerbs.AsFlt;
 import suite.primitive.LngVerbs.AsLng;
@@ -21,7 +23,6 @@ import suite.trade.Time;
 import suite.trade.TimeRange;
 import suite.trade.Trade_;
 import suite.ts.TimeSeries;
-import suite.util.Set_;
 import suite.util.To;
 
 // all prices should be already adjusted according to corporate service actions
@@ -68,7 +69,7 @@ public class DataSource {
 					.concatMap(ds -> Longs_.of(ds.ts).map(t -> t)) //
 					.distinct();
 		else
-			tradeTimes = Read.from(Set_.intersect(dataSources // intersect
+			tradeTimes = Read.from(Intersect.of(dataSources // intersect
 					.<Collection<Long>> map(ds -> Longs_.of(ds.ts).map(t -> t).toList()) //
 					.toList()));
 		return tradeTimes.sort(Compare::objects).collect(AsLng.lift(t -> t)).toArray();
@@ -204,7 +205,7 @@ public class DataSource {
 	}
 
 	public String recent(String prefix, int size) {
-		return To.string(sb -> {
+		return Build.string(sb -> {
 			for (var i = ts.length - size; i < ts.length; i++)
 				sb.append(prefix + "[" + Time.ofEpochSec(ts[i]) + "]" //
 						+ " o/c:" + To.string(opens[i]) + "/" + To.string(closes[i]) //

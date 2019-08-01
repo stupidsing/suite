@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+import primal.Verbs.Build;
 import primal.Verbs.Equals;
 import primal.adt.IdentityKey;
 import primal.adt.Pair;
@@ -33,7 +34,6 @@ import suite.primitive.adt.map.IntObjMap;
 import suite.primitive.adt.map.ObjIntMap;
 import suite.streamlet.As;
 import suite.streamlet.Read;
-import suite.util.To;
 
 /**
  * Converts a node into graph representation. The nodes link to other nodes via
@@ -325,7 +325,7 @@ public class Grapher {
 	}
 
 	public String toString() {
-		return To.string(sb -> {
+		return Build.string(sb -> {
 			for (var gn : gns) {
 				String s;
 				switch (gn.type) {

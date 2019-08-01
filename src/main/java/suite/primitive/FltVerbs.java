@@ -4,10 +4,10 @@ import primal.adt.Pair;
 import primal.fp.Funs.Fun;
 import primal.primitive.FltPrim.ObjObj_Flt;
 import primal.primitive.FltPrim.Obj_Flt;
+import primal.puller.Puller;
+import primal.puller.Puller2;
 import suite.primitive.Floats.FloatsBuilder;
 import suite.primitive.streamlet.FltStreamlet;
-import suite.streamlet.Puller;
-import suite.streamlet.Puller2;
 
 public class FltVerbs {
 

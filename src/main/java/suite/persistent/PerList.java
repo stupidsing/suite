@@ -5,13 +5,13 @@ import java.util.Deque;
 import java.util.Iterator;
 import java.util.Objects;
 
+import primal.Verbs.Build;
 import primal.Verbs.Equals;
 import primal.Verbs.Get;
 import primal.fp.FunUtil;
 import primal.fp.Funs.Source;
-import suite.streamlet.Puller;
+import primal.puller.Puller;
 import suite.streamlet.Streamlet;
-import suite.util.To;
 
 /**
  * Persistent linked list.
@@ -140,7 +140,7 @@ public class PerList<T> implements Iterable<T> {
 
 	@Override
 	public String toString() {
-		return To.string(sb -> {
+		return Build.string(sb -> {
 			var node = this;
 			while (!node.isEmpty()) {
 				sb.append(node.head + ", ");

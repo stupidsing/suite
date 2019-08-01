@@ -17,8 +17,12 @@ import primal.fp.Funs.Fun;
 import primal.fp.Funs.Sink;
 import primal.fp.Funs.Source;
 import primal.fp.Funs2.Fun2;
+import primal.primitive.IntPrim.IntObjSource;
+import primal.primitive.adt.pair.IntObjPair;
+import primal.puller.Puller;
 import primal.streamlet.StreamletDefaults;
 import suite.adt.map.ListMultimap;
+import suite.primitive.streamlet.IntObjPuller;
 import suite.primitive.streamlet.IntObjStreamlet;
 
 public class Streamlet<T> implements StreamletDefaults<T, Puller<T>> {
@@ -115,7 +119,7 @@ public class Streamlet<T> implements StreamletDefaults<T, Puller<T>> {
 	}
 
 	public <K, V1> Streamlet2<K, V1> groupBy(Fun<T, K> keyFun, Fun<Streamlet<T>, V1> fun) {
-		return new Streamlet2<>(() -> spawn().groupBy(keyFun, fun));
+		return new Streamlet2<>(() -> spawn().groupBy(keyFun).mapValue(list -> fun.apply(Read.from(list))));
 	}
 
 	@Override
@@ -124,7 +128,18 @@ public class Streamlet<T> implements StreamletDefaults<T, Puller<T>> {
 	}
 
 	public IntObjStreamlet<T> index() {
-		return new IntObjStreamlet<>(() -> spawn().index());
+		return new IntObjStreamlet<>(() -> IntObjPuller.of(new IntObjSource<>() {
+			private Puller<T> puller = spawn();
+			private int i = 0;
+
+			public boolean source2(IntObjPair<T> pair) {
+				var t = puller.pull();
+				boolean b = t != null;
+				if (b)
+					pair.update(i++, t);
+				return b;
+			}
+		}));
 	}
 
 	public boolean isAll(Predicate<T> pred) {
@@ -233,19 +248,19 @@ public class Streamlet<T> implements StreamletDefaults<T, Puller<T>> {
 	}
 
 	public <K> Map<K, T> toMap(Fun<T, K> keyFun) {
-		return spawn().toMap(keyFun);
+		return toMap(keyFun, value -> value);
 	}
 
 	public <K, V> Map<K, V> toMap(Fun<T, K> keyFun, Fun<T, V> valueFun) {
-		return spawn().toMap(keyFun, valueFun);
+		return spawn().map2(keyFun, valueFun).groupBy().mapValue(values -> Read.from(values).uniqueResult()).toMap();
 	}
 
 	public <K> ListMultimap<K, T> toMultimap(Fun<T, K> keyFun) {
-		return spawn().toMultimap(keyFun);
+		return toMultimap(keyFun, value -> value);
 	}
 
 	public <K, V> ListMultimap<K, V> toMultimap(Fun<T, K> keyFun, Fun<T, V> valueFun) {
-		return spawn().toMultimap(keyFun, valueFun);
+		return spawn().map2(keyFun, valueFun).groupBy().collect(As::multimap);
 	}
 
 	public Set<T> toSet() {
@@ -253,7 +268,7 @@ public class Streamlet<T> implements StreamletDefaults<T, Puller<T>> {
 	}
 
 	public <K, V> Map<K, Set<V>> toSetMap(Fun<T, K> keyFun, Fun<T, V> valueFun) {
-		return spawn().toSetMap(keyFun, valueFun);
+		return spawn().map2(keyFun, valueFun).groupBy().mapValue(values -> Read.from(values).toSet()).toMap();
 	}
 
 	@Override

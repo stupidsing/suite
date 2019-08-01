@@ -24,12 +24,12 @@ import primal.primitive.ChrPrim.ChrObj_Obj;
 import primal.primitive.ChrPrim.ChrTest;
 import primal.primitive.adt.pair.ChrObjPair;
 import primal.primitive.fp.ChrObjFunUtil;
+import primal.puller.Puller;
+import primal.puller.Puller2;
 import primal.streamlet.StreamletDefaults;
 import suite.adt.map.ListMultimap;
 import suite.primitive.adt.map.ChrObjMap;
 import suite.primitive.adt.map.ObjChrMap;
-import suite.streamlet.Puller;
-import suite.streamlet.Puller2;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
@@ -130,7 +130,7 @@ public class ChrObjStreamlet<V> implements StreamletDefaults<ChrObjPair<V>, ChrO
 	}
 
 	public <V1> ChrObjStreamlet<V1> groupBy(Fun<Streamlet<V>, V1> fun) {
-		return streamlet(() -> spawn().groupBy(fun));
+		return streamlet(() -> spawn().groupBy().mapValue(list -> fun.apply(Read.from(list))));
 	}
 
 	@Override
@@ -260,7 +260,9 @@ public class ChrObjStreamlet<V> implements StreamletDefaults<ChrObjPair<V>, ChrO
 	}
 
 	public ListMultimap<Character, V> toMultimap() {
-		return spawn().toMultimap();
+		var map = new ListMultimap<Character, V>();
+		spawn().groupBy().concatMapValue(Puller::of).sink(map::put);
+		return map;
 	}
 
 	public ObjChrMap<V> toObjChrMap() {
@@ -269,10 +271,6 @@ public class ChrObjStreamlet<V> implements StreamletDefaults<ChrObjPair<V>, ChrO
 
 	public Set<ChrObjPair<V>> toSet() {
 		return spawn().toSet();
-	}
-
-	public ChrObjMap<Set<V>> toSetMap() {
-		return spawn().toSetMap();
 	}
 
 	public ChrObjPair<V> uniqueResult() {

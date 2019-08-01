@@ -8,10 +8,10 @@ import java.net.URLDecoder;
 import java.util.Map;
 
 import primal.String_;
+import primal.Verbs.Build;
 import suite.cfg.Defaults;
 import suite.persistent.PerList;
 import suite.streamlet.Read;
-import suite.util.To;
 
 public class HttpHeaderUtil {
 
@@ -33,7 +33,7 @@ public class HttpHeaderUtil {
 	public static Map<String, String> getPostedAttrs(InputStream is) {
 		var reader = new InputStreamReader(is, Defaults.charset);
 
-		var query = To.string(sb -> {
+		var query = Build.string(sb -> {
 			var buffer = new char[Defaults.bufferSize];
 			int nCharsRead;
 

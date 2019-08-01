@@ -18,6 +18,7 @@ import primal.NullableSyncQueue;
 import primal.Verbs.Close;
 import primal.Verbs.Equals;
 import primal.Verbs.Get;
+import primal.Verbs.Take;
 import primal.adt.Mutable;
 import primal.adt.Pair;
 import primal.fp.FunUtil;
@@ -36,7 +37,9 @@ import primal.primitive.IntPrim.Int_Obj;
 import primal.primitive.Int_Int;
 import primal.primitive.adt.pair.IntObjPair;
 import primal.primitive.fp.IntFunUtil;
-import primal.streamlet.PullerDefaults;
+import primal.puller.Puller;
+import primal.puller.Puller2;
+import primal.puller.PullerDefaults;
 import suite.adt.map.ListMultimap;
 import suite.primitive.Ints;
 import suite.primitive.Ints.IntsBuilder;
@@ -44,10 +47,7 @@ import suite.primitive.adt.map.IntObjMap;
 import suite.primitive.adt.map.ObjIntMap;
 import suite.primitive.adt.set.IntSet;
 import suite.streamlet.As;
-import suite.streamlet.Puller;
-import suite.streamlet.Puller2;
 import suite.streamlet.Read;
-import suite.util.To;
 
 public class IntPuller implements PullerDefaults<Integer> {
 
@@ -60,7 +60,7 @@ public class IntPuller implements PullerDefaults<Integer> {
 		var sources = new ArrayList<IntSource>();
 		for (var outlet : outlets)
 			sources.add(outlet.source);
-		return of(IntFunUtil.concat(To.source(sources)));
+		return of(IntFunUtil.concat(Take.from(sources)));
 	}
 
 	public static IntPuller empty() {
@@ -87,11 +87,11 @@ public class IntPuller implements PullerDefaults<Integer> {
 	}
 
 	public static IntPuller of(Enumeration<Integer> en) {
-		return of(To.source(en));
+		return of(Take.from(en));
 	}
 
 	public static IntPuller of(Iterable<Integer> col) {
-		return of(To.source(col));
+		return of(Take.from(col));
 	}
 
 	public static IntPuller of(Source<Integer> source) {

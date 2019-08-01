@@ -14,10 +14,10 @@ import primal.primitive.FltPrim.Obj_Flt;
 import primal.primitive.Flt_Flt;
 import primal.primitive.adt.pair.FltFltPair;
 import primal.primitive.adt.pair.FltObjPair;
+import primal.puller.Puller;
 import suite.primitive.streamlet.FltObjPuller;
 import suite.primitive.streamlet.FltObjStreamlet;
 import suite.streamlet.As;
-import suite.streamlet.Puller;
 
 /**
  * Map with primitive float key and primitive float value. Float.MIN_VALUE is

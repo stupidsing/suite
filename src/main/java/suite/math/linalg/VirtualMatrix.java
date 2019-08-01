@@ -4,6 +4,7 @@ import static java.lang.Math.min;
 import static primal.statics.Fail.fail;
 import static suite.util.Streamlet_.forInt;
 
+import primal.Verbs.Build;
 import primal.primitive.IntInt_Flt;
 import suite.streamlet.As;
 import suite.util.To;
@@ -82,7 +83,7 @@ public class VirtualMatrix {
 	}
 
 	public String dump() {
-		return To.string(sb -> {
+		return Build.string(sb -> {
 			sb.append("[ ");
 			for (var i = 0; i < height; i++) {
 				for (var j = 0; i < width_; j++)

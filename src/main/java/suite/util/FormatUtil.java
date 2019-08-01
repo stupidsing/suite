@@ -2,6 +2,7 @@ package suite.util;
 
 import static suite.util.Streamlet_.forInt;
 
+import primal.Verbs.Build;
 import suite.primitive.IntVerbs.AsInt;
 import suite.streamlet.As;
 import suite.streamlet.Read;
@@ -19,7 +20,7 @@ public class FormatUtil {
 						.collect(AsInt.lift(row -> row[column].length())).max())) //
 				.toArray();
 
-		return To.string(sb -> {
+		return Build.string(sb -> {
 			for (var row : rows) {
 				for (var column = 0; column < nColumns; column++) {
 					var cell = row[column];

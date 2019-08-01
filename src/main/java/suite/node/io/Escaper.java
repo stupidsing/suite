@@ -1,13 +1,13 @@
 package suite.node.io;
 
+import primal.Verbs.Build;
 import primal.os.Log_;
 import suite.streamlet.Read;
-import suite.util.To;
 
 public class Escaper {
 
 	public static String escape(String s, char quote) {
-		return To.string(sb -> {
+		return Build.string(sb -> {
 			sb.append(quote);
 
 			for (var ch : Read.chars(s))

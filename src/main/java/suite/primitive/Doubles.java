@@ -10,17 +10,17 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
 
+import primal.Verbs.Build;
 import primal.Verbs.Compare;
 import primal.Verbs.Get;
 import primal.fp.Funs.Fun;
 import primal.primitive.DblPrim;
 import primal.primitive.DblPrim.DblSource;
+import primal.puller.Puller;
 import suite.cfg.Defaults;
 import suite.primitive.streamlet.DblPuller;
 import suite.primitive.streamlet.DblStreamlet;
-import suite.streamlet.Puller;
 import suite.util.ParseUtil;
-import suite.util.To;
 
 public class Doubles implements Iterable<Double> {
 
@@ -264,7 +264,7 @@ public class Doubles implements Iterable<Double> {
 
 	@Override
 	public String toString() {
-		return To.string(sb -> {
+		return Build.string(sb -> {
 			for (var i = start; i < end; i++)
 				sb.append(cs[i]);
 		});

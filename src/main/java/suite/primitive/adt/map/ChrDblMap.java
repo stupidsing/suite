@@ -16,10 +16,10 @@ import primal.primitive.DblPrim.Obj_Dbl;
 import primal.primitive.Dbl_Dbl;
 import primal.primitive.adt.pair.ChrDblPair;
 import primal.primitive.adt.pair.ChrObjPair;
+import primal.puller.Puller;
 import suite.primitive.streamlet.ChrObjPuller;
 import suite.primitive.streamlet.ChrObjStreamlet;
 import suite.streamlet.As;
-import suite.streamlet.Puller;
 
 /**
  * Map with primitive char key and primitive double value. Double.MIN_VALUE is

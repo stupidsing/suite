@@ -4,9 +4,9 @@ import static primal.statics.Rethrow.ex;
 
 import primal.fp.Funs.Iterate;
 import primal.fp.Funs.Source;
+import primal.puller.Puller;
 import suite.primitive.Bytes.BytesBuilder;
 import suite.primitive.Bytes.WriteByte;
-import suite.streamlet.Puller;
 
 public class Bytes_ {
 

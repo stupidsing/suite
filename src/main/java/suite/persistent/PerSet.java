@@ -2,11 +2,11 @@ package suite.persistent;
 
 import java.util.Iterator;
 
+import primal.Verbs.Build;
 import primal.Verbs.Compare;
 import primal.Verbs.Equals;
 import primal.Verbs.Get;
 import suite.streamlet.Streamlet;
-import suite.util.To;
 
 public class PerSet<V extends Comparable<V>> implements Iterable<V> {
 
@@ -67,7 +67,7 @@ public class PerSet<V extends Comparable<V>> implements Iterable<V> {
 
 	@Override
 	public String toString() {
-		return To.string(sb -> {
+		return Build.string(sb -> {
 			sb.append("(");
 
 			for (var v : this)

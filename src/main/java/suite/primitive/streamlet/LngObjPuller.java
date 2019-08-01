@@ -19,6 +19,7 @@ import primal.Verbs.Get;
 import primal.Verbs.New;
 import primal.Verbs.Reverse;
 import primal.Verbs.Sort;
+import primal.Verbs.Take;
 import primal.adt.Mutable;
 import primal.adt.Pair;
 import primal.fp.FunUtil;
@@ -33,15 +34,14 @@ import primal.primitive.LngPrim.LngObj_Obj;
 import primal.primitive.LngPrim.LngTest;
 import primal.primitive.adt.pair.LngObjPair;
 import primal.primitive.fp.LngObjFunUtil;
-import primal.streamlet.PullerDefaults;
+import primal.puller.Puller;
+import primal.puller.Puller2;
+import primal.puller.PullerDefaults;
 import suite.adt.map.ListMultimap;
 import suite.primitive.adt.map.LngObjMap;
 import suite.primitive.adt.map.ObjLngMap;
-import suite.streamlet.Puller;
-import suite.streamlet.Puller2;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
-import suite.util.To;
 
 public class LngObjPuller<V> implements PullerDefaults<LngObjPair<V>> {
 
@@ -54,7 +54,7 @@ public class LngObjPuller<V> implements PullerDefaults<LngObjPair<V>> {
 		var sources = new ArrayList<LngObjSource<V>>();
 		for (var outlet : outlets)
 			sources.add(outlet.source);
-		return of(LngObjFunUtil.concat(To.source(sources)));
+		return of(LngObjFunUtil.concat(Take.from(sources)));
 	}
 
 	public static <V> LngObjPuller<V> empty() {

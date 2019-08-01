@@ -16,10 +16,10 @@ import primal.primitive.LngPrim.Obj_Lng;
 import primal.primitive.Lng_Lng;
 import primal.primitive.adt.pair.FltLngPair;
 import primal.primitive.adt.pair.FltObjPair;
+import primal.puller.Puller;
 import suite.primitive.streamlet.FltObjPuller;
 import suite.primitive.streamlet.FltObjStreamlet;
 import suite.streamlet.As;
-import suite.streamlet.Puller;
 
 /**
  * Map with primitive float key and primitive long value. Long.MIN_VALUE is

@@ -18,6 +18,7 @@ import primal.NullableSyncQueue;
 import primal.Verbs.Close;
 import primal.Verbs.Equals;
 import primal.Verbs.Get;
+import primal.Verbs.Take;
 import primal.adt.Mutable;
 import primal.adt.Pair;
 import primal.fp.FunUtil;
@@ -36,7 +37,9 @@ import primal.primitive.FltPrim.Flt_Obj;
 import primal.primitive.Flt_Flt;
 import primal.primitive.adt.pair.FltObjPair;
 import primal.primitive.fp.FltFunUtil;
-import primal.streamlet.PullerDefaults;
+import primal.puller.Puller;
+import primal.puller.Puller2;
+import primal.puller.PullerDefaults;
 import suite.adt.map.ListMultimap;
 import suite.primitive.Floats;
 import suite.primitive.Floats.FloatsBuilder;
@@ -44,10 +47,7 @@ import suite.primitive.adt.map.FltObjMap;
 import suite.primitive.adt.map.ObjFltMap;
 import suite.primitive.adt.set.FltSet;
 import suite.streamlet.As;
-import suite.streamlet.Puller;
-import suite.streamlet.Puller2;
 import suite.streamlet.Read;
-import suite.util.To;
 
 public class FltPuller implements PullerDefaults<Float> {
 
@@ -60,7 +60,7 @@ public class FltPuller implements PullerDefaults<Float> {
 		var sources = new ArrayList<FltSource>();
 		for (var outlet : outlets)
 			sources.add(outlet.source);
-		return of(FltFunUtil.concat(To.source(sources)));
+		return of(FltFunUtil.concat(Take.from(sources)));
 	}
 
 	public static FltPuller empty() {
@@ -87,11 +87,11 @@ public class FltPuller implements PullerDefaults<Float> {
 	}
 
 	public static FltPuller of(Enumeration<Float> en) {
-		return of(To.source(en));
+		return of(Take.from(en));
 	}
 
 	public static FltPuller of(Iterable<Float> col) {
-		return of(To.source(col));
+		return of(Take.from(col));
 	}
 
 	public static FltPuller of(Source<Float> source) {

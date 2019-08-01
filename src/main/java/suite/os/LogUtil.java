@@ -2,11 +2,11 @@ package suite.os;
 
 import java.lang.reflect.InvocationTargetException;
 
+import primal.Verbs.Build;
 import primal.fp.Funs.Source;
 import primal.os.Log_;
 import suite.inspect.Dump;
 import suite.proxy.Intercept;
-import suite.util.To;
 
 public class LogUtil {
 
@@ -45,7 +45,7 @@ public class LogUtil {
 			var methodName = m.getName();
 			var prefix = methodName + "()\n";
 
-			var dump = To.string(sb -> {
+			var dump = Build.string(sb -> {
 				sb.append(prefix);
 
 				if (ps != null)

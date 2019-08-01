@@ -13,13 +13,13 @@ import java.util.Map;
 
 import primal.String_;
 import primal.Verbs.ReadLine;
+import primal.Verbs.Union;
 import primal.adt.FixieArray;
 import suite.cfg.Defaults;
 import suite.os.FileUtil;
 import suite.primitive.Bytes;
 import suite.streamlet.Read;
 import suite.text.TextUtil.BytesPair;
-import suite.util.Set_;
 
 public interface Snapshot {
 
@@ -74,13 +74,13 @@ class Impl implements Snapshot {
 			Map<String, List<BytesPair>> map0, //
 			Map<String, List<BytesPair>> map1) {
 		return Read //
-				.from(Set_.union(map0.keySet(), map1.keySet())) //
+				.from(Union.of(map0.keySet(), map1.keySet())) //
 				.map2(key -> textUtil.merge(map0.get(key), map1.get(key))) //
 				.toMap();
 	}
 
 	private Map<String, List<BytesPair>> diffMaps(Map<String, Bytes> map0, Map<String, Bytes> map1) {
-		var keys = Set_.union(map0.keySet(), map1.keySet());
+		var keys = Union.of(map0.keySet(), map1.keySet());
 		var diffMap = new HashMap<String, List<BytesPair>>();
 
 		for (var key : keys) {

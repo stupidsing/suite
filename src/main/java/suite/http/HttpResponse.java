@@ -1,8 +1,8 @@
 package suite.http;
 
 import primal.fp.Funs.Sink;
+import primal.puller.Puller;
 import suite.primitive.Bytes;
-import suite.streamlet.Puller;
 
 public class HttpResponse {
 

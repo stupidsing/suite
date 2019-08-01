@@ -8,11 +8,11 @@ import primal.fp.Funs.Source;
 import primal.primitive.Int_Lng;
 import primal.primitive.LngPrim;
 import primal.primitive.fp.LngFunUtil;
+import primal.puller.Puller;
 import suite.primitive.Longs.LongsBuilder;
 import suite.primitive.Longs.WriteChar;
 import suite.primitive.streamlet.LngPuller;
 import suite.primitive.streamlet.LngStreamlet;
-import suite.streamlet.Puller;
 import suite.streamlet.Read;
 
 public class Longs_ {

@@ -4,10 +4,10 @@ import primal.adt.Pair;
 import primal.fp.Funs.Fun;
 import primal.primitive.ChrPrim.ObjObj_Chr;
 import primal.primitive.ChrPrim.Obj_Chr;
+import primal.puller.Puller;
+import primal.puller.Puller2;
 import suite.primitive.Chars.CharsBuilder;
 import suite.primitive.streamlet.ChrStreamlet;
-import suite.streamlet.Puller;
-import suite.streamlet.Puller2;
 
 public class ChrVerbs {
 

@@ -5,9 +5,9 @@ import java.util.List;
 import java.util.Map;
 
 import primal.String_;
+import primal.Verbs.Build;
 import suite.streamlet.As;
 import suite.streamlet.Read;
-import suite.util.To;
 
 public class Grammar {
 
@@ -80,7 +80,7 @@ public class Grammar {
 
 	@Override
 	public String toString() {
-		return To.string(sb -> toString("", sb));
+		return Build.string(sb -> toString("", sb));
 	}
 
 	private void toString(String indent, StringBuilder sb) {

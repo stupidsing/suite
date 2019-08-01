@@ -4,10 +4,10 @@ import primal.adt.Pair;
 import primal.fp.Funs.Fun;
 import primal.primitive.LngPrim.ObjObj_Lng;
 import primal.primitive.LngPrim.Obj_Lng;
+import primal.puller.Puller;
+import primal.puller.Puller2;
 import suite.primitive.Longs.LongsBuilder;
 import suite.primitive.streamlet.LngStreamlet;
-import suite.streamlet.Puller;
-import suite.streamlet.Puller2;
 
 public class LngVerbs {
 

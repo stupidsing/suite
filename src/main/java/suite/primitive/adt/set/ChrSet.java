@@ -2,13 +2,13 @@ package suite.primitive.adt.set;
 
 import java.util.Arrays;
 
+import primal.Verbs.Build;
 import primal.primitive.ChrPrim;
 import primal.primitive.ChrPrim.ChrSink;
 import primal.primitive.ChrPrim.ChrSource;
 import suite.primitive.Chars_;
 import suite.primitive.streamlet.ChrPuller;
 import suite.primitive.streamlet.ChrStreamlet;
-import suite.util.To;
 
 /**
  * Set with character elements. Character.MIN_VALUE is not allowed. Not
@@ -141,7 +141,7 @@ public class ChrSet {
 
 	@Override
 	public String toString() {
-		return To.string(sb -> streamlet().forEach(sb::append));
+		return Build.string(sb -> streamlet().forEach(sb::append));
 	}
 
 	private boolean add_(char c) {

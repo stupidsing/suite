@@ -7,6 +7,7 @@ import static primal.statics.Fail.fail;
 
 import java.util.List;
 
+import primal.Verbs.Build;
 import primal.fp.Funs.Fun;
 import primal.primitive.IntPrim.Obj_Int;
 import primal.primitive.Int_Dbl;
@@ -167,7 +168,7 @@ public class Statistic {
 		}
 
 		public String toString() {
-			return To.string(sb -> {
+			return Build.string(sb -> {
 				var tStatistic = tStatistic();
 				for (var i = 0; i < nDepVariables; i++)
 					sb.append("\n" + coefficientNames[i] + " = " + To.string(coefficients[i]) //

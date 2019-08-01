@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import primal.Verbs.Take;
 import primal.adt.Pair;
 import primal.fp.Funs.Source;
 import suite.adt.PriorityQueue;
@@ -22,12 +23,12 @@ public class Huffman {
 
 	public <Unit> Pair<List<Unit>, List<Boolean>> encode(List<Unit> input) {
 		var dictionary = build(input);
-		return Pair.of(save(dictionary), To.list(encode(dictionary, To.source(input))));
+		return Pair.of(save(dictionary), To.list(encode(dictionary, Take.from(input))));
 	}
 
 	public <Unit> List<Unit> decode(Pair<List<Unit>, List<Boolean>> input) {
 		var dictionary = load(input);
-		return To.list(decode(dictionary, To.source(input.v)));
+		return To.list(decode(dictionary, Take.from(input.v)));
 	}
 
 	private <Unit> Dictionary<Unit> build(List<Unit> input) {

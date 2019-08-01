@@ -2,13 +2,13 @@ package suite.primitive.adt.set;
 
 import java.util.Arrays;
 
+import primal.Verbs.Build;
 import primal.primitive.FltPrim;
 import primal.primitive.FltPrim.FltSink;
 import primal.primitive.FltPrim.FltSource;
 import suite.primitive.Floats_;
 import suite.primitive.streamlet.FltPuller;
 import suite.primitive.streamlet.FltStreamlet;
-import suite.util.To;
 
 /**
  * Set with floatacter elements. Float.MIN_VALUE is not allowed. Not
@@ -141,7 +141,7 @@ public class FltSet {
 
 	@Override
 	public String toString() {
-		return To.string(sb -> streamlet().forEach(sb::append));
+		return Build.string(sb -> streamlet().forEach(sb::append));
 	}
 
 	private boolean add_(float c) {

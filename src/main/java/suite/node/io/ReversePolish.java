@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import primal.String_;
+import primal.Verbs.Build;
 import primal.adt.Pair;
 import suite.Suite;
 import suite.node.Atom;
@@ -22,7 +23,6 @@ import suite.node.Tree;
 import suite.node.io.Rewrite_.NodeRead;
 import suite.node.io.Rewrite_.NodeWrite;
 import suite.node.io.Rewrite_.ReadType;
-import suite.util.To;
 
 public class ReversePolish {
 
@@ -106,7 +106,7 @@ public class ReversePolish {
 			list.add(s);
 		}
 
-		return To.string(sb -> {
+		return Build.string(sb -> {
 			for (var i = list.size() - 1; 0 <= i; i--)
 				sb.append(list.get(i) + '\n');
 		});
