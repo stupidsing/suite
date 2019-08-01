@@ -44,7 +44,7 @@ public class Longs implements Iterable<Long> {
 		while (c == 0 && index < minSize) {
 			var c0 = longs0.cs[start0 + index];
 			var c1 = longs1.cs[start1 + index];
-			c = Compare.compare(c0, c1);
+			c = Compare.primitive(c0, c1);
 			index++;
 		}
 

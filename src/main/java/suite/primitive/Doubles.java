@@ -44,7 +44,7 @@ public class Doubles implements Iterable<Double> {
 		while (c == 0 && index < minSize) {
 			var c0 = doubles0.cs[start0 + index];
 			var c1 = doubles1.cs[start1 + index];
-			c = Compare.compare(c0, c1);
+			c = Compare.primitive(c0, c1);
 			index++;
 		}
 

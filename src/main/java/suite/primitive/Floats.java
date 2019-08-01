@@ -44,7 +44,7 @@ public class Floats implements Iterable<Float> {
 		while (c == 0 && index < minSize) {
 			var c0 = floats0.cs[start0 + index];
 			var c1 = floats1.cs[start1 + index];
-			c = Compare.compare(c0, c1);
+			c = Compare.primitive(c0, c1);
 			index++;
 		}
 

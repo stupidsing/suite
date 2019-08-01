@@ -44,7 +44,7 @@ public class Chars implements Iterable<Character> {
 		while (c == 0 && index < minSize) {
 			var c0 = chars0.cs[start0 + index];
 			var c1 = chars1.cs[start1 + index];
-			c = Compare.compare(c0, c1);
+			c = Compare.primitive(c0, c1);
 			index++;
 		}
 

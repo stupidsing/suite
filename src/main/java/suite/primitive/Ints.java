@@ -44,7 +44,7 @@ public class Ints implements Iterable<Integer> {
 		while (c == 0 && index < minSize) {
 			var c0 = ints0.cs[start0 + index];
 			var c1 = ints1.cs[start1 + index];
-			c = Compare.compare(c0, c1);
+			c = Compare.primitive(c0, c1);
 			index++;
 		}
 

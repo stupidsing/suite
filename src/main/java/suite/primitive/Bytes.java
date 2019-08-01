@@ -39,7 +39,7 @@ public class Bytes implements Iterable<Byte> {
 		while (c == 0 && index < minSize) {
 			var c0 = bytes0.bs[start0 + index];
 			var c1 = bytes1.bs[start1 + index];
-			c = Compare.compare(c0, c1);
+			c = Compare.primitive(c0, c1);
 			index++;
 		}
 
