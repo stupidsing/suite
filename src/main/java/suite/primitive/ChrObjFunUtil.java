@@ -14,13 +14,13 @@ import primal.fp.Funs.Source;
 import primal.fp.Funs2.Source2;
 import primal.os.Log_;
 import primal.primitive.ChrObj_Chr;
+import primal.primitive.ChrPrim.ChrObjPredicate;
+import primal.primitive.ChrPrim.ChrObjSource;
+import primal.primitive.ChrPrim.ChrObj_Obj;
 import primal.primitive.ChrPrim.ChrTest;
 import primal.primitive.adt.pair.ChrObjPair;
 import primal.statics.Fail.InterruptedRuntimeException;
 import primal.statics.Rethrow;
-import suite.primitive.ChrPrimitives.ChrObjPredicate;
-import suite.primitive.ChrPrimitives.ChrObjSource;
-import suite.primitive.ChrPrimitives.ChrObj_Obj;
 
 public class ChrObjFunUtil {
 

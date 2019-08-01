@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
 import primal.primitive.LngPrim;
-import primal.primitive.adt.pair.LngObjPair;
 import suite.primitive.Longs.LongsBuilder;
 import suite.primitive.streamlet.LngPuller;
 import suite.primitive.streamlet.LngStreamlet;
@@ -41,52 +40,6 @@ public class LngPrimitives {
 				}
 			};
 		}
-	}
-
-	public interface LngObj_Obj<X, Y> {
-		public Y apply(long c, X x);
-
-		public default LngObj_Obj<X, Y> rethrow() {
-			return (x, y) -> {
-				try {
-					return apply(x, y);
-				} catch (Exception ex) {
-					return fail("for " + x + ":" + y, ex);
-				}
-			};
-		}
-	}
-
-	public interface LngObjPredicate<T> {
-		public boolean test(long c, T t);
-
-		public default LngObjPredicate<T> rethrow() {
-			return (c, t) -> {
-				try {
-					return test(c, t);
-				} catch (Exception ex) {
-					return fail("for " + c + ":" + t, ex);
-				}
-			};
-		}
-	}
-
-	public interface LngObjSink<T> { // extends ObjCharConsumer<T>
-		public void sink2(long c, T t);
-
-		public default LngObjSink<T> rethrow() {
-			return (c, t) -> {
-				try {
-					sink2(c, t);
-				} catch (Exception ex) {
-					fail("for " + t, ex);
-				}
-			};
-		}
-	}
-
-	public interface LngObjSource<T> {
-		public boolean source2(LngObjPair<T> pair);
 	}
 
 	public interface Obj_Lng<T> {

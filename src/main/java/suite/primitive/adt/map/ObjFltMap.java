@@ -5,11 +5,13 @@ import static primal.statics.Fail.fail;
 import java.util.Arrays;
 import java.util.Objects;
 
+import org.checkerframework.checker.units.qual.K;
+
 import primal.Verbs.Equals;
 import primal.primitive.FltPrim;
+import primal.primitive.FltPrim.FltObjSink;
+import primal.primitive.FltPrim.FltObjSource;
 import primal.primitive.adt.pair.FltObjPair;
-import suite.primitive.FltPrimitives.FltObjSink;
-import suite.primitive.FltPrimitives.FltObjSource;
 import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.primitive.Flt_Flt;
 import suite.primitive.streamlet.FltObjPuller;

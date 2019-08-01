@@ -14,13 +14,13 @@ import primal.fp.Funs.Source;
 import primal.fp.Funs2.Source2;
 import primal.os.Log_;
 import primal.primitive.FltObj_Flt;
+import primal.primitive.FltPrim.FltObjPredicate;
+import primal.primitive.FltPrim.FltObjSource;
+import primal.primitive.FltPrim.FltObj_Obj;
 import primal.primitive.FltPrim.FltTest;
 import primal.primitive.adt.pair.FltObjPair;
 import primal.statics.Fail.InterruptedRuntimeException;
 import primal.statics.Rethrow;
-import suite.primitive.FltPrimitives.FltObjPredicate;
-import suite.primitive.FltPrimitives.FltObjSource;
-import suite.primitive.FltPrimitives.FltObj_Obj;
 
 public class FltObjFunUtil {
 

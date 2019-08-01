@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
 import primal.primitive.FltPrim;
-import primal.primitive.adt.pair.FltObjPair;
 import suite.primitive.Floats.FloatsBuilder;
 import suite.primitive.streamlet.FltPuller;
 import suite.primitive.streamlet.FltStreamlet;
@@ -41,52 +40,6 @@ public class FltPrimitives {
 				}
 			};
 		}
-	}
-
-	public interface FltObj_Obj<X, Y> {
-		public Y apply(float c, X x);
-
-		public default FltObj_Obj<X, Y> rethrow() {
-			return (x, y) -> {
-				try {
-					return apply(x, y);
-				} catch (Exception ex) {
-					return fail("for " + x + ":" + y, ex);
-				}
-			};
-		}
-	}
-
-	public interface FltObjPredicate<T> {
-		public boolean test(float c, T t);
-
-		public default FltObjPredicate<T> rethrow() {
-			return (c, t) -> {
-				try {
-					return test(c, t);
-				} catch (Exception ex) {
-					return fail("for " + c + ":" + t, ex);
-				}
-			};
-		}
-	}
-
-	public interface FltObjSink<T> { // extends ObjCharConsumer<T>
-		public void sink2(float c, T t);
-
-		public default FltObjSink<T> rethrow() {
-			return (c, t) -> {
-				try {
-					sink2(c, t);
-				} catch (Exception ex) {
-					fail("for " + t, ex);
-				}
-			};
-		}
-	}
-
-	public interface FltObjSource<T> {
-		public boolean source2(FltObjPair<T> pair);
 	}
 
 	public interface Obj_Flt<T> {

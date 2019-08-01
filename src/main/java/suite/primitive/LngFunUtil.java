@@ -13,12 +13,12 @@ import primal.fp.Funs.Source;
 import primal.fp.Funs2.Source2;
 import primal.os.Log_;
 import primal.primitive.LngPrim;
+import primal.primitive.LngPrim.LngObjSource;
 import primal.primitive.LngPrim.LngSink;
 import primal.primitive.LngPrim.LngSource;
 import primal.primitive.LngPrim.LngTest;
 import primal.primitive.adt.pair.LngObjPair;
 import primal.statics.Fail.InterruptedRuntimeException;
-import suite.primitive.LngPrimitives.LngObjSource;
 import suite.primitive.LngPrimitives.Lng_Obj;
 
 public class LngFunUtil {

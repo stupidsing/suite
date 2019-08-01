@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
 import primal.primitive.ChrPrim;
-import primal.primitive.adt.pair.ChrObjPair;
 import suite.primitive.Chars.CharsBuilder;
 import suite.primitive.streamlet.ChrPuller;
 import suite.primitive.streamlet.ChrStreamlet;
@@ -41,52 +40,6 @@ public class ChrPrimitives {
 				}
 			};
 		}
-	}
-
-	public interface ChrObj_Obj<X, Y> {
-		public Y apply(char c, X x);
-
-		public default ChrObj_Obj<X, Y> rethrow() {
-			return (x, y) -> {
-				try {
-					return apply(x, y);
-				} catch (Exception ex) {
-					return fail("for " + x + ":" + y, ex);
-				}
-			};
-		}
-	}
-
-	public interface ChrObjPredicate<T> {
-		public boolean test(char c, T t);
-
-		public default ChrObjPredicate<T> rethrow() {
-			return (c, t) -> {
-				try {
-					return test(c, t);
-				} catch (Exception ex) {
-					return fail("for " + c + ":" + t, ex);
-				}
-			};
-		}
-	}
-
-	public interface ChrObjSink<T> { // extends ObjCharConsumer<T>
-		public void sink2(char c, T t);
-
-		public default ChrObjSink<T> rethrow() {
-			return (c, t) -> {
-				try {
-					sink2(c, t);
-				} catch (Exception ex) {
-					fail("for " + t, ex);
-				}
-			};
-		}
-	}
-
-	public interface ChrObjSource<T> {
-		public boolean source2(ChrObjPair<T> pair);
 	}
 
 	public interface Obj_Chr<T> {

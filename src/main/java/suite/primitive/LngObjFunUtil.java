@@ -14,13 +14,13 @@ import primal.fp.Funs.Source;
 import primal.fp.Funs2.Source2;
 import primal.os.Log_;
 import primal.primitive.LngObj_Lng;
+import primal.primitive.LngPrim.LngObjPredicate;
+import primal.primitive.LngPrim.LngObjSource;
+import primal.primitive.LngPrim.LngObj_Obj;
 import primal.primitive.LngPrim.LngTest;
 import primal.primitive.adt.pair.LngObjPair;
 import primal.statics.Fail.InterruptedRuntimeException;
 import primal.statics.Rethrow;
-import suite.primitive.LngPrimitives.LngObjPredicate;
-import suite.primitive.LngPrimitives.LngObjSource;
-import suite.primitive.LngPrimitives.LngObj_Obj;
 
 public class LngObjFunUtil {
 

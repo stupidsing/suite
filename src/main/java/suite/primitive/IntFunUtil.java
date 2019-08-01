@@ -13,12 +13,12 @@ import primal.fp.Funs.Source;
 import primal.fp.Funs2.Source2;
 import primal.os.Log_;
 import primal.primitive.IntPrim;
+import primal.primitive.IntPrim.IntObjSource;
 import primal.primitive.IntPrim.IntSink;
 import primal.primitive.IntPrim.IntSource;
 import primal.primitive.IntPrim.IntTest;
 import primal.primitive.adt.pair.IntObjPair;
 import primal.statics.Fail.InterruptedRuntimeException;
-import suite.primitive.IntPrimitives.IntObjSource;
 import suite.primitive.IntPrimitives.Int_Obj;
 
 public class IntFunUtil {

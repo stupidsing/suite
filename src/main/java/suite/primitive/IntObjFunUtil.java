@@ -14,13 +14,13 @@ import primal.fp.Funs.Source;
 import primal.fp.Funs2.Source2;
 import primal.os.Log_;
 import primal.primitive.IntObj_Int;
+import primal.primitive.IntPrim.IntObjPredicate;
+import primal.primitive.IntPrim.IntObjSource;
+import primal.primitive.IntPrim.IntObj_Obj;
 import primal.primitive.IntPrim.IntTest;
 import primal.primitive.adt.pair.IntObjPair;
 import primal.statics.Fail.InterruptedRuntimeException;
 import primal.statics.Rethrow;
-import suite.primitive.IntPrimitives.IntObjPredicate;
-import suite.primitive.IntPrimitives.IntObjSource;
-import suite.primitive.IntPrimitives.IntObj_Obj;
 
 public class IntObjFunUtil {
 

@@ -13,12 +13,12 @@ import primal.fp.Funs.Source;
 import primal.fp.Funs2.Source2;
 import primal.os.Log_;
 import primal.primitive.ChrPrim;
+import primal.primitive.ChrPrim.ChrObjSource;
 import primal.primitive.ChrPrim.ChrSink;
 import primal.primitive.ChrPrim.ChrSource;
 import primal.primitive.ChrPrim.ChrTest;
 import primal.primitive.adt.pair.ChrObjPair;
 import primal.statics.Fail.InterruptedRuntimeException;
-import suite.primitive.ChrPrimitives.ChrObjSource;
 import suite.primitive.ChrPrimitives.Chr_Obj;
 
 public class ChrFunUtil {

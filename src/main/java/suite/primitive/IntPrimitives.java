@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
 import primal.primitive.IntPrim;
-import primal.primitive.adt.pair.IntObjPair;
 import suite.primitive.Ints.IntsBuilder;
 import suite.primitive.streamlet.IntPuller;
 import suite.primitive.streamlet.IntStreamlet;
@@ -41,52 +40,6 @@ public class IntPrimitives {
 				}
 			};
 		}
-	}
-
-	public interface IntObj_Obj<X, Y> {
-		public Y apply(int c, X x);
-
-		public default IntObj_Obj<X, Y> rethrow() {
-			return (x, y) -> {
-				try {
-					return apply(x, y);
-				} catch (Exception ex) {
-					return fail("for " + x + ":" + y, ex);
-				}
-			};
-		}
-	}
-
-	public interface IntObjPredicate<T> {
-		public boolean test(int c, T t);
-
-		public default IntObjPredicate<T> rethrow() {
-			return (c, t) -> {
-				try {
-					return test(c, t);
-				} catch (Exception ex) {
-					return fail("for " + c + ":" + t, ex);
-				}
-			};
-		}
-	}
-
-	public interface IntObjSink<T> { // extends ObjCharConsumer<T>
-		public void sink2(int c, T t);
-
-		public default IntObjSink<T> rethrow() {
-			return (c, t) -> {
-				try {
-					sink2(c, t);
-				} catch (Exception ex) {
-					fail("for " + t, ex);
-				}
-			};
-		}
-	}
-
-	public interface IntObjSource<T> {
-		public boolean source2(IntObjPair<T> pair);
 	}
 
 	public interface Obj_Int<T> {

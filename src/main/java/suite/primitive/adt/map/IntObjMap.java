@@ -5,9 +5,9 @@ import static primal.statics.Fail.fail;
 import java.util.Objects;
 
 import primal.fp.Funs.Iterate;
+import primal.primitive.IntPrim.IntObjSink;
+import primal.primitive.IntPrim.IntObjSource;
 import primal.primitive.adt.pair.IntObjPair;
-import suite.primitive.IntPrimitives.IntObjSink;
-import suite.primitive.IntPrimitives.IntObjSource;
 import suite.primitive.IntPrimitives.Int_Obj;
 import suite.primitive.streamlet.IntObjPuller;
 import suite.primitive.streamlet.IntObjStreamlet;
