@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
-import suite.util.Array_;
+import primal.Verbs.New;
 
 /**
  * Persistent binomial priority queue, implemented using dense-list of trees.
@@ -81,7 +81,7 @@ public class PerBinPriorityQueue<T> {
 
 	@SuppressWarnings("unchecked")
 	public PerBinPriorityQueue(Comparator<T> comparator) {
-		this(comparator, Array_.newArray(Node.class, maxRank));
+		this(comparator, New.array(Node.class, maxRank));
 	}
 
 	public PerBinPriorityQueue(Comparator<T> comparator, Node[] trees) {
@@ -148,7 +148,7 @@ public class PerBinPriorityQueue<T> {
 
 	private Node[] newForest() {
 		@SuppressWarnings("unchecked")
-		Node[] forest = Array_.newArray(Node.class, maxRank);
+		Node[] forest = New.array(Node.class, maxRank);
 		return forest;
 	}
 

@@ -1,5 +1,6 @@
 package suite.math.numeric;
 
+import primal.Verbs.New;
 import primal.fp.Funs.Fun;
 import suite.math.linalg.CholeskyDecomposition;
 import suite.math.linalg.Matrix;
@@ -8,7 +9,6 @@ import suite.math.sym.Symbolic;
 import suite.node.Node;
 import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Dbl_Dbl;
-import suite.util.Array_;
 
 /**
  * https://en.wikipedia.org/wiki/Gauss%E2%80%93Newton_algorithm
@@ -26,7 +26,7 @@ public class GaussNewton {
 		var nVars = vars.length;
 		var nrs = rs.length;
 		@SuppressWarnings("unchecked")
-		Obj_Dbl<float[]>[] residualFuns = Array_.newArray(Obj_Dbl.class, nrs);
+		Obj_Dbl<float[]>[] residualFuns = New.array(Obj_Dbl.class, nrs);
 		Dbl_Dbl[][] gradientFuns = new Dbl_Dbl[nrs][nVars];
 
 		for (var i = 0; i < nrs; i++) {

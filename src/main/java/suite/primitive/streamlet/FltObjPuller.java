@@ -16,6 +16,7 @@ import primal.Verbs.Close;
 import primal.Verbs.Compare;
 import primal.Verbs.Equals;
 import primal.Verbs.Get;
+import primal.Verbs.New;
 import primal.adt.Mutable;
 import primal.adt.Pair;
 import primal.fp.FunUtil;
@@ -38,7 +39,6 @@ import suite.streamlet.Puller2;
 import suite.streamlet.PullerDefaults;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
-import suite.util.Array_;
 import suite.util.List_;
 import suite.util.To;
 
@@ -420,7 +420,7 @@ public class FltObjPuller<V> implements PullerDefaults<FltObjPair<V>> {
 	public FltObjPair<V>[] toArray() {
 		var list = toList();
 		@SuppressWarnings("unchecked")
-		FltObjPair<V>[] array = Array_.newArray(FltObjPair.class, list.size());
+		FltObjPair<V>[] array = New.array(FltObjPair.class, list.size());
 		return list.toArray(array);
 	}
 

@@ -20,6 +20,7 @@ import primal.Verbs.Close;
 import primal.Verbs.Compare;
 import primal.Verbs.Equals;
 import primal.Verbs.Get;
+import primal.Verbs.New;
 import primal.adt.Fixie_.FixieFun3;
 import primal.adt.Mutable;
 import primal.adt.Pair;
@@ -30,7 +31,6 @@ import primal.fp.Funs2.Fun2;
 import primal.fp.Funs2.Sink2;
 import primal.fp.Funs2.Source2;
 import suite.adt.map.ListMultimap;
-import suite.util.Array_;
 import suite.util.List_;
 import suite.util.To;
 
@@ -414,7 +414,7 @@ public class Puller2<K, V> implements PullerDefaults<Pair<K, V>> {
 	public Pair<K, V>[] toArray() {
 		var list = toList();
 		@SuppressWarnings("unchecked")
-		Pair<K, V>[] array = Array_.newArray(Pair.class, list.size());
+		Pair<K, V>[] array = New.array(Pair.class, list.size());
 		return list.toArray(array);
 	}
 

@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 import primal.Verbs.Equals;
+import primal.Verbs.New;
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
 import suite.cfg.Defaults;
@@ -23,7 +24,6 @@ import suite.file.ExtentAllocator.Extent;
 import suite.inspect.Inspect;
 import suite.primitive.Bytes;
 import suite.streamlet.Read;
-import suite.util.Array_;
 import suite.util.Memoize;
 import suite.util.To;
 
@@ -191,7 +191,7 @@ public class Serialize {
 		return new Serializer<>() {
 			public T[] read(SerInput si) throws IOException {
 				var size = int_.read(si);
-				var array = Array_.newArray(clazz, size);
+				var array = New.array(clazz, size);
 				for (var i = 0; i < size; i++)
 					array[i] = serializer.read(si);
 				return array;

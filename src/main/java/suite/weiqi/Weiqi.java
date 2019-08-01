@@ -2,8 +2,8 @@ package suite.weiqi;
 
 import java.util.Arrays;
 
+import primal.Verbs.Copy;
 import primal.Verbs.Get;
-import suite.util.Array_;
 
 public class Weiqi {
 
@@ -70,7 +70,7 @@ public class Weiqi {
 		}
 
 		public Array(Array<T> array) {
-			Array_.copy(array.positions, 0, positions, 0, size << shift);
+			Copy.array(array.positions, 0, positions, 0, size << shift);
 		}
 
 		public static <T1> Array<T1> create() {

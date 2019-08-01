@@ -20,6 +20,7 @@ import primal.Verbs.Close;
 import primal.Verbs.Compare;
 import primal.Verbs.Equals;
 import primal.Verbs.Get;
+import primal.Verbs.New;
 import primal.adt.Fixie;
 import primal.adt.Fixie_.FixieA;
 import primal.adt.Mutable;
@@ -34,9 +35,7 @@ import primal.fp.Funs2.Fun2;
 import primal.primitive.IntPrim.IntObjSource;
 import primal.primitive.adt.pair.IntObjPair;
 import suite.adt.map.ListMultimap;
-import suite.fp.ZipFibTest.T;
 import suite.primitive.streamlet.IntObjPuller;
-import suite.util.Array_;
 import suite.util.List_;
 import suite.util.To;
 
@@ -340,7 +339,7 @@ public class Puller<T> implements PullerDefaults<T> {
 
 	public T[] toArray(Class<T> clazz) {
 		var list = toList();
-		var array = Array_.newArray(clazz, list.size());
+		var array = New.array(clazz, list.size());
 		return list.toArray(array);
 	}
 

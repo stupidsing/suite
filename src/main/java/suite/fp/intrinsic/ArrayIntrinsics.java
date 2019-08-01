@@ -2,12 +2,12 @@ package suite.fp.intrinsic;
 
 import java.util.Arrays;
 
+import primal.Verbs.Copy;
 import suite.fp.intrinsic.Intrinsics.Intrinsic;
 import suite.instructionexecutor.thunk.ThunkUtil;
 import suite.node.Int;
 import suite.node.Node;
 import suite.node.Tuple;
-import suite.util.Array_;
 
 public class ArrayIntrinsics {
 
@@ -15,8 +15,8 @@ public class ArrayIntrinsics {
 		var array0 = Tuple.t(inputs.get(0));
 		var array1 = Tuple.t(inputs.get(1));
 		var array = new Node[array0.length + array1.length];
-		Array_.copy(array0, 0, array, 0, array0.length);
-		Array_.copy(array1, 0, array, array0.length, array1.length);
+		Copy.array(array0, 0, array, 0, array0.length);
+		Copy.array(array1, 0, array, array0.length, array1.length);
 		return Tuple.of(array);
 	};
 

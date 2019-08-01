@@ -23,6 +23,7 @@ import java.util.List;
 
 import primal.String_;
 import primal.Verbs.Close;
+import primal.Verbs.New;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Sink;
 import primal.fp.Funs.Source;
@@ -45,7 +46,7 @@ public class To {
 	private static String hexDigits = "0123456789ABCDEF";
 
 	public static <T> T[] array(int length, Class<T> clazz, Int_Obj<T> f) {
-		var ts = Array_.newArray(clazz, length);
+		var ts = New.array(clazz, length);
 		for (var i = 0; i < length; i++)
 			ts[i] = f.apply(i);
 		return ts;

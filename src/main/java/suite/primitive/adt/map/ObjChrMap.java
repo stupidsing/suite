@@ -5,8 +5,6 @@ import static primal.statics.Fail.fail;
 import java.util.Arrays;
 import java.util.Objects;
 
-import org.checkerframework.checker.units.qual.K;
-
 import primal.Verbs.Equals;
 import primal.primitive.ChrPrim;
 import primal.primitive.ChrPrim.ChrObjSink;

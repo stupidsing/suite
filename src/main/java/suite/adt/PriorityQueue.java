@@ -2,7 +2,7 @@ package suite.adt;
 
 import java.util.Comparator;
 
-import suite.util.Array_;
+import primal.Verbs.New;
 
 /**
  * Priority queue implementation from Programming Pearls.
@@ -17,7 +17,7 @@ public class PriorityQueue<T> {
 
 	public PriorityQueue(Class<T> clazz, int max, Comparator<T> comparator) {
 		this.comparator = comparator;
-		ts = Array_.newArray(clazz, max + 1);
+		ts = New.array(clazz, max + 1);
 		size = 0;
 	}
 

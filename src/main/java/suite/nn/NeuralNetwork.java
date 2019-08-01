@@ -8,6 +8,7 @@ import static suite.util.Streamlet_.forInt;
 import java.lang.reflect.Array;
 import java.util.Random;
 
+import primal.Verbs.New;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Iterate;
 import suite.math.Sigmoid;
@@ -21,7 +22,6 @@ import suite.primitive.Int_Dbl;
 import suite.streamlet.Puller;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
-import suite.util.Array_;
 import suite.util.To;
 
 public class NeuralNetwork {
@@ -365,7 +365,7 @@ public class NeuralNetwork {
 
 		return inputs -> {
 			@SuppressWarnings("unchecked")
-			var outputs = (T) Array_.newArray(clazz, inputs.length * stride);
+			var outputs = (T) New.array(clazz, inputs.length * stride);
 			var di = 0;
 
 			for (var row : inputs) {
@@ -374,12 +374,12 @@ public class NeuralNetwork {
 			}
 
 			return new Out<>(outputs, errors -> {
-				var errors1 = Array_.newArray(arrayClazz, Array.getLength(errors) / stride);
+				var errors1 = New.array(arrayClazz, Array.getLength(errors) / stride);
 				var si = 0;
 
 				for (var i = 0; i < errors1.length; i++) {
 					@SuppressWarnings("unchecked")
-					var t = (T) Array_.newArray(clazz, stride);
+					var t = (T) New.array(clazz, stride);
 					System.arraycopy(errors, si, errors1[i] = t, 0, stride);
 					si += stride;
 				}

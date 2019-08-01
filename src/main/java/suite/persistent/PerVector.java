@@ -4,9 +4,9 @@ import static java.lang.Math.min;
 
 import java.util.Objects;
 
+import primal.Verbs.Copy;
 import primal.Verbs.Equals;
 import primal.Verbs.Get;
-import suite.util.Array_;
 
 /**
  * A list of nodes that can be easily expanded in left or right direction.
@@ -50,12 +50,12 @@ public class PerVector<T> {
 		private void insertBefore(T[] n, int s, int e) {
 			var l1 = e - s;
 			startUsed -= l1;
-			Array_.copy(n, s, nodes, startUsed, l1);
+			Copy.array(n, s, nodes, startUsed, l1);
 		}
 
 		private void insertAfter(T[] n, int s, int e) {
 			var l1 = e - s;
-			Array_.copy(n, s, nodes, endUsed, l1);
+			Copy.array(n, s, nodes, endUsed, l1);
 			endUsed += l1;
 		}
 	}

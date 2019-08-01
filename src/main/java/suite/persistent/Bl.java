@@ -2,11 +2,11 @@ package suite.persistent;
 
 import java.util.List;
 
+import primal.Verbs.Copy;
 import primal.fp.Funs2.BinOp;
 import primal.primitive.adt.pair.IntObjPair;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
-import suite.util.Array_;
 
 /**
  * Bitmap list.
@@ -83,9 +83,9 @@ public class Bl<T> {
 			var ts1 = new Object[ts0.length + diff];
 			var bitCount0 = Long.bitCount(bits0);
 			var bitCount1 = Long.bitCount(bits1);
-			Array_.copy(ts0, 0, ts1, 0, bitCount0);
+			Copy.array(ts0, 0, ts1, 0, bitCount0);
 			ts1[bitCount0] = t;
-			Array_.copy(ts0, bitCount0 + diff0, ts1, bitCount0 + diff1, bitCount1);
+			Copy.array(ts0, bitCount0 + diff0, ts1, bitCount0 + diff1, bitCount1);
 
 			return new Bl<>(bitmap1, ts1);
 		} else
