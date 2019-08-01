@@ -7,7 +7,7 @@ import java.util.Objects;
 import primal.Verbs.Equals;
 import primal.Verbs.Get;
 import primal.adt.Opt;
-import suite.primitive.FltPrimitives.FltTest;
+import primal.primitive.FltPrim.FltTest;
 import suite.primitive.FltPrimitives.Flt_Obj;
 
 public class FltOpt {

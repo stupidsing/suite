@@ -12,8 +12,8 @@ import java.util.Iterator;
 
 import primal.Verbs.Get;
 import primal.fp.Funs.Fun;
+import primal.primitive.ChrPrim.ChrSource;
 import suite.cfg.Defaults;
-import suite.primitive.ChrPrimitives.ChrSource;
 import suite.primitive.streamlet.ChrPuller;
 import suite.primitive.streamlet.ChrStreamlet;
 import suite.streamlet.Puller;

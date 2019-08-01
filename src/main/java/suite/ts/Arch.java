@@ -7,8 +7,8 @@ import static suite.util.Streamlet_.forInt;
 import java.util.Arrays;
 import java.util.Random;
 
+import primal.primitive.DblPrim.DblSource;
 import suite.math.numeric.Statistic;
-import suite.primitive.DblPrimitives.DblSource;
 import suite.primitive.Floats_;
 import suite.primitive.Int_Dbl;
 import suite.primitive.adt.pair.FltObjPair;

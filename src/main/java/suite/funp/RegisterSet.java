@@ -3,11 +3,11 @@ package suite.funp;
 import static primal.statics.Fail.fail;
 import static suite.util.Streamlet_.forInt;
 
+import primal.primitive.IntPrim.IntTest;
 import suite.assembler.Amd64;
 import suite.assembler.Amd64.OpMem;
 import suite.assembler.Amd64.OpReg;
 import suite.assembler.Amd64.Operand;
-import suite.primitive.IntPrimitives.IntTest;
 import suite.streamlet.Read;
 
 public class RegisterSet {

@@ -17,10 +17,6 @@ import suite.streamlet.Streamlet;
 
 public class DblPrimitives {
 
-	public interface DblComparator {
-		int compare(double c0, double c1);
-	}
-
 	public interface Dbl_Obj<T> {
 		public T apply(double c);
 
@@ -90,38 +86,6 @@ public class DblPrimitives {
 
 	public interface DblObjSource<T> {
 		public boolean source2(DblObjPair<T> pair);
-	}
-
-	public interface DblTest {
-		public boolean test(double c);
-
-		public default DblTest rethrow() {
-			return c -> {
-				try {
-					return test(c);
-				} catch (Exception ex) {
-					return fail("for " + c, ex);
-				}
-			};
-		}
-	}
-
-	public interface DblSink {
-		public void f(double c);
-
-		public default DblSink rethrow() {
-			return t -> {
-				try {
-					f(t);
-				} catch (Exception ex) {
-					fail("for " + t, ex);
-				}
-			};
-		}
-	}
-
-	public interface DblSource {
-		public double g();
 	}
 
 	public interface Obj_Dbl<T> {

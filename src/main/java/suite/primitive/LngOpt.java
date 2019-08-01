@@ -7,7 +7,7 @@ import java.util.Objects;
 import primal.Verbs.Equals;
 import primal.Verbs.Get;
 import primal.adt.Opt;
-import suite.primitive.LngPrimitives.LngTest;
+import primal.primitive.LngPrim.LngTest;
 import suite.primitive.LngPrimitives.Lng_Obj;
 
 public class LngOpt {

@@ -2,10 +2,10 @@ package suite.primitive.adt.set;
 
 import java.util.Arrays;
 
+import primal.primitive.FltPrim.FltSink;
+import primal.primitive.FltPrim.FltSource;
 import suite.primitive.Floats_;
 import suite.primitive.FltFunUtil;
-import suite.primitive.FltPrimitives.FltSink;
-import suite.primitive.FltPrimitives.FltSource;
 import suite.primitive.streamlet.FltPuller;
 import suite.primitive.streamlet.FltStreamlet;
 import suite.util.To;

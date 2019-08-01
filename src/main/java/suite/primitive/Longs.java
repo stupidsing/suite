@@ -12,8 +12,8 @@ import java.util.Iterator;
 
 import primal.Verbs.Get;
 import primal.fp.Funs.Fun;
+import primal.primitive.LngPrim.LngSource;
 import suite.cfg.Defaults;
-import suite.primitive.LngPrimitives.LngSource;
 import suite.primitive.streamlet.LngPuller;
 import suite.primitive.streamlet.LngStreamlet;
 import suite.streamlet.Puller;

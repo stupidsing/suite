@@ -2,10 +2,10 @@ package suite.primitive.adt.set;
 
 import java.util.Arrays;
 
+import primal.primitive.ChrPrim.ChrSink;
+import primal.primitive.ChrPrim.ChrSource;
 import suite.primitive.Chars_;
 import suite.primitive.ChrFunUtil;
-import suite.primitive.ChrPrimitives.ChrSink;
-import suite.primitive.ChrPrimitives.ChrSource;
 import suite.primitive.streamlet.ChrPuller;
 import suite.primitive.streamlet.ChrStreamlet;
 import suite.util.To;

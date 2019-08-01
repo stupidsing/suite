@@ -7,7 +7,7 @@ import java.util.Objects;
 import primal.Verbs.Equals;
 import primal.Verbs.Get;
 import primal.adt.Opt;
-import suite.primitive.DblPrimitives.DblTest;
+import primal.primitive.DblPrim.DblTest;
 import suite.primitive.DblPrimitives.Dbl_Obj;
 
 public class DblOpt {

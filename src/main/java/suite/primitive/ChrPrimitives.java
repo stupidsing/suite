@@ -17,10 +17,6 @@ import suite.streamlet.Streamlet;
 
 public class ChrPrimitives {
 
-	public interface ChrComparator {
-		int compare(char c0, char c1);
-	}
-
 	public interface Chr_Obj<T> {
 		public T apply(char c);
 
@@ -90,38 +86,6 @@ public class ChrPrimitives {
 
 	public interface ChrObjSource<T> {
 		public boolean source2(ChrObjPair<T> pair);
-	}
-
-	public interface ChrTest {
-		public boolean test(char c);
-
-		public default ChrTest rethrow() {
-			return c -> {
-				try {
-					return test(c);
-				} catch (Exception ex) {
-					return fail("for " + c, ex);
-				}
-			};
-		}
-	}
-
-	public interface ChrSink {
-		public void f(char c);
-
-		public default ChrSink rethrow() {
-			return t -> {
-				try {
-					f(t);
-				} catch (Exception ex) {
-					fail("for " + t, ex);
-				}
-			};
-		}
-	}
-
-	public interface ChrSource {
-		public char g();
 	}
 
 	public interface Obj_Chr<T> {

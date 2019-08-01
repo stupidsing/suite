@@ -17,10 +17,6 @@ import suite.streamlet.Streamlet;
 
 public class FltPrimitives {
 
-	public interface FltComparator {
-		int compare(float c0, float c1);
-	}
-
 	public interface Flt_Obj<T> {
 		public T apply(float c);
 
@@ -90,38 +86,6 @@ public class FltPrimitives {
 
 	public interface FltObjSource<T> {
 		public boolean source2(FltObjPair<T> pair);
-	}
-
-	public interface FltTest {
-		public boolean test(float c);
-
-		public default FltTest rethrow() {
-			return c -> {
-				try {
-					return test(c);
-				} catch (Exception ex) {
-					return fail("for " + c, ex);
-				}
-			};
-		}
-	}
-
-	public interface FltSink {
-		public void f(float c);
-
-		public default FltSink rethrow() {
-			return t -> {
-				try {
-					f(t);
-				} catch (Exception ex) {
-					fail("for " + t, ex);
-				}
-			};
-		}
-	}
-
-	public interface FltSource {
-		public float g();
 	}
 
 	public interface Obj_Flt<T> {

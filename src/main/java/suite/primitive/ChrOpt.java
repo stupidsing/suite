@@ -7,7 +7,7 @@ import java.util.Objects;
 import primal.Verbs.Equals;
 import primal.Verbs.Get;
 import primal.adt.Opt;
-import suite.primitive.ChrPrimitives.ChrTest;
+import primal.primitive.ChrPrim.ChrTest;
 import suite.primitive.ChrPrimitives.Chr_Obj;
 
 public class ChrOpt {

@@ -2,9 +2,9 @@ package suite.primitive.adt.set;
 
 import java.util.Arrays;
 
+import primal.primitive.LngPrim.LngSink;
+import primal.primitive.LngPrim.LngSource;
 import suite.primitive.LngFunUtil;
-import suite.primitive.LngPrimitives.LngSink;
-import suite.primitive.LngPrimitives.LngSource;
 import suite.primitive.Longs_;
 import suite.primitive.streamlet.LngPuller;
 import suite.primitive.streamlet.LngStreamlet;

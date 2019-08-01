@@ -8,11 +8,11 @@ import primal.Verbs.Equals;
 import primal.Verbs.Get;
 import primal.adt.Pair;
 import primal.fp.Funs.Sink;
+import primal.primitive.IntPrim.IntSink;
 import suite.node.Node;
 import suite.node.Reference;
 import suite.node.io.Rewrite_.NodeHead;
 import suite.node.io.Rewrite_.NodeRead;
-import suite.primitive.IntPrimitives.IntSink;
 import suite.primitive.adt.map.IntObjMap;
 import suite.primitive.adt.pair.IntObjPair;
 

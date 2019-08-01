@@ -12,6 +12,7 @@ import org.junit.Test;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Iterate;
 import primal.fp.Funs.Source;
+import primal.primitive.IntPrim.IntSource;
 import suite.Suite;
 import suite.inspect.Dump;
 import suite.jdk.gen.FunExprM.PrintlnFunExpr;
@@ -25,7 +26,6 @@ import suite.node.Reference;
 import suite.node.Tree;
 import suite.node.io.TermOp;
 import suite.primitive.Flt_Flt;
-import suite.primitive.IntPrimitives.IntSource;
 import suite.primitive.Int_Int;
 
 public class FunCreatorTest {

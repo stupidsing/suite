@@ -6,8 +6,8 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
+import primal.primitive.IntPrim.IntSink;
 import suite.adt.PriorityQueue;
-import suite.primitive.IntPrimitives.IntSink;
 import suite.primitive.adt.pair.IntIntPair;
 
 public class SparseMatrix {

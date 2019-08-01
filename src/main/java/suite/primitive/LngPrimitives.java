@@ -17,10 +17,6 @@ import suite.streamlet.Streamlet;
 
 public class LngPrimitives {
 
-	public interface LngComparator {
-		int compare(long c0, long c1);
-	}
-
 	public interface Lng_Obj<T> {
 		public T apply(long c);
 
@@ -90,38 +86,6 @@ public class LngPrimitives {
 
 	public interface LngObjSource<T> {
 		public boolean source2(LngObjPair<T> pair);
-	}
-
-	public interface LngTest {
-		public boolean test(long c);
-
-		public default LngTest rethrow() {
-			return c -> {
-				try {
-					return test(c);
-				} catch (Exception ex) {
-					return fail("for " + c, ex);
-				}
-			};
-		}
-	}
-
-	public interface LngSink {
-		public void f(long c);
-
-		public default LngSink rethrow() {
-			return t -> {
-				try {
-					f(t);
-				} catch (Exception ex) {
-					fail("for " + t, ex);
-				}
-			};
-		}
-	}
-
-	public interface LngSource {
-		public long g();
 	}
 
 	public interface Obj_Lng<T> {

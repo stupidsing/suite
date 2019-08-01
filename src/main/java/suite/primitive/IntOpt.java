@@ -7,7 +7,7 @@ import java.util.Objects;
 import primal.Verbs.Equals;
 import primal.Verbs.Get;
 import primal.adt.Opt;
-import suite.primitive.IntPrimitives.IntTest;
+import primal.primitive.IntPrim.IntTest;
 import suite.primitive.IntPrimitives.Int_Obj;
 
 public class IntOpt {

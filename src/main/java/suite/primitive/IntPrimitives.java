@@ -17,10 +17,6 @@ import suite.streamlet.Streamlet;
 
 public class IntPrimitives {
 
-	public interface IntComparator {
-		int compare(int c0, int c1);
-	}
-
 	public interface Int_Obj<T> {
 		public T apply(int c);
 
@@ -90,38 +86,6 @@ public class IntPrimitives {
 
 	public interface IntObjSource<T> {
 		public boolean source2(IntObjPair<T> pair);
-	}
-
-	public interface IntTest {
-		public boolean test(int c);
-
-		public default IntTest rethrow() {
-			return c -> {
-				try {
-					return test(c);
-				} catch (Exception ex) {
-					return fail("for " + c, ex);
-				}
-			};
-		}
-	}
-
-	public interface IntSink {
-		public void f(int c);
-
-		public default IntSink rethrow() {
-			return t -> {
-				try {
-					f(t);
-				} catch (Exception ex) {
-					fail("for " + t, ex);
-				}
-			};
-		}
-	}
-
-	public interface IntSource {
-		public int g();
 	}
 
 	public interface Obj_Int<T> {

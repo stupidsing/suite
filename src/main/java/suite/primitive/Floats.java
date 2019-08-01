@@ -12,8 +12,8 @@ import java.util.Iterator;
 
 import primal.Verbs.Get;
 import primal.fp.Funs.Fun;
+import primal.primitive.FltPrim.FltSource;
 import suite.cfg.Defaults;
-import suite.primitive.FltPrimitives.FltSource;
 import suite.primitive.streamlet.FltPuller;
 import suite.primitive.streamlet.FltStreamlet;
 import suite.streamlet.Puller;

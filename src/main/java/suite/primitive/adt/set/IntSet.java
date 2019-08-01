@@ -2,9 +2,9 @@ package suite.primitive.adt.set;
 
 import java.util.Arrays;
 
+import primal.primitive.IntPrim.IntSink;
+import primal.primitive.IntPrim.IntSource;
 import suite.primitive.IntFunUtil;
-import suite.primitive.IntPrimitives.IntSink;
-import suite.primitive.IntPrimitives.IntSource;
 import suite.primitive.Ints_;
 import suite.primitive.streamlet.IntPuller;
 import suite.primitive.streamlet.IntStreamlet;
