@@ -53,7 +53,6 @@ replace src/main/java/suite/primitive/ChrDbl_Flt.java
 replace src/main/java/suite/primitive/ChrDblSource.java
 replace src/main/java/suite/primitive/ChrFunUtil.java
 replace src/main/java/suite/primitive/ChrMutable.java
-replace src/main/java/suite/primitive/ChrObj_Dbl.java
 replace src/main/java/suite/primitive/ChrObjFunUtil.java
 replace src/main/java/suite/primitive/ChrPrimitives.java
 replace src/main/java/suite/primitive/ChrRange.java

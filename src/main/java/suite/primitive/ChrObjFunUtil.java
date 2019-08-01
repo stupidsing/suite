@@ -12,6 +12,7 @@ import primal.fp.Funs.Sink;
 import primal.fp.Funs.Source;
 import primal.fp.Funs2.Source2;
 import primal.os.Log_;
+import primal.primitive.ChrObj_Chr;
 import primal.primitive.ChrPrim.ChrTest;
 import primal.primitive.adt.pair.ChrObjPair;
 import primal.statics.Fail.InterruptedRuntimeException;
