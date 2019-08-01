@@ -6,7 +6,6 @@ import static primal.statics.Rethrow.ex;
 import java.lang.reflect.Method;
 import java.sql.Timestamp;
 import java.util.Date;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -19,8 +18,6 @@ import primal.fp.Funs2.Fun2;
 import suite.streamlet.Read;
 
 public class Util {
-
-	private static AtomicInteger counter = new AtomicInteger();
 
 	public static void assert_(boolean b) {
 		if (!b)
@@ -60,10 +57,6 @@ public class Util {
 			} catch (Exception ex) {
 				return fail("for " + clazz, ex);
 			}
-	}
-
-	public static int temp() {
-		return counter.getAndIncrement();
 	}
 
 	public static <T extends Exception, R> R throwSneakly(Exception ex) throws T {

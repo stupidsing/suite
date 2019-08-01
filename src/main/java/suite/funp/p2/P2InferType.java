@@ -15,6 +15,7 @@ import java.util.Set;
 import java.util.function.BiPredicate;
 
 import primal.String_;
+import primal.Verbs.Get;
 import primal.adt.Fixie;
 import primal.adt.Fixie_.Fixie3;
 import primal.adt.Mutable;
@@ -110,7 +111,6 @@ import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 import suite.util.Switch;
-import suite.util.Util;
 
 /**
  * Hindley-Milner type inference.
@@ -565,7 +565,7 @@ public class P2InferType {
 				var offset = IntMutable.nil();
 				var size = getTypeSize(typeOf(init));
 				var var_ = localStack(scope, offset, 0, size);
-				var e1 = new Erase(scope, env.replace("fold$" + Util.temp(), var_), me);
+				var e1 = new Erase(scope, env.replace("fold$" + Get.temp(), var_), me);
 				var m = var_.get(scope);
 				var cont_ = e1.applyOnce(m, cont, size);
 				var next_ = e1.applyOnce(m, next, size);

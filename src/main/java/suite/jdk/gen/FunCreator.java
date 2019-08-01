@@ -23,6 +23,7 @@ import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.Type;
 
+import primal.Verbs.Get;
 import primal.Verbs.New;
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
@@ -38,7 +39,6 @@ import suite.jdk.gen.pass.FunGenerateBytecode;
 import suite.jdk.gen.pass.FunRewrite;
 import suite.jdk.lambda.LambdaInterface;
 import suite.streamlet.Read;
-import suite.util.Util;
 
 public class FunCreator<I> extends FunFactory {
 
@@ -107,7 +107,7 @@ public class FunCreator<I> extends FunFactory {
 
 		private CreateClass(FunExpr expr0) {
 			var interfaceClass = lambdaClass.interfaceClass;
-			var clsName = interfaceClass.getName() + "_" + Util.temp();
+			var clsName = interfaceClass.getName() + "_" + Get.temp();
 			var methodName = lambdaClass.methodName;
 
 			var localTypes = new ArrayList<Type>();
@@ -231,7 +231,7 @@ public class FunCreator<I> extends FunFactory {
 	}
 
 	public FunExpr constant(Object object) {
-		var fieldName = "s_" + Util.temp();
+		var fieldName = "s_" + Get.temp();
 		var fieldType = object != null ? Type.getType(object.getClass()) : Type.OBJECT;
 		fieldStaticTypeValues.put(fieldName, Pair.of(fieldType, object));
 

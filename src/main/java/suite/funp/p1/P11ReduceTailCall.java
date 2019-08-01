@@ -3,6 +3,7 @@ package suite.funp.p1;
 import java.util.List;
 
 import primal.String_;
+import primal.Verbs.Get;
 import primal.adt.Pair;
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.Fdt;
@@ -22,7 +23,6 @@ import suite.funp.P0.FunpVariable;
 import suite.inspect.Inspect;
 import suite.node.util.Singleton;
 import suite.util.Switch;
-import suite.util.Util;
 
 public class P11ReduceTailCall {
 
@@ -74,7 +74,7 @@ public class P11ReduceTailCall {
 		// return o.b ? FunpTco.of(var, do1) : null;
 
 		if (o.b) {
-			var tcoVarName = "tco$" + Util.temp();
+			var tcoVarName = "tco$" + Get.temp();
 			var var = FunpVariable.of(vn);
 			var tcoVar = FunpVariable.of(tcoVarName);
 			var tcoVarRef = FunpReference.of(tcoVar);

@@ -10,6 +10,7 @@ import java.util.Map;
 
 import org.apache.bcel.generic.Type;
 
+import primal.Verbs.Get;
 import primal.adt.Pair;
 import suite.jdk.gen.FunCreator;
 import suite.jdk.gen.FunExprK.Declare0ParameterFunExpr;
@@ -36,7 +37,6 @@ import suite.jdk.lambda.LambdaInterface;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
 import suite.util.Switch;
-import suite.util.Util;
 
 public class FunRewrite extends FunFactory {
 
@@ -99,7 +99,7 @@ public class FunRewrite extends FunFactory {
 					})).applyIf(PlaceholderFunExpr.class, e4 -> {
 						FunExpr fieldValue = placeholders.get(e);
 						if (fieldValue != null) {
-							var fieldName = "e_" + Util.temp();
+							var fieldName = "e_" + Get.temp();
 							var fieldType = fti.typeOf(fieldValue);
 							fieldTypes.put(fieldName, fieldType);
 							fieldValues.put(fieldName, fieldValue);
@@ -160,7 +160,7 @@ public class FunRewrite extends FunFactory {
 	}
 
 	private FunExpr objectField(Object object, Type type) {
-		var fieldName = "o_" + Util.temp();
+		var fieldName = "o_" + Get.temp();
 		fieldTypeValues.put(fieldName, Pair.of(type, object));
 		return rewrite(this_().field(fieldName, type));
 	}

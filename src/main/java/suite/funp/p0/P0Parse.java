@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import primal.Verbs.Get;
 import primal.adt.Mutable;
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
@@ -66,7 +67,6 @@ import suite.primitive.IntMutable;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
 import suite.util.To;
-import suite.util.Util;
 
 public class P0Parse {
 
@@ -151,7 +151,7 @@ public class P0Parse {
 					if (a == dontCare)
 						return n;
 					else {
-						var vn = "n$" + Util.temp();
+						var vn = "n$" + Get.temp();
 						var v = FunpVariable.of(vn);
 						var ref = FunpReference.of(FunpDeref.of(v));
 						return FunpDefine.of(vn, n, FunpDoAssignRef.of(ref, p(a), v), Fdt.L_MONO);
@@ -253,7 +253,7 @@ public class P0Parse {
 			}).match("numberp .0", a -> {
 				return FunpCoerce.of(Coerce.NUMBER, Coerce.NUMBERP, FunpNumber.ofNumber(num(a)));
 			}).match("predef .0", a -> {
-				return FunpPredefine.of("predefine$" + Util.temp(), p(a));
+				return FunpPredefine.of("predefine$" + Get.temp(), p(a));
 			}).match("predef/.0 .1", (a, b) -> {
 				return FunpPredefine.of(Atom.name(a), p(b));
 			}).match("size.of .0", a -> {
@@ -276,7 +276,7 @@ public class P0Parse {
 			}).applyIf(Int.class, n -> {
 				return FunpNumber.ofNumber(n.number);
 			}).applyIf(Str.class, str -> {
-				var vn = "s$" + Util.temp();
+				var vn = "s$" + Get.temp();
 				var fa = FunpArray.of(To //
 						.chars(str.value) //
 						.streamlet() //
@@ -378,7 +378,7 @@ public class P0Parse {
 
 		private Fun<Node, FunpLambda> lambda(Node a, boolean isPassDo) {
 			var isVar = isVar(a);
-			var vn = isVar ? Atom.name(a) : "l$" + Util.temp();
+			var vn = isVar ? Atom.name(a) : "l$" + Get.temp();
 			var nv = isPassDo ? nv(vn) : new Parse(vns.replace(vn).remove(doToken));
 			return b -> {
 				var f = isVar ? nv.p(b) : nv.bind(a, Atom.of(vn), b);

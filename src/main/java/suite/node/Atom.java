@@ -1,7 +1,7 @@
 package suite.node;
 
+import primal.Verbs.Get;
 import suite.node.util.Singleton;
-import suite.util.Util;
 
 public class Atom extends Node {
 
@@ -25,7 +25,7 @@ public class Atom extends Node {
 	}
 
 	public static Atom temp() {
-		return Atom.of("a$" + Util.temp());
+		return Atom.of("a$" + Get.temp());
 	}
 
 }

@@ -2,13 +2,13 @@ package suite.node;
 
 import static primal.statics.Fail.fail;
 
+import primal.Verbs.Get;
 import suite.lp.doer.ProverConstant;
-import suite.util.Util;
 
 public class Reference extends Node {
 
 	private Node node = this;
-	private int id = Util.temp();
+	private int id = Get.temp();
 
 	public static Reference of(Node node) {
 		var reference = new Reference();

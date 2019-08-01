@@ -6,6 +6,7 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Set;
 
+import primal.Verbs.Get;
 import primal.adt.Pair;
 import primal.fp.Funs2.Fun2;
 import suite.funp.Funp_;
@@ -26,7 +27,6 @@ import suite.funp.P2.FunpLambdaCapture;
 import suite.inspect.Inspect;
 import suite.node.util.Singleton;
 import suite.streamlet.Read;
-import suite.util.Util;
 
 public class P21CaptureLambda {
 
@@ -58,7 +58,7 @@ public class P21CaptureLambda {
 		new AssociateLambda(grandLambda).a(node0);
 
 		class Li {
-			private String capn = "cap$" + Util.temp();
+			private String capn = "cap$" + Get.temp();
 			private FunpVariable cap = FunpVariable.of(capn);
 			private Set<String> captureSet = new HashSet<>();
 			private List<Pair<String, Funp>> captures = new ArrayList<>();
@@ -139,7 +139,7 @@ public class P21CaptureLambda {
 					var li = infoByLambda.get(f);
 					var captures = li.captures;
 					if (!captures.isEmpty()) {
-						var pcapn = "pcap$" + Util.temp();
+						var pcapn = "pcap$" + Get.temp();
 						var pcap = FunpVariable.of(pcapn);
 						var struct = FunpStruct.of(captures);
 						var lc = FunpLambdaCapture.of(pcap, li.cap, struct, vn, c(expr));

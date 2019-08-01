@@ -2,6 +2,7 @@ package suite.game;
 
 import java.io.File;
 
+import primal.Verbs.Get;
 import suite.cfg.Defaults;
 import suite.os.Execute;
 import suite.os.FileUtil;
@@ -11,7 +12,6 @@ import suite.streamlet.As;
 import suite.streamlet.Puller;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
-import suite.util.Util;
 
 public class Plotty {
 
@@ -22,7 +22,7 @@ public class Plotty {
 				.map(xyt -> Floats_.of(xyt).index().map((y, x) -> FltFltPair.of(x, y)).collect(this::xyt) + ",") //
 				.collect(As::joined);
 
-		var file = Defaults.tmp("plot$" + Util.temp() + ".html");
+		var file = Defaults.tmp("plot$" + Get.temp() + ".html");
 
 		FileUtil.out(file).writeAndClose("" //
 				+ "<head><script src='https://cdn.plot.ly/plotly-latest.min.js'></script></head>" //

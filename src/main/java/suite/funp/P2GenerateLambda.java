@@ -4,6 +4,7 @@ import static primal.statics.Fail.fail;
 
 import java.util.Map;
 
+import primal.Verbs.Get;
 import primal.fp.Funs.Fun;
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.Fdt;
@@ -34,7 +35,6 @@ import suite.node.util.TreeUtil;
 import suite.persistent.PerMap;
 import suite.streamlet.Read;
 import suite.util.To;
-import suite.util.Util;
 
 public class P2GenerateLambda {
 
@@ -137,7 +137,7 @@ public class P2GenerateLambda {
 				var p = compile_(f);
 				return rt -> ((Ref) p.apply(rt)).v;
 			}).applyIf(FunpDoFold.class, f -> f.apply((init, cont, next) -> {
-				var vn1 = "fold$" + Util.temp();
+				var vn1 = "fold$" + Get.temp();
 				var fs1 = fs + 1;
 				var init_ = compile_(init);
 				var var_ = FunpVariable.of(vn1);

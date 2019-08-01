@@ -9,12 +9,12 @@ import java.nio.file.attribute.PosixFilePermission;
 import java.util.HashSet;
 import java.util.List;
 
+import primal.Verbs.Get;
 import suite.cfg.Defaults;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
 import suite.primitive.IntPrimitives.Int_Obj;
 import suite.serialize.SerOutput;
-import suite.util.Util;
 
 // http://www.muppetlabs.com/~breadbox/software/tiny/teensy.html
 public class WriteElf {
@@ -34,7 +34,7 @@ public class WriteElf {
 	}
 
 	public Execute exec(byte[] input, Int_Obj<Bytes> source) {
-		var path = Defaults.tmp("a.out." + Util.temp());
+		var path = Defaults.tmp("a.out." + Get.temp());
 
 		write(org, source.apply(org + elfHeaderSize), path);
 		return new Execute(new String[] { path.toString(), }, input);

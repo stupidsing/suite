@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import primal.Verbs.Close;
+import primal.Verbs.Get;
 import primal.fp.Funs.Iterate;
 import primal.fp.Funs.Sink;
 import primal.fp.Funs2.Sink2;
@@ -31,7 +32,6 @@ import suite.concurrent.Pool;
 import suite.net.NetUtil;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
-import suite.util.Util;
 
 public class NioDispatch implements Closeable {
 
@@ -90,7 +90,7 @@ public class NioDispatch implements Closeable {
 		}
 
 		public void request(Bytes request, Sink<Bytes> okay) {
-			var id = Util.temp();
+			var id = Get.temp();
 			handlers.put(id, okay);
 			reconnect.connect(rec -> packetId.write(id, request, v -> reader.run(), rec.reconnect));
 		}

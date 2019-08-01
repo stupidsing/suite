@@ -6,6 +6,7 @@ import java.util.Map;
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 
+import primal.Verbs.Get;
 import primal.adt.Fixie_.FixieFun0;
 import primal.adt.Fixie_.FixieFun1;
 import primal.adt.Fixie_.FixieFun2;
@@ -15,7 +16,6 @@ import primal.adt.Mutable;
 import suite.jdk.gen.FunExpression.FunExpr;
 import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.Ints.IntsBuilder;
-import suite.util.Util;
 
 /**
  * Functional expressions that can be handled by FunGenerateBytecode.java.
@@ -240,7 +240,7 @@ public class FunExprM {
 	}
 
 	public static class ProfileFunExpr extends FunExpr {
-		public String counterFieldName = "p_" + Util.temp();
+		public String counterFieldName = "p_" + Get.temp();
 		public FunExpr do_;
 
 		public <R> R apply(FixieFun2<String, FunExpr, R> fun) {
