@@ -21,6 +21,8 @@ import primal.Verbs.Compare;
 import primal.Verbs.Equals;
 import primal.Verbs.Get;
 import primal.Verbs.New;
+import primal.Verbs.Reverse;
+import primal.Verbs.Sort;
 import primal.adt.Fixie_.FixieFun3;
 import primal.adt.Mutable;
 import primal.adt.Pair;
@@ -31,7 +33,6 @@ import primal.fp.Funs2.Fun2;
 import primal.fp.Funs2.Sink2;
 import primal.fp.Funs2.Source2;
 import suite.adt.map.ListMultimap;
-import suite.util.List_;
 import suite.util.To;
 
 public class Puller2<K, V> implements PullerDefaults<Pair<K, V>> {
@@ -351,7 +352,7 @@ public class Puller2<K, V> implements PullerDefaults<Pair<K, V>> {
 	}
 
 	public Puller2<K, V> reverse() {
-		return of(List_.reverse(toList()));
+		return of(Reverse.of(toList()));
 	}
 
 	public void sink(Sink2<K, V> sink0) {
@@ -378,7 +379,7 @@ public class Puller2<K, V> implements PullerDefaults<Pair<K, V>> {
 		Pair<K, V> pair;
 		while (pull(pair = Pair.of(null, null)))
 			list.add(pair);
-		return of(List_.sort(list, comparator));
+		return of(Sort.list(list, comparator));
 	}
 
 	public <O extends Comparable<? super O>> Puller2<K, V> sortBy(Fun2<K, V, O> fun) {

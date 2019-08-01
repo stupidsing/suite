@@ -21,6 +21,8 @@ import primal.Verbs.Compare;
 import primal.Verbs.Equals;
 import primal.Verbs.Get;
 import primal.Verbs.New;
+import primal.Verbs.Reverse;
+import primal.Verbs.Sort;
 import primal.adt.Fixie;
 import primal.adt.Fixie_.FixieA;
 import primal.adt.Mutable;
@@ -36,7 +38,6 @@ import primal.primitive.IntPrim.IntObjSource;
 import primal.primitive.adt.pair.IntObjPair;
 import suite.adt.map.ListMultimap;
 import suite.primitive.streamlet.IntObjPuller;
-import suite.util.List_;
 import suite.util.To;
 
 /**
@@ -290,7 +291,7 @@ public class Puller<T> implements PullerDefaults<T> {
 	}
 
 	public Puller<T> reverse() {
-		return of(List_.reverse(toList()));
+		return of(Reverse.of(toList()));
 	}
 
 	public void sink(Sink<T> sink0) {
@@ -316,7 +317,7 @@ public class Puller<T> implements PullerDefaults<T> {
 	}
 
 	public Puller<T> sort(Comparator<T> comparator) {
-		return of(List_.sort(toList(), comparator));
+		return of(Sort.list(toList(), comparator));
 	}
 
 	public <O extends Comparable<? super O>> Puller<T> sortBy(Fun<T, O> fun) {

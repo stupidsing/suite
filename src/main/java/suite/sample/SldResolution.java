@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import primal.Verbs.Concat;
 import primal.fp.Funs.Source;
 import suite.Suite;
 import suite.lp.Configuration.ProverCfg;
@@ -13,7 +14,6 @@ import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.TermOp;
 import suite.node.util.TreeUtil;
-import suite.util.List_;
 import suite.util.To;
 
 /**
@@ -47,7 +47,7 @@ public class SldResolution {
 			for (var i = 0; i < ors.size(); i++) {
 				var index = i;
 
-				orsMap.put(ors.get(index), () -> List_.concat(ors.subList(0, index), ors.subList(index + 1, ors.size())));
+				orsMap.put(ors.get(index), () -> Concat.lists(ors.subList(0, index), ors.subList(index + 1, ors.size())));
 			}
 		}
 
@@ -58,7 +58,7 @@ public class SldResolution {
 			var value1 = orsMap.get(negate(e.getKey()));
 
 			if (value1 != null)
-				results.add(TreeUtil.buildUp(TermOp.AND___, List_.concat(value0.g(), value1.g())));
+				results.add(TreeUtil.buildUp(TermOp.AND___, Concat.lists(value0.g(), value1.g())));
 		}
 
 		return results;

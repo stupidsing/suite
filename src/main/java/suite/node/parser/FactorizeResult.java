@@ -3,6 +3,8 @@ package suite.node.parser;
 import java.util.ArrayList;
 import java.util.List;
 
+import primal.Verbs.First;
+import primal.Verbs.Last;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Iterate;
 import suite.Suite;
@@ -17,7 +19,6 @@ import suite.node.util.Rewrite;
 import suite.node.util.Singleton;
 import suite.primitive.Chars;
 import suite.primitive.Chars.CharsBuilder;
-import suite.util.List_;
 import suite.util.Nodify;
 import suite.util.To;
 
@@ -85,8 +86,8 @@ public class FactorizeResult {
 	}
 
 	public static FactorizeResult merge(String name, List<FactorizeResult> list) {
-		var pre = List_.first(list).pre;
-		var post = List_.last(list).post;
+		var pre = First.of(list).pre;
+		var post = Last.of(list).post;
 		var pairs = new ArrayList<FPair>();
 
 		for (var i = 0; i < list.size(); i++) {

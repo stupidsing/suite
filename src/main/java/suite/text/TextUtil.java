@@ -5,12 +5,13 @@ import static java.lang.Math.min;
 import java.util.ArrayList;
 import java.util.List;
 
+import primal.Verbs.Concat;
 import primal.Verbs.Equals;
+import primal.Verbs.Right;
 import suite.lcs.Lccs;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
 import suite.streamlet.Read;
-import suite.util.List_;
 import suite.util.To;
 
 public class TextUtil {
@@ -87,8 +88,8 @@ public class TextUtil {
 		if (!isEmptyx || !isEmptyy) {
 			var phx = !isEmptyx ? pairsx.get(0) : new BytesPair(Bytes.empty, Bytes.empty);
 			var phy = !isEmptyy ? pairsy.get(0) : new BytesPair(Bytes.empty, Bytes.empty);
-			var ptx = !isEmptyx ? List_.right(pairsx, 1) : pairsx;
-			var pty = !isEmptyy ? List_.right(pairsy, 1) : pairsy;
+			var ptx = !isEmptyx ? Right.of(pairsx, 1) : pairsx;
+			var pty = !isEmptyy ? Right.of(pairsy, 1) : pairsy;
 
 			var c = min(phx.t0.size(), phy.t0.size());
 			var commonx = phx.t0.range(0, c);
@@ -157,7 +158,7 @@ public class TextUtil {
 
 	private List<BytesPair> cons(BytesPair ph, List<BytesPair> pt) {
 		if (!ph.t0.isEmpty() || !ph.t1.isEmpty())
-			return List_.concat(List.of(ph), pt);
+			return Concat.lists(List.of(ph), pt);
 		else
 			return pt;
 	}

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import primal.Verbs.Left;
 import primal.primitive.IntPrim.Obj_Int;
 import primal.primitive.adt.pair.DblObjPair;
 import primal.primitive.adt.pair.IntDblPair;
@@ -14,7 +15,6 @@ import suite.primitive.adt.map.IntObjMap;
 import suite.primitive.adt.map.ObjIntMap;
 import suite.streamlet.As;
 import suite.streamlet.Read;
-import suite.util.List_;
 import suite.util.To;
 
 public class KmeansCluster {
@@ -55,7 +55,7 @@ public class KmeansCluster {
 	}
 
 	private Obj_Int<float[]> kMeansClusterClassifier(List<float[]> points, int k, int nIterations) {
-		var centers = List_.left(points, k);
+		var centers = Left.of(points, k);
 
 		for (var iteration = 0; iteration < nIterations; iteration++) {
 			var bins = To.array(k, KmeansBin.class, j -> new KmeansBin());

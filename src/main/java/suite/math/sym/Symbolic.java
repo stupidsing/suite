@@ -3,6 +3,7 @@ package suite.math.sym;
 import java.util.ArrayList;
 import java.util.List;
 
+import primal.Verbs.Concat;
 import primal.adt.Opt;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs2.Fun2;
@@ -27,7 +28,6 @@ import suite.node.Tree;
 import suite.node.io.SwitchNode;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
-import suite.util.List_;
 
 public class Symbolic {
 
@@ -307,8 +307,8 @@ public class Symbolic {
 							Int_Obj<Streamlet<Node>> f = power_ -> {
 								List<Node> n = new ArrayList<>();
 								for (var ch : Integer.toBinaryString(power_).toCharArray()) {
-									n = List_.concat(n, n);
-									n = ch != '0' ? List_.concat(n, pos) : n;
+									n = Concat.lists(n, n);
+									n = ch != '0' ? Concat.lists(n, pos) : n;
 								}
 								return Read.from(n);
 							};

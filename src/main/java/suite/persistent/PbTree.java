@@ -7,10 +7,14 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+import primal.Verbs.Concat;
+import primal.Verbs.First;
+import primal.Verbs.Last;
+import primal.Verbs.Left;
+import primal.Verbs.Right;
 import primal.fp.Funs.Iterate;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
-import suite.util.List_;
 import suite.util.To;
 
 public class PbTree<T> implements PerTree<T> {
@@ -203,15 +207,15 @@ public class PbTree<T> implements PerTree<T> {
 				replaceSlots.add(new Slot(null, t1));
 		}
 
-		var slots1 = List_.concat(List_.left(node0, s0), replaceSlots, List_.right(node0, s1));
+		var slots1 = Concat.lists(Left.of(node0, s0), replaceSlots, Right.of(node0, s1));
 		List<Slot> node1;
 
 		// checks if need to split
 		if (slots1.size() < maxBranchFactor)
 			node1 = List.of(slot(slots1));
 		else { // splits into two if reached maximum number of nodes
-			var leftSlots = List_.left(slots1, minBranchFactor);
-			var rightSlots = List_.right(slots1, minBranchFactor);
+			var leftSlots = Left.of(slots1, minBranchFactor);
+			var rightSlots = Right.of(slots1, minBranchFactor);
 			node1 = List.of(slot(leftSlots), slot(rightSlots));
 		}
 
@@ -225,11 +229,11 @@ public class PbTree<T> implements PerTree<T> {
 			List<Slot> leftSlots, rightSlots;
 
 			if (minBranchFactor < node0.size()) {
-				leftSlots = List_.left(node0, -1);
-				rightSlots = List_.concat(List.of(List_.last(node0)), node1);
+				leftSlots = Left.of(node0, -1);
+				rightSlots = Concat.lists(List.of(Last.of(node0)), node1);
 			} else if (minBranchFactor < node1.size()) {
-				leftSlots = List_.concat(node0, List.of(List_.first(node1)));
-				rightSlots = List_.right(node1, 1);
+				leftSlots = Concat.lists(node0, List.of(First.of(node1)));
+				rightSlots = Right.of(node1, 1);
 			} else {
 				leftSlots = node0;
 				rightSlots = node1;
@@ -237,7 +241,7 @@ public class PbTree<T> implements PerTree<T> {
 
 			melded = List.of(slot(leftSlots), slot(rightSlots));
 		} else
-			melded = List.of(slot(List_.concat(node0, node1)));
+			melded = List.of(slot(Concat.lists(node0, node1)));
 
 		return melded;
 	}
@@ -248,7 +252,7 @@ public class PbTree<T> implements PerTree<T> {
 	}
 
 	private Slot slot(List<Slot> slots) {
-		return new Slot(slots, List_.first(slots).pivot);
+		return new Slot(slots, First.of(slots).pivot);
 	}
 
 	private int compare(T t0, T t1) {

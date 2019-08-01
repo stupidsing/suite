@@ -5,11 +5,11 @@ import java.util.List;
 import java.util.Map;
 
 import primal.String_;
+import primal.Verbs.Right;
 import primal.fp.Funs.Iterate;
 import suite.ebnf.Grammar;
 import suite.ebnf.Grammar.GrammarType;
 import suite.streamlet.Read;
-import suite.util.List_;
 
 /**
  * Transform head-recursion rule as follows:
@@ -68,7 +68,7 @@ public class ReduceHeadRecursion {
 			hrf = new HeadRecursionForm(empty, empty);
 		else if (en.type == GrammarType.AND___) {
 			var hrf0 = getHeadRecursionForm(en.children.get(0), entity);
-			var tail = List_.right(en.children, 1);
+			var tail = Right.of(en.children, 1);
 
 			Iterate<List<Grammar>> fun = list -> Read.from(list).map(en_ -> {
 				var ens1 = new ArrayList<Grammar>();

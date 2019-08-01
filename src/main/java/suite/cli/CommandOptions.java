@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import primal.String_;
+import primal.Verbs.Concat;
 import primal.fp.Funs.Source;
 import suite.Suite;
 import suite.editor.EditorMain;
@@ -16,7 +17,6 @@ import suite.fp.FunCompilerCfg;
 import suite.lp.Configuration.ProverCfg;
 import suite.lp.kb.RuleSet;
 import suite.node.Node;
-import suite.util.List_;
 
 /**
  * Command line interface environment.
@@ -65,7 +65,7 @@ public class CommandOptions {
 		else if (String_.equals(arg, "--trace"))
 			isTrace = on;
 		else if (String_.equals(arg, "--use") && (arg1 = source.g()) != null)
-			libraries = List_.concat(libraries, List.of(arg1.split(",")));
+			libraries = Concat.lists(libraries, List.of(arg1.split(",")));
 		else
 			fail("unknown option " + arg);
 

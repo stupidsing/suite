@@ -3,6 +3,7 @@ package suite.lp.doer;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import primal.Verbs.Right;
 import primal.fp.Funs.Source;
 import primal.os.Log_;
 import suite.Suite;
@@ -18,7 +19,6 @@ import suite.node.Node;
 import suite.node.Suspend;
 import suite.node.Tree;
 import suite.node.io.TermOp;
-import suite.util.List_;
 
 public class Prover {
 
@@ -188,7 +188,7 @@ public class Prover {
 		return new Suspend(() -> {
 			if (!rules.isEmpty()) {
 				var clause = rules.get(0).newClause(query, cut);
-				return Tree.ofOr(clause, expandClauses(query, cut, List_.right(rules, 1)));
+				return Tree.ofOr(clause, expandClauses(query, cut, Right.of(rules, 1)));
 			} else
 				return FAIL;
 		});

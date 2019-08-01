@@ -5,9 +5,9 @@ import static primal.statics.Fail.fail;
 import java.util.ArrayList;
 import java.util.List;
 
+import primal.Verbs.Right;
 import primal.fp.Funs.Source;
 import suite.persistent.PerPointer;
-import suite.util.List_;
 
 public class IndexedSourceReader<T> {
 
@@ -37,7 +37,7 @@ public class IndexedSourceReader<T> {
 
 							if (maxBuffers < size1) {
 								var shift = size1 - maxBuffers / 2;
-								queue = new ArrayList<>(List_.right(queue, shift));
+								queue = new ArrayList<>(Right.of(queue, shift));
 								offset += shift;
 							}
 

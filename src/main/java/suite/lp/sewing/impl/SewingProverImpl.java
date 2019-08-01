@@ -10,7 +10,11 @@ import java.util.List;
 import java.util.Map;
 
 import primal.String_;
+import primal.Verbs.Last;
+import primal.Verbs.Left;
 import primal.Verbs.New;
+import primal.Verbs.Reverse;
+import primal.Verbs.Right;
 import primal.adt.Mutable;
 import primal.fp.Funs.Sink;
 import primal.fp.Funs.Source;
@@ -51,7 +55,6 @@ import suite.persistent.PerList;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
-import suite.util.List_;
 
 /**
  * Compile logical rules into lambda-sews and run them. Supposed to be faster
@@ -340,8 +343,8 @@ public class SewingProverImpl implements ProverFactory {
 
 	private Cps orCps(Streamlet<Cps> cpss) {
 		var cpsList = cpss.toList();
-		var cpsArray = List_.left(cpsList, -1).toArray(new Cps[0]);
-		var cps_ = List_.last(cpsList);
+		var cpsArray = Left.of(cpsList, -1).toArray(new Cps[0]);
+		var cps_ = Last.of(cpsList);
 		return rt -> {
 			var restore = save(rt);
 			for (var cps1 : cpsArray) {
@@ -662,7 +665,7 @@ public class SewingProverImpl implements ProverFactory {
 			};
 		} else {
 			var trh = trs_.get(0);
-			var trt = List_.reverse(List_.right(trs_, 1));
+			var trt = Reverse.of(Right.of(trs_, 1));
 			return rt -> {
 				for (var tr_ : trt)
 					rt.pushRem(tr_);
@@ -690,7 +693,7 @@ public class SewingProverImpl implements ProverFactory {
 			};
 		} else {
 			var trh = trs_.get(0);
-			var trt = List_.reverse(List_.right(trs_, 1));
+			var trt = Reverse.of(Right.of(trs_, 1));
 			return rt -> {
 				var restore = save(rt);
 				for (var tr_ : trt)

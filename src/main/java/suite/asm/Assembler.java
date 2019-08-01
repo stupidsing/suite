@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.List;
 
 import primal.String_;
+import primal.Verbs.Right;
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
 import suite.Suite;
@@ -34,7 +35,6 @@ import suite.primitive.Bytes.BytesBuilder;
 import suite.streamlet.Read;
 import suite.text.Preprocess;
 import suite.text.Preprocess.Run;
-import suite.util.List_;
 import suite.util.To;
 
 public class Assembler {
@@ -77,7 +77,7 @@ public class Assembler {
 		}
 
 		var lnis = Read //
-				.from(List_.right(lines, start)) //
+				.from(Right.of(lines, start)) //
 				.map(line -> String_.split2l(line, "\t").map((label, command) -> {
 					var reference = String_.isNotBlank(label) //
 							? generalizer.getVariable(Atom.of(label)) //

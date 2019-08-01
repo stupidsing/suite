@@ -17,6 +17,8 @@ import primal.Verbs.Compare;
 import primal.Verbs.Equals;
 import primal.Verbs.Get;
 import primal.Verbs.New;
+import primal.Verbs.Reverse;
+import primal.Verbs.Sort;
 import primal.adt.Mutable;
 import primal.adt.Pair;
 import primal.fp.FunUtil;
@@ -39,7 +41,6 @@ import suite.streamlet.Puller2;
 import suite.streamlet.PullerDefaults;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
-import suite.util.List_;
 import suite.util.To;
 
 public class ChrObjPuller<V> implements PullerDefaults<ChrObjPair<V>> {
@@ -357,7 +358,7 @@ public class ChrObjPuller<V> implements PullerDefaults<ChrObjPair<V>> {
 	}
 
 	public ChrObjPuller<V> reverse() {
-		return of(List_.reverse(toList()));
+		return of(Reverse.of(toList()));
 	}
 
 	public void sink(Sink2<Character, V> sink0) {
@@ -384,7 +385,7 @@ public class ChrObjPuller<V> implements PullerDefaults<ChrObjPair<V>> {
 		ChrObjPair<V> pair;
 		while (pull(pair = ChrObjPair.of(empty, null)))
 			list.add(pair);
-		return of(List_.sort(list, comparator));
+		return of(Sort.list(list, comparator));
 	}
 
 	public <O extends Comparable<? super O>> ChrObjPuller<V> sortBy(ChrObj_Obj<V, O> fun) {

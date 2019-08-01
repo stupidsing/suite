@@ -2,12 +2,14 @@ package suite.fs.impl;
 
 import java.util.List;
 
+import primal.Verbs.Concat;
+import primal.Verbs.First;
+import primal.Verbs.Right;
 import suite.fs.KeyDataStore;
 import suite.fs.impl.FileSystemKeyUtil.NameKey;
 import suite.primitive.Bytes;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
-import suite.util.List_;
 
 /**
  * Facilitates storage of unlimited length of filenames on the persistent
@@ -34,17 +36,17 @@ public class FileSystemKeySet {
 
 	private Streamlet<Bytes> list(List<NameKey> prefix, List<NameKey> keys0, List<NameKey> keys1) {
 		var hash = keyUtil.hash(keyUtil.toName(prefix));
-		var minKey = keys0 != null && !keys0.isEmpty() ? List_.first(keys0) : boundingKey(hash, 0);
-		var maxKey = keys1 != null && !keys1.isEmpty() ? List_.first(keys1) : boundingKey(hash, 1);
+		var minKey = keys0 != null && !keys0.isEmpty() ? First.of(keys0) : boundingKey(hash, 0);
+		var maxKey = keys1 != null && !keys1.isEmpty() ? First.of(keys1) : boundingKey(hash, 1);
 		var st = store.mutateData().keys(keyUtil.toBytes(minKey), increment(keyUtil.toBytes(maxKey)));
 
 		return st.concatMap(bytes -> {
 			var key = keyUtil.toNameKey(bytes);
-			var prefix1 = List_.concat(prefix, List.of(key));
+			var prefix1 = Concat.lists(prefix, List.of(key));
 
 			if (key.size == 0) {
-				var tailKeys0 = key == minKey ? !keys0.isEmpty() ? List_.right(keys0, 1) : emptyKeys : null;
-				var tailKeys1 = key == maxKey ? !keys1.isEmpty() ? List_.right(keys1, 1) : emptyKeys : null;
+				var tailKeys0 = key == minKey ? !keys0.isEmpty() ? Right.of(keys0, 1) : emptyKeys : null;
+				var tailKeys1 = key == maxKey ? !keys1.isEmpty() ? Right.of(keys1, 1) : emptyKeys : null;
 				return list(prefix1, tailKeys0, tailKeys1);
 			} else
 				return Read.each(keyUtil.toName(prefix1));

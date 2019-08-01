@@ -5,10 +5,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import primal.Verbs.Concat;
+import primal.Verbs.Left;
 import primal.fp.FunUtil;
 import primal.fp.Funs.Sink;
 import primal.fp.Funs.Source;
-import suite.util.List_;
 
 /**
  * Lempel-Ziv-Welch compression.
@@ -83,9 +84,9 @@ public class LempelZivWelch<Unit> {
 				List<Unit> newWord;
 
 				if (index < dict.size())
-					newWord = List_.concat(word0, List_.left(word = dict.get(index), 1));
+					newWord = Concat.lists(word0, Left.of(word = dict.get(index), 1));
 				else
-					newWord = word = List_.concat(word0, List_.left(word0, 1));
+					newWord = word = Concat.lists(word0, Left.of(word0, 1));
 
 				dict.add(newWord);
 

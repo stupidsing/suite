@@ -7,13 +7,17 @@ import static primal.statics.Fail.fail;
 import java.util.ArrayDeque;
 import java.util.List;
 
+import primal.Verbs.Concat;
+import primal.Verbs.First;
+import primal.Verbs.Last;
+import primal.Verbs.Left;
+import primal.Verbs.Right;
 import primal.fp.Funs.Iterate;
 import primal.primitive.IntInt_Obj;
 import primal.primitive.IntPrim.Int_Obj;
 import suite.primitive.AsInt;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
-import suite.util.List_;
 
 public class PerRope<T> {
 
@@ -228,19 +232,19 @@ public class PerRope<T> {
 			List<PerRope<T>> ropes;
 
 			if (depth1 < depth0)
-				ropes = List_.concat(List_.left(rope0.ropes, -1), meld_(List_.last(rope0.ropes), rope1));
+				ropes = Concat.lists(Left.of(rope0.ropes, -1), meld_(Last.of(rope0.ropes), rope1));
 			else if (depth0 < depth1)
-				ropes = List_.concat(meld_(rope0, List_.first(rope1.ropes)), List_.right(rope1.ropes, 1));
+				ropes = Concat.lists(meld_(rope0, First.of(rope1.ropes)), Right.of(rope1.ropes, 1));
 			else
-				ropes = List_.concat(rope0.ropes, rope1.ropes);
+				ropes = Concat.lists(rope0.ropes, rope1.ropes);
 
 			List<PerRope<T>> list;
 			var size = ropes.size();
 
 			if (maxBranchFactor <= size) {
 				var p = size / 2;
-				var left = List_.left(ropes, p);
-				var right = List_.right(ropes, p);
+				var left = Left.of(ropes, p);
+				var right = Right.of(ropes, p);
 				list = List.of(new PerRope<>(depth, left), new PerRope<>(depth, right));
 			} else
 				list = List.of(new PerRope<>(depth, ropes));

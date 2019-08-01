@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import primal.Verbs.Equals;
+import primal.Verbs.Right;
 import primal.adt.IdentityKey;
 import suite.adt.map.BiMap;
 import suite.instructionexecutor.InstructionUtil.Insn;
@@ -23,7 +24,6 @@ import suite.node.Reference;
 import suite.node.Tree;
 import suite.node.io.TermOp;
 import suite.streamlet.Read;
-import suite.util.List_;
 
 public class InstructionExtractor implements AutoCloseable {
 
@@ -76,7 +76,7 @@ public class InstructionExtractor implements AutoCloseable {
 							fail("bad frame definition");
 					else {
 						rsList.add(rs);
-						for (var op : List_.right(rs, 1))
+						for (var op : Right.of(rs, 1))
 							if ((value = label(op)) != null)
 								deque.push(value);
 						deque.push(tree.getRight());

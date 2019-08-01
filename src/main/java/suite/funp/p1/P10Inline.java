@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 import primal.String_;
+import primal.Verbs.Reverse;
 import primal.fp.Funs.Iterate;
 import suite.funp.Funp_;
 import suite.funp.Funp_.Funp;
@@ -29,7 +30,6 @@ import suite.node.util.Singleton;
 import suite.persistent.PerMap;
 import suite.primitive.IntMutable;
 import suite.streamlet.Read;
-import suite.util.List_;
 
 public class P10Inline {
 
@@ -123,7 +123,7 @@ public class P10Inline {
 						var n2 = check != null ? FunpTypeCheck.of(check.left, check.right, n1) : n1;
 						var b = false;
 
-						for (var vn_ : List_.reverse(vns))
+						for (var vn_ : Reverse.of(vns))
 							if (!String_.equals(vn, vn_))
 								n2 = FunpDefine.of(vn_, FunpDontCare.of(), n2, Fdt.L_MONO);
 							else

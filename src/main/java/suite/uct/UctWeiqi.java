@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
-import suite.util.List_;
+import primal.Verbs.Last;
 import suite.weiqi.Board;
 import suite.weiqi.Board.MoveType;
 import suite.weiqi.Coordinate;
@@ -135,7 +135,7 @@ public class UctWeiqi {
 
 				// try a random empty position, if that position does not work,
 				// calls the heavier possible move method
-				if ((pos = List_.last(empties)) != null)
+				if ((pos = Last.of(empties)) != null)
 					if (gameSet.playIfValid(move = new Move(pos)))
 						empties.remove(empties.size() - 1);
 					else
