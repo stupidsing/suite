@@ -7,10 +7,10 @@ import java.util.Objects;
 
 import primal.fp.Funs.Fun;
 import primal.primitive.ChrLngSink;
+import primal.primitive.ChrLngSource;
 import primal.primitive.LngPrim;
 import primal.primitive.adt.pair.ChrLngPair;
 import primal.primitive.adt.pair.ChrObjPair;
-import suite.primitive.ChrLngSource;
 import suite.primitive.ChrPrimitives.ChrObjSource;
 import suite.primitive.ChrPrimitives.Obj_Chr;
 import suite.primitive.Chr_Lng;

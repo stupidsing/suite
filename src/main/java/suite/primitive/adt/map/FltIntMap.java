@@ -7,10 +7,10 @@ import java.util.Objects;
 
 import primal.fp.Funs.Fun;
 import primal.primitive.FltIntSink;
+import primal.primitive.FltIntSource;
 import primal.primitive.IntPrim;
 import primal.primitive.adt.pair.FltIntPair;
 import primal.primitive.adt.pair.FltObjPair;
-import suite.primitive.FltIntSource;
 import suite.primitive.FltPrimitives.FltObjSource;
 import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.primitive.Flt_Int;

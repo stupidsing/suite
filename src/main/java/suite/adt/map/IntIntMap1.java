@@ -5,10 +5,10 @@ import static primal.statics.Fail.fail;
 import java.util.Arrays;
 
 import primal.primitive.IntIntSink;
+import primal.primitive.IntIntSource;
 import primal.primitive.IntPrim;
 import primal.primitive.adt.pair.IntIntPair;
 import primal.primitive.adt.pair.IntObjPair;
-import suite.primitive.IntIntSource;
 import suite.primitive.IntPrimitives.IntObjSource;
 import suite.primitive.Int_Int;
 import suite.primitive.streamlet.IntObjPuller;
