@@ -13,8 +13,8 @@ import primal.adt.Fixie_.FixieFun2;
 import primal.adt.Fixie_.FixieFun3;
 import primal.adt.Fixie_.FixieFun4;
 import primal.adt.Mutable;
+import primal.primitive.IntPrim.Obj_Int;
 import suite.jdk.gen.FunExpression.FunExpr;
-import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.Ints.IntsBuilder;
 
 /**

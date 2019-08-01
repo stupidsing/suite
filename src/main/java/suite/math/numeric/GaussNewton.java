@@ -2,13 +2,13 @@ package suite.math.numeric;
 
 import primal.Verbs.New;
 import primal.fp.Funs.Fun;
+import primal.primitive.DblPrim.Obj_Dbl;
 import primal.primitive.Dbl_Dbl;
 import suite.math.linalg.CholeskyDecomposition;
 import suite.math.linalg.Matrix;
 import suite.math.linalg.Vector;
 import suite.math.sym.Symbolic;
 import suite.node.Node;
-import suite.primitive.DblPrimitives.Obj_Dbl;
 
 /**
  * https://en.wikipedia.org/wiki/Gauss%E2%80%93Newton_algorithm

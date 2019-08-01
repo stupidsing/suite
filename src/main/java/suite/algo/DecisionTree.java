@@ -5,11 +5,12 @@ import static suite.util.Streamlet_.forInt;
 import java.util.Random;
 
 import primal.primitive.IntPrim;
+import primal.primitive.IntPrim.Obj_Int;
 import primal.primitive.adt.pair.DblIntPair;
 import primal.primitive.adt.pair.IntObjPair;
 import suite.adt.map.IntIntMap1;
-import suite.primitive.DblPrimitives.Obj_Dbl;
-import suite.primitive.IntPrimitives.Obj_Int;
+import suite.primitive.DblPrimitives;
+import suite.primitive.IntPrimitives;
 import suite.streamlet.As;
 import suite.streamlet.Streamlet;
 
@@ -54,7 +55,7 @@ public class DecisionTree {
 						var es = data //
 								.groupBy(datum -> datum.v[p]) //
 								.values() //
-								.toDouble(Obj_Dbl.sum(set -> entropy(set) * set.size()));
+								.toDouble(DblPrimitives.sum(set -> entropy(set) * set.size()));
 
 						var informationGain = entropy0 - es / data.size();
 
@@ -92,7 +93,7 @@ public class DecisionTree {
 		}
 
 		public double error() {
-			var correct = input.toInt(Obj_Int.sum(datum -> datum.map((y, xs) -> classify.apply(xs) == y ? 1 : 0)));
+			var correct = input.toInt(IntPrimitives.sum(datum -> datum.map((y, xs) -> classify.apply(xs) == y ? 1 : 0)));
 			return correct / (double) input.size();
 		}
 	}

@@ -7,6 +7,7 @@ import java.io.FileReader;
 import java.util.ArrayList;
 
 import primal.adt.Pair;
+import primal.primitive.IntPrim.Obj_Int;
 import primal.statics.Fail;
 import suite.Suite;
 import suite.ebnf.Ebnf;
@@ -33,7 +34,6 @@ import suite.node.Tree;
 import suite.node.io.SwitchNode;
 import suite.node.io.TermOp;
 import suite.node.tree.TreeTuple;
-import suite.primitive.IntPrimitives.Obj_Int;
 import suite.streamlet.Read;
 import suite.util.To;
 

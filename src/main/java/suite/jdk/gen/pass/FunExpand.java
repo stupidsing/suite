@@ -19,7 +19,7 @@ import suite.jdk.gen.FunExprM.If1FunExpr;
 import suite.jdk.gen.FunExpression.FunExpr;
 import suite.jdk.gen.FunFactory;
 import suite.node.util.Singleton;
-import suite.primitive.IntPrimitives.Obj_Int;
+import suite.primitive.IntPrimitives;
 import suite.streamlet.Read;
 import suite.util.Switch;
 
@@ -84,12 +84,12 @@ public class FunExpand extends FunFactory {
 		else
 			return inspect //
 					.fields(e0.getClass()) //
-					.toInt(Obj_Int.sum(field -> {
+					.toInt(IntPrimitives.sum(field -> {
 						var e1 = ex(() -> field.get(e0));
 						if (e1 instanceof FunExpr)
 							return weight_(e1);
 						else if (e1 instanceof Iterable<?>)
-							return Read.from((Iterable<?>) e1).toInt(Obj_Int.sum(e2 -> weight_(e2)));
+							return Read.from((Iterable<?>) e1).toInt(IntPrimitives.sum(e2 -> weight_(e2)));
 						else
 							return 0;
 					})) + 1;

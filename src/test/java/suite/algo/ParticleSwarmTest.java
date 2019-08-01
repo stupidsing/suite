@@ -15,7 +15,7 @@ import org.junit.Test;
 import primal.primitive.adt.pair.DblObjPair;
 import suite.math.Math_;
 import suite.math.linalg.Vector;
-import suite.primitive.DblPrimitives.Obj_Dbl;
+import suite.primitive.DblPrimitives;
 import suite.streamlet.Read;
 
 // https://medium.com/@deepulse/a-practical-guide-to-particle-swarm-optimization-c6a615113a71
@@ -111,7 +111,7 @@ public class ParticleSwarmTest {
 		var x = xs[0];
 		var y = xs[1];
 		var alpha = 418.982887d;
-		return Read.each(x, y).toDouble(Obj_Dbl.sum(x_ -> alpha - Math.sin(sqrt(abs(x_)))));
+		return Read.each(x, y).toDouble(DblPrimitives.sum(x_ -> alpha - Math.sin(sqrt(abs(x_)))));
 	}
 
 }

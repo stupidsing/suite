@@ -104,7 +104,7 @@ import suite.node.util.Singleton;
 import suite.node.util.TreeUtil;
 import suite.persistent.PerMap;
 import suite.primitive.IntMutable;
-import suite.primitive.IntPrimitives.Obj_Int;
+import suite.primitive.IntPrimitives;
 import suite.primitive.IntRange;
 import suite.primitive.adt.map.ObjIntMap;
 import suite.streamlet.Read;
@@ -1050,7 +1050,7 @@ public class P2InferType {
 		else if ((m = typePatLambda.match(n)) != null)
 			return ps + ps;
 		else if ((structMembers = isCompletedStructSet(n)) != null)
-			return Read.from(structMembers).toInt(Obj_Int.sum(this::getTypeSize));
+			return Read.from(structMembers).toInt(IntPrimitives.sum(this::getTypeSize));
 		else if ((m = typePatTag.match(n)) != null) {
 			var dict = Dict.m(m[0]);
 			var size = 0;

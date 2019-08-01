@@ -5,10 +5,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import primal.primitive.IntPrim.Obj_Int;
 import primal.primitive.adt.pair.DblObjPair;
 import primal.primitive.adt.pair.IntDblPair;
 import suite.math.linalg.Vector;
-import suite.primitive.IntPrimitives.Obj_Int;
+import suite.primitive.IntPrimitives;
 import suite.primitive.adt.map.IntObjMap;
 import suite.primitive.adt.map.ObjIntMap;
 import suite.streamlet.As;
@@ -50,7 +51,7 @@ public class KmeansCluster {
 	}
 
 	public int[] kMeansCluster(List<float[]> points, int k, int nIterations) {
-		return Read.from(points).collect(Obj_Int.lift(kMeansClusterClassifier(points, k, nIterations))).toArray();
+		return Read.from(points).collect(IntPrimitives.lift(kMeansClusterClassifier(points, k, nIterations))).toArray();
 	}
 
 	private Obj_Int<float[]> kMeansClusterClassifier(List<float[]> points, int k, int nIterations) {

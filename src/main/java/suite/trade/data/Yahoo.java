@@ -24,8 +24,8 @@ import suite.http.HttpUtil;
 import suite.node.util.Singleton;
 import suite.os.FileUtil;
 import suite.os.LogUtil;
-import suite.primitive.FltPrimitives.Obj_Flt;
-import suite.primitive.LngPrimitives.Obj_Lng;
+import suite.primitive.FltPrimitives;
+import suite.primitive.LngPrimitives;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
@@ -51,12 +51,12 @@ public class Yahoo {
 				.sort((a0, a1) -> Compare.objects(a0[0], a1[0])) //
 				.collect();
 
-		var ts = arrays.collect(Obj_Lng.lift(array -> closeTs(array[0]))).toArray();
-		var ops = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[1]))).toArray();
-		var cls = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[4]))).toArray();
-		var los = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[3]))).toArray();
-		var his = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[2]))).toArray();
-		var volumes = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[5]))).toArray();
+		var ts = arrays.collect(LngPrimitives.lift(array -> closeTs(array[0]))).toArray();
+		var ops = arrays.collect(FltPrimitives.lift(array -> Float.parseFloat(array[1]))).toArray();
+		var cls = arrays.collect(FltPrimitives.lift(array -> Float.parseFloat(array[4]))).toArray();
+		var los = arrays.collect(FltPrimitives.lift(array -> Float.parseFloat(array[3]))).toArray();
+		var his = arrays.collect(FltPrimitives.lift(array -> Float.parseFloat(array[2]))).toArray();
+		var volumes = arrays.collect(FltPrimitives.lift(array -> Float.parseFloat(array[5]))).toArray();
 
 		adjust(symbol, ts, ops);
 		adjust(symbol, ts, cls);
@@ -120,7 +120,7 @@ public class Yahoo {
 
 			var ts = jsons //
 					.flatMap(json_ -> json_.path("timestamp")) //
-					.collect(Obj_Lng.lift(t -> getOpenTimeBefore(exchange, t.longValue()))) //
+					.collect(LngPrimitives.lift(t -> getOpenTimeBefore(exchange, t.longValue()))) //
 					.toArray();
 
 			var length = ts.length;
@@ -148,7 +148,7 @@ public class Yahoo {
 
 			var data = Streamlet2 //
 					.concat(dataJsons0, dataJsons1) //
-					.mapValue(json_ -> json_.collect(Obj_Flt.lift(JsonNode::floatValue)).toArray()) //
+					.mapValue(json_ -> json_.collect(FltPrimitives.lift(JsonNode::floatValue)).toArray()) //
 					.filterValue(fs -> length <= fs.length) //
 					.mapValue(fs -> To.array(length, LngFltPair.class, i -> LngFltPair.of(ts[i], fs[i]))) //
 					.toMap();

@@ -8,7 +8,6 @@ import java.util.Arrays;
 
 import suite.math.linalg.Vector;
 import suite.primitive.Doubles_;
-import suite.trade.analysis.MovingAverage.MovingRange;
 import suite.ts.TimeSeries;
 import suite.util.To;
 

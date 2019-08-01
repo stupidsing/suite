@@ -1,8 +1,8 @@
 package suite.math;
 
 import primal.fp.Funs.Fun;
+import primal.primitive.DblPrim.Obj_Dbl;
 import suite.math.linalg.Vector;
-import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.util.To;
 
 public class FiniteDifference {

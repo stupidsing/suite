@@ -23,8 +23,7 @@ import primal.fp.Funs.Fun;
 import primal.primitive.DblDbl_Dbl;
 import primal.primitive.adt.pair.DblFltPair;
 import suite.math.numeric.Statistic;
-import suite.primitive.DblPrimitives.ObjObj_Dbl;
-import suite.primitive.DblPrimitives.Obj_Dbl;
+import suite.primitive.DblPrimitives;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.trade.Instrument;
@@ -380,7 +379,7 @@ public interface BackAllocator {
 				// re-assemble the entries into current profile
 				return Read //
 						.multimap(entriesBySymbol) //
-						.groupBy(entries -> entries.toDouble(Obj_Dbl.sum(pair -> pair.t0))) //
+						.groupBy(entries -> entries.toDouble(DblPrimitives.sum(pair -> pair.t0))) //
 						.toList();
 			};
 		};
@@ -427,7 +426,7 @@ class BackAllocatorUtil {
 	}
 
 	static double totalPotential(List<Pair<String, Double>> potentialBySymbol) {
-		return Read.from2(potentialBySymbol).toDouble(ObjObj_Dbl.sum((symbol, potential) -> potential));
+		return Read.from2(potentialBySymbol).toDouble(DblPrimitives.sum((symbol, potential) -> potential));
 	}
 
 }

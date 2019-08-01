@@ -10,7 +10,7 @@ import java.util.List;
 import primal.fp.Funs.Iterate;
 import primal.primitive.IntInt_Obj;
 import primal.primitive.IntPrim.Int_Obj;
-import suite.primitive.IntPrimitives.Obj_Int;
+import suite.primitive.IntPrimitives;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.List_;
@@ -208,7 +208,7 @@ public class PerRope<T> {
 						&& ropes == null //
 				|| (rs = Read.from(ropes)) != null //
 						&& rs.isAll(rope -> rope.depth + 1 == depth) //
-						&& rs.toInt(Obj_Int.sum(rope -> rope.weight)) == weight //
+						&& rs.toInt(IntPrimitives.sum(rope -> rope.weight)) == weight //
 						&& ts == null //
 						&& (s = rs.size()) < maxBranchFactor //
 						&& rs.isAll(rope -> rope.validate(false))) //

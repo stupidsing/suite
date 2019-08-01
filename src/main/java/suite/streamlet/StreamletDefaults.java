@@ -1,8 +1,8 @@
 package suite.streamlet;
 
 import primal.fp.Funs.Fun;
-import suite.primitive.DblPrimitives.Obj_Dbl;
-import suite.primitive.IntPrimitives.Obj_Int;
+import primal.primitive.DblPrim.Obj_Dbl;
+import primal.primitive.IntPrim.Obj_Int;
 
 public interface StreamletDefaults<T, Puller_ extends PullerDefaults<T>> extends Iterable<T> {
 

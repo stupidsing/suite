@@ -1,10 +1,10 @@
 package suite.math.numeric;
 
 import primal.fp.Funs.Fun;
+import primal.primitive.DblPrim.Obj_Dbl;
 import suite.math.FiniteDifference;
 import suite.math.linalg.Matrix;
 import suite.math.linalg.Vector;
-import suite.primitive.DblPrimitives.Obj_Dbl;
 
 /**
  * https://en.wikipedia.org/wiki/Symmetric_rank-one

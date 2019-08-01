@@ -11,7 +11,7 @@ import primal.os.Log_;
 import suite.math.Math_;
 import suite.node.util.Singleton;
 import suite.os.SerializedStoreCache;
-import suite.primitive.DblPrimitives.Obj_Dbl;
+import suite.primitive.DblPrimitives;
 import suite.serialize.Serialize;
 import suite.smtp.SmtpSslGmail;
 import suite.streamlet.Read;
@@ -101,7 +101,7 @@ public class DailyMain {
 				.collect();
 
 		var requestTrades = strategyTrades.filterKey(strategy -> !String_.equals(strategy, sellPool));
-		var amounts = strategyTrades.values().collect(Obj_Dbl.lift(Trade::amount));
+		var amounts = strategyTrades.values().collect(DblPrimitives.lift(Trade::amount));
 		var buys_ = amounts.filter(amount -> 0d < amount).sum();
 		var sells = amounts.filter(amount -> amount < 0d).sum();
 
@@ -210,7 +210,7 @@ public class DailyMain {
 		var account = Account.ofPortfolio(history);
 
 		var faceValueBySymbol = history //
-				.groupBy(record -> record.symbol, rs -> (float) Read.from(rs).toDouble(Obj_Dbl.sum(Trade::amount))) //
+				.groupBy(record -> record.symbol, rs -> (float) Read.from(rs).toDouble(DblPrimitives.sum(Trade::amount))) //
 				.toMap();
 
 		var trades = account //

@@ -11,8 +11,8 @@ import java.util.List;
 
 import primal.Verbs.Compare;
 import primal.primitive.adt.pair.LngFltPair;
-import suite.primitive.FltPrimitives.Obj_Flt;
-import suite.primitive.LngPrimitives.Obj_Lng;
+import suite.primitive.FltPrimitives;
+import suite.primitive.LngPrimitives;
 import suite.primitive.Longs_;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
@@ -71,21 +71,21 @@ public class DataSource {
 			tradeTimes = Read.from(Set_.intersect(dataSources // intersect
 					.<Collection<Long>> map(ds -> Longs_.of(ds.ts).map(t -> t).toList()) //
 					.toList()));
-		return tradeTimes.sort(Compare::objects).collect(Obj_Lng.lift(t -> t)).toArray();
+		return tradeTimes.sort(Compare::objects).collect(LngPrimitives.lift(t -> t)).toArray();
 	}
 
 	public static DataSource of(Streamlet<Datum> data) {
-		return of(data.collect(Obj_Lng.lift(datum -> datum.t0)).toArray(), data);
+		return of(data.collect(LngPrimitives.lift(datum -> datum.t0)).toArray(), data);
 	}
 
 	private static DataSource of(long[] ts, Streamlet<Datum> data) {
 		return ofOhlcv( //
 				ts, //
-				data.collect(Obj_Flt.lift(datum -> datum.open)).toArray(), //
-				data.collect(Obj_Flt.lift(datum -> datum.close)).toArray(), //
-				data.collect(Obj_Flt.lift(datum -> datum.low)).toArray(), //
-				data.collect(Obj_Flt.lift(datum -> datum.high)).toArray(), //
-				data.collect(Obj_Flt.lift(datum -> datum.volume)).toArray());
+				data.collect(FltPrimitives.lift(datum -> datum.open)).toArray(), //
+				data.collect(FltPrimitives.lift(datum -> datum.close)).toArray(), //
+				data.collect(FltPrimitives.lift(datum -> datum.low)).toArray(), //
+				data.collect(FltPrimitives.lift(datum -> datum.high)).toArray(), //
+				data.collect(FltPrimitives.lift(datum -> datum.volume)).toArray());
 	}
 
 	public static DataSource of(long[] ts, float[] prices) {

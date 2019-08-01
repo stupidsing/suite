@@ -1,6 +1,6 @@
 package suite.math.numeric;
 
-import suite.primitive.DblPrimitives.Obj_Dbl;
+import primal.primitive.DblPrim.Obj_Dbl;
 
 public class Rosenbrock {
 

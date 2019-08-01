@@ -5,9 +5,9 @@ import java.util.Comparator;
 import java.util.List;
 
 import primal.primitive.DblPrim.Dbl_Obj;
+import primal.primitive.DblPrim.Obj_Dbl;
 import primal.primitive.adt.pair.DblObjPair;
 import suite.math.linalg.Vector;
-import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.streamlet.Read;
 
 // https://github.com/fchollet/nelder-mead/blob/master/nelder_mead.py#L83

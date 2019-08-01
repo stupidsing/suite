@@ -10,7 +10,7 @@ import java.util.Set;
 
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Source;
-import suite.primitive.IntPrimitives.Obj_Int;
+import primal.primitive.IntPrim.Obj_Int;
 
 public class Astar<Node> {
 
