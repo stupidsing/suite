@@ -7,12 +7,13 @@ import java.util.Objects;
 import primal.Verbs.Equals;
 import primal.Verbs.Get;
 import primal.adt.Opt;
+import primal.primitive.DblPrim;
 import primal.primitive.DblPrim.DblTest;
 import suite.primitive.DblPrimitives.Dbl_Obj;
 
 public class DblOpt {
 
-	private static double empty = DblFunUtil.EMPTYVALUE;
+	private static double empty = DblPrim.EMPTYVALUE;
 	private static DblOpt none_ = DblOpt.of(empty);
 
 	private double value;

@@ -8,13 +8,13 @@ import primal.Verbs.Equals;
 import primal.Verbs.Get;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Iterate;
-import suite.primitive.DblFunUtil;
+import primal.primitive.DblPrim;
 import suite.primitive.DblPrimitives.DblObj_Obj;
 import suite.primitive.Dbl_Dbl;
 
 public class DblObjPair<V> {
 
-	private static DblObjPair<?> none_ = DblObjPair.of(DblFunUtil.EMPTYVALUE, null);
+	private static DblObjPair<?> none_ = DblObjPair.of(DblPrim.EMPTYVALUE, null);
 
 	public double k;
 	public V v;

@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.Objects;
 
 import primal.Verbs.Equals;
-import suite.primitive.LngFunUtil;
+import primal.primitive.LngPrim;
 import suite.primitive.LngPrimitives.LngObjSink;
 import suite.primitive.LngPrimitives.LngObjSource;
 import suite.primitive.LngPrimitives.Obj_Lng;
@@ -24,7 +24,7 @@ import suite.streamlet.As;
  */
 public class ObjLngMap<K> {
 
-	private static long empty = LngFunUtil.EMPTYVALUE;
+	private static long empty = LngPrim.EMPTYVALUE;
 
 	private int size;
 	private Object[] ks;

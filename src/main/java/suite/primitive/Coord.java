@@ -4,10 +4,11 @@ import java.util.Comparator;
 
 import primal.Verbs.Get;
 import primal.fp.Funs.Iterate;
+import primal.primitive.IntPrim;
 
 public class Coord {
 
-	private static Coord none_ = Coord.of(IntFunUtil.EMPTYVALUE, IntFunUtil.EMPTYVALUE);
+	private static Coord none_ = Coord.of(IntPrim.EMPTYVALUE, IntPrim.EMPTYVALUE);
 
 	public int x;
 	public int y;

@@ -4,10 +4,11 @@ import java.util.Comparator;
 
 import primal.Verbs.Get;
 import primal.fp.Funs.Iterate;
+import primal.primitive.DblPrim;
 
 public class DblRange {
 
-	private static DblRange none_ = DblRange.of(DblFunUtil.EMPTYVALUE, DblFunUtil.EMPTYVALUE);
+	private static DblRange none_ = DblRange.of(DblPrim.EMPTYVALUE, DblPrim.EMPTYVALUE);
 
 	public double s;
 	public double e;

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
+import primal.primitive.LngPrim;
 import suite.primitive.Longs.LongsBuilder;
 import suite.primitive.adt.pair.LngObjPair;
 import suite.primitive.streamlet.LngPuller;
@@ -25,7 +26,7 @@ public class LngPrimitives {
 			return s -> {
 				var ts = new ArrayList<T>();
 				long c;
-				while ((c = s.pull()) != LngFunUtil.EMPTYVALUE)
+				while ((c = s.pull()) != LngPrim.EMPTYVALUE)
 					ts.add(fun1.apply(c));
 				return Read.from(ts);
 			};

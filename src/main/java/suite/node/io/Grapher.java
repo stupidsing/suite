@@ -13,6 +13,7 @@ import java.util.List;
 import primal.Verbs.Equals;
 import primal.adt.IdentityKey;
 import primal.adt.Pair;
+import primal.primitive.IntPrim;
 import suite.lp.Trail;
 import suite.lp.doer.Binder;
 import suite.lp.doer.ProverConstant;
@@ -27,7 +28,6 @@ import suite.node.Tuple;
 import suite.node.io.Rewrite_.NodeHead;
 import suite.node.io.Rewrite_.NodeRead;
 import suite.node.io.Rewrite_.ReadType;
-import suite.primitive.IntFunUtil;
 import suite.primitive.adt.map.IntObjMap;
 import suite.primitive.adt.map.ObjIntMap;
 import suite.primitive.adt.pair.IntIntPair;
@@ -69,7 +69,7 @@ public class Grapher {
 		var key = IdentityKey.of(node);
 		var id = ids.get(key);
 
-		if (id == IntFunUtil.EMPTYVALUE) {
+		if (id == IntPrim.EMPTYVALUE) {
 			ids.put(key, id = gns.size());
 			gns.add(null);
 

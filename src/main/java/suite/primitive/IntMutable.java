@@ -3,6 +3,7 @@ package suite.primitive;
 import static primal.statics.Fail.fail;
 
 import primal.Verbs.Get;
+import primal.primitive.IntPrim;
 
 /**
  * An indirect reference to a primitive int. Integer.MIN_VALUE is not allowed
@@ -12,7 +13,7 @@ import primal.Verbs.Get;
  */
 public class IntMutable {
 
-	private static int empty = IntFunUtil.EMPTYVALUE;
+	private static int empty = IntPrim.EMPTYVALUE;
 
 	private int value;
 

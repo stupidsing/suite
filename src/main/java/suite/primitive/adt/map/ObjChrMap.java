@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.Objects;
 
 import primal.Verbs.Equals;
-import suite.primitive.ChrFunUtil;
+import primal.primitive.ChrPrim;
 import suite.primitive.ChrPrimitives.ChrObjSink;
 import suite.primitive.ChrPrimitives.ChrObjSource;
 import suite.primitive.ChrPrimitives.Obj_Chr;
@@ -24,7 +24,7 @@ import suite.streamlet.As;
  */
 public class ObjChrMap<K> {
 
-	private static char empty = ChrFunUtil.EMPTYVALUE;
+	private static char empty = ChrPrim.EMPTYVALUE;
 
 	private int size;
 	private Object[] ks;

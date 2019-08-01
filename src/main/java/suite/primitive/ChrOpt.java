@@ -7,12 +7,13 @@ import java.util.Objects;
 import primal.Verbs.Equals;
 import primal.Verbs.Get;
 import primal.adt.Opt;
+import primal.primitive.ChrPrim;
 import primal.primitive.ChrPrim.ChrTest;
 import suite.primitive.ChrPrimitives.Chr_Obj;
 
 public class ChrOpt {
 
-	private static char empty = ChrFunUtil.EMPTYVALUE;
+	private static char empty = ChrPrim.EMPTYVALUE;
 	private static ChrOpt none_ = ChrOpt.of(empty);
 
 	private char value;

@@ -4,13 +4,13 @@ import java.util.Comparator;
 
 import primal.Verbs.Get;
 import primal.fp.Funs.Iterate;
+import primal.primitive.FltPrim;
 import suite.primitive.FltFlt_Obj;
-import suite.primitive.FltFunUtil;
 import suite.primitive.Flt_Flt;
 
 public class FltFltPair {
 
-	private static FltFltPair none_ = FltFltPair.of(FltFunUtil.EMPTYVALUE, FltFunUtil.EMPTYVALUE);
+	private static FltFltPair none_ = FltFltPair.of(FltPrim.EMPTYVALUE, FltPrim.EMPTYVALUE);
 
 	public float t0;
 	public float t1;

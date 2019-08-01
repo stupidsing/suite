@@ -19,9 +19,9 @@ import primal.adt.Mutable;
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs2.Sink2;
+import primal.primitive.LngPrim;
 import primal.primitive.LngPrim.LngTest;
 import suite.adt.map.ListMultimap;
-import suite.primitive.LngFunUtil;
 import suite.primitive.LngObjFunUtil;
 import suite.primitive.LngObj_Lng;
 import suite.primitive.LngPrimitives.LngObjPredicate;
@@ -44,7 +44,7 @@ import suite.util.To;
 
 public class LngObjPuller<V> implements PullerDefaults<LngObjPair<V>> {
 
-	private static long empty = LngFunUtil.EMPTYVALUE;
+	private static long empty = LngPrim.EMPTYVALUE;
 
 	private LngObjSource<V> source;
 

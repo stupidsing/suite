@@ -15,9 +15,9 @@ import primal.adt.Pair;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Source;
 import primal.fp.Funs2.Sink2;
+import primal.primitive.DblPrim;
 import primal.primitive.DblPrim.DblTest;
 import suite.adt.map.ListMultimap;
-import suite.primitive.DblFunUtil;
 import suite.primitive.DblObjFunUtil;
 import suite.primitive.DblObj_Dbl;
 import suite.primitive.DblPrimitives.DblObjPredicate;
@@ -277,7 +277,7 @@ public class DblObjStreamlet<V> implements StreamletDefaults<DblObjPair<V>, DblO
 
 	public DblObjPair<V> uniqueResult() {
 		var pair = spawn().opt();
-		if (pair.k != DblFunUtil.EMPTYVALUE)
+		if (pair.k != DblPrim.EMPTYVALUE)
 			return pair;
 		else
 			return fail("no result");

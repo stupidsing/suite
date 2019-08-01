@@ -4,9 +4,9 @@ import static suite.util.Streamlet_.forInt;
 
 import java.util.Random;
 
+import primal.primitive.IntPrim;
 import suite.adt.map.IntIntMap1;
 import suite.primitive.DblPrimitives.Obj_Dbl;
-import suite.primitive.IntFunUtil;
 import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.Int_Dbl;
 import suite.primitive.adt.pair.DblIntPair;
@@ -100,7 +100,7 @@ public class DecisionTree {
 	private double entropy(Iterable<IntObjPair<Object[]>> data) {
 		var hist0 = new IntIntMap1();
 		for (var datum : data)
-			hist0.update(datum.k, v -> (v != IntFunUtil.EMPTYVALUE ? v : 0) + 1);
+			hist0.update(datum.k, v -> (v != IntPrim.EMPTYVALUE ? v : 0) + 1);
 		var hist1 = hist0.values();
 		var sum = (double) hist1.sum();
 		return hist1.toDouble(Int_Dbl.sum(c -> Math.log(c / sum)));

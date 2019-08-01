@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.Objects;
 
 import primal.fp.Funs.Fun;
-import suite.primitive.DblFunUtil;
+import primal.primitive.DblPrim;
 import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Dbl_Dbl;
 import suite.primitive.FltDblSink;
@@ -29,7 +29,7 @@ import suite.streamlet.Puller;
  */
 public class FltDblMap {
 
-	private static double empty = DblFunUtil.EMPTYVALUE;
+	private static double empty = DblPrim.EMPTYVALUE;
 
 	private int size;
 	private float[] ks;

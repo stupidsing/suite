@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.Objects;
 
 import primal.fp.Funs.Fun;
-import suite.primitive.LngFunUtil;
+import primal.primitive.LngPrim;
 import suite.primitive.LngLngSink;
 import suite.primitive.LngLngSource;
 import suite.primitive.LngPrimitives.LngObjSource;
@@ -27,7 +27,7 @@ import suite.streamlet.Puller;
  */
 public class LngLngMap {
 
-	private static long empty = LngFunUtil.EMPTYVALUE;
+	private static long empty = LngPrim.EMPTYVALUE;
 
 	private int size;
 	private long[] ks;

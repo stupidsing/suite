@@ -6,12 +6,12 @@ import java.util.Arrays;
 import java.util.Objects;
 
 import primal.fp.Funs.Fun;
+import primal.primitive.DblPrim;
 import suite.primitive.ChrDblSink;
 import suite.primitive.ChrDblSource;
 import suite.primitive.ChrPrimitives.ChrObjSource;
 import suite.primitive.ChrPrimitives.Obj_Chr;
 import suite.primitive.Chr_Dbl;
-import suite.primitive.DblFunUtil;
 import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Dbl_Dbl;
 import suite.primitive.adt.pair.ChrDblPair;
@@ -29,7 +29,7 @@ import suite.streamlet.Puller;
  */
 public class ChrDblMap {
 
-	private static double empty = DblFunUtil.EMPTYVALUE;
+	private static double empty = DblPrim.EMPTYVALUE;
 
 	private int size;
 	private char[] ks;

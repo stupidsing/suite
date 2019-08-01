@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.Objects;
 
 import primal.Verbs.Equals;
-import suite.primitive.IntFunUtil;
+import primal.primitive.IntPrim;
 import suite.primitive.IntPrimitives.IntObjSink;
 import suite.primitive.IntPrimitives.IntObjSource;
 import suite.primitive.IntPrimitives.Obj_Int;
@@ -24,7 +24,7 @@ import suite.streamlet.As;
  */
 public class ObjIntMap<K> {
 
-	private static int empty = IntFunUtil.EMPTYVALUE;
+	private static int empty = IntPrim.EMPTYVALUE;
 
 	private int size;
 	private Object[] ks;

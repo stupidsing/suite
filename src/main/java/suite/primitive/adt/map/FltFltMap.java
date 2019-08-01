@@ -6,9 +6,9 @@ import java.util.Arrays;
 import java.util.Objects;
 
 import primal.fp.Funs.Fun;
+import primal.primitive.FltPrim;
 import suite.primitive.FltFltSink;
 import suite.primitive.FltFltSource;
-import suite.primitive.FltFunUtil;
 import suite.primitive.FltPrimitives.FltObjSource;
 import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.primitive.Flt_Flt;
@@ -27,7 +27,7 @@ import suite.streamlet.Puller;
  */
 public class FltFltMap {
 
-	private static float empty = FltFunUtil.EMPTYVALUE;
+	private static float empty = FltPrim.EMPTYVALUE;
 
 	private int size;
 	private float[] ks;

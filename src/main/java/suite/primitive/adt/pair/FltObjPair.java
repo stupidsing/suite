@@ -8,13 +8,13 @@ import primal.Verbs.Equals;
 import primal.Verbs.Get;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Iterate;
-import suite.primitive.FltFunUtil;
+import primal.primitive.FltPrim;
 import suite.primitive.FltPrimitives.FltObj_Obj;
 import suite.primitive.Flt_Flt;
 
 public class FltObjPair<V> {
 
-	private static FltObjPair<?> none_ = FltObjPair.of(FltFunUtil.EMPTYVALUE, null);
+	private static FltObjPair<?> none_ = FltObjPair.of(FltPrim.EMPTYVALUE, null);
 
 	public float k;
 	public V v;

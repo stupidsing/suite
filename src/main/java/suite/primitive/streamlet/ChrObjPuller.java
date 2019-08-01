@@ -19,9 +19,9 @@ import primal.adt.Mutable;
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs2.Sink2;
+import primal.primitive.ChrPrim;
 import primal.primitive.ChrPrim.ChrTest;
 import suite.adt.map.ListMultimap;
-import suite.primitive.ChrFunUtil;
 import suite.primitive.ChrObjFunUtil;
 import suite.primitive.ChrObj_Chr;
 import suite.primitive.ChrPrimitives.ChrObjPredicate;
@@ -44,7 +44,7 @@ import suite.util.To;
 
 public class ChrObjPuller<V> implements PullerDefaults<ChrObjPair<V>> {
 
-	private static char empty = ChrFunUtil.EMPTYVALUE;
+	private static char empty = ChrPrim.EMPTYVALUE;
 
 	private ChrObjSource<V> source;
 

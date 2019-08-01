@@ -2,6 +2,8 @@ package suite.primitive;
 
 import static primal.statics.Fail.fail;
 
+import primal.primitive.IntPrim;
+
 public class BooMutable {
 
 	private static int falseValue = 0;
@@ -18,7 +20,7 @@ public class BooMutable {
 	}
 
 	public static BooMutable nil() {
-		return BooMutable.of(IntFunUtil.EMPTYVALUE);
+		return BooMutable.of(IntPrim.EMPTYVALUE);
 	}
 
 	public static BooMutable of(int i) {
@@ -40,7 +42,7 @@ public class BooMutable {
 	}
 
 	public void set(int t) {
-		if (value == IntFunUtil.EMPTYVALUE)
+		if (value == IntPrim.EMPTYVALUE)
 			update(t);
 		else
 			fail("value already set");

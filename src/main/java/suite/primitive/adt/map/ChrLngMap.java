@@ -6,12 +6,12 @@ import java.util.Arrays;
 import java.util.Objects;
 
 import primal.fp.Funs.Fun;
+import primal.primitive.LngPrim;
 import suite.primitive.ChrLngSink;
 import suite.primitive.ChrLngSource;
 import suite.primitive.ChrPrimitives.ChrObjSource;
 import suite.primitive.ChrPrimitives.Obj_Chr;
 import suite.primitive.Chr_Lng;
-import suite.primitive.LngFunUtil;
 import suite.primitive.LngPrimitives.Obj_Lng;
 import suite.primitive.Lng_Lng;
 import suite.primitive.adt.pair.ChrLngPair;
@@ -29,7 +29,7 @@ import suite.streamlet.Puller;
  */
 public class ChrLngMap {
 
-	private static long empty = LngFunUtil.EMPTYVALUE;
+	private static long empty = LngPrim.EMPTYVALUE;
 
 	private int size;
 	private char[] ks;

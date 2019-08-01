@@ -15,9 +15,9 @@ import primal.adt.Pair;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Source;
 import primal.fp.Funs2.Sink2;
+import primal.primitive.LngPrim;
 import primal.primitive.LngPrim.LngTest;
 import suite.adt.map.ListMultimap;
-import suite.primitive.LngFunUtil;
 import suite.primitive.LngObjFunUtil;
 import suite.primitive.LngObj_Lng;
 import suite.primitive.LngPrimitives.LngObjPredicate;
@@ -277,7 +277,7 @@ public class LngObjStreamlet<V> implements StreamletDefaults<LngObjPair<V>, LngO
 
 	public LngObjPair<V> uniqueResult() {
 		var pair = spawn().opt();
-		if (pair.k != LngFunUtil.EMPTYVALUE)
+		if (pair.k != LngPrim.EMPTYVALUE)
 			return pair;
 		else
 			return fail("no result");

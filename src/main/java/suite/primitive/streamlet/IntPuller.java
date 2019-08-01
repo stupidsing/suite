@@ -21,6 +21,7 @@ import primal.adt.Mutable;
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Source;
+import primal.primitive.IntPrim;
 import primal.primitive.IntPrim.IntComparator;
 import primal.primitive.IntPrim.IntSink;
 import primal.primitive.IntPrim.IntSource;
@@ -50,7 +51,7 @@ import suite.util.To;
 
 public class IntPuller implements PullerDefaults<Integer> {
 
-	private static int empty = IntFunUtil.EMPTYVALUE;
+	private static int empty = IntPrim.EMPTYVALUE;
 
 	private IntSource source;
 

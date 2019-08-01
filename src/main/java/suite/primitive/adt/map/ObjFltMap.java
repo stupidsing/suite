@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.Objects;
 
 import primal.Verbs.Equals;
-import suite.primitive.FltFunUtil;
+import primal.primitive.FltPrim;
 import suite.primitive.FltPrimitives.FltObjSink;
 import suite.primitive.FltPrimitives.FltObjSource;
 import suite.primitive.FltPrimitives.Obj_Flt;
@@ -24,7 +24,7 @@ import suite.streamlet.As;
  */
 public class ObjFltMap<K> {
 
-	private static float empty = FltFunUtil.EMPTYVALUE;
+	private static float empty = FltPrim.EMPTYVALUE;
 
 	private int size;
 	private Object[] ks;

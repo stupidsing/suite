@@ -7,12 +7,13 @@ import java.util.Objects;
 import primal.Verbs.Equals;
 import primal.Verbs.Get;
 import primal.adt.Opt;
+import primal.primitive.FltPrim;
 import primal.primitive.FltPrim.FltTest;
 import suite.primitive.FltPrimitives.Flt_Obj;
 
 public class FltOpt {
 
-	private static float empty = FltFunUtil.EMPTYVALUE;
+	private static float empty = FltPrim.EMPTYVALUE;
 	private static FltOpt none_ = FltOpt.of(empty);
 
 	private float value;

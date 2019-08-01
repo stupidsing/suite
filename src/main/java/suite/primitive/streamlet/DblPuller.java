@@ -21,6 +21,7 @@ import primal.adt.Mutable;
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Source;
+import primal.primitive.DblPrim;
 import primal.primitive.DblPrim.DblComparator;
 import primal.primitive.DblPrim.DblSink;
 import primal.primitive.DblPrim.DblSource;
@@ -50,7 +51,7 @@ import suite.util.To;
 
 public class DblPuller implements PullerDefaults<Double> {
 
-	private static double empty = DblFunUtil.EMPTYVALUE;
+	private static double empty = DblPrim.EMPTYVALUE;
 
 	private DblSource source;
 

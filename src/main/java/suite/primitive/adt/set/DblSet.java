@@ -2,9 +2,9 @@ package suite.primitive.adt.set;
 
 import java.util.Arrays;
 
+import primal.primitive.DblPrim;
 import primal.primitive.DblPrim.DblSink;
 import primal.primitive.DblPrim.DblSource;
-import suite.primitive.DblFunUtil;
 import suite.primitive.Doubles_;
 import suite.primitive.streamlet.DblPuller;
 import suite.primitive.streamlet.DblStreamlet;
@@ -18,7 +18,7 @@ import suite.util.To;
  */
 public class DblSet {
 
-	private static double empty = DblFunUtil.EMPTYVALUE;
+	private static double empty = DblPrim.EMPTYVALUE;
 
 	private int size;
 	private double[] vs;

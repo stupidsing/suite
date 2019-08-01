@@ -15,9 +15,9 @@ import primal.adt.Pair;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Source;
 import primal.fp.Funs2.Sink2;
+import primal.primitive.FltPrim;
 import primal.primitive.FltPrim.FltTest;
 import suite.adt.map.ListMultimap;
-import suite.primitive.FltFunUtil;
 import suite.primitive.FltObjFunUtil;
 import suite.primitive.FltObj_Flt;
 import suite.primitive.FltPrimitives.FltObjPredicate;
@@ -277,7 +277,7 @@ public class FltObjStreamlet<V> implements StreamletDefaults<FltObjPair<V>, FltO
 
 	public FltObjPair<V> uniqueResult() {
 		var pair = spawn().opt();
-		if (pair.k != FltFunUtil.EMPTYVALUE)
+		if (pair.k != FltPrim.EMPTYVALUE)
 			return pair;
 		else
 			return fail("no result");

@@ -10,6 +10,7 @@ import primal.fp.Funs.Sink;
 import primal.fp.Funs.Source;
 import primal.fp.Funs2.Source2;
 import primal.os.Log_;
+import primal.primitive.FltPrim;
 import primal.primitive.FltPrim.FltSink;
 import primal.primitive.FltPrim.FltSource;
 import primal.primitive.FltPrim.FltTest;
@@ -22,19 +23,17 @@ import suite.util.Thread_;
 
 public class FltFunUtil {
 
-	public static float EMPTYVALUE = Float.MIN_VALUE;
-
 	public static Source<FltSource> chunk(int n, FltSource source) {
 		return new Source<>() {
 			private float c = source.g();
-			private boolean isAvail = c != EMPTYVALUE;
+			private boolean isAvail = c != FltPrim.EMPTYVALUE;
 			private int i;
 			private FltSource source_ = () -> {
-				if ((isAvail = isAvail && (c = source.g()) != EMPTYVALUE) && ++i < n)
+				if ((isAvail = isAvail && (c = source.g()) != FltPrim.EMPTYVALUE) && ++i < n)
 					return c;
 				else {
 					i = 0;
-					return EMPTYVALUE;
+					return FltPrim.EMPTYVALUE;
 				}
 			};
 
@@ -49,8 +48,8 @@ public class FltFunUtil {
 			private FltSource source0 = nullSource();
 
 			public float g() {
-				var c = EMPTYVALUE;
-				while (source0 != null && (c = source0.g()) == EMPTYVALUE)
+				var c = FltPrim.EMPTYVALUE;
+				while (source0 != null && (c = source0.g()) == FltPrim.EMPTYVALUE)
 					source0 = source.g();
 				return c;
 			}
@@ -75,8 +74,8 @@ public class FltFunUtil {
 	public static FltSource filter(FltTest fun0, FltSource source) {
 		var fun1 = fun0.rethrow();
 		return () -> {
-			var c = EMPTYVALUE;
-			while ((c = source.g()) != EMPTYVALUE && !fun1.test(c))
+			var c = FltPrim.EMPTYVALUE;
+			while ((c = source.g()) != FltPrim.EMPTYVALUE && !fun1.test(c))
 				;
 			return c;
 		};
@@ -92,7 +91,7 @@ public class FltFunUtil {
 					if ((iterable = source.g()) != null)
 						iter = iterable.iterator();
 					else
-						return EMPTYVALUE;
+						return FltPrim.EMPTYVALUE;
 				return iter.next();
 			}
 		};
@@ -101,7 +100,7 @@ public class FltFunUtil {
 	public static <R> R fold(Fun<FltObjPair<R>, R> fun0, R init, FltSource source) {
 		var fun1 = fun0.rethrow();
 		float c;
-		while ((c = source.g()) != EMPTYVALUE)
+		while ((c = source.g()) != FltPrim.EMPTYVALUE)
 			init = fun1.apply(FltObjPair.of(c, init));
 		return init;
 	}
@@ -109,7 +108,7 @@ public class FltFunUtil {
 	public static boolean isAll(FltTest pred0, FltSource source) {
 		var pred1 = pred0.rethrow();
 		float c;
-		while ((c = source.g()) != EMPTYVALUE)
+		while ((c = source.g()) != FltPrim.EMPTYVALUE)
 			if (!pred1.test(c))
 				return false;
 		return true;
@@ -118,7 +117,7 @@ public class FltFunUtil {
 	public static boolean isAny(FltTest pred0, FltSource source) {
 		var pred1 = pred0.rethrow();
 		float c;
-		while ((c = source.g()) != EMPTYVALUE)
+		while ((c = source.g()) != FltPrim.EMPTYVALUE)
 			if (pred1.test(c))
 				return true;
 		return false;
@@ -126,17 +125,17 @@ public class FltFunUtil {
 
 	public static Iterator<Float> iterator(FltSource source) {
 		return new Iterator<>() {
-			private float next = EMPTYVALUE;
+			private float next = FltPrim.EMPTYVALUE;
 
 			public boolean hasNext() {
-				if (next == EMPTYVALUE)
+				if (next == FltPrim.EMPTYVALUE)
 					next = source.g();
-				return next != EMPTYVALUE;
+				return next != FltPrim.EMPTYVALUE;
 			}
 
 			public Float next() {
 				var next0 = next;
-				next = EMPTYVALUE;
+				next = FltPrim.EMPTYVALUE;
 				return next0;
 			}
 
@@ -151,7 +150,7 @@ public class FltFunUtil {
 		var fun1 = fun0.rethrow();
 		return () -> {
 			var c0 = source.g();
-			return c0 != FltFunUtil.EMPTYVALUE ? fun1.apply(c0) : null;
+			return c0 != FltPrim.EMPTYVALUE ? fun1.apply(c0) : null;
 		};
 	}
 
@@ -160,7 +159,7 @@ public class FltFunUtil {
 		var vf1 = vf0.rethrow();
 		return pair -> {
 			var c = source.g();
-			var b = c != EMPTYVALUE;
+			var b = c != FltPrim.EMPTYVALUE;
 			if (b)
 				pair.update(kf1.apply(c), vf1.apply(c));
 			return b;
@@ -171,7 +170,7 @@ public class FltFunUtil {
 		var fun1 = fun0.rethrow();
 		return () -> {
 			var c = source.g();
-			return c != FltFunUtil.EMPTYVALUE ? fun1.apply(c) : FltFunUtil.EMPTYVALUE;
+			return c != FltPrim.EMPTYVALUE ? fun1.apply(c) : FltPrim.EMPTYVALUE;
 		};
 	}
 
@@ -179,7 +178,7 @@ public class FltFunUtil {
 		var fun1 = fun0.rethrow();
 		return pair -> {
 			var c = source.g();
-			if (c != FltFunUtil.EMPTYVALUE) {
+			if (c != FltPrim.EMPTYVALUE) {
 				pair.update(c, fun1.apply(c));
 				return true;
 			} else
@@ -194,7 +193,7 @@ public class FltFunUtil {
 	}
 
 	public static FltSource nullSource() {
-		return () -> EMPTYVALUE;
+		return () -> FltPrim.EMPTYVALUE;
 	}
 
 	public static FltSource snoc(float c, FltSource source) {
@@ -204,14 +203,14 @@ public class FltFunUtil {
 			public float g() {
 				if (!isAppended) {
 					var c_ = source.g();
-					if (c_ != EMPTYVALUE)
+					if (c_ != FltPrim.EMPTYVALUE)
 						return c_;
 					else {
 						isAppended = true;
 						return c;
 					}
 				} else
-					return EMPTYVALUE;
+					return FltPrim.EMPTYVALUE;
 			}
 		};
 	}
@@ -224,8 +223,8 @@ public class FltFunUtil {
 		var fun1 = fun0.rethrow();
 		return new Source<>() {
 			private float c = source.g();
-			private boolean isAvail = c != EMPTYVALUE;
-			private FltSource source_ = () -> (isAvail = isAvail && (c = source.g()) != EMPTYVALUE) && !fun1.test(c) ? c : null;
+			private boolean isAvail = c != FltPrim.EMPTYVALUE;
+			private FltSource source_ = () -> (isAvail = isAvail && (c = source.g()) != FltPrim.EMPTYVALUE) && !fun1.test(c) ? c : null;
 
 			public FltSource g() {
 				return isAvail ? cons(c, source_) : null;
@@ -244,7 +243,7 @@ public class FltFunUtil {
 			try {
 				fun.f(enqueue);
 			} finally {
-				enqueue(queue, EMPTYVALUE);
+				enqueue(queue, FltPrim.EMPTYVALUE);
 			}
 		});
 

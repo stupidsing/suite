@@ -4,6 +4,7 @@ import static primal.statics.Rethrow.ex;
 
 import primal.fp.Funs.Iterate;
 import primal.fp.Funs.Source;
+import primal.primitive.LngPrim;
 import suite.primitive.Longs.LongsBuilder;
 import suite.primitive.Longs.WriteChar;
 import suite.primitive.streamlet.LngPuller;
@@ -89,7 +90,7 @@ public class Longs_ {
 			var m = LngMutable.of(s);
 			return LngPuller.of(() -> {
 				var c = m.increment();
-				return c < e ? c : LngFunUtil.EMPTYVALUE;
+				return c < e ? c : LngPrim.EMPTYVALUE;
 			});
 		});
 	}

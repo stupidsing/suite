@@ -12,6 +12,7 @@ import java.util.Iterator;
 
 import primal.Verbs.Get;
 import primal.fp.Funs.Fun;
+import primal.primitive.IntPrim;
 import primal.primitive.IntPrim.IntSource;
 import suite.cfg.Defaults;
 import suite.primitive.streamlet.IntPuller;
@@ -133,7 +134,7 @@ public class Ints implements Iterable<Integer> {
 			private int i = start;
 
 			public int g() {
-				return i < end ? cs[i++] : IntFunUtil.EMPTYVALUE;
+				return i < end ? cs[i++] : IntPrim.EMPTYVALUE;
 			}
 		}));
 	}

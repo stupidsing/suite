@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.Objects;
 
 import primal.fp.Funs.Fun;
-import suite.primitive.IntFunUtil;
+import primal.primitive.IntPrim;
 import suite.primitive.IntIntSink;
 import suite.primitive.IntIntSource;
 import suite.primitive.IntPrimitives.IntObjSource;
@@ -27,7 +27,7 @@ import suite.streamlet.Puller;
  */
 public class IntIntMap {
 
-	private static int empty = IntFunUtil.EMPTYVALUE;
+	private static int empty = IntPrim.EMPTYVALUE;
 
 	private int size;
 	private int[] ks;

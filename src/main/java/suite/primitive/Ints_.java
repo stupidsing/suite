@@ -4,6 +4,7 @@ import static primal.statics.Rethrow.ex;
 
 import primal.fp.Funs.Iterate;
 import primal.fp.Funs.Source;
+import primal.primitive.IntPrim;
 import suite.primitive.Ints.IntsBuilder;
 import suite.primitive.Ints.WriteChar;
 import suite.primitive.streamlet.IntPuller;
@@ -89,7 +90,7 @@ public class Ints_ {
 			var m = IntMutable.of(s);
 			return IntPuller.of(() -> {
 				var c = m.increment();
-				return c < e ? c : IntFunUtil.EMPTYVALUE;
+				return c < e ? c : IntPrim.EMPTYVALUE;
 			});
 		});
 	}

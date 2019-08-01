@@ -4,15 +4,15 @@ import java.util.Comparator;
 
 import primal.Verbs.Get;
 import primal.fp.Funs.Iterate;
-import suite.primitive.FltFunUtil;
+import primal.primitive.FltPrim;
+import primal.primitive.LngPrim;
 import suite.primitive.Flt_Flt;
 import suite.primitive.LngFlt_Obj;
-import suite.primitive.LngFunUtil;
 import suite.primitive.Lng_Lng;
 
 public class LngFltPair {
 
-	private static LngFltPair none_ = LngFltPair.of(LngFunUtil.EMPTYVALUE, FltFunUtil.EMPTYVALUE);
+	private static LngFltPair none_ = LngFltPair.of(LngPrim.EMPTYVALUE, FltPrim.EMPTYVALUE);
 
 	public long t0;
 	public float t1;

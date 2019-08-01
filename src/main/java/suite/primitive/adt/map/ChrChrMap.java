@@ -6,9 +6,9 @@ import java.util.Arrays;
 import java.util.Objects;
 
 import primal.fp.Funs.Fun;
+import primal.primitive.ChrPrim;
 import suite.primitive.ChrChrSink;
 import suite.primitive.ChrChrSource;
-import suite.primitive.ChrFunUtil;
 import suite.primitive.ChrPrimitives.ChrObjSource;
 import suite.primitive.ChrPrimitives.Obj_Chr;
 import suite.primitive.Chr_Chr;
@@ -27,7 +27,7 @@ import suite.streamlet.Puller;
  */
 public class ChrChrMap {
 
-	private static char empty = ChrFunUtil.EMPTYVALUE;
+	private static char empty = ChrPrim.EMPTYVALUE;
 
 	private int size;
 	private char[] ks;

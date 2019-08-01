@@ -4,13 +4,13 @@ import java.util.Comparator;
 
 import primal.Verbs.Get;
 import primal.fp.Funs.Iterate;
-import suite.primitive.IntFunUtil;
+import primal.primitive.IntPrim;
 import suite.primitive.IntInt_Obj;
 import suite.primitive.Int_Int;
 
 public class IntIntPair {
 
-	private static IntIntPair none_ = IntIntPair.of(IntFunUtil.EMPTYVALUE, IntFunUtil.EMPTYVALUE);
+	private static IntIntPair none_ = IntIntPair.of(IntPrim.EMPTYVALUE, IntPrim.EMPTYVALUE);
 
 	public int t0;
 	public int t1;

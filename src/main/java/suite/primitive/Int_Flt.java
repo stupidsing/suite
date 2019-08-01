@@ -3,6 +3,7 @@ package suite.primitive;
 import static primal.statics.Fail.fail;
 
 import primal.fp.Funs.Fun;
+import primal.primitive.IntPrim;
 import suite.primitive.Floats.FloatsBuilder;
 import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.primitive.streamlet.FltStreamlet;
@@ -17,7 +18,7 @@ public interface Int_Flt {
 		return ts -> {
 			var b = new FloatsBuilder();
 			int c;
-			while ((c = ts.pull()) != IntFunUtil.EMPTYVALUE)
+			while ((c = ts.pull()) != IntPrim.EMPTYVALUE)
 				b.append(fun1.apply(c));
 			return b.toFloats().streamlet();
 		};
@@ -29,7 +30,7 @@ public interface Int_Flt {
 			var source = puller.source();
 			int c;
 			var result = (float) 0;
-			while ((c = source.g()) != IntFunUtil.EMPTYVALUE)
+			while ((c = source.g()) != IntPrim.EMPTYVALUE)
 				result += fun1.apply(c);
 			return result;
 		};

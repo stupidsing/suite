@@ -19,9 +19,9 @@ import primal.adt.Mutable;
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs2.Sink2;
+import primal.primitive.IntPrim;
 import primal.primitive.IntPrim.IntTest;
 import suite.adt.map.ListMultimap;
-import suite.primitive.IntFunUtil;
 import suite.primitive.IntObjFunUtil;
 import suite.primitive.IntObj_Int;
 import suite.primitive.IntPrimitives.IntObjPredicate;
@@ -44,7 +44,7 @@ import suite.util.To;
 
 public class IntObjPuller<V> implements PullerDefaults<IntObjPair<V>> {
 
-	private static int empty = IntFunUtil.EMPTYVALUE;
+	private static int empty = IntPrim.EMPTYVALUE;
 
 	private IntObjSource<V> source;
 

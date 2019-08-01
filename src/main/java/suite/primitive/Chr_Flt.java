@@ -3,6 +3,7 @@ package suite.primitive;
 import static primal.statics.Fail.fail;
 
 import primal.fp.Funs.Fun;
+import primal.primitive.ChrPrim;
 import suite.primitive.Floats.FloatsBuilder;
 import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.primitive.streamlet.ChrPuller;
@@ -17,7 +18,7 @@ public interface Chr_Flt {
 		return ts -> {
 			var b = new FloatsBuilder();
 			char c;
-			while ((c = ts.pull()) != ChrFunUtil.EMPTYVALUE)
+			while ((c = ts.pull()) != ChrPrim.EMPTYVALUE)
 				b.append(fun1.apply(c));
 			return b.toFloats().streamlet();
 		};
@@ -29,7 +30,7 @@ public interface Chr_Flt {
 			var source = puller.source();
 			char c;
 			var result = (float) 0;
-			while ((c = source.g()) != ChrFunUtil.EMPTYVALUE)
+			while ((c = source.g()) != ChrPrim.EMPTYVALUE)
 				result += fun1.apply(c);
 			return result;
 		};

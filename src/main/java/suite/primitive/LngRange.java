@@ -4,10 +4,11 @@ import java.util.Comparator;
 
 import primal.Verbs.Get;
 import primal.fp.Funs.Iterate;
+import primal.primitive.LngPrim;
 
 public class LngRange {
 
-	private static LngRange none_ = LngRange.of(LngFunUtil.EMPTYVALUE, LngFunUtil.EMPTYVALUE);
+	private static LngRange none_ = LngRange.of(LngPrim.EMPTYVALUE, LngPrim.EMPTYVALUE);
 
 	public long s;
 	public long e;

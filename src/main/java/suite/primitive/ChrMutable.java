@@ -3,6 +3,7 @@ package suite.primitive;
 import static primal.statics.Fail.fail;
 
 import primal.Verbs.Get;
+import primal.primitive.ChrPrim;
 
 /**
  * An indirect reference to a primitive char. Character.MIN_VALUE is not allowed
@@ -12,7 +13,7 @@ import primal.Verbs.Get;
  */
 public class ChrMutable {
 
-	private static char empty = ChrFunUtil.EMPTYVALUE;
+	private static char empty = ChrPrim.EMPTYVALUE;
 
 	private char value;
 

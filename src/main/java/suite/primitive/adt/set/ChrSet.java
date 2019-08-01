@@ -2,10 +2,10 @@ package suite.primitive.adt.set;
 
 import java.util.Arrays;
 
+import primal.primitive.ChrPrim;
 import primal.primitive.ChrPrim.ChrSink;
 import primal.primitive.ChrPrim.ChrSource;
 import suite.primitive.Chars_;
-import suite.primitive.ChrFunUtil;
 import suite.primitive.streamlet.ChrPuller;
 import suite.primitive.streamlet.ChrStreamlet;
 import suite.util.To;
@@ -18,7 +18,7 @@ import suite.util.To;
  */
 public class ChrSet {
 
-	private static char empty = ChrFunUtil.EMPTYVALUE;
+	private static char empty = ChrPrim.EMPTYVALUE;
 
 	private int size;
 	private char[] vs;

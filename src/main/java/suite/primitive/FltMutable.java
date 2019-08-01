@@ -3,6 +3,7 @@ package suite.primitive;
 import static primal.statics.Fail.fail;
 
 import primal.Verbs.Get;
+import primal.primitive.FltPrim;
 
 /**
  * An indirect reference to a primitive float. Float.MIN_VALUE is not allowed
@@ -12,7 +13,7 @@ import primal.Verbs.Get;
  */
 public class FltMutable {
 
-	private static float empty = FltFunUtil.EMPTYVALUE;
+	private static float empty = FltPrim.EMPTYVALUE;
 
 	private float value;
 

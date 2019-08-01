@@ -10,6 +10,7 @@ import primal.fp.Funs.Sink;
 import primal.fp.Funs.Source;
 import primal.fp.Funs2.Source2;
 import primal.os.Log_;
+import primal.primitive.IntPrim;
 import primal.primitive.IntPrim.IntSink;
 import primal.primitive.IntPrim.IntSource;
 import primal.primitive.IntPrim.IntTest;
@@ -22,19 +23,17 @@ import suite.util.Thread_;
 
 public class IntFunUtil {
 
-	public static int EMPTYVALUE = Integer.MIN_VALUE;
-
 	public static Source<IntSource> chunk(int n, IntSource source) {
 		return new Source<>() {
 			private int c = source.g();
-			private boolean isAvail = c != EMPTYVALUE;
+			private boolean isAvail = c != IntPrim.EMPTYVALUE;
 			private int i;
 			private IntSource source_ = () -> {
-				if ((isAvail = isAvail && (c = source.g()) != EMPTYVALUE) && ++i < n)
+				if ((isAvail = isAvail && (c = source.g()) != IntPrim.EMPTYVALUE) && ++i < n)
 					return c;
 				else {
 					i = 0;
-					return EMPTYVALUE;
+					return IntPrim.EMPTYVALUE;
 				}
 			};
 
@@ -49,8 +48,8 @@ public class IntFunUtil {
 			private IntSource source0 = nullSource();
 
 			public int g() {
-				var c = EMPTYVALUE;
-				while (source0 != null && (c = source0.g()) == EMPTYVALUE)
+				var c = IntPrim.EMPTYVALUE;
+				while (source0 != null && (c = source0.g()) == IntPrim.EMPTYVALUE)
 					source0 = source.g();
 				return c;
 			}
@@ -75,8 +74,8 @@ public class IntFunUtil {
 	public static IntSource filter(IntTest fun0, IntSource source) {
 		var fun1 = fun0.rethrow();
 		return () -> {
-			var c = EMPTYVALUE;
-			while ((c = source.g()) != EMPTYVALUE && !fun1.test(c))
+			var c = IntPrim.EMPTYVALUE;
+			while ((c = source.g()) != IntPrim.EMPTYVALUE && !fun1.test(c))
 				;
 			return c;
 		};
@@ -92,7 +91,7 @@ public class IntFunUtil {
 					if ((iterable = source.g()) != null)
 						iter = iterable.iterator();
 					else
-						return EMPTYVALUE;
+						return IntPrim.EMPTYVALUE;
 				return iter.next();
 			}
 		};
@@ -101,7 +100,7 @@ public class IntFunUtil {
 	public static <R> R fold(Fun<IntObjPair<R>, R> fun0, R init, IntSource source) {
 		var fun1 = fun0.rethrow();
 		int c;
-		while ((c = source.g()) != EMPTYVALUE)
+		while ((c = source.g()) != IntPrim.EMPTYVALUE)
 			init = fun1.apply(IntObjPair.of(c, init));
 		return init;
 	}
@@ -109,7 +108,7 @@ public class IntFunUtil {
 	public static boolean isAll(IntTest pred0, IntSource source) {
 		var pred1 = pred0.rethrow();
 		int c;
-		while ((c = source.g()) != EMPTYVALUE)
+		while ((c = source.g()) != IntPrim.EMPTYVALUE)
 			if (!pred1.test(c))
 				return false;
 		return true;
@@ -118,7 +117,7 @@ public class IntFunUtil {
 	public static boolean isAny(IntTest pred0, IntSource source) {
 		var pred1 = pred0.rethrow();
 		int c;
-		while ((c = source.g()) != EMPTYVALUE)
+		while ((c = source.g()) != IntPrim.EMPTYVALUE)
 			if (pred1.test(c))
 				return true;
 		return false;
@@ -126,17 +125,17 @@ public class IntFunUtil {
 
 	public static Iterator<Integer> iterator(IntSource source) {
 		return new Iterator<>() {
-			private int next = EMPTYVALUE;
+			private int next = IntPrim.EMPTYVALUE;
 
 			public boolean hasNext() {
-				if (next == EMPTYVALUE)
+				if (next == IntPrim.EMPTYVALUE)
 					next = source.g();
-				return next != EMPTYVALUE;
+				return next != IntPrim.EMPTYVALUE;
 			}
 
 			public Integer next() {
 				var next0 = next;
-				next = EMPTYVALUE;
+				next = IntPrim.EMPTYVALUE;
 				return next0;
 			}
 
@@ -151,7 +150,7 @@ public class IntFunUtil {
 		var fun1 = fun0.rethrow();
 		return () -> {
 			var c0 = source.g();
-			return c0 != IntFunUtil.EMPTYVALUE ? fun1.apply(c0) : null;
+			return c0 != IntPrim.EMPTYVALUE ? fun1.apply(c0) : null;
 		};
 	}
 
@@ -160,7 +159,7 @@ public class IntFunUtil {
 		var vf1 = vf0.rethrow();
 		return pair -> {
 			var c = source.g();
-			var b = c != EMPTYVALUE;
+			var b = c != IntPrim.EMPTYVALUE;
 			if (b)
 				pair.update(kf1.apply(c), vf1.apply(c));
 			return b;
@@ -171,7 +170,7 @@ public class IntFunUtil {
 		var fun1 = fun0.rethrow();
 		return () -> {
 			var c = source.g();
-			return c != IntFunUtil.EMPTYVALUE ? fun1.apply(c) : IntFunUtil.EMPTYVALUE;
+			return c != IntPrim.EMPTYVALUE ? fun1.apply(c) : IntPrim.EMPTYVALUE;
 		};
 	}
 
@@ -179,7 +178,7 @@ public class IntFunUtil {
 		var fun1 = fun0.rethrow();
 		return pair -> {
 			var c = source.g();
-			if (c != IntFunUtil.EMPTYVALUE) {
+			if (c != IntPrim.EMPTYVALUE) {
 				pair.update(c, fun1.apply(c));
 				return true;
 			} else
@@ -194,7 +193,7 @@ public class IntFunUtil {
 	}
 
 	public static IntSource nullSource() {
-		return () -> EMPTYVALUE;
+		return () -> IntPrim.EMPTYVALUE;
 	}
 
 	public static IntSource snoc(int c, IntSource source) {
@@ -204,14 +203,14 @@ public class IntFunUtil {
 			public int g() {
 				if (!isAppended) {
 					var c_ = source.g();
-					if (c_ != EMPTYVALUE)
+					if (c_ != IntPrim.EMPTYVALUE)
 						return c_;
 					else {
 						isAppended = true;
 						return c;
 					}
 				} else
-					return EMPTYVALUE;
+					return IntPrim.EMPTYVALUE;
 			}
 		};
 	}
@@ -224,8 +223,8 @@ public class IntFunUtil {
 		var fun1 = fun0.rethrow();
 		return new Source<>() {
 			private int c = source.g();
-			private boolean isAvail = c != EMPTYVALUE;
-			private IntSource source_ = () -> (isAvail = isAvail && (c = source.g()) != EMPTYVALUE) && !fun1.test(c) ? c : null;
+			private boolean isAvail = c != IntPrim.EMPTYVALUE;
+			private IntSource source_ = () -> (isAvail = isAvail && (c = source.g()) != IntPrim.EMPTYVALUE) && !fun1.test(c) ? c : null;
 
 			public IntSource g() {
 				return isAvail ? cons(c, source_) : null;
@@ -244,7 +243,7 @@ public class IntFunUtil {
 			try {
 				fun.f(enqueue);
 			} finally {
-				enqueue(queue, EMPTYVALUE);
+				enqueue(queue, IntPrim.EMPTYVALUE);
 			}
 		});
 

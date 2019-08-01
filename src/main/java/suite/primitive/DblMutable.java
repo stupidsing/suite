@@ -3,6 +3,7 @@ package suite.primitive;
 import static primal.statics.Fail.fail;
 
 import primal.Verbs.Get;
+import primal.primitive.DblPrim;
 
 /**
  * An indirect reference to a primitive double. Double.MIN_VALUE is not allowed
@@ -12,7 +13,7 @@ import primal.Verbs.Get;
  */
 public class DblMutable {
 
-	private static double empty = DblFunUtil.EMPTYVALUE;
+	private static double empty = DblPrim.EMPTYVALUE;
 
 	private double value;
 

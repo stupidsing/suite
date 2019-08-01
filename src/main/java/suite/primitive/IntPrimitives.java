@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
+import primal.primitive.IntPrim;
 import suite.primitive.Ints.IntsBuilder;
 import suite.primitive.adt.pair.IntObjPair;
 import suite.primitive.streamlet.IntPuller;
@@ -25,7 +26,7 @@ public class IntPrimitives {
 			return s -> {
 				var ts = new ArrayList<T>();
 				int c;
-				while ((c = s.pull()) != IntFunUtil.EMPTYVALUE)
+				while ((c = s.pull()) != IntPrim.EMPTYVALUE)
 					ts.add(fun1.apply(c));
 				return Read.from(ts);
 			};

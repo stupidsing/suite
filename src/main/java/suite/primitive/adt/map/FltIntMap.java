@@ -6,12 +6,12 @@ import java.util.Arrays;
 import java.util.Objects;
 
 import primal.fp.Funs.Fun;
+import primal.primitive.IntPrim;
 import suite.primitive.FltIntSink;
 import suite.primitive.FltIntSource;
 import suite.primitive.FltPrimitives.FltObjSource;
 import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.primitive.Flt_Int;
-import suite.primitive.IntFunUtil;
 import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.Int_Int;
 import suite.primitive.adt.pair.FltIntPair;
@@ -29,7 +29,7 @@ import suite.streamlet.Puller;
  */
 public class FltIntMap {
 
-	private static int empty = IntFunUtil.EMPTYVALUE;
+	private static int empty = IntPrim.EMPTYVALUE;
 
 	private int size;
 	private float[] ks;

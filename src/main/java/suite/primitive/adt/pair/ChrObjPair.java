@@ -8,13 +8,13 @@ import primal.Verbs.Equals;
 import primal.Verbs.Get;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Iterate;
-import suite.primitive.ChrFunUtil;
+import primal.primitive.ChrPrim;
 import suite.primitive.ChrPrimitives.ChrObj_Obj;
 import suite.primitive.Chr_Chr;
 
 public class ChrObjPair<V> {
 
-	private static ChrObjPair<?> none_ = ChrObjPair.of(ChrFunUtil.EMPTYVALUE, null);
+	private static ChrObjPair<?> none_ = ChrObjPair.of(ChrPrim.EMPTYVALUE, null);
 
 	public char k;
 	public V v;

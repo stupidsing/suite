@@ -2,10 +2,10 @@ package suite.primitive.adt.set;
 
 import java.util.Arrays;
 
+import primal.primitive.FltPrim;
 import primal.primitive.FltPrim.FltSink;
 import primal.primitive.FltPrim.FltSource;
 import suite.primitive.Floats_;
-import suite.primitive.FltFunUtil;
 import suite.primitive.streamlet.FltPuller;
 import suite.primitive.streamlet.FltStreamlet;
 import suite.util.To;
@@ -18,7 +18,7 @@ import suite.util.To;
  */
 public class FltSet {
 
-	private static float empty = FltFunUtil.EMPTYVALUE;
+	private static float empty = FltPrim.EMPTYVALUE;
 
 	private int size;
 	private float[] vs;

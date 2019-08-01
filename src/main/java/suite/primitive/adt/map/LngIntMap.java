@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.Objects;
 
 import primal.fp.Funs.Fun;
-import suite.primitive.IntFunUtil;
+import primal.primitive.IntPrim;
 import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.Int_Int;
 import suite.primitive.LngIntSink;
@@ -29,7 +29,7 @@ import suite.streamlet.Puller;
  */
 public class LngIntMap {
 
-	private static int empty = IntFunUtil.EMPTYVALUE;
+	private static int empty = IntPrim.EMPTYVALUE;
 
 	private int size;
 	private long[] ks;

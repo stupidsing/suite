@@ -4,13 +4,13 @@ import java.util.Comparator;
 
 import primal.Verbs.Get;
 import primal.fp.Funs.Iterate;
+import primal.primitive.DblPrim;
 import suite.primitive.DblDbl_Obj;
-import suite.primitive.DblFunUtil;
 import suite.primitive.Dbl_Dbl;
 
 public class DblDblPair {
 
-	private static DblDblPair none_ = DblDblPair.of(DblFunUtil.EMPTYVALUE, DblFunUtil.EMPTYVALUE);
+	private static DblDblPair none_ = DblDblPair.of(DblPrim.EMPTYVALUE, DblPrim.EMPTYVALUE);
 
 	public double t0;
 	public double t1;

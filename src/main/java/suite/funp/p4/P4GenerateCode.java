@@ -16,6 +16,7 @@ import primal.fp.Funs.Fun;
 import primal.fp.Funs.Sink;
 import primal.fp.Funs.Source;
 import primal.fp.Funs2.Sink2;
+import primal.primitive.IntPrim;
 import suite.Suite;
 import suite.assembler.Amd64;
 import suite.assembler.Amd64.Insn;
@@ -66,7 +67,6 @@ import suite.node.io.Operator.Assoc;
 import suite.node.io.TermOp;
 import suite.node.util.TreeUtil;
 import suite.primitive.Bytes;
-import suite.primitive.IntFunUtil;
 import suite.primitive.IntPrimitives.IntObj_Obj;
 import suite.primitive.adt.pair.IntIntPair;
 import suite.streamlet.Read;
@@ -440,9 +440,9 @@ public class P4GenerateCode {
 				Fun<IntObj_Obj<OpReg, CompileOut>, CompileOut> mf = fun -> {
 					var ft = pointer.cast(FunpOp.class);
 					var fn = ft != null && ft.operator == TermOp.PLUS__ ? ft.right.cast(FunpNumber.class) : null;
-					var i = fn != null ? fn.i.value() : IntFunUtil.EMPTYVALUE;
-					var pointer1 = i != IntFunUtil.EMPTYVALUE ? ft.left : pointer;
-					var start1 = start + (i != IntFunUtil.EMPTYVALUE ? i : 0);
+					var i = fn != null ? fn.i.value() : IntPrim.EMPTYVALUE;
+					var pointer1 = i != IntPrim.EMPTYVALUE ? ft.left : pointer;
+					var start1 = start + (i != IntPrim.EMPTYVALUE ? i : 0);
 					return fun.apply(start1, compilePsReg(pointer1));
 				};
 

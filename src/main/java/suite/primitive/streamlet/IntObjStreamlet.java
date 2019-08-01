@@ -15,9 +15,9 @@ import primal.adt.Pair;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Source;
 import primal.fp.Funs2.Sink2;
+import primal.primitive.IntPrim;
 import primal.primitive.IntPrim.IntTest;
 import suite.adt.map.ListMultimap;
-import suite.primitive.IntFunUtil;
 import suite.primitive.IntObjFunUtil;
 import suite.primitive.IntObj_Int;
 import suite.primitive.IntPrimitives.IntObjPredicate;
@@ -277,7 +277,7 @@ public class IntObjStreamlet<V> implements StreamletDefaults<IntObjPair<V>, IntO
 
 	public IntObjPair<V> uniqueResult() {
 		var pair = spawn().opt();
-		if (pair.k != IntFunUtil.EMPTYVALUE)
+		if (pair.k != IntPrim.EMPTYVALUE)
 			return pair;
 		else
 			return fail("no result");

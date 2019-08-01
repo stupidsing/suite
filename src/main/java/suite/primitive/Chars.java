@@ -12,6 +12,7 @@ import java.util.Iterator;
 
 import primal.Verbs.Get;
 import primal.fp.Funs.Fun;
+import primal.primitive.ChrPrim;
 import primal.primitive.ChrPrim.ChrSource;
 import suite.cfg.Defaults;
 import suite.primitive.streamlet.ChrPuller;
@@ -133,7 +134,7 @@ public class Chars implements Iterable<Character> {
 			private int i = start;
 
 			public char g() {
-				return i < end ? cs[i++] : ChrFunUtil.EMPTYVALUE;
+				return i < end ? cs[i++] : ChrPrim.EMPTYVALUE;
 			}
 		}));
 	}

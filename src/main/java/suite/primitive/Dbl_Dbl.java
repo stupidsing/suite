@@ -3,6 +3,7 @@ package suite.primitive;
 import static primal.statics.Fail.fail;
 
 import primal.fp.Funs.Fun;
+import primal.primitive.DblPrim;
 import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Doubles.DoublesBuilder;
 import suite.primitive.streamlet.DblPuller;
@@ -17,7 +18,7 @@ public interface Dbl_Dbl {
 		return ts -> {
 			var b = new DoublesBuilder();
 			double c;
-			while ((c = ts.pull()) != DblFunUtil.EMPTYVALUE)
+			while ((c = ts.pull()) != DblPrim.EMPTYVALUE)
 				b.append(fun1.apply(c));
 			return b.toDoubles().streamlet();
 		};
@@ -29,7 +30,7 @@ public interface Dbl_Dbl {
 			var source = puller.source();
 			double c;
 			var result = (double) 0;
-			while ((c = source.g()) != DblFunUtil.EMPTYVALUE)
+			while ((c = source.g()) != DblPrim.EMPTYVALUE)
 				result += fun1.apply(c);
 			return result;
 		};

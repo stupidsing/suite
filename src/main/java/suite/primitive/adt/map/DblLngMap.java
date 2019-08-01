@@ -6,12 +6,12 @@ import java.util.Arrays;
 import java.util.Objects;
 
 import primal.fp.Funs.Fun;
+import primal.primitive.LngPrim;
 import suite.primitive.DblLngSink;
 import suite.primitive.DblLngSource;
 import suite.primitive.DblPrimitives.DblObjSource;
 import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Dbl_Lng;
-import suite.primitive.LngFunUtil;
 import suite.primitive.LngPrimitives.Obj_Lng;
 import suite.primitive.Lng_Lng;
 import suite.primitive.adt.pair.DblLngPair;
@@ -29,7 +29,7 @@ import suite.streamlet.Puller;
  */
 public class DblLngMap {
 
-	private static long empty = LngFunUtil.EMPTYVALUE;
+	private static long empty = LngPrim.EMPTYVALUE;
 
 	private int size;
 	private double[] ks;

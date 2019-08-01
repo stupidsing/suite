@@ -21,6 +21,7 @@ import primal.adt.Mutable;
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Source;
+import primal.primitive.LngPrim;
 import primal.primitive.LngPrim.LngComparator;
 import primal.primitive.LngPrim.LngSink;
 import primal.primitive.LngPrim.LngSource;
@@ -50,7 +51,7 @@ import suite.util.To;
 
 public class LngPuller implements PullerDefaults<Long> {
 
-	private static long empty = LngFunUtil.EMPTYVALUE;
+	private static long empty = LngPrim.EMPTYVALUE;
 
 	private LngSource source;
 

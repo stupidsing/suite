@@ -3,6 +3,7 @@ package suite.primitive;
 import static primal.statics.Fail.fail;
 
 import primal.fp.Funs.Fun;
+import primal.primitive.IntPrim;
 import suite.primitive.Chars.CharsBuilder;
 import suite.primitive.ChrPrimitives.Obj_Chr;
 import suite.primitive.streamlet.ChrStreamlet;
@@ -17,7 +18,7 @@ public interface Int_Chr {
 		return ts -> {
 			var b = new CharsBuilder();
 			int c;
-			while ((c = ts.pull()) != IntFunUtil.EMPTYVALUE)
+			while ((c = ts.pull()) != IntPrim.EMPTYVALUE)
 				b.append(fun1.apply(c));
 			return b.toChars().streamlet();
 		};
@@ -29,7 +30,7 @@ public interface Int_Chr {
 			var source = puller.source();
 			int c;
 			var result = (char) 0;
-			while ((c = source.g()) != IntFunUtil.EMPTYVALUE)
+			while ((c = source.g()) != IntPrim.EMPTYVALUE)
 				result += fun1.apply(c);
 			return result;
 		};

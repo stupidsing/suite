@@ -10,6 +10,7 @@ import primal.fp.Funs.Sink;
 import primal.fp.Funs.Source;
 import primal.fp.Funs2.Source2;
 import primal.os.Log_;
+import primal.primitive.ChrPrim;
 import primal.primitive.ChrPrim.ChrSink;
 import primal.primitive.ChrPrim.ChrSource;
 import primal.primitive.ChrPrim.ChrTest;
@@ -22,19 +23,17 @@ import suite.util.Thread_;
 
 public class ChrFunUtil {
 
-	public static char EMPTYVALUE = Character.MIN_VALUE;
-
 	public static Source<ChrSource> chunk(int n, ChrSource source) {
 		return new Source<>() {
 			private char c = source.g();
-			private boolean isAvail = c != EMPTYVALUE;
+			private boolean isAvail = c != ChrPrim.EMPTYVALUE;
 			private int i;
 			private ChrSource source_ = () -> {
-				if ((isAvail = isAvail && (c = source.g()) != EMPTYVALUE) && ++i < n)
+				if ((isAvail = isAvail && (c = source.g()) != ChrPrim.EMPTYVALUE) && ++i < n)
 					return c;
 				else {
 					i = 0;
-					return EMPTYVALUE;
+					return ChrPrim.EMPTYVALUE;
 				}
 			};
 
@@ -49,8 +48,8 @@ public class ChrFunUtil {
 			private ChrSource source0 = nullSource();
 
 			public char g() {
-				var c = EMPTYVALUE;
-				while (source0 != null && (c = source0.g()) == EMPTYVALUE)
+				var c = ChrPrim.EMPTYVALUE;
+				while (source0 != null && (c = source0.g()) == ChrPrim.EMPTYVALUE)
 					source0 = source.g();
 				return c;
 			}
@@ -75,8 +74,8 @@ public class ChrFunUtil {
 	public static ChrSource filter(ChrTest fun0, ChrSource source) {
 		var fun1 = fun0.rethrow();
 		return () -> {
-			var c = EMPTYVALUE;
-			while ((c = source.g()) != EMPTYVALUE && !fun1.test(c))
+			var c = ChrPrim.EMPTYVALUE;
+			while ((c = source.g()) != ChrPrim.EMPTYVALUE && !fun1.test(c))
 				;
 			return c;
 		};
@@ -92,7 +91,7 @@ public class ChrFunUtil {
 					if ((iterable = source.g()) != null)
 						iter = iterable.iterator();
 					else
-						return EMPTYVALUE;
+						return ChrPrim.EMPTYVALUE;
 				return iter.next();
 			}
 		};
@@ -101,7 +100,7 @@ public class ChrFunUtil {
 	public static <R> R fold(Fun<ChrObjPair<R>, R> fun0, R init, ChrSource source) {
 		var fun1 = fun0.rethrow();
 		char c;
-		while ((c = source.g()) != EMPTYVALUE)
+		while ((c = source.g()) != ChrPrim.EMPTYVALUE)
 			init = fun1.apply(ChrObjPair.of(c, init));
 		return init;
 	}
@@ -109,7 +108,7 @@ public class ChrFunUtil {
 	public static boolean isAll(ChrTest pred0, ChrSource source) {
 		var pred1 = pred0.rethrow();
 		char c;
-		while ((c = source.g()) != EMPTYVALUE)
+		while ((c = source.g()) != ChrPrim.EMPTYVALUE)
 			if (!pred1.test(c))
 				return false;
 		return true;
@@ -118,7 +117,7 @@ public class ChrFunUtil {
 	public static boolean isAny(ChrTest pred0, ChrSource source) {
 		var pred1 = pred0.rethrow();
 		char c;
-		while ((c = source.g()) != EMPTYVALUE)
+		while ((c = source.g()) != ChrPrim.EMPTYVALUE)
 			if (pred1.test(c))
 				return true;
 		return false;
@@ -126,17 +125,17 @@ public class ChrFunUtil {
 
 	public static Iterator<Character> iterator(ChrSource source) {
 		return new Iterator<>() {
-			private char next = EMPTYVALUE;
+			private char next = ChrPrim.EMPTYVALUE;
 
 			public boolean hasNext() {
-				if (next == EMPTYVALUE)
+				if (next == ChrPrim.EMPTYVALUE)
 					next = source.g();
-				return next != EMPTYVALUE;
+				return next != ChrPrim.EMPTYVALUE;
 			}
 
 			public Character next() {
 				var next0 = next;
-				next = EMPTYVALUE;
+				next = ChrPrim.EMPTYVALUE;
 				return next0;
 			}
 
@@ -151,7 +150,7 @@ public class ChrFunUtil {
 		var fun1 = fun0.rethrow();
 		return () -> {
 			var c0 = source.g();
-			return c0 != ChrFunUtil.EMPTYVALUE ? fun1.apply(c0) : null;
+			return c0 != ChrPrim.EMPTYVALUE ? fun1.apply(c0) : null;
 		};
 	}
 
@@ -160,7 +159,7 @@ public class ChrFunUtil {
 		var vf1 = vf0.rethrow();
 		return pair -> {
 			var c = source.g();
-			var b = c != EMPTYVALUE;
+			var b = c != ChrPrim.EMPTYVALUE;
 			if (b)
 				pair.update(kf1.apply(c), vf1.apply(c));
 			return b;
@@ -171,7 +170,7 @@ public class ChrFunUtil {
 		var fun1 = fun0.rethrow();
 		return () -> {
 			var c = source.g();
-			return c != ChrFunUtil.EMPTYVALUE ? fun1.apply(c) : ChrFunUtil.EMPTYVALUE;
+			return c != ChrPrim.EMPTYVALUE ? fun1.apply(c) : ChrPrim.EMPTYVALUE;
 		};
 	}
 
@@ -179,7 +178,7 @@ public class ChrFunUtil {
 		var fun1 = fun0.rethrow();
 		return pair -> {
 			var c = source.g();
-			if (c != ChrFunUtil.EMPTYVALUE) {
+			if (c != ChrPrim.EMPTYVALUE) {
 				pair.update(c, fun1.apply(c));
 				return true;
 			} else
@@ -194,7 +193,7 @@ public class ChrFunUtil {
 	}
 
 	public static ChrSource nullSource() {
-		return () -> EMPTYVALUE;
+		return () -> ChrPrim.EMPTYVALUE;
 	}
 
 	public static ChrSource snoc(char c, ChrSource source) {
@@ -204,14 +203,14 @@ public class ChrFunUtil {
 			public char g() {
 				if (!isAppended) {
 					var c_ = source.g();
-					if (c_ != EMPTYVALUE)
+					if (c_ != ChrPrim.EMPTYVALUE)
 						return c_;
 					else {
 						isAppended = true;
 						return c;
 					}
 				} else
-					return EMPTYVALUE;
+					return ChrPrim.EMPTYVALUE;
 			}
 		};
 	}
@@ -224,8 +223,8 @@ public class ChrFunUtil {
 		var fun1 = fun0.rethrow();
 		return new Source<>() {
 			private char c = source.g();
-			private boolean isAvail = c != EMPTYVALUE;
-			private ChrSource source_ = () -> (isAvail = isAvail && (c = source.g()) != EMPTYVALUE) && !fun1.test(c) ? c : null;
+			private boolean isAvail = c != ChrPrim.EMPTYVALUE;
+			private ChrSource source_ = () -> (isAvail = isAvail && (c = source.g()) != ChrPrim.EMPTYVALUE) && !fun1.test(c) ? c : null;
 
 			public ChrSource g() {
 				return isAvail ? cons(c, source_) : null;
@@ -244,7 +243,7 @@ public class ChrFunUtil {
 			try {
 				fun.f(enqueue);
 			} finally {
-				enqueue(queue, EMPTYVALUE);
+				enqueue(queue, ChrPrim.EMPTYVALUE);
 			}
 		});
 

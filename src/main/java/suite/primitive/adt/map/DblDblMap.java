@@ -6,9 +6,9 @@ import java.util.Arrays;
 import java.util.Objects;
 
 import primal.fp.Funs.Fun;
+import primal.primitive.DblPrim;
 import suite.primitive.DblDblSink;
 import suite.primitive.DblDblSource;
-import suite.primitive.DblFunUtil;
 import suite.primitive.DblPrimitives.DblObjSource;
 import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Dbl_Dbl;
@@ -27,7 +27,7 @@ import suite.streamlet.Puller;
  */
 public class DblDblMap {
 
-	private static double empty = DblFunUtil.EMPTYVALUE;
+	private static double empty = DblPrim.EMPTYVALUE;
 
 	private int size;
 	private double[] ks;

@@ -12,6 +12,7 @@ import java.util.Iterator;
 
 import primal.Verbs.Get;
 import primal.fp.Funs.Fun;
+import primal.primitive.LngPrim;
 import primal.primitive.LngPrim.LngSource;
 import suite.cfg.Defaults;
 import suite.primitive.streamlet.LngPuller;
@@ -133,7 +134,7 @@ public class Longs implements Iterable<Long> {
 			private int i = start;
 
 			public long g() {
-				return i < end ? cs[i++] : LngFunUtil.EMPTYVALUE;
+				return i < end ? cs[i++] : LngPrim.EMPTYVALUE;
 			}
 		}));
 	}

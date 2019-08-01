@@ -19,9 +19,9 @@ import primal.adt.Mutable;
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs2.Sink2;
+import primal.primitive.DblPrim;
 import primal.primitive.DblPrim.DblTest;
 import suite.adt.map.ListMultimap;
-import suite.primitive.DblFunUtil;
 import suite.primitive.DblObjFunUtil;
 import suite.primitive.DblObj_Dbl;
 import suite.primitive.DblPrimitives.DblObjPredicate;
@@ -44,7 +44,7 @@ import suite.util.To;
 
 public class DblObjPuller<V> implements PullerDefaults<DblObjPair<V>> {
 
-	private static double empty = DblFunUtil.EMPTYVALUE;
+	private static double empty = DblPrim.EMPTYVALUE;
 
 	private DblObjSource<V> source;
 

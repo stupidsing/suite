@@ -4,13 +4,13 @@ import java.util.Comparator;
 
 import primal.Verbs.Get;
 import primal.fp.Funs.Iterate;
+import primal.primitive.ChrPrim;
 import suite.primitive.ChrChr_Obj;
-import suite.primitive.ChrFunUtil;
 import suite.primitive.Chr_Chr;
 
 public class ChrChrPair {
 
-	private static ChrChrPair none_ = ChrChrPair.of(ChrFunUtil.EMPTYVALUE, ChrFunUtil.EMPTYVALUE);
+	private static ChrChrPair none_ = ChrChrPair.of(ChrPrim.EMPTYVALUE, ChrPrim.EMPTYVALUE);
 
 	public char t0;
 	public char t1;

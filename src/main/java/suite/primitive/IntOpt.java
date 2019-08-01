@@ -7,12 +7,13 @@ import java.util.Objects;
 import primal.Verbs.Equals;
 import primal.Verbs.Get;
 import primal.adt.Opt;
+import primal.primitive.IntPrim;
 import primal.primitive.IntPrim.IntTest;
 import suite.primitive.IntPrimitives.Int_Obj;
 
 public class IntOpt {
 
-	private static int empty = IntFunUtil.EMPTYVALUE;
+	private static int empty = IntPrim.EMPTYVALUE;
 	private static IntOpt none_ = IntOpt.of(empty);
 
 	private int value;

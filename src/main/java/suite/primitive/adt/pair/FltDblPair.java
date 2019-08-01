@@ -4,15 +4,15 @@ import java.util.Comparator;
 
 import primal.Verbs.Get;
 import primal.fp.Funs.Iterate;
-import suite.primitive.DblFunUtil;
+import primal.primitive.DblPrim;
+import primal.primitive.FltPrim;
 import suite.primitive.Dbl_Dbl;
 import suite.primitive.FltDbl_Obj;
-import suite.primitive.FltFunUtil;
 import suite.primitive.Flt_Flt;
 
 public class FltDblPair {
 
-	private static FltDblPair none_ = FltDblPair.of(FltFunUtil.EMPTYVALUE, DblFunUtil.EMPTYVALUE);
+	private static FltDblPair none_ = FltDblPair.of(FltPrim.EMPTYVALUE, DblPrim.EMPTYVALUE);
 
 	public float t0;
 	public double t1;

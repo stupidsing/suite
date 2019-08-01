@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
+import primal.primitive.ChrPrim;
 import suite.primitive.Chars.CharsBuilder;
 import suite.primitive.adt.pair.ChrObjPair;
 import suite.primitive.streamlet.ChrPuller;
@@ -25,7 +26,7 @@ public class ChrPrimitives {
 			return s -> {
 				var ts = new ArrayList<T>();
 				char c;
-				while ((c = s.pull()) != ChrFunUtil.EMPTYVALUE)
+				while ((c = s.pull()) != ChrPrim.EMPTYVALUE)
 					ts.add(fun1.apply(c));
 				return Read.from(ts);
 			};

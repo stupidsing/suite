@@ -4,6 +4,7 @@ import static primal.statics.Rethrow.ex;
 
 import primal.fp.Funs.Iterate;
 import primal.fp.Funs.Source;
+import primal.primitive.ChrPrim;
 import suite.primitive.Chars.CharsBuilder;
 import suite.primitive.Chars.WriteChar;
 import suite.primitive.streamlet.ChrPuller;
@@ -89,7 +90,7 @@ public class Chars_ {
 			var m = ChrMutable.of(s);
 			return ChrPuller.of(() -> {
 				var c = m.increment();
-				return c < e ? c : ChrFunUtil.EMPTYVALUE;
+				return c < e ? c : ChrPrim.EMPTYVALUE;
 			});
 		});
 	}

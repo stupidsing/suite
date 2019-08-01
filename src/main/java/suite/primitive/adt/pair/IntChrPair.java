@@ -4,15 +4,15 @@ import java.util.Comparator;
 
 import primal.Verbs.Get;
 import primal.fp.Funs.Iterate;
-import suite.primitive.ChrFunUtil;
+import primal.primitive.ChrPrim;
+import primal.primitive.IntPrim;
 import suite.primitive.Chr_Chr;
 import suite.primitive.IntChr_Obj;
-import suite.primitive.IntFunUtil;
 import suite.primitive.Int_Int;
 
 public class IntChrPair {
 
-	private static IntChrPair none_ = IntChrPair.of(IntFunUtil.EMPTYVALUE, ChrFunUtil.EMPTYVALUE);
+	private static IntChrPair none_ = IntChrPair.of(IntPrim.EMPTYVALUE, ChrPrim.EMPTYVALUE);
 
 	public int t0;
 	public char t1;

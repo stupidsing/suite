@@ -4,6 +4,7 @@ import static primal.statics.Rethrow.ex;
 
 import primal.fp.Funs.Iterate;
 import primal.fp.Funs.Source;
+import primal.primitive.DblPrim;
 import suite.primitive.Doubles.DoublesBuilder;
 import suite.primitive.Doubles.WriteChar;
 import suite.primitive.streamlet.DblPuller;
@@ -89,7 +90,7 @@ public class Doubles_ {
 			var m = DblMutable.of(s);
 			return DblPuller.of(() -> {
 				var c = m.increment();
-				return c < e ? c : DblFunUtil.EMPTYVALUE;
+				return c < e ? c : DblPrim.EMPTYVALUE;
 			});
 		});
 	}

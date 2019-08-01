@@ -8,13 +8,13 @@ import primal.Verbs.Equals;
 import primal.Verbs.Get;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Iterate;
-import suite.primitive.LngFunUtil;
+import primal.primitive.LngPrim;
 import suite.primitive.LngPrimitives.LngObj_Obj;
 import suite.primitive.Lng_Lng;
 
 public class LngObjPair<V> {
 
-	private static LngObjPair<?> none_ = LngObjPair.of(LngFunUtil.EMPTYVALUE, null);
+	private static LngObjPair<?> none_ = LngObjPair.of(LngPrim.EMPTYVALUE, null);
 
 	public long k;
 	public V v;

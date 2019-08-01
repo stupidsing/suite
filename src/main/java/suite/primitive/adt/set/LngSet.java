@@ -2,9 +2,9 @@ package suite.primitive.adt.set;
 
 import java.util.Arrays;
 
+import primal.primitive.LngPrim;
 import primal.primitive.LngPrim.LngSink;
 import primal.primitive.LngPrim.LngSource;
-import suite.primitive.LngFunUtil;
 import suite.primitive.Longs_;
 import suite.primitive.streamlet.LngPuller;
 import suite.primitive.streamlet.LngStreamlet;
@@ -18,7 +18,7 @@ import suite.util.To;
  */
 public class LngSet {
 
-	private static long empty = LngFunUtil.EMPTYVALUE;
+	private static long empty = LngPrim.EMPTYVALUE;
 
 	private int size;
 	private long[] vs;

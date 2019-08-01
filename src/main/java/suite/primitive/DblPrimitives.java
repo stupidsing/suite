@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
+import primal.primitive.DblPrim;
 import suite.primitive.Doubles.DoublesBuilder;
 import suite.primitive.adt.pair.DblObjPair;
 import suite.primitive.streamlet.DblPuller;
@@ -25,7 +26,7 @@ public class DblPrimitives {
 			return s -> {
 				var ts = new ArrayList<T>();
 				double c;
-				while ((c = s.pull()) != DblFunUtil.EMPTYVALUE)
+				while ((c = s.pull()) != DblPrim.EMPTYVALUE)
 					ts.add(fun1.apply(c));
 				return Read.from(ts);
 			};

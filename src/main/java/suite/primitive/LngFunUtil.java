@@ -10,6 +10,7 @@ import primal.fp.Funs.Sink;
 import primal.fp.Funs.Source;
 import primal.fp.Funs2.Source2;
 import primal.os.Log_;
+import primal.primitive.LngPrim;
 import primal.primitive.LngPrim.LngSink;
 import primal.primitive.LngPrim.LngSource;
 import primal.primitive.LngPrim.LngTest;
@@ -22,19 +23,17 @@ import suite.util.Thread_;
 
 public class LngFunUtil {
 
-	public static long EMPTYVALUE = Long.MIN_VALUE;
-
 	public static Source<LngSource> chunk(int n, LngSource source) {
 		return new Source<>() {
 			private long c = source.g();
-			private boolean isAvail = c != EMPTYVALUE;
+			private boolean isAvail = c != LngPrim.EMPTYVALUE;
 			private int i;
 			private LngSource source_ = () -> {
-				if ((isAvail = isAvail && (c = source.g()) != EMPTYVALUE) && ++i < n)
+				if ((isAvail = isAvail && (c = source.g()) != LngPrim.EMPTYVALUE) && ++i < n)
 					return c;
 				else {
 					i = 0;
-					return EMPTYVALUE;
+					return LngPrim.EMPTYVALUE;
 				}
 			};
 
@@ -49,8 +48,8 @@ public class LngFunUtil {
 			private LngSource source0 = nullSource();
 
 			public long g() {
-				var c = EMPTYVALUE;
-				while (source0 != null && (c = source0.g()) == EMPTYVALUE)
+				var c = LngPrim.EMPTYVALUE;
+				while (source0 != null && (c = source0.g()) == LngPrim.EMPTYVALUE)
 					source0 = source.g();
 				return c;
 			}
@@ -75,8 +74,8 @@ public class LngFunUtil {
 	public static LngSource filter(LngTest fun0, LngSource source) {
 		var fun1 = fun0.rethrow();
 		return () -> {
-			var c = EMPTYVALUE;
-			while ((c = source.g()) != EMPTYVALUE && !fun1.test(c))
+			var c = LngPrim.EMPTYVALUE;
+			while ((c = source.g()) != LngPrim.EMPTYVALUE && !fun1.test(c))
 				;
 			return c;
 		};
@@ -92,7 +91,7 @@ public class LngFunUtil {
 					if ((iterable = source.g()) != null)
 						iter = iterable.iterator();
 					else
-						return EMPTYVALUE;
+						return LngPrim.EMPTYVALUE;
 				return iter.next();
 			}
 		};
@@ -101,7 +100,7 @@ public class LngFunUtil {
 	public static <R> R fold(Fun<LngObjPair<R>, R> fun0, R init, LngSource source) {
 		var fun1 = fun0.rethrow();
 		long c;
-		while ((c = source.g()) != EMPTYVALUE)
+		while ((c = source.g()) != LngPrim.EMPTYVALUE)
 			init = fun1.apply(LngObjPair.of(c, init));
 		return init;
 	}
@@ -109,7 +108,7 @@ public class LngFunUtil {
 	public static boolean isAll(LngTest pred0, LngSource source) {
 		var pred1 = pred0.rethrow();
 		long c;
-		while ((c = source.g()) != EMPTYVALUE)
+		while ((c = source.g()) != LngPrim.EMPTYVALUE)
 			if (!pred1.test(c))
 				return false;
 		return true;
@@ -118,7 +117,7 @@ public class LngFunUtil {
 	public static boolean isAny(LngTest pred0, LngSource source) {
 		var pred1 = pred0.rethrow();
 		long c;
-		while ((c = source.g()) != EMPTYVALUE)
+		while ((c = source.g()) != LngPrim.EMPTYVALUE)
 			if (pred1.test(c))
 				return true;
 		return false;
@@ -126,17 +125,17 @@ public class LngFunUtil {
 
 	public static Iterator<Long> iterator(LngSource source) {
 		return new Iterator<>() {
-			private long next = EMPTYVALUE;
+			private long next = LngPrim.EMPTYVALUE;
 
 			public boolean hasNext() {
-				if (next == EMPTYVALUE)
+				if (next == LngPrim.EMPTYVALUE)
 					next = source.g();
-				return next != EMPTYVALUE;
+				return next != LngPrim.EMPTYVALUE;
 			}
 
 			public Long next() {
 				var next0 = next;
-				next = EMPTYVALUE;
+				next = LngPrim.EMPTYVALUE;
 				return next0;
 			}
 
@@ -151,7 +150,7 @@ public class LngFunUtil {
 		var fun1 = fun0.rethrow();
 		return () -> {
 			var c0 = source.g();
-			return c0 != LngFunUtil.EMPTYVALUE ? fun1.apply(c0) : null;
+			return c0 != LngPrim.EMPTYVALUE ? fun1.apply(c0) : null;
 		};
 	}
 
@@ -160,7 +159,7 @@ public class LngFunUtil {
 		var vf1 = vf0.rethrow();
 		return pair -> {
 			var c = source.g();
-			var b = c != EMPTYVALUE;
+			var b = c != LngPrim.EMPTYVALUE;
 			if (b)
 				pair.update(kf1.apply(c), vf1.apply(c));
 			return b;
@@ -171,7 +170,7 @@ public class LngFunUtil {
 		var fun1 = fun0.rethrow();
 		return () -> {
 			var c = source.g();
-			return c != LngFunUtil.EMPTYVALUE ? fun1.apply(c) : LngFunUtil.EMPTYVALUE;
+			return c != LngPrim.EMPTYVALUE ? fun1.apply(c) : LngPrim.EMPTYVALUE;
 		};
 	}
 
@@ -179,7 +178,7 @@ public class LngFunUtil {
 		var fun1 = fun0.rethrow();
 		return pair -> {
 			var c = source.g();
-			if (c != LngFunUtil.EMPTYVALUE) {
+			if (c != LngPrim.EMPTYVALUE) {
 				pair.update(c, fun1.apply(c));
 				return true;
 			} else
@@ -194,7 +193,7 @@ public class LngFunUtil {
 	}
 
 	public static LngSource nullSource() {
-		return () -> EMPTYVALUE;
+		return () -> LngPrim.EMPTYVALUE;
 	}
 
 	public static LngSource snoc(long c, LngSource source) {
@@ -204,14 +203,14 @@ public class LngFunUtil {
 			public long g() {
 				if (!isAppended) {
 					var c_ = source.g();
-					if (c_ != EMPTYVALUE)
+					if (c_ != LngPrim.EMPTYVALUE)
 						return c_;
 					else {
 						isAppended = true;
 						return c;
 					}
 				} else
-					return EMPTYVALUE;
+					return LngPrim.EMPTYVALUE;
 			}
 		};
 	}
@@ -224,8 +223,8 @@ public class LngFunUtil {
 		var fun1 = fun0.rethrow();
 		return new Source<>() {
 			private long c = source.g();
-			private boolean isAvail = c != EMPTYVALUE;
-			private LngSource source_ = () -> (isAvail = isAvail && (c = source.g()) != EMPTYVALUE) && !fun1.test(c) ? c : null;
+			private boolean isAvail = c != LngPrim.EMPTYVALUE;
+			private LngSource source_ = () -> (isAvail = isAvail && (c = source.g()) != LngPrim.EMPTYVALUE) && !fun1.test(c) ? c : null;
 
 			public LngSource g() {
 				return isAvail ? cons(c, source_) : null;
@@ -244,7 +243,7 @@ public class LngFunUtil {
 			try {
 				fun.f(enqueue);
 			} finally {
-				enqueue(queue, EMPTYVALUE);
+				enqueue(queue, LngPrim.EMPTYVALUE);
 			}
 		});
 

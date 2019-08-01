@@ -10,6 +10,7 @@ import primal.fp.Funs.Sink;
 import primal.fp.Funs.Source;
 import primal.fp.Funs2.Source2;
 import primal.os.Log_;
+import primal.primitive.DblPrim;
 import primal.primitive.DblPrim.DblSink;
 import primal.primitive.DblPrim.DblSource;
 import primal.primitive.DblPrim.DblTest;
@@ -22,19 +23,17 @@ import suite.util.Thread_;
 
 public class DblFunUtil {
 
-	public static double EMPTYVALUE = Double.MIN_VALUE;
-
 	public static Source<DblSource> chunk(int n, DblSource source) {
 		return new Source<>() {
 			private double c = source.g();
-			private boolean isAvail = c != EMPTYVALUE;
+			private boolean isAvail = c != DblPrim.EMPTYVALUE;
 			private int i;
 			private DblSource source_ = () -> {
-				if ((isAvail = isAvail && (c = source.g()) != EMPTYVALUE) && ++i < n)
+				if ((isAvail = isAvail && (c = source.g()) != DblPrim.EMPTYVALUE) && ++i < n)
 					return c;
 				else {
 					i = 0;
-					return EMPTYVALUE;
+					return DblPrim.EMPTYVALUE;
 				}
 			};
 
@@ -49,8 +48,8 @@ public class DblFunUtil {
 			private DblSource source0 = nullSource();
 
 			public double g() {
-				var c = EMPTYVALUE;
-				while (source0 != null && (c = source0.g()) == EMPTYVALUE)
+				var c = DblPrim.EMPTYVALUE;
+				while (source0 != null && (c = source0.g()) == DblPrim.EMPTYVALUE)
 					source0 = source.g();
 				return c;
 			}
@@ -75,8 +74,8 @@ public class DblFunUtil {
 	public static DblSource filter(DblTest fun0, DblSource source) {
 		var fun1 = fun0.rethrow();
 		return () -> {
-			var c = EMPTYVALUE;
-			while ((c = source.g()) != EMPTYVALUE && !fun1.test(c))
+			var c = DblPrim.EMPTYVALUE;
+			while ((c = source.g()) != DblPrim.EMPTYVALUE && !fun1.test(c))
 				;
 			return c;
 		};
@@ -92,7 +91,7 @@ public class DblFunUtil {
 					if ((iterable = source.g()) != null)
 						iter = iterable.iterator();
 					else
-						return EMPTYVALUE;
+						return DblPrim.EMPTYVALUE;
 				return iter.next();
 			}
 		};
@@ -101,7 +100,7 @@ public class DblFunUtil {
 	public static <R> R fold(Fun<DblObjPair<R>, R> fun0, R init, DblSource source) {
 		var fun1 = fun0.rethrow();
 		double c;
-		while ((c = source.g()) != EMPTYVALUE)
+		while ((c = source.g()) != DblPrim.EMPTYVALUE)
 			init = fun1.apply(DblObjPair.of(c, init));
 		return init;
 	}
@@ -109,7 +108,7 @@ public class DblFunUtil {
 	public static boolean isAll(DblTest pred0, DblSource source) {
 		var pred1 = pred0.rethrow();
 		double c;
-		while ((c = source.g()) != EMPTYVALUE)
+		while ((c = source.g()) != DblPrim.EMPTYVALUE)
 			if (!pred1.test(c))
 				return false;
 		return true;
@@ -118,7 +117,7 @@ public class DblFunUtil {
 	public static boolean isAny(DblTest pred0, DblSource source) {
 		var pred1 = pred0.rethrow();
 		double c;
-		while ((c = source.g()) != EMPTYVALUE)
+		while ((c = source.g()) != DblPrim.EMPTYVALUE)
 			if (pred1.test(c))
 				return true;
 		return false;
@@ -126,17 +125,17 @@ public class DblFunUtil {
 
 	public static Iterator<Double> iterator(DblSource source) {
 		return new Iterator<>() {
-			private double next = EMPTYVALUE;
+			private double next = DblPrim.EMPTYVALUE;
 
 			public boolean hasNext() {
-				if (next == EMPTYVALUE)
+				if (next == DblPrim.EMPTYVALUE)
 					next = source.g();
-				return next != EMPTYVALUE;
+				return next != DblPrim.EMPTYVALUE;
 			}
 
 			public Double next() {
 				var next0 = next;
-				next = EMPTYVALUE;
+				next = DblPrim.EMPTYVALUE;
 				return next0;
 			}
 
@@ -151,7 +150,7 @@ public class DblFunUtil {
 		var fun1 = fun0.rethrow();
 		return () -> {
 			var c0 = source.g();
-			return c0 != DblFunUtil.EMPTYVALUE ? fun1.apply(c0) : null;
+			return c0 != DblPrim.EMPTYVALUE ? fun1.apply(c0) : null;
 		};
 	}
 
@@ -160,7 +159,7 @@ public class DblFunUtil {
 		var vf1 = vf0.rethrow();
 		return pair -> {
 			var c = source.g();
-			var b = c != EMPTYVALUE;
+			var b = c != DblPrim.EMPTYVALUE;
 			if (b)
 				pair.update(kf1.apply(c), vf1.apply(c));
 			return b;
@@ -171,7 +170,7 @@ public class DblFunUtil {
 		var fun1 = fun0.rethrow();
 		return () -> {
 			var c = source.g();
-			return c != DblFunUtil.EMPTYVALUE ? fun1.apply(c) : DblFunUtil.EMPTYVALUE;
+			return c != DblPrim.EMPTYVALUE ? fun1.apply(c) : DblPrim.EMPTYVALUE;
 		};
 	}
 
@@ -179,7 +178,7 @@ public class DblFunUtil {
 		var fun1 = fun0.rethrow();
 		return pair -> {
 			var c = source.g();
-			if (c != DblFunUtil.EMPTYVALUE) {
+			if (c != DblPrim.EMPTYVALUE) {
 				pair.update(c, fun1.apply(c));
 				return true;
 			} else
@@ -194,7 +193,7 @@ public class DblFunUtil {
 	}
 
 	public static DblSource nullSource() {
-		return () -> EMPTYVALUE;
+		return () -> DblPrim.EMPTYVALUE;
 	}
 
 	public static DblSource snoc(double c, DblSource source) {
@@ -204,14 +203,14 @@ public class DblFunUtil {
 			public double g() {
 				if (!isAppended) {
 					var c_ = source.g();
-					if (c_ != EMPTYVALUE)
+					if (c_ != DblPrim.EMPTYVALUE)
 						return c_;
 					else {
 						isAppended = true;
 						return c;
 					}
 				} else
-					return EMPTYVALUE;
+					return DblPrim.EMPTYVALUE;
 			}
 		};
 	}
@@ -224,8 +223,8 @@ public class DblFunUtil {
 		var fun1 = fun0.rethrow();
 		return new Source<>() {
 			private double c = source.g();
-			private boolean isAvail = c != EMPTYVALUE;
-			private DblSource source_ = () -> (isAvail = isAvail && (c = source.g()) != EMPTYVALUE) && !fun1.test(c) ? c : null;
+			private boolean isAvail = c != DblPrim.EMPTYVALUE;
+			private DblSource source_ = () -> (isAvail = isAvail && (c = source.g()) != DblPrim.EMPTYVALUE) && !fun1.test(c) ? c : null;
 
 			public DblSource g() {
 				return isAvail ? cons(c, source_) : null;
@@ -244,7 +243,7 @@ public class DblFunUtil {
 			try {
 				fun.f(enqueue);
 			} finally {
-				enqueue(queue, EMPTYVALUE);
+				enqueue(queue, DblPrim.EMPTYVALUE);
 			}
 		});
 

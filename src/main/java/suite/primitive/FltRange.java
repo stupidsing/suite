@@ -4,10 +4,11 @@ import java.util.Comparator;
 
 import primal.Verbs.Get;
 import primal.fp.Funs.Iterate;
+import primal.primitive.FltPrim;
 
 public class FltRange {
 
-	private static FltRange none_ = FltRange.of(FltFunUtil.EMPTYVALUE, FltFunUtil.EMPTYVALUE);
+	private static FltRange none_ = FltRange.of(FltPrim.EMPTYVALUE, FltPrim.EMPTYVALUE);
 
 	public float s;
 	public float e;

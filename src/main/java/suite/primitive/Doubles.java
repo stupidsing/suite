@@ -12,6 +12,7 @@ import java.util.Iterator;
 
 import primal.Verbs.Get;
 import primal.fp.Funs.Fun;
+import primal.primitive.DblPrim;
 import primal.primitive.DblPrim.DblSource;
 import suite.cfg.Defaults;
 import suite.primitive.streamlet.DblPuller;
@@ -133,7 +134,7 @@ public class Doubles implements Iterable<Double> {
 			private int i = start;
 
 			public double g() {
-				return i < end ? cs[i++] : DblFunUtil.EMPTYVALUE;
+				return i < end ? cs[i++] : DblPrim.EMPTYVALUE;
 			}
 		}));
 	}

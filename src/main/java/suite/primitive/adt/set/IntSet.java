@@ -2,9 +2,9 @@ package suite.primitive.adt.set;
 
 import java.util.Arrays;
 
+import primal.primitive.IntPrim;
 import primal.primitive.IntPrim.IntSink;
 import primal.primitive.IntPrim.IntSource;
-import suite.primitive.IntFunUtil;
 import suite.primitive.Ints_;
 import suite.primitive.streamlet.IntPuller;
 import suite.primitive.streamlet.IntStreamlet;
@@ -18,7 +18,7 @@ import suite.util.To;
  */
 public class IntSet {
 
-	private static int empty = IntFunUtil.EMPTYVALUE;
+	private static int empty = IntPrim.EMPTYVALUE;
 
 	private int size;
 	private int[] vs;

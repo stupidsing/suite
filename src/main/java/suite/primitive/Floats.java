@@ -12,6 +12,7 @@ import java.util.Iterator;
 
 import primal.Verbs.Get;
 import primal.fp.Funs.Fun;
+import primal.primitive.FltPrim;
 import primal.primitive.FltPrim.FltSource;
 import suite.cfg.Defaults;
 import suite.primitive.streamlet.FltPuller;
@@ -133,7 +134,7 @@ public class Floats implements Iterable<Float> {
 			private int i = start;
 
 			public float g() {
-				return i < end ? cs[i++] : FltFunUtil.EMPTYVALUE;
+				return i < end ? cs[i++] : FltPrim.EMPTYVALUE;
 			}
 		}));
 	}

@@ -8,13 +8,13 @@ import primal.Verbs.Equals;
 import primal.Verbs.Get;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Iterate;
-import suite.primitive.IntFunUtil;
+import primal.primitive.IntPrim;
 import suite.primitive.IntPrimitives.IntObj_Obj;
 import suite.primitive.Int_Int;
 
 public class IntObjPair<V> {
 
-	private static IntObjPair<?> none_ = IntObjPair.of(IntFunUtil.EMPTYVALUE, null);
+	private static IntObjPair<?> none_ = IntObjPair.of(IntPrim.EMPTYVALUE, null);
 
 	public int k;
 	public V v;

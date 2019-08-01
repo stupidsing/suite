@@ -4,10 +4,11 @@ import java.util.Comparator;
 
 import primal.Verbs.Get;
 import primal.fp.Funs.Iterate;
+import primal.primitive.ChrPrim;
 
 public class ChrRange {
 
-	private static ChrRange none_ = ChrRange.of(ChrFunUtil.EMPTYVALUE, ChrFunUtil.EMPTYVALUE);
+	private static ChrRange none_ = ChrRange.of(ChrPrim.EMPTYVALUE, ChrPrim.EMPTYVALUE);
 
 	public char s;
 	public char e;

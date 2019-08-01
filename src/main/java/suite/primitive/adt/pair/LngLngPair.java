@@ -4,13 +4,13 @@ import java.util.Comparator;
 
 import primal.Verbs.Get;
 import primal.fp.Funs.Iterate;
-import suite.primitive.LngFunUtil;
+import primal.primitive.LngPrim;
 import suite.primitive.LngLng_Obj;
 import suite.primitive.Lng_Lng;
 
 public class LngLngPair {
 
-	private static LngLngPair none_ = LngLngPair.of(LngFunUtil.EMPTYVALUE, LngFunUtil.EMPTYVALUE);
+	private static LngLngPair none_ = LngLngPair.of(LngPrim.EMPTYVALUE, LngPrim.EMPTYVALUE);
 
 	public long t0;
 	public long t1;

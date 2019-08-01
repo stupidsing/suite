@@ -15,9 +15,9 @@ import primal.adt.Pair;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Source;
 import primal.fp.Funs2.Sink2;
+import primal.primitive.ChrPrim;
 import primal.primitive.ChrPrim.ChrTest;
 import suite.adt.map.ListMultimap;
-import suite.primitive.ChrFunUtil;
 import suite.primitive.ChrObjFunUtil;
 import suite.primitive.ChrObj_Chr;
 import suite.primitive.ChrPrimitives.ChrObjPredicate;
@@ -277,7 +277,7 @@ public class ChrObjStreamlet<V> implements StreamletDefaults<ChrObjPair<V>, ChrO
 
 	public ChrObjPair<V> uniqueResult() {
 		var pair = spawn().opt();
-		if (pair.k != ChrFunUtil.EMPTYVALUE)
+		if (pair.k != ChrPrim.EMPTYVALUE)
 			return pair;
 		else
 			return fail("no result");

@@ -4,7 +4,7 @@ import static primal.statics.Fail.fail;
 
 import java.util.Arrays;
 
-import suite.primitive.IntFunUtil;
+import primal.primitive.IntPrim;
 import suite.primitive.IntIntSink;
 import suite.primitive.IntIntSource;
 import suite.primitive.IntPrimitives.IntObjSource;
@@ -25,7 +25,7 @@ import suite.streamlet.As;
  */
 public class IntIntMap1 {
 
-	private static int empty = IntFunUtil.EMPTYVALUE;
+	private static int empty = IntPrim.EMPTYVALUE;
 
 	private int size;
 	private long[] kvs;

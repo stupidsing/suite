@@ -3,6 +3,7 @@ package suite.primitive;
 import static primal.statics.Fail.fail;
 
 import primal.fp.Funs.Fun;
+import primal.primitive.LngPrim;
 import suite.primitive.LngPrimitives.Obj_Lng;
 import suite.primitive.Longs.LongsBuilder;
 import suite.primitive.streamlet.LngPuller;
@@ -17,7 +18,7 @@ public interface Lng_Lng {
 		return ts -> {
 			var b = new LongsBuilder();
 			long c;
-			while ((c = ts.pull()) != LngFunUtil.EMPTYVALUE)
+			while ((c = ts.pull()) != LngPrim.EMPTYVALUE)
 				b.append(fun1.apply(c));
 			return b.toLongs().streamlet();
 		};
@@ -29,7 +30,7 @@ public interface Lng_Lng {
 			var source = puller.source();
 			long c;
 			var result = (long) 0;
-			while ((c = source.g()) != LngFunUtil.EMPTYVALUE)
+			while ((c = source.g()) != LngPrim.EMPTYVALUE)
 				result += fun1.apply(c);
 			return result;
 		};

@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.Objects;
 
 import primal.Verbs.Equals;
-import suite.primitive.DblFunUtil;
+import primal.primitive.DblPrim;
 import suite.primitive.DblPrimitives.DblObjSink;
 import suite.primitive.DblPrimitives.DblObjSource;
 import suite.primitive.DblPrimitives.Obj_Dbl;
@@ -24,7 +24,7 @@ import suite.streamlet.As;
  */
 public class ObjDblMap<K> {
 
-	private static double empty = DblFunUtil.EMPTYVALUE;
+	private static double empty = DblPrim.EMPTYVALUE;
 
 	private int size;
 	private Object[] ks;

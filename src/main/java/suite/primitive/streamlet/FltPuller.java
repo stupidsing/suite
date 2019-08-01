@@ -21,6 +21,7 @@ import primal.adt.Mutable;
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Source;
+import primal.primitive.FltPrim;
 import primal.primitive.FltPrim.FltComparator;
 import primal.primitive.FltPrim.FltSink;
 import primal.primitive.FltPrim.FltSource;
@@ -50,7 +51,7 @@ import suite.util.To;
 
 public class FltPuller implements PullerDefaults<Float> {
 
-	private static float empty = FltFunUtil.EMPTYVALUE;
+	private static float empty = FltPrim.EMPTYVALUE;
 
 	private FltSource source;
 

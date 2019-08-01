@@ -19,9 +19,9 @@ import primal.adt.Mutable;
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs2.Sink2;
+import primal.primitive.FltPrim;
 import primal.primitive.FltPrim.FltTest;
 import suite.adt.map.ListMultimap;
-import suite.primitive.FltFunUtil;
 import suite.primitive.FltObjFunUtil;
 import suite.primitive.FltObj_Flt;
 import suite.primitive.FltPrimitives.FltObjPredicate;
@@ -44,7 +44,7 @@ import suite.util.To;
 
 public class FltObjPuller<V> implements PullerDefaults<FltObjPair<V>> {
 
-	private static float empty = FltFunUtil.EMPTYVALUE;
+	private static float empty = FltPrim.EMPTYVALUE;
 
 	private FltObjSource<V> source;
 

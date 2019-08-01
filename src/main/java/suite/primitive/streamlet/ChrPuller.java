@@ -21,6 +21,7 @@ import primal.adt.Mutable;
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Source;
+import primal.primitive.ChrPrim;
 import primal.primitive.ChrPrim.ChrComparator;
 import primal.primitive.ChrPrim.ChrSink;
 import primal.primitive.ChrPrim.ChrSource;
@@ -50,7 +51,7 @@ import suite.util.To;
 
 public class ChrPuller implements PullerDefaults<Character> {
 
-	private static char empty = ChrFunUtil.EMPTYVALUE;
+	private static char empty = ChrPrim.EMPTYVALUE;
 
 	private ChrSource source;
 

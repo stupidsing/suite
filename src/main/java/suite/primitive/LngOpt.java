@@ -7,12 +7,13 @@ import java.util.Objects;
 import primal.Verbs.Equals;
 import primal.Verbs.Get;
 import primal.adt.Opt;
+import primal.primitive.LngPrim;
 import primal.primitive.LngPrim.LngTest;
 import suite.primitive.LngPrimitives.Lng_Obj;
 
 public class LngOpt {
 
-	private static long empty = LngFunUtil.EMPTYVALUE;
+	private static long empty = LngPrim.EMPTYVALUE;
 	private static LngOpt none_ = LngOpt.of(empty);
 
 	private long value;

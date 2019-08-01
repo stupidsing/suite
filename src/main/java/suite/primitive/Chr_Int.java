@@ -3,6 +3,7 @@ package suite.primitive;
 import static primal.statics.Fail.fail;
 
 import primal.fp.Funs.Fun;
+import primal.primitive.ChrPrim;
 import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.Ints.IntsBuilder;
 import suite.primitive.streamlet.ChrPuller;
@@ -17,7 +18,7 @@ public interface Chr_Int {
 		return ts -> {
 			var b = new IntsBuilder();
 			char c;
-			while ((c = ts.pull()) != ChrFunUtil.EMPTYVALUE)
+			while ((c = ts.pull()) != ChrPrim.EMPTYVALUE)
 				b.append(fun1.apply(c));
 			return b.toInts().streamlet();
 		};
@@ -29,7 +30,7 @@ public interface Chr_Int {
 			var source = puller.source();
 			char c;
 			var result = (int) 0;
-			while ((c = source.g()) != ChrFunUtil.EMPTYVALUE)
+			while ((c = source.g()) != ChrPrim.EMPTYVALUE)
 				result += fun1.apply(c);
 			return result;
 		};

@@ -3,6 +3,7 @@ package suite.primitive;
 import static primal.statics.Fail.fail;
 
 import primal.Verbs.Get;
+import primal.primitive.LngPrim;
 
 /**
  * An indirect reference to a primitive long. Long.MIN_VALUE is not allowed
@@ -12,7 +13,7 @@ import primal.Verbs.Get;
  */
 public class LngMutable {
 
-	private static long empty = LngFunUtil.EMPTYVALUE;
+	private static long empty = LngPrim.EMPTYVALUE;
 
 	private long value;
 

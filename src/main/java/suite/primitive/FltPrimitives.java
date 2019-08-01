@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
+import primal.primitive.FltPrim;
 import suite.primitive.Floats.FloatsBuilder;
 import suite.primitive.adt.pair.FltObjPair;
 import suite.primitive.streamlet.FltPuller;
@@ -25,7 +26,7 @@ public class FltPrimitives {
 			return s -> {
 				var ts = new ArrayList<T>();
 				float c;
-				while ((c = s.pull()) != FltFunUtil.EMPTYVALUE)
+				while ((c = s.pull()) != FltPrim.EMPTYVALUE)
 					ts.add(fun1.apply(c));
 				return Read.from(ts);
 			};
