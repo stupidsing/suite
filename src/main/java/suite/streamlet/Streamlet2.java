@@ -15,6 +15,8 @@ import primal.Verbs.Equals;
 import primal.Verbs.Get;
 import primal.adt.Fixie_.FixieFun3;
 import primal.adt.Pair;
+import primal.fp.FunUtil;
+import primal.fp.FunUtil2;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Source;
 import primal.fp.Funs2.Fun2;

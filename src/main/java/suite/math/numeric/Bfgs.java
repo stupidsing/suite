@@ -3,10 +3,10 @@ package suite.math.numeric;
 import static java.lang.Math.abs;
 
 import primal.fp.Funs.Fun;
+import primal.primitive.DblDbl_Dbl;
 import suite.math.FiniteDifference;
 import suite.math.linalg.Matrix;
 import suite.math.linalg.Vector;
-import suite.primitive.DblDbl_Dbl;
 import suite.primitive.DblPrimitives.Dbl_Obj;
 import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Dbl_Dbl;

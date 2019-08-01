@@ -4,6 +4,7 @@ import java.util.Comparator;
 
 import primal.Verbs.Get;
 import primal.fp.Funs.Iterate;
+import primal.primitive.IntInt_Obj;
 import primal.primitive.IntPrim;
 
 public class Coord {

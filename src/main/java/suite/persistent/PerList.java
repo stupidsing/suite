@@ -7,8 +7,8 @@ import java.util.Objects;
 
 import primal.Verbs.Equals;
 import primal.Verbs.Get;
+import primal.fp.FunUtil;
 import primal.fp.Funs.Source;
-import suite.streamlet.FunUtil;
 import suite.streamlet.Puller;
 import suite.streamlet.Streamlet;
 import suite.util.To;

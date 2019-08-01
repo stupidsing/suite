@@ -5,13 +5,13 @@ import static primal.statics.Fail.fail;
 import java.util.ArrayList;
 import java.util.List;
 
+import primal.fp.FunUtil;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Sink;
 import primal.fp.Funs.Source;
 import suite.lp.doer.Cloner;
 import suite.lp.kb.RuleSet;
 import suite.node.Node;
-import suite.streamlet.FunUtil;
 import suite.util.To;
 
 public class ProverBuilder {

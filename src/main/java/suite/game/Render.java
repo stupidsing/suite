@@ -14,9 +14,9 @@ import javax.swing.JLabel;
 
 import primal.fp.Funs2.BiFun;
 import primal.os.Log_;
+import primal.primitive.IntInt_Obj;
 import suite.cfg.Defaults;
 import suite.math.R3;
-import suite.primitive.IntInt_Obj;
 import suite.primitive.Ints_;
 import suite.streamlet.As;
 import suite.util.To;

@@ -16,6 +16,8 @@ import java.util.Map;
 
 import primal.Verbs.ReadLine;
 import primal.adt.Pair;
+import primal.fp.FunUtil;
+import primal.fp.FunUtil2;
 import primal.fp.Funs.Source;
 import primal.fp.Funs2.Source2;
 import suite.cfg.Defaults;

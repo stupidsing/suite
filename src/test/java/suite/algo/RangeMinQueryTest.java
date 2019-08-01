@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import suite.primitive.IntInt_Int;
+import primal.primitive.IntInt_Int;
 
 public class RangeMinQueryTest {
 

@@ -2,7 +2,7 @@ package suite.trade.backalloc.strategy;
 
 import java.util.function.IntPredicate;
 
-import suite.primitive.IntInt_Int;
+import primal.primitive.IntInt_Int;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
 import suite.trade.analysis.MovingAverage;

@@ -2,6 +2,7 @@ package suite.primitive;
 
 import static primal.statics.Rethrow.ex;
 
+import primal.fp.FunUtil;
 import primal.fp.Funs.Iterate;
 import primal.fp.Funs.Source;
 import primal.primitive.DblPrim;
@@ -9,7 +10,6 @@ import suite.primitive.Doubles.DoublesBuilder;
 import suite.primitive.Doubles.WriteChar;
 import suite.primitive.streamlet.DblPuller;
 import suite.primitive.streamlet.DblStreamlet;
-import suite.streamlet.FunUtil;
 import suite.streamlet.Puller;
 import suite.streamlet.Read;
 

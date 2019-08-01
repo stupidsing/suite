@@ -13,9 +13,9 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.net.ssl.SSLSocketFactory;
 
+import primal.primitive.ChrChr_Int;
 import suite.cfg.Defaults;
 import suite.primitive.Chars.CharsBuilder;
-import suite.primitive.ChrChr_Int;
 
 public class SmtpSslGmail {
 

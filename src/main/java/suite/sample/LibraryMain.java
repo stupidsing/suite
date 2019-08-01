@@ -11,6 +11,7 @@ import java.util.List;
 
 import org.apache.commons.codec.digest.Md5Crypt;
 
+import primal.Verbs.Get;
 import primal.adt.Pair;
 import suite.os.FileUtil;
 import suite.streamlet.Streamlet;
@@ -43,7 +44,7 @@ public class LibraryMain {
 	private boolean run() {
 		var partition = FileUtil //
 				.findPaths(Paths.get(inputDir)) //
-				.filter(path -> fileExtensions.contains(FileUtil.getFileExtension(path))) //
+				.filter(path -> fileExtensions.contains(Get.fileExtension(path))) //
 				.map2(path -> ex(() -> Files.size(path))) //
 				.partition((path, size) -> 0 < size);
 

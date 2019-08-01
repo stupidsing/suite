@@ -2,6 +2,7 @@ package suite.funp.p3;
 
 import primal.adt.Pair;
 import primal.fp.Funs2.Fun2;
+import primal.primitive.IntInt_Int;
 import suite.funp.Funp_;
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.FunpBoolean;
@@ -20,7 +21,6 @@ import suite.node.io.TermOp;
 import suite.node.util.Singleton;
 import suite.node.util.TreeUtil;
 import suite.primitive.IntInt_Bool;
-import suite.primitive.IntInt_Int;
 import suite.primitive.IntRange;
 import suite.streamlet.Read;
 

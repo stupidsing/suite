@@ -1,8 +1,8 @@
 package suite.math;
 
+import primal.primitive.DblDbl_Dbl;
+import primal.primitive.IntInt_Int;
 import suite.game.Render;
-import suite.primitive.DblDbl_Dbl;
-import suite.primitive.IntInt_Int;
 import suite.util.RunUtil;
 
 public class PlotMain {

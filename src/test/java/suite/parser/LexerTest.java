@@ -7,8 +7,8 @@ import java.io.IOException;
 
 import org.junit.Test;
 
+import primal.fp.FunUtil;
 import suite.cfg.Defaults;
-import suite.streamlet.FunUtil;
 
 public class LexerTest {
 

@@ -2,7 +2,7 @@ package suite.math.linalg;
 
 import static primal.statics.Fail.fail;
 
-import suite.primitive.IntInt_Flt;
+import primal.primitive.IntInt_Flt;
 
 public class Strassen {
 

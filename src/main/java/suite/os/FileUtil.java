@@ -9,7 +9,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.management.ManagementFactory;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -46,15 +45,6 @@ public class FileUtil {
 
 	public static Streamlet<Path> findPaths(Path path) {
 		return Read.from(() -> ex(() -> Files.walk(path).filter(Files::isRegularFile).iterator()));
-	}
-
-	public static String getFileExtension(Path path) {
-		var filename = path.toString();
-		return filename.substring(filename.lastIndexOf('.') + 1);
-	}
-
-	public static long getPid() {
-		return ManagementFactory.getRuntimeMXBean().getPid();
 	}
 
 	public static ReadStream in(String filename) {

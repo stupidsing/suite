@@ -12,6 +12,7 @@ import primal.Verbs.Equals;
 import primal.Verbs.Get;
 import primal.adt.Opt;
 import primal.adt.Pair;
+import primal.fp.FunUtil;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Sink;
 import primal.fp.Funs.Source;

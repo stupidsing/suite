@@ -4,7 +4,7 @@ import static java.lang.Math.min;
 import static primal.statics.Fail.fail;
 import static suite.util.Streamlet_.forInt;
 
-import suite.primitive.IntInt_Flt;
+import primal.primitive.IntInt_Flt;
 import suite.primitive.Int_Dbl;
 import suite.util.To;
 

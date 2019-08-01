@@ -25,6 +25,8 @@ import primal.adt.Fixie_.FixieA;
 import primal.adt.Mutable;
 import primal.adt.Opt;
 import primal.adt.Pair;
+import primal.fp.FunUtil;
+import primal.fp.FunUtil2;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Sink;
 import primal.fp.Funs.Source;
