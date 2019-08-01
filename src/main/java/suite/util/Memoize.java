@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import primal.Ob;
+import primal.Verbs.Wait;
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Source;
@@ -72,7 +72,7 @@ public class Memoize {
 							notifyAll();
 						} else
 							while (result == null)
-								Ob.wait(this);
+								Wait.object(this);
 					}
 				return result;
 			}

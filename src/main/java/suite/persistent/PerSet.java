@@ -2,14 +2,16 @@ package suite.persistent;
 
 import java.util.Iterator;
 
-import primal.Ob;
+import primal.Verbs.Compare;
+import primal.Verbs.Equals;
+import primal.Verbs.Get;
 import suite.streamlet.Streamlet;
 import suite.util.To;
 
 public class PerSet<V extends Comparable<V>> implements Iterable<V> {
 
 	private static PerSet<?> empty = new PerSet<Integer>();
-	private PerTree<V> tree = new PbTree<>(Ob::compare);
+	private PerTree<V> tree = new PbTree<>(Compare::objects);
 
 	public static <V extends Comparable<V>> PerSet<V> empty() {
 		@SuppressWarnings("unchecked")
@@ -55,7 +57,7 @@ public class PerSet<V extends Comparable<V>> implements Iterable<V> {
 
 	@Override
 	public boolean equals(Object object) {
-		return Ob.clazz(object) == PerSet.class && Ob.equals(streamlet(), ((PerSet<?>) object).streamlet());
+		return Get.clazz(object) == PerSet.class && Equals.ab(streamlet(), ((PerSet<?>) object).streamlet());
 	}
 
 	@Override

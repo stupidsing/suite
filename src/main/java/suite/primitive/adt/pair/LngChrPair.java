@@ -2,7 +2,7 @@ package suite.primitive.adt.pair;
 
 import java.util.Comparator;
 
-import primal.Ob;
+import primal.Verbs.Get;
 import primal.fp.Funs.Iterate;
 import suite.primitive.ChrFunUtil;
 import suite.primitive.Chr_Chr;
@@ -73,7 +73,7 @@ public class LngChrPair {
 
 	@Override
 	public boolean equals(Object object) {
-		if (Ob.clazz(object) == LngChrPair.class) {
+		if (Get.clazz(object) == LngChrPair.class) {
 			var other = (LngChrPair) object;
 			return t0 == other.t0 && t1 == other.t1;
 		} else

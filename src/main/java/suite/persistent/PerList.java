@@ -5,7 +5,8 @@ import java.util.Deque;
 import java.util.Iterator;
 import java.util.Objects;
 
-import primal.Ob;
+import primal.Verbs.Equals;
+import primal.Verbs.Get;
 import primal.fp.Funs.Source;
 import suite.streamlet.FunUtil;
 import suite.streamlet.Puller;
@@ -79,7 +80,7 @@ public class PerList<T> implements Iterable<T> {
 	public PerList<T> remove(T t) {
 		PerList<T> result = end();
 		for (var t_ : reverse())
-			if (!Ob.equals(t, t_))
+			if (!Equals.ab(t, t_))
 				result = PerList.cons(t_, result);
 		return result;
 	}
@@ -108,14 +109,14 @@ public class PerList<T> implements Iterable<T> {
 
 	@Override
 	public boolean equals(Object object) {
-		if (Ob.clazz(object) == PerList.class) {
+		if (Get.clazz(object) == PerList.class) {
 			var list0 = this;
 			var list1 = (PerList<?>) object;
 			boolean e0, e1;
 			while (true) {
 				e0 = list0.isEmpty();
 				e1 = list1.isEmpty();
-				if (!e0 && !e1 && Ob.equals(list0.head, list1.head)) {
+				if (!e0 && !e1 && Equals.ab(list0.head, list1.head)) {
 					list0 = list0.tail;
 					list1 = list1.tail;
 				} else

@@ -10,9 +10,9 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-import primal.Ob;
-import primal.adt.Pair;
+import primal.Verbs.Equals;
 import primal.adt.IdentityKey;
+import primal.adt.Pair;
 import suite.lp.Trail;
 import suite.lp.doer.Binder;
 import suite.lp.doer.ProverConstant;
@@ -165,7 +165,7 @@ public class Grapher {
 						&& gn1.terminal instanceof Reference //
 						&& Binder.bind(gn1.terminal, mapi0.get(pair.t0).key, trail))
 					;
-				else if (gn0.type == gn1.type && Ob.equals(gn0.terminal, gn1.terminal) && gn0.op == gn1.op) {
+				else if (gn0.type == gn1.type && Equals.ab(gn0.terminal, gn1.terminal) && gn0.op == gn1.op) {
 					var children0 = gn0.children;
 					var children1 = gn1.children;
 					var size0 = children0.size();

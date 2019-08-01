@@ -15,16 +15,19 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
 
-import primal.Ob;
+import primal.Verbs.Close;
+import primal.Verbs.Compare;
+import primal.Verbs.Equals;
+import primal.Verbs.Get;
 import primal.adt.Fixie;
 import primal.adt.Fixie_.FixieA;
+import primal.adt.Mutable;
 import primal.adt.Opt;
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Sink;
 import primal.fp.Funs.Source;
 import primal.fp.Funs2.Fun2;
-import primal.adt.Mutable;
 import suite.adt.map.ListMultimap;
 import suite.primitive.IntPrimitives.IntObjSource;
 import suite.primitive.adt.pair.IntObjPair;
@@ -85,7 +88,7 @@ public class Puller<T> implements PullerDefaults<T> {
 		return of(() -> {
 			var next = pull();
 			if (next == null)
-				Ob.closeQuietly(c);
+				Close.quietly(c);
 			return next;
 		});
 	}
@@ -147,10 +150,10 @@ public class Puller<T> implements PullerDefaults<T> {
 
 	@Override
 	public boolean equals(Object object) {
-		if (Ob.clazz(object) == Puller.class) {
+		if (Get.clazz(object) == Puller.class) {
 			var source1 = ((Puller<?>) object).source;
 			Object o0, o1;
-			while (Ob.equals(o0 = source.g(), o1 = source1.g()))
+			while (Equals.ab(o0 = source.g(), o1 = source1.g()))
 				if (o0 == null && o1 == null)
 					return true;
 			return false;
@@ -315,7 +318,7 @@ public class Puller<T> implements PullerDefaults<T> {
 	}
 
 	public <O extends Comparable<? super O>> Puller<T> sortBy(Fun<T, O> fun) {
-		return sort((e0, e1) -> Ob.compare(fun.apply(e0), fun.apply(e1)));
+		return sort((e0, e1) -> Compare.objects(fun.apply(e0), fun.apply(e1)));
 	}
 
 	public Puller<Puller<T>> split(Predicate<T> fun) {

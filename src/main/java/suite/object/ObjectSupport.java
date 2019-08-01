@@ -3,8 +3,9 @@ package suite.object;
 import java.util.List;
 import java.util.Objects;
 
-import primal.Ob;
 import primal.String_;
+import primal.Verbs.Compare;
+import primal.Verbs.Equals;
 import primal.fp.Funs.Fun;
 import suite.persistent.PerList;
 import suite.util.To;
@@ -30,7 +31,7 @@ public class ObjectSupport<T> {
 			c = 0;
 			while (c == 0 && (c = Boolean.compare(b0 = iter0.hasNext(), b1 = iter1.hasNext())) == 0)
 				if (b0 && b1)
-					c = Ob.compareAnyway(iter0.next(), iter1.next());
+					c = Compare.anyway(iter0.next(), iter1.next());
 		} else
 			c = String_.compare(class0.getName(), class1.getName());
 		return c;
@@ -55,7 +56,7 @@ public class ObjectSupport<T> {
 		var b = true;
 		if (size0 == size1)
 			for (var i = 0; i < size0; i++)
-				b &= Ob.equals(list0.get(i), list1.get(i));
+				b &= Equals.ab(list0.get(i), list1.get(i));
 		return b;
 	}
 

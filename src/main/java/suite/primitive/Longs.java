@@ -10,7 +10,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
 
-import primal.Ob;
+import primal.Verbs.Get;
 import primal.fp.Funs.Fun;
 import suite.cfg.Defaults;
 import suite.primitive.LngPrimitives.LngSource;
@@ -238,7 +238,7 @@ public class Longs implements Iterable<Long> {
 
 	@Override
 	public boolean equals(Object object) {
-		if (Ob.clazz(object) == Longs.class) {
+		if (Get.clazz(object) == Longs.class) {
 			var other = (Longs) object;
 
 			if (size_() == other.size_()) {

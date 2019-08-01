@@ -9,13 +9,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import primal.Ob;
 import primal.String_;
+import primal.Verbs.New;
+import primal.adt.Mutable;
 import primal.fp.Funs.Sink;
 import primal.fp.Funs.Source;
 import primal.os.Log_;
 import suite.Suite;
-import primal.adt.Mutable;
 import suite.adt.map.ListMultimap;
 import suite.lp.Configuration.ProverCfg;
 import suite.lp.compile.impl.CompileExpressionImpl;
@@ -464,7 +464,7 @@ public class SewingProverImpl implements ProverFactory {
 			var fieldName = Atom.name(m[1]);
 			BuiltinPredicate predicate = ex(() -> {
 				var clazz = Class.forName(className);
-				return (BuiltinPredicate) clazz.getField(fieldName).get(Ob.new_(clazz));
+				return (BuiltinPredicate) clazz.getField(fieldName).get(New.clazz(clazz));
 			});
 			tr = compileTrCallPredicate(bf, predicate, m[2]);
 		} else if ((m = Suite.pattern("find.all .0 .1 .2").match(node)) != null) {

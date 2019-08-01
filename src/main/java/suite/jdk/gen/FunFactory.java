@@ -7,12 +7,12 @@ import org.apache.bcel.Const;
 import org.apache.bcel.generic.BasicType;
 import org.apache.bcel.generic.Type;
 
-import primal.Ob;
+import primal.Verbs.Equals;
+import primal.adt.Mutable;
 import primal.fp.Funs.Iterate;
 import primal.fp.Funs.Source;
 import primal.fp.Funs2.BinOp;
 import primal.fp.Funs2.Fun2;
-import primal.adt.Mutable;
 import suite.inspect.Inspect;
 import suite.jdk.gen.FunExprK.Declare0ParameterFunExpr;
 import suite.jdk.gen.FunExprK.Declare1ParameterFunExpr;
@@ -136,7 +136,7 @@ public class FunFactory {
 
 	public FunExpr ifEquals(FunExpr left, FunExpr right, FunExpr then_, FunExpr else_) {
 		var expr = new If2FunExpr();
-		expr.opcode = t -> !Ob.equals(t, Type.INT) ? Const.IF_ACMPNE : Const.IF_ICMPNE;
+		expr.opcode = t -> !Equals.ab(t, Type.INT) ? Const.IF_ACMPNE : Const.IF_ICMPNE;
 		expr.left = left;
 		expr.right = right;
 		expr.then = then_;

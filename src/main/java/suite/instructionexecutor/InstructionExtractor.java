@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import primal.Ob;
+import primal.Verbs.Equals;
 import primal.adt.IdentityKey;
 import suite.adt.map.BiMap;
 import suite.instructionexecutor.InstructionUtil.Insn;
@@ -90,7 +90,7 @@ public class InstructionExtractor implements AutoCloseable {
 		var insnName = Atom.name(rs.get(0));
 		Insn insn;
 
-		if (Ob.equals(insnName, "EVALUATE")) {
+		if (Equals.ab(insnName, "EVALUATE")) {
 			var operator = TermOp.find(Atom.name(rs.remove(3)));
 			insn = InstructionUtil.getEvalInsn(operator);
 		} else

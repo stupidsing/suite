@@ -2,7 +2,7 @@ package suite.primitive;
 
 import static primal.statics.Fail.fail;
 
-import primal.Ob;
+import primal.Verbs.Get;
 
 /**
  * An indirect reference to a primitive float. Float.MIN_VALUE is not allowed
@@ -47,7 +47,7 @@ public class FltMutable {
 
 	@Override
 	public boolean equals(Object object) {
-		return Ob.clazz(object) == FltMutable.class && value == ((FltMutable) object).value;
+		return Get.clazz(object) == FltMutable.class && value == ((FltMutable) object).value;
 	}
 
 	@Override

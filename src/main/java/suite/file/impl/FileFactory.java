@@ -7,7 +7,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-import primal.Ob;
+import primal.Verbs.Equals;
 import primal.os.Log_;
 import suite.file.ExtentAllocator.Extent;
 import suite.file.ExtentFile;
@@ -64,7 +64,7 @@ public class FileFactory {
 				var bb = new BytesBuilder();
 				for (var pointer = extent.start; pointer < extent.end; pointer++) {
 					var block = pageFile.load(pointer);
-					Util.assert_(Ob.equals(block.extent, extent));
+					Util.assert_(Equals.ab(block.extent, extent));
 					bb.append(block.bytes);
 				}
 				return bb.toBytes();

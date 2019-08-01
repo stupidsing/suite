@@ -8,7 +8,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
 
-import primal.Ob;
+import primal.Verbs.Equals;
+import primal.Verbs.Get;
 import primal.adt.Opt;
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
@@ -84,7 +85,7 @@ public class Streamlet<T> implements StreamletDefaults<T, Puller<T>> {
 
 	@Override
 	public boolean equals(Object object) {
-		return Ob.clazz(object) == Streamlet.class ? Ob.equals(spawn(), ((Streamlet<?>) object).spawn()) : false;
+		return Get.clazz(object) == Streamlet.class ? Equals.ab(spawn(), ((Streamlet<?>) object).spawn()) : false;
 	}
 
 	public Streamlet<T> filter(Predicate<T> fun) {

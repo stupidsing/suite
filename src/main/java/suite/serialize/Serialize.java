@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import primal.Ob;
+import primal.Verbs.Equals;
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
 import suite.cfg.Defaults;
@@ -84,19 +84,19 @@ public class Serialize {
 		Serializer<?> serializer;
 		if (type instanceof Class) {
 			var clazz = (Class<?>) type;
-			if (Ob.equals(clazz, boolean.class) || Ob.equals(clazz, Boolean.class))
+			if (Equals.ab(clazz, boolean.class) || Equals.ab(clazz, Boolean.class))
 				serializer = boolean_;
-			else if (Ob.equals(clazz, Bytes.class))
+			else if (Equals.ab(clazz, Bytes.class))
 				serializer = variableLengthBytes;
-			else if (Ob.equals(clazz, double.class) || Ob.equals(clazz, Double.class))
+			else if (Equals.ab(clazz, double.class) || Equals.ab(clazz, Double.class))
 				serializer = double_;
-			else if (Ob.equals(clazz, float.class) || Ob.equals(clazz, Float.class))
+			else if (Equals.ab(clazz, float.class) || Equals.ab(clazz, Float.class))
 				serializer = float_;
-			else if (Ob.equals(clazz, float[].class))
+			else if (Equals.ab(clazz, float[].class))
 				serializer = vector;
-			else if (Ob.equals(clazz, int.class) || Ob.equals(clazz, Integer.class))
+			else if (Equals.ab(clazz, int.class) || Equals.ab(clazz, Integer.class))
 				serializer = int_;
-			else if (Ob.equals(clazz, String.class))
+			else if (Equals.ab(clazz, String.class))
 				serializer = variableLengthString;
 			else if (clazz.isArray()) {
 				@SuppressWarnings("unchecked")

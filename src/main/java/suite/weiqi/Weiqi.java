@@ -2,7 +2,7 @@ package suite.weiqi;
 
 import java.util.Arrays;
 
-import primal.Ob;
+import primal.Verbs.Get;
 import suite.util.Array_;
 
 public class Weiqi {
@@ -90,7 +90,7 @@ public class Weiqi {
 
 		@Override
 		public boolean equals(Object object) {
-			if (Ob.clazz(object) == Array.class) {
+			if (Get.clazz(object) == Array.class) {
 				var array = (Array<?>) object;
 				return Arrays.equals(positions, array.positions);
 			} else

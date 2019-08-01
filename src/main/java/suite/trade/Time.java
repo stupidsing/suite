@@ -11,7 +11,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.Objects;
 
-import primal.Ob;
+import primal.Verbs.Equals;
+import primal.Verbs.Get;
 import suite.util.To;
 
 /**
@@ -188,7 +189,7 @@ public class Time implements Comparable<Time> {
 
 	@Override
 	public boolean equals(Object object) {
-		return Ob.clazz(object) == Time.class ? Ob.equals(dateTime, ((Time) object).dateTime) : false;
+		return Get.clazz(object) == Time.class ? Equals.ab(dateTime, ((Time) object).dateTime) : false;
 	}
 
 	@Override

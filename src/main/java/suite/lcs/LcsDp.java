@@ -6,7 +6,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import primal.Ob;
+import primal.Verbs.Equals;
 import suite.persistent.PerList;
 
 /**
@@ -59,7 +59,7 @@ public class LcsDp<T> {
 
 				var t0 = l0.get(i0);
 				var t1 = l1.get(i1);
-				var lu1 = Ob.equals(t0, t1) ? new Node(t0, lu) : lu;
+				var lu1 = Equals.ab(t0, t1) ? new Node(t0, lu) : lu;
 
 				dp[i0][i1] = Collections.max(List.of(u, l, lu1), comparator);
 			}

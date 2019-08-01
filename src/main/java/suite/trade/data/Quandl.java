@@ -8,6 +8,7 @@ import suite.cfg.Defaults;
 import suite.node.util.Singleton;
 import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.primitive.LngPrimitives.Obj_Lng;
+import suite.primitive.adt.map.ObjIntMap;
 import suite.streamlet.As;
 import suite.streamlet.Streamlet;
 import suite.trade.Time;
@@ -24,19 +25,21 @@ public class Quandl {
 
 		// Date, Open, High, Low, Last, Change, Settle, Volume, Previous Day
 		// Open Interest
-		var arrays = csv(urlString) //
-				.skip(1) //
-				.sort((a0, a1) -> String_.compare(a0[0], a1[0])) //
-				.collect();
+		return csv(urlString).map((headers, csv) -> {
+			var arrays = csv(urlString).v //
+					.skip(1) //
+					.sort((a0, a1) -> String_.compare(a0[0], a1[0])) //
+					.collect();
 
-		var ts = arrays.collect(Obj_Lng.lift(array -> Time.of(array[0] + " 18:00:00").epochSec(-4))).toArray();
-		var opens = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[1]))).toArray();
-		var settles = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[6]))).toArray();
-		var lows = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[3]))).toArray();
-		var highs = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[2]))).toArray();
-		var volumes = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[7]))).toArray();
+			var ts = arrays.collect(Obj_Lng.lift(array -> Time.of(array[0] + " 18:00:00").epochSec(-4))).toArray();
+			var opens = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[1]))).toArray();
+			var settles = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[6]))).toArray();
+			var lows = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[3]))).toArray();
+			var highs = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[2]))).toArray();
+			var volumes = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[7]))).toArray();
 
-		return DataSource.ofOhlcv(ts, opens, settles, lows, highs, volumes).range(period);
+			return DataSource.ofOhlcv(ts, opens, settles, lows, highs, volumes).range(period);
+		});
 	}
 
 	public Pair<String[], List<String[]>> dataSourceCsvV3(String qn, TimeRange period) {
@@ -48,15 +51,15 @@ public class Quandl {
 
 		// Date, Value
 		var csv = csv(urlString);
-		var header = csv.first();
-		var list = csv.skip(1).toList();
+		var header = csv.v.first();
+		var list = csv.v.skip(1).toList();
 		return Pair.of(header, list);
 	}
 
-	private Streamlet<String[]> csv(String urlString) {
+	private Pair<ObjIntMap<String>, Streamlet<String[]>> csv(String urlString) {
 		var m = Defaults.secrets("quandl .0");
 
-		return Singleton.me.storeCache.http(urlString + (m != null ? "&api_key=" + m[0] : "")).collect(As::csv);
+		return Singleton.me.storeCache.http(urlString + (m != null ? "&api_key=" + m[0] : "")).collect(As::csvWithHeader);
 	}
 
 }

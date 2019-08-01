@@ -11,7 +11,7 @@ import java.util.Set;
 
 import org.junit.Test;
 
-import primal.Ob;
+import primal.Verbs.Equals;
 import suite.primitive.Coord;
 import suite.primitive.adt.pair.IntDblPair;
 
@@ -93,12 +93,12 @@ public class Q_LearningTest {
 				else
 					return new Result(this, -1);
 			else if (action == 4) // pickup
-				if (passenger != onTaxi && Ob.equals(taxi, locations.get(passenger)))
+				if (passenger != onTaxi && Equals.ab(taxi, locations.get(passenger)))
 					return new Result(new State(taxi, onTaxi, destination), -1);
 				else
 					return new Result(this, -10);
 			else if (action == 5) // drop-off
-				if (passenger == onTaxi && Ob.equals(taxi, locations.get(destination)))
+				if (passenger == onTaxi && Equals.ab(taxi, locations.get(destination)))
 					return new Result(this, 20, true);
 				else
 					return new Result(this, -10);

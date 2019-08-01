@@ -6,7 +6,7 @@ import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 
-import primal.Ob;
+import primal.Verbs.Get;
 import suite.inspect.Dump;
 import suite.inspect.Inspect;
 import suite.jdk.gen.FunExprL.ApplyFunExpr;
@@ -124,7 +124,7 @@ public class FunExpression {
 
 		@Override
 		public boolean equals(Object object) {
-			return Ob.clazz(object) == getClass() && inspect.equals(this, object);
+			return Get.clazz(object) == getClass() && inspect.equals(this, object);
 		}
 
 		@Override

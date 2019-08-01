@@ -7,8 +7,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import primal.Ob;
 import primal.String_;
+import primal.Verbs.Compare;
 import primal.fp.Funs.Iterate;
 import primal.fp.Funs2.BinOp;
 import suite.primitive.Int_Flt;
@@ -181,7 +181,7 @@ public class StockHistory {
 			var date = TimeRange.min;
 			for (var pair : pairs0) {
 				var date1 = Time.ofEpochSec(pair.t0).startOfDay();
-				if (Ob.compare(date, date1) < 0)
+				if (Compare.objects(date, date1) < 0)
 					pairs1.add(pair);
 				date = date1;
 			}

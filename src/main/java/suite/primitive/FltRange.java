@@ -2,7 +2,7 @@ package suite.primitive;
 
 import java.util.Comparator;
 
-import primal.Ob;
+import primal.Verbs.Get;
 import primal.fp.Funs.Iterate;
 
 public class FltRange {
@@ -72,7 +72,7 @@ public class FltRange {
 
 	@Override
 	public boolean equals(Object object) {
-		if (Ob.clazz(object) == FltRange.class) {
+		if (Get.clazz(object) == FltRange.class) {
 			var other = (FltRange) object;
 			return s == other.s && e == other.e;
 		} else

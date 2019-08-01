@@ -2,7 +2,7 @@ package suite.lcs;
 
 import static java.lang.Math.min;
 
-import primal.Ob;
+import primal.Verbs.Equals;
 import primal.adt.Pair;
 import suite.primitive.Bytes;
 import suite.primitive.adt.map.IntObjMap;
@@ -43,7 +43,7 @@ public class Lccs0 {
 					var b0 = bytes0.range(segment0.start, end0);
 					var b1 = bytes1.range(segment1.start, end1);
 
-					if (Ob.equals(b0, b1)) {
+					if (Equals.ab(b0, b1)) {
 						var i = 0;
 						int p0, p1;
 						while ((p0 = end0 + i) < size0 && (p1 = end1 + i) < size1 && b0.get(p0) == b1.get(p1))

@@ -8,7 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.IntFunction;
 
-import primal.Ob;
+import primal.Verbs.Close;
+import primal.Verbs.New;
 import suite.cfg.Defaults;
 import suite.instructionexecutor.thunk.IndexedReader;
 import suite.instructionexecutor.thunk.IndexedSourceReader;
@@ -88,7 +89,7 @@ public class Intrinsics {
 			if (0 <= nCharsRead)
 				return Chars.of(buffer, 0, nCharsRead);
 			else {
-				Ob.closeQuietly(reader);
+				Close.quietly(reader);
 				return null;
 			}
 		}));
@@ -102,7 +103,7 @@ public class Intrinsics {
 				, MonadIntrinsics.class //
 				, SeqIntrinsics.class //
 				, SuiteIntrinsics.class)) {
-			var instance = Ob.new_(clazz);
+			var instance = New.clazz(clazz);
 
 			for (var field : clazz.getFields())
 				if (Intrinsic.class.isAssignableFrom(field.getType())) {

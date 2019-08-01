@@ -4,7 +4,7 @@ import java.security.SecureRandom;
 import java.util.Random;
 import java.util.function.BiPredicate;
 
-import primal.Ob;
+import primal.Verbs.Equals;
 import suite.persistent.PerList;
 import suite.primitive.LngMutable;
 import suite.streamlet.As;
@@ -61,7 +61,7 @@ public class HttpSessionControl {
 			var session = sessionId != null ? sessionManager.get(sessionId) : null;
 			HttpResponse response;
 
-			if (Ob.equals(request.paths, PerList.of("login"))) {
+			if (Equals.ab(request.paths, PerList.of("login"))) {
 				var attrs = HttpHeaderUtil.getPostedAttrs(request.inputStream);
 				var username = attrs.get("username");
 				var password = attrs.get("password");
@@ -81,7 +81,7 @@ public class HttpSessionControl {
 					response = showProtectedPage(request1, sessionId);
 				} else
 					response = showLoginPage(paths, true);
-			} else if (Ob.equals(request.paths, PerList.of("logout"))) {
+			} else if (Equals.ab(request.paths, PerList.of("logout"))) {
 				if (sessionId != null)
 					sessionManager.remove(sessionId);
 

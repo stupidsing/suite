@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import primal.Ob;
+import primal.Verbs.New;
 import primal.adt.Pair;
 import primal.fp.Funs.Iterate;
 import suite.node.util.Singleton;
@@ -95,7 +95,7 @@ public class Object_ {
 					return map;
 				}), object -> ex(() -> {
 					var map = (Map<?, ?>) object;
-					var object1 = Ob.new_(clazz);
+					var object1 = New.clazz(clazz);
 					for (var sf : sfs)
 						sf.v.set(object1, map.get(sf.k));
 					return object1;

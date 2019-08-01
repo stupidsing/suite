@@ -5,7 +5,7 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Map;
 
-import primal.Ob;
+import primal.Verbs.Compare;
 import primal.adt.Pair;
 import primal.fp.Funs.Source;
 import suite.ebnf.Ebnf.Ast;
@@ -93,7 +93,7 @@ public class LrParse {
 		return Read //
 				.from2(map) //
 				.map2((k, v) -> k.toString(), (k, v) -> v) //
-				.sortByKey(Ob::compare) //
+				.sortByKey(Compare::objects) //
 				.map((k, v) -> k + " = " + v + "\n") //
 				.collect(As.joinedBy("{\n", "", "}\n"));
 	}

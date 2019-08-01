@@ -4,7 +4,8 @@ import static primal.statics.Fail.fail;
 
 import java.util.Objects;
 
-import primal.Ob;
+import primal.Verbs.Equals;
+import primal.Verbs.Get;
 import primal.adt.Opt;
 import suite.primitive.DblPrimitives.DblTest;
 import suite.primitive.DblPrimitives.Dbl_Obj;
@@ -44,7 +45,7 @@ public class DblOpt {
 
 	@Override
 	public boolean equals(Object object) {
-		return Ob.clazz(object) == DblOpt.class && Ob.equals(value, ((DblOpt) object).value);
+		return Get.clazz(object) == DblOpt.class && Equals.ab(value, ((DblOpt) object).value);
 	}
 
 	@Override

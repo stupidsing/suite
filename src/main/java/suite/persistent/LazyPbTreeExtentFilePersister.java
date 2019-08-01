@@ -10,9 +10,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import primal.adt.IdentityKey;
 import primal.adt.Pair;
 import primal.fp.Funs.Sink;
-import primal.adt.IdentityKey;
 import suite.adt.map.BiHashMap;
 import suite.adt.map.BiMap;
 import suite.file.ExtentAllocator.Extent;

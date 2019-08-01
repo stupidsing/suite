@@ -2,7 +2,7 @@ package suite.math;
 
 import static java.lang.Math.sqrt;
 
-import primal.Ob;
+import primal.Verbs.Get;
 
 public class R3 {
 
@@ -78,7 +78,7 @@ public class R3 {
 
 	@Override
 	public boolean equals(Object object) {
-		if (Ob.clazz(object) == R3.class) {
+		if (Get.clazz(object) == R3.class) {
 			var vector = (R3) object;
 			return x == vector.x && y == vector.y && z == vector.z;
 		} else

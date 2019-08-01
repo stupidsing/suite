@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
-import primal.Ob;
+import primal.Verbs.Min;
 import primal.adt.Range;
 import suite.util.To;
 
@@ -30,7 +30,7 @@ public class Ranges<T extends Comparable<? super T>> {
 				range1 = source1.g();
 			}
 
-			add.test(Range.of(Ob.min(range0.fr, range0.fr), to));
+			add.test(Range.of(Min.of(range0.fr, range0.fr), to));
 		}
 
 		return new Ranges<>(intersects);

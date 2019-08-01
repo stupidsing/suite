@@ -1,6 +1,6 @@
 package suite.math;
 
-import primal.Ob;
+import primal.Verbs.Get;
 
 public class Complex {
 
@@ -63,7 +63,7 @@ public class Complex {
 
 	@Override
 	public boolean equals(Object object) {
-		if (Ob.clazz(object) == Complex.class) {
+		if (Get.clazz(object) == Complex.class) {
 			var other = (Complex) object;
 			return r == other.r && i == other.i;
 		} else

@@ -2,7 +2,7 @@ package suite.primitive.adt.pair;
 
 import java.util.Comparator;
 
-import primal.Ob;
+import primal.Verbs.Get;
 import primal.fp.Funs.Iterate;
 import suite.primitive.DblFunUtil;
 import suite.primitive.DblLng_Obj;
@@ -73,7 +73,7 @@ public class DblLngPair {
 
 	@Override
 	public boolean equals(Object object) {
-		if (Ob.clazz(object) == DblLngPair.class) {
+		if (Get.clazz(object) == DblLngPair.class) {
 			var other = (DblLngPair) object;
 			return t0 == other.t0 && t1 == other.t1;
 		} else

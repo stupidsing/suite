@@ -7,9 +7,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 
-import primal.Ob;
-import primal.adt.Pair;
+import primal.Verbs.New;
 import primal.adt.IdentityKey;
+import primal.adt.Pair;
 import suite.inspect.Inspect;
 import suite.node.util.Singleton;
 import suite.streamlet.Streamlet;
@@ -31,7 +31,7 @@ public class AutoObject<T extends AutoObject<T>> extends BaseObject<T> implement
 						var key = IdentityKey.of(v1);
 						var vx = map.get(key);
 						if (vx == null) {
-							map.put(key, vx = Ob.new_(v1.getClass()));
+							map.put(key, vx = New.clazz(v1.getClass()));
 							for (var field : v1.fields())
 								field.set(vx, c_(field.get(v1)));
 						}

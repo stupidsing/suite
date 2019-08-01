@@ -9,7 +9,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Stack;
 
-import primal.Ob;
+import primal.Verbs.Equals;
 import primal.adt.Pair;
 import suite.btree.B_Tree;
 import suite.file.PageAllocator;
@@ -187,7 +187,7 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 
 	private KeyPointer loadKeyPointer(Key key) {
 		var kp = new Traverse(key).kp;
-		return kp != null && Ob.equals(kp.key, key) ? kp : null;
+		return kp != null && Equals.ab(kp.key, key) ? kp : null;
 	}
 
 	@Override
@@ -241,7 +241,7 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 		var t = new Traverse(key);
 		var kp = t.kp;
 
-		if (kp != null && Ob.equals(kp.key, key)) {
+		if (kp != null && Equals.ab(kp.key, key)) {
 			discard(kp);
 			kp.pointer = pointer; // replace existing value
 			saveOldPage(t.page);
@@ -313,7 +313,7 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 		var index = slot.index;
 		var kp = slot.getKeyPointer();
 
-		if (kp != null && Ob.equals(kp.key, key)) {
+		if (kp != null && Equals.ab(kp.key, key)) {
 			discard(kp);
 			page.remove(index.intValue());
 		}

@@ -2,7 +2,7 @@ package suite.primitive;
 
 import static primal.statics.Fail.fail;
 
-import primal.Ob;
+import primal.Verbs.Get;
 
 /**
  * An indirect reference to a primitive long. Long.MIN_VALUE is not allowed
@@ -47,7 +47,7 @@ public class LngMutable {
 
 	@Override
 	public boolean equals(Object object) {
-		return Ob.clazz(object) == LngMutable.class && value == ((LngMutable) object).value;
+		return Get.clazz(object) == LngMutable.class && value == ((LngMutable) object).value;
 	}
 
 	@Override

@@ -10,7 +10,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
 
-import primal.Ob;
+import primal.Verbs.Get;
 import primal.fp.Funs.Fun;
 import suite.cfg.Defaults;
 import suite.primitive.FltPrimitives.FltSource;
@@ -238,7 +238,7 @@ public class Floats implements Iterable<Float> {
 
 	@Override
 	public boolean equals(Object object) {
-		if (Ob.clazz(object) == Floats.class) {
+		if (Get.clazz(object) == Floats.class) {
 			var other = (Floats) object;
 
 			if (size_() == other.size_()) {

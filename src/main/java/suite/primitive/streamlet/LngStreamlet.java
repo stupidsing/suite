@@ -5,7 +5,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import primal.Ob;
+import primal.Verbs.Equals;
+import primal.Verbs.Get;
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Source;
@@ -93,7 +94,7 @@ public class LngStreamlet implements StreamletDefaults<Long, LngPuller> {
 
 	@Override
 	public boolean equals(Object object) {
-		return Ob.clazz(object) == LngStreamlet.class ? Ob.equals(spawn(), ((LngStreamlet) object).spawn()) : false;
+		return Get.clazz(object) == LngStreamlet.class ? Equals.ab(spawn(), ((LngStreamlet) object).spawn()) : false;
 	}
 
 	public LngStreamlet filter(LngTest fun) {

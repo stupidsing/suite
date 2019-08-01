@@ -3,7 +3,7 @@ package suite.trade.backalloc.run;
 import static java.lang.Math.expm1;
 import static java.lang.Math.log1p;
 
-import primal.Ob;
+import primal.Verbs.Compare;
 import primal.fp.Funs.Sink;
 import suite.math.numeric.Statistic;
 import suite.primitive.DblPrimitives.Obj_Dbl;
@@ -59,7 +59,7 @@ public class BackTester {
 				}) //
 				.map((key, summary) -> "TEST = " + key + " " + summary);
 
-		return Streamlet.concat(results0, results1).sort(Ob::compare).toString();
+		return Streamlet.concat(results0, results1).sort(Compare::objects).toString();
 	}
 
 }

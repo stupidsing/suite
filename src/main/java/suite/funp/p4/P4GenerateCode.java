@@ -10,13 +10,13 @@ import java.util.Set;
 
 import primal.adt.Fixie_.FixieFun3;
 import primal.adt.Fixie_.FixieFun5;
+import primal.adt.Mutable;
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Sink;
 import primal.fp.Funs.Source;
 import primal.fp.Funs2.Sink2;
 import suite.Suite;
-import primal.adt.Mutable;
 import suite.assembler.Amd64;
 import suite.assembler.Amd64.Insn;
 import suite.assembler.Amd64.Instruction;

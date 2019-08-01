@@ -5,7 +5,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import primal.Ob;
+import primal.Verbs.Equals;
+import primal.Verbs.Get;
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Source;
@@ -93,7 +94,7 @@ public class DblStreamlet implements StreamletDefaults<Double, DblPuller> {
 
 	@Override
 	public boolean equals(Object object) {
-		return Ob.clazz(object) == DblStreamlet.class ? Ob.equals(spawn(), ((DblStreamlet) object).spawn()) : false;
+		return Get.clazz(object) == DblStreamlet.class ? Equals.ab(spawn(), ((DblStreamlet) object).spawn()) : false;
 	}
 
 	public DblStreamlet filter(DblTest fun) {

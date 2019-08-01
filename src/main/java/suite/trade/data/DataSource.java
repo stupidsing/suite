@@ -9,7 +9,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import primal.Ob;
+import primal.Verbs.Compare;
 import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.primitive.LngPrimitives.Obj_Lng;
 import suite.primitive.Longs_;
@@ -71,7 +71,7 @@ public class DataSource {
 			tradeTimes = Read.from(Set_.intersect(dataSources // intersect
 					.<Collection<Long>> map(ds -> Longs_.of(ds.ts).map(t -> t).toList()) //
 					.toList()));
-		return tradeTimes.sort(Ob::compare).collect(Obj_Lng.lift(t -> t)).toArray();
+		return tradeTimes.sort(Compare::objects).collect(Obj_Lng.lift(t -> t)).toArray();
 	}
 
 	public static DataSource of(Streamlet<Datum> data) {

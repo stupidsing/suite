@@ -2,8 +2,8 @@ package suite.trade;
 
 import static java.lang.Math.abs;
 
-import primal.Ob;
 import primal.String_;
+import primal.Verbs.Compare;
 import suite.math.Math_;
 import suite.util.To;
 
@@ -20,9 +20,9 @@ public class Trade {
 
 	public static int compare(Trade trade0, Trade trade1) {
 		var c = 0;
-		c = c == 0 ? Ob.compare(trade0.symbol, trade1.symbol) : c;
+		c = c == 0 ? Compare.objects(trade0.symbol, trade1.symbol) : c;
 		c = c == 0 ? Integer.compare(trade0.buySell, trade1.buySell) : c;
-		c = c == 0 ? Ob.compare(trade0.strategy, trade1.strategy) : c;
+		c = c == 0 ? Compare.objects(trade0.strategy, trade1.strategy) : c;
 		return c;
 	};
 

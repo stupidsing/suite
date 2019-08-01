@@ -3,7 +3,7 @@ package suite.persistent;
 import java.util.Comparator;
 import java.util.List;
 
-import primal.Ob;
+import primal.Verbs.Close;
 import primal.adt.Pair;
 import suite.file.ExtentAllocator.Extent;
 import suite.file.PageFile;
@@ -72,7 +72,7 @@ public class LazyPbTreeStore<Pointer, Key, Value> implements KeyValueStore<Key, 
 			superblockFile.save(0, pointerx);
 		}
 
-		Ob.closeQuietly(persister, superblockFile);
+		Close.quietly(persister, superblockFile);
 	}
 
 	@Override

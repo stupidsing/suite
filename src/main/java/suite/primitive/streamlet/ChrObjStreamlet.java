@@ -9,7 +9,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
 
-import primal.Ob;
+import primal.Verbs.Equals;
+import primal.Verbs.Get;
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Source;
@@ -100,7 +101,7 @@ public class ChrObjStreamlet<V> implements StreamletDefaults<ChrObjPair<V>, ChrO
 
 	@Override
 	public boolean equals(Object object) {
-		return Ob.clazz(object) == ChrObjStreamlet.class ? Ob.equals(spawn(), ((ChrObjStreamlet<?>) object).spawn())
+		return Get.clazz(object) == ChrObjStreamlet.class ? Equals.ab(spawn(), ((ChrObjStreamlet<?>) object).spawn())
 				: false;
 	}
 

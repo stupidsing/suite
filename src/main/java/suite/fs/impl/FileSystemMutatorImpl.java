@@ -4,7 +4,7 @@ import static java.lang.Math.min;
 
 import java.util.List;
 
-import primal.Ob;
+import primal.Verbs.Equals;
 import primal.fp.Funs.Source;
 import suite.file.PageFile;
 import suite.fs.FileSystemMutator;
@@ -59,7 +59,7 @@ public class FileSystemMutatorImpl implements FileSystemMutator {
 		var sizeKey = key(hash, SIZEID, 0);
 
 		var nameBytes0 = fsNameKeySet.list(name, null).first();
-		var isRemove = Ob.equals(nameBytes0, name);
+		var isRemove = Equals.ab(nameBytes0, name);
 		var isCreate = bytes != null;
 
 		if (isRemove) {

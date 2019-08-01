@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.concurrent.atomic.AtomicReference;
 
-import primal.Ob;
+import primal.Verbs.Wait;
 import suite.concurrent.Concurrent.DeadlockException;
 
 /**
@@ -52,7 +52,7 @@ public class Mutex {
 							throw new DeadlockException();
 					}
 
-					Ob.wait(bigLock);
+					Wait.object(bigLock);
 				}
 
 				depth++;

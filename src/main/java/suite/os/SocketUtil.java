@@ -12,7 +12,7 @@ import java.io.PrintWriter;
 import java.io.Reader;
 import java.net.ServerSocket;
 
-import primal.Ob;
+import primal.Verbs.Close;
 import primal.os.Log_;
 import suite.cfg.Defaults;
 import suite.util.Thread_;
@@ -52,7 +52,7 @@ public class SocketUtil {
 					} catch (Exception ex) {
 						Log_.error(ex);
 					} finally {
-						Ob.closeQuietly(socket);
+						Close.quietly(socket);
 					}
 				});
 			}

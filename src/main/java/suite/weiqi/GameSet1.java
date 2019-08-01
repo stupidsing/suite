@@ -3,7 +3,7 @@ package suite.weiqi;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
-import primal.Ob;
+import primal.Verbs.Get;
 import suite.primitive.adt.set.IntSet;
 import suite.weiqi.Weiqi.Occupation;
 
@@ -60,7 +60,7 @@ public class GameSet1 {
 
 	@Override
 	public boolean equals(Object object) {
-		if (Ob.clazz(object) == GameSet1.class) {
+		if (Get.clazz(object) == GameSet1.class) {
 			var other = (GameSet1) object;
 			return board.equals(other.board) && nextPlayer == other.nextPlayer && previousStates.equals(other.previousStates);
 		} else

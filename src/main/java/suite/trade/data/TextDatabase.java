@@ -10,8 +10,9 @@ import java.util.Objects;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import primal.Ob;
 import primal.String_;
+import primal.Verbs.Compare;
+import primal.Verbs.Equals;
 import suite.cfg.HomeDir;
 import suite.os.FileUtil;
 import suite.primitive.Bytes;
@@ -91,9 +92,9 @@ public class TextDatabase {
 
 	private void merge(Datum datum) {
 		var datum0 = data.ceiling(datum);
-		if (datum0 == null || !Ob.equals(datum, datum0))
+		if (datum0 == null || !Equals.ab(datum, datum0))
 			data.add(datum);
-		else if (!Ob.equals(datum0.value, datum.value))
+		else if (!Equals.ab(datum0.value, datum.value))
 			fail("value mismatch for key " + datum.key + ": " + datum0.value + " != " + datum.value);
 	}
 
@@ -120,7 +121,7 @@ public class TextDatabase {
 		}
 
 		public int compareTo(Datum other) {
-			return Ob.compare(key, other.key);
+			return Compare.objects(key, other.key);
 		}
 
 		public boolean equals(Object object) {

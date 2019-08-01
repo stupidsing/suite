@@ -2,7 +2,7 @@ package suite.ansi;
 
 import com.sun.jna.Native;
 
-import primal.Ob;
+import primal.Verbs.Equals;
 import primal.adt.Pair;
 import suite.ansi.Keyboard.VK;
 import suite.util.RunUtil;
@@ -16,7 +16,7 @@ public class ReadLineMain {
 			var keys = keyboard.pusher().pushee();
 			Pair<VK, Character> pair;
 
-			while (!Ob.equals(pair = keys.pull(), Pair.of(null, 'q')))
+			while (!Equals.ab(pair = keys.pull(), Pair.of(null, 'q')))
 				System.out.println(pair);
 
 			return true;

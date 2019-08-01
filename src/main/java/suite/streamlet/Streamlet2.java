@@ -11,7 +11,8 @@ import java.util.Set;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
-import primal.Ob;
+import primal.Verbs.Equals;
+import primal.Verbs.Get;
 import primal.adt.Fixie_.FixieFun3;
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
@@ -92,7 +93,7 @@ public class Streamlet2<K, V> implements StreamletDefaults<Pair<K, V>, Puller2<K
 
 	@Override
 	public boolean equals(Object object) {
-		return Ob.clazz(object) == Streamlet2.class ? Ob.equals(spawn(), ((Streamlet2<?, ?>) object).spawn()) : false;
+		return Get.clazz(object) == Streamlet2.class ? Equals.ab(spawn(), ((Streamlet2<?, ?>) object).spawn()) : false;
 	}
 
 	public Streamlet2<K, V> filter(BiPredicate<K, V> fun) {

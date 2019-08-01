@@ -4,7 +4,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-import primal.Ob;
+import primal.Verbs.Equals;
+import primal.Verbs.Get;
 import suite.adt.map.ListMultimap;
 import suite.lp.doer.ProverConstant;
 import suite.node.Atom;
@@ -80,7 +81,7 @@ public class Prototype implements Comparable<Prototype> {
 
 	@Override
 	public boolean equals(Object object) {
-		return Ob.clazz(object) == Prototype.class ? Ob.equals(head, ((Prototype) object).head) : false;
+		return Get.clazz(object) == Prototype.class ? Equals.ab(head, ((Prototype) object).head) : false;
 	}
 
 	@Override

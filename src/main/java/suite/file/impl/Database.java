@@ -4,7 +4,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.nio.file.Path;
 
-import primal.Ob;
+import primal.Verbs.Compare;
 import primal.fp.Funs.Fun;
 import suite.file.JournalledPageFile;
 import suite.file.PageFile;
@@ -34,7 +34,7 @@ public class Database implements Closeable {
 
 		transactionManager = new TransactionManager<>(() -> LazyPbTreeStore.ofExtent( //
 				journalledPageFile, //
-				Ob::compare, //
+				Compare::objects, //
 				ser.int_, //
 				ser.variableLengthString));
 	}

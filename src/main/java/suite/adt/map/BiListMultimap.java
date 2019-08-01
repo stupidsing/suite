@@ -3,7 +3,7 @@ package suite.adt.map;
 import java.util.List;
 import java.util.Map;
 
-import primal.Ob;
+import primal.Verbs.Get;
 import suite.streamlet.Streamlet2;
 
 public class BiListMultimap<K, V> {
@@ -69,7 +69,7 @@ public class BiListMultimap<K, V> {
 	}
 
 	public boolean equals(Object object) {
-		return Ob.clazz(object) == BiListMultimap.class ? map.equals(((BiListMultimap<?, ?>) object).map) : false;
+		return Get.clazz(object) == BiListMultimap.class ? map.equals(((BiListMultimap<?, ?>) object).map) : false;
 	}
 
 	public int hashCode() {

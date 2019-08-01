@@ -3,9 +3,9 @@ package suite.lp.doer;
 import java.util.HashSet;
 import java.util.Set;
 
-import primal.Ob;
-import primal.adt.Pair;
+import primal.Verbs.Equals;
 import primal.adt.IdentityKey;
+import primal.adt.Pair;
 import suite.lp.Trail;
 import suite.node.Dict;
 import suite.node.Int;
@@ -81,7 +81,7 @@ public class BinderRecursive {
 		} else if (clazz0 == Int.class && clazz1 == Int.class)
 			return Int.num(n0) == Int.num(n1);
 		else if (clazz0 == Str.class && clazz1 == Str.class)
-			return Ob.equals(Str.str(n0), Str.str(n1));
+			return Equals.ab(Str.str(n0), Str.str(n1));
 		else if (Tree.class.isAssignableFrom(clazz0) && Tree.class.isAssignableFrom(clazz1)) {
 			var t0 = (Tree) n0;
 			var t1 = (Tree) n1;

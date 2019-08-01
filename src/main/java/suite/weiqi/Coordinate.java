@@ -3,7 +3,7 @@ package suite.weiqi;
 import java.util.ArrayList;
 import java.util.List;
 
-import primal.Ob;
+import primal.Verbs.Get;
 import suite.primitive.Coord;
 
 public class Coordinate implements Comparable<Coordinate> {
@@ -78,7 +78,7 @@ public class Coordinate implements Comparable<Coordinate> {
 
 	@Override
 	public boolean equals(Object object) {
-		if (Ob.clazz(object) == Coordinate.class) {
+		if (Get.clazz(object) == Coordinate.class) {
 			var c = (Coordinate) object;
 			return index == c.index;
 		} else

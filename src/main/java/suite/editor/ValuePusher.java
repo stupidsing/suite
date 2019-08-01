@@ -1,6 +1,6 @@
 package suite.editor;
 
-import primal.Ob;
+import primal.Verbs.Equals;
 import suite.streamlet.Pusher;
 
 public class ValuePusher<T> {
@@ -17,7 +17,7 @@ public class ValuePusher<T> {
 	}
 
 	public void change(T value_) {
-		if (!Ob.equals(value, value_)) {
+		if (!Equals.ab(value, value_)) {
 			value = value_;
 			changed.push(value_);
 		}

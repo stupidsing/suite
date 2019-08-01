@@ -4,7 +4,8 @@ import static primal.statics.Fail.fail;
 
 import java.util.Objects;
 
-import primal.Ob;
+import primal.Verbs.Equals;
+import primal.Verbs.Get;
 import primal.adt.Opt;
 import suite.primitive.LngPrimitives.LngTest;
 import suite.primitive.LngPrimitives.Lng_Obj;
@@ -44,7 +45,7 @@ public class LngOpt {
 
 	@Override
 	public boolean equals(Object object) {
-		return Ob.clazz(object) == LngOpt.class && Ob.equals(value, ((LngOpt) object).value);
+		return Get.clazz(object) == LngOpt.class && Equals.ab(value, ((LngOpt) object).value);
 	}
 
 	@Override

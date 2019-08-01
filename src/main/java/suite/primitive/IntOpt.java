@@ -4,7 +4,8 @@ import static primal.statics.Fail.fail;
 
 import java.util.Objects;
 
-import primal.Ob;
+import primal.Verbs.Equals;
+import primal.Verbs.Get;
 import primal.adt.Opt;
 import suite.primitive.IntPrimitives.IntTest;
 import suite.primitive.IntPrimitives.Int_Obj;
@@ -44,7 +45,7 @@ public class IntOpt {
 
 	@Override
 	public boolean equals(Object object) {
-		return Ob.clazz(object) == IntOpt.class && Ob.equals(value, ((IntOpt) object).value);
+		return Get.clazz(object) == IntOpt.class && Equals.ab(value, ((IntOpt) object).value);
 	}
 
 	@Override

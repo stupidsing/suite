@@ -16,7 +16,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import primal.Ob;
+import primal.Verbs.Instantiate;
+import primal.Verbs.New;
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
 import suite.inspect.Inspect;
@@ -151,7 +152,7 @@ public class Nodify {
 					return Dict.of(map);
 				}), n -> ex(() -> {
 					var map = Dict.m(n);
-					var o1 = Ob.new_(clazz);
+					var o1 = New.clazz(clazz);
 					for (var pair : pairs) {
 						var fieldInfo = pair.v;
 						var value = map.get(pair.k).finalNode();
@@ -177,7 +178,7 @@ public class Nodify {
 					return start.getRight();
 				}, n -> {
 					var list = Tree.read(n, TermOp.OR____).map(n_ -> apply_(n_, nodifier1)).toList();
-					var o1 = (Collection<Object>) Ob.instantiate(clazz);
+					var o1 = (Collection<Object>) Instantiate.clazz(clazz);
 					o1.addAll(list);
 					return o1;
 				});
@@ -191,7 +192,7 @@ public class Nodify {
 					return Dict.of(map);
 				}, n -> {
 					var map = Dict.m(n);
-					var object1 = (Map<Object, Object>) Ob.instantiate(clazz);
+					var object1 = (Map<Object, Object>) Instantiate.clazz(clazz);
 					for (var e : map.entrySet())
 						object1.put(apply_(e.getKey(), kn), apply_(e.getValue().finalNode(), vn));
 					return object1;

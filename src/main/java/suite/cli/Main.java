@@ -14,8 +14,8 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
-import primal.Ob;
 import primal.String_;
+import primal.Verbs.Close;
 import primal.os.Log_;
 import suite.Suite;
 import suite.cfg.Defaults;
@@ -146,7 +146,7 @@ public class Main implements AutoCloseable {
 
 	@Override
 	public void close() {
-		Ob.closeQuietly(reader, writer);
+		Close.quietly(reader, writer);
 	}
 
 }

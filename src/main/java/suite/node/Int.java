@@ -1,6 +1,6 @@
 package suite.node;
 
-import primal.Ob;
+import primal.Verbs.Get;
 
 public class Int extends Node {
 
@@ -32,7 +32,7 @@ public class Int extends Node {
 
 	@Override
 	public boolean equals(Object object) {
-		if (Ob.clazz(object) == Int.class) {
+		if (Get.clazz(object) == Int.class) {
 			var i = (Int) object;
 			return number == i.number;
 		} else

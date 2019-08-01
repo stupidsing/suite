@@ -10,7 +10,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
 
-import primal.Ob;
+import primal.Verbs.Get;
 import primal.fp.Funs.Fun;
 import suite.cfg.Defaults;
 import suite.primitive.IntPrimitives.IntSource;
@@ -238,7 +238,7 @@ public class Ints implements Iterable<Integer> {
 
 	@Override
 	public boolean equals(Object object) {
-		if (Ob.clazz(object) == Ints.class) {
+		if (Get.clazz(object) == Ints.class) {
 			var other = (Ints) object;
 
 			if (size_() == other.size_()) {

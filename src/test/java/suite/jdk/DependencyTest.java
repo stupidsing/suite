@@ -10,7 +10,7 @@ import java.util.List;
 
 import org.junit.Test;
 
-import primal.Ob;
+import primal.Verbs.Compare;
 import suite.os.FileUtil;
 import suite.persistent.PerSet;
 import suite.search.DirectedGraph;
@@ -51,7 +51,7 @@ public class DependencyTest {
 		var scc = new StronglyConnectedComponents<>(DirectedGraph.of(vertices, edges));
 
 		for (var layer : scc.group().layers()) {
-			Read.from(layer).flatMap(iterable -> iterable).sort(Ob::compare).forEach(System.out::println);
+			Read.from(layer).flatMap(iterable -> iterable).sort(Compare::objects).forEach(System.out::println);
 			System.out.println();
 		}
 	}

@@ -3,8 +3,8 @@ package suite.trade.analysis;
 import java.time.LocalDate;
 import java.util.Map;
 
-import primal.Ob;
 import primal.String_;
+import primal.Verbs.Compare;
 import primal.adt.Fixie;
 import primal.adt.Fixie_.Fixie3;
 import primal.fp.Funs.Fun;
@@ -102,7 +102,7 @@ public class Summarize {
 
 			var outs = summaryByKey //
 					.mapValue(Summarize_::out0) //
-					.sortByKey(Ob::compareAnyway) //
+					.sortByKey(Compare::anyway) //
 					.map((k, v) -> "\nFor strategy " + k + ":" + v);
 
 			for (var out : outs)
@@ -149,7 +149,7 @@ public class Summarize {
 							+ " = " + ((long) (nShares * price)) //
 							+ (info != null ? " \t(" + info + ")" : "");
 				}) //
-				.sort(Ob::compare) //
+				.sort(Compare::objects) //
 				.collect();
 
 		return new Summarize_(details, trades0, trades1);

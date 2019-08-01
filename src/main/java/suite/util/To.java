@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
-import primal.Ob;
+import primal.Verbs.Close;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Sink;
 import primal.fp.Funs.Source;
@@ -204,7 +204,7 @@ public class To {
 			if (0 <= nBytesRead)
 				return Bytes.of(bs, 0, nBytesRead);
 			else {
-				Ob.closeQuietly(is);
+				Close.quietly(is);
 				return null;
 			}
 		};

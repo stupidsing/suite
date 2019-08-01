@@ -5,7 +5,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import primal.Ob;
+import primal.Verbs.Equals;
+import primal.Verbs.Get;
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Source;
@@ -93,7 +94,7 @@ public class ChrStreamlet implements StreamletDefaults<Character, ChrPuller> {
 
 	@Override
 	public boolean equals(Object object) {
-		return Ob.clazz(object) == ChrStreamlet.class ? Ob.equals(spawn(), ((ChrStreamlet) object).spawn()) : false;
+		return Get.clazz(object) == ChrStreamlet.class ? Equals.ab(spawn(), ((ChrStreamlet) object).spawn()) : false;
 	}
 
 	public ChrStreamlet filter(ChrTest fun) {

@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
-import primal.Ob;
+import primal.Verbs.Compare;
 import suite.node.Atom;
 import suite.node.Dict;
 import suite.node.Int;
@@ -58,7 +58,7 @@ public class Comparer implements Comparator<Node> {
 				keys.addAll(m0.keySet());
 				keys.addAll(m1.keySet());
 				for (var key : Read.from(keys).sort(this::compare))
-					c = c != 0 ? c : Ob.compare(m0.get(key), m1.get(key));
+					c = c != 0 ? c : Compare.objects(m0.get(key), m1.get(key));
 				return c;
 			} else if (clazz0 == Int.class)
 				return Integer.compare(Int.num(n0), Int.num(n1));

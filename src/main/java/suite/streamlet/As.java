@@ -25,6 +25,7 @@ import suite.primitive.Chars;
 import suite.primitive.Chars.CharsBuilder;
 import suite.primitive.IntPrimitives.IntSink;
 import suite.primitive.IntPrimitives.Obj_Int;
+import suite.primitive.adt.map.ObjIntMap;
 import suite.primitive.streamlet.IntPuller;
 import suite.util.Thread_;
 import suite.util.To;
@@ -50,6 +51,13 @@ public class As {
 
 	public static Streamlet<String[]> csv(Puller<Bytes> puller) {
 		return Read.from(puller.collect(As::lines_).map(As::csvLine).toList());
+	}
+
+	public static Pair<ObjIntMap<String>, Streamlet<String[]>> csvWithHeader(Puller<Bytes> puller) {
+		var list = puller.collect(As::lines_).map(As::csvLine).toList();
+		var headers = new ObjIntMap<String>();
+		Read.from(list.get(0)).index().sink((i, field) -> headers.put(field, i));
+		return Pair.of(headers, Read.from(list).skip(1));
 	}
 
 	public static <T> Fun<Puller<T>, Void> executeThreads(Sink<T> sink) {

@@ -1,7 +1,7 @@
 package suite.node;
 
-import primal.Ob;
 import primal.String_;
+import primal.Verbs.Get;
 
 public class Str extends Node {
 
@@ -17,7 +17,7 @@ public class Str extends Node {
 
 	@Override
 	public boolean equals(Object object) {
-		return Ob.clazz(object) == Str.class ? String_.equals(value, ((Str) object).value) : false;
+		return Get.clazz(object) == Str.class ? String_.equals(value, ((Str) object).value) : false;
 	}
 
 	@Override

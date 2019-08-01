@@ -2,10 +2,10 @@ package suite.fp;
 
 import static primal.statics.Fail.fail;
 
+import primal.adt.Mutable;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Iterate;
 import suite.Suite;
-import primal.adt.Mutable;
 import suite.lp.Trail;
 import suite.lp.doer.Binder;
 import suite.node.Atom;

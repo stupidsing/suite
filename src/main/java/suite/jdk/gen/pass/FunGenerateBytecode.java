@@ -17,7 +17,7 @@ import org.apache.bcel.generic.NEW;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.Type;
 
-import primal.Ob;
+import primal.Verbs.Equals;
 import suite.jdk.gen.FunExprM.ArrayFunExpr;
 import suite.jdk.gen.FunExprM.ArrayLengthFunExpr;
 import suite.jdk.gen.FunExprM.AssignLocalFunExpr;
@@ -236,7 +236,7 @@ public class FunGenerateBytecode {
 				visit_(e1.do_);
 			}).doIf(SeqFunExpr.class, e1 -> {
 				visit_(e1.left);
-				if (!Ob.equals(fti.typeOf(e1.left), Type.VOID))
+				if (!Equals.ab(fti.typeOf(e1.left), Type.VOID))
 					list.add(InstructionConst.POP);
 				visit_(e1.right);
 			}).doIf(VoidFunExpr.class, e1 -> {

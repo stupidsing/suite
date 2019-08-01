@@ -3,7 +3,7 @@ package suite.node;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import primal.Ob;
+import primal.Verbs.Get;
 import suite.node.io.Operator;
 import suite.node.io.SwitchNode;
 
@@ -33,7 +33,7 @@ public class TreeIntern {
 		}
 
 		public boolean equals(Object object) {
-			if (Ob.clazz(object) == NodeKey.class) {
+			if (Get.clazz(object) == NodeKey.class) {
 				var key = (NodeKey) object;
 				return hashCode == key.hashCode && node == key.node;
 			} else
@@ -58,7 +58,7 @@ public class TreeIntern {
 		}
 
 		public boolean equals(Object object) {
-			if (Ob.clazz(object) == TreeKey.class) {
+			if (Get.clazz(object) == TreeKey.class) {
 				var key = (TreeKey) object;
 				return hashCode == key.hashCode && operator == key.operator && left == key.left && right == key.right;
 			} else

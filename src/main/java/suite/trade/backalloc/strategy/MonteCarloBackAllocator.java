@@ -5,7 +5,7 @@ import static suite.util.Streamlet_.forInt;
 import java.util.Map;
 import java.util.Random;
 
-import primal.Ob;
+import primal.Verbs.Compare;
 import suite.streamlet.Read;
 import suite.trade.Time;
 import suite.trade.backalloc.BackAllocator;
@@ -39,7 +39,7 @@ public class MonteCarloBackAllocator implements BackAllocator {
 				var portfolios1 = Read //
 						.from(portfolios) //
 						.map2(portfolio -> evaluate(symbols, portfolio, returnsBySymbol, index)) //
-						.sortByValue((o0, o1) -> Ob.compare(o1, o0)) //
+						.sortByValue((o0, o1) -> Compare.objects(o1, o0)) //
 						.take(128) //
 						.keys() //
 						.toList();

@@ -3,7 +3,7 @@ package suite.lp.kb;
 import java.util.ArrayList;
 import java.util.List;
 
-import primal.Ob;
+import primal.Verbs.Equals;
 import suite.lp.doer.Cloner;
 import suite.node.Node;
 
@@ -40,7 +40,7 @@ public class LinearRuleSet implements RuleSet {
 
 	@Override
 	public boolean equals(Object object) {
-		return object instanceof LinearRuleSet && Ob.equals(rules, ((LinearRuleSet) object).rules);
+		return object instanceof LinearRuleSet && Equals.ab(rules, ((LinearRuleSet) object).rules);
 	}
 
 	@Override

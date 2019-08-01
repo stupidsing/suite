@@ -1,6 +1,6 @@
 package suite.persistent;
 
-import primal.Ob;
+import primal.Verbs.Equals;
 import primal.adt.Pair;
 import primal.fp.Funs2.BinOp;
 import primal.fp.Funs2.Source2;
@@ -41,7 +41,7 @@ public class PerHashMap<K, V> {
 
 	public V get(K key) {
 		for (var e : set.get(key.hashCode()))
-			if (Ob.equals(key, e.k))
+			if (Equals.ab(key, e.k))
 				return e.v;
 		return null;
 	}

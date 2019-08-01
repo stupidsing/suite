@@ -2,7 +2,7 @@ package suite.weiqi;
 
 import static primal.statics.Fail.fail;
 
-import primal.Ob;
+import primal.Verbs.Get;
 import suite.primitive.adt.set.IntSet;
 import suite.weiqi.Board.MoveType;
 import suite.weiqi.Weiqi.Occupation;
@@ -137,7 +137,7 @@ public class GameSet {
 
 	@Override
 	public boolean equals(Object object) {
-		if (Ob.clazz(object) == GameSet.class) {
+		if (Get.clazz(object) == GameSet.class) {
 			var other = (GameSet) object;
 			return board.equals(other.board) && nextPlayer == other.nextPlayer && previousStates.equals(other.previousStates);
 		} else

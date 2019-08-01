@@ -1,6 +1,6 @@
 package suite.lp.kb;
 
-import primal.Ob;
+import primal.Verbs.Get;
 import suite.lp.doer.GeneralizerFactory.Generalize_;
 import suite.lp.doer.ProverConstant;
 import suite.lp.sewing.impl.SewingGeneralizerImpl;
@@ -54,7 +54,7 @@ public class Rule {
 
 	@Override
 	public boolean equals(Object object) {
-		if (Ob.clazz(object) == Rule.class) {
+		if (Get.clazz(object) == Rule.class) {
 			var other = (Rule) object;
 			return head.equals(other.head) && tail.equals(other.tail);
 		} else

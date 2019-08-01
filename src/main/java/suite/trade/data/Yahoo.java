@@ -14,8 +14,8 @@ import java.util.function.Predicate;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import primal.Ob;
 import primal.String_;
+import primal.Verbs.Compare;
 import primal.fp.Funs2.FoldOp;
 import suite.cfg.Defaults;
 import suite.cfg.HomeDir;
@@ -48,7 +48,7 @@ public class Yahoo {
 				.http(urlString) //
 				.collect(As::csv) //
 				.skip(1) //
-				.sort((a0, a1) -> Ob.compare(a0[0], a1[0])) //
+				.sort((a0, a1) -> Compare.objects(a0[0], a1[0])) //
 				.collect();
 
 		var ts = arrays.collect(Obj_Lng.lift(array -> closeTs(array[0]))).toArray();
@@ -230,7 +230,7 @@ public class Yahoo {
 	private Map<String, Float> quote_(Streamlet<String> symbols, String field) {
 		if (0 < symbols.size()) {
 			var url = "https://download.finance.yahoo.com/d/quotes.csv" //
-					+ "?s=" + symbols.sort(Ob::compare).map(this::encode).collect(As.joinedBy("+")) //
+					+ "?s=" + symbols.sort(Compare::objects).map(this::encode).collect(As.joinedBy("+")) //
 					+ "&f=s" + field;
 
 			return HttpUtil.get(url).out().collect(As::csv).toMap(array -> array[0], array -> Float.parseFloat(array[1]));

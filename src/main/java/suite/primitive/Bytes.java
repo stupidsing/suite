@@ -10,7 +10,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
 
-import primal.Ob;
+import primal.Verbs.Get;
 import primal.fp.Funs.Fun;
 import suite.cfg.Defaults;
 import suite.streamlet.Puller;
@@ -210,7 +210,7 @@ public class Bytes implements Iterable<Byte> {
 
 	@Override
 	public boolean equals(Object object) {
-		if (Ob.clazz(object) == Bytes.class) {
+		if (Get.clazz(object) == Bytes.class) {
 			var other = (Bytes) object;
 
 			if (size_() == other.size_()) {

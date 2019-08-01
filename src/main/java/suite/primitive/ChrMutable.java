@@ -2,7 +2,7 @@ package suite.primitive;
 
 import static primal.statics.Fail.fail;
 
-import primal.Ob;
+import primal.Verbs.Get;
 
 /**
  * An indirect reference to a primitive char. Character.MIN_VALUE is not allowed
@@ -47,7 +47,7 @@ public class ChrMutable {
 
 	@Override
 	public boolean equals(Object object) {
-		return Ob.clazz(object) == ChrMutable.class && value == ((ChrMutable) object).value;
+		return Get.clazz(object) == ChrMutable.class && value == ((ChrMutable) object).value;
 	}
 
 	@Override

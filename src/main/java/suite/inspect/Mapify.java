@@ -17,7 +17,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import primal.Ob;
+import primal.Verbs.Instantiate;
+import primal.Verbs.New;
 import primal.fp.Funs.Iterate;
 import suite.streamlet.Read;
 import suite.util.Switch;
@@ -136,7 +137,7 @@ public class Mapify {
 							.toMap();
 				}, o -> ex(() -> {
 					var map = (Map<?, ?>) o;
-					var object1 = Ob.new_(clazz);
+					var object1 = New.clazz(clazz);
 					for (var fi : fis)
 						fi.field.set(object1, apply_(map.get(fi.name), fi.mapifier.unmapify));
 					return object1;
@@ -157,7 +158,7 @@ public class Mapify {
 					return map;
 				}, o -> {
 					var map = (Map<?, ?>) o;
-					var object1 = (Collection<Object>) Ob.instantiate(clazz);
+					var object1 = (Collection<Object>) Instantiate.clazz(clazz);
 					var i = 0;
 					while (map.containsKey(i))
 						object1.add(apply_(map.get(i++), mapifier1.unmapify));
@@ -172,7 +173,7 @@ public class Mapify {
 							.map2((k, v) -> apply_(k, km.unmapify), (k, v) -> apply_(v, vm.mapify)) //
 							.toMap();
 				}, o -> {
-					var object1 = (Map<Object, Object>) Ob.instantiate(clazz);
+					var object1 = (Map<Object, Object>) Instantiate.clazz(clazz);
 					((Map<?, ?>) o).forEach((k, v) -> object1.put(apply_(k, km.unmapify), apply_(v, vm.unmapify)));
 					return object1;
 				});

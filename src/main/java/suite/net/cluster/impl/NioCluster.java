@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import primal.Ob;
+import primal.Verbs.Close;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Sink;
 import primal.os.Log_;
@@ -71,7 +71,7 @@ public class NioCluster implements Closeable {
 			rw.close();
 
 		probe.stop();
-		Ob.closeQuietly(unlisten);
+		Close.quietly(unlisten);
 		nd.stop();
 	}
 

@@ -1,6 +1,7 @@
 package suite.node;
 
-import primal.Ob;
+import primal.Verbs.Equals;
+import primal.Verbs.Get;
 
 public class Tuple extends Node {
 
@@ -20,7 +21,7 @@ public class Tuple extends Node {
 
 	@Override
 	public boolean equals(Object object) {
-		return Ob.clazz(object) == Tuple.class && Ob.equals(nodes, ((Tuple) object).nodes);
+		return Get.clazz(object) == Tuple.class && Equals.ab(nodes, ((Tuple) object).nodes);
 	}
 
 	@Override

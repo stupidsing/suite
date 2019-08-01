@@ -2,7 +2,7 @@ package suite.trade.analysis;
 
 import java.util.List;
 
-import primal.Ob;
+import primal.Verbs.Compare;
 import primal.adt.Pair;
 import suite.math.linalg.Vector;
 import suite.math.numeric.Statistic;
@@ -49,7 +49,7 @@ public class Factor {
 
 		return instruments //
 				.map2(instrument -> project(ids, cfg.dataSource(instrument.symbol), period)) //
-				.sortByValue(Ob::compare) //
+				.sortByValue(Compare::objects) //
 				.toList();
 	}
 

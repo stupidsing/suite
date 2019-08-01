@@ -7,7 +7,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
-import primal.Ob;
+import primal.Verbs.Compare;
 import suite.http.HttpUtil;
 import suite.node.util.Singleton;
 import suite.streamlet.Read;
@@ -101,7 +101,7 @@ public class HkexFactBook {
 				.pipe("egrep '^0'") //
 				.read() //
 				.map(line -> HkexUtil.toSymbol(line.substring(0, 5))) //
-				.sort(Ob::compare) //
+				.sort(Compare::objects) //
 				.collect();
 	}
 
@@ -115,7 +115,7 @@ public class HkexFactBook {
 				.pipe("egrep '^0'") //
 				.read() //
 				.map(line -> HkexUtil.toSymbol(line.substring(0, 5))) //
-				.sort(Ob::compare) //
+				.sort(Compare::objects) //
 				.collect();
 	}
 

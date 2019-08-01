@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import primal.Ob;
+import primal.Verbs.Get;
 
 public class BiHashMap<K, V> implements BiMap<K, V> {
 
@@ -94,7 +94,7 @@ public class BiHashMap<K, V> implements BiMap<K, V> {
 
 	@Override
 	public boolean equals(Object object) {
-		return Ob.clazz(object) == BiHashMap.class ? map.equals(((BiHashMap<?, ?>) object).map) : false;
+		return Get.clazz(object) == BiHashMap.class ? map.equals(((BiHashMap<?, ?>) object).map) : false;
 	}
 
 	@Override

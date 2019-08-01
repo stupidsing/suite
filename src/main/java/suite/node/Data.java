@@ -2,7 +2,8 @@ package suite.node;
 
 import java.util.Objects;
 
-import primal.Ob;
+import primal.Verbs.Equals;
+import primal.Verbs.Get;
 
 public class Data<T> extends Node {
 
@@ -20,7 +21,7 @@ public class Data<T> extends Node {
 
 	@Override
 	public boolean equals(Object object) {
-		return Ob.clazz(object) == Data.class && Ob.equals(data, ((Data<?>) object).data);
+		return Get.clazz(object) == Data.class && Equals.ab(data, ((Data<?>) object).data);
 	}
 
 	@Override

@@ -3,7 +3,7 @@ package suite.node;
 import java.util.HashMap;
 import java.util.Map;
 
-import primal.Ob;
+import primal.Verbs.Get;
 import primal.adt.Pair;
 
 public class Dict extends Node {
@@ -47,7 +47,7 @@ public class Dict extends Node {
 	public boolean equals(Object object) {
 		var map0 = getMap();
 		var map1 = ((Dict) object).getMap();
-		return Ob.clazz(object) == Dict.class ? map0.equals(map1) : false;
+		return Get.clazz(object) == Dict.class ? map0.equals(map1) : false;
 	}
 
 	@Override

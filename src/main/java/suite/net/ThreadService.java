@@ -2,7 +2,7 @@ package suite.net;
 
 import java.io.Closeable;
 
-import primal.Ob;
+import primal.Verbs.Wait;
 import suite.util.Thread_;
 import suite.util.Thread_.RunnableEx;
 
@@ -22,7 +22,7 @@ public class ThreadService {
 		thread = Thread_.startThread(serve);
 
 		while (!started)
-			Ob.wait(this);
+			Wait.object(this);
 	}
 
 	public synchronized void stop() {
@@ -30,7 +30,7 @@ public class ThreadService {
 		thread.interrupt();
 
 		while (started)
-			Ob.wait(this);
+			Wait.object(this);
 
 		thread = null;
 	}

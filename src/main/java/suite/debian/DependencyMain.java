@@ -10,7 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import primal.Ob;
+import primal.Verbs.Compare;
+import primal.Verbs.Equals;
 import suite.debian.AptUtil.Repo;
 import suite.os.FileUtil;
 import suite.streamlet.Read;
@@ -162,7 +163,7 @@ public class DependencyMain {
 				.from(packages) //
 				.filter(pm -> pm.get("Status").contains("deinstall")) //
 				.map(pm -> "sudo dpkg --purge " + packageName(pm)) //
-				.sort(Ob::compare) //
+				.sort(Compare::objects) //
 				.toList();
 	}
 
@@ -180,7 +181,7 @@ public class DependencyMain {
 		return Read //
 				.from(required1) //
 				.map(packageName_ -> aptUtil.getDownloadUrl(repo, packages, packageName_)) //
-				.sort(Ob::compare) //
+				.sort(Compare::objects) //
 				.toList();
 	}
 
@@ -199,7 +200,7 @@ public class DependencyMain {
 				.filter(packageName -> !dependees.containsKey(packageName)) //
 				.filter(packageName -> !requiredList.contains(packageName)) //
 				.map(packageName -> "sudo apt remove -y --purge " + packageName) //
-				.sort(Ob::compare) //
+				.sort(Compare::objects) //
 				.toList();
 	}
 
@@ -219,7 +220,7 @@ public class DependencyMain {
 				.from(packages) //
 				.map(this::packageName) //
 				.filter(packageName -> !required1.contains(packageName)) //
-				.sort(Ob::compare) //
+				.sort(Compare::objects) //
 				.toList();
 	}
 
@@ -242,7 +243,7 @@ public class DependencyMain {
 	}
 
 	private boolean isEssential(Map<String, String> pm) {
-		return Ob.equals(pm.get("Essential"), "yes") //
+		return Equals.ab(pm.get("Essential"), "yes") //
 				|| List.of("important", "required").contains(pm.get("Priority"));
 	}
 

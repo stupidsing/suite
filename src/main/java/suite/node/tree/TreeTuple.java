@@ -1,6 +1,6 @@
 package suite.node.tree;
 
-import primal.Ob;
+import primal.Verbs.Get;
 import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.Operator;
@@ -20,7 +20,7 @@ public class TreeTuple extends Tree {
 
 	@Override
 	public boolean equals(Object object) {
-		return Ob.clazz(object) == getClass() ? childrenEquals((Tree) object) : false;
+		return Get.clazz(object) == getClass() ? childrenEquals((Tree) object) : false;
 	}
 
 	@Override

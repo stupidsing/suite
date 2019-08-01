@@ -10,7 +10,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
 
-import primal.Ob;
+import primal.Verbs.Get;
 import primal.fp.Funs.Fun;
 import suite.cfg.Defaults;
 import suite.primitive.DblPrimitives.DblSource;
@@ -238,7 +238,7 @@ public class Doubles implements Iterable<Double> {
 
 	@Override
 	public boolean equals(Object object) {
-		if (Ob.clazz(object) == Doubles.class) {
+		if (Get.clazz(object) == Doubles.class) {
 			var other = (Doubles) object;
 
 			if (size_() == other.size_()) {

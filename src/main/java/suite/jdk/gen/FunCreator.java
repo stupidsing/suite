@@ -23,7 +23,7 @@ import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.Type;
 
-import primal.Ob;
+import primal.Verbs.New;
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Iterate;
@@ -212,7 +212,7 @@ public class FunCreator<I> extends FunFactory {
 		}
 
 		private I create(Map<String, Object> fieldValues) {
-			var t = Ob.new_(clazz);
+			var t = New.clazz(clazz);
 
 			return ex(() -> {
 				for (var field : clazz.getDeclaredFields()) {

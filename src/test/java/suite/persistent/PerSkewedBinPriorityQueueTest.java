@@ -7,7 +7,7 @@ import java.util.Collections;
 
 import org.junit.Test;
 
-import primal.Ob;
+import primal.Verbs.Compare;
 
 public class PerSkewedBinPriorityQueueTest {
 
@@ -20,7 +20,7 @@ public class PerSkewedBinPriorityQueueTest {
 			list.add(i);
 		Collections.shuffle(list);
 
-		var pq = new PerSkewedBinPriorityQueue<Integer>(Ob::compare);
+		var pq = new PerSkewedBinPriorityQueue<Integer>(Compare::objects);
 
 		for (var i : list)
 			pq = pq.add(i);

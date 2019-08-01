@@ -10,10 +10,10 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
+import primal.adt.IdentityKey;
 import primal.fp.Funs.Fun;
 import primal.os.Log_;
 import suite.Suite;
-import primal.adt.IdentityKey;
 import suite.lp.doer.Cloner;
 import suite.lp.doer.Specializer;
 import suite.lp.predicate.PredicateUtil.BuiltinPredicate;

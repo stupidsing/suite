@@ -14,11 +14,12 @@ import java.util.Map;
 import java.util.function.IntPredicate;
 import java.util.function.Predicate;
 
-import primal.Ob;
 import primal.String_;
+import primal.Verbs.Compare;
+import primal.Verbs.Equals;
+import primal.adt.Mutable;
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
-import primal.adt.Mutable;
 import suite.math.numeric.Statistic;
 import suite.primitive.DblDbl_Dbl;
 import suite.primitive.DblPrimitives.ObjObj_Dbl;
@@ -179,7 +180,7 @@ public interface BackAllocator {
 					var time_ = Time.ofEpochSec(akds.ts[index - 1]);
 					var time1 = time_.addDays(-(time_.epochDay() % freq));
 
-					if (!Ob.equals(time0, time1)) {
+					if (!Equals.ab(time0, time1)) {
 						time0 = time1;
 						result0 = onDateTime.onDateTime(index);
 					}
@@ -246,7 +247,7 @@ public interface BackAllocator {
 
 			return index -> Read //
 					.from2(onDateTime.onDateTime(index)) //
-					.sortByValue((r0, r1) -> Ob.compare(r1, r0)) //
+					.sortByValue((r0, r1) -> Compare.objects(r1, r0)) //
 					.take(top) //
 					.toList();
 		};

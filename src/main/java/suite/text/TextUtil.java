@@ -5,7 +5,7 @@ import static java.lang.Math.min;
 import java.util.ArrayList;
 import java.util.List;
 
-import primal.Ob;
+import primal.Verbs.Equals;
 import suite.lcs.Lccs;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
@@ -64,7 +64,7 @@ public class TextUtil {
 		var p = 0;
 		for (var pair : pairs) {
 			var p1 = p + pair.t0.size();
-			if (Ob.equals(bytes.range(p, p1), pair.t0))
+			if (Equals.ab(bytes.range(p, p1), pair.t0))
 				bb.append(pair.t1);
 			else
 				throw new ConflictException();
@@ -94,7 +94,7 @@ public class TextUtil {
 			var commonx = phx.t0.range(0, c);
 			var commony = phy.t0.range(0, c);
 
-			if (Ob.equals(commonx, commony)) {
+			if (Equals.ab(commonx, commony)) {
 				int s0, s1;
 				BytesPair pair;
 				List<BytesPair> pairs;

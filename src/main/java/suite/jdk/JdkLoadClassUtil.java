@@ -9,7 +9,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Path;
 
-import primal.Ob;
+import primal.Verbs.New;
 import primal.os.Log_;
 import suite.util.To;
 
@@ -31,7 +31,7 @@ public class JdkLoadClassUtil extends JdkUtil implements Closeable {
 	public <T> T newInstance(Class<T> interfaceClazz, String canonicalName, String java) {
 		compile(canonicalName, java);
 		Class<? extends T> clazz = load(canonicalName);
-		return Ob.new_(clazz);
+		return New.clazz(clazz);
 	}
 
 	private <T> Class<? extends T> load(String canonicalName) {

@@ -8,7 +8,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import primal.Ob;
+import primal.Verbs.Equals;
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
 import suite.ebnf.Grammar;
@@ -69,7 +69,7 @@ public class BuildLr {
 			if (order0 < order1) {
 				put(key, value1);
 				return true;
-			} else if (order1 < order0 || Ob.equals(value0, value1))
+			} else if (order1 < order0 || Equals.ab(value0, value1))
 				return false;
 			else if (value0.k != null && value1.k != null) {
 

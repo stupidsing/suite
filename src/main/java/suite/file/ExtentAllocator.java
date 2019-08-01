@@ -2,7 +2,7 @@ package suite.file;
 
 import java.io.Closeable;
 
-import primal.Ob;
+import primal.Verbs.Get;
 
 public interface ExtentAllocator extends Closeable {
 
@@ -16,7 +16,7 @@ public interface ExtentAllocator extends Closeable {
 		}
 
 		public boolean equals(Object object) {
-			if (Ob.clazz(object) == Extent.class) {
+			if (Get.clazz(object) == Extent.class) {
 				var other = (Extent) object;
 				return start == other.start && end == other.end;
 			} else

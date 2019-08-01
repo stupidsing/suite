@@ -5,7 +5,7 @@ import static primal.statics.Fail.fail;
 import java.util.Arrays;
 import java.util.Objects;
 
-import primal.Ob;
+import primal.Verbs.Equals;
 import suite.primitive.ChrFunUtil;
 import suite.primitive.ChrPrimitives.ChrObjSink;
 import suite.primitive.ChrPrimitives.ChrObjSource;
@@ -75,7 +75,7 @@ public class ObjChrMap<K> {
 
 	public char get(K key) {
 		var index = index(key);
-		return Ob.equals(ks[index], key) ? vs[index] : empty;
+		return Equals.ab(ks[index], key) ? vs[index] : empty;
 	}
 
 	@Override

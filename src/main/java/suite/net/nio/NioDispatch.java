@@ -19,7 +19,7 @@ import java.nio.channels.SocketChannel;
 import java.util.HashMap;
 import java.util.Map;
 
-import primal.Ob;
+import primal.Verbs.Close;
 import primal.fp.Funs.Iterate;
 import primal.fp.Funs.Sink;
 import primal.fp.Funs2.Sink2;
@@ -330,7 +330,7 @@ public class NioDispatch implements Closeable {
 			ssc.configureBlocking(false);
 			ssc.socket().bind(new InetSocketAddress(port));
 			reg(ssc, SelectionKey.OP_ACCEPT, accept, fail);
-			return () -> Ob.closeQuietly(ssc);
+			return () -> Close.quietly(ssc);
 		} catch (IOException ex) {
 			fail.f(ex);
 			return null;

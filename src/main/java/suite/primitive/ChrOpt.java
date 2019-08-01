@@ -4,7 +4,8 @@ import static primal.statics.Fail.fail;
 
 import java.util.Objects;
 
-import primal.Ob;
+import primal.Verbs.Equals;
+import primal.Verbs.Get;
 import primal.adt.Opt;
 import suite.primitive.ChrPrimitives.ChrTest;
 import suite.primitive.ChrPrimitives.Chr_Obj;
@@ -44,7 +45,7 @@ public class ChrOpt {
 
 	@Override
 	public boolean equals(Object object) {
-		return Ob.clazz(object) == ChrOpt.class && Ob.equals(value, ((ChrOpt) object).value);
+		return Get.clazz(object) == ChrOpt.class && Equals.ab(value, ((ChrOpt) object).value);
 	}
 
 	@Override

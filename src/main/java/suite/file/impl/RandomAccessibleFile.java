@@ -8,7 +8,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.file.Path;
 
-import primal.Ob;
+import primal.Verbs.Close;
 import suite.os.FileUtil;
 import suite.primitive.Bytes;
 
@@ -25,7 +25,7 @@ public class RandomAccessibleFile implements Closeable {
 
 	@Override
 	public void close() {
-		Ob.closeQuietly(channel, file);
+		Close.quietly(channel, file);
 	}
 
 	public void sync() {

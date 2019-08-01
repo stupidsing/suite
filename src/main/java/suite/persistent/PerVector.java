@@ -4,7 +4,8 @@ import static java.lang.Math.min;
 
 import java.util.Objects;
 
-import primal.Ob;
+import primal.Verbs.Equals;
+import primal.Verbs.Get;
 import suite.util.Array_;
 
 /**
@@ -128,14 +129,14 @@ public class PerVector<T> {
 	public boolean equals(Object object) {
 		var b = false;
 
-		if (Ob.clazz(object) == PerVector.class) {
+		if (Get.clazz(object) == PerVector.class) {
 			@SuppressWarnings("unchecked")
 			PerVector<T> v = (PerVector<T>) object;
 			b = end - start == v.end - v.start;
 			int si = start, di = v.start;
 
 			while (b && si < end)
-				b &= Ob.equals(data.nodes[si++], v.data.nodes[di++]);
+				b &= Equals.ab(data.nodes[si++], v.data.nodes[di++]);
 		}
 
 		return b;

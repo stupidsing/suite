@@ -14,11 +14,13 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.IntPredicate;
 
-import primal.Ob;
+import primal.Verbs.Close;
+import primal.Verbs.Equals;
+import primal.Verbs.Get;
+import primal.adt.Mutable;
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Source;
-import primal.adt.Mutable;
 import suite.adt.map.ListMultimap;
 import suite.primitive.DblFunUtil;
 import suite.primitive.DblOpt;
@@ -124,7 +126,7 @@ public class DblPuller implements PullerDefaults<Double> {
 		return of(() -> {
 			var next = pull();
 			if (next == empty)
-				Ob.closeQuietly(c);
+				Close.quietly(c);
 			return next;
 		});
 	}
@@ -190,10 +192,10 @@ public class DblPuller implements PullerDefaults<Double> {
 
 	@Override
 	public boolean equals(Object object) {
-		if (Ob.clazz(object) == DblPuller.class) {
+		if (Get.clazz(object) == DblPuller.class) {
 			var source1 = ((DblPuller) object).source;
 			double o0, o1;
-			while (Ob.equals(o0 = source.g(), o1 = source1.g()))
+			while (Equals.ab(o0 = source.g(), o1 = source1.g()))
 				if (o0 == empty && o1 == empty)
 					return true;
 			return false;
