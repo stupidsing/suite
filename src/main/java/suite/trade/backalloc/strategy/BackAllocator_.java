@@ -5,7 +5,7 @@ import java.util.List;
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
 import primal.primitive.Int_Dbl;
-import suite.primitive.DblPrimitives;
+import suite.primitive.AsDbl;
 import suite.streamlet.Read;
 import suite.trade.backalloc.BackAllocator;
 import suite.trade.data.DataSource;
@@ -47,7 +47,7 @@ public class BackAllocator_ {
 
 			return index -> odts //
 					.flatMap(odt -> odt.onDateTime(index)) //
-					.groupBy(Pair::fst, st -> st.toDouble(DblPrimitives.sum(Pair::snd))) //
+					.groupBy(Pair::fst, st -> st.toDouble(AsDbl.sum(Pair::snd))) //
 					.toList();
 		};
 	}

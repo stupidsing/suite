@@ -8,7 +8,7 @@ import java.util.List;
 import org.junit.Test;
 
 import primal.adt.Pair;
-import suite.primitive.DblPrimitives;
+import suite.primitive.AsDbl;
 import suite.primitive.Ints_;
 import suite.primitive.Longs_;
 import suite.streamlet.Read;
@@ -37,7 +37,7 @@ public class BackAllocatorTest {
 
 		var potentials = forInt(indices.length) //
 				.map(index -> 0 < index ? Read.from(odt.onDateTime(index)) : Read.<Pair<String, Double>> empty()) //
-				.map(pairs -> pairs.toDouble(DblPrimitives.sum(pair -> pair.v))) //
+				.map(pairs -> pairs.toDouble(AsDbl.sum(pair -> pair.v))) //
 				.toList();
 
 		assertEquals(List.of(0d, 1d, 1d, 1d, 0d, 0d, 0d, 0d, 0d), potentials);

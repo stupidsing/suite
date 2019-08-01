@@ -7,9 +7,9 @@ import primal.Verbs.Compare;
 import primal.fp.FunUtil;
 import primal.fp.Funs.Sink;
 import suite.math.numeric.Statistic;
-import suite.primitive.DblPrimitives;
+import suite.primitive.AsDbl;
 import suite.primitive.Floats_;
-import suite.primitive.FltPrimitives;
+import suite.primitive.AsFlt;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 import suite.trade.Instrument;
@@ -44,10 +44,10 @@ public class BackTester {
 		var results1 = simulationsByKey //
 				.filterValue(sim -> sim.exception == null) //
 				.groupBy(sims -> {
-					var txFee = sims.toDouble(DblPrimitives.sum(sim -> cfg.transactionFee(sim.account.transactionAmount())));
+					var txFee = sims.toDouble(AsDbl.sum(sim -> cfg.transactionFee(sim.account.transactionAmount())));
 
 					var returns = sims //
-							.collect(FltPrimitives.lift(sim -> (float) sim.annualReturn)) //
+							.collect(AsFlt.lift(sim -> (float) sim.annualReturn)) //
 							.toArray();
 
 					var mv = stat.meanVariance(returns);

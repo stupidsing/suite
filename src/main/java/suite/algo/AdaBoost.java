@@ -7,7 +7,7 @@ import java.util.List;
 import primal.primitive.DblPrim.Obj_Dbl;
 import primal.primitive.adt.pair.DblIntPair;
 import suite.math.linalg.Vector;
-import suite.primitive.DblPrimitives;
+import suite.primitive.AsDbl;
 import suite.primitive.Floats;
 import suite.streamlet.Read;
 import suite.util.To;
@@ -43,7 +43,7 @@ public class AdaBoost {
 				var error = Read //
 						.from(xys) //
 						.map(xy -> xy.xs[p] == xy.y ? 0d : ws[p]) //
-						.toDouble(DblPrimitives.sum(e -> e));
+						.toDouble(AsDbl.sum(e -> e));
 
 				if (error < min.t0)
 					min.update(error, p);
@@ -63,7 +63,7 @@ public class AdaBoost {
 			});
 		}).collect();
 
-		return xs -> p_alphas.toDouble(DblPrimitives.sum(pair -> pair.map((alpha, p) -> alpha * d(xs[p]))));
+		return xs -> p_alphas.toDouble(AsDbl.sum(pair -> pair.map((alpha, p) -> alpha * d(xs[p]))));
 	}
 
 	private double d(boolean b) {

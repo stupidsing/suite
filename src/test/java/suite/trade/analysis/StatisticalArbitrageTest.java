@@ -20,7 +20,7 @@ import primal.primitive.adt.pair.IntFltPair;
 import suite.algo.KmeansCluster;
 import suite.math.numeric.Statistic;
 import suite.math.transform.DiscreteCosineTransform;
-import suite.primitive.DblPrimitives;
+import suite.primitive.AsDbl;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
@@ -233,7 +233,7 @@ public class StatisticalArbitrageTest {
 
 				var sum = forInt(1, maxTor) //
 						.map(i -> i) //
-						.toDouble(DblPrimitives.sum(tor -> {
+						.toDouble(AsDbl.sum(tor -> {
 							var probability = cpsArray[tor - 1][cpsi_ + 1] - cpsArray[tor - 1][cpsi_];
 							return 1d / probability;
 						}));

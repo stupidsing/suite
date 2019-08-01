@@ -9,7 +9,7 @@ import suite.primitive.streamlet.DblStreamlet;
 import suite.streamlet.Puller;
 import suite.streamlet.Puller2;
 
-public class DblPrimitives {
+public class AsDbl {
 
 	public static <T> Fun<Puller<T>, DblStreamlet> lift(Obj_Dbl<T> fun0) {
 		var fun1 = fun0.rethrow();

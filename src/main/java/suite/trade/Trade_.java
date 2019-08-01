@@ -24,7 +24,7 @@ import primal.primitive.adt.pair.IntFltPair;
 import primal.primitive.adt.pair.LngFltPair;
 import primal.primitive.adt.pair.LngIntPair;
 import suite.math.Math_;
-import suite.primitive.IntPrimitives;
+import suite.primitive.AsInt;
 import suite.streamlet.As;
 import suite.streamlet.Puller;
 import suite.streamlet.Read;
@@ -182,7 +182,7 @@ public class Trade_ {
 		return Read //
 				.from(trades) //
 				.map2(r -> r.symbol, r -> r.buySell) //
-				.groupBy(sizes -> sizes.toInt(IntPrimitives.sum(size -> size))) //
+				.groupBy(sizes -> sizes.toInt(AsInt.sum(size -> size))) //
 				.filterValue(size -> size != 0) //
 				.toMap();
 	}

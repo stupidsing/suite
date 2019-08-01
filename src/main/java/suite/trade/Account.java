@@ -11,7 +11,7 @@ import java.util.Map;
 import primal.String_;
 import primal.primitive.Dbl_Dbl;
 import primal.primitive.FltPrim.Obj_Flt;
-import suite.primitive.DblPrimitives;
+import suite.primitive.AsDbl;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
 import suite.util.To;
@@ -135,7 +135,7 @@ public class Account {
 		}
 
 		public float sum() {
-			return (float) streamlet().toDouble(DblPrimitives.sum((symbol, v) -> v));
+			return (float) streamlet().toDouble(AsDbl.sum((symbol, v) -> v));
 		}
 	}
 
