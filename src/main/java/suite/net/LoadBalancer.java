@@ -6,13 +6,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import primal.Verbs.Start;
 import primal.os.Log_;
 import suite.os.SocketUtil;
 import suite.os.SocketUtil.Io;
 import suite.primitive.BooMutable;
 import suite.streamlet.Read;
 import suite.util.Copy;
-import suite.util.Thread_;
 
 public class LoadBalancer {
 
@@ -55,7 +55,7 @@ public class LoadBalancer {
 			try (var socket = new Socket(server, port)) {
 				var sis = socket.getInputStream();
 				var sos = socket.getOutputStream();
-				Read.each(Copy.streamByThread(is, sos), Copy.streamByThread(sis, os)).collect(Thread_::startJoin);
+				Read.each(Copy.streamByThread(is, sos), Copy.streamByThread(sis, os)).collect(Start::thenJoin);
 			}
 		};
 

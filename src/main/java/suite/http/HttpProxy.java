@@ -6,6 +6,7 @@ import java.net.Socket;
 
 import primal.String_;
 import primal.Verbs.ReadLine;
+import primal.Verbs.Start;
 import primal.fp.Funs.Fun;
 import primal.os.Log_;
 import primal.primitive.adt.pair.IntObjPair;
@@ -13,7 +14,6 @@ import suite.cfg.Defaults;
 import suite.os.SocketUtil;
 import suite.streamlet.Read;
 import suite.util.Copy;
-import suite.util.Thread_;
 
 /**
  * A very crude HTTP proxy.
@@ -45,7 +45,7 @@ public class HttpProxy {
 					var is1 = socket1.getInputStream(); //
 					var os1 = socket1.getOutputStream();) {
 				os1.write((line + "\r\nConnection: close\r\n").getBytes(Defaults.charset));
-				Read.each(Copy.streamByThread(is0, os1), Copy.streamByThread(is1, os0)).collect(Thread_::startJoin);
+				Read.each(Copy.streamByThread(is0, os1), Copy.streamByThread(is1, os0)).collect(Start::thenJoin);
 			}
 		});
 	}
@@ -73,7 +73,7 @@ public class HttpProxy {
 					var os0 = os; //
 					var is1 = socket1.getInputStream(); //
 					var os1 = socket1.getOutputStream();) {
-				Thread_.startJoin( //
+				Start.thenJoin( //
 						() -> httpIo.writeRequest(os1, request1), //
 						() -> httpIo.writeResponse(os0, httpIo.readResponse(is1)));
 			}

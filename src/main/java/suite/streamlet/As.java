@@ -14,6 +14,7 @@ import java.util.Set;
 
 import primal.Verbs.Build;
 import primal.Verbs.New;
+import primal.Verbs.Start;
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Sink;
@@ -40,7 +41,6 @@ import suite.primitive.adt.map.ObjIntMap;
 import suite.primitive.streamlet.FltStreamlet;
 import suite.primitive.streamlet.IntPuller;
 import suite.primitive.streamlet.IntStreamlet;
-import suite.util.Thread_;
 import suite.util.To;
 
 public class As {
@@ -74,11 +74,11 @@ public class As {
 	}
 
 	public static <T> Fun<Puller<T>, Void> executeThreads(Sink<T> sink) {
-		return puller -> puller.map(t -> New.thread(() -> sink.f(t))).collect(Thread_::startJoin);
+		return puller -> puller.map(t -> New.thread(() -> sink.f(t))).collect(Start::thenJoin);
 	}
 
 	public static <T> Fun<IntPuller, Void> executeThreadsByInt(IntSink sink) {
-		return puller -> puller.map(t -> New.thread(() -> sink.f(t))).collect(Thread_::startJoin);
+		return puller -> puller.map(t -> New.thread(() -> sink.f(t))).collect(Start::thenJoin);
 	}
 
 	public static Fun<IntPuller, FltStreamlet> floats(Int_Flt fun0) {

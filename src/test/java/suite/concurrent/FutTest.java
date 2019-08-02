@@ -10,7 +10,7 @@ import org.junit.Test;
 
 import primal.Verbs.New;
 import primal.Verbs.Sleep;
-import suite.util.Thread_;
+import primal.Verbs.Start;
 
 public class FutTest {
 
@@ -32,7 +32,7 @@ public class FutTest {
 				nc.incrementAndGet();
 			else
 				fail();
-		})).collect(Thread_::startJoin);
+		})).collect(Start::thenJoin);
 
 		assertEquals(count, nc.get());
 	}

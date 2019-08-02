@@ -16,6 +16,7 @@ import org.junit.Test;
 
 import primal.Verbs.New;
 import primal.Verbs.Sleep;
+import primal.Verbs.Start;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Sink;
 import primal.fp.Funs.Source;
@@ -26,7 +27,6 @@ import suite.net.cluster.impl.NioCluster;
 import suite.net.cluster.impl.NioClusterMap;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
-import suite.util.Thread_;
 
 public class NioClusterMapTest {
 
@@ -93,7 +93,7 @@ public class NioClusterMapTest {
 			}
 		}.run(0);
 
-		Read.from2(clusters).values().map(cluster -> New.thread(cluster::run)).collect(Thread_::startJoin);
+		Read.from2(clusters).values().map(cluster -> New.thread(cluster::run)).collect(Start::thenJoin);
 
 		for (var cluster : clusters.values())
 			cluster.close();

@@ -12,10 +12,10 @@ import java.util.Map;
 import org.junit.Test;
 
 import primal.Verbs.Sleep;
+import primal.Verbs.Start;
 import primal.os.Log_;
 import primal.statics.Rethrow;
 import suite.net.cluster.impl.NioCluster;
-import suite.util.Thread_;
 
 public class NioClusterTest {
 
@@ -53,7 +53,7 @@ public class NioClusterTest {
 				System.out.println("=== CLUSTER STOPPED (" + LocalDateTime.now() + ") ===\n");
 			}, Log_::error);
 
-			Thread_.startJoin(cluster0::run, cluster1::run);
+			Start.thenJoin(cluster0::run, cluster1::run);
 		}
 	}
 
