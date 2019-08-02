@@ -130,7 +130,7 @@ public class IntObjStreamlet<V> implements StreamletDefaults<IntObjPair<V>, IntO
 	}
 
 	public <V1> IntObjStreamlet<V1> groupBy(Fun<Streamlet<V>, V1> fun) {
-		return streamlet(() -> spawn().groupBy(fun));
+		return streamlet(() -> spawn().groupBy().mapValue(list -> fun.apply(Read.from(list))));
 	}
 
 	@Override
@@ -260,7 +260,9 @@ public class IntObjStreamlet<V> implements StreamletDefaults<IntObjPair<V>, IntO
 	}
 
 	public ListMultimap<Integer, V> toMultimap() {
-		return spawn().toMultimap();
+		var map = new ListMultimap<Integer, V>();
+		spawn().groupBy().concatMapValue(Puller::of).sink(map::put);
+		return map;
 	}
 
 	public ObjIntMap<V> toObjIntMap() {
@@ -269,10 +271,6 @@ public class IntObjStreamlet<V> implements StreamletDefaults<IntObjPair<V>, IntO
 
 	public Set<IntObjPair<V>> toSet() {
 		return spawn().toSet();
-	}
-
-	public IntObjMap<Set<V>> toSetMap() {
-		return spawn().toSetMap();
 	}
 
 	public IntObjPair<V> uniqueResult() {

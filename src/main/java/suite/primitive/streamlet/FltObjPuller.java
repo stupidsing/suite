@@ -40,8 +40,6 @@ import primal.puller.PullerDefaults;
 import suite.adt.map.ListMultimap;
 import suite.primitive.adt.map.FltObjMap;
 import suite.primitive.adt.map.ObjFltMap;
-import suite.streamlet.Read;
-import suite.streamlet.Streamlet;
 
 public class FltObjPuller<V> implements PullerDefaults<FltObjPair<V>> {
 
@@ -230,10 +228,6 @@ public class FltObjPuller<V> implements PullerDefaults<FltObjPair<V>> {
 
 	public FltObjPuller<List<V>> groupBy() {
 		return of(toListMap().source());
-	}
-
-	public <V1> FltObjPuller<V1> groupBy(Fun<Streamlet<V>, V1> fun) {
-		return groupBy().mapValue(list -> fun.apply(Read.from(list)));
 	}
 
 	@Override
@@ -449,12 +443,6 @@ public class FltObjPuller<V> implements PullerDefaults<FltObjPair<V>> {
 		return map;
 	}
 
-	public ListMultimap<Float, V> toMultimap() {
-		var map = new ListMultimap<Float, V>();
-		groupBy().concatMapValue(Puller::of).sink(map::put);
-		return map;
-	}
-
 	public ObjFltMap<V> toObjFltMap() {
 		var pair = FltObjPair.of(empty, (V) null);
 		var map = new ObjFltMap<V>();
@@ -470,10 +458,6 @@ public class FltObjPuller<V> implements PullerDefaults<FltObjPair<V>> {
 			set.add(pair);
 		return set;
 
-	}
-
-	public FltObjMap<Set<V>> toSetMap() {
-		return groupBy().mapValue(values -> Read.from(values).toSet()).toMap();
 	}
 
 	public Puller<V> values() {

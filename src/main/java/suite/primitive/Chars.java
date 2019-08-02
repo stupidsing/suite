@@ -16,6 +16,7 @@ import primal.Verbs.Get;
 import primal.fp.Funs.Fun;
 import primal.primitive.ChrPrim;
 import primal.primitive.ChrPrim.ChrSource;
+import primal.primitive.ChrVerbs.CopyChr;
 import primal.puller.Puller;
 import suite.cfg.Defaults;
 import suite.primitive.streamlet.ChrPuller;
@@ -94,8 +95,8 @@ public class Chars implements Iterable<Character> {
 	public Chars append(Chars a) {
 		int size0 = size_(), size1 = a.size_(), newSize = size0 + size1;
 		var nb = new char[newSize];
-		Chars_.copy(cs, start, nb, 0, size0);
-		Chars_.copy(a.cs, a.start, nb, size0, size1);
+		CopyChr.array(cs, start, nb, 0, size0);
+		CopyChr.array(a.cs, a.start, nb, size0, size1);
 		return of(nb);
 	}
 
@@ -333,7 +334,7 @@ public class Chars implements Iterable<Character> {
 		public CharsBuilder append(char[] cs_, int start, int end) {
 			var inc = end - start;
 			extendBuffer(size + inc);
-			Chars_.copy(cs_, start, cs, size, inc);
+			CopyChr.array(cs_, start, cs, size, inc);
 			size += inc;
 			return this;
 		}

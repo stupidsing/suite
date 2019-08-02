@@ -19,7 +19,7 @@ import suite.jdk.gen.FunExprM.If1FunExpr;
 import suite.jdk.gen.FunExpression.FunExpr;
 import suite.jdk.gen.FunFactory;
 import suite.node.util.Singleton;
-import suite.primitive.IntVerbs.AsInt;
+import suite.primitive.AsInt;
 import suite.streamlet.Read;
 import suite.util.Switch;
 

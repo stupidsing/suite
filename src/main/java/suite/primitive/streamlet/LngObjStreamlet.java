@@ -130,7 +130,7 @@ public class LngObjStreamlet<V> implements StreamletDefaults<LngObjPair<V>, LngO
 	}
 
 	public <V1> LngObjStreamlet<V1> groupBy(Fun<Streamlet<V>, V1> fun) {
-		return streamlet(() -> spawn().groupBy(fun));
+		return streamlet(() -> spawn().groupBy().mapValue(list -> fun.apply(Read.from(list))));
 	}
 
 	@Override
@@ -260,7 +260,9 @@ public class LngObjStreamlet<V> implements StreamletDefaults<LngObjPair<V>, LngO
 	}
 
 	public ListMultimap<Long, V> toMultimap() {
-		return spawn().toMultimap();
+		var map = new ListMultimap<Long, V>();
+		spawn().groupBy().concatMapValue(Puller::of).sink(map::put);
+		return map;
 	}
 
 	public ObjLngMap<V> toObjLngMap() {
@@ -269,10 +271,6 @@ public class LngObjStreamlet<V> implements StreamletDefaults<LngObjPair<V>, LngO
 
 	public Set<LngObjPair<V>> toSet() {
 		return spawn().toSet();
-	}
-
-	public LngObjMap<Set<V>> toSetMap() {
-		return spawn().toSetMap();
 	}
 
 	public LngObjPair<V> uniqueResult() {

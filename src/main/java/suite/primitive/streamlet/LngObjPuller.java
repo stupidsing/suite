@@ -40,8 +40,6 @@ import primal.puller.PullerDefaults;
 import suite.adt.map.ListMultimap;
 import suite.primitive.adt.map.LngObjMap;
 import suite.primitive.adt.map.ObjLngMap;
-import suite.streamlet.Read;
-import suite.streamlet.Streamlet;
 
 public class LngObjPuller<V> implements PullerDefaults<LngObjPair<V>> {
 
@@ -230,10 +228,6 @@ public class LngObjPuller<V> implements PullerDefaults<LngObjPair<V>> {
 
 	public LngObjPuller<List<V>> groupBy() {
 		return of(toListMap().source());
-	}
-
-	public <V1> LngObjPuller<V1> groupBy(Fun<Streamlet<V>, V1> fun) {
-		return groupBy().mapValue(list -> fun.apply(Read.from(list)));
 	}
 
 	@Override
@@ -449,12 +443,6 @@ public class LngObjPuller<V> implements PullerDefaults<LngObjPair<V>> {
 		return map;
 	}
 
-	public ListMultimap<Long, V> toMultimap() {
-		var map = new ListMultimap<Long, V>();
-		groupBy().concatMapValue(Puller::of).sink(map::put);
-		return map;
-	}
-
 	public ObjLngMap<V> toObjLngMap() {
 		var pair = LngObjPair.of(empty, (V) null);
 		var map = new ObjLngMap<V>();
@@ -470,10 +458,6 @@ public class LngObjPuller<V> implements PullerDefaults<LngObjPair<V>> {
 			set.add(pair);
 		return set;
 
-	}
-
-	public LngObjMap<Set<V>> toSetMap() {
-		return groupBy().mapValue(values -> Read.from(values).toSet()).toMap();
 	}
 
 	public Puller<V> values() {

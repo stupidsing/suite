@@ -11,7 +11,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.function.IntPredicate;
 
 import primal.NullableSyncQueue;
@@ -28,26 +27,21 @@ import primal.fp.Funs.Source;
 import primal.primitive.FltOpt;
 import primal.primitive.FltPrim;
 import primal.primitive.FltPrim.FltComparator;
-import primal.primitive.FltPrim.FltObjSource;
 import primal.primitive.FltPrim.FltObj_Obj;
 import primal.primitive.FltPrim.FltSink;
 import primal.primitive.FltPrim.FltSource;
 import primal.primitive.FltPrim.FltTest;
 import primal.primitive.FltPrim.Flt_Obj;
 import primal.primitive.Flt_Flt;
-import primal.primitive.adt.pair.FltObjPair;
 import primal.primitive.fp.FltFunUtil;
 import primal.puller.Puller;
 import primal.puller.Puller2;
 import primal.puller.PullerDefaults;
-import suite.adt.map.ListMultimap;
 import suite.primitive.Floats;
 import suite.primitive.Floats.FloatsBuilder;
 import suite.primitive.adt.map.FltObjMap;
 import suite.primitive.adt.map.ObjFltMap;
 import suite.primitive.adt.set.FltSet;
-import suite.streamlet.As;
-import suite.streamlet.Read;
 
 public class FltPuller implements PullerDefaults<Float> {
 
@@ -240,21 +234,6 @@ public class FltPuller implements PullerDefaults<Float> {
 		return h;
 	}
 
-	public FltObjPuller<Integer> index() {
-		return FltObjPuller.of(new FltObjSource<>() {
-			private int i = 0;
-
-			public boolean source2(FltObjPair<Integer> pair) {
-				var c = pull();
-				if (c != empty) {
-					pair.update(c, i++);
-					return true;
-				} else
-					return false;
-			}
-		});
-	}
-
 	public boolean isAll(FltTest pred) {
 		return FltFunUtil.isAll(pred, source);
 	}
@@ -280,7 +259,7 @@ public class FltPuller implements PullerDefaults<Float> {
 	}
 
 	public <K, V> Puller2<K, V> map2(Flt_Obj<K> kf0, Flt_Obj<V> vf0) {
-		return map2_(kf0, vf0);
+		return Puller2.of(FltFunUtil.map2(kf0, vf0, source));
 	}
 
 	public FltPuller mapFlt(Flt_Flt fun0) {
@@ -452,14 +431,6 @@ public class FltPuller implements PullerDefaults<Float> {
 		return map;
 	}
 
-	public <K> ListMultimap<K, Float> toMultimap(Flt_Obj<K> keyFun) {
-		return toMultimap(keyFun, value -> value);
-	}
-
-	public <K, V> ListMultimap<K, V> toMultimap(Flt_Obj<K> keyFun, Flt_Obj<V> valueFun) {
-		return map2_(keyFun, valueFun).groupBy().collect(As::multimap);
-	}
-
 	public FltSet toSet() {
 		var set = new FltSet();
 		float c;
@@ -468,20 +439,12 @@ public class FltPuller implements PullerDefaults<Float> {
 		return set;
 	}
 
-	public <K, V> Map<K, Set<V>> toSetMap(Flt_Obj<K> keyFun, Flt_Obj<V> valueFun) {
-		return map2_(keyFun, valueFun).groupBy().mapValue(values -> Read.from(values).toSet()).toMap();
-	}
-
 	public <U, R> Puller<R> zip(Puller<U> outlet1, FltObj_Obj<U, R> fun) {
 		return Puller.of(() -> {
 			var t = pull();
 			var u = outlet1.pull();
 			return t != empty && u != null ? fun.apply(t, u) : null;
 		});
-	}
-
-	private <K, V> Puller2<K, V> map2_(Flt_Obj<K> kf0, Flt_Obj<V> vf0) {
-		return Puller2.of(FltFunUtil.map2(kf0, vf0, source));
 	}
 
 }

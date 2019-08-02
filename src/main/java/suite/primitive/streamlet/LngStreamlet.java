@@ -12,13 +12,16 @@ import primal.fp.Funs.Fun;
 import primal.fp.Funs.Source;
 import primal.fp.Funs2.Fun2;
 import primal.primitive.LngOpt;
+import primal.primitive.LngPrim;
 import primal.primitive.LngPrim.LngComparator;
+import primal.primitive.LngPrim.LngObjSource;
 import primal.primitive.LngPrim.LngObj_Obj;
 import primal.primitive.LngPrim.LngSink;
 import primal.primitive.LngPrim.LngSource;
 import primal.primitive.LngPrim.LngTest;
 import primal.primitive.LngPrim.Lng_Obj;
 import primal.primitive.Lng_Lng;
+import primal.primitive.adt.pair.LngObjPair;
 import primal.puller.Puller;
 import primal.streamlet.StreamletDefaults;
 import suite.adt.map.ListMultimap;
@@ -28,6 +31,8 @@ import suite.primitive.Longs_;
 import suite.primitive.adt.map.LngObjMap;
 import suite.primitive.adt.map.ObjLngMap;
 import suite.primitive.adt.set.LngSet;
+import suite.streamlet.As;
+import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 
@@ -131,7 +136,19 @@ public class LngStreamlet implements StreamletDefaults<Long, LngPuller> {
 	}
 
 	public LngObjStreamlet<Integer> index() {
-		return new LngObjStreamlet<>(() -> spawn().index());
+		return new LngObjStreamlet<>(() -> LngObjPuller.of(new LngObjSource<>() {
+			private LngPuller puller = spawn();
+			private int i = 0;
+
+			public boolean source2(LngObjPair<Integer> pair) {
+				var c = puller.pull();
+				if (c != LngPrim.EMPTYVALUE) {
+					pair.update(c, i++);
+					return true;
+				} else
+					return false;
+			}
+		}));
 	}
 
 	public boolean isAll(LngTest pred) {
@@ -256,11 +273,11 @@ public class LngStreamlet implements StreamletDefaults<Long, LngPuller> {
 	}
 
 	public <K> ListMultimap<K, Long> toMultimap(Lng_Obj<K> keyFun) {
-		return spawn().toMultimap(keyFun);
+		return toMultimap(keyFun);
 	}
 
 	public <K, V> ListMultimap<K, V> toMultimap(Lng_Obj<K> keyFun, Lng_Obj<V> valueFun) {
-		return spawn().toMultimap(keyFun, valueFun);
+		return spawn().map2(keyFun, valueFun).groupBy().collect(As::multimap);
 	}
 
 	public LngSet toSet() {
@@ -268,7 +285,7 @@ public class LngStreamlet implements StreamletDefaults<Long, LngPuller> {
 	}
 
 	public <K, V> Map<K, Set<V>> toSetMap(Lng_Obj<K> keyFun, Lng_Obj<V> valueFun) {
-		return spawn().toSetMap(keyFun, valueFun);
+		return spawn().map2(keyFun, valueFun).groupBy().mapValue(values -> Read.from(values).toSet()).toMap();
 	}
 
 	public long uniqueResult() {

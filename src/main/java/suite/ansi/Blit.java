@@ -1,6 +1,6 @@
 package suite.ansi;
 
-import suite.primitive.Chars_;
+import primal.primitive.ChrVerbs.CopyChr;
 
 public class Blit {
 
@@ -24,7 +24,7 @@ public class Blit {
 
 		if (xs < xe && ys < ye)
 			for (var xx = xs; xx < xe; xx++)
-				Chars_.copy(source.buffer[x0 + xx], y0 + ys, dest.buffer[x1 + xx], y1 + ys, ye - ys);
+				CopyChr.array(source.buffer[x0 + xx], y0 + ys, dest.buffer[x1 + xx], y1 + ys, ye - ys);
 	}
 
 	private int min(int... l) {

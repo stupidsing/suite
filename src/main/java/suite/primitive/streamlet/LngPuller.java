@@ -11,7 +11,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.function.IntPredicate;
 
 import primal.NullableSyncQueue;
@@ -28,26 +27,21 @@ import primal.fp.Funs.Source;
 import primal.primitive.LngOpt;
 import primal.primitive.LngPrim;
 import primal.primitive.LngPrim.LngComparator;
-import primal.primitive.LngPrim.LngObjSource;
 import primal.primitive.LngPrim.LngObj_Obj;
 import primal.primitive.LngPrim.LngSink;
 import primal.primitive.LngPrim.LngSource;
 import primal.primitive.LngPrim.LngTest;
 import primal.primitive.LngPrim.Lng_Obj;
 import primal.primitive.Lng_Lng;
-import primal.primitive.adt.pair.LngObjPair;
 import primal.primitive.fp.LngFunUtil;
 import primal.puller.Puller;
 import primal.puller.Puller2;
 import primal.puller.PullerDefaults;
-import suite.adt.map.ListMultimap;
 import suite.primitive.Longs;
 import suite.primitive.Longs.LongsBuilder;
 import suite.primitive.adt.map.LngObjMap;
 import suite.primitive.adt.map.ObjLngMap;
 import suite.primitive.adt.set.LngSet;
-import suite.streamlet.As;
-import suite.streamlet.Read;
 
 public class LngPuller implements PullerDefaults<Long> {
 
@@ -240,21 +234,6 @@ public class LngPuller implements PullerDefaults<Long> {
 		return h;
 	}
 
-	public LngObjPuller<Integer> index() {
-		return LngObjPuller.of(new LngObjSource<>() {
-			private int i = 0;
-
-			public boolean source2(LngObjPair<Integer> pair) {
-				var c = pull();
-				if (c != empty) {
-					pair.update(c, i++);
-					return true;
-				} else
-					return false;
-			}
-		});
-	}
-
 	public boolean isAll(LngTest pred) {
 		return LngFunUtil.isAll(pred, source);
 	}
@@ -280,7 +259,7 @@ public class LngPuller implements PullerDefaults<Long> {
 	}
 
 	public <K, V> Puller2<K, V> map2(Lng_Obj<K> kf0, Lng_Obj<V> vf0) {
-		return map2_(kf0, vf0);
+		return Puller2.of(LngFunUtil.map2(kf0, vf0, source));
 	}
 
 	public LngPuller mapLng(Lng_Lng fun0) {
@@ -452,14 +431,6 @@ public class LngPuller implements PullerDefaults<Long> {
 		return map;
 	}
 
-	public <K> ListMultimap<K, Long> toMultimap(Lng_Obj<K> keyFun) {
-		return toMultimap(keyFun, value -> value);
-	}
-
-	public <K, V> ListMultimap<K, V> toMultimap(Lng_Obj<K> keyFun, Lng_Obj<V> valueFun) {
-		return map2_(keyFun, valueFun).groupBy().collect(As::multimap);
-	}
-
 	public LngSet toSet() {
 		var set = new LngSet();
 		long c;
@@ -468,20 +439,12 @@ public class LngPuller implements PullerDefaults<Long> {
 		return set;
 	}
 
-	public <K, V> Map<K, Set<V>> toSetMap(Lng_Obj<K> keyFun, Lng_Obj<V> valueFun) {
-		return map2_(keyFun, valueFun).groupBy().mapValue(values -> Read.from(values).toSet()).toMap();
-	}
-
 	public <U, R> Puller<R> zip(Puller<U> outlet1, LngObj_Obj<U, R> fun) {
 		return Puller.of(() -> {
 			var t = pull();
 			var u = outlet1.pull();
 			return t != empty && u != null ? fun.apply(t, u) : null;
 		});
-	}
-
-	private <K, V> Puller2<K, V> map2_(Lng_Obj<K> kf0, Lng_Obj<V> vf0) {
-		return Puller2.of(LngFunUtil.map2(kf0, vf0, source));
 	}
 
 }

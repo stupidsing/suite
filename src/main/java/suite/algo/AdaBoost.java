@@ -7,7 +7,7 @@ import java.util.List;
 import primal.primitive.DblPrim.Obj_Dbl;
 import primal.primitive.adt.pair.DblIntPair;
 import suite.math.linalg.Vector;
-import suite.primitive.DblVerbs.AsDbl;
+import suite.primitive.AsDbl;
 import suite.primitive.Floats;
 import suite.streamlet.Read;
 import suite.util.To;

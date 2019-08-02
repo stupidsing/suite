@@ -11,7 +11,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.function.IntPredicate;
 
 import primal.NullableSyncQueue;
@@ -28,26 +27,21 @@ import primal.fp.Funs.Source;
 import primal.primitive.DblOpt;
 import primal.primitive.DblPrim;
 import primal.primitive.DblPrim.DblComparator;
-import primal.primitive.DblPrim.DblObjSource;
 import primal.primitive.DblPrim.DblObj_Obj;
 import primal.primitive.DblPrim.DblSink;
 import primal.primitive.DblPrim.DblSource;
 import primal.primitive.DblPrim.DblTest;
 import primal.primitive.DblPrim.Dbl_Obj;
 import primal.primitive.Dbl_Dbl;
-import primal.primitive.adt.pair.DblObjPair;
 import primal.primitive.fp.DblFunUtil;
 import primal.puller.Puller;
 import primal.puller.Puller2;
 import primal.puller.PullerDefaults;
-import suite.adt.map.ListMultimap;
 import suite.primitive.Doubles;
 import suite.primitive.Doubles.DoublesBuilder;
 import suite.primitive.adt.map.DblObjMap;
 import suite.primitive.adt.map.ObjDblMap;
 import suite.primitive.adt.set.DblSet;
-import suite.streamlet.As;
-import suite.streamlet.Read;
 
 public class DblPuller implements PullerDefaults<Double> {
 
@@ -240,21 +234,6 @@ public class DblPuller implements PullerDefaults<Double> {
 		return h;
 	}
 
-	public DblObjPuller<Integer> index() {
-		return DblObjPuller.of(new DblObjSource<>() {
-			private int i = 0;
-
-			public boolean source2(DblObjPair<Integer> pair) {
-				var c = pull();
-				if (c != empty) {
-					pair.update(c, i++);
-					return true;
-				} else
-					return false;
-			}
-		});
-	}
-
 	public boolean isAll(DblTest pred) {
 		return DblFunUtil.isAll(pred, source);
 	}
@@ -280,7 +259,7 @@ public class DblPuller implements PullerDefaults<Double> {
 	}
 
 	public <K, V> Puller2<K, V> map2(Dbl_Obj<K> kf0, Dbl_Obj<V> vf0) {
-		return map2_(kf0, vf0);
+		return Puller2.of(DblFunUtil.map2(kf0, vf0, source));
 	}
 
 	public DblPuller mapDbl(Dbl_Dbl fun0) {
@@ -452,14 +431,6 @@ public class DblPuller implements PullerDefaults<Double> {
 		return map;
 	}
 
-	public <K> ListMultimap<K, Double> toMultimap(Dbl_Obj<K> keyFun) {
-		return toMultimap(keyFun, value -> value);
-	}
-
-	public <K, V> ListMultimap<K, V> toMultimap(Dbl_Obj<K> keyFun, Dbl_Obj<V> valueFun) {
-		return map2_(keyFun, valueFun).groupBy().collect(As::multimap);
-	}
-
 	public DblSet toSet() {
 		var set = new DblSet();
 		double c;
@@ -468,20 +439,12 @@ public class DblPuller implements PullerDefaults<Double> {
 		return set;
 	}
 
-	public <K, V> Map<K, Set<V>> toSetMap(Dbl_Obj<K> keyFun, Dbl_Obj<V> valueFun) {
-		return map2_(keyFun, valueFun).groupBy().mapValue(values -> Read.from(values).toSet()).toMap();
-	}
-
 	public <U, R> Puller<R> zip(Puller<U> outlet1, DblObj_Obj<U, R> fun) {
 		return Puller.of(() -> {
 			var t = pull();
 			var u = outlet1.pull();
 			return t != empty && u != null ? fun.apply(t, u) : null;
 		});
-	}
-
-	private <K, V> Puller2<K, V> map2_(Dbl_Obj<K> kf0, Dbl_Obj<V> vf0) {
-		return Puller2.of(DblFunUtil.map2(kf0, vf0, source));
 	}
 
 }

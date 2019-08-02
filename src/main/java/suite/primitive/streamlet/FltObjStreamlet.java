@@ -130,7 +130,7 @@ public class FltObjStreamlet<V> implements StreamletDefaults<FltObjPair<V>, FltO
 	}
 
 	public <V1> FltObjStreamlet<V1> groupBy(Fun<Streamlet<V>, V1> fun) {
-		return streamlet(() -> spawn().groupBy(fun));
+		return streamlet(() -> spawn().groupBy().mapValue(list -> fun.apply(Read.from(list))));
 	}
 
 	@Override
@@ -260,7 +260,9 @@ public class FltObjStreamlet<V> implements StreamletDefaults<FltObjPair<V>, FltO
 	}
 
 	public ListMultimap<Float, V> toMultimap() {
-		return spawn().toMultimap();
+		var map = new ListMultimap<Float, V>();
+		spawn().groupBy().concatMapValue(Puller::of).sink(map::put);
+		return map;
 	}
 
 	public ObjFltMap<V> toObjFltMap() {
@@ -269,10 +271,6 @@ public class FltObjStreamlet<V> implements StreamletDefaults<FltObjPair<V>, FltO
 
 	public Set<FltObjPair<V>> toSet() {
 		return spawn().toSet();
-	}
-
-	public FltObjMap<Set<V>> toSetMap() {
-		return spawn().toSetMap();
 	}
 
 	public FltObjPair<V> uniqueResult() {

@@ -40,8 +40,6 @@ import primal.puller.PullerDefaults;
 import suite.adt.map.ListMultimap;
 import suite.primitive.adt.map.IntObjMap;
 import suite.primitive.adt.map.ObjIntMap;
-import suite.streamlet.Read;
-import suite.streamlet.Streamlet;
 
 public class IntObjPuller<V> implements PullerDefaults<IntObjPair<V>> {
 
@@ -230,10 +228,6 @@ public class IntObjPuller<V> implements PullerDefaults<IntObjPair<V>> {
 
 	public IntObjPuller<List<V>> groupBy() {
 		return of(toListMap().source());
-	}
-
-	public <V1> IntObjPuller<V1> groupBy(Fun<Streamlet<V>, V1> fun) {
-		return groupBy().mapValue(list -> fun.apply(Read.from(list)));
 	}
 
 	@Override
@@ -449,12 +443,6 @@ public class IntObjPuller<V> implements PullerDefaults<IntObjPair<V>> {
 		return map;
 	}
 
-	public ListMultimap<Integer, V> toMultimap() {
-		var map = new ListMultimap<Integer, V>();
-		groupBy().concatMapValue(Puller::of).sink(map::put);
-		return map;
-	}
-
 	public ObjIntMap<V> toObjIntMap() {
 		var pair = IntObjPair.of(empty, (V) null);
 		var map = new ObjIntMap<V>();
@@ -470,10 +458,6 @@ public class IntObjPuller<V> implements PullerDefaults<IntObjPair<V>> {
 			set.add(pair);
 		return set;
 
-	}
-
-	public IntObjMap<Set<V>> toSetMap() {
-		return groupBy().mapValue(values -> Read.from(values).toSet()).toMap();
 	}
 
 	public Puller<V> values() {

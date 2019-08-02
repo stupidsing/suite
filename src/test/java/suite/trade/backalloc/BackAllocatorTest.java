@@ -8,7 +8,7 @@ import java.util.List;
 import org.junit.Test;
 
 import primal.adt.Pair;
-import suite.primitive.DblVerbs.AsDbl;
+import suite.primitive.AsDbl;
 import suite.primitive.Ints_;
 import suite.primitive.Longs_;
 import suite.streamlet.Read;

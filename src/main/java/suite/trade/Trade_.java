@@ -26,7 +26,7 @@ import primal.primitive.adt.pair.LngFltPair;
 import primal.primitive.adt.pair.LngIntPair;
 import primal.puller.Puller;
 import suite.math.Math_;
-import suite.primitive.IntVerbs.AsInt;
+import suite.primitive.AsInt;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;

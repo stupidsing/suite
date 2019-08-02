@@ -12,13 +12,16 @@ import primal.fp.Funs.Fun;
 import primal.fp.Funs.Source;
 import primal.fp.Funs2.Fun2;
 import primal.primitive.DblOpt;
+import primal.primitive.DblPrim;
 import primal.primitive.DblPrim.DblComparator;
+import primal.primitive.DblPrim.DblObjSource;
 import primal.primitive.DblPrim.DblObj_Obj;
 import primal.primitive.DblPrim.DblSink;
 import primal.primitive.DblPrim.DblSource;
 import primal.primitive.DblPrim.DblTest;
 import primal.primitive.DblPrim.Dbl_Obj;
 import primal.primitive.Dbl_Dbl;
+import primal.primitive.adt.pair.DblObjPair;
 import primal.puller.Puller;
 import primal.streamlet.StreamletDefaults;
 import suite.adt.map.ListMultimap;
@@ -28,6 +31,8 @@ import suite.primitive.Doubles_;
 import suite.primitive.adt.map.DblObjMap;
 import suite.primitive.adt.map.ObjDblMap;
 import suite.primitive.adt.set.DblSet;
+import suite.streamlet.As;
+import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 
@@ -131,7 +136,19 @@ public class DblStreamlet implements StreamletDefaults<Double, DblPuller> {
 	}
 
 	public DblObjStreamlet<Integer> index() {
-		return new DblObjStreamlet<>(() -> spawn().index());
+		return new DblObjStreamlet<>(() -> DblObjPuller.of(new DblObjSource<>() {
+			private DblPuller puller = spawn();
+			private int i = 0;
+
+			public boolean source2(DblObjPair<Integer> pair) {
+				var c = puller.pull();
+				if (c != DblPrim.EMPTYVALUE) {
+					pair.update(c, i++);
+					return true;
+				} else
+					return false;
+			}
+		}));
 	}
 
 	public boolean isAll(DblTest pred) {
@@ -256,11 +273,11 @@ public class DblStreamlet implements StreamletDefaults<Double, DblPuller> {
 	}
 
 	public <K> ListMultimap<K, Double> toMultimap(Dbl_Obj<K> keyFun) {
-		return spawn().toMultimap(keyFun);
+		return toMultimap(keyFun);
 	}
 
 	public <K, V> ListMultimap<K, V> toMultimap(Dbl_Obj<K> keyFun, Dbl_Obj<V> valueFun) {
-		return spawn().toMultimap(keyFun, valueFun);
+		return spawn().map2(keyFun, valueFun).groupBy().collect(As::multimap);
 	}
 
 	public DblSet toSet() {
@@ -268,7 +285,7 @@ public class DblStreamlet implements StreamletDefaults<Double, DblPuller> {
 	}
 
 	public <K, V> Map<K, Set<V>> toSetMap(Dbl_Obj<K> keyFun, Dbl_Obj<V> valueFun) {
-		return spawn().toSetMap(keyFun, valueFun);
+		return spawn().map2(keyFun, valueFun).groupBy().mapValue(values -> Read.from(values).toSet()).toMap();
 	}
 
 	public double uniqueResult() {

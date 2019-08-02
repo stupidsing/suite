@@ -12,7 +12,7 @@ import primal.os.Log_;
 import suite.math.Math_;
 import suite.node.util.Singleton;
 import suite.os.SerializedStoreCache;
-import suite.primitive.DblVerbs.AsDbl;
+import suite.primitive.AsDbl;
 import suite.serialize.Serialize;
 import suite.smtp.SmtpSslGmail;
 import suite.streamlet.Read;

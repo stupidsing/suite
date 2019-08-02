@@ -130,7 +130,7 @@ public class DblObjStreamlet<V> implements StreamletDefaults<DblObjPair<V>, DblO
 	}
 
 	public <V1> DblObjStreamlet<V1> groupBy(Fun<Streamlet<V>, V1> fun) {
-		return streamlet(() -> spawn().groupBy(fun));
+		return streamlet(() -> spawn().groupBy().mapValue(list -> fun.apply(Read.from(list))));
 	}
 
 	@Override
@@ -260,7 +260,9 @@ public class DblObjStreamlet<V> implements StreamletDefaults<DblObjPair<V>, DblO
 	}
 
 	public ListMultimap<Double, V> toMultimap() {
-		return spawn().toMultimap();
+		var map = new ListMultimap<Double, V>();
+		spawn().groupBy().concatMapValue(Puller::of).sink(map::put);
+		return map;
 	}
 
 	public ObjDblMap<V> toObjDblMap() {
@@ -269,10 +271,6 @@ public class DblObjStreamlet<V> implements StreamletDefaults<DblObjPair<V>, DblO
 
 	public Set<DblObjPair<V>> toSet() {
 		return spawn().toSet();
-	}
-
-	public DblObjMap<Set<V>> toSetMap() {
-		return spawn().toSetMap();
 	}
 
 	public DblObjPair<V> uniqueResult() {

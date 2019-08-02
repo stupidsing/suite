@@ -6,7 +6,7 @@ import primal.Verbs.Build;
 import primal.primitive.ChrPrim;
 import primal.primitive.ChrPrim.ChrSink;
 import primal.primitive.ChrPrim.ChrSource;
-import suite.primitive.Chars_;
+import primal.primitive.ChrVerbs.CopyChr;
 import suite.primitive.streamlet.ChrPuller;
 import suite.primitive.streamlet.ChrStreamlet;
 
@@ -74,7 +74,7 @@ public class ChrSet {
 		var capacity = vs.length;
 		var set = new ChrSet(capacity);
 		set.size = size;
-		Chars_.copy(vs, 0, set.vs, 0, capacity);
+		CopyChr.array(vs, 0, set.vs, 0, capacity);
 		return set;
 	}
 

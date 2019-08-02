@@ -12,13 +12,16 @@ import primal.fp.Funs.Fun;
 import primal.fp.Funs.Source;
 import primal.fp.Funs2.Fun2;
 import primal.primitive.IntOpt;
+import primal.primitive.IntPrim;
 import primal.primitive.IntPrim.IntComparator;
+import primal.primitive.IntPrim.IntObjSource;
 import primal.primitive.IntPrim.IntObj_Obj;
 import primal.primitive.IntPrim.IntSink;
 import primal.primitive.IntPrim.IntSource;
 import primal.primitive.IntPrim.IntTest;
 import primal.primitive.IntPrim.Int_Obj;
 import primal.primitive.Int_Int;
+import primal.primitive.adt.pair.IntObjPair;
 import primal.puller.Puller;
 import primal.streamlet.StreamletDefaults;
 import suite.adt.map.ListMultimap;
@@ -28,6 +31,8 @@ import suite.primitive.Ints_;
 import suite.primitive.adt.map.IntObjMap;
 import suite.primitive.adt.map.ObjIntMap;
 import suite.primitive.adt.set.IntSet;
+import suite.streamlet.As;
+import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 
@@ -131,7 +136,19 @@ public class IntStreamlet implements StreamletDefaults<Integer, IntPuller> {
 	}
 
 	public IntObjStreamlet<Integer> index() {
-		return new IntObjStreamlet<>(() -> spawn().index());
+		return new IntObjStreamlet<>(() -> IntObjPuller.of(new IntObjSource<>() {
+			private IntPuller puller = spawn();
+			private int i = 0;
+
+			public boolean source2(IntObjPair<Integer> pair) {
+				var c = puller.pull();
+				if (c != IntPrim.EMPTYVALUE) {
+					pair.update(c, i++);
+					return true;
+				} else
+					return false;
+			}
+		}));
 	}
 
 	public boolean isAll(IntTest pred) {
@@ -256,11 +273,11 @@ public class IntStreamlet implements StreamletDefaults<Integer, IntPuller> {
 	}
 
 	public <K> ListMultimap<K, Integer> toMultimap(Int_Obj<K> keyFun) {
-		return spawn().toMultimap(keyFun);
+		return toMultimap(keyFun);
 	}
 
 	public <K, V> ListMultimap<K, V> toMultimap(Int_Obj<K> keyFun, Int_Obj<V> valueFun) {
-		return spawn().toMultimap(keyFun, valueFun);
+		return spawn().map2(keyFun, valueFun).groupBy().collect(As::multimap);
 	}
 
 	public IntSet toSet() {
@@ -268,7 +285,7 @@ public class IntStreamlet implements StreamletDefaults<Integer, IntPuller> {
 	}
 
 	public <K, V> Map<K, Set<V>> toSetMap(Int_Obj<K> keyFun, Int_Obj<V> valueFun) {
-		return spawn().toSetMap(keyFun, valueFun);
+		return spawn().map2(keyFun, valueFun).groupBy().mapValue(values -> Read.from(values).toSet()).toMap();
 	}
 
 	public int uniqueResult() {

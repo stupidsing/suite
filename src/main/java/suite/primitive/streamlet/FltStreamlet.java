@@ -12,13 +12,16 @@ import primal.fp.Funs.Fun;
 import primal.fp.Funs.Source;
 import primal.fp.Funs2.Fun2;
 import primal.primitive.FltOpt;
+import primal.primitive.FltPrim;
 import primal.primitive.FltPrim.FltComparator;
+import primal.primitive.FltPrim.FltObjSource;
 import primal.primitive.FltPrim.FltObj_Obj;
 import primal.primitive.FltPrim.FltSink;
 import primal.primitive.FltPrim.FltSource;
 import primal.primitive.FltPrim.FltTest;
 import primal.primitive.FltPrim.Flt_Obj;
 import primal.primitive.Flt_Flt;
+import primal.primitive.adt.pair.FltObjPair;
 import primal.puller.Puller;
 import primal.streamlet.StreamletDefaults;
 import suite.adt.map.ListMultimap;
@@ -28,6 +31,8 @@ import suite.primitive.Floats_;
 import suite.primitive.adt.map.FltObjMap;
 import suite.primitive.adt.map.ObjFltMap;
 import suite.primitive.adt.set.FltSet;
+import suite.streamlet.As;
+import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 
@@ -131,7 +136,19 @@ public class FltStreamlet implements StreamletDefaults<Float, FltPuller> {
 	}
 
 	public FltObjStreamlet<Integer> index() {
-		return new FltObjStreamlet<>(() -> spawn().index());
+		return new FltObjStreamlet<>(() -> FltObjPuller.of(new FltObjSource<>() {
+			private FltPuller puller = spawn();
+			private int i = 0;
+
+			public boolean source2(FltObjPair<Integer> pair) {
+				var c = puller.pull();
+				if (c != FltPrim.EMPTYVALUE) {
+					pair.update(c, i++);
+					return true;
+				} else
+					return false;
+			}
+		}));
 	}
 
 	public boolean isAll(FltTest pred) {
@@ -256,11 +273,11 @@ public class FltStreamlet implements StreamletDefaults<Float, FltPuller> {
 	}
 
 	public <K> ListMultimap<K, Float> toMultimap(Flt_Obj<K> keyFun) {
-		return spawn().toMultimap(keyFun);
+		return toMultimap(keyFun);
 	}
 
 	public <K, V> ListMultimap<K, V> toMultimap(Flt_Obj<K> keyFun, Flt_Obj<V> valueFun) {
-		return spawn().toMultimap(keyFun, valueFun);
+		return spawn().map2(keyFun, valueFun).groupBy().collect(As::multimap);
 	}
 
 	public FltSet toSet() {
@@ -268,7 +285,7 @@ public class FltStreamlet implements StreamletDefaults<Float, FltPuller> {
 	}
 
 	public <K, V> Map<K, Set<V>> toSetMap(Flt_Obj<K> keyFun, Flt_Obj<V> valueFun) {
-		return spawn().toSetMap(keyFun, valueFun);
+		return spawn().map2(keyFun, valueFun).groupBy().mapValue(values -> Read.from(values).toSet()).toMap();
 	}
 
 	public float uniqueResult() {
