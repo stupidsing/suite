@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.Random;
 
 import primal.primitive.DblPrim.DblSource;
+import primal.primitive.FltVerbs.CopyFlt;
 import primal.primitive.adt.pair.FltObjPair;
 import suite.math.numeric.Statistic;
 import suite.primitive.Floats_;
@@ -70,7 +71,7 @@ public class Arch {
 		var fs1 = new float[to - from];
 		var p = -max(0, from);
 		Arrays.fill(fs1, 0, p, 0f);
-		Floats_.copy(fs0, 0, fs1, p, to - p);
+		CopyFlt.array(fs0, 0, fs1, p, to - p);
 		return fs1;
 	}
 

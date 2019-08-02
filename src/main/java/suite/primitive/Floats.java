@@ -16,6 +16,7 @@ import primal.Verbs.Get;
 import primal.fp.Funs.Fun;
 import primal.primitive.FltPrim;
 import primal.primitive.FltPrim.FltSource;
+import primal.primitive.FltVerbs.CopyFlt;
 import primal.puller.Puller;
 import suite.cfg.Defaults;
 import suite.primitive.streamlet.FltPuller;
@@ -94,8 +95,8 @@ public class Floats implements Iterable<Float> {
 	public Floats append(Floats a) {
 		int size0 = size_(), size1 = a.size_(), newSize = size0 + size1;
 		var nb = new float[newSize];
-		Floats_.copy(cs, start, nb, 0, size0);
-		Floats_.copy(a.cs, a.start, nb, size0, size1);
+		CopyFlt.array(cs, start, nb, 0, size0);
+		CopyFlt.array(a.cs, a.start, nb, size0, size1);
 		return of(nb);
 	}
 
@@ -333,7 +334,7 @@ public class Floats implements Iterable<Float> {
 		public FloatsBuilder append(float[] cs_, int start, int end) {
 			var inc = end - start;
 			extendBuffer(size + inc);
-			Floats_.copy(cs_, start, cs, size, inc);
+			CopyFlt.array(cs_, start, cs, size, inc);
 			size += inc;
 			return this;
 		}

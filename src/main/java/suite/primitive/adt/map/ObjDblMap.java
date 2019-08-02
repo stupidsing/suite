@@ -30,14 +30,6 @@ public class ObjDblMap<K> {
 	private Object[] ks;
 	private double[] vs;
 
-	public static <K> ObjDblMap<K> collect(DblObjPuller<K> puller) {
-		var map = new ObjDblMap<K>();
-		var pair = DblObjPair.<K> of((double) 0, null);
-		while (puller.source().source2(pair))
-			map.put(pair.v, pair.k);
-		return map;
-	}
-
 	public ObjDblMap() {
 		this(8);
 	}

@@ -16,6 +16,7 @@ import primal.Verbs.Get;
 import primal.fp.Funs.Fun;
 import primal.primitive.LngPrim;
 import primal.primitive.LngPrim.LngSource;
+import primal.primitive.LngVerbs.CopyLng;
 import primal.puller.Puller;
 import suite.cfg.Defaults;
 import suite.primitive.streamlet.LngPuller;
@@ -94,8 +95,8 @@ public class Longs implements Iterable<Long> {
 	public Longs append(Longs a) {
 		int size0 = size_(), size1 = a.size_(), newSize = size0 + size1;
 		var nb = new long[newSize];
-		Longs_.copy(cs, start, nb, 0, size0);
-		Longs_.copy(a.cs, a.start, nb, size0, size1);
+		CopyLng.array(cs, start, nb, 0, size0);
+		CopyLng.array(a.cs, a.start, nb, size0, size1);
 		return of(nb);
 	}
 
@@ -333,7 +334,7 @@ public class Longs implements Iterable<Long> {
 		public LongsBuilder append(long[] cs_, int start, int end) {
 			var inc = end - start;
 			extendBuffer(size + inc);
-			Longs_.copy(cs_, start, cs, size, inc);
+			CopyLng.array(cs_, start, cs, size, inc);
 			size += inc;
 			return this;
 		}

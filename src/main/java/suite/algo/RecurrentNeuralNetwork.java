@@ -5,11 +5,11 @@ import static java.lang.Math.sqrt;
 import java.util.Random;
 
 import primal.Verbs.Build;
+import primal.primitive.FltVerbs.CopyFlt;
 import suite.math.Forget;
 import suite.math.Tanh;
 import suite.math.linalg.Matrix;
 import suite.math.linalg.Vector;
-import suite.primitive.Floats_;
 
 public class RecurrentNeuralNetwork {
 
@@ -72,8 +72,8 @@ public class RecurrentNeuralNetwork {
 			var memory0 = memory;
 			var iv = new float[ll1];
 
-			Floats_.copy(input, 0, iv, 0, inputLength);
-			Floats_.copy(memory0, 0, iv, inputLength, memoryLength);
+			CopyFlt.array(input, 0, iv, 0, inputLength);
+			CopyFlt.array(memory0, 0, iv, inputLength, memoryLength);
 			iv[ll] = 1f;
 
 			var memory1 = vec.copyOf(memory = Tanh.tanhOn(mtx.mul(weights, iv)));

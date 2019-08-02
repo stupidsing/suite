@@ -4,8 +4,8 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 import primal.primitive.IntLngSink;
+import primal.primitive.IntVerbs.CopyInt;
 import suite.primitive.Bytes;
-import suite.primitive.Ints_;
 
 /**
  * https://en.wikipedia.org/wiki/SHA-2
@@ -74,7 +74,7 @@ public class Sha2 {
 		var w = new int[64];
 
 		for (var pos = 0; pos < is.length; pos += s512 / 32) {
-			Ints_.copy(is, pos, w, 0, s512 / 32);
+			CopyInt.array(is, pos, w, 0, s512 / 32);
 
 			for (var i = s512 / 32; i < w.length; i++) {
 				var wi02 = w[i - 02];

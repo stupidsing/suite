@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.Random;
 
 import primal.primitive.DblPrim.DblSource;
+import primal.primitive.FltVerbs.CopyFlt;
 import primal.primitive.adt.pair.DblObjPair;
 import primal.primitive.adt.pair.FltObjPair;
 import suite.math.linalg.Vector;
@@ -126,8 +127,8 @@ public class Arima {
 			System.out.println();
 
 			var coefficients = lr.coefficients();
-			Floats_.copy(coefficients, 0, ars, 0, p);
-			Floats_.copy(coefficients, p, mas, 0, q);
+			CopyFlt.array(coefficients, 0, ars, 0, p);
+			CopyFlt.array(coefficients, p, mas, 0, q);
 		}
 
 		var x1 = arma.sum(xsp, epq);
@@ -154,7 +155,7 @@ public class Arima {
 		var epq = To.vector(lengthq, i -> xs[max(0, min(xsp.length, i - q))] * .25f);
 
 		Arrays.fill(xsp, 0, p, xs[0]);
-		Floats_.copy(xs, 0, xsp, p, length);
+		CopyFlt.array(xs, 0, xsp, p, length);
 
 		for (var iter = 0; iter < 9; iter++) {
 
@@ -173,8 +174,8 @@ public class Arima {
 							return FltObjPair.of(lry, lrxs);
 						})).coefficients();
 
-				Floats_.copy(coeffs, 0, ars, 0, p);
-				Floats_.copy(coeffs, p, mas, p, q);
+				CopyFlt.array(coeffs, 0, ars, 0, p);
+				CopyFlt.array(coeffs, p, mas, p, q);
 			}
 
 			{
@@ -192,7 +193,7 @@ public class Arima {
 							return FltObjPair.of((float) lry, lrxs);
 						})).coefficients();
 
-				Floats_.copy(epq1, 0, epq, 0, lengthq);
+				CopyFlt.array(epq1, 0, epq, 0, lengthq);
 			}
 		}
 
@@ -230,7 +231,7 @@ public class Arima {
 		var epqByIter = new float[q][];
 
 		Arrays.fill(xsp, 0, p, xs[0]);
-		Floats_.copy(xs, 0, xsp, p, length);
+		CopyFlt.array(xs, 0, xsp, p, length);
 
 		while (true) {
 			var iter_ = iter;
@@ -249,7 +250,7 @@ public class Arima {
 			var coeffs = lr.coefficients();
 
 			if (iter < q)
-				Floats_.copy(lr.residuals, 0, epqByIter[iter++] = new float[lengthq], q, length);
+				CopyFlt.array(lr.residuals, 0, epqByIter[iter++] = new float[lengthq], q, length);
 			else {
 				var ars = Floats.of(coeffs, 0, p).toArray();
 				var mas = Floats.of(coeffs, p).toArray();
@@ -326,7 +327,7 @@ public class Arima {
 					}));
 
 			if (iter < q)
-				Floats_.copy(lr.residuals, 0, epqByIter[iter++] = new float[q + length], q, length);
+				CopyFlt.array(lr.residuals, 0, epqByIter[iter++] = new float[q + length], q, length);
 			else
 				return lr.coefficients();
 		}

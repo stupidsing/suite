@@ -30,14 +30,6 @@ public class ObjIntMap<K> {
 	private Object[] ks;
 	private int[] vs;
 
-	public static <K> ObjIntMap<K> collect(IntObjPuller<K> puller) {
-		var map = new ObjIntMap<K>();
-		var pair = IntObjPair.<K> of((int) 0, null);
-		while (puller.source().source2(pair))
-			map.put(pair.v, pair.k);
-		return map;
-	}
-
 	public ObjIntMap() {
 		this(8);
 	}

@@ -16,6 +16,7 @@ import primal.Verbs.Get;
 import primal.fp.Funs.Fun;
 import primal.primitive.DblPrim;
 import primal.primitive.DblPrim.DblSource;
+import primal.primitive.DblVerbs.CopyDbl;
 import primal.puller.Puller;
 import suite.cfg.Defaults;
 import suite.primitive.streamlet.DblPuller;
@@ -94,8 +95,8 @@ public class Doubles implements Iterable<Double> {
 	public Doubles append(Doubles a) {
 		int size0 = size_(), size1 = a.size_(), newSize = size0 + size1;
 		var nb = new double[newSize];
-		Doubles_.copy(cs, start, nb, 0, size0);
-		Doubles_.copy(a.cs, a.start, nb, size0, size1);
+		CopyDbl.array(cs, start, nb, 0, size0);
+		CopyDbl.array(a.cs, a.start, nb, size0, size1);
 		return of(nb);
 	}
 
@@ -333,7 +334,7 @@ public class Doubles implements Iterable<Double> {
 		public DoublesBuilder append(double[] cs_, int start, int end) {
 			var inc = end - start;
 			extendBuffer(size + inc);
-			Doubles_.copy(cs_, start, cs, size, inc);
+			CopyDbl.array(cs_, start, cs, size, inc);
 			size += inc;
 			return this;
 		}

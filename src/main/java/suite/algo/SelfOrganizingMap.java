@@ -7,9 +7,9 @@ import java.util.List;
 import java.util.Random;
 
 import primal.fp.Funs.Sink;
+import primal.primitive.IntVerbs.CopyInt;
 import suite.math.linalg.Vector;
 import suite.primitive.DblMutable;
-import suite.primitive.Ints_;
 import suite.util.To;
 
 public class SelfOrganizingMap {
@@ -43,7 +43,7 @@ public class SelfOrganizingMap {
 					double distance = vec.dotDiff(in, som0);
 					if (distance < nearestDistance.value()) {
 						nearestDistance.update(distance);
-						Ints_.copy(is, 0, nearestIndices, 0, nDim);
+						CopyInt.array(is, 0, nearestIndices, 0, nDim);
 					}
 				}).findMin(0);
 

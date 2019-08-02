@@ -6,6 +6,7 @@ import primal.fp.FunUtil;
 import primal.fp.Funs.Iterate;
 import primal.fp.Funs.Source;
 import primal.primitive.IntPrim;
+import primal.primitive.IntVerbs.CopyInt;
 import primal.primitive.Int_Int;
 import primal.primitive.fp.IntFunUtil;
 import primal.puller.Puller;
@@ -43,7 +44,7 @@ public class Ints_ {
 		var i = 0;
 		for (var fs : array) {
 			var length_ = fs.length;
-			copy(fs, 0, fs1, i, length_);
+			CopyInt.array(fs, 0, fs1, i, length_);
 			i += length_;
 		}
 		return fs1;
@@ -57,17 +58,10 @@ public class Ints_ {
 		var i = 0;
 		for (var ints : array) {
 			var size_ = ints.size();
-			copy(ints.cs, ints.start, cs1, i, size_);
+			CopyInt.array(ints.cs, ints.start, cs1, i, size_);
 			i += size_;
 		}
 		return Ints.of(cs1);
-	}
-
-	public static void copy(int[] from, int fromIndex, int[] to, int toIndex, int size) {
-		if (0 < size)
-			System.arraycopy(from, fromIndex, to, toIndex, size);
-		else if (size < 0)
-			throw new IndexOutOfBoundsException();
 	}
 
 	public static void copy(Puller<Ints> puller, WriteChar writer) {

@@ -27,14 +27,6 @@ public class LngObjMap<V> {
 	private long[] ks;
 	private Object[] vs;
 
-	public static <V> LngObjMap<V> collect(LngObjPuller<V> puller) {
-		var map = new LngObjMap<V>();
-		var pair = LngObjPair.<V> of((long) 0, null);
-		while (puller.source().source2(pair))
-			map.put(pair.k, pair.v);
-		return map;
-	}
-
 	public LngObjMap() {
 		this(8);
 	}

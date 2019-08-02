@@ -1,6 +1,6 @@
 package suite.math.transform;
 
-import suite.primitive.Ints_;
+import primal.primitive.IntVerbs.CopyInt;
 
 // https://en.wikipedia.org/wiki/Discrete_wavelet_transform
 public class DiscreteHaarWaveletTransform {
@@ -20,7 +20,7 @@ public class DiscreteHaarWaveletTransform {
 				output[i + length] = a - b;
 			}
 
-			Ints_.copy(output, 0, input, 0, length2);
+			CopyInt.array(output, 0, input, 0, length2);
 			length2 = length;
 		}
 
@@ -40,7 +40,7 @@ public class DiscreteHaarWaveletTransform {
 				output[i2 + 1] = (sum_ - diff) / 2;
 			}
 
-			Ints_.copy(output, 0, input, 0, length2);
+			CopyInt.array(output, 0, input, 0, length2);
 			length = length2;
 		}
 

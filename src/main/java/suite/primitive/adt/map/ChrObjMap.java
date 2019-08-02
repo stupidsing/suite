@@ -27,14 +27,6 @@ public class ChrObjMap<V> {
 	private char[] ks;
 	private Object[] vs;
 
-	public static <V> ChrObjMap<V> collect(ChrObjPuller<V> puller) {
-		var map = new ChrObjMap<V>();
-		var pair = ChrObjPair.<V> of((char) 0, null);
-		while (puller.source().source2(pair))
-			map.put(pair.k, pair.v);
-		return map;
-	}
-
 	public ChrObjMap() {
 		this(8);
 	}

@@ -27,14 +27,6 @@ public class IntObjMap<V> {
 	private int[] ks;
 	private Object[] vs;
 
-	public static <V> IntObjMap<V> collect(IntObjPuller<V> puller) {
-		var map = new IntObjMap<V>();
-		var pair = IntObjPair.<V> of((int) 0, null);
-		while (puller.source().source2(pair))
-			map.put(pair.k, pair.v);
-		return map;
-	}
-
 	public IntObjMap() {
 		this(8);
 	}

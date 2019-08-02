@@ -4,12 +4,12 @@ import static java.lang.Math.sqrt;
 
 import java.util.Random;
 
+import primal.primitive.FltVerbs.CopyFlt;
 import suite.math.Forget;
 import suite.math.Sigmoid;
 import suite.math.Tanh;
 import suite.math.linalg.Matrix;
 import suite.math.linalg.Vector;
-import suite.primitive.Floats_;
 
 public class LongShortTermMemory {
 
@@ -88,8 +88,8 @@ public class LongShortTermMemory {
 			var output0 = output;
 			var iv = new float[ll1];
 
-			Floats_.copy(input, 0, iv, 0, inputLength);
-			Floats_.copy(output0, 0, iv, inputLength, memoryLength);
+			CopyFlt.array(input, 0, iv, 0, inputLength);
+			CopyFlt.array(output0, 0, iv, inputLength, memoryLength);
 			iv[ll] = 1f;
 
 			var sig_fs = Sigmoid.sigmoidOn(mtx.mul(wf, iv));

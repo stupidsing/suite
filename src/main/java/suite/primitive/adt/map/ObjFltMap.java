@@ -30,14 +30,6 @@ public class ObjFltMap<K> {
 	private Object[] ks;
 	private float[] vs;
 
-	public static <K> ObjFltMap<K> collect(FltObjPuller<K> puller) {
-		var map = new ObjFltMap<K>();
-		var pair = FltObjPair.<K> of((float) 0, null);
-		while (puller.source().source2(pair))
-			map.put(pair.v, pair.k);
-		return map;
-	}
-
 	public ObjFltMap() {
 		this(8);
 	}

@@ -16,6 +16,7 @@ import primal.Verbs.Get;
 import primal.fp.Funs.Fun;
 import primal.primitive.IntPrim;
 import primal.primitive.IntPrim.IntSource;
+import primal.primitive.IntVerbs.CopyInt;
 import primal.puller.Puller;
 import suite.cfg.Defaults;
 import suite.primitive.streamlet.IntPuller;
@@ -94,8 +95,8 @@ public class Ints implements Iterable<Integer> {
 	public Ints append(Ints a) {
 		int size0 = size_(), size1 = a.size_(), newSize = size0 + size1;
 		var nb = new int[newSize];
-		Ints_.copy(cs, start, nb, 0, size0);
-		Ints_.copy(a.cs, a.start, nb, size0, size1);
+		CopyInt.array(cs, start, nb, 0, size0);
+		CopyInt.array(a.cs, a.start, nb, size0, size1);
 		return of(nb);
 	}
 
@@ -333,7 +334,7 @@ public class Ints implements Iterable<Integer> {
 		public IntsBuilder append(int[] cs_, int start, int end) {
 			var inc = end - start;
 			extendBuffer(size + inc);
-			Ints_.copy(cs_, start, cs, size, inc);
+			CopyInt.array(cs_, start, cs, size, inc);
 			size += inc;
 			return this;
 		}

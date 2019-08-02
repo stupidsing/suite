@@ -6,7 +6,7 @@ import primal.Verbs.Build;
 import primal.primitive.IntPrim;
 import primal.primitive.IntPrim.IntSink;
 import primal.primitive.IntPrim.IntSource;
-import suite.primitive.Ints_;
+import primal.primitive.IntVerbs.CopyInt;
 import suite.primitive.streamlet.IntPuller;
 import suite.primitive.streamlet.IntStreamlet;
 
@@ -74,7 +74,7 @@ public class IntSet {
 		var capacity = vs.length;
 		var set = new IntSet(capacity);
 		set.size = size;
-		Ints_.copy(vs, 0, set.vs, 0, capacity);
+		CopyInt.array(vs, 0, set.vs, 0, capacity);
 		return set;
 	}
 

@@ -2,9 +2,9 @@ package suite.trade.singlealloc;
 
 import java.util.Arrays;
 
+import primal.primitive.FltVerbs.CopyFlt;
 import suite.math.linalg.Vector;
 import suite.math.transform.DiscreteCosineTransform;
-import suite.primitive.Floats_;
 import suite.primitive.Ints_;
 import suite.trade.analysis.MovingAverage;
 import suite.trade.singlealloc.BuySellStrategy.GetBuySell;
@@ -27,7 +27,7 @@ public class Strategos {
 				var fs0 = new float[windowSize]; // moving window
 				var price0 = prices[day];
 
-				Floats_.copy(prices, day - nPastDays, fs0, 0, nPastDays);
+				CopyFlt.array(prices, day - nPastDays, fs0, 0, nPastDays);
 				Arrays.fill(fs0, nPastDays, windowSize, price0);
 
 				var fs1 = dct.dct(fs0);

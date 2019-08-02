@@ -6,7 +6,7 @@ import primal.Verbs.Build;
 import primal.primitive.DblPrim;
 import primal.primitive.DblPrim.DblSink;
 import primal.primitive.DblPrim.DblSource;
-import suite.primitive.Doubles_;
+import primal.primitive.DblVerbs.CopyDbl;
 import suite.primitive.streamlet.DblPuller;
 import suite.primitive.streamlet.DblStreamlet;
 
@@ -74,7 +74,7 @@ public class DblSet {
 		var capacity = vs.length;
 		var set = new DblSet(capacity);
 		set.size = size;
-		Doubles_.copy(vs, 0, set.vs, 0, capacity);
+		CopyDbl.array(vs, 0, set.vs, 0, capacity);
 		return set;
 	}
 

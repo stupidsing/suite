@@ -6,7 +6,7 @@ import primal.Verbs.Build;
 import primal.primitive.LngPrim;
 import primal.primitive.LngPrim.LngSink;
 import primal.primitive.LngPrim.LngSource;
-import suite.primitive.Longs_;
+import primal.primitive.LngVerbs.CopyLng;
 import suite.primitive.streamlet.LngPuller;
 import suite.primitive.streamlet.LngStreamlet;
 
@@ -74,7 +74,7 @@ public class LngSet {
 		var capacity = vs.length;
 		var set = new LngSet(capacity);
 		set.size = size;
-		Longs_.copy(vs, 0, set.vs, 0, capacity);
+		CopyLng.array(vs, 0, set.vs, 0, capacity);
 		return set;
 	}
 

@@ -6,7 +6,7 @@ import primal.Verbs.Build;
 import primal.primitive.FltPrim;
 import primal.primitive.FltPrim.FltSink;
 import primal.primitive.FltPrim.FltSource;
-import suite.primitive.Floats_;
+import primal.primitive.FltVerbs.CopyFlt;
 import suite.primitive.streamlet.FltPuller;
 import suite.primitive.streamlet.FltStreamlet;
 
@@ -74,7 +74,7 @@ public class FltSet {
 		var capacity = vs.length;
 		var set = new FltSet(capacity);
 		set.size = size;
-		Floats_.copy(vs, 0, set.vs, 0, capacity);
+		CopyFlt.array(vs, 0, set.vs, 0, capacity);
 		return set;
 	}
 

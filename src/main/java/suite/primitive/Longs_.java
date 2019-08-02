@@ -7,6 +7,7 @@ import primal.fp.Funs.Iterate;
 import primal.fp.Funs.Source;
 import primal.primitive.Int_Lng;
 import primal.primitive.LngPrim;
+import primal.primitive.LngVerbs.CopyLng;
 import primal.primitive.fp.LngFunUtil;
 import primal.puller.Puller;
 import suite.primitive.Longs.LongsBuilder;
@@ -43,7 +44,7 @@ public class Longs_ {
 		var i = 0;
 		for (var fs : array) {
 			var length_ = fs.length;
-			copy(fs, 0, fs1, i, length_);
+			CopyLng.array(fs, 0, fs1, i, length_);
 			i += length_;
 		}
 		return fs1;
@@ -57,17 +58,10 @@ public class Longs_ {
 		var i = 0;
 		for (var longs : array) {
 			var size_ = longs.size();
-			copy(longs.cs, longs.start, cs1, i, size_);
+			CopyLng.array(longs.cs, longs.start, cs1, i, size_);
 			i += size_;
 		}
 		return Longs.of(cs1);
-	}
-
-	public static void copy(long[] from, int fromIndex, long[] to, int toIndex, int size) {
-		if (0 < size)
-			System.arraycopy(from, fromIndex, to, toIndex, size);
-		else if (size < 0)
-			throw new IndexOutOfBoundsException();
 	}
 
 	public static void copy(Puller<Longs> puller, WriteChar writer) {

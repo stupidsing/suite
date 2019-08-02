@@ -27,14 +27,6 @@ public class FltObjMap<V> {
 	private float[] ks;
 	private Object[] vs;
 
-	public static <V> FltObjMap<V> collect(FltObjPuller<V> puller) {
-		var map = new FltObjMap<V>();
-		var pair = FltObjPair.<V> of((float) 0, null);
-		while (puller.source().source2(pair))
-			map.put(pair.k, pair.v);
-		return map;
-	}
-
 	public FltObjMap() {
 		this(8);
 	}

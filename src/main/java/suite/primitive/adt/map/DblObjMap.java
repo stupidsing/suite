@@ -27,14 +27,6 @@ public class DblObjMap<V> {
 	private double[] ks;
 	private Object[] vs;
 
-	public static <V> DblObjMap<V> collect(DblObjPuller<V> puller) {
-		var map = new DblObjMap<V>();
-		var pair = DblObjPair.<V> of((double) 0, null);
-		while (puller.source().source2(pair))
-			map.put(pair.k, pair.v);
-		return map;
-	}
-
 	public DblObjMap() {
 		this(8);
 	}

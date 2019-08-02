@@ -30,14 +30,6 @@ public class ObjChrMap<K> {
 	private Object[] ks;
 	private char[] vs;
 
-	public static <K> ObjChrMap<K> collect(ChrObjPuller<K> puller) {
-		var map = new ObjChrMap<K>();
-		var pair = ChrObjPair.<K> of((char) 0, null);
-		while (puller.source().source2(pair))
-			map.put(pair.v, pair.k);
-		return map;
-	}
-
 	public ObjChrMap() {
 		this(8);
 	}

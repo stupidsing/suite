@@ -30,14 +30,6 @@ public class ObjLngMap<K> {
 	private Object[] ks;
 	private long[] vs;
 
-	public static <K> ObjLngMap<K> collect(LngObjPuller<K> puller) {
-		var map = new ObjLngMap<K>();
-		var pair = LngObjPair.<K> of((long) 0, null);
-		while (puller.source().source2(pair))
-			map.put(pair.v, pair.k);
-		return map;
-	}
-
 	public ObjLngMap() {
 		this(8);
 	}

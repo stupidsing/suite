@@ -3,6 +3,7 @@ package suite.ts;
 import static primal.statics.Fail.fail;
 import static suite.util.Streamlet_.forInt;
 
+import primal.primitive.FltVerbs.CopyFlt;
 import primal.primitive.adt.pair.FltObjPair;
 import suite.math.numeric.Statistic;
 import suite.math.numeric.Statistic.LinearRegression;
@@ -47,7 +48,7 @@ public class Ardl {
 		return Floats_.concat(To.array(fsList.length, float[].class, is -> {
 			var fsi = fsList[is];
 			var xs = new float[maxLag + (isIncludeCurrent ? 1 : 0)];
-			Floats_.copy(fsi, t, xs, 0, maxLag);
+			CopyFlt.array(fsi, t, xs, 0, maxLag);
 			if (isIncludeCurrent)
 				xs[maxLag] = is != it ? fsi[t + maxLag] : 1f;
 			return xs;
