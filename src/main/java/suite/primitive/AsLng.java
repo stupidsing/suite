@@ -4,17 +4,25 @@ import java.util.List;
 
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
+import primal.fp.Funs.Sink;
 import primal.primitive.LngPrim.ObjObj_Lng;
 import primal.primitive.LngPrim.Obj_Lng;
+import primal.primitive.puller.LngObjPuller;
 import primal.puller.Puller;
 import primal.puller.Puller2;
 import suite.adt.map.ListMultimap;
 import suite.primitive.Longs.LongsBuilder;
 import suite.primitive.adt.map.LngObjMap;
-import suite.primitive.streamlet.LngObjPuller;
+import suite.primitive.streamlet.LngObjStreamlet;
 import suite.primitive.streamlet.LngStreamlet;
 
 public class AsLng {
+
+	public static Longs build(Sink<LongsBuilder> sink) {
+		var sb = new LongsBuilder();
+		sink.f(sb);
+		return sb.toLongs();
+	}
 
 	public static <T> Fun<Puller<T>, LngStreamlet> lift(Obj_Lng<T> fun0) {
 		var fun1 = fun0.rethrow();
@@ -27,19 +35,21 @@ public class AsLng {
 		};
 	}
 
-	public static <V> LngObjPuller<V> read2(LngObjMap<V> map) {
-		return LngObjPuller.of(map.source());
+	public static <V> LngObjStreamlet<V> read2(LngObjMap<V> map) {
+		return new LngObjStreamlet<>(() -> LngObjPuller.of(map.source()));
 	}
 
-	public static <V> LngObjPuller<List<V>> read2(ListMultimap<Long, V> multimap) {
-		var iter = multimap.listEntries().iterator();
-		return LngObjPuller.of(pair -> {
-			var b = iter.hasNext();
-			if (b) {
-				var pair1 = iter.next();
-				pair.update(pair1.k, pair1.v);
-			}
-			return b;
+	public static <V> LngObjStreamlet<List<V>> read2(ListMultimap<Long, V> multimap) {
+		return new LngObjStreamlet<>(() -> {
+			var iter = multimap.listEntries().iterator();
+			return LngObjPuller.of(pair -> {
+				var b = iter.hasNext();
+				if (b) {
+					var pair1 = iter.next();
+					pair.update(pair1.k, pair1.v);
+				}
+				return b;
+			});
 		});
 	}
 

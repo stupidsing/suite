@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Map;
 
+import primal.Nouns.Utf8;
 import primal.Verbs.ReadLine;
 import primal.adt.Pair;
 import primal.fp.FunUtil;
@@ -22,7 +23,6 @@ import primal.fp.Funs.Source;
 import primal.fp.Funs2.Source2;
 import primal.puller.Puller;
 import primal.puller.Puller2;
-import suite.cfg.Defaults;
 import suite.http.HttpUtil;
 import suite.primitive.Bytes;
 import suite.util.To;
@@ -67,7 +67,7 @@ public class Read {
 
 	public static <K, V> Streamlet2<K, V> empty2() {
 		@SuppressWarnings("unchecked")
-		Streamlet2<K, V> st = (Streamlet2<K, V>) empty2;
+		var st = (Streamlet2<K, V>) empty2;
 		return st;
 	}
 
@@ -118,7 +118,7 @@ public class Read {
 	}
 
 	public static Puller<String> lines(InputStream is) {
-		return lines(new InputStreamReader(is, Defaults.charset)).closeAtEnd(is);
+		return lines(new InputStreamReader(is, Utf8.charset)).closeAtEnd(is);
 	}
 
 	public static Puller<String> lines(Reader reader) {

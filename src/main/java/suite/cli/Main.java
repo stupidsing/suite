@@ -14,12 +14,12 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
-import primal.String_;
+import primal.Nouns.Utf8;
 import primal.Verbs.Close;
+import primal.Verbs.Equals;
 import primal.Verbs.Take;
 import primal.os.Log_;
 import suite.Suite;
-import suite.cfg.Defaults;
 import suite.net.ServeSocket;
 import suite.os.FileUtil;
 import suite.util.ParseUtil;
@@ -36,8 +36,8 @@ public class Main implements AutoCloseable {
 	private CommandOptions opt;
 	private CommandDispatcher dispatcher;
 
-	private Reader reader = new BufferedReader(new InputStreamReader(System.in, Defaults.charset));
-	private Writer writer = new BufferedWriter(new OutputStreamWriter(System.out, Defaults.charset));
+	private Reader reader = new BufferedReader(new InputStreamReader(System.in, Utf8.charset));
+	private Writer writer = new BufferedWriter(new OutputStreamWriter(System.out, Utf8.charset));
 
 	public static void main(String[] args) {
 		RunUtil.run(() -> {
@@ -58,7 +58,7 @@ public class Main implements AutoCloseable {
 
 		while ((arg = source.g()) != null)
 			if (arg.startsWith("-"))
-				if (String_.equals(arg, "--file"))
+				if (Equals.string(arg, "--file"))
 					inputs.add(readScript(source.g()));
 				else
 					b &= opt.processOption(arg, source);
@@ -70,17 +70,17 @@ public class Main implements AutoCloseable {
 		dispatcher = new CommandDispatcher(opt);
 
 		if (b)
-			if (String_.equals(verb, "evaluate"))
+			if (Equals.string(verb, "evaluate"))
 				b &= dispatcher.dispatchEvaluate(inputs);
-			else if (String_.equals(verb, "filter"))
+			else if (Equals.string(verb, "filter"))
 				b &= dispatcher.dispatchFilter(inputs, reader, writer);
-			else if (String_.equals(verb, "precompile"))
+			else if (Equals.string(verb, "precompile"))
 				b &= dispatcher.dispatchPrecompile(inputs);
-			else if (String_.equals(verb, "prove"))
+			else if (Equals.string(verb, "prove"))
 				b &= dispatcher.dispatchProve(inputs);
-			else if (String_.equals(verb, "query"))
+			else if (Equals.string(verb, "query"))
 				b &= runInteractive(inputs);
-			else if (String_.equals(verb, "serve"))
+			else if (Equals.string(verb, "serve"))
 				new ServeSocket().run();
 			else if (verb != null && verb.startsWith("suite.")) {
 				var verb_ = verb;
@@ -88,7 +88,7 @@ public class Main implements AutoCloseable {
 					var c = Class.forName(verb_);
 					return c.getMethod("main", String[].class).invoke(null);
 				});
-			} else if (String_.equals(verb, "type"))
+			} else if (Equals.string(verb, "type"))
 				b &= dispatcher.dispatchType(inputs);
 			else if (verb == null)
 				b &= runInteractive(inputs);

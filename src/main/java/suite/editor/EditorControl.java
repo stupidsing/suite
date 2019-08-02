@@ -10,10 +10,11 @@ import java.nio.file.Paths;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
+import primal.Nouns.Utf8;
 import primal.Verbs.Start;
+import primal.Verbs.WriteFile;
 import primal.fp.Funs.Iterate;
 import suite.Suite;
-import suite.cfg.Defaults;
 import suite.node.io.Formatter;
 import suite.node.pp.PrettyPrinter;
 import suite.os.FileUtil;
@@ -144,7 +145,7 @@ public class EditorControl {
 	}
 
 	public void save() {
-		FileUtil.out(model.filename()).doWrite(os -> os.write(view.getEditor().getText().getBytes(Defaults.charset)));
+		WriteFile.to(model.filename()).doWrite(os -> os.write(view.getEditor().getText().getBytes(Utf8.charset)));
 		model.changeIsModified(false);
 	}
 
@@ -186,7 +187,7 @@ public class EditorControl {
 		var text1 = ex(() -> {
 			var process = Runtime.getRuntime().exec(command);
 
-			try (var pos = process.getOutputStream(); var writer = new OutputStreamWriter(pos, Defaults.charset)) {
+			try (var pos = process.getOutputStream(); var writer = new OutputStreamWriter(pos, Utf8.charset)) {
 				writer.write(text0);
 			}
 

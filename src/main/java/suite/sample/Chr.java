@@ -23,7 +23,6 @@ import suite.persistent.PerMap;
 import suite.persistent.PerSet;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
-import suite.util.To;
 
 /**
  * Constraint handling rules implementation.
@@ -65,11 +64,11 @@ public class Chr {
 				node = t1.getRight();
 
 				if (key == Atom.of("given"))
-					rule.givens = To.list(Tree.read(value));
+					rule.givens = Tree.read(value).toList();
 				else if (key == Atom.of("if"))
-					rule.ifs = To.list(Tree.read(value));
+					rule.ifs = Tree.read(value).toList();
 				else if (key == Atom.of("then"))
-					rule.thens = To.list(Tree.read(value));
+					rule.thens = Tree.read(value).toList();
 				else if (key == Atom.of("when"))
 					rule.when = value;
 				else
@@ -94,12 +93,7 @@ public class Chr {
 		while ((state1 = chr(state)) != null)
 			state = state1;
 
-		var nodes1 = new ArrayList<Node>();
-
-		for (var e : state.factsByPrototype)
-			nodes1.addAll(To.list(e.v));
-
-		return nodes1;
+		return state.factsByPrototype.streamlet2().values().concatMap(PerSet::streamlet).toList();
 	}
 
 	private State chr(State state) {

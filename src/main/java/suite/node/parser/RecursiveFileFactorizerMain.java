@@ -5,8 +5,8 @@ import static primal.statics.Rethrow.ex;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+import primal.Nouns.Utf8;
 import primal.adt.Pair;
-import suite.cfg.Defaults;
 import suite.node.io.TermOp;
 import suite.os.FileUtil;
 import suite.parser.Wildcard;
@@ -29,7 +29,7 @@ public class RecursiveFileFactorizerMain {
 
 						var bs = fts //
 								.fold(FileUtil.read(path), (s_, ft) -> recursiveFactorizer.rewrite(ft.k, ft.v, s_)) //
-								.getBytes(Defaults.charset);
+								.getBytes(Utf8.charset);
 
 						ex(() -> Files.write(path, bs));
 					});

@@ -176,24 +176,4 @@ public class ParseUtil {
 		return quote;
 	}
 
-	public static boolean isWhitespace(byte b) {
-		return b == 0;
-	}
-
-	public static boolean isWhitespace(char c) {
-		return Character.isWhitespace(c);
-	}
-
-	public static boolean isWhitespace(double d) {
-		return d == 0d;
-	}
-
-	public static boolean isWhitespace(float f) {
-		return f == 0f;
-	}
-
-	public static boolean isWhitespace(int i) {
-		return i == 0;
-	}
-
 }

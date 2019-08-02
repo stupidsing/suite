@@ -11,13 +11,13 @@ import java.util.Base64.Encoder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import primal.String_;
-import suite.cfg.Defaults;
+import primal.Nouns.Utf8;
+import primal.Verbs.Equals;
 import suite.math.Sha2;
 
 public class Jwt {
 
-	private Charset charset = Defaults.charset;
+	private Charset charset = Utf8.charset;
 	private ObjectMapper om = new ObjectMapper();
 	private Decoder urlDecoder = Base64.getUrlDecoder();
 	private Encoder urlEncoder = Base64.getUrlEncoder();
@@ -32,7 +32,7 @@ public class Jwt {
 		var hash1 = urlDecoder.decode(array[2]);
 
 		var json = ex(() -> om.readTree(header));
-		var b = String_.equals(json.path("typ").textValue(), "JWT") && String_.equals(json.path("alg").textValue(), "HS256");
+		var b = Equals.string(json.path("typ").textValue(), "JWT") && Equals.string(json.path("alg").textValue(), "HS256");
 		var data = encodeUrl(header) + "." + encodeUrl(payload);
 		var hash = sha2.sha256(data.getBytes(charset)); // sha2.hmac(secret, data.getBytes(charset))
 		return b && Arrays.equals(hash, hash1) ? payload : fail();

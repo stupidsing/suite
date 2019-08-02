@@ -4,7 +4,9 @@ import static primal.statics.Rethrow.ex;
 
 import java.io.IOException;
 
+import primal.Verbs.ReadFile;
 import primal.fp.Funs.Fun;
+import primal.io.ReadStream;
 import primal.statics.Rethrow.FunIo;
 import primal.statics.Rethrow.SourceEx;
 import suite.Suite;
@@ -18,7 +20,6 @@ import suite.node.Tree;
 import suite.node.io.SwitchNode;
 import suite.node.io.TermOp;
 import suite.os.FileUtil;
-import suite.util.ReadStream;
 
 public class P00Consult {
 
@@ -59,7 +60,7 @@ public class P00Consult {
 		Fun<SourceEx<ReadStream, IOException>, Node> r1 = source -> ex(source::g).doRead(r0::apply);
 
 		if (url.startsWith("file://"))
-			return r1.apply(() -> FileUtil.in(url.substring(7)));
+			return r1.apply(() -> ReadFile.from(url.substring(7)));
 		else if (url.startsWith("http://") || url.startsWith("https://"))
 			return r0.apply(HttpUtil.get(url).inputStream());
 		else

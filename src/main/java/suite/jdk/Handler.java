@@ -7,7 +7,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
 
-import primal.String_;
+import primal.Verbs.Is;
 
 public class Handler extends URLStreamHandler {
 
@@ -15,7 +15,7 @@ public class Handler extends URLStreamHandler {
 		var property = System.getProperty("java.protocol.handler.pkgs");
 		var packageName = "suite";
 
-		if (String_.isBlank(property))
+		if (Is.blank(property))
 			property = packageName;
 		else if (!property.contains(packageName))
 			property = packageName + "|" + property;

@@ -6,7 +6,7 @@ import java.nio.file.Paths;
 import org.junit.Test;
 import org.xml.sax.SAXException;
 
-import suite.os.FileUtil;
+import primal.Verbs.ReadFile;
 import suite.util.XmlUtil.XmlNode;
 
 public class XmlUtilTest {
@@ -22,7 +22,7 @@ public class XmlUtilTest {
 
 	@Test
 	public void testPom() throws SAXException {
-		XmlNode xml = xmlUtil.read(FileUtil.in("pom.xml"));
+		XmlNode xml = xmlUtil.read(ReadFile.from("pom.xml"));
 
 		System.out.println(xml);
 		System.out.println(xml.children("project").uniqueResult().toString());

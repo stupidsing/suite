@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import primal.String_;
+import primal.Verbs.Equals;
 import primal.primitive.Dbl_Dbl;
 import primal.primitive.FltPrim.Obj_Flt;
 import suite.primitive.AsDbl;
@@ -126,7 +126,7 @@ public class Account {
 		public final Map<String, Float> valuationBySymbol;
 
 		private Valuation(Obj_Flt<String> priceFun0) {
-			Obj_Flt<String> priceFun1 = symbol -> !String_.equals(symbol, cashCode) ? priceFun0.apply(symbol) : 1f;
+			Obj_Flt<String> priceFun1 = symbol -> !Equals.string(symbol, cashCode) ? priceFun0.apply(symbol) : 1f;
 			valuationBySymbol = Read.from2(assets).map2((symbol, n) -> priceFun1.apply(symbol) * n).toMap();
 		}
 

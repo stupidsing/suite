@@ -1,5 +1,7 @@
 package suite.algo;
 
+import static primal.statics.Fail.fail;
+
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -10,146 +12,159 @@ import java.util.Map;
 import primal.Verbs.Take;
 import primal.adt.Pair;
 import primal.fp.Funs.Source;
+import primal.primitive.IntPrim;
+import primal.primitive.adt.pair.IntObjPair;
+import primal.puller.Puller;
 import suite.adt.PriorityQueue;
+import suite.primitive.adt.map.ObjIntMap;
+import suite.primitive.streamlet.IntObjStreamlet;
 import suite.streamlet.Read;
-import suite.util.To;
 
 /**
  * Huffman compression.
  *
  * @author ywsing
  */
-public class Huffman {
+public class Huffman<Unit> {
 
-	public <Unit> Pair<List<Unit>, List<Boolean>> encode(List<Unit> input) {
+	public Pair<List<IntObjPair<Unit>>, List<Boolean>> encode(List<Unit> input) {
 		var dictionary = build(input);
-		return Pair.of(save(dictionary), To.list(encode(dictionary, Take.from(input))));
+		var source = Take.from(input);
+
+		var puller = Puller.of(new Source<Boolean>() {
+			private Node node = dictionary.root;
+
+			public Boolean g() {
+				Node parent;
+				Unit unit;
+
+				while ((parent = node.parent) == null)
+					if ((unit = source.g()) != null)
+						node = dictionary.nodeByUnit.get(unit);
+					else
+						return null;
+
+				var b = parent.node1 == node;
+				node = parent;
+				return b;
+			}
+		});
+
+		return Pair.of(save(dictionary), puller.toList());
 	}
 
-	public <Unit> List<Unit> decode(Pair<List<Unit>, List<Boolean>> input) {
-		var dictionary = load(input);
-		return To.list(decode(dictionary, Take.from(input.v)));
+	public List<Unit> decode(Pair<List<IntObjPair<Unit>>, List<Boolean>> input) {
+		return Puller.of(new Source<Unit>() {
+			private Node root = load(input.k).root;
+			private Source<Boolean> source = Take.from(input.v);
+
+			public Unit g() {
+				var node = root;
+				Unit unit = null;
+				Boolean b;
+
+				while ((unit = node.unit) == null)
+					if ((b = source.g()) != null)
+						node = b ? node.node1 : node.node0;
+					else
+						break;
+
+				return unit;
+			}
+		}).toList();
 	}
 
-	private <Unit> Dictionary<Unit> build(List<Unit> input) {
-		var comparator = Comparator.<Node<Unit>> comparingInt(node -> node.size);
+	private Dictionary build(List<Unit> input) {
+		var comparator = Comparator.<Node> comparingInt(node -> node.size);
 
 		@SuppressWarnings("unchecked")
-		var clazz = (Class<Node<Unit>>) (Class<?>) Node.class;
+		var clazz = (Class<Node>) (Class<?>) Node.class;
 
-		var nodes = Read //
-				.from2(histogram(input)) //
-				.map(Node<Unit>::new) //
-				.toList();
-
-		var priorityQueue = new PriorityQueue<>(clazz, 0, comparator);
+		var nodes = histogram(input).map((count, unit) -> new Node(unit, count)).toList();
+		var pq = new PriorityQueue<>(clazz, 0, comparator);
 
 		for (var node : nodes)
-			priorityQueue.insert(node);
+			pq.insert(node);
 
-		while (1 < priorityQueue.size()) {
-			var node0 = priorityQueue.extractMin();
-			var node1 = priorityQueue.extractMin();
-			priorityQueue.insert(new Node<>(node0, node1));
+		while (1 < pq.size()) {
+			var node0 = pq.extractMin();
+			var node1 = pq.extractMin();
+			pq.insert(new Node(node0, node1));
 		}
 
-		var dictionary = new Dictionary<Unit>();
-		dictionary.root = !priorityQueue.isEmpty() ? priorityQueue.extractMin() : null;
-		dictionary.nodeByUnit = Read.from(nodes).toMap(node -> node.unit, node -> node);
-		return dictionary;
+		// root and root.unit must not be empty
+		var root0 = !pq.isEmpty() ? pq.extractMin() : dummy;
+		var root1 = root0.unit != null ? root0 : new Node(dummy, root0);
+		return new Dictionary(root1, Read.from(nodes).toMap(node -> node.unit));
 	}
 
-	private <Unit> Dictionary<Unit> load(Pair<List<Unit>, List<Boolean>> input) {
-		var nodeByUnit = new HashMap<Unit, Node<Unit>>();
-		var deque = new ArrayDeque<Node<Unit>>();
+	private Dictionary load(List<IntObjPair<Unit>> list) {
+		var nodeByUnit = new HashMap<Unit, Node>();
+		var deque = new ArrayDeque<Node>();
+		Node node;
 
-		for (var unit : input.k)
-			if (unit == null) {
-				var node0 = deque.pop();
+		for (var pair : list) {
+			if (pair.k == 0)
+				node = dummy;
+			else if (pair.k == 1) {
 				var node1 = deque.pop();
-				deque.push(new Node<>(node0, node1));
-			} else {
-				var node = new Node<>(unit, 0);
-				deque.push(node);
+				var node0 = deque.pop();
+				node = new Node(node0, node1);
+			} else if (pair.k == 2) {
+				var unit = pair.v;
+				node = new Node(unit, 0);
 				nodeByUnit.put(unit, node);
-			}
+			} else
+				return fail();
+			deque.push(node);
+		}
 
-		var dictionary = new Dictionary<Unit>();
-		dictionary.root = deque.pop();
-		dictionary.nodeByUnit = nodeByUnit;
-		return dictionary;
+		return new Dictionary(deque.pop(), nodeByUnit);
 	}
 
-	private <Unit> List<Unit> save(Dictionary<Unit> dictionary) {
-		var list = new ArrayList<Unit>();
-		save(list, dictionary.root);
+	private List<IntObjPair<Unit>> save(Dictionary dictionary) {
+		var list = new ArrayList<IntObjPair<Unit>>();
+
+		new Object() {
+			private void save(Node node) {
+				if (node == dummy)
+					list.add(IntObjPair.of(0, null));
+				else if (node.node0 != null && node.node1 != null) {
+					save(node.node0);
+					save(node.node1);
+					list.add(IntObjPair.of(1, null));
+				} else
+					list.add(IntObjPair.of(2, node.unit));
+			}
+		}.save(dictionary.root);
+
 		return list;
 	}
 
-	private static <Unit> void save(List<Unit> list, Node<Unit> node) {
-		if (node.node0 != null || node.node1 != null) {
-			save(list, node.node0);
-			save(list, node.node1);
-			list.add(null);
-		} else
-			list.add(node.unit);
+	private class Dictionary {
+		private Node root;
+		private Map<Unit, Node> nodeByUnit;
+
+		private Dictionary(Node root, Map<Unit, Node> nodeByUnit) {
+			this.root = root;
+			this.nodeByUnit = nodeByUnit;
+		}
 	}
 
-	private static <Unit> Source<Boolean> encode(Dictionary<Unit> dictionary, Source<Unit> source) {
-		var stack = new ArrayDeque<Boolean>();
+	private Node dummy = new Node(null, 0);
 
-		return () -> {
-			Unit unit;
-
-			while (stack.isEmpty() && (unit = source.g()) != null) {
-				var node = dictionary.nodeByUnit.get(unit);
-				Node<Unit> parent;
-
-				while ((parent = node.parent) != null) {
-					stack.push(parent.node0 == node ? Boolean.FALSE : Boolean.TRUE);
-					node = parent;
-				}
-			}
-
-			return !stack.isEmpty() ? stack.pop() : null;
-		};
-	}
-
-	private static <Unit> Source<Unit> decode(Dictionary<Unit> dictionary, Source<Boolean> source) {
-		return () -> {
-			Boolean b;
-
-			if ((b = source.g()) != null) {
-				var node = dictionary.root;
-
-				while (node.unit == null) {
-					node = b ? node.node0 : node.node1;
-					b = source.g();
-				}
-
-				return node.unit;
-			} else
-				return null;
-		};
-	}
-
-	private static class Dictionary<Unit> {
-		private Node<Unit> root;
-		private Map<Unit, Node<Unit>> nodeByUnit;
-	}
-
-	private static class Node<Unit> {
+	private class Node {
 		private Unit unit;
 		private int size;
-		private Node<Unit> parent;
-		private Node<Unit> node0, node1;
+		private Node parent;
+		private Node node0, node1;
 
 		private Node(Unit unit, int size) {
 			this.unit = unit;
 			this.size = size;
 		}
 
-		private Node(Node<Unit> node0, Node<Unit> node1) {
+		private Node(Node node0, Node node1) {
 			this.size = node0.size + node1.size;
 			this.node0 = node0;
 			this.node1 = node1;
@@ -157,11 +172,11 @@ public class Huffman {
 		}
 	}
 
-	private static <Unit> Map<Unit, Integer> histogram(List<Unit> input) {
-		var histogram = new HashMap<Unit, Integer>();
+	private IntObjStreamlet<Unit> histogram(Iterable<Unit> input) {
+		var histogram = new ObjIntMap<Unit>();
 		for (var unit : input)
-			histogram.put(unit, histogram.getOrDefault(unit, 0) + 1);
-		return histogram;
+			histogram.update(unit, c -> (c != IntPrim.EMPTYVALUE ? c : 0) + 1);
+		return histogram.streamlet();
 	}
 
 }

@@ -9,7 +9,7 @@ import primal.primitive.IntPrim.IntObjSink;
 import primal.primitive.IntPrim.IntObjSource;
 import primal.primitive.IntPrim.Int_Obj;
 import primal.primitive.adt.pair.IntObjPair;
-import suite.primitive.streamlet.IntObjPuller;
+import primal.primitive.puller.IntObjPuller;
 import suite.primitive.streamlet.IntObjStreamlet;
 import suite.streamlet.As;
 
@@ -64,7 +64,7 @@ public class IntObjMap<V> {
 	public V get(int key) {
 		var index = index(key);
 		@SuppressWarnings("unchecked")
-		V v = ks[index] == key ? cast(vs[index]) : (V) EMPTYVALUE;
+		var v = ks[index] == key ? cast(vs[index]) : (V) EMPTYVALUE;
 		return v;
 	}
 

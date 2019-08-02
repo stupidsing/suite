@@ -1,6 +1,6 @@
 package suite.weiqi;
 
-import primal.String_;
+import primal.Verbs.Equals;
 import suite.weiqi.Weiqi.Occupation;
 
 public class UserInterface {
@@ -24,7 +24,7 @@ public class UserInterface {
 				var occupation = Occupation.EMPTY;
 
 				for (var o : Occupation.values())
-					if (String_.equals(cols[y], o.display()))
+					if (Equals.string(cols[y], o.display()))
 						occupation = o;
 
 				board.set(Coordinate.c(x, y), occupation);

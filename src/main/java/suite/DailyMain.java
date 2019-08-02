@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import primal.String_;
+import primal.Verbs.Equals;
 import primal.Verbs.Union;
 import primal.adt.Pair;
 import primal.fp.Funs.Sink;
@@ -100,7 +100,7 @@ public class DailyMain {
 				.filterValue(trade -> trade.buySell != 0) //
 				.collect();
 
-		var requestTrades = strategyTrades.filterKey(strategy -> !String_.equals(strategy, sellPool));
+		var requestTrades = strategyTrades.filterKey(strategy -> !Equals.string(strategy, sellPool));
 		var amounts = strategyTrades.values().collect(AsDbl.lift(Trade::amount));
 		var buys_ = amounts.filter(amount -> 0d < amount).sum();
 		var sells = amounts.filter(amount -> amount < 0d).sum();
@@ -206,7 +206,7 @@ public class DailyMain {
 
 	// some orders caused by stupid bugs. need to sell those at suitable times.
 	private Result sellForEarn(String tag) {
-		var history = cfg.queryHistory().filter(r -> String_.equals(r.strategy, tag));
+		var history = cfg.queryHistory().filter(r -> Equals.string(r.strategy, tag));
 		var account = Account.ofPortfolio(history);
 
 		var faceValueBySymbol = history //
@@ -235,7 +235,7 @@ public class DailyMain {
 	private Result alloc(String tag, float fund, BackAllocator backAllocator, Streamlet<Instrument> instruments) {
 		var period = TimeRange.daysBefore(64);
 		var sim = BackAllocTester.of(cfg, period, instruments, backAllocator, log).simulate(fund);
-		var account0 = Account.ofPortfolio(cfg.queryHistory().filter(r -> String_.equals(r.strategy, tag)));
+		var account0 = Account.ofPortfolio(cfg.queryHistory().filter(r -> Equals.string(r.strategy, tag)));
 		var account1 = sim.account;
 		var assets0 = account0.assets();
 		var assets1 = account1.assets();

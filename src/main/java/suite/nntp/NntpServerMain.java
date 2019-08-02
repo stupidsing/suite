@@ -10,12 +10,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import primal.String_;
+import primal.Verbs.Equals;
 import primal.Verbs.ReadLine;
+import primal.Verbs.Split;
+import primal.io.WriteStream;
 import suite.os.SocketUtil;
 import suite.util.CommandUtil;
 import suite.util.RunUtil;
-import suite.util.WriteStream;
 
 public class NntpServerMain {
 
@@ -76,14 +77,14 @@ public class NntpServerMain {
 							pw.println("423 Bad article number");
 						break;
 					case LIST:
-						if (String_.equals(options, "ACTIVE")) {
+						if (Equals.string(options, "ACTIVE")) {
 							pw.println("215 Okay");
 							for (var groupId : nntp.listGroupIds()) {
 								var articleIdRange = nntp.getArticleIdRange(groupId);
 								pw.println(groupId + " " + articleIdRange.k + " " + articleIdRange.v + " y");
 							}
 							pw.println(".");
-						} else if (String_.equals(options, "NEWSGROUPS")) {
+						} else if (Equals.string(options, "NEWSGROUPS")) {
 							pw.println("215 Okay");
 							for (var group : nntp.listGroupIds())
 								pw.println(group + " " + group);
@@ -103,14 +104,14 @@ public class NntpServerMain {
 						pw.println("340 Okay");
 						var size = 0;
 						var lines = new ArrayList<String>();
-						while (!String_.equals(line = ReadLine.from(sis), ".") && size < 1048576) {
+						while (!Equals.string(line = ReadLine.from(sis), ".") && size < 1048576) {
 							lines.add(line);
 							size += line.length();
 						}
 						article = new HashMap<>();
 						var pos = 0;
 						while (!(line = lines.get(pos++)).isEmpty())
-							String_.split2l(line, ":").map(article::put);
+							Split.strl(line, ":").map(article::put);
 						var sb = new StringBuilder();
 						while (pos < lines.size())
 							sb.append(lines.get(pos++));
@@ -128,7 +129,7 @@ public class NntpServerMain {
 		private void printHead(PrintWriter pw, Map<String, String> article) {
 			for (var e : article.entrySet()) {
 				var key = e.getKey();
-				if (!String_.equals(key, Nntp.contentKey))
+				if (!Equals.string(key, Nntp.contentKey))
 					pw.println(key + ": " + e.getValue());
 			}
 		}

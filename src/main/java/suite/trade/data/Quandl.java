@@ -2,7 +2,7 @@ package suite.trade.data;
 
 import java.util.List;
 
-import primal.String_;
+import primal.Verbs.Compare;
 import primal.adt.Pair;
 import suite.cfg.Defaults;
 import suite.node.util.Singleton;
@@ -28,7 +28,7 @@ public class Quandl {
 		return csv(urlString).map((headers, csv) -> {
 			var arrays = csv(urlString).v //
 					.skip(1) //
-					.sort((a0, a1) -> String_.compare(a0[0], a1[0])) //
+					.sort((a0, a1) -> Compare.string(a0[0], a1[0])) //
 					.collect();
 
 			var ts = arrays.collect(AsLng.lift(array -> Time.of(array[0] + " 18:00:00").epochSec(-4))).toArray();

@@ -5,7 +5,7 @@ import static primal.statics.Rethrow.ex;
 
 import java.util.List;
 
-import primal.String_;
+import primal.Verbs.Equals;
 import primal.adt.Fixie_.FixieFun0;
 import primal.adt.Fixie_.FixieFun1;
 import primal.adt.Fixie_.FixieFun2;
@@ -26,7 +26,7 @@ public class MapObject_ {
 			var size = list.size();
 			var m = Read //
 					.from(clazz.getMethods()) //
-					.filter(method -> String_.equals(method.getName(), "of") && method.getParameterCount() == size) //
+					.filter(method -> Equals.string(method.getName(), "of") && method.getParameterCount() == size) //
 					.uniqueResult();
 			@SuppressWarnings("unchecked")
 			var t = (MapObject<T>) m.invoke(null, list.toArray());
@@ -34,12 +34,12 @@ public class MapObject_ {
 		});
 	}
 
-	public static <T extends MapObject<T>> List<?> list(Object object) {
+	public static <T extends MapObject<?>> List<?> list(T object) {
 		var clazz = object.getClass();
 
 		var m = Read //
 				.from(clazz.getMethods()) //
-				.filter(method -> String_.equals(method.getName(), "apply")) //
+				.filter(method -> Equals.string(method.getName(), "apply")) //
 				.uniqueResult();
 
 		var type = m.getParameters()[0].getType();

@@ -1,13 +1,9 @@
 package suite.jdk;
 
-import static primal.statics.Fail.fail;
-
-import java.io.IOException;
-
 import org.junit.Test;
 
+import primal.Verbs.Mk;
 import suite.cfg.Defaults;
-import suite.os.FileUtil;
 
 public class JdkUtilTest {
 
@@ -17,8 +13,8 @@ public class JdkUtilTest {
 		var binDir = Defaults.tmp("bin");
 		var className = "HelloWorld";
 
-		FileUtil.mkdir(srcDir);
-		FileUtil.mkdir(binDir);
+		Mk.dir(srcDir);
+		Mk.dir(binDir);
 
 		var src = "" //
 				+ "public class " + className + " implements Runnable {" //
@@ -29,8 +25,6 @@ public class JdkUtilTest {
 
 		try (var jdkLoadClassUtil = new JdkLoadClassUtil(srcDir, binDir)) {
 			jdkLoadClassUtil.newInstance(Runnable.class, className, src).run();
-		} catch (IOException ex) {
-			fail(ex);
 		}
 
 		new JdkUnsafeLoadClassUtil(srcDir, binDir).newInstance(Runnable.class, className, src).run();

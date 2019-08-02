@@ -9,7 +9,7 @@ import primal.primitive.DblPrim.DblObjSink;
 import primal.primitive.DblPrim.DblObjSource;
 import primal.primitive.DblPrim.Dbl_Obj;
 import primal.primitive.adt.pair.DblObjPair;
-import suite.primitive.streamlet.DblObjPuller;
+import primal.primitive.puller.DblObjPuller;
 import suite.primitive.streamlet.DblObjStreamlet;
 import suite.streamlet.As;
 
@@ -64,7 +64,7 @@ public class DblObjMap<V> {
 	public V get(double key) {
 		var index = index(key);
 		@SuppressWarnings("unchecked")
-		V v = ks[index] == key ? cast(vs[index]) : (V) EMPTYVALUE;
+		var v = ks[index] == key ? cast(vs[index]) : (V) EMPTYVALUE;
 		return v;
 	}
 

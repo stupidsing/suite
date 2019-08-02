@@ -1,6 +1,8 @@
 package suite.node.parser;
 
-import primal.String_;
+import primal.Verbs.Get;
+import primal.Verbs.Is;
+import primal.Verbs.Range;
 import primal.os.Log_;
 import suite.node.Atom;
 import suite.node.Int;
@@ -13,10 +15,10 @@ public class TerminalParser {
 
 	public Node parseTerminal(String s) {
 		if (!s.isEmpty()) {
-			var first = String_.charAt(s, 0);
-			var last = String_.charAt(s, -1);
+			var first = Get.ch(s, 0);
+			var last = Get.ch(s, -1);
 
-			if (String_.isInteger(s))
+			if (Is.integer(s))
 				return Int.of(Integer.parseInt(s));
 			if (s.startsWith("+x")) // allows +xFFFFFFFF
 				return Int.of((int) Long.parseLong(s.substring(2), 16));
@@ -24,10 +26,10 @@ public class TerminalParser {
 				return Int.of(s.charAt(2));
 
 			if (first == '"' && last == '"')
-				return new Str(Escaper.unescape(String_.range(s, 1, -1), "\""));
+				return new Str(Escaper.unescape(Range.of(s, 1, -1), "\""));
 
 			if (first == '\'' && last == '\'')
-				s = Escaper.unescape(String_.range(s, 1, -1), "'");
+				s = Escaper.unescape(Range.of(s, 1, -1), "'");
 			else {
 				s = s.trim(); // trim unquoted atoms
 				if (!ParseUtil.isParseable(s))

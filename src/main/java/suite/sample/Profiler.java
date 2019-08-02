@@ -9,8 +9,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import primal.String_;
 import primal.Verbs.Build;
+import primal.Verbs.Equals;
 import suite.streamlet.Read;
 
 public class Profiler {
@@ -97,7 +97,7 @@ public class Profiler {
 			if (threadInfo != null //
 					&& threadInfo.getThreadId() != currentThreadId //
 					&& threadInfo.getThreadState() == State.RUNNABLE //
-					&& !String_.equals(threadInfo.getThreadName(), "ReaderThread")) {
+					&& !Equals.string(threadInfo.getThreadName(), "ReaderThread")) {
 				var stackTrace = threadInfo.getStackTrace();
 				var elements = new HashSet<>();
 				var i = stackTrace.length;

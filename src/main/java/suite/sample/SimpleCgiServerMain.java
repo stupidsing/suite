@@ -10,6 +10,7 @@ import java.nio.IntBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
+import primal.Nouns.Utf8;
 import suite.cfg.Defaults;
 import suite.os.SocketUtil;
 import suite.util.RunUtil;
@@ -27,7 +28,7 @@ public class SimpleCgiServerMain {
 
 	private boolean run() {
 		run((headers, os) -> {
-			var writer = new OutputStreamWriter(os, Defaults.charset);
+			var writer = new OutputStreamWriter(os, Utf8.charset);
 			writer.write("<html>" + headers + "</html>");
 		});
 		return true;
@@ -39,7 +40,7 @@ public class SimpleCgiServerMain {
 
 			os.write(("Status: 200 OK\r\n" //
 					+ "Content-Type: text/html\r\n" //
-					+ "\r\n").getBytes(Defaults.charset));
+					+ "\r\n").getBytes(Utf8.charset));
 
 			handler.handle(headers, os);
 		});

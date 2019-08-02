@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import primal.String_;
+import primal.Verbs.Equals;
 import primal.Verbs.Last;
 import primal.Verbs.Left;
 import primal.Verbs.New;
@@ -322,9 +322,9 @@ public class SewingProverImpl implements ProverFactory {
 			cps = compileCpsCallPredicate(bf, Atom.name(m[0]), m[1], node, cpsx);
 		else if (node instanceof Atom) {
 			var name = Atom.name(node);
-			if (String_.equals(name, ""))
+			if (Equals.string(name, ""))
 				cps = cpsx;
-			else if (String_.equals(name, "fail"))
+			else if (Equals.string(name, "fail"))
 				cps = rt -> null;
 			else
 				cps = compileCpsCallPredicate(bf, name, Atom.NIL, node, cpsx);
@@ -625,9 +625,9 @@ public class SewingProverImpl implements ProverFactory {
 			var name = Atom.name(node);
 			if (node == ProverConstant.cut)
 				tr = cutEnd();
-			else if (String_.equals(name, ""))
+			else if (Equals.string(name, ""))
 				tr = okay;
-			else if (String_.equals(name, "fail"))
+			else if (Equals.string(name, "fail"))
 				tr = fail;
 			else
 				tr = compileTrCallPredicate(bf, name, Atom.NIL, node);

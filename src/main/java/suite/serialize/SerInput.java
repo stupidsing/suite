@@ -5,7 +5,7 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import suite.util.ReadStream;
+import primal.io.ReadStream;
 
 public class SerInput extends ReadStream implements DataInput {
 

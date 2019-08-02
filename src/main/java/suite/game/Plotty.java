@@ -3,11 +3,11 @@ package suite.game;
 import java.io.File;
 
 import primal.Verbs.Get;
+import primal.Verbs.WriteFile;
 import primal.primitive.adt.pair.FltFltPair;
 import primal.puller.Puller;
 import suite.cfg.Defaults;
 import suite.os.Execute;
-import suite.os.FileUtil;
 import suite.primitive.Floats_;
 import suite.streamlet.As;
 import suite.streamlet.Read;
@@ -24,7 +24,7 @@ public class Plotty {
 
 		var file = Defaults.tmp("plot$" + Get.temp() + ".html");
 
-		FileUtil.out(file).writeAndClose("" //
+		WriteFile.to(file).writeAndClose("" //
 				+ "<head><script src='https://cdn.plot.ly/plotly-latest.min.js'></script></head>" //
 				+ "<body><div id='plot'></div></body>" //
 				+ "<script>" //

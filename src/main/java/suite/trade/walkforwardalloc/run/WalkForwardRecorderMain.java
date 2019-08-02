@@ -10,8 +10,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
+import primal.Verbs.ReadFile;
 import suite.cfg.HomeDir;
-import suite.os.FileUtil;
 import suite.os.Schedule;
 import suite.os.Scheduler;
 import suite.trade.Time;
@@ -66,7 +66,7 @@ public class WalkForwardRecorderMain {
 			var ts = "20170612-092616";
 			var filename = "wfa." + ts + ".csv";
 
-			var data = FileUtil.in(HomeDir.resolve(filename)).doBufferedReader(br -> {
+			var data = ReadFile.from(HomeDir.resolve(filename)).doBufferedReader(br -> {
 				var data_ = new TreeMap<Time, Map<String, Float>>();
 				while (br.ready()) {
 					var array = br.readLine().split(",");

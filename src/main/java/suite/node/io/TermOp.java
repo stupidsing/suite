@@ -2,7 +2,7 @@ package suite.node.io;
 
 import java.util.List;
 
-import primal.String_;
+import primal.Verbs.Equals;
 
 public enum TermOp implements Operator {
 
@@ -52,7 +52,7 @@ public enum TermOp implements Operator {
 
 	public static TermOp find(String name) {
 		for (var operator : values())
-			if (String_.equals(operator.name, name))
+			if (Equals.string(operator.name, name))
 				return operator;
 		return null;
 	}

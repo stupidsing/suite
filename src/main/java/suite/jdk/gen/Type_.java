@@ -10,7 +10,7 @@ import org.apache.bcel.generic.BasicType;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.Type;
 
-import primal.String_;
+import primal.Verbs.Equals;
 
 public class Type_ {
 
@@ -35,7 +35,7 @@ public class Type_ {
 					long.class, //
 					short.class, //
 					void.class))
-				if (String_.equals(className, clazz.getSimpleName()))
+				if (Equals.string(className, clazz.getSimpleName()))
 					return clazz;
 			return Class.forName(className);
 		});

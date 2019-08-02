@@ -12,6 +12,8 @@ import java.util.List;
 import org.apache.commons.codec.digest.Md5Crypt;
 
 import primal.Verbs.Get;
+import primal.Verbs.Mk;
+import primal.Verbs.WriteFile;
 import primal.adt.Pair;
 import suite.os.FileUtil;
 import suite.streamlet.Streamlet;
@@ -68,7 +70,7 @@ public class LibraryMain {
 				});
 
 		// construct file listing
-		FileUtil.out(inputDir + ".listing").doPrintWriter(pw -> {
+		WriteFile.to(inputDir + ".listing").doPrintWriter(pw -> {
 			for (var path_fileInfo : path_fileInfos)
 				pw.println(path_fileInfo.k + path_fileInfo.v.md5);
 		});
@@ -78,7 +80,7 @@ public class LibraryMain {
 
 					// move file to library, by md5
 					var path1 = Paths.get(libraryDir, fileInfo.md5.substring(0, 2), fileInfo.md5);
-					FileUtil.mkdir(path1.getParent());
+					Mk.dir(path1.getParent());
 					ex(() -> Files.move(path, path1, StandardCopyOption.REPLACE_EXISTING));
 					return fileInfo;
 				}) //

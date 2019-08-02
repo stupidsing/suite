@@ -52,7 +52,7 @@ public class B_TreeTest {
 
 			b_tree.dump(System.out);
 
-			System.out.println(To.list(b_tree.keys(3, 10)));
+			System.out.println(b_tree.keys(3, 10).toList());
 			jpf.commit();
 		}
 	}
@@ -131,7 +131,7 @@ public class B_TreeTest {
 		for (var i = 0; i < nKeys; i++)
 			assertEquals(Integer.toString(i), b_tree.get(i));
 
-		assertEquals(nKeys / 2, To.list(b_tree.keys(0, nKeys / 2)).size());
+		assertEquals(nKeys / 2, b_tree.keys(0, nKeys / 2).size());
 		var count = 0;
 
 		for (var e : b_tree.range(0, nKeys)) {

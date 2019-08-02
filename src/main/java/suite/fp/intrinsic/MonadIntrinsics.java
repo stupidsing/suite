@@ -11,9 +11,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 
+import primal.Nouns.Utf8;
 import primal.Verbs.Start;
 import primal.fp.Funs.Iterate;
-import suite.cfg.Defaults;
 import suite.fp.intrinsic.Intrinsics.Intrinsic;
 import suite.fp.intrinsic.Intrinsics.IntrinsicCallback;
 import suite.instructionexecutor.thunk.ThunkUtil;
@@ -75,7 +75,7 @@ public class MonadIntrinsics {
 	}
 
 	private Node newReader(IntrinsicCallback callback, InputStream is) {
-		var br = new BufferedReader(new InputStreamReader(is, Defaults.charset));
+		var br = new BufferedReader(new InputStreamReader(is, Utf8.charset));
 		var icrp = Intrinsics.read(br);
 		return callback.enclose(new CharsIntrinsics().drain, new Data<>(icrp));
 	}

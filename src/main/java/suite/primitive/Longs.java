@@ -13,15 +13,15 @@ import java.util.Iterator;
 import primal.Verbs.Build;
 import primal.Verbs.Compare;
 import primal.Verbs.Get;
+import primal.Verbs.Is;
 import primal.fp.Funs.Fun;
 import primal.primitive.LngPrim;
 import primal.primitive.LngPrim.LngSource;
 import primal.primitive.LngVerbs.CopyLng;
+import primal.primitive.puller.LngPuller;
 import primal.puller.Puller;
 import suite.cfg.Defaults;
-import suite.primitive.streamlet.LngPuller;
 import suite.primitive.streamlet.LngStreamlet;
-import suite.util.ParseUtil;
 
 public class Longs implements Iterable<Long> {
 
@@ -126,7 +126,7 @@ public class Longs implements Iterable<Long> {
 	public boolean isWhitespaces() {
 		var b = true;
 		for (var i = start; b && i < end; i++)
-			b &= ParseUtil.isWhitespace(cs[i]);
+			b &= Is.whitespace(cs[i]);
 		return b;
 	}
 
@@ -209,9 +209,9 @@ public class Longs implements Iterable<Long> {
 	public Longs trim() {
 		var s = start;
 		var e = end;
-		while (s < e && ParseUtil.isWhitespace(cs[s]))
+		while (s < e && Is.whitespace(cs[s]))
 			s++;
-		while (s < e && ParseUtil.isWhitespace(cs[e - 1]))
+		while (s < e && Is.whitespace(cs[e - 1]))
 			e--;
 		return of(cs, s, e);
 	}

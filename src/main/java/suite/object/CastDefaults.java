@@ -3,7 +3,7 @@ package suite.object;
 import primal.fp.Funs.Fun;
 import suite.util.Switch;
 
-public interface AutoInterface<T> {
+public interface CastDefaults<T> {
 
 	public default <U extends T, V> V cast(Class<U> clazz, Fun<U, V> fun) {
 		var u = cast(clazz);

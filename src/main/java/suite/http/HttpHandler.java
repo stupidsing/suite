@@ -12,7 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.function.BiPredicate;
 
-import primal.String_;
+import primal.Verbs.Equals;
 import primal.fp.Funs.Sink;
 import suite.persistent.PerList;
 import suite.persistent.PerMap;
@@ -40,7 +40,7 @@ public interface HttpHandler {
 			long size;
 
 			for (var p : request.paths)
-				if (!String_.equals(p, ".."))
+				if (!Equals.string(p, ".."))
 					path = path.resolve(p);
 
 			var file = path.toFile();

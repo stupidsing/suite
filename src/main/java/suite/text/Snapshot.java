@@ -11,11 +11,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import primal.String_;
+import primal.Nouns.Utf8;
+import primal.Verbs.Equals;
+import primal.Verbs.ReadFile;
 import primal.Verbs.ReadLine;
 import primal.Verbs.Union;
+import primal.Verbs.WriteFile;
 import primal.adt.FixieArray;
-import suite.cfg.Defaults;
 import suite.os.FileUtil;
 import suite.primitive.Bytes;
 import suite.streamlet.Read;
@@ -57,7 +59,7 @@ class Impl implements Snapshot {
 				if (textUtil.isDiff(value)) {
 					var data = textUtil.fromTo(value, isFrom);
 					if (data != null)
-						FileUtil.out(p).doWrite(os -> os.write(data.toArray()));
+						WriteFile.to(p).doWrite(os -> os.write(data.toArray()));
 					else
 						FileUtil.deleteIfExists(p);
 				}
@@ -102,12 +104,12 @@ class Impl implements Snapshot {
 	public List<BytesPair> readPatch(InputStream is) {
 		var list = new ArrayList<BytesPair>();
 		String line;
-		while (!String_.equals(line = ReadLine.from(is), "EOF"))
+		while (!Equals.string(line = ReadLine.from(is), "EOF"))
 			list.add(FixieArray.of(line.split(" ")).map((f, s0, s1) -> ex(() -> {
-				var size0 = !String_.equals(s0, "N") ? Integer.valueOf(s0) : null;
-				var size1 = !String_.equals(s1, "N") ? Integer.valueOf(s1) : null;
+				var size0 = !Equals.string(s0, "N") ? Integer.valueOf(s0) : null;
+				var size1 = !Equals.string(s1, "N") ? Integer.valueOf(s1) : null;
 				Bytes bs0, bs1;
-				if (String_.equals("!", f)) {
+				if (Equals.string("!", f)) {
 					bs0 = readBlock(is, size0, '<');
 					bs1 = readBlock(is, size1, '>');
 				} else
@@ -126,14 +128,14 @@ class Impl implements Snapshot {
 				var size1 = bs1 != null ? Integer.toString(bs1.size()) : "N";
 				var isDiff = bs0 != bs1;
 				var line = (isDiff ? "!" : "=") + " " + size0 + " " + size1 + "\n";
-				os.write(line.getBytes(Defaults.charset));
+				os.write(line.getBytes(Utf8.charset));
 				if (isDiff) {
 					writeBlock(os, '<', bs0);
 					writeBlock(os, '>', bs1);
 				} else
 					writeBlock(os, '=', bs0);
 			}
-			os.write("EOF\n".getBytes(Defaults.charset));
+			os.write("EOF\n".getBytes(Utf8.charset));
 			return list;
 		});
 	}
@@ -153,14 +155,14 @@ class Impl implements Snapshot {
 		if (bs != null) {
 			os.write(ch);
 			os.write(bs.toArray());
-			os.write("\n".getBytes(Defaults.charset));
+			os.write("\n".getBytes(Utf8.charset));
 		}
 	}
 
 	private Map<String, Bytes> readMap(Path path) {
 		return FileUtil //
 				.findPaths(path) //
-				.map2(Path::toString, p -> Bytes.of(FileUtil.in(p).readBytes())) //
+				.map2(Path::toString, p -> Bytes.of(ReadFile.from(p).readBytes())) //
 				.toMap();
 	}
 
@@ -169,7 +171,7 @@ class Impl implements Snapshot {
 			var p = path0.resolve(e.getKey());
 			var value = e.getValue();
 			if (value != null)
-				FileUtil.out(p).doWrite(os -> os.write(value.toArray()));
+				WriteFile.to(p).doWrite(os -> os.write(value.toArray()));
 			else
 				FileUtil.deleteIfExists(p);
 		}

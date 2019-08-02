@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import primal.Nouns.Utf8;
 import primal.Verbs.Equals;
 import primal.Verbs.New;
 import primal.adt.Pair;
@@ -403,7 +404,7 @@ public class Serialize {
 			}
 
 			public void write(SerOutput so, String value) throws IOException {
-				var bs = Arrays.copyOf(value.getBytes(Defaults.charset), length);
+				var bs = Arrays.copyOf(value.getBytes(Utf8.charset), length);
 				so.writeInt(value.length());
 				so.write(bs);
 			}

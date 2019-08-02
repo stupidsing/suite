@@ -4,7 +4,7 @@ import static primal.statics.Rethrow.ex;
 
 import java.lang.reflect.Method;
 
-import primal.String_;
+import primal.Verbs.Equals;
 import primal.adt.Fixie_.FixieFun2;
 import suite.streamlet.Read;
 import suite.util.Util;
@@ -32,7 +32,7 @@ public class LambdaInterface<I> {
 	public Method method() {
 		if (method == null) {
 			var methods = ex(interfaceClass::getMethods);
-			method = Read.from(methods).filter(m -> String_.equals(m.getName(), methodName)).uniqueResult();
+			method = Read.from(methods).filter(m -> Equals.string(m.getName(), methodName)).uniqueResult();
 		}
 		return method;
 	}

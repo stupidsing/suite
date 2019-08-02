@@ -6,7 +6,7 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.List;
 
-import primal.String_;
+import primal.Verbs.Is;
 import primal.fp.Funs.Sink;
 import suite.node.Atom;
 import suite.node.Node;
@@ -117,7 +117,7 @@ public class IterativeParser {
 					add.f(node);
 				} else
 					stack.push(new Section(ch));
-			else if (String_.isNotBlank(data))
+			else if (Is.notBlank(data))
 				add.f(terminalParser.parseTerminal(data));
 		}
 

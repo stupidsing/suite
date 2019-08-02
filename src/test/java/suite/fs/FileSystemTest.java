@@ -10,6 +10,7 @@ import java.nio.file.Paths;
 
 import org.junit.Test;
 
+import primal.Nouns.Utf8;
 import suite.cfg.Defaults;
 import suite.fs.impl.B_TreeFileSystemImpl;
 import suite.fs.impl.LazyPbTreeFileSystemImpl;
@@ -84,7 +85,7 @@ public class FileSystemTest {
 
 		for (var path : paths) {
 			var filename = path.toString().replace(File.separatorChar, '/');
-			var name = Bytes.of(filename.getBytes(Defaults.charset));
+			var name = Bytes.of(filename.getBytes(Utf8.charset));
 			fsm.replace(name, Bytes.of(Files.readAllBytes(path)));
 		}
 	}
@@ -92,7 +93,7 @@ public class FileSystemTest {
 	private void testReadFile(FileSystem fs) throws IOException {
 		var filename = "src/test/java/suite/fs/FileSystemTest.java";
 		var fsm = fs.mutate();
-		var name = Bytes.of(filename.getBytes(Defaults.charset));
+		var name = Bytes.of(filename.getBytes(Utf8.charset));
 		Copy.stream(fsm.read(name).collect(As::inputStream), System.out);
 	}
 

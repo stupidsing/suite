@@ -27,7 +27,7 @@ import primal.puller.Puller2;
 import primal.streamlet.StreamletDefaults;
 import suite.adt.map.ListMultimap;
 
-public class Streamlet2<K, V> implements StreamletDefaults<Pair<K, V>, Puller2<K, V>> {
+public class Streamlet2<K, V> implements StreamletDefaults<Pair<K, V>, Pair<K, V>, BiPredicate<K, V>, Puller2<K, V>, Sink2<K, V>, Source2<K, V>> {
 
 	private Source<Puller2<K, V>> in;
 
@@ -138,14 +138,6 @@ public class Streamlet2<K, V> implements StreamletDefaults<Pair<K, V>, Puller2<K
 		return spawn().hashCode();
 	}
 
-	public boolean isAll(BiPredicate<K, V> pred) {
-		return spawn().isAll(pred);
-	}
-
-	public boolean isAny(BiPredicate<K, V> pred) {
-		return spawn().isAny(pred);
-	}
-
 	@Override
 	public Iterator<Pair<K, V>> iterator() {
 		return spawn().iterator();
@@ -183,10 +175,6 @@ public class Streamlet2<K, V> implements StreamletDefaults<Pair<K, V>, Puller2<K
 		return spawn().minOrNull(comparator);
 	}
 
-	public Pair<K, V> opt() {
-		return spawn().opt();
-	}
-
 	public Streamlet<Pair<K, V>> pairs() {
 		return new Streamlet<>(() -> spawn().pairs());
 	}
@@ -201,10 +189,6 @@ public class Streamlet2<K, V> implements StreamletDefaults<Pair<K, V>, Puller2<K
 
 	public Streamlet2<K, V> reverse() {
 		return streamlet2(() -> spawn().reverse());
-	}
-
-	public void sink(Sink2<K, V> sink) {
-		spawn().sink(sink);
 	}
 
 	public Streamlet2<K, V> skip(int n) {
@@ -229,10 +213,6 @@ public class Streamlet2<K, V> implements StreamletDefaults<Pair<K, V>, Puller2<K
 
 	public Streamlet2<K, V> sortByValue(Comparator<V> comparator) {
 		return streamlet2(() -> spawn().sortByValue(comparator));
-	}
-
-	public Source2<K, V> source() {
-		return spawn().source();
 	}
 
 	public Streamlet2<K, V> take(int n) {

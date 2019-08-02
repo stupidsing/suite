@@ -4,9 +4,10 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import primal.String_;
+import primal.Verbs.Range;
+import primal.Verbs.ReadFile;
+import primal.io.ReadStream;
 import suite.inspect.Dump;
-import suite.os.FileUtil;
 import suite.util.HtmlUtil.HtmlNode;
 
 public class HtmlUtilTest {
@@ -38,7 +39,7 @@ public class HtmlUtilTest {
 
 	@Test
 	public void testRender() {
-		var h = FileUtil.in("src/main/html/render.html").doRead(ReadStream::readString);
+		var h = ReadFile.from("src/main/html/render.html").doRead(ReadStream::readString);
 		Dump.details(html.parse(h));
 	}
 
@@ -67,7 +68,7 @@ public class HtmlUtilTest {
 					}
 				} else if (h.tag.startsWith("<!--") && h.tag.endsWith("-->")) {
 					sb.append("rd.dom(vm => document.createComment(");
-					s(String_.range(h.tag, 4, -3).trim());
+					s(Range.of(h.tag, 4, -3).trim());
 					sb.append("))");
 				} else {
 					sb.append("rd.dom(vm => document.createTextNode(");

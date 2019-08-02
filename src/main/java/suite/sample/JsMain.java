@@ -9,7 +9,7 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
-import primal.String_;
+import primal.Verbs.Is;
 import suite.util.RunUtil;
 
 /**
@@ -47,7 +47,7 @@ public class JsMain {
 			var r = engine.eval(new FileReader(filename));
 			b &= r == Boolean.TRUE //
 					|| r instanceof Number && ((Number) r).intValue() != 0 //
-					|| r instanceof String && String_.isNotBlank((String) r);
+					|| r instanceof String && Is.notBlank((String) r);
 		}
 
 		return b;

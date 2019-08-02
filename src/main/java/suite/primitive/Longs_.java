@@ -9,10 +9,10 @@ import primal.primitive.Int_Lng;
 import primal.primitive.LngPrim;
 import primal.primitive.LngVerbs.CopyLng;
 import primal.primitive.fp.LngFunUtil;
+import primal.primitive.puller.LngPuller;
 import primal.puller.Puller;
 import suite.primitive.Longs.LongsBuilder;
 import suite.primitive.Longs.WriteChar;
-import suite.primitive.streamlet.LngPuller;
 import suite.primitive.streamlet.LngStreamlet;
 import suite.streamlet.Read;
 

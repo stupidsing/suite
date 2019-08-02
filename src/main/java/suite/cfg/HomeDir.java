@@ -3,13 +3,13 @@ package suite.cfg;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import suite.os.FileUtil;
+import primal.Verbs.Mk;
 
 public class HomeDir {
 
 	public static Path dir(String path_) {
 		var path = resolve(path_);
-		FileUtil.mkdir(path);
+		Mk.dir(path);
 		return path;
 	}
 

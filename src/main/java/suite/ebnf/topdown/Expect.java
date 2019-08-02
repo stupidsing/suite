@@ -2,7 +2,8 @@ package suite.ebnf.topdown;
 
 import static java.lang.Math.min;
 
-import primal.String_;
+import primal.Verbs.Equals;
+import primal.Verbs.Range;
 import suite.os.UnicodeData;
 
 public class Expect {
@@ -103,11 +104,11 @@ public class Expect {
 	public int comment(String in, int length, int start, String sm, String em) {
 		int sl = sm.length(), el = em.length();
 		int pos = start, end;
-		if (pos < length && String_.equals(String_.range(in, pos, pos + sl), sm)) {
+		if (pos < length && Equals.string(Range.of(in, pos, pos + sl), sm)) {
 			pos += 2;
-			while (pos < length && !String_.equals(String_.range(in, pos, pos + el), em))
+			while (pos < length && !Equals.string(Range.of(in, pos, pos + el), em))
 				pos++;
-			if (pos < length && String_.equals(String_.range(in, pos, pos + el), em)) {
+			if (pos < length && Equals.string(Range.of(in, pos, pos + el), em)) {
 				pos += 2;
 				end = pos;
 			} else

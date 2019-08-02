@@ -6,7 +6,7 @@ import static java.lang.Math.max;
 import java.util.Arrays;
 import java.util.List;
 
-import primal.String_;
+import primal.Verbs.Equals;
 import primal.adt.Pair;
 import suite.math.numeric.Statistic;
 import suite.trade.analysis.MovingAverage;
@@ -110,7 +110,7 @@ public class BackAllocatorOld {
 	public BackAllocator pairs(TradeCfg cfg, String symbol0, String symbol1) {
 		return BackAllocatorGeneral.me.rsi //
 				.relativeToIndex(cfg, symbol0) //
-				.filterBySymbol(symbol -> String_.equals(symbol, symbol1));
+				.filterBySymbol(symbol -> Equals.string(symbol, symbol1));
 	}
 
 	public BackAllocator questoQuella(String symbol0, String symbol1) {
@@ -140,7 +140,7 @@ public class BackAllocatorOld {
 			};
 		};
 
-		return ba0.filterBySymbol(symbol -> String_.equals(symbol, symbol0) || String_.equals(symbol, symbol1));
+		return ba0.filterBySymbol(symbol -> Equals.string(symbol, symbol0) || Equals.string(symbol, symbol1));
 	}
 
 	// reverse draw-down; trendy strategy

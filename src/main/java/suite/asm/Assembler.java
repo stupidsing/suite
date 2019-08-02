@@ -7,8 +7,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import primal.String_;
+import primal.Nouns.Utf8;
+import primal.Verbs.Is;
 import primal.Verbs.Right;
+import primal.Verbs.Split;
 import primal.Verbs.Take;
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
@@ -16,7 +18,6 @@ import suite.Suite;
 import suite.asm.Assembler.Asm;
 import suite.assembler.Amd64Assemble;
 import suite.assembler.Amd64Parse;
-import suite.cfg.Defaults;
 import suite.lp.Trail;
 import suite.lp.doer.Binder;
 import suite.lp.doer.Generalizer;
@@ -71,15 +72,15 @@ public class Assembler {
 		Pair<String, String> pe;
 		var start = 0;
 
-		while ((pe = String_.split2(lines.get(start), "=")) != null) {
+		while ((pe = Split.string(lines.get(start), "=")) != null) {
 			generalizer.getVariable(Atom.of(pe.k)).bound(Suite.parse(pe.v));
 			start++;
 		}
 
 		var lnis = Read //
 				.from(Right.of(lines, start)) //
-				.map(line -> String_.split2l(line, "\t").map((label, command) -> {
-					var reference = String_.isNotBlank(label) //
+				.map(line -> Split.strl(line, "\t").map((label, command) -> {
+					var reference = Is.notBlank(label) //
 							? generalizer.getVariable(Atom.of(label)) //
 							: new Reference();
 					var instruction = generalizer.generalize(Suite.parse(command));
@@ -155,7 +156,7 @@ class AsmA implements Asm {
 		if (instruction == Atom.NIL)
 			return Bytes.empty;
 		else if (instruction instanceof Str)
-			return Bytes.of(Str.str(instruction).getBytes(Defaults.charset));
+			return Bytes.of(Str.str(instruction).getBytes(Utf8.charset));
 		else
 			return aa.assemble(isPass2, address, ap.parse(instruction));
 	}

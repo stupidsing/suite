@@ -7,7 +7,7 @@ import primal.primitive.LngPrim;
 import primal.primitive.LngPrim.LngSink;
 import primal.primitive.LngPrim.LngSource;
 import primal.primitive.LngVerbs.CopyLng;
-import suite.primitive.streamlet.LngPuller;
+import primal.primitive.puller.LngPuller;
 import suite.primitive.streamlet.LngStreamlet;
 
 /**

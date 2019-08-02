@@ -10,7 +10,7 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 
-import primal.String_;
+import primal.Verbs.Is;
 import primal.fp.Funs.Fun;
 import suite.Suite;
 import suite.editor.ClipboardUtil;
@@ -92,7 +92,7 @@ public class PopupMain {
 	}
 
 	private void execute(String cmd) {
-		if (!String_.isBlank(cmd)) {
+		if (!Is.blank(cmd)) {
 			var clipboardUtil = new ClipboardUtil();
 			var text0 = clipboardUtil.getClipboardText();
 			var text1 = Suite.evaluateFilterFun(cmd, text0, true, false);

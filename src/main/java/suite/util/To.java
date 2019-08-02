@@ -17,14 +17,15 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.TemporalAccessor;
-import java.util.ArrayList;
-import java.util.List;
 
+import primal.Nouns.Utf8;
 import primal.Verbs.Close;
 import primal.Verbs.New;
+import primal.Verbs.WriteFile;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Sink;
 import primal.fp.Funs.Source;
+import primal.io.ReadStream;
 import primal.primitive.DblPrim.Obj_Dbl;
 import primal.primitive.Flt_Dbl;
 import primal.primitive.IntInt_Dbl;
@@ -32,7 +33,6 @@ import primal.primitive.IntPrim.Int_Obj;
 import primal.primitive.Int_Dbl;
 import primal.puller.Puller;
 import suite.cfg.Defaults;
-import suite.os.FileUtil;
 import suite.primitive.Bytes;
 import suite.primitive.Chars;
 import suite.primitive.IoSink;
@@ -58,7 +58,7 @@ public class To {
 	}
 
 	public static Bytes bytes(String s) {
-		return Bytes.of(s.getBytes(Defaults.charset));
+		return Bytes.of(s.getBytes(Utf8.charset));
 	}
 
 	public static Bytes bytes(IoSink<SerOutput> ioSink) {
@@ -81,7 +81,7 @@ public class To {
 
 	public static Fun<Puller<Bytes>, Boolean> file(String filename) {
 		return puller -> {
-			FileUtil.out(filename).doWrite(os -> Copy.stream(inputStream(puller), os));
+			WriteFile.to(filename).doWrite(os -> Copy.stream(inputStream(puller), os));
 			return true;
 		};
 	}
@@ -135,18 +135,6 @@ public class To {
 		});
 	}
 
-	public static <T> List<T> list(Source<T> source) {
-		return list(Puller.of(source));
-	}
-
-	public static <T> List<T> list(Iterable<T> i) {
-		var list = new ArrayList<T>();
-		var iter = i.iterator();
-		while (iter.hasNext())
-			list.add(iter.next());
-		return list;
-	}
-
 	public static float[][] matrix(int height, int width_, IntInt_Dbl fun) {
 		var matrix = new float[height][width_];
 		for (var i = 0; i < height; i++)
@@ -160,7 +148,7 @@ public class To {
 	}
 
 	public static Puller<Bytes> puller(String data) {
-		return puller(new ByteArrayInputStream(data.getBytes(Defaults.charset)));
+		return puller(new ByteArrayInputStream(data.getBytes(Utf8.charset)));
 	}
 
 	public static Puller<Bytes> puller(InputStream is) {
@@ -195,7 +183,7 @@ public class To {
 	}
 
 	public static String string(byte[] bs) {
-		return new String(bs, Defaults.charset);
+		return new String(bs, Utf8.charset);
 	}
 
 	public static String string(double d) {

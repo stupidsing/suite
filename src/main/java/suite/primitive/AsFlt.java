@@ -4,17 +4,25 @@ import java.util.List;
 
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
+import primal.fp.Funs.Sink;
 import primal.primitive.FltPrim.ObjObj_Flt;
 import primal.primitive.FltPrim.Obj_Flt;
+import primal.primitive.puller.FltObjPuller;
 import primal.puller.Puller;
 import primal.puller.Puller2;
 import suite.adt.map.ListMultimap;
 import suite.primitive.Floats.FloatsBuilder;
 import suite.primitive.adt.map.FltObjMap;
-import suite.primitive.streamlet.FltObjPuller;
+import suite.primitive.streamlet.FltObjStreamlet;
 import suite.primitive.streamlet.FltStreamlet;
 
 public class AsFlt {
+
+	public static Floats build(Sink<FloatsBuilder> sink) {
+		var sb = new FloatsBuilder();
+		sink.f(sb);
+		return sb.toFloats();
+	}
 
 	public static <T> Fun<Puller<T>, FltStreamlet> lift(Obj_Flt<T> fun0) {
 		var fun1 = fun0.rethrow();
@@ -27,19 +35,21 @@ public class AsFlt {
 		};
 	}
 
-	public static <V> FltObjPuller<V> read2(FltObjMap<V> map) {
-		return FltObjPuller.of(map.source());
+	public static <V> FltObjStreamlet<V> read2(FltObjMap<V> map) {
+		return new FltObjStreamlet<>(() -> FltObjPuller.of(map.source()));
 	}
 
-	public static <V> FltObjPuller<List<V>> read2(ListMultimap<Float, V> multimap) {
-		var iter = multimap.listEntries().iterator();
-		return FltObjPuller.of(pair -> {
-			var b = iter.hasNext();
-			if (b) {
-				var pair1 = iter.next();
-				pair.update(pair1.k, pair1.v);
-			}
-			return b;
+	public static <V> FltObjStreamlet<List<V>> read2(ListMultimap<Float, V> multimap) {
+		return new FltObjStreamlet<>(() -> {
+			var iter = multimap.listEntries().iterator();
+			return FltObjPuller.of(pair -> {
+				var b = iter.hasNext();
+				if (b) {
+					var pair1 = iter.next();
+					pair.update(pair1.k, pair1.v);
+				}
+				return b;
+			});
 		});
 	}
 

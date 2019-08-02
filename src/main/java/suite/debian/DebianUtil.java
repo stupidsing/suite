@@ -9,15 +9,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import primal.String_;
-import suite.os.FileUtil;
+import primal.Verbs.ReadFile;
+import primal.Verbs.Split;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 
 public class DebianUtil {
 
 	public Streamlet<Map<String, String>> readDpkgConfiguration(File file) {
-		return FileUtil.in(file.toString()).doRead(this::readDpkgConfiguration);
+		return ReadFile.from(file.toString()).doRead(this::readDpkgConfiguration);
 	}
 
 	public Streamlet<Map<String, String>> readDpkgConfiguration(InputStream is) throws IOException {
@@ -29,7 +29,7 @@ public class DebianUtil {
 
 			while ((line = br.readLine()) != null) {
 				if (!line.startsWith(" ") && 0 < sb.length()) {
-					var pair = String_.split2(sb.toString(), ":");
+					var pair = Split.string(sb.toString(), ":");
 					pm.put(pair.k, pair.v);
 					sb.setLength(0);
 				}

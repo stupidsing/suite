@@ -9,10 +9,10 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 
+import primal.Nouns.Utf8;
 import primal.Verbs.Th;
 import primal.os.Log_;
 import primal.statics.Fail.InterruptedRuntimeException;
-import suite.cfg.Defaults;
 import suite.streamlet.Read;
 import suite.util.Copy;
 import suite.util.To;
@@ -44,7 +44,7 @@ public class Execute {
 	}
 
 	public Execute(String[] command, String in) {
-		this(command, in.getBytes(Defaults.charset));
+		this(command, in.getBytes(Utf8.charset));
 	}
 
 	public Execute(String[] command, byte[] bytes) {

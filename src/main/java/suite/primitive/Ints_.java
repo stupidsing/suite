@@ -9,10 +9,10 @@ import primal.primitive.IntPrim;
 import primal.primitive.IntVerbs.CopyInt;
 import primal.primitive.Int_Int;
 import primal.primitive.fp.IntFunUtil;
+import primal.primitive.puller.IntPuller;
 import primal.puller.Puller;
 import suite.primitive.Ints.IntsBuilder;
 import suite.primitive.Ints.WriteChar;
-import suite.primitive.streamlet.IntPuller;
 import suite.primitive.streamlet.IntStreamlet;
 import suite.streamlet.Read;
 

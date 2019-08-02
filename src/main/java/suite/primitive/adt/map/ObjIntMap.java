@@ -12,7 +12,7 @@ import primal.primitive.IntPrim.IntObjSource;
 import primal.primitive.IntPrim.Obj_Int;
 import primal.primitive.Int_Int;
 import primal.primitive.adt.pair.IntObjPair;
-import suite.primitive.streamlet.IntObjPuller;
+import primal.primitive.puller.IntObjPuller;
 import suite.primitive.streamlet.IntObjStreamlet;
 import suite.streamlet.As;
 

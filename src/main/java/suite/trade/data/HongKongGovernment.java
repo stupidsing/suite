@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import primal.String_;
+import primal.Verbs.Equals;
 import suite.node.util.Singleton;
 import suite.primitive.Floats.FloatsBuilder;
 import suite.primitive.Longs.LongsBuilder;
@@ -27,7 +27,7 @@ public class HongKongGovernment {
 				.collect(As::lines) //
 				.map(line -> line.split(":")) //
 				.filter(array -> 2 <= array.length) //
-				.split(array -> String_.equals(array[0], "BEGIN") && String_.equals(array[1], "VEVENT")) //
+				.split(array -> Equals.string(array[0], "BEGIN") && Equals.string(array[1], "VEVENT")) //
 				.map(arrays -> Read //
 						.from(arrays) //
 						.map2(array -> array[0], array -> array[1]) //

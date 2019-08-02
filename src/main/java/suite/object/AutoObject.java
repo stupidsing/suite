@@ -6,6 +6,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map;
 
 import primal.Verbs.New;
 import primal.adt.IdentityKey;
@@ -14,7 +15,7 @@ import suite.inspect.Inspect;
 import suite.node.util.Singleton;
 import suite.streamlet.Streamlet;
 
-public class AutoObject<T extends AutoObject<T>> extends BaseObject<T> implements Cloneable, AutoInterface<T> {
+public class AutoObject<T extends AutoObject<T>> extends BaseObject<T> implements Cloneable, CastDefaults<T> {
 
 	private static Inspect inspect = Singleton.me.inspect;
 
@@ -40,6 +41,11 @@ public class AutoObject<T extends AutoObject<T>> extends BaseObject<T> implement
 						var v1 = new ArrayList<Object>();
 						for (var c : (Collection<?>) v0)
 							v1.add(c_(c));
+						return v1;
+					} else if (v0 instanceof Map) {
+						var v1 = new HashMap<Object, Object>();
+						for (var e : ((Map<?, ?>) v0).entrySet())
+							v1.put(c_(e.getKey()), c_(e.getValue()));
 						return v1;
 					} else if (v0 instanceof Pair) {
 						var pair = (Pair<?, ?>) v0;

@@ -2,8 +2,8 @@ package suite.trade;
 
 import static java.lang.Math.abs;
 
-import primal.String_;
 import primal.Verbs.Compare;
+import primal.Verbs.Equals;
 import suite.math.Math_;
 import suite.util.To;
 
@@ -59,7 +59,7 @@ public class Trade {
 
 	public String record() {
 		return date //
-				+ (!String_.equals(remark, "-") ? remark : "") //
+				+ (!Equals.string(remark, "-") ? remark : "") //
 				+ "\t" + buySell //
 				+ "\t" + symbol //
 				+ "\t" + price //
@@ -72,7 +72,7 @@ public class Trade {
 
 	@Override
 	public String toString() {
-		return (!String_.equals(date, NA) ? date + " " : "") //
+		return (!Equals.string(date, NA) ? date + " " : "") //
 				+ Math_.posNeg(buySell) //
 				+ symbol //
 				+ ":" + To.string(price) + "*" + abs(buySell);

@@ -12,7 +12,7 @@ import primal.primitive.DblPrim.DblObjSource;
 import primal.primitive.DblPrim.Obj_Dbl;
 import primal.primitive.Dbl_Dbl;
 import primal.primitive.adt.pair.DblObjPair;
-import suite.primitive.streamlet.DblObjPuller;
+import primal.primitive.puller.DblObjPuller;
 import suite.primitive.streamlet.DblObjStreamlet;
 import suite.streamlet.As;
 

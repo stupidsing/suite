@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.IntFunction;
 
-import primal.String_;
+import primal.Verbs.Equals;
 import primal.adt.Fixie;
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
@@ -255,7 +255,7 @@ public class BackAllocatorGeneral {
 
 		return (akds, indices) -> {
 			var prices = akds.dsByKey //
-					.filter((symbol_, ds) -> String_.equals(symbol, symbol_)) //
+					.filter((symbol_, ds) -> Equals.string(symbol, symbol_)) //
 					.uniqueResult().v.prices;
 
 			var price0 = prices[indices[0]];

@@ -22,6 +22,8 @@ import primal.primitive.FltPrim.FltTest;
 import primal.primitive.FltPrim.Flt_Obj;
 import primal.primitive.Flt_Flt;
 import primal.primitive.adt.pair.FltObjPair;
+import primal.primitive.puller.FltObjPuller;
+import primal.primitive.puller.FltPuller;
 import primal.puller.Puller;
 import primal.streamlet.StreamletDefaults;
 import suite.adt.map.ListMultimap;
@@ -36,7 +38,7 @@ import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 
-public class FltStreamlet implements StreamletDefaults<Float, FltPuller> {
+public class FltStreamlet implements StreamletDefaults<Float, FltOpt, FltTest, FltPuller, FltSink, FltSource> {
 
 	private Source<FltPuller> in;
 
@@ -151,14 +153,6 @@ public class FltStreamlet implements StreamletDefaults<Float, FltPuller> {
 		}));
 	}
 
-	public boolean isAll(FltTest pred) {
-		return spawn().isAll(pred);
-	}
-
-	public boolean isAny(FltTest pred) {
-		return spawn().isAny(pred);
-	}
-
 	@Override
 	public Iterator<Float> iterator() {
 		return spawn().iterator();
@@ -189,11 +183,11 @@ public class FltStreamlet implements StreamletDefaults<Float, FltPuller> {
 	}
 
 	public float max() {
-		return spawn().max();
+		return spawn().min((c0, c1) -> Float.compare(c1, c0));
 	}
 
 	public float min() {
-		return spawn().min();
+		return spawn().min((c0, c1) -> Float.compare(c0, c1));
 	}
 
 	public float min(FltComparator comparator) {
@@ -202,10 +196,6 @@ public class FltStreamlet implements StreamletDefaults<Float, FltPuller> {
 
 	public float minOrEmpty(FltComparator comparator) {
 		return spawn().minOrEmpty(comparator);
-	}
-
-	public FltOpt opt() {
-		return spawn().opt();
 	}
 
 	public Pair<FltStreamlet, FltStreamlet> partition(FltTest pred) {
@@ -220,10 +210,6 @@ public class FltStreamlet implements StreamletDefaults<Float, FltPuller> {
 		return streamlet(() -> spawn().reverse());
 	}
 
-	public void sink(FltSink sink) {
-		spawn().sink(sink);
-	}
-
 	public FltStreamlet skip(int n) {
 		return streamlet(() -> spawn().skip(n));
 	}
@@ -234,10 +220,6 @@ public class FltStreamlet implements StreamletDefaults<Float, FltPuller> {
 
 	public FltStreamlet sort() {
 		return streamlet(() -> spawn().sort());
-	}
-
-	public FltSource source() {
-		return spawn().source();
 	}
 
 	public float sum() {
@@ -328,7 +310,8 @@ public class FltStreamlet implements StreamletDefaults<Float, FltPuller> {
 	}
 
 	private Floats toList_() {
-		return spawn().toList();
+		var list = spawn().toList();
+		return Floats.of(list.cs, 0, list.size);
 	}
 
 	private FltObjMap<FloatsBuilder> toListMap_() {

@@ -16,15 +16,16 @@ import primal.adt.Pair;
 import primal.fp.FunUtil;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Source;
-import primal.fp.Funs2.Sink2;
 import primal.primitive.IntObj_Int;
 import primal.primitive.IntPrim;
 import primal.primitive.IntPrim.IntObjPredicate;
+import primal.primitive.IntPrim.IntObjSink;
 import primal.primitive.IntPrim.IntObjSource;
 import primal.primitive.IntPrim.IntObj_Obj;
 import primal.primitive.IntPrim.IntTest;
 import primal.primitive.adt.pair.IntObjPair;
 import primal.primitive.fp.IntObjFunUtil;
+import primal.primitive.puller.IntObjPuller;
 import primal.puller.Puller;
 import primal.puller.Puller2;
 import primal.streamlet.StreamletDefaults;
@@ -35,7 +36,7 @@ import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 
-public class IntObjStreamlet<V> implements StreamletDefaults<IntObjPair<V>, IntObjPuller<V>> {
+public class IntObjStreamlet<V> implements StreamletDefaults<IntObjPair<V>, IntObjPair<V>, IntObjPredicate<V>, IntObjPuller<V>, IntObjSink<V>, IntObjSource<V>> {
 
 	private Source<IntObjPuller<V>> in;
 
@@ -139,14 +140,6 @@ public class IntObjStreamlet<V> implements StreamletDefaults<IntObjPair<V>, IntO
 		return spawn().hashCode();
 	}
 
-	public boolean isAll(IntObjPredicate<V> pred) {
-		return spawn().isAll(pred);
-	}
-
-	public boolean isAny(IntObjPredicate<V> pred) {
-		return spawn().isAny(pred);
-	}
-
 	@Override
 	public Iterator<IntObjPair<V>> iterator() {
 		return spawn().iterator();
@@ -188,10 +181,6 @@ public class IntObjStreamlet<V> implements StreamletDefaults<IntObjPair<V>, IntO
 		return spawn().minOrNull(comparator);
 	}
 
-	public IntObjPair<V> opt() {
-		return spawn().opt();
-	}
-
 	public Streamlet<IntObjPair<V>> pairs() {
 		return new Streamlet<>(() -> spawn().pairs());
 	}
@@ -206,10 +195,6 @@ public class IntObjStreamlet<V> implements StreamletDefaults<IntObjPair<V>, IntO
 
 	public IntObjStreamlet<V> reverse() {
 		return streamlet(() -> spawn().reverse());
-	}
-
-	public void sink(Sink2<Integer, V> sink) {
-		spawn().sink(sink);
 	}
 
 	public IntObjStreamlet<V> skip(int n) {
@@ -234,10 +219,6 @@ public class IntObjStreamlet<V> implements StreamletDefaults<IntObjPair<V>, IntO
 
 	public IntObjStreamlet<V> sortByValue(Comparator<V> comparator) {
 		return streamlet(() -> spawn().sortByValue(comparator));
-	}
-
-	public IntObjSource<V> source() {
-		return spawn().source();
 	}
 
 	public IntObjStreamlet<V> take(int n) {

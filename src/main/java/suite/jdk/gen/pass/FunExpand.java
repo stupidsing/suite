@@ -4,7 +4,7 @@ import static primal.statics.Rethrow.ex;
 
 import org.apache.bcel.generic.Type;
 
-import primal.String_;
+import primal.Verbs.Equals;
 import suite.inspect.Inspect;
 import suite.jdk.gen.FunExprK.Declare0ParameterFunExpr;
 import suite.jdk.gen.FunExprK.Declare1ParameterFunExpr;
@@ -73,7 +73,7 @@ public class FunExpand extends FunFactory {
 	private FunExpr replaceFieldInject(FunExpr expr0, String fieldName, FunExpr to) {
 		return rewrite(e -> {
 			var inj = e.cast(FieldInjectFunExpr.class);
-			return inj != null && String_.equals(inj.fieldName, fieldName) ? to : null;
+			return inj != null && Equals.string(inj.fieldName, fieldName) ? to : null;
 		}, expr0);
 	}
 

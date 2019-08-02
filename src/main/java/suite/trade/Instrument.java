@@ -1,6 +1,6 @@
 package suite.trade;
 
-import primal.String_;
+import primal.Verbs.Equals;
 import suite.node.util.Singleton;
 import suite.serialize.Serialize.Serializer;
 import suite.trade.data.Hkex;
@@ -43,7 +43,7 @@ public class Instrument {
 	public boolean equals(Object object) {
 		if (object.getClass() == Instrument.class) {
 			var other = (Instrument) object;
-			return String_.equals(symbol, other.symbol);
+			return Equals.string(symbol, other.symbol);
 		} else
 			return false;
 	}

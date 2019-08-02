@@ -11,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import primal.String_;
+import primal.Verbs.Equals;
 import primal.fp.Funs.Source;
 import suite.http.HttpUtil;
 import suite.node.util.Singleton;
@@ -239,7 +239,7 @@ public class Hkex {
 	}
 
 	public Instrument queryCompany(String symbol) {
-		return !String_.equals(symbol, "6098.HK") ? queryCompany_(symbol)
+		return !Equals.string(symbol, "6098.HK") ? queryCompany_(symbol)
 				: Instrument.of("6098.HK", "CG SERVICES", 1000);
 	}
 
@@ -291,9 +291,9 @@ public class Hkex {
 		return HttpUtil.get(url).inputStream().doRead(is -> Read //
 				.each(om.readTree(is)) //
 				.flatMap(json_ -> json_.path("data")) //
-				.filter(json_ -> String_.equals(json_.path("title").textValue(), "Hong Kong")) //
+				.filter(json_ -> Equals.string(json_.path("title").textValue(), "Hong Kong")) //
 				.flatMap(json_ -> json_.path("content")) //
-				.filter(json_ -> String_.equals(json_.path(0).textValue(), "Hang Seng Index")) //
+				.filter(json_ -> Equals.string(json_.path(0).textValue(), "Hang Seng Index")) //
 				.map(json_ -> Float.parseFloat(json_.path(1).textValue().split(" ")[0].replace(",", ""))) //
 				.uniqueResult());
 	}
@@ -321,9 +321,9 @@ public class Hkex {
 		return HttpUtil.get(url).inputStream().doRead(is -> Read //
 				.each(om.readTree(is)) //
 				.flatMap(json_ -> json_.path("data")) //
-				.filter(json_ -> String_.equals(json_.path("title").textValue(), "Stock price HKD")) //
+				.filter(json_ -> Equals.string(json_.path("title").textValue(), "Stock price HKD")) //
 				.flatMap(json_ -> json_.path("content")) //
-				.filter(json_ -> String_.equals(json_.path(0).textValue(), "Previous<br>day close")) //
+				.filter(json_ -> Equals.string(json_.path(0).textValue(), "Previous<br>day close")) //
 				.map(json_ -> Float.parseFloat(json_.path(1).textValue().split(" ")[0])) //
 				.uniqueResult());
 	}
@@ -413,7 +413,7 @@ public class Hkex {
 	}
 
 	private int queryBoardLot_(String symbol) {
-		if (String_.equals(symbol, "0700.HK"))
+		if (Equals.string(symbol, "0700.HK"))
 			return 100;
 		else {
 			var json = query("" //
@@ -433,7 +433,7 @@ public class Hkex {
 					.each(companyInfo) //
 					.flatMap(ci -> ci.data) //
 					.concatMap(Data::tableEntries) //
-					.filter(td -> String_.equals(td.get(0), "Board lot")) //
+					.filter(td -> Equals.string(td.get(0), "Board lot")) //
 					.uniqueResult() //
 					.get(1) //
 					.replace(",", "");

@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 
 import primal.Verbs.Build;
+import primal.fp.Funs.Fun;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
 
@@ -20,6 +21,10 @@ public class ListMultimap<K, V> {
 
 	public ListMultimap(Map<K, List<V>> map) {
 		this.map = map;
+	}
+
+	public <T> T apply(Fun<ListMultimap<K, V>, T> fun) {
+		return fun.apply(this);
 	}
 
 	public void clear() {

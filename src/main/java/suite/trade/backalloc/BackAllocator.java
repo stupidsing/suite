@@ -14,7 +14,6 @@ import java.util.Map;
 import java.util.function.IntPredicate;
 import java.util.function.Predicate;
 
-import primal.String_;
 import primal.Verbs.Compare;
 import primal.Verbs.Equals;
 import primal.Verbs.Union;
@@ -123,7 +122,7 @@ public interface BackAllocator {
 					var each = 1d / size;
 
 					return potentialBySymbol //
-							.filterKey(symbol -> !String_.equals(symbol, Instrument.cashSymbol)) //
+							.filterKey(symbol -> !Equals.string(symbol, Instrument.cashSymbol)) //
 							.mapValue(potential -> 1d / each) //
 							.toList();
 				} else

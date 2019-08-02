@@ -9,8 +9,9 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.concurrent.TimeUnit;
 
+import primal.Nouns.Utf8;
+import primal.Verbs.WriteFile;
 import primal.os.Log_;
-import suite.cfg.Defaults;
 import suite.lp.doer.Cloner;
 import suite.lp.predicate.PredicateUtil.BuiltinPredicate;
 import suite.node.Int;
@@ -67,7 +68,7 @@ public class IoPredicates {
 		var filename = Formatter.display(fn);
 		var content = Formatter.display(contents);
 
-		FileUtil.out(filename).writeAndClose(content.getBytes(Defaults.charset));
+		WriteFile.to(filename).writeAndClose(content.getBytes(Utf8.charset));
 		return true;
 	});
 

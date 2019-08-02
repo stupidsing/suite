@@ -22,6 +22,8 @@ import primal.primitive.LngPrim.LngTest;
 import primal.primitive.LngPrim.Lng_Obj;
 import primal.primitive.Lng_Lng;
 import primal.primitive.adt.pair.LngObjPair;
+import primal.primitive.puller.LngObjPuller;
+import primal.primitive.puller.LngPuller;
 import primal.puller.Puller;
 import primal.streamlet.StreamletDefaults;
 import suite.adt.map.ListMultimap;
@@ -36,7 +38,7 @@ import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 
-public class LngStreamlet implements StreamletDefaults<Long, LngPuller> {
+public class LngStreamlet implements StreamletDefaults<Long, LngOpt, LngTest, LngPuller, LngSink, LngSource> {
 
 	private Source<LngPuller> in;
 
@@ -151,14 +153,6 @@ public class LngStreamlet implements StreamletDefaults<Long, LngPuller> {
 		}));
 	}
 
-	public boolean isAll(LngTest pred) {
-		return spawn().isAll(pred);
-	}
-
-	public boolean isAny(LngTest pred) {
-		return spawn().isAny(pred);
-	}
-
 	@Override
 	public Iterator<Long> iterator() {
 		return spawn().iterator();
@@ -189,11 +183,11 @@ public class LngStreamlet implements StreamletDefaults<Long, LngPuller> {
 	}
 
 	public long max() {
-		return spawn().max();
+		return spawn().min((c0, c1) -> Long.compare(c1, c0));
 	}
 
 	public long min() {
-		return spawn().min();
+		return spawn().min((c0, c1) -> Long.compare(c0, c1));
 	}
 
 	public long min(LngComparator comparator) {
@@ -202,10 +196,6 @@ public class LngStreamlet implements StreamletDefaults<Long, LngPuller> {
 
 	public long minOrEmpty(LngComparator comparator) {
 		return spawn().minOrEmpty(comparator);
-	}
-
-	public LngOpt opt() {
-		return spawn().opt();
 	}
 
 	public Pair<LngStreamlet, LngStreamlet> partition(LngTest pred) {
@@ -220,10 +210,6 @@ public class LngStreamlet implements StreamletDefaults<Long, LngPuller> {
 		return streamlet(() -> spawn().reverse());
 	}
 
-	public void sink(LngSink sink) {
-		spawn().sink(sink);
-	}
-
 	public LngStreamlet skip(int n) {
 		return streamlet(() -> spawn().skip(n));
 	}
@@ -234,10 +220,6 @@ public class LngStreamlet implements StreamletDefaults<Long, LngPuller> {
 
 	public LngStreamlet sort() {
 		return streamlet(() -> spawn().sort());
-	}
-
-	public LngSource source() {
-		return spawn().source();
 	}
 
 	public long sum() {
@@ -328,7 +310,8 @@ public class LngStreamlet implements StreamletDefaults<Long, LngPuller> {
 	}
 
 	private Longs toList_() {
-		return spawn().toList();
+		var list = spawn().toList();
+		return Longs.of(list.cs, 0, list.size);
 	}
 
 	private LngObjMap<LongsBuilder> toListMap_() {

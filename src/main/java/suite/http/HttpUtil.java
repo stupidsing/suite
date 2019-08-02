@@ -18,6 +18,7 @@ import org.apache.http.impl.client.HttpClients;
 import primal.Verbs.Sleep;
 import primal.adt.FixieArray;
 import primal.fp.Funs.Fun;
+import primal.io.ReadStream;
 import primal.os.Log_;
 import primal.puller.Puller;
 import suite.adt.map.ListMultimap;
@@ -29,7 +30,6 @@ import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.util.Memoize;
 import suite.util.ParseUtil;
-import suite.util.ReadStream;
 import suite.util.To;
 
 public class HttpUtil {

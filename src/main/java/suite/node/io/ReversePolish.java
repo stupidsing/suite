@@ -11,8 +11,8 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import primal.String_;
 import primal.Verbs.Build;
+import primal.Verbs.Equals;
 import primal.adt.Pair;
 import suite.Suite;
 import suite.node.Atom;
@@ -53,7 +53,7 @@ public class ReversePolish {
 				}
 				n = new NodeWrite( //
 						ReadType.valueOf(a[0]), //
-						!String_.equals(a[1], "null") ? Suite.parse(a[1]) : null, //
+						!Equals.string(a[1], "null") ? Suite.parse(a[1]) : null, //
 						TermOp.valueOf(a[2]), //
 						children).node;
 				// n = Suite.parse(s);

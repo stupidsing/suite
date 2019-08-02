@@ -10,12 +10,11 @@ import java.util.Objects;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import primal.String_;
 import primal.Verbs.Compare;
 import primal.Verbs.Equals;
 import primal.Verbs.Sleep;
+import primal.Verbs.WriteFile;
 import suite.cfg.HomeDir;
-import suite.os.FileUtil;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes_;
 import suite.streamlet.As;
@@ -83,7 +82,7 @@ public class TextDatabase {
 				.map(this::toBytes) //
 				.collect(Bytes_::buffer);
 
-		FileUtil.out(path).doWrite(os -> Bytes_.copy(puller, os::write));
+		WriteFile.to(path).doWrite(os -> Bytes_.copy(puller, os::write));
 	}
 
 	private void merge(Path path) {
@@ -127,7 +126,7 @@ public class TextDatabase {
 		public boolean equals(Object object) {
 			if (object.getClass() == Datum.class) {
 				var other = (Datum) object;
-				return String_.equals(key, other.key);
+				return Equals.string(key, other.key);
 			} else
 				return false;
 		}

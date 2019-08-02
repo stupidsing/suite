@@ -5,8 +5,8 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import primal.io.WriteStream;
 import suite.primitive.Bytes;
-import suite.util.WriteStream;
 
 public class SerOutput extends WriteStream implements DataOutput {
 

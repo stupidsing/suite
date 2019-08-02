@@ -12,7 +12,7 @@ import java.io.Reader;
 import java.io.Writer;
 import java.net.SocketException;
 
-import primal.String_;
+import primal.Verbs.Equals;
 import primal.Verbs.New;
 import primal.Verbs.Th;
 import suite.cfg.Defaults;
@@ -53,7 +53,7 @@ public class Copy {
 				stream(is_, os_);
 			} catch (InterruptedIOException ex) {
 			} catch (SocketException ex) {
-				if (!String_.equals(ex.getMessage(), "Socket closed"))
+				if (!Equals.string(ex.getMessage(), "Socket closed"))
 					throw ex;
 			}
 		});

@@ -9,6 +9,8 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 import primal.Verbs.Build;
+import primal.Verbs.ReadFile;
+import primal.Verbs.WriteFile;
 import suite.Suite;
 import suite.lp.predicate.PredicateUtil.BuiltinPredicate;
 import suite.node.Atom;
@@ -20,7 +22,6 @@ import suite.node.io.Grapher;
 import suite.node.io.ReversePolish;
 import suite.node.pp.NewPrettyPrinter;
 import suite.node.pp.PrettyPrinter;
-import suite.os.FileUtil;
 
 public class FormatPredicates {
 
@@ -53,7 +54,7 @@ public class FormatPredicates {
 	public BuiltinPredicate parse = PredicateUtil.fun(n -> Suite.parse(Formatter.display(n)));
 
 	public BuiltinPredicate persistLoad = PredicateUtil.p2((prover, node, filename) -> {
-		return FileUtil.in(Str.str(filename)).doRead(is -> {
+		return ReadFile.from(Str.str(filename)).doRead(is -> {
 			try (var gis = new GZIPInputStream(is); var dis = new DataInputStream(gis)) {
 				var grapher = new Grapher();
 				grapher.load(dis);
@@ -63,7 +64,7 @@ public class FormatPredicates {
 	});
 
 	public BuiltinPredicate persistSave = PredicateUtil.p2((prover, node, filename) -> {
-		FileUtil.out(Str.str(filename)).doWrite(os -> {
+		WriteFile.to(Str.str(filename)).doWrite(os -> {
 			try (var gos = new GZIPOutputStream(os); var dos = new DataOutputStream(gos)) {
 				var grapher = new Grapher();
 				grapher.graph(node);

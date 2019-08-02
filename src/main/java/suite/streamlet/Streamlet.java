@@ -19,13 +19,13 @@ import primal.fp.Funs.Source;
 import primal.fp.Funs2.Fun2;
 import primal.primitive.IntPrim.IntObjSource;
 import primal.primitive.adt.pair.IntObjPair;
+import primal.primitive.puller.IntObjPuller;
 import primal.puller.Puller;
 import primal.streamlet.StreamletDefaults;
 import suite.adt.map.ListMultimap;
-import suite.primitive.streamlet.IntObjPuller;
 import suite.primitive.streamlet.IntObjStreamlet;
 
-public class Streamlet<T> implements StreamletDefaults<T, Puller<T>> {
+public class Streamlet<T> implements StreamletDefaults<T, Opt<T>, Predicate<T>, Puller<T>, Sink<T>, Source<T>> {
 
 	private Source<Puller<T>> in;
 
@@ -142,14 +142,6 @@ public class Streamlet<T> implements StreamletDefaults<T, Puller<T>> {
 		}));
 	}
 
-	public boolean isAll(Predicate<T> pred) {
-		return spawn().isAll(pred);
-	}
-
-	public boolean isAny(Predicate<T> pred) {
-		return spawn().isAny(pred);
-	}
-
 	@Override
 	public Iterator<T> iterator() {
 		return spawn().iterator();
@@ -183,10 +175,6 @@ public class Streamlet<T> implements StreamletDefaults<T, Puller<T>> {
 		return spawn().minOrNull(comparator);
 	}
 
-	public Opt<T> opt() {
-		return spawn().opt();
-	}
-
 	public Pair<Streamlet<T>, Streamlet<T>> partition(Predicate<T> pred) {
 		return Pair.of(filter(pred), filter(pred.negate()));
 	}
@@ -197,10 +185,6 @@ public class Streamlet<T> implements StreamletDefaults<T, Puller<T>> {
 
 	public Streamlet<T> reverse() {
 		return streamlet(() -> spawn().reverse());
-	}
-
-	public void sink(Sink<T> sink) {
-		spawn().sink(sink);
 	}
 
 	public Streamlet<T> skip(int n) {
@@ -217,10 +201,6 @@ public class Streamlet<T> implements StreamletDefaults<T, Puller<T>> {
 
 	public <O extends Comparable<? super O>> Streamlet<T> sortBy(Fun<T, O> fun) {
 		return streamlet(() -> spawn().sortBy(fun));
-	}
-
-	public Source<T> source() {
-		return spawn().source();
 	}
 
 	public Streamlet<T> take(int n) {

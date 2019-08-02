@@ -15,7 +15,7 @@ import javax.net.ssl.SSLSocketFactory;
 
 import primal.primitive.ChrChr_Int;
 import suite.cfg.Defaults;
-import suite.primitive.Chars.CharsBuilder;
+import suite.primitive.AsChr;
 
 public class SmtpSslGmail {
 
@@ -69,19 +69,18 @@ public class SmtpSslGmail {
 	}
 
 	private static String convert(char[] salt, String in0, ChrChr_Int f) {
-		var cb = new CharsBuilder();
-		var in1 = in0.toCharArray();
+		return AsChr.build(cb -> {
+			var in1 = in0.toCharArray();
 
-		for (var i = 0; i < in1.length; i++) {
-			var a = f.apply(in1[i], salt[i % salt.length]);
-			while (a < 32)
-				a += 128 - 32;
-			while (128 < a)
-				a -= 128 - 32;
-			cb.append((char) a);
-		}
-
-		return cb.toChars().toString();
+			for (var i = 0; i < in1.length; i++) {
+				var a = f.apply(in1[i], salt[i % salt.length]);
+				while (a < 32)
+					a += 128 - 32;
+				while (128 < a)
+					a -= 128 - 32;
+				cb.append((char) a);
+			}
+		}).toString();
 	}
 
 }

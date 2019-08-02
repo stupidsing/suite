@@ -4,8 +4,8 @@ import java.io.Reader;
 import java.util.List;
 import java.util.Map;
 
-import primal.String_;
 import primal.Verbs.Build;
+import primal.Verbs.Split;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 
@@ -38,7 +38,7 @@ public class Grammar {
 				.map(line -> line.replace('\t', ' ')) //
 				.split(line -> !line.startsWith(" ")) //
 				.map(o -> o.fold("", String::concat)) //
-				.map(line -> String_.split2(line, " ::= ")) //
+				.map(line -> Split.string(line, " ::= ")) //
 				.filter(lr -> lr != null) //
 				.collect(As::streamlet) //
 				.map2(lr -> lr.k, lr -> lr.map(breakdown::breakdown)) //

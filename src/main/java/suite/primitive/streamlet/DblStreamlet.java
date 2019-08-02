@@ -22,6 +22,8 @@ import primal.primitive.DblPrim.DblTest;
 import primal.primitive.DblPrim.Dbl_Obj;
 import primal.primitive.Dbl_Dbl;
 import primal.primitive.adt.pair.DblObjPair;
+import primal.primitive.puller.DblObjPuller;
+import primal.primitive.puller.DblPuller;
 import primal.puller.Puller;
 import primal.streamlet.StreamletDefaults;
 import suite.adt.map.ListMultimap;
@@ -36,7 +38,7 @@ import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 
-public class DblStreamlet implements StreamletDefaults<Double, DblPuller> {
+public class DblStreamlet implements StreamletDefaults<Double, DblOpt, DblTest, DblPuller, DblSink, DblSource> {
 
 	private Source<DblPuller> in;
 
@@ -151,14 +153,6 @@ public class DblStreamlet implements StreamletDefaults<Double, DblPuller> {
 		}));
 	}
 
-	public boolean isAll(DblTest pred) {
-		return spawn().isAll(pred);
-	}
-
-	public boolean isAny(DblTest pred) {
-		return spawn().isAny(pred);
-	}
-
 	@Override
 	public Iterator<Double> iterator() {
 		return spawn().iterator();
@@ -189,11 +183,11 @@ public class DblStreamlet implements StreamletDefaults<Double, DblPuller> {
 	}
 
 	public double max() {
-		return spawn().max();
+		return spawn().min((c0, c1) -> Double.compare(c1, c0));
 	}
 
 	public double min() {
-		return spawn().min();
+		return spawn().min((c0, c1) -> Double.compare(c0, c1));
 	}
 
 	public double min(DblComparator comparator) {
@@ -202,10 +196,6 @@ public class DblStreamlet implements StreamletDefaults<Double, DblPuller> {
 
 	public double minOrEmpty(DblComparator comparator) {
 		return spawn().minOrEmpty(comparator);
-	}
-
-	public DblOpt opt() {
-		return spawn().opt();
 	}
 
 	public Pair<DblStreamlet, DblStreamlet> partition(DblTest pred) {
@@ -220,10 +210,6 @@ public class DblStreamlet implements StreamletDefaults<Double, DblPuller> {
 		return streamlet(() -> spawn().reverse());
 	}
 
-	public void sink(DblSink sink) {
-		spawn().sink(sink);
-	}
-
 	public DblStreamlet skip(int n) {
 		return streamlet(() -> spawn().skip(n));
 	}
@@ -234,10 +220,6 @@ public class DblStreamlet implements StreamletDefaults<Double, DblPuller> {
 
 	public DblStreamlet sort() {
 		return streamlet(() -> spawn().sort());
-	}
-
-	public DblSource source() {
-		return spawn().source();
 	}
 
 	public double sum() {
@@ -328,7 +310,8 @@ public class DblStreamlet implements StreamletDefaults<Double, DblPuller> {
 	}
 
 	private Doubles toList_() {
-		return spawn().toList();
+		var list = spawn().toList();
+		return Doubles.of(list.cs, 0, list.size);
 	}
 
 	private DblObjMap<DoublesBuilder> toListMap_() {

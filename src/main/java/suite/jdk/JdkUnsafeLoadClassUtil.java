@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import primal.Verbs.New;
+import primal.jdk.UnsafeUtil;
 import primal.os.Log_;
 
 public class JdkUnsafeLoadClassUtil extends JdkUtil {

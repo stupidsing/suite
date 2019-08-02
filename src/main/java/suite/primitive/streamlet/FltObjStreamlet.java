@@ -16,15 +16,16 @@ import primal.adt.Pair;
 import primal.fp.FunUtil;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Source;
-import primal.fp.Funs2.Sink2;
 import primal.primitive.FltObj_Flt;
 import primal.primitive.FltPrim;
 import primal.primitive.FltPrim.FltObjPredicate;
+import primal.primitive.FltPrim.FltObjSink;
 import primal.primitive.FltPrim.FltObjSource;
 import primal.primitive.FltPrim.FltObj_Obj;
 import primal.primitive.FltPrim.FltTest;
 import primal.primitive.adt.pair.FltObjPair;
 import primal.primitive.fp.FltObjFunUtil;
+import primal.primitive.puller.FltObjPuller;
 import primal.puller.Puller;
 import primal.puller.Puller2;
 import primal.streamlet.StreamletDefaults;
@@ -35,7 +36,7 @@ import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 
-public class FltObjStreamlet<V> implements StreamletDefaults<FltObjPair<V>, FltObjPuller<V>> {
+public class FltObjStreamlet<V> implements StreamletDefaults<FltObjPair<V>, FltObjPair<V>, FltObjPredicate<V>, FltObjPuller<V>, FltObjSink<V>, FltObjSource<V>> {
 
 	private Source<FltObjPuller<V>> in;
 
@@ -139,14 +140,6 @@ public class FltObjStreamlet<V> implements StreamletDefaults<FltObjPair<V>, FltO
 		return spawn().hashCode();
 	}
 
-	public boolean isAll(FltObjPredicate<V> pred) {
-		return spawn().isAll(pred);
-	}
-
-	public boolean isAny(FltObjPredicate<V> pred) {
-		return spawn().isAny(pred);
-	}
-
 	@Override
 	public Iterator<FltObjPair<V>> iterator() {
 		return spawn().iterator();
@@ -188,10 +181,6 @@ public class FltObjStreamlet<V> implements StreamletDefaults<FltObjPair<V>, FltO
 		return spawn().minOrNull(comparator);
 	}
 
-	public FltObjPair<V> opt() {
-		return spawn().opt();
-	}
-
 	public Streamlet<FltObjPair<V>> pairs() {
 		return new Streamlet<>(() -> spawn().pairs());
 	}
@@ -206,10 +195,6 @@ public class FltObjStreamlet<V> implements StreamletDefaults<FltObjPair<V>, FltO
 
 	public FltObjStreamlet<V> reverse() {
 		return streamlet(() -> spawn().reverse());
-	}
-
-	public void sink(Sink2<Float, V> sink) {
-		spawn().sink(sink);
 	}
 
 	public FltObjStreamlet<V> skip(int n) {
@@ -234,10 +219,6 @@ public class FltObjStreamlet<V> implements StreamletDefaults<FltObjPair<V>, FltO
 
 	public FltObjStreamlet<V> sortByValue(Comparator<V> comparator) {
 		return streamlet(() -> spawn().sortByValue(comparator));
-	}
-
-	public FltObjSource<V> source() {
-		return spawn().source();
 	}
 
 	public FltObjStreamlet<V> take(int n) {

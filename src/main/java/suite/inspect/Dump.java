@@ -7,16 +7,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
-import primal.String_;
 import primal.Verbs.Build;
 import primal.Verbs.Get;
+import primal.Verbs.Left;
+import primal.Verbs.Range;
 import primal.adt.Pair;
 import primal.fp.Funs.Sink;
 import primal.os.Log_;
 import suite.node.Tree;
 import suite.node.io.Operator.Assoc;
 import suite.node.util.Singleton;
-import suite.object.MapInterface;
+import suite.object.MapObject;
 import suite.object.MapObject_;
 import suite.streamlet.As;
 import suite.streamlet.Read;
@@ -88,10 +89,10 @@ public class Dump {
 							d(e.getValue(), ",");
 						}
 						sink.f("}");
-					}).doIf(MapInterface.class, mi -> {
+					}).doIf(MapObject.class, mi -> {
 						sink.f(mi.getClass().getSimpleName());
 						sink.f("{");
-						for (var object1 : MapObject_.list(object))
+						for (var object1 : MapObject_.list(mi))
 							d(object1, ",");
 						sink.f("}");
 					}).doIf(Pair.class, pair -> {
@@ -231,9 +232,9 @@ public class Dump {
 						d(prefix + "[" + count + "].getValue()", value);
 						count++;
 					}
-				else if (MapInterface.class.isAssignableFrom(clazz)) {
+				else if (MapObject.class.isAssignableFrom(clazz)) {
 					var i = 0;
-					for (var object1 : MapObject_.list(object))
+					for (var object1 : MapObject_.list((MapObject<?>) object))
 						d(prefix + "." + i++, object1);
 				} else if (Pair.class.isAssignableFrom(clazz)) {
 					var pair = (Pair<?, ?>) object;
@@ -269,8 +270,8 @@ public class Dump {
 						int pos = s.indexOf(open);
 
 						if (last == close && 0 <= pos) {
-							var left = String_.left(s, pos);
-							var right = String_.range(s, pos + 1, -1);
+							var left = Left.of(s, pos);
+							var right = Range.of(s, pos + 1, -1);
 							return Streamlet.concat( //
 									Read.each(indent + left + open), //
 									split(indent + "  ", right, ""), //

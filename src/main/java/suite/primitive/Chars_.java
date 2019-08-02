@@ -9,10 +9,10 @@ import primal.primitive.ChrPrim;
 import primal.primitive.ChrVerbs.CopyChr;
 import primal.primitive.Int_Chr;
 import primal.primitive.fp.ChrFunUtil;
+import primal.primitive.puller.ChrPuller;
 import primal.puller.Puller;
 import suite.primitive.Chars.CharsBuilder;
 import suite.primitive.Chars.WriteChar;
-import suite.primitive.streamlet.ChrPuller;
 import suite.primitive.streamlet.ChrStreamlet;
 import suite.streamlet.Read;
 

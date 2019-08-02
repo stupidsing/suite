@@ -14,15 +14,15 @@ import java.util.function.Predicate;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import primal.String_;
+import primal.Nouns.Utf8;
 import primal.Verbs.Compare;
+import primal.Verbs.Equals;
+import primal.Verbs.WriteFile;
 import primal.fp.Funs2.FoldOp;
 import primal.primitive.adt.pair.LngFltPair;
-import suite.cfg.Defaults;
 import suite.cfg.HomeDir;
 import suite.http.HttpUtil;
 import suite.node.util.Singleton;
-import suite.os.FileUtil;
 import suite.os.LogUtil;
 import suite.primitive.AsFlt;
 import suite.primitive.AsLng;
@@ -174,16 +174,16 @@ public class Yahoo {
 			else
 				stockHistory1 = fail();
 
-			FileUtil.out(path).writeAndClose(stockHistory1.write());
+			WriteFile.to(path).writeAndClose(stockHistory1.write());
 		} else
 			stockHistory1 = stockHistory0;
 
 		Predicate<LngFltPair> splitFilter;
 		LngFltPair[] splits2;
 
-		if (String_.equals(symbol, "0700.HK"))
+		if (Equals.string(symbol, "0700.HK"))
 			splitFilter = pair -> pair.t0 != Time.of(2014, 5, 15, 9, 30).epochSec();
-		else if (String_.equals(symbol, "2318.HK"))
+		else if (Equals.string(symbol, "2318.HK"))
 			splitFilter = pair -> pair.t0 != Time.of(2015, 7, 27, 9, 30).epochSec();
 		else
 			splitFilter = null;
@@ -251,8 +251,8 @@ public class Yahoo {
 
 	private void adjust(String symbol, long[] ts, float[] prices) {
 		var adjusters = new HashMap<String, FoldOp<Long, Float>>();
-		adjusters.put("0700.HK", (d, p) -> String_.compare(Time.ofEpochSec(d).ymd(), "2014-05-14") <= 0 ? p * .2f : p);
-		adjusters.put("2318.HK", (d, p) -> String_.compare(Time.ofEpochSec(d).ymd(), "2014-03-23") <= 0 ? p * .5f : p);
+		adjusters.put("0700.HK", (d, p) -> Compare.string(Time.ofEpochSec(d).ymd(), "2014-05-14") <= 0 ? p * .2f : p);
+		adjusters.put("2318.HK", (d, p) -> Compare.string(Time.ofEpochSec(d).ymd(), "2014-03-23") <= 0 ? p * .5f : p);
 
 		var adjuster = adjusters.get(symbol);
 		if (adjuster != null)
@@ -269,7 +269,7 @@ public class Yahoo {
 	}
 
 	private boolean isHkg(String exchange) {
-		return String_.equals(exchange, "HKG");
+		return Equals.string(exchange, "HKG");
 	}
 
 	private long closeTs(String ymd) {
@@ -277,7 +277,7 @@ public class Yahoo {
 	}
 
 	private String encode(String s) {
-		return ex(() -> URLEncoder.encode(s, Defaults.charset.name()));
+		return ex(() -> URLEncoder.encode(s, Utf8.charset.name()));
 	}
 
 }

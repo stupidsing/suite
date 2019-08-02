@@ -18,9 +18,9 @@ import org.w3c.dom.ls.DOMImplementationLS;
 import org.w3c.dom.ls.LSSerializer;
 import org.xml.sax.SAXException;
 
-import primal.String_;
+import primal.Nouns.Utf8;
+import primal.Verbs.Equals;
 import primal.fp.Funs.Source;
-import suite.cfg.Defaults;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 
@@ -55,9 +55,9 @@ public class XmlUtil {
 	}
 
 	public String format(String xml) throws SAXException {
-		try (var is = new ByteArrayInputStream(xml.getBytes(Defaults.charset)); var writer = new StringWriter()) {
+		try (var is = new ByteArrayInputStream(xml.getBytes(Utf8.charset)); var writer = new StringWriter()) {
 			var lso = di.createLSOutput();
-			lso.setEncoding(Defaults.charset.name());
+			lso.setEncoding(Utf8.charset.name());
 			lso.setCharacterStream(writer);
 
 			lss.write(documentBuilder.parse(is), lso);
@@ -106,7 +106,7 @@ public class XmlUtil {
 					public XmlNode g() {
 						Node child;
 						while (i < nodeList.getLength())
-							if (String_.equals((child = nodeList.item(i++)).getNodeName(), tagName))
+							if (Equals.string((child = nodeList.item(i++)).getNodeName(), tagName))
 								return node(child);
 						return null;
 					}

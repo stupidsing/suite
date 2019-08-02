@@ -54,7 +54,7 @@ public class CacheUtil {
 
 	public <I, O> Fun<I, O> proxy(Fun<I, O> fun) {
 		@SuppressWarnings("unchecked")
-		Fun<I, O> proxy = proxy(Fun.class, fun);
+		var proxy = (Fun<I, O>) proxy(Fun.class, fun);
 		return proxy;
 	}
 
@@ -92,12 +92,12 @@ public class CacheUtil {
 		};
 
 		@SuppressWarnings("unchecked")
-		Class<I> clazz = (Class<I>) object.getClass();
+		var clazz = (Class<I>) object.getClass();
 		var classLoader = clazz.getClassLoader();
 		Class<?>[] classes = { interface_ };
 
 		@SuppressWarnings("unchecked")
-		I proxied = (I) Proxy.newProxyInstance(classLoader, classes, handler);
+		var proxied = (I) Proxy.newProxyInstance(classLoader, classes, handler);
 		return proxied;
 	}
 

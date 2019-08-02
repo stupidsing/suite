@@ -4,7 +4,7 @@ import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Set;
 
-import primal.String_;
+import primal.Verbs.Compare;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Source;
 import suite.node.Node;
@@ -33,7 +33,7 @@ public class VariableMapper<K> {
 			return Read //
 					.from2(indices) //
 					.map2((key, index) -> display(key), (key, index) -> refs[index].finalNode()) //
-					.sortByKey(String_::compare) //
+					.sortByKey(Compare::string) //
 					.map((k, v) -> k + " = " + Formatter.dump(v)) //
 					.collect(As.joinedBy(", "));
 		}

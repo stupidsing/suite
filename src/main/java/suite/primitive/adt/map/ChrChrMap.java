@@ -14,8 +14,8 @@ import primal.primitive.ChrPrim.Obj_Chr;
 import primal.primitive.Chr_Chr;
 import primal.primitive.adt.pair.ChrChrPair;
 import primal.primitive.adt.pair.ChrObjPair;
+import primal.primitive.puller.ChrObjPuller;
 import primal.puller.Puller;
-import suite.primitive.streamlet.ChrObjPuller;
 import suite.primitive.streamlet.ChrObjStreamlet;
 import suite.streamlet.As;
 

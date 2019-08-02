@@ -7,7 +7,7 @@ import primal.primitive.IntPrim;
 import primal.primitive.IntPrim.IntSink;
 import primal.primitive.IntPrim.IntSource;
 import primal.primitive.IntVerbs.CopyInt;
-import suite.primitive.streamlet.IntPuller;
+import primal.primitive.puller.IntPuller;
 import suite.primitive.streamlet.IntStreamlet;
 
 /**

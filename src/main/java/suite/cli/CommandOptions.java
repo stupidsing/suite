@@ -8,8 +8,8 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import primal.String_;
 import primal.Verbs.Concat;
+import primal.Verbs.Equals;
 import primal.fp.Funs.Source;
 import suite.Suite;
 import suite.editor.EditorMain;
@@ -44,27 +44,27 @@ public class CommandOptions {
 		var b = true;
 		String arg1;
 
-		if (String_.equals(arg, "--do"))
+		if (Equals.string(arg, "--do"))
 			isDo = on;
-		else if (String_.equals(arg, "--chars"))
+		else if (Equals.string(arg, "--chars"))
 			isChars = on;
-		else if (String_.equals(arg, "--eager"))
+		else if (Equals.string(arg, "--eager"))
 			isLazy = !on;
-		else if (String_.equals(arg, "--editor"))
+		else if (Equals.string(arg, "--editor"))
 			EditorMain.main(null);
-		else if (String_.equals(arg, "--imports") && (arg1 = source.g()) != null)
+		else if (Equals.string(arg, "--imports") && (arg1 = source.g()) != null)
 			imports = List.of(arg1.split(","));
-		else if (String_.equals(arg, "--lazy"))
+		else if (Equals.string(arg, "--lazy"))
 			isLazy = on;
-		else if (String_.equals(arg, "--libraries") && (arg1 = source.g()) != null)
+		else if (Equals.string(arg, "--libraries") && (arg1 = source.g()) != null)
 			libraries = List.of(arg1.split(","));
 		else if (arg.startsWith("--no-"))
 			b &= processOption("--" + arg.substring(5), source, false);
-		else if (String_.equals(arg, "--quiet"))
+		else if (Equals.string(arg, "--quiet"))
 			isQuiet = on;
-		else if (String_.equals(arg, "--trace"))
+		else if (Equals.string(arg, "--trace"))
 			isTrace = on;
-		else if (String_.equals(arg, "--use") && (arg1 = source.g()) != null)
+		else if (Equals.string(arg, "--use") && (arg1 = source.g()) != null)
 			libraries = Concat.lists(libraries, List.of(arg1.split(",")));
 		else
 			fail("unknown option " + arg);

@@ -12,10 +12,10 @@ import java.io.PrintWriter;
 import java.io.Reader;
 import java.net.ServerSocket;
 
+import primal.Nouns.Utf8;
 import primal.Verbs.Close;
 import primal.Verbs.New;
 import primal.os.Log_;
-import suite.cfg.Defaults;
 
 public class SocketUtil {
 
@@ -33,7 +33,7 @@ public class SocketUtil {
 
 	public void listenRw(int port, Rw rw) {
 		listenIo(port, (is, os) -> {
-			try (var reader = new BufferedReader(new InputStreamReader(is, Defaults.charset)); var writer = new PrintWriter(os)) {
+			try (var reader = new BufferedReader(new InputStreamReader(is, Utf8.charset)); var writer = new PrintWriter(os)) {
 				rw.serve(reader, writer);
 			}
 		});

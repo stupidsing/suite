@@ -10,10 +10,10 @@ import javax.imageio.ImageIO;
 import org.junit.Test;
 
 import primal.Verbs.Get;
+import primal.Verbs.WriteFile;
 import suite.cfg.Defaults;
 import suite.editor.ImageViewer;
 import suite.math.R3;
-import suite.os.FileUtil;
 import suite.rt.RayTracer.LightSource;
 import suite.rt.RayTracer.Material;
 import suite.rt.composite.Intersect;
@@ -201,7 +201,7 @@ public class RayTracerTest {
 		var path = Defaults.tmp(Get.stackTrace(3).getMethodName() + ".png");
 		var bufferedImage = rayTracer.trace(640, 480, 640);
 		if (Boolean.TRUE)
-			FileUtil.out(path).doWrite(os -> ImageIO.write(bufferedImage, "png", os));
+			WriteFile.to(path).doWrite(os -> ImageIO.write(bufferedImage, "png", os));
 		else {
 			new ImageViewer(bufferedImage);
 			System.in.read();

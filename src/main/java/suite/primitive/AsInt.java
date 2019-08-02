@@ -4,17 +4,25 @@ import java.util.List;
 
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
+import primal.fp.Funs.Sink;
 import primal.primitive.IntPrim.ObjObj_Int;
 import primal.primitive.IntPrim.Obj_Int;
+import primal.primitive.puller.IntObjPuller;
 import primal.puller.Puller;
 import primal.puller.Puller2;
 import suite.adt.map.ListMultimap;
 import suite.primitive.Ints.IntsBuilder;
 import suite.primitive.adt.map.IntObjMap;
-import suite.primitive.streamlet.IntObjPuller;
+import suite.primitive.streamlet.IntObjStreamlet;
 import suite.primitive.streamlet.IntStreamlet;
 
 public class AsInt {
+
+	public static Ints build(Sink<IntsBuilder> sink) {
+		var sb = new IntsBuilder();
+		sink.f(sb);
+		return sb.toInts();
+	}
 
 	public static <T> Fun<Puller<T>, IntStreamlet> lift(Obj_Int<T> fun0) {
 		var fun1 = fun0.rethrow();
@@ -27,19 +35,21 @@ public class AsInt {
 		};
 	}
 
-	public static <V> IntObjPuller<V> read2(IntObjMap<V> map) {
-		return IntObjPuller.of(map.source());
+	public static <V> IntObjStreamlet<V> read2(IntObjMap<V> map) {
+		return new IntObjStreamlet<>(() -> IntObjPuller.of(map.source()));
 	}
 
-	public static <V> IntObjPuller<List<V>> read2(ListMultimap<Integer, V> multimap) {
-		var iter = multimap.listEntries().iterator();
-		return IntObjPuller.of(pair -> {
-			var b = iter.hasNext();
-			if (b) {
-				var pair1 = iter.next();
-				pair.update(pair1.k, pair1.v);
-			}
-			return b;
+	public static <V> IntObjStreamlet<List<V>> read2(ListMultimap<Integer, V> multimap) {
+		return new IntObjStreamlet<>(() -> {
+			var iter = multimap.listEntries().iterator();
+			return IntObjPuller.of(pair -> {
+				var b = iter.hasNext();
+				if (b) {
+					var pair1 = iter.next();
+					pair.update(pair1.k, pair1.v);
+				}
+				return b;
+			});
 		});
 	}
 

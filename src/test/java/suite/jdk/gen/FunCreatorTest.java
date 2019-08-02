@@ -65,11 +65,11 @@ public class FunCreatorTest {
 
 	@Test
 	public void testBiPredicate() {
-		@SuppressWarnings("rawtypes")
-		FunCreator<BiPredicate> fc = FunCreator.of(BiPredicate.class);
+		var fc = FunCreator.of(BiPredicate.class);
+		var bp = fc.create((p, q) -> f._true()).apply(void_);
 		@SuppressWarnings("unchecked")
-		BiPredicate<Object, Object> bp = fc.create((p, q) -> f._true()).apply(void_);
-		assertTrue(bp.test("Hello", "world"));
+		var b = bp.test("Hello", "world");
+		assertTrue(b);
 	}
 
 	@Test

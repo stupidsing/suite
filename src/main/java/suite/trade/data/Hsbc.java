@@ -7,7 +7,7 @@ import java.io.ByteArrayInputStream;
 import java.util.Map;
 import java.util.Set;
 
-import suite.cfg.Defaults;
+import primal.Nouns.Utf8;
 import suite.os.Execute;
 import suite.streamlet.As;
 import suite.streamlet.Read;
@@ -34,7 +34,7 @@ public class Hsbc {
 							+ "&stockName=" //
 							+ "&lang=en'";
 
-					var is = new ByteArrayInputStream(Execute.shell(command).getBytes(Defaults.charset));
+					var is = new ByteArrayInputStream(Execute.shell(command).getBytes(Utf8.charset));
 					var xml = ex(() -> xmlUtil.read(is));
 
 					var quote = Read //

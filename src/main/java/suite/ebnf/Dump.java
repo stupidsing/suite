@@ -7,7 +7,7 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.List;
 
-import primal.String_;
+import primal.Verbs.Equals;
 import suite.ebnf.Ebnf.Ast;
 
 public class Dump {
@@ -41,7 +41,7 @@ public class Dump {
 			var end = ast.getEnd();
 
 			w.write(indent + entity0);
-			if (!String_.equals(entity0, entity1))
+			if (!Equals.string(entity0, entity1))
 				w.write(".." + entity1);
 			w.write("@" + start + "-" + end);
 			if (children.isEmpty())

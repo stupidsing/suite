@@ -3,7 +3,6 @@ package suite.trade.analysis;
 import java.time.LocalDate;
 import java.util.Map;
 
-import primal.String_;
 import primal.Verbs.Build;
 import primal.Verbs.Compare;
 import primal.adt.Fixie;
@@ -90,7 +89,7 @@ public class Summarize {
 					.from2(nSharesByKeyBySymbol.getOrDefault(symbol, Map.ofEntries())) //
 					.keys() //
 					.map(Object::toString) //
-					.sort(String_::compare) //
+					.sort(Compare::string) //
 					.collect(As.joinedBy("/"));
 
 			return percent(price1, pricex) //

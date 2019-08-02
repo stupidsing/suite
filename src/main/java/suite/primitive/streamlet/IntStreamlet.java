@@ -22,6 +22,8 @@ import primal.primitive.IntPrim.IntTest;
 import primal.primitive.IntPrim.Int_Obj;
 import primal.primitive.Int_Int;
 import primal.primitive.adt.pair.IntObjPair;
+import primal.primitive.puller.IntObjPuller;
+import primal.primitive.puller.IntPuller;
 import primal.puller.Puller;
 import primal.streamlet.StreamletDefaults;
 import suite.adt.map.ListMultimap;
@@ -36,7 +38,7 @@ import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 
-public class IntStreamlet implements StreamletDefaults<Integer, IntPuller> {
+public class IntStreamlet implements StreamletDefaults<Integer, IntOpt, IntTest, IntPuller, IntSink, IntSource> {
 
 	private Source<IntPuller> in;
 
@@ -151,14 +153,6 @@ public class IntStreamlet implements StreamletDefaults<Integer, IntPuller> {
 		}));
 	}
 
-	public boolean isAll(IntTest pred) {
-		return spawn().isAll(pred);
-	}
-
-	public boolean isAny(IntTest pred) {
-		return spawn().isAny(pred);
-	}
-
 	@Override
 	public Iterator<Integer> iterator() {
 		return spawn().iterator();
@@ -189,11 +183,11 @@ public class IntStreamlet implements StreamletDefaults<Integer, IntPuller> {
 	}
 
 	public int max() {
-		return spawn().max();
+		return spawn().min((c0, c1) -> Integer.compare(c1, c0));
 	}
 
 	public int min() {
-		return spawn().min();
+		return spawn().min((c0, c1) -> Integer.compare(c0, c1));
 	}
 
 	public int min(IntComparator comparator) {
@@ -202,10 +196,6 @@ public class IntStreamlet implements StreamletDefaults<Integer, IntPuller> {
 
 	public int minOrEmpty(IntComparator comparator) {
 		return spawn().minOrEmpty(comparator);
-	}
-
-	public IntOpt opt() {
-		return spawn().opt();
 	}
 
 	public Pair<IntStreamlet, IntStreamlet> partition(IntTest pred) {
@@ -220,10 +210,6 @@ public class IntStreamlet implements StreamletDefaults<Integer, IntPuller> {
 		return streamlet(() -> spawn().reverse());
 	}
 
-	public void sink(IntSink sink) {
-		spawn().sink(sink);
-	}
-
 	public IntStreamlet skip(int n) {
 		return streamlet(() -> spawn().skip(n));
 	}
@@ -234,10 +220,6 @@ public class IntStreamlet implements StreamletDefaults<Integer, IntPuller> {
 
 	public IntStreamlet sort() {
 		return streamlet(() -> spawn().sort());
-	}
-
-	public IntSource source() {
-		return spawn().source();
 	}
 
 	public int sum() {
@@ -328,7 +310,8 @@ public class IntStreamlet implements StreamletDefaults<Integer, IntPuller> {
 	}
 
 	private Ints toList_() {
-		return spawn().toList();
+		var list = spawn().toList();
+		return Ints.of(list.cs, 0, list.size);
 	}
 
 	private IntObjMap<IntsBuilder> toListMap_() {

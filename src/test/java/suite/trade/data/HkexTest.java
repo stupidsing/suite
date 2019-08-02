@@ -5,7 +5,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import primal.String_;
+import primal.Verbs.Equals;
 import suite.streamlet.Read;
 
 public class HkexTest {
@@ -26,7 +26,7 @@ public class HkexTest {
 
 		var name = Read //
 				.from(companies) //
-				.filter(fixie -> String_.equals(fixie.symbol, "0005.HK")) //
+				.filter(fixie -> Equals.string(fixie.symbol, "0005.HK")) //
 				.uniqueResult().name;
 
 		assertTrue(name.equals("HSBC Holdings plc"));

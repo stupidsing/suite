@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import primal.String_;
+import primal.Verbs.Equals;
 import primal.Verbs.Union;
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
@@ -103,7 +103,7 @@ public class Trade_ {
 			if (forInt(i0_, i1_).mapInt(i -> trades0[i].buySell).sum() != 0)
 				while (i0_ < i1_) {
 					var trade0 = trades0[i0_++];
-					if (!String_.equals(trade0.remark, "#"))
+					if (!Equals.string(trade0.remark, "#"))
 						trades1.add(trade0);
 				}
 		};
@@ -112,8 +112,8 @@ public class Trade_ {
 			var trade0 = trades0[i0];
 			var trade1 = trades0[i];
 			var isGroup = true //
-					&& String_.equals(trade0.date, trade1.date) //
-					&& String_.equals(trade0.symbol, trade1.symbol) //
+					&& Equals.string(trade0.date, trade1.date) //
+					&& Equals.string(trade0.symbol, trade1.symbol) //
 					&& trade0.price == trade1.price;
 			if (!isGroup) {
 				tx.sink2(i0, i);
@@ -166,7 +166,7 @@ public class Trade_ {
 	public static String format(Map<String, Integer> portfolio) {
 		return Read //
 				.from2(portfolio) //
-				.sortBy((code, i) -> !String_.equals(code, Instrument.cashSymbol) ? code : "") //
+				.sortBy((code, i) -> !Equals.string(code, Instrument.cashSymbol) ? code : "") //
 				.map((code, i) -> Math_.posNeg(i) + code + "*" + abs(i)) //
 				.collect(As::joined);
 	}
@@ -220,7 +220,7 @@ public class Trade_ {
 
 			var portfolio = Read //
 					.from2(ratioBySymbol) //
-					.filterKey(symbol -> !String_.equals(symbol, Instrument.cashSymbol)) //
+					.filterKey(symbol -> !Equals.string(symbol, Instrument.cashSymbol)) //
 					.map2((symbol, potential) -> {
 						var price = eodBySymbol.get(symbol).price;
 						var lotSize = instrumentBySymbol.get(symbol).lotSize;
@@ -267,7 +267,7 @@ public class Trade_ {
 	}
 
 	public static boolean isValidStock(String symbol, int nShares) {
-		return Trade_.isShortSell || String_.equals(symbol, Instrument.cashSymbol) || 0 <= nShares;
+		return Trade_.isShortSell || Equals.string(symbol, Instrument.cashSymbol) || 0 <= nShares;
 	}
 
 	private static Streamlet<Trade> diff_( //
@@ -285,7 +285,7 @@ public class Trade_ {
 					return n1 - n0;
 				}) //
 				.filter((symbol, buySell) -> true //
-						&& !String_.equals(symbol, Instrument.cashSymbol) //
+						&& !Equals.string(symbol, Instrument.cashSymbol) //
 						&& buySell != 0) //
 				.map((symbol, buySell) -> Trade.of(time, buySell, symbol, priceFun.apply(symbol), "-")) //
 				.collect();

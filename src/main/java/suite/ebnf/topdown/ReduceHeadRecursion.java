@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import primal.String_;
+import primal.Verbs.Equals;
 import primal.Verbs.Right;
 import primal.fp.Funs.Iterate;
 import suite.ebnf.Grammar;
@@ -78,7 +78,7 @@ public class ReduceHeadRecursion {
 			}).toList();
 
 			hrf = new HeadRecursionForm(fun.apply(hrf0.listb), fun.apply(hrf0.listc));
-		} else if (en.type == GrammarType.NAMED_ && String_.equals(en.content, entity))
+		} else if (en.type == GrammarType.NAMED_ && Equals.string(en.content, entity))
 			hrf = new HeadRecursionForm(empty, List.of(new Grammar(GrammarType.AND___)));
 		else if (en.type == GrammarType.OR____) {
 			var hrfs = Read.from(en.children).map(en_ -> getHeadRecursionForm(en_, entity)).toList();

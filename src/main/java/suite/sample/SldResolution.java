@@ -14,7 +14,6 @@ import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.TermOp;
 import suite.node.util.TreeUtil;
-import suite.util.To;
 
 /**
  * Selective linear definite clause resolution.
@@ -42,12 +41,11 @@ public class SldResolution {
 		var orsMap = new HashMap<Node, Source<List<Node>>>();
 
 		for (var n1 : Tree.read(n0)) {
-			var ors = To.list(Tree.read(n1));
+			var ors = Tree.read(n1).toList();
 
-			for (var i = 0; i < ors.size(); i++) {
-				var index = i;
-
-				orsMap.put(ors.get(index), () -> Concat.lists(ors.subList(0, index), ors.subList(index + 1, ors.size())));
+			for (var index = 0; index < ors.size(); index++) {
+				var i = index;
+				orsMap.put(ors.get(i), () -> Concat.lists(ors.subList(0, i), ors.subList(i + 1, ors.size())));
 			}
 		}
 

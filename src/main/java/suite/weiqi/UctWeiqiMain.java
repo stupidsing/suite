@@ -5,7 +5,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.DecimalFormat;
 
-import primal.String_;
+import primal.Nouns.Utf8;
+import primal.Verbs.Is;
+import primal.Verbs.Split;
 import primal.os.Log_;
 import suite.cfg.Defaults;
 import suite.os.Stopwatch;
@@ -27,7 +29,7 @@ public class UctWeiqiMain<Move> {
 	private static Occupation startingPlayer = Occupation.BLACK;
 
 	public static void main(String[] args) {
-		var isr = new InputStreamReader(System.in, Defaults.charset);
+		var isr = new InputStreamReader(System.in, Utf8.charset);
 		var br = new BufferedReader(isr);
 		var df = new DecimalFormat("0.000");
 		var nThreads = Defaults.nThreads;
@@ -91,9 +93,9 @@ public class UctWeiqiMain<Move> {
 							status = "AFTER UNDO:";
 							break;
 						default:
-							if (!String_.isBlank(line))
-								gameSet.play(String_ //
-										.split2l(line, ",") //
+							if (!Is.blank(line))
+								gameSet.play(Split //
+										.strl(line, ",") //
 										.map((xs, ys) -> Coordinate.c(Integer.parseInt(xs), Integer.parseInt(ys))));
 						}
 					else
@@ -116,7 +118,7 @@ public class UctWeiqiMain<Move> {
 
 		do
 			sb.append((s = br.readLine()) + "\n");
-		while (!String_.isBlank(s));
+		while (!Is.blank(s));
 
 		var board = UserInterface.importBoard(sb.toString());
 		return new MovingGameSet(board, startingPlayer);

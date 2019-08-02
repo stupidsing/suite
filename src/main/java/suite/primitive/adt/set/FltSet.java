@@ -7,7 +7,7 @@ import primal.primitive.FltPrim;
 import primal.primitive.FltPrim.FltSink;
 import primal.primitive.FltPrim.FltSource;
 import primal.primitive.FltVerbs.CopyFlt;
-import suite.primitive.streamlet.FltPuller;
+import primal.primitive.puller.FltPuller;
 import suite.primitive.streamlet.FltStreamlet;
 
 /**

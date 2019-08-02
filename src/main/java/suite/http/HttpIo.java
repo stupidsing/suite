@@ -10,15 +10,16 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URLDecoder;
 
-import primal.String_;
+import primal.Nouns.Utf8;
+import primal.Verbs.Equals;
 import primal.Verbs.ReadLine;
+import primal.Verbs.Split;
 import primal.adt.FixieArray;
 import primal.adt.Opt;
 import primal.fp.Funs2.Fun2;
-import suite.cfg.Defaults;
+import primal.io.ReadStream;
 import suite.streamlet.As;
 import suite.util.Copy;
-import suite.util.ReadStream;
 import suite.util.To;
 
 public class HttpIo {
@@ -28,19 +29,19 @@ public class HttpIo {
 		var headers = readHeaders(is0);
 
 		return FixieArray.of(ls).map((method, url, protocol) -> {
-			Fun2<String, String, HttpRequest> requestFun = (host, pqs) -> String_.split2l(pqs, "?")
+			Fun2<String, String, HttpRequest> requestFun = (host, pqs) -> Split.strl(pqs, "?")
 					.map((path0, query) -> {
 						var is1 = getContentStream(is0, headers);
 						var path1 = path0.startsWith("/") ? path0 : "/" + path0;
-						var path2 = ex(() -> URLDecoder.decode(path1, Defaults.charset));
+						var path2 = ex(() -> URLDecoder.decode(path1, Utf8.charset));
 
-						return String_.equals(protocol, "HTTP/1.1") //
+						return Equals.string(protocol, "HTTP/1.1") //
 								? new HttpRequest(method, host, path2, query, headers, is1) //
 								: fail("only HTTP/1.1 is supported");
 					});
 
-			var pp = String_.split2(url, "://");
-			return pp != null ? String_.split2l(pp.v, "/").map(requestFun) : requestFun.apply("", url);
+			var pp = Split.string(url, "://");
+			return pp != null ? Split.strl(pp.v, "/").map(requestFun) : requestFun.apply("", url);
 		});
 	}
 
@@ -52,7 +53,7 @@ public class HttpIo {
 			var cl = Opt.of(headers.get("Content-Length")).map(Integer::parseInt);
 			var is1 = !cl.isEmpty() ? sizeLimitedInputStream(is0, cl.get()) : is0;
 
-			return String_.equals(protocol, "HTTP/1.1") //
+			return Equals.string(protocol, "HTTP/1.1") //
 					? new HttpResponse(status, headers, To.puller(is1)) //
 					: fail("only HTTP/1.1 is supported");
 		});
@@ -68,7 +69,7 @@ public class HttpIo {
 				+ request.headers.streamlet().map((k, v) -> k + ": " + v + "\r\n").collect(As::joined) //
 				+ "\r\n";
 
-		os.write(s.getBytes(Defaults.charset));
+		os.write(s.getBytes(Utf8.charset));
 		Copy.stream(request.inputStream, os);
 	}
 
@@ -77,7 +78,7 @@ public class HttpIo {
 				+ response.headers.streamlet().map((k, v) -> k + ": " + v + "\r\n").collect(As::joined) //
 				+ "\r\n";
 
-		os.write(s.getBytes(Defaults.charset));
+		os.write(s.getBytes(Utf8.charset));
 		var out = response.out;
 
 		if (out != null)
@@ -102,7 +103,7 @@ public class HttpIo {
 		String line;
 		while (!(line = ReadLine.from(is)).isEmpty()) {
 			var headers0 = headers;
-			headers = String_.split2l(line, ":").map((k, v) -> headers0.put(k, v));
+			headers = Split.strl(line, ":").map((k, v) -> headers0.put(k, v));
 		}
 		return headers;
 	}

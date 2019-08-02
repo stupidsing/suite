@@ -2,7 +2,7 @@ package suite.funp.p1;
 
 import java.util.List;
 
-import primal.String_;
+import primal.Verbs.Equals;
 import primal.Verbs.Get;
 import primal.adt.Pair;
 import suite.funp.Funp_.Funp;
@@ -52,7 +52,7 @@ public class P11ReduceTailCall {
 				return new Switch<Funp>(do_ //
 				).applyIf(FunpApply.class, f -> f.apply((value, lambda) -> {
 					return lambda.cast(FunpVariable.class, g -> g.apply(vn_ -> {
-						return String_.equals(lambdaVn, vn_) ? cont(true, value, FunpDontCare.of()) : null;
+						return Equals.string(lambdaVn, vn_) ? cont(true, value, FunpDontCare.of()) : null;
 					}));
 				})).applyIf(FunpIf.class, g -> g.apply((if_, then, else_) -> {
 					return FunpIf.of(if_, tco(then), tco(else_));

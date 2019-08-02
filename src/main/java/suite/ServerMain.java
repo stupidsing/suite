@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiPredicate;
 
+import primal.Nouns.Utf8;
 import primal.Verbs.Sleep;
 import primal.Verbs.Start;
 import suite.cfg.Defaults;
@@ -66,7 +67,7 @@ public class ServerMain {
 			for (var i = 0; i < 8; i++) {
 				Sleep.quietly(1000l);
 				var event = "event: number\ndata: { \"i\": " + i + " }\n\n";
-				writer.f(Bytes.of(event.getBytes(Defaults.charset)));
+				writer.f(Bytes.of(event.getBytes(Utf8.charset)));
 			}
 			writer.f(null);
 		});

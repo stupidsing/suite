@@ -7,8 +7,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import primal.String_;
 import primal.Verbs.Compare;
+import primal.Verbs.Equals;
 import primal.Verbs.Union;
 import primal.fp.Funs.Iterate;
 import primal.fp.Funs2.BinOp;
@@ -57,7 +57,7 @@ public class StockHistory {
 		return of( //
 				exchange, //
 				Time.ofYmdHms(line), //
-				!String_.equals(isActive, "N"), //
+				!Equals.string(isActive, "N"), //
 				data, //
 				dividends, //
 				splits);
@@ -67,8 +67,8 @@ public class StockHistory {
 		var pairs = new ArrayList<LngFltPair>();
 		String line;
 
-		if (String_.equals(line = puller.pull(), "{"))
-			while (!String_.equals(line = puller.pull(), "}")) {
+		if (Equals.string(line = puller.pull(), "{"))
+			while (!Equals.string(line = puller.pull(), "}")) {
 				var p = line.lastIndexOf(":");
 				var time = Time.of(line.substring(0, p));
 				var price = Float.parseFloat(line.substring(p + 1));
@@ -117,7 +117,7 @@ public class StockHistory {
 		var data_ = Read //
 				.from2(data) //
 				.map2((name, pairs) -> {
-					if (!String_.equals(name, "volume"))
+					if (!Equals.string(name, "volume"))
 						cleanse.cleanse(pairs);
 					return pairs;
 				}) //

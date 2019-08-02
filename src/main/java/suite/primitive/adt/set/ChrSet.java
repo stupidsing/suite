@@ -7,7 +7,7 @@ import primal.primitive.ChrPrim;
 import primal.primitive.ChrPrim.ChrSink;
 import primal.primitive.ChrPrim.ChrSource;
 import primal.primitive.ChrVerbs.CopyChr;
-import suite.primitive.streamlet.ChrPuller;
+import primal.primitive.puller.ChrPuller;
 import suite.primitive.streamlet.ChrStreamlet;
 
 /**

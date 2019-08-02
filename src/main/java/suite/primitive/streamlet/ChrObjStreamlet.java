@@ -16,15 +16,16 @@ import primal.adt.Pair;
 import primal.fp.FunUtil;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Source;
-import primal.fp.Funs2.Sink2;
 import primal.primitive.ChrObj_Chr;
 import primal.primitive.ChrPrim;
 import primal.primitive.ChrPrim.ChrObjPredicate;
+import primal.primitive.ChrPrim.ChrObjSink;
 import primal.primitive.ChrPrim.ChrObjSource;
 import primal.primitive.ChrPrim.ChrObj_Obj;
 import primal.primitive.ChrPrim.ChrTest;
 import primal.primitive.adt.pair.ChrObjPair;
 import primal.primitive.fp.ChrObjFunUtil;
+import primal.primitive.puller.ChrObjPuller;
 import primal.puller.Puller;
 import primal.puller.Puller2;
 import primal.streamlet.StreamletDefaults;
@@ -35,7 +36,7 @@ import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 
-public class ChrObjStreamlet<V> implements StreamletDefaults<ChrObjPair<V>, ChrObjPuller<V>> {
+public class ChrObjStreamlet<V> implements StreamletDefaults<ChrObjPair<V>, ChrObjPair<V>, ChrObjPredicate<V>, ChrObjPuller<V>, ChrObjSink<V>, ChrObjSource<V>> {
 
 	private Source<ChrObjPuller<V>> in;
 
@@ -139,14 +140,6 @@ public class ChrObjStreamlet<V> implements StreamletDefaults<ChrObjPair<V>, ChrO
 		return spawn().hashCode();
 	}
 
-	public boolean isAll(ChrObjPredicate<V> pred) {
-		return spawn().isAll(pred);
-	}
-
-	public boolean isAny(ChrObjPredicate<V> pred) {
-		return spawn().isAny(pred);
-	}
-
 	@Override
 	public Iterator<ChrObjPair<V>> iterator() {
 		return spawn().iterator();
@@ -188,10 +181,6 @@ public class ChrObjStreamlet<V> implements StreamletDefaults<ChrObjPair<V>, ChrO
 		return spawn().minOrNull(comparator);
 	}
 
-	public ChrObjPair<V> opt() {
-		return spawn().opt();
-	}
-
 	public Streamlet<ChrObjPair<V>> pairs() {
 		return new Streamlet<>(() -> spawn().pairs());
 	}
@@ -206,10 +195,6 @@ public class ChrObjStreamlet<V> implements StreamletDefaults<ChrObjPair<V>, ChrO
 
 	public ChrObjStreamlet<V> reverse() {
 		return streamlet(() -> spawn().reverse());
-	}
-
-	public void sink(Sink2<Character, V> sink) {
-		spawn().sink(sink);
 	}
 
 	public ChrObjStreamlet<V> skip(int n) {
@@ -234,10 +219,6 @@ public class ChrObjStreamlet<V> implements StreamletDefaults<ChrObjPair<V>, ChrO
 
 	public ChrObjStreamlet<V> sortByValue(Comparator<V> comparator) {
 		return streamlet(() -> spawn().sortByValue(comparator));
-	}
-
-	public ChrObjSource<V> source() {
-		return spawn().source();
 	}
 
 	public ChrObjStreamlet<V> take(int n) {

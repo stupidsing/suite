@@ -73,7 +73,7 @@ public class Mapify {
 
 	public <T> T unmapify(Class<T> clazz, Object object) {
 		@SuppressWarnings("unchecked")
-		T t = (T) apply_(object, getMapifier(clazz).unmapify);
+		var t = (T) apply_(object, getMapifier(clazz).unmapify);
 		return t;
 	}
 

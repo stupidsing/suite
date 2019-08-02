@@ -7,7 +7,7 @@ import java.util.Deque;
 import java.util.List;
 import java.util.Map;
 
-import primal.String_;
+import primal.Verbs.Equals;
 import primal.fp.Funs.Source;
 import primal.os.Log_;
 import primal.puller.Puller;
@@ -311,19 +311,19 @@ public class TopDownParse {
 	private Parser buildLiteral(String entity) {
 		ExpectFun e;
 
-		if (String_.equals(entity, "<CHARACTER>"))
+		if (Equals.string(entity, "<CHARACTER>"))
 			e = expect.char_;
-		else if (String_.equals(entity, "<CHARACTER_LITERAL>"))
+		else if (Equals.string(entity, "<CHARACTER_LITERAL>"))
 			e = expect.charLiteral;
-		else if (String_.equals(entity, "<FLOATING_POINT_LITERAL>"))
+		else if (Equals.string(entity, "<FLOATING_POINT_LITERAL>"))
 			e = expect.realLiteral;
-		else if (String_.equals(entity, "<IDENTIFIER>"))
+		else if (Equals.string(entity, "<IDENTIFIER>"))
 			e = expect.identifier;
 		else if (entity.startsWith("<IGNORE:") && entity.endsWith(">"))
 			e = expect.fail;
-		else if (String_.equals(entity, "<INTEGER_LITERAL>"))
+		else if (Equals.string(entity, "<INTEGER_LITERAL>"))
 			e = expect.integerLiteral;
-		else if (String_.equals(entity, "<STRING_LITERAL>"))
+		else if (Equals.string(entity, "<STRING_LITERAL>"))
 			e = expect.stringLiteral;
 		else if (entity.startsWith("<UNICODE_CLASS:") && entity.endsWith(">"))
 			e = expect.unicodeClass(entity.substring(4, entity.length() - 1));

@@ -17,6 +17,7 @@ import suite.node.Node;
 import suite.node.Str;
 import suite.node.util.Rewrite;
 import suite.node.util.Singleton;
+import suite.primitive.AsChr;
 import suite.primitive.Chars;
 import suite.primitive.Chars.CharsBuilder;
 import suite.util.Nodify;
@@ -135,11 +136,11 @@ public class FactorizeResult {
 	}
 
 	public String unparse() {
-		var cb = new CharsBuilder();
-		cb.append(pre);
-		unparse(cb, node);
-		cb.append(post);
-		return cb.toChars().toString();
+		return AsChr.build(cb -> {
+			cb.append(pre);
+			unparse(cb, node);
+			cb.append(post);
+		}).toString();
 	}
 
 	private void unparse(CharsBuilder cb, FNode fn) {

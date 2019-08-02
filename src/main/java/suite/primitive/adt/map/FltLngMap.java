@@ -16,8 +16,8 @@ import primal.primitive.LngPrim.Obj_Lng;
 import primal.primitive.Lng_Lng;
 import primal.primitive.adt.pair.FltLngPair;
 import primal.primitive.adt.pair.FltObjPair;
+import primal.primitive.puller.FltObjPuller;
 import primal.puller.Puller;
-import suite.primitive.streamlet.FltObjPuller;
 import suite.primitive.streamlet.FltObjStreamlet;
 import suite.streamlet.As;
 

@@ -35,7 +35,6 @@ import suite.node.io.SwitchNode;
 import suite.node.io.TermOp;
 import suite.node.tree.TreeTuple;
 import suite.streamlet.Read;
-import suite.util.To;
 
 public class P0CrudeScript {
 
@@ -152,7 +151,7 @@ public class P0CrudeScript {
 				}).match("expression-pp .0", a -> {
 					var pat0 = Suite.pattern("op-inc-dec ('++' (),)");
 					var pat1 = Suite.pattern("op-inc-dec ('--' (),)");
-					var list = To.list(Tree.read(a));
+					var list = Tree.read(a).toList();
 					Obj_Int<Node> f = op -> pat0.match(op) != null ? 1 : pat1.match(op) != null ? -1 : 0;
 
 					int s = 0, e = list.size() - 1, c;

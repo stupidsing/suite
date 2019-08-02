@@ -7,7 +7,7 @@ import primal.primitive.DblPrim;
 import primal.primitive.DblPrim.DblSink;
 import primal.primitive.DblPrim.DblSource;
 import primal.primitive.DblVerbs.CopyDbl;
-import suite.primitive.streamlet.DblPuller;
+import primal.primitive.puller.DblPuller;
 import suite.primitive.streamlet.DblStreamlet;
 
 /**

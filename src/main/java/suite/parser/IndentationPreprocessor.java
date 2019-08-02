@@ -7,7 +7,7 @@ import static primal.statics.Fail.fail;
 import java.util.ArrayList;
 import java.util.List;
 
-import primal.String_;
+import primal.Verbs.Equals;
 import suite.node.io.Operator;
 import suite.node.io.Operator.Assoc;
 import suite.text.Preprocess.Run;
@@ -63,7 +63,7 @@ public class IndentationPreprocessor {
 					if (!name.isEmpty()) {
 						if (line.startsWith(name + " "))
 							startPos = max(startPos, name.length() + 1);
-						if (String_.equals(line, name))
+						if (Equals.string(line, name))
 							startPos = max(startPos, name.length());
 						if (line.endsWith(name))
 							endPos = min(endPos, lineLength - name.length());

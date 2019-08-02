@@ -4,7 +4,7 @@ import suite.inspect.Dump;
 import suite.inspect.Inspect;
 import suite.node.util.Singleton;
 
-public class ToStringObject<T extends ToStringObject<T>> implements Cloneable, AutoInterface<T> {
+public class ToStringObject<T extends ToStringObject<T>> implements Cloneable, CastDefaults<T> {
 
 	private static Inspect inspect = Singleton.me.inspect;
 

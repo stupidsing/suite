@@ -12,7 +12,7 @@ import primal.primitive.ChrPrim.ChrObjSource;
 import primal.primitive.ChrPrim.Obj_Chr;
 import primal.primitive.Chr_Chr;
 import primal.primitive.adt.pair.ChrObjPair;
-import suite.primitive.streamlet.ChrObjPuller;
+import primal.primitive.puller.ChrObjPuller;
 import suite.primitive.streamlet.ChrObjStreamlet;
 import suite.streamlet.As;
 

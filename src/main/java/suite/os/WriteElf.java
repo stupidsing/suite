@@ -9,7 +9,9 @@ import java.nio.file.attribute.PosixFilePermission;
 import java.util.HashSet;
 import java.util.List;
 
+import primal.Nouns.Utf8;
 import primal.Verbs.Get;
+import primal.Verbs.WriteFile;
 import primal.primitive.IntPrim.Int_Obj;
 import suite.cfg.Defaults;
 import suite.primitive.Bytes;
@@ -41,7 +43,7 @@ public class WriteElf {
 	}
 
 	private void write(int org, Bytes code, Path path) {
-		FileUtil.out(path).doWrite(os -> {
+		WriteFile.to(path).doWrite(os -> {
 			try (var do_ = SerOutput.of(os)) {
 				write(org, code, do_);
 			}
@@ -65,7 +67,7 @@ public class WriteElf {
 	private Bytes header32(int org, Bytes code, SerOutput do_) throws IOException {
 		return new Write_() //
 				.db(0x7F) // e_ident
-				.append("ELF".getBytes(Defaults.charset)) //
+				.append("ELF".getBytes(Utf8.charset)) //
 				.append(new byte[] { 1, 1, 1, 0, }) //
 				.append(new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, }) //
 				.dw(2) // e_type
@@ -95,7 +97,7 @@ public class WriteElf {
 	private Bytes header64(int org, Bytes code, SerOutput do_) throws IOException {
 		return new Write_() //
 				.db(0x7F) // e_ident
-				.append("ELF".getBytes(Defaults.charset)) //
+				.append("ELF".getBytes(Utf8.charset)) //
 				.append(new byte[] { 2, 1, 1, 0, }) //
 				.append(new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, }) //
 				.dw(2) // e_type

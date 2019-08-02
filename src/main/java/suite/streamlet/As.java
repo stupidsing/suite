@@ -27,19 +27,19 @@ import primal.primitive.IntPrim.Obj_Int;
 import primal.primitive.Int_Dbl;
 import primal.primitive.Int_Flt;
 import primal.primitive.Int_Int;
+import primal.primitive.puller.IntPuller;
 import primal.puller.Puller;
 import primal.puller.Puller2;
 import suite.adt.map.ListMultimap;
+import suite.primitive.AsChr;
+import suite.primitive.AsFlt;
+import suite.primitive.AsInt;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
 import suite.primitive.Bytes_;
 import suite.primitive.Chars;
-import suite.primitive.Chars.CharsBuilder;
-import suite.primitive.Floats.FloatsBuilder;
-import suite.primitive.Ints.IntsBuilder;
 import suite.primitive.adt.map.ObjIntMap;
 import suite.primitive.streamlet.FltStreamlet;
-import suite.primitive.streamlet.IntPuller;
 import suite.primitive.streamlet.IntStreamlet;
 import suite.util.To;
 
@@ -83,13 +83,11 @@ public class As {
 
 	public static Fun<IntPuller, FltStreamlet> floats(Int_Flt fun0) {
 		var fun1 = fun0.rethrow();
-		return ts -> {
-			var b = new FloatsBuilder();
+		return ts -> AsFlt.build(b -> {
 			int c;
 			while ((c = ts.pull()) != IntPrim.EMPTYVALUE)
 				b.append(fun1.apply(c));
-			return b.toFloats().streamlet();
-		};
+		}).streamlet();
 	}
 
 	public static InputStream inputStream(Bytes bytes) {
@@ -99,11 +97,11 @@ public class As {
 	public static Fun<IntPuller, IntStreamlet> ints(Int_Int fun0) {
 		var fun1 = fun0.rethrow();
 		return ts -> {
-			var b = new IntsBuilder();
-			int c;
-			while ((c = ts.pull()) != IntPrim.EMPTYVALUE)
-				b.append(fun1.apply(c));
-			return b.toInts().streamlet();
+			return AsInt.build(b -> {
+				int c;
+				while ((c = ts.pull()) != IntPrim.EMPTYVALUE)
+					b.append(fun1.apply(c));
+			}).streamlet();
 		};
 	}
 
@@ -232,49 +230,49 @@ public class As {
 
 			private Chars decode() {
 				var bytes = bb.toBytes();
-				var cb = new CharsBuilder();
-				var s = 0;
 
-				while (s < bytes.size()) {
-					var b0 = Byte.toUnsignedInt(bytes.get(s++));
-					int ch, e;
-					if (b0 < 0x80) {
-						ch = b0;
-						e = s;
-					} else if (b0 < 0xE0) {
-						ch = b0 & 0x1F;
-						e = s + 1;
-					} else if (b0 < 0xF0) {
-						ch = b0 & 0x0F;
-						e = s + 2;
-					} else if (b0 < 0xF8) {
-						ch = b0 & 0x07;
-						e = s + 3;
-					} else if (b0 < 0xFC) {
-						ch = b0 & 0x03;
-						e = s + 4;
-					} else if (b0 < 0xFE) {
-						ch = b0 & 0x01;
-						e = s + 5;
-					} else
-						throw new RuntimeException();
-					if (e <= bytes.size()) {
-						while (s < e) {
-							var b = Byte.toUnsignedInt(bytes.get(s++));
-							if ((b & 0xC0) == 0x80)
-								ch = (ch << 6) + (b & 0x3F);
-							else
-								fail();
-						}
-						cb.append((char) ch);
-					} else
-						break;
-				}
+				return AsChr.build(cb -> {
+					var s = 0;
 
-				bb = new BytesBuilder();
-				bb.append(bytes.range(s));
+					while (s < bytes.size()) {
+						var b0 = Byte.toUnsignedInt(bytes.get(s++));
+						int ch, e;
+						if (b0 < 0x80) {
+							ch = b0;
+							e = s;
+						} else if (b0 < 0xE0) {
+							ch = b0 & 0x1F;
+							e = s + 1;
+						} else if (b0 < 0xF0) {
+							ch = b0 & 0x0F;
+							e = s + 2;
+						} else if (b0 < 0xF8) {
+							ch = b0 & 0x07;
+							e = s + 3;
+						} else if (b0 < 0xFC) {
+							ch = b0 & 0x03;
+							e = s + 4;
+						} else if (b0 < 0xFE) {
+							ch = b0 & 0x01;
+							e = s + 5;
+						} else
+							throw new RuntimeException();
+						if (e <= bytes.size()) {
+							while (s < e) {
+								var b = Byte.toUnsignedInt(bytes.get(s++));
+								if ((b & 0xC0) == 0x80)
+									ch = (ch << 6) + (b & 0x3F);
+								else
+									fail();
+							}
+							cb.append((char) ch);
+						} else
+							break;
+					}
 
-				return cb.toChars();
+					bb = new BytesBuilder();
+					bb.append(bytes.range(s));
+				});
 			}
 		});
 	}

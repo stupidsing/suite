@@ -7,8 +7,8 @@ import java.util.List;
 
 import org.junit.Test;
 
+import primal.Nouns.Utf8;
 import primal.fp.Funs.Source;
-import suite.cfg.Defaults;
 import suite.os.FileUtil;
 import suite.primitive.Bytes.BytesBuilder;
 import suite.util.To;
@@ -40,7 +40,7 @@ public class LempelZivWelchTest {
 	}
 
 	private String doTest(String s0) {
-		var bs = s0.getBytes(Defaults.charset);
+		var bs = s0.getBytes(Utf8.charset);
 
 		Source<Byte> source0 = new Source<>() {
 			private int index;

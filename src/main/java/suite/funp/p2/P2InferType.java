@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.BiPredicate;
 
-import primal.String_;
+import primal.Verbs.Equals;
 import primal.Verbs.Get;
 import primal.adt.Fixie;
 import primal.adt.Fixie_.Fixie3;
@@ -814,7 +814,7 @@ public class P2InferType {
 			if (struct != null)
 				for (var pair : struct) {
 					var offset1 = offset + getTypeSize(pair.v);
-					if (!String_.equals(Atom.name(pair.k), n.field))
+					if (!Equals.string(Atom.name(pair.k), n.field))
 						offset = offset1;
 					else
 						return IntRange.of(offset, offset1);

@@ -25,7 +25,7 @@ import suite.funp.p4.P4GenerateCode;
 import suite.inspect.Inspect;
 import suite.node.Node;
 import suite.node.util.Singleton;
-import suite.object.AutoInterface;
+import suite.object.CastDefaults;
 import suite.persistent.PerMap;
 import suite.primitive.Bytes;
 import suite.streamlet.Read;
@@ -51,7 +51,7 @@ public class Funp_ {
 
 	private boolean isOptimize;
 
-	public interface Funp extends AutoInterface<Funp> {
+	public interface Funp extends CastDefaults<Funp> {
 	}
 
 	public static class CompileException extends RuntimeException {

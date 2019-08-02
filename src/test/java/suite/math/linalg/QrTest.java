@@ -9,16 +9,16 @@ import suite.math.Math_;
 public class QrTest {
 
 	private Matrix mtx = new Matrix();
+	private Qr qr = new Qr();
 
 	@Test
 	public void test() {
-		var qr = new Qr();
 		test(qr::decompose);
 		test(qr::decomposeByGivensRotation);
 	}
 
 	private void test(Fun<float[][], Pair<float[][], float[][]>> fun) {
-		float[][] m0 = { //
+		var m0 = new float[][] { //
 				{ 12f, -51f, 4f, }, //
 				{ 6f, 167f, -68f, }, //
 				{ -4f, 24f, -41f, }, //
@@ -28,14 +28,14 @@ public class QrTest {
 		var qr = fun.apply(m0);
 
 		@SuppressWarnings("unused")
-		float[][] expectedq = { //
+		var expectedq = new float[][] { //
 				{ 6f / 7f, -69f / 175f, -58f / 175f, }, //
 				{ 3f / 7f, 158f / 175f, 6f / 175f, }, //
 				{ -2f / 7f, 6f / 35f, -33f / 35f, }, //
 		};
 
 		@SuppressWarnings("unused")
-		float[][] expectedr = { //
+		var expectedr = new float[][] { //
 				{ 14f, 21f, -14f, }, //
 				{ 0f, 175f, -70f, }, //
 				{ 0f, 0f, 35f, }, //

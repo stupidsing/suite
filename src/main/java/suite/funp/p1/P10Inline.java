@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
-import primal.String_;
+import primal.Verbs.Equals;
 import primal.Verbs.Reverse;
 import primal.fp.Funs.Iterate;
 import suite.funp.Funp_;
@@ -124,7 +124,7 @@ public class P10Inline {
 						var b = false;
 
 						for (var vn_ : Reverse.of(vns))
-							if (!String_.equals(vn, vn_))
+							if (!Equals.string(vn, vn_))
 								n2 = FunpDefine.of(vn_, FunpDontCare.of(), n2, Fdt.L_MONO);
 							else
 								b = true;
@@ -221,7 +221,7 @@ public class P10Inline {
 							&& (struct = define.value.cast(FunpStruct.class)) != null) {
 						var pair = Read //
 								.from2(struct.pairs) //
-								.filterKey(field_ -> String_.equals(field_, field.field)) //
+								.filterKey(field_ -> Equals.string(field_, field.field)) //
 								.first();
 						return pair != null ? inline(pair.v) : null;
 					} else
@@ -265,7 +265,7 @@ public class P10Inline {
 					else if ((tagValue = n_.cast(FunpTagValue.class)) != null //
 							&& (variable = tagValue.reference.expr.cast(FunpVariable.class)) != null //
 							&& (tag = defs.get(variable).cast(FunpDefine.class, n -> n.value.cast(FunpTag.class))) != null)
-						return String_.equals(tag.tag, tagValue.tag) ? tag.value : FunpDontCare.of();
+						return Equals.string(tag.tag, tagValue.tag) ? tag.value : FunpDontCare.of();
 					else
 						return null;
 				});

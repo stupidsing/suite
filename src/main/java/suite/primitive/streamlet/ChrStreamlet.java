@@ -22,6 +22,8 @@ import primal.primitive.ChrPrim.ChrTest;
 import primal.primitive.ChrPrim.Chr_Obj;
 import primal.primitive.Chr_Chr;
 import primal.primitive.adt.pair.ChrObjPair;
+import primal.primitive.puller.ChrObjPuller;
+import primal.primitive.puller.ChrPuller;
 import primal.puller.Puller;
 import primal.streamlet.StreamletDefaults;
 import suite.adt.map.ListMultimap;
@@ -36,7 +38,7 @@ import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 
-public class ChrStreamlet implements StreamletDefaults<Character, ChrPuller> {
+public class ChrStreamlet implements StreamletDefaults<Character, ChrOpt, ChrTest, ChrPuller, ChrSink, ChrSource> {
 
 	private Source<ChrPuller> in;
 
@@ -151,14 +153,6 @@ public class ChrStreamlet implements StreamletDefaults<Character, ChrPuller> {
 		}));
 	}
 
-	public boolean isAll(ChrTest pred) {
-		return spawn().isAll(pred);
-	}
-
-	public boolean isAny(ChrTest pred) {
-		return spawn().isAny(pred);
-	}
-
 	@Override
 	public Iterator<Character> iterator() {
 		return spawn().iterator();
@@ -189,11 +183,11 @@ public class ChrStreamlet implements StreamletDefaults<Character, ChrPuller> {
 	}
 
 	public char max() {
-		return spawn().max();
+		return spawn().min((c0, c1) -> Character.compare(c1, c0));
 	}
 
 	public char min() {
-		return spawn().min();
+		return spawn().min((c0, c1) -> Character.compare(c0, c1));
 	}
 
 	public char min(ChrComparator comparator) {
@@ -202,10 +196,6 @@ public class ChrStreamlet implements StreamletDefaults<Character, ChrPuller> {
 
 	public char minOrEmpty(ChrComparator comparator) {
 		return spawn().minOrEmpty(comparator);
-	}
-
-	public ChrOpt opt() {
-		return spawn().opt();
 	}
 
 	public Pair<ChrStreamlet, ChrStreamlet> partition(ChrTest pred) {
@@ -220,10 +210,6 @@ public class ChrStreamlet implements StreamletDefaults<Character, ChrPuller> {
 		return streamlet(() -> spawn().reverse());
 	}
 
-	public void sink(ChrSink sink) {
-		spawn().sink(sink);
-	}
-
 	public ChrStreamlet skip(int n) {
 		return streamlet(() -> spawn().skip(n));
 	}
@@ -234,10 +220,6 @@ public class ChrStreamlet implements StreamletDefaults<Character, ChrPuller> {
 
 	public ChrStreamlet sort() {
 		return streamlet(() -> spawn().sort());
-	}
-
-	public ChrSource source() {
-		return spawn().source();
 	}
 
 	public char sum() {
@@ -328,7 +310,8 @@ public class ChrStreamlet implements StreamletDefaults<Character, ChrPuller> {
 	}
 
 	private Chars toList_() {
-		return spawn().toList();
+		var list = spawn().toList();
+		return Chars.of(list.cs, 0, list.size);
 	}
 
 	private ChrObjMap<CharsBuilder> toListMap_() {

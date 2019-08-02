@@ -9,7 +9,7 @@ import primal.primitive.ChrPrim.ChrObjSink;
 import primal.primitive.ChrPrim.ChrObjSource;
 import primal.primitive.ChrPrim.Chr_Obj;
 import primal.primitive.adt.pair.ChrObjPair;
-import suite.primitive.streamlet.ChrObjPuller;
+import primal.primitive.puller.ChrObjPuller;
 import suite.primitive.streamlet.ChrObjStreamlet;
 import suite.streamlet.As;
 
@@ -64,7 +64,7 @@ public class ChrObjMap<V> {
 	public V get(char key) {
 		var index = index(key);
 		@SuppressWarnings("unchecked")
-		V v = ks[index] == key ? cast(vs[index]) : (V) EMPTYVALUE;
+		var v = ks[index] == key ? cast(vs[index]) : (V) EMPTYVALUE;
 		return v;
 	}
 

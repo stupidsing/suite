@@ -5,6 +5,8 @@ import java.util.Map;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import primal.Verbs.ReadFile;
+import primal.Verbs.WriteFile;
 import suite.cfg.Defaults;
 import suite.inspect.Mapify;
 import suite.node.util.Singleton;
@@ -27,16 +29,16 @@ public class Keeper {
 	}
 
 	public PackageMemento loadPackageMemento(String packageName) {
-		return FileUtil //
-				.in(keeperDir.resolve(packageName)) //
+		return ReadFile //
+				.from(keeperDir.resolve(packageName)) //
 				.doRead(is -> mapify.unmapify(PackageMemento.class, om.readValue(is, Map.class)));
 	}
 
 	public void savePackageMemento(PackageMemento packageMemento) {
 		var packageName = packageMemento.getPackageManifest().getName();
 
-		FileUtil //
-				.out(keeperDir.resolve(packageName)) //
+		WriteFile //
+				.to(keeperDir.resolve(packageName)) //
 				.doWrite(os -> om.writeValue(os, mapify.mapify(PackageMemento.class, packageMemento)));
 	}
 

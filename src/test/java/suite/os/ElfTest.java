@@ -6,12 +6,12 @@ import java.util.List;
 
 import org.junit.Test;
 
+import primal.Nouns.Utf8;
 import suite.assembler.Amd64;
 import suite.assembler.Amd64.Insn;
 import suite.assembler.Amd64.Instruction;
 import suite.assembler.Amd64Assemble;
 import suite.assembler.Amd64Interpret;
-import suite.cfg.Defaults;
 import suite.funp.Funp_;
 import suite.primitive.Bytes;
 import suite.util.RunUtil;
@@ -100,8 +100,8 @@ public class ElfTest {
 	}
 
 	private void test(int code, String program, String input, String expected) {
-		var ibs = Bytes.of(input.getBytes(Defaults.charset));
-		var ebs = Bytes.of(expected.getBytes(Defaults.charset));
+		var ibs = Bytes.of(input.getBytes(Utf8.charset));
+		var ebs = Bytes.of(expected.getBytes(Utf8.charset));
 		var main = Funp_.main(true);
 
 		if (Boolean.TRUE && RunUtil.isLinux()) { // not Windows => run ELF

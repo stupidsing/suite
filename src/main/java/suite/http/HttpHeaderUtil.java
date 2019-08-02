@@ -7,8 +7,10 @@ import java.io.InputStreamReader;
 import java.net.URLDecoder;
 import java.util.Map;
 
-import primal.String_;
+import primal.Nouns.Utf8;
 import primal.Verbs.Build;
+import primal.Verbs.Equals;
+import primal.Verbs.Split;
 import suite.cfg.Defaults;
 import suite.persistent.PerList;
 import suite.streamlet.Read;
@@ -20,7 +22,7 @@ public class HttpHeaderUtil {
 		var paths = PerList.<String> end();
 		for (var i = arr.length - 1; i >= 0; i--) {
 			String p = arr[i];
-			if (!p.isEmpty() && !String_.equals(p, ".."))
+			if (!p.isEmpty() && !Equals.string(p, ".."))
 				paths = PerList.cons(p, paths);
 		}
 		return paths;
@@ -31,7 +33,7 @@ public class HttpHeaderUtil {
 	}
 
 	public static Map<String, String> getPostedAttrs(InputStream is) {
-		var reader = new InputStreamReader(is, Defaults.charset);
+		var reader = new InputStreamReader(is, Utf8.charset);
 
 		var query = Build.string(sb -> {
 			var buffer = new char[Defaults.bufferSize];
@@ -52,13 +54,13 @@ public class HttpHeaderUtil {
 		var qs = query != null ? query.split(sep) : new String[0];
 		return Read //
 				.from(qs) //
-				.concatMap2(q -> Read.each2(String_.split2l(q, "="))) //
+				.concatMap2(q -> Read.each2(Split.strl(q, "="))) //
 				.mapValue(HttpHeaderUtil::decode) //
 				.toMap();
 	}
 
 	private static String decode(String s) {
-		return ex(() -> URLDecoder.decode(s, Defaults.charset));
+		return ex(() -> URLDecoder.decode(s, Utf8.charset));
 	}
 
 }

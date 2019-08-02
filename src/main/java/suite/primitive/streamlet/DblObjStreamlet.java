@@ -16,15 +16,16 @@ import primal.adt.Pair;
 import primal.fp.FunUtil;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Source;
-import primal.fp.Funs2.Sink2;
 import primal.primitive.DblObj_Dbl;
 import primal.primitive.DblPrim;
 import primal.primitive.DblPrim.DblObjPredicate;
+import primal.primitive.DblPrim.DblObjSink;
 import primal.primitive.DblPrim.DblObjSource;
 import primal.primitive.DblPrim.DblObj_Obj;
 import primal.primitive.DblPrim.DblTest;
 import primal.primitive.adt.pair.DblObjPair;
 import primal.primitive.fp.DblObjFunUtil;
+import primal.primitive.puller.DblObjPuller;
 import primal.puller.Puller;
 import primal.puller.Puller2;
 import primal.streamlet.StreamletDefaults;
@@ -35,7 +36,7 @@ import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 
-public class DblObjStreamlet<V> implements StreamletDefaults<DblObjPair<V>, DblObjPuller<V>> {
+public class DblObjStreamlet<V> implements StreamletDefaults<DblObjPair<V>, DblObjPair<V>, DblObjPredicate<V>, DblObjPuller<V>, DblObjSink<V>, DblObjSource<V>> {
 
 	private Source<DblObjPuller<V>> in;
 
@@ -139,14 +140,6 @@ public class DblObjStreamlet<V> implements StreamletDefaults<DblObjPair<V>, DblO
 		return spawn().hashCode();
 	}
 
-	public boolean isAll(DblObjPredicate<V> pred) {
-		return spawn().isAll(pred);
-	}
-
-	public boolean isAny(DblObjPredicate<V> pred) {
-		return spawn().isAny(pred);
-	}
-
 	@Override
 	public Iterator<DblObjPair<V>> iterator() {
 		return spawn().iterator();
@@ -188,10 +181,6 @@ public class DblObjStreamlet<V> implements StreamletDefaults<DblObjPair<V>, DblO
 		return spawn().minOrNull(comparator);
 	}
 
-	public DblObjPair<V> opt() {
-		return spawn().opt();
-	}
-
 	public Streamlet<DblObjPair<V>> pairs() {
 		return new Streamlet<>(() -> spawn().pairs());
 	}
@@ -206,10 +195,6 @@ public class DblObjStreamlet<V> implements StreamletDefaults<DblObjPair<V>, DblO
 
 	public DblObjStreamlet<V> reverse() {
 		return streamlet(() -> spawn().reverse());
-	}
-
-	public void sink(Sink2<Double, V> sink) {
-		spawn().sink(sink);
 	}
 
 	public DblObjStreamlet<V> skip(int n) {
@@ -234,10 +219,6 @@ public class DblObjStreamlet<V> implements StreamletDefaults<DblObjPair<V>, DblO
 
 	public DblObjStreamlet<V> sortByValue(Comparator<V> comparator) {
 		return streamlet(() -> spawn().sortByValue(comparator));
-	}
-
-	public DblObjSource<V> source() {
-		return spawn().source();
 	}
 
 	public DblObjStreamlet<V> take(int n) {

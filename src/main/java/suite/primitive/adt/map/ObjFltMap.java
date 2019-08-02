@@ -12,7 +12,7 @@ import primal.primitive.FltPrim.FltObjSource;
 import primal.primitive.FltPrim.Obj_Flt;
 import primal.primitive.Flt_Flt;
 import primal.primitive.adt.pair.FltObjPair;
-import suite.primitive.streamlet.FltObjPuller;
+import primal.primitive.puller.FltObjPuller;
 import suite.primitive.streamlet.FltObjStreamlet;
 import suite.streamlet.As;
 

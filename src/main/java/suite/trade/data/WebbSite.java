@@ -4,7 +4,7 @@ import static java.util.Map.entry;
 
 import java.util.Map;
 
-import primal.String_;
+import primal.Verbs.Equals;
 import suite.node.util.Singleton;
 import suite.streamlet.As;
 import suite.trade.Time;
@@ -48,7 +48,7 @@ public class WebbSite {
 					var factor = new Factor();
 					factor.atDate = Time.of(vs[0]);
 					factor.settleDate = Time.of(vs[1]);
-					factor.susp = String_.equals(vs[2], "1");
+					factor.susp = Equals.string(vs[2], "1");
 					factor.closing = Float.parseFloat(vs[3]);
 					factor.bid = Float.parseFloat(vs[4]);
 					factor.ask = Float.parseFloat(vs[5]);

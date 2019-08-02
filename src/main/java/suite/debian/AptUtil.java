@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.zip.GZIPInputStream;
 
-import primal.String_;
 import primal.Verbs.Equals;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
@@ -41,7 +40,7 @@ public class AptUtil {
 
 		return Read //
 				.from(packages) //
-				.filter(pm -> String_.equals(pm.get("Package"), packageName)) //
+				.filter(pm -> Equals.string(pm.get("Package"), packageName)) //
 				.map(pm -> {
 					var p = pm.get("Filename");
 					if (p != null)

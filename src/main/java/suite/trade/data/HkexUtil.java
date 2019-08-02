@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
 
-import primal.String_;
+import primal.Verbs.Right;
 import primal.fp.Funs.Source;
 import suite.trade.Time;
 import suite.util.Memoize;
@@ -47,7 +47,7 @@ public class HkexUtil {
 	}
 
 	public static String toSymbol(String stockCode) {
-		return String_.right("0000" + stockCode.trim(), -4) + ".HK";
+		return Right.of("0000" + stockCode.trim(), -4) + ".HK";
 	}
 
 	private static Time until(Time start, int dir, Predicate<Time> pred) {

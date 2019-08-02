@@ -10,10 +10,9 @@ public class StoreCacheTest {
 
 	@Test
 	public void test() {
-		var url = Defaults.secrets("stockUrl .0")[0];
-
-		var size = Singleton.me.storeCache //
-				.http(url) //
+		var size = Defaults //
+				.bindSecrets("stockUrl .0") //
+				.map(Singleton.me.storeCache::http) //
 				.collect(As::table) //
 				.size();
 

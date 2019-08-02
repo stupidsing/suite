@@ -6,7 +6,8 @@ import java.io.Reader;
 import java.io.Writer;
 import java.util.List;
 
-import primal.String_;
+import primal.Verbs.Is;
+import primal.Verbs.Range;
 import primal.Verbs.Take;
 import primal.fp.Funs.Sink;
 import primal.fp.Funs.Source;
@@ -92,7 +93,7 @@ public class CommandDispatcher {
 	}
 
 	public boolean dispatchCommand(String input, Writer writer) throws IOException {
-		return String_.isBlank(input) || dispatchCommand_(input, writer);
+		return Is.blank(input) || dispatchCommand_(input, writer);
 	}
 
 	private boolean dispatchCommand_(String input, Writer writer) throws IOException {
@@ -104,7 +105,7 @@ public class CommandDispatcher {
 		input = pair.v.trim();
 
 		if (input.endsWith("#"))
-			input = String_.range(input, 0, -1);
+			input = Range.of(input, 0, -1);
 
 		var node = Suite.parse(input.trim());
 

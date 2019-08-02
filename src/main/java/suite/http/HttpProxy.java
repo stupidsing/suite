@@ -4,13 +4,13 @@ import static primal.statics.Rethrow.ex;
 
 import java.net.Socket;
 
-import primal.String_;
+import primal.Nouns.Utf8;
 import primal.Verbs.ReadLine;
+import primal.Verbs.Split;
 import primal.Verbs.Start;
 import primal.fp.Funs.Fun;
 import primal.os.Log_;
 import primal.primitive.adt.pair.IntObjPair;
-import suite.cfg.Defaults;
 import suite.os.SocketUtil;
 import suite.streamlet.Read;
 import suite.util.Copy;
@@ -36,15 +36,15 @@ public class HttpProxy {
 			Log_.info("PROXY " + line);
 
 			var url = line.split(" ")[1];
-			var pp = String_.split2(url, "://");
-			var path = pp != null ? String_.split2l(pp.v, "/").v : url;
+			var pp = Split.string(url, "://");
+			var path = pp != null ? Split.strl(pp.v, "/").v : url;
 
 			try (var socket1 = connect(path); //
 					var is0 = is; //
 					var os0 = os; //
 					var is1 = socket1.getInputStream(); //
 					var os1 = socket1.getOutputStream();) {
-				os1.write((line + "\r\nConnection: close\r\n").getBytes(Defaults.charset));
+				os1.write((line + "\r\nConnection: close\r\n").getBytes(Utf8.charset));
 				Read.each(Copy.streamByThread(is0, os1), Copy.streamByThread(is1, os0)).collect(Start::thenJoin);
 			}
 		});

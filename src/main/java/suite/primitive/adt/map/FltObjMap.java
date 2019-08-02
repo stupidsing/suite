@@ -9,7 +9,7 @@ import primal.primitive.FltPrim.FltObjSink;
 import primal.primitive.FltPrim.FltObjSource;
 import primal.primitive.FltPrim.Flt_Obj;
 import primal.primitive.adt.pair.FltObjPair;
-import suite.primitive.streamlet.FltObjPuller;
+import primal.primitive.puller.FltObjPuller;
 import suite.primitive.streamlet.FltObjStreamlet;
 import suite.streamlet.As;
 
@@ -64,7 +64,7 @@ public class FltObjMap<V> {
 	public V get(float key) {
 		var index = index(key);
 		@SuppressWarnings("unchecked")
-		V v = ks[index] == key ? cast(vs[index]) : (V) EMPTYVALUE;
+		var v = ks[index] == key ? cast(vs[index]) : (V) EMPTYVALUE;
 		return v;
 	}
 

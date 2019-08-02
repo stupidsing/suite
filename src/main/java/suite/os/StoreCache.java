@@ -8,6 +8,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 
+import primal.Nouns.Utf8;
+import primal.Verbs.WriteFile;
 import primal.adt.Pair;
 import primal.fp.Funs.Source;
 import primal.puller.Puller;
@@ -34,7 +36,7 @@ public class StoreCache {
 
 		public Piper pipe(String command0) {
 			var command1 = sh + " | (" + command0 + ")";
-			var key = Bytes.of(command1.getBytes(Defaults.charset));
+			var key = Bytes.of(command1.getBytes(Utf8.charset));
 
 			return match(key).map((isCached, file) -> {
 				if (!isCached)
@@ -84,7 +86,7 @@ public class StoreCache {
 	}
 
 	public Puller<Bytes> getPuller(String key, Source<Puller<Bytes>> source) {
-		var keyBytes = Bytes.of(key.getBytes(Defaults.charset));
+		var keyBytes = Bytes.of(key.getBytes(Utf8.charset));
 		return getPuller(keyBytes, source);
 	}
 
@@ -115,7 +117,7 @@ public class StoreCache {
 				return read(vdis).closeAtEnd(vis);
 			} else {
 				var puller = source.g();
-				var vos = FileUtil.out(pair.v);
+				var vos = WriteFile.to(pair.v);
 				var vdo = SerOutput.of(vos);
 
 				return Puller //
@@ -167,7 +169,7 @@ public class StoreCache {
 	}
 
 	private void writeKey(Path path, Bytes key) throws IOException {
-		try (var kos = FileUtil.out(path); SerOutput kdo = SerOutput.of(kos)) {
+		try (var kos = WriteFile.to(path); SerOutput kdo = SerOutput.of(kos)) {
 			kdo.writeInt(key.size());
 			kdo.writeBytes(key);
 		}

@@ -14,11 +14,11 @@ import java.nio.charset.Charset;
 
 import org.junit.Test;
 
+import primal.Nouns.Utf8;
 import primal.Verbs.Start;
 import primal.fp.Funs.Sink;
 import primal.os.Log_;
 import primal.statics.Rethrow;
-import suite.cfg.Defaults;
 import suite.net.nio.NioDispatch.AsyncRw;
 import suite.primitive.Bytes;
 
@@ -26,7 +26,7 @@ public class NioDispatchTest {
 
 	private InetAddress localHost = Rethrow.ex(InetAddress::getLocalHost);
 	private int port = 5151;
-	private Charset charset = Defaults.charset;
+	private Charset charset = Utf8.charset;
 	private String hello = "HELLO";
 	private Bytes helloBytes = Bytes.of(hello.getBytes(charset));
 

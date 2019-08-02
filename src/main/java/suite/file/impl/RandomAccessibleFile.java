@@ -9,7 +9,7 @@ import java.nio.channels.FileChannel;
 import java.nio.file.Path;
 
 import primal.Verbs.Close;
-import suite.os.FileUtil;
+import primal.Verbs.Mk;
 import suite.primitive.Bytes;
 
 public class RandomAccessibleFile implements Closeable {
@@ -18,7 +18,7 @@ public class RandomAccessibleFile implements Closeable {
 	private FileChannel channel;
 
 	public RandomAccessibleFile(Path path) {
-		FileUtil.mkdir(path.getParent());
+		Mk.dir(path.getParent());
 		file = ex(() -> new RandomAccessFile(path.toFile(), "rw"));
 		channel = file.getChannel();
 	}

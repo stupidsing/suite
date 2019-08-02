@@ -16,15 +16,16 @@ import primal.adt.Pair;
 import primal.fp.FunUtil;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Source;
-import primal.fp.Funs2.Sink2;
 import primal.primitive.LngObj_Lng;
 import primal.primitive.LngPrim;
 import primal.primitive.LngPrim.LngObjPredicate;
+import primal.primitive.LngPrim.LngObjSink;
 import primal.primitive.LngPrim.LngObjSource;
 import primal.primitive.LngPrim.LngObj_Obj;
 import primal.primitive.LngPrim.LngTest;
 import primal.primitive.adt.pair.LngObjPair;
 import primal.primitive.fp.LngObjFunUtil;
+import primal.primitive.puller.LngObjPuller;
 import primal.puller.Puller;
 import primal.puller.Puller2;
 import primal.streamlet.StreamletDefaults;
@@ -35,7 +36,7 @@ import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 
-public class LngObjStreamlet<V> implements StreamletDefaults<LngObjPair<V>, LngObjPuller<V>> {
+public class LngObjStreamlet<V> implements StreamletDefaults<LngObjPair<V>, LngObjPair<V>, LngObjPredicate<V>, LngObjPuller<V>, LngObjSink<V>, LngObjSource<V>> {
 
 	private Source<LngObjPuller<V>> in;
 
@@ -139,14 +140,6 @@ public class LngObjStreamlet<V> implements StreamletDefaults<LngObjPair<V>, LngO
 		return spawn().hashCode();
 	}
 
-	public boolean isAll(LngObjPredicate<V> pred) {
-		return spawn().isAll(pred);
-	}
-
-	public boolean isAny(LngObjPredicate<V> pred) {
-		return spawn().isAny(pred);
-	}
-
 	@Override
 	public Iterator<LngObjPair<V>> iterator() {
 		return spawn().iterator();
@@ -188,10 +181,6 @@ public class LngObjStreamlet<V> implements StreamletDefaults<LngObjPair<V>, LngO
 		return spawn().minOrNull(comparator);
 	}
 
-	public LngObjPair<V> opt() {
-		return spawn().opt();
-	}
-
 	public Streamlet<LngObjPair<V>> pairs() {
 		return new Streamlet<>(() -> spawn().pairs());
 	}
@@ -206,10 +195,6 @@ public class LngObjStreamlet<V> implements StreamletDefaults<LngObjPair<V>, LngO
 
 	public LngObjStreamlet<V> reverse() {
 		return streamlet(() -> spawn().reverse());
-	}
-
-	public void sink(Sink2<Long, V> sink) {
-		spawn().sink(sink);
 	}
 
 	public LngObjStreamlet<V> skip(int n) {
@@ -234,10 +219,6 @@ public class LngObjStreamlet<V> implements StreamletDefaults<LngObjPair<V>, LngO
 
 	public LngObjStreamlet<V> sortByValue(Comparator<V> comparator) {
 		return streamlet(() -> spawn().sortByValue(comparator));
-	}
-
-	public LngObjSource<V> source() {
-		return spawn().source();
 	}
 
 	public LngObjStreamlet<V> take(int n) {

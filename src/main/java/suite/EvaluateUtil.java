@@ -4,7 +4,7 @@ import static primal.statics.Fail.fail;
 
 import java.io.IOException;
 
-import primal.String_;
+import primal.Verbs.Is;
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Source;
@@ -120,7 +120,7 @@ public class EvaluateUtil {
 		var libraries = fcc.getLibraries();
 
 		for (var library : libraries.reverse())
-			if (!String_.isBlank(library))
+			if (!Is.blank(library))
 				node = Suite.substitute("use .0 ~ .1", Atom.of(library), node);
 
 		return node;

@@ -13,15 +13,15 @@ import java.util.Iterator;
 import primal.Verbs.Build;
 import primal.Verbs.Compare;
 import primal.Verbs.Get;
+import primal.Verbs.Is;
 import primal.fp.Funs.Fun;
 import primal.primitive.IntPrim;
 import primal.primitive.IntPrim.IntSource;
 import primal.primitive.IntVerbs.CopyInt;
+import primal.primitive.puller.IntPuller;
 import primal.puller.Puller;
 import suite.cfg.Defaults;
-import suite.primitive.streamlet.IntPuller;
 import suite.primitive.streamlet.IntStreamlet;
-import suite.util.ParseUtil;
 
 public class Ints implements Iterable<Integer> {
 
@@ -126,7 +126,7 @@ public class Ints implements Iterable<Integer> {
 	public boolean isWhitespaces() {
 		var b = true;
 		for (var i = start; b && i < end; i++)
-			b &= ParseUtil.isWhitespace(cs[i]);
+			b &= Is.whitespace(cs[i]);
 		return b;
 	}
 
@@ -209,9 +209,9 @@ public class Ints implements Iterable<Integer> {
 	public Ints trim() {
 		var s = start;
 		var e = end;
-		while (s < e && ParseUtil.isWhitespace(cs[s]))
+		while (s < e && Is.whitespace(cs[s]))
 			s++;
-		while (s < e && ParseUtil.isWhitespace(cs[e - 1]))
+		while (s < e && Is.whitespace(cs[e - 1]))
 			e--;
 		return of(cs, s, e);
 	}

@@ -10,7 +10,8 @@ import java.util.Random;
 
 import org.junit.Test;
 
-import primal.String_;
+import primal.Verbs.Equals;
+import primal.Verbs.Right;
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
 import primal.os.Log_;
@@ -118,12 +119,12 @@ public class StatisticalArbitrageTest {
 		var flags0 = "-----";
 
 		for (var i = 0; i < ds.ts.length; i++) {
-			var flags = String_ //
-					.right("00000" + Integer.toBinaryString(flagsArray[i]), -5) //
+			var flags = Right //
+					.of("00000" + Integer.toBinaryString(flagsArray[i]), -5) //
 					.replace('0', '-') //
 					.replace('1', 'M');
 
-			if (!String_.equals(flags0, flags))
+			if (!Equals.string(flags0, flags))
 				System.out.println(Time.ofEpochSec(ds.ts[i]).ymd() + " " + flags);
 
 			flags0 = flags;

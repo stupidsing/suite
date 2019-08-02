@@ -7,6 +7,7 @@ import java.util.List;
 import org.junit.Test;
 
 import primal.Verbs.Compare;
+import primal.Verbs.Mk;
 import suite.os.Execute;
 import suite.os.FileUtil;
 import suite.streamlet.As;
@@ -40,7 +41,7 @@ public class OtfTest {
 		var keys = List.of(familyKey, subfamilyKey);
 
 		// make sure the input directory exists; we are not supposed to show errors.
-		FileUtil.mkdir(Paths.get(directory));
+		Mk.dir(Paths.get(directory));
 
 		var commands = Read //
 

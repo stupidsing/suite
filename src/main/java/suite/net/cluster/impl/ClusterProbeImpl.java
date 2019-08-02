@@ -14,10 +14,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import primal.String_;
+import primal.Nouns.Utf8;
+import primal.Verbs.Equals;
 import primal.os.Log_;
 import primal.primitive.adt.pair.IntIntPair;
-import suite.cfg.Defaults;
 import suite.net.NetUtil;
 import suite.net.ThreadService;
 import suite.net.cluster.ClusterProbe;
@@ -236,7 +236,7 @@ public class ClusterProbeImpl implements ClusterProbe {
 		var bytes = formMessage(data);
 
 		for (var remote : peers.keySet())
-			if (!String_.equals(remote, me))
+			if (!Equals.string(remote, me))
 				sendMessage(remote, bytes);
 	}
 
@@ -255,7 +255,7 @@ public class ClusterProbeImpl implements ClusterProbe {
 				.map((peer, lastActiveTime) -> "," + peer + "," + lastActiveTime) //
 				.cons(data.name() + "," + me) //
 				.collect(As::joined) //
-				.getBytes(Defaults.charset);
+				.getBytes(Utf8.charset);
 	}
 
 	@Override

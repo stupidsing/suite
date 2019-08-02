@@ -14,8 +14,8 @@ import primal.primitive.IntPrim.Obj_Int;
 import primal.primitive.Int_Int;
 import primal.primitive.adt.pair.IntIntPair;
 import primal.primitive.adt.pair.IntObjPair;
+import primal.primitive.puller.IntObjPuller;
 import primal.puller.Puller;
-import suite.primitive.streamlet.IntObjPuller;
 import suite.primitive.streamlet.IntObjStreamlet;
 import suite.streamlet.As;
 

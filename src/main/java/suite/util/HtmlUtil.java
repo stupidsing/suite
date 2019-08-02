@@ -6,8 +6,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import primal.String_;
 import primal.Verbs.Build;
+import primal.Verbs.Equals;
+import primal.Verbs.Get;
+import primal.Verbs.Range;
+import primal.Verbs.Split;
 import primal.adt.Pair;
 import primal.adt.map.BiHashMap;
 import primal.adt.map.BiMap;
@@ -35,12 +38,12 @@ public class HtmlUtil {
 			this.tag = tag;
 			if (name != null)
 				attrs = Read //
-						.from(String_.range(tag, 1, -1).split(" ")) //
+						.from(Range.of(tag, 1, -1).split(" ")) //
 						.skip(1) //
-						.map(kv -> String_.split2l(kv, "=")) //
+						.map(kv -> Split.strl(kv, "=")) //
 						.map(Pair.mapSnd(v -> {
 							var isQuoted = v.startsWith("'") && v.endsWith("'") || v.startsWith("\"") && v.endsWith("\"");
-							return !isQuoted ? v : String_.range(v, 1, -1);
+							return !isQuoted ? v : Range.of(v, 1, -1);
 						})) //
 						.toList();
 			else
@@ -102,7 +105,7 @@ public class HtmlUtil {
 
 			prevp = getNameFun.apply(tag).map((d, name) -> {
 				if (d == -1)
-					while (!deque.isEmpty() && !String_.equals(getNameFun.apply(deque.pop().tag).v, name))
+					while (!deque.isEmpty() && !Equals.string(getNameFun.apply(deque.pop().tag).v, name))
 						;
 				else {
 					var htmlNode1 = new HtmlNode(name, tag);
@@ -155,8 +158,8 @@ public class HtmlUtil {
 						var key = in.substring(start, index);
 						String entity;
 
-						if (String_.charAt(key, 1) == '#')
-							sb.append((char) Integer.parseInt(String_.range(key, 2, -1)));
+						if (Get.ch(key, 1) == '#')
+							sb.append((char) Integer.parseInt(Range.of(key, 2, -1)));
 						else if ((entity = charByEscapeToken.get(key)) != null)
 							sb.append(entity);
 						else

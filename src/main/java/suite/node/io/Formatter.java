@@ -3,7 +3,8 @@ package suite.node.io;
 import java.util.HashSet;
 import java.util.Set;
 
-import primal.String_;
+import primal.Verbs.Equals;
+import primal.Verbs.Is;
 import suite.lp.doer.ProverConstant;
 import suite.node.Atom;
 import suite.node.Data;
@@ -51,7 +52,7 @@ public class Formatter {
 				}
 			}).doIf(Tree.class, tree -> {
 				var op = tree.getOperator().name_();
-				op = String_.equals(op, " ") ? "<>" : op.trim();
+				op = Equals.string(op, " ") ? "<>" : op.trim();
 
 				treeize(tree.getLeft(), indent1);
 				sb.append(indent + op + "\n");
@@ -222,7 +223,7 @@ public class Formatter {
 						|| s0.contains(CommentPreprocessor.openLineComment) //
 						|| s0.contains(CommentPreprocessor.closeLineComment);
 
-				quote |= String_.isInteger(s0);
+				quote |= Is.integer(s0);
 
 				s1 = quote ? Escaper.escape(s0, '\'') : s0;
 			} else

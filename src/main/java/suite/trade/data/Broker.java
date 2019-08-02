@@ -29,9 +29,8 @@ public interface Broker {
 		private static Source<Streamlet<Trade>> memoizeHistoryRecords = Memoize.source(Hsbc::queryHistory_);
 
 		private static Streamlet<Trade> queryHistory_() {
-			var url = Defaults.secrets("stockUrl .0")[0];
 			var path = HomeDir.resolve("home-data").resolve("stock.txt");
-			var bytes = Files.exists(path) ? Read.bytes(path) : Read.url(url);
+			var bytes = Files.exists(path) ? Read.bytes(path) : Defaults.bindSecrets("stockUrl .0").map(Read::url);
 			return bytes.collect(As::table).map(Trade::of).collect();
 		}
 

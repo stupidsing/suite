@@ -8,8 +8,8 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 
+import primal.Nouns.Utf8;
 import primal.os.Log_;
-import suite.cfg.Defaults;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.Copy;
@@ -31,7 +31,7 @@ public class Pipe {
 		var command1 = command0;
 
 		return new Streamlet<>(() -> ex(() -> {
-			var bis = new ByteArrayInputStream(sh.getBytes(Defaults.charset));
+			var bis = new ByteArrayInputStream(sh.getBytes(Utf8.charset));
 
 			var process = ex(() -> Runtime.getRuntime().exec(command1));
 

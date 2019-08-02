@@ -13,15 +13,15 @@ import java.util.Iterator;
 import primal.Verbs.Build;
 import primal.Verbs.Compare;
 import primal.Verbs.Get;
+import primal.Verbs.Is;
 import primal.fp.Funs.Fun;
 import primal.primitive.DblPrim;
 import primal.primitive.DblPrim.DblSource;
 import primal.primitive.DblVerbs.CopyDbl;
+import primal.primitive.puller.DblPuller;
 import primal.puller.Puller;
 import suite.cfg.Defaults;
-import suite.primitive.streamlet.DblPuller;
 import suite.primitive.streamlet.DblStreamlet;
-import suite.util.ParseUtil;
 
 public class Doubles implements Iterable<Double> {
 
@@ -126,7 +126,7 @@ public class Doubles implements Iterable<Double> {
 	public boolean isWhitespaces() {
 		var b = true;
 		for (var i = start; b && i < end; i++)
-			b &= ParseUtil.isWhitespace(cs[i]);
+			b &= Is.whitespace(cs[i]);
 		return b;
 	}
 
@@ -209,9 +209,9 @@ public class Doubles implements Iterable<Double> {
 	public Doubles trim() {
 		var s = start;
 		var e = end;
-		while (s < e && ParseUtil.isWhitespace(cs[s]))
+		while (s < e && Is.whitespace(cs[s]))
 			s++;
-		while (s < e && ParseUtil.isWhitespace(cs[e - 1]))
+		while (s < e && Is.whitespace(cs[e - 1]))
 			e--;
 		return of(cs, s, e);
 	}

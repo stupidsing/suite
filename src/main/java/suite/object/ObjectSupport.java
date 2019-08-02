@@ -3,7 +3,6 @@ package suite.object;
 import java.util.List;
 import java.util.Objects;
 
-import primal.String_;
 import primal.Verbs.Build;
 import primal.Verbs.Compare;
 import primal.Verbs.Equals;
@@ -33,7 +32,7 @@ public class ObjectSupport<T> {
 				if (b0 && b1)
 					c = Compare.anyway(iter0.next(), iter1.next());
 		} else
-			c = String_.compare(class0.getName(), class1.getName());
+			c = Compare.string(class0.getName(), class1.getName());
 		return c;
 	}
 

@@ -9,7 +9,7 @@ import primal.primitive.LngPrim.LngObjSink;
 import primal.primitive.LngPrim.LngObjSource;
 import primal.primitive.LngPrim.Lng_Obj;
 import primal.primitive.adt.pair.LngObjPair;
-import suite.primitive.streamlet.LngObjPuller;
+import primal.primitive.puller.LngObjPuller;
 import suite.primitive.streamlet.LngObjStreamlet;
 import suite.streamlet.As;
 
@@ -64,7 +64,7 @@ public class LngObjMap<V> {
 	public V get(long key) {
 		var index = index(key);
 		@SuppressWarnings("unchecked")
-		V v = ks[index] == key ? cast(vs[index]) : (V) EMPTYVALUE;
+		var v = ks[index] == key ? cast(vs[index]) : (V) EMPTYVALUE;
 		return v;
 	}
 

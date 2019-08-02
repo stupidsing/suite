@@ -12,7 +12,7 @@ import primal.primitive.LngPrim.LngObjSource;
 import primal.primitive.LngPrim.Obj_Lng;
 import primal.primitive.Lng_Lng;
 import primal.primitive.adt.pair.LngObjPair;
-import suite.primitive.streamlet.LngObjPuller;
+import primal.primitive.puller.LngObjPuller;
 import suite.primitive.streamlet.LngObjStreamlet;
 import suite.streamlet.As;
 

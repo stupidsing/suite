@@ -1,6 +1,6 @@
 package suite.object;
 
-public abstract class BaseObject<T extends BaseObject<T>> implements Comparable<T>, AutoInterface<T> {
+public abstract class BaseObject<T extends BaseObject<T>> implements Comparable<T>, CastDefaults<T> {
 
 	@Override
 	public int compareTo(T t1) {

@@ -8,7 +8,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import primal.String_;
+import primal.Verbs.Equals;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs2.Fun2;
 import primal.os.Log_;
@@ -118,13 +118,13 @@ public class TradeCfgImpl implements TradeCfg {
 	private Src src(String symbol) {
 		if (symbol.endsWith("=X"))
 			return srcForex;
-		else if (String_.equals(symbol, Instrument.cashSymbol))
+		else if (Equals.string(symbol, Instrument.cashSymbol))
 			return srcHkd__;
 		else if (symbol.endsWith(".HK"))
 			return srcHkex_;
-		else if (symbol.startsWith("^") || String_.equals(symbol, Usex.nasdaq))
+		else if (symbol.startsWith("^") || Equals.string(symbol, Usex.nasdaq))
 			return srcIndex;
-		else if (String_.equals(symbol, "CL=F") || symbol.endsWith(".NYM"))
+		else if (Equals.string(symbol, "CL=F") || symbol.endsWith(".NYM"))
 			return srcNymex;
 		else if (Boolean.FALSE)
 			return srcNone_;

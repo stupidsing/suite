@@ -7,7 +7,16 @@ import java.util.HashMap;
 import primal.adt.IdentityKey;
 import suite.streamlet.Read;
 
-public class MapObject<T extends MapObject<T>> extends BaseObject<T> implements Cloneable, MapInterface<T> {
+/**
+ * An object having the following methods:
+ * 
+ * - a static Xxx.of(a, b, c) constructor
+ * 
+ * - a static apply(Fun<A, B, C, T> fun) mapper
+ * 
+ * @author ywsing
+ */
+public class MapObject<T extends MapObject<T>> extends BaseObject<T> implements Cloneable {
 
 	@Override
 	public T clone() {
