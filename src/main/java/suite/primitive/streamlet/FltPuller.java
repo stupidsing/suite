@@ -317,10 +317,7 @@ public class FltPuller implements PullerDefaults<Float> {
 	public FltOpt opt() {
 		var c = pull();
 		if (c != empty)
-			if (pull() == empty)
-				return FltOpt.of(c);
-			else
-				return fail("more than one result");
+			return pull() == empty ? FltOpt.of(c) : fail("more than one result");
 		else
 			return FltOpt.none();
 	}

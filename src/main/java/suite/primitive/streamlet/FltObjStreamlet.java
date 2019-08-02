@@ -3,6 +3,7 @@ package suite.primitive.streamlet;
 import static primal.statics.Fail.fail;
 
 import java.io.Closeable;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
@@ -126,11 +127,11 @@ public class FltObjStreamlet<V> implements StreamletDefaults<FltObjPair<V>, FltO
 	}
 
 	public FltObjStreamlet<List<V>> groupBy() {
-		return streamlet(() -> spawn().groupBy());
+		return streamlet(() -> groupBy_());
 	}
 
 	public <V1> FltObjStreamlet<V1> groupBy(Fun<Streamlet<V>, V1> fun) {
-		return streamlet(() -> spawn().groupBy().mapValue(list -> fun.apply(Read.from(list))));
+		return streamlet(() -> groupBy_().mapValue(list -> fun.apply(Read.from(list))));
 	}
 
 	@Override
@@ -252,21 +253,36 @@ public class FltObjStreamlet<V> implements StreamletDefaults<FltObjPair<V>, FltO
 	}
 
 	public FltObjMap<List<V>> toListMap() {
-		return spawn().toListMap();
+		var source = spawn().source();
+		var map = new FltObjMap<List<V>>();
+		var pair = FltObjPair.of(FltPrim.EMPTYVALUE, (V) null);
+		while (source.source2(pair))
+			map.computeIfAbsent(pair.k, k_ -> new ArrayList<>()).add(pair.v);
+		return map;
 	}
 
 	public FltObjMap<V> toMap() {
-		return spawn().toMap();
+		var source = spawn().source();
+		var map = new FltObjMap<V>();
+		var pair = FltObjPair.of(FltPrim.EMPTYVALUE, (V) null);
+		while (source.source2(pair))
+			map.put(pair.k, pair.v);
+		return map;
 	}
 
 	public ListMultimap<Float, V> toMultimap() {
 		var map = new ListMultimap<Float, V>();
-		spawn().groupBy().concatMapValue(Puller::of).sink(map::put);
+		groupBy_().concatMapValue(Puller::of).sink(map::put);
 		return map;
 	}
 
 	public ObjFltMap<V> toObjFltMap() {
-		return spawn().toObjFltMap();
+		var source = spawn().source();
+		var pair = FltObjPair.of(FltPrim.EMPTYVALUE, (V) null);
+		var map = new ObjFltMap<V>();
+		while (source.source2(pair))
+			map.put(pair.v, pair.k);
+		return map;
 	}
 
 	public Set<FltObjPair<V>> toSet() {
@@ -275,10 +291,7 @@ public class FltObjStreamlet<V> implements StreamletDefaults<FltObjPair<V>, FltO
 
 	public FltObjPair<V> uniqueResult() {
 		var pair = spawn().opt();
-		if (pair.k != FltPrim.EMPTYVALUE)
-			return pair;
-		else
-			return fail("no result");
+		return pair.k != FltPrim.EMPTYVALUE ? pair : fail("no result");
 	}
 
 	public Streamlet<V> values() {
@@ -298,6 +311,10 @@ public class FltObjStreamlet<V> implements StreamletDefaults<FltObjPair<V>, FltO
 	private <V1> FltObjStreamlet<V1> concatMapFltObj_(FltObj_Obj<V, FltObjStreamlet<V1>> fun) {
 		FltObj_Obj<V, FltObjPuller<V1>> bf = (k, v) -> fun.apply(k, v).puller();
 		return streamlet(() -> FltObjPuller.of(spawn().concatMapFltObj(bf)));
+	}
+
+	private FltObjPuller<List<V>> groupBy_() {
+		return FltObjPuller.of(toListMap().source());
 	}
 
 	private <T> Streamlet<T> map_(FltObj_Obj<V, T> fun) {

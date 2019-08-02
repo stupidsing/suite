@@ -317,10 +317,7 @@ public class ChrPuller implements PullerDefaults<Character> {
 	public ChrOpt opt() {
 		var c = pull();
 		if (c != empty)
-			if (pull() == empty)
-				return ChrOpt.of(c);
-			else
-				return fail("more than one result");
+			return pull() == empty ? ChrOpt.of(c) : fail("more than one result");
 		else
 			return ChrOpt.none();
 	}

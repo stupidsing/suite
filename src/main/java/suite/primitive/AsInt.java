@@ -1,12 +1,17 @@
 package suite.primitive;
 
+import java.util.List;
+
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
 import primal.primitive.IntPrim.ObjObj_Int;
 import primal.primitive.IntPrim.Obj_Int;
 import primal.puller.Puller;
 import primal.puller.Puller2;
+import suite.adt.map.ListMultimap;
 import suite.primitive.Ints.IntsBuilder;
+import suite.primitive.adt.map.IntObjMap;
+import suite.primitive.streamlet.IntObjPuller;
 import suite.primitive.streamlet.IntStreamlet;
 
 public class AsInt {
@@ -20,6 +25,22 @@ public class AsInt {
 				b.append(fun1.apply(t));
 			return b.toInts().streamlet();
 		};
+	}
+
+	public static <V> IntObjPuller<V> read2(IntObjMap<V> map) {
+		return IntObjPuller.of(map.source());
+	}
+
+	public static <V> IntObjPuller<List<V>> read2(ListMultimap<Integer, V> multimap) {
+		var iter = multimap.listEntries().iterator();
+		return IntObjPuller.of(pair -> {
+			var b = iter.hasNext();
+			if (b) {
+				var pair1 = iter.next();
+				pair.update(pair1.k, pair1.v);
+			}
+			return b;
+		});
 	}
 
 	public static <T> Obj_Int<Puller<T>> sum(Obj_Int<T> fun0) {

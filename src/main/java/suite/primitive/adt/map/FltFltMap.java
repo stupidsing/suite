@@ -37,9 +37,10 @@ public class FltFltMap {
 		var kf1 = kf0.rethrow();
 		var vf1 = vf0.rethrow();
 		return puller -> {
+			var source = puller.source();
 			var map = new FltFltMap();
 			T t;
-			while ((t = puller.source().g()) != null)
+			while ((t = source.g()) != null)
 				map.put(kf1.apply(t), vf1.apply(t));
 			return map;
 		};

@@ -3,6 +3,7 @@ package suite.primitive.streamlet;
 import static primal.statics.Fail.fail;
 
 import java.io.Closeable;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
@@ -126,11 +127,11 @@ public class LngObjStreamlet<V> implements StreamletDefaults<LngObjPair<V>, LngO
 	}
 
 	public LngObjStreamlet<List<V>> groupBy() {
-		return streamlet(() -> spawn().groupBy());
+		return streamlet(() -> groupBy_());
 	}
 
 	public <V1> LngObjStreamlet<V1> groupBy(Fun<Streamlet<V>, V1> fun) {
-		return streamlet(() -> spawn().groupBy().mapValue(list -> fun.apply(Read.from(list))));
+		return streamlet(() -> groupBy_().mapValue(list -> fun.apply(Read.from(list))));
 	}
 
 	@Override
@@ -252,21 +253,36 @@ public class LngObjStreamlet<V> implements StreamletDefaults<LngObjPair<V>, LngO
 	}
 
 	public LngObjMap<List<V>> toListMap() {
-		return spawn().toListMap();
+		var source = spawn().source();
+		var map = new LngObjMap<List<V>>();
+		var pair = LngObjPair.of(LngPrim.EMPTYVALUE, (V) null);
+		while (source.source2(pair))
+			map.computeIfAbsent(pair.k, k_ -> new ArrayList<>()).add(pair.v);
+		return map;
 	}
 
 	public LngObjMap<V> toMap() {
-		return spawn().toMap();
+		var source = spawn().source();
+		var map = new LngObjMap<V>();
+		var pair = LngObjPair.of(LngPrim.EMPTYVALUE, (V) null);
+		while (source.source2(pair))
+			map.put(pair.k, pair.v);
+		return map;
 	}
 
 	public ListMultimap<Long, V> toMultimap() {
 		var map = new ListMultimap<Long, V>();
-		spawn().groupBy().concatMapValue(Puller::of).sink(map::put);
+		groupBy_().concatMapValue(Puller::of).sink(map::put);
 		return map;
 	}
 
 	public ObjLngMap<V> toObjLngMap() {
-		return spawn().toObjLngMap();
+		var source = spawn().source();
+		var pair = LngObjPair.of(LngPrim.EMPTYVALUE, (V) null);
+		var map = new ObjLngMap<V>();
+		while (source.source2(pair))
+			map.put(pair.v, pair.k);
+		return map;
 	}
 
 	public Set<LngObjPair<V>> toSet() {
@@ -275,10 +291,7 @@ public class LngObjStreamlet<V> implements StreamletDefaults<LngObjPair<V>, LngO
 
 	public LngObjPair<V> uniqueResult() {
 		var pair = spawn().opt();
-		if (pair.k != LngPrim.EMPTYVALUE)
-			return pair;
-		else
-			return fail("no result");
+		return pair.k != LngPrim.EMPTYVALUE ? pair : fail("no result");
 	}
 
 	public Streamlet<V> values() {
@@ -298,6 +311,10 @@ public class LngObjStreamlet<V> implements StreamletDefaults<LngObjPair<V>, LngO
 	private <V1> LngObjStreamlet<V1> concatMapLngObj_(LngObj_Obj<V, LngObjStreamlet<V1>> fun) {
 		LngObj_Obj<V, LngObjPuller<V1>> bf = (k, v) -> fun.apply(k, v).puller();
 		return streamlet(() -> LngObjPuller.of(spawn().concatMapLngObj(bf)));
+	}
+
+	private LngObjPuller<List<V>> groupBy_() {
+		return LngObjPuller.of(toListMap().source());
 	}
 
 	private <T> Streamlet<T> map_(LngObj_Obj<V, T> fun) {

@@ -1,12 +1,17 @@
 package suite.primitive;
 
+import java.util.List;
+
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
 import primal.primitive.DblPrim.ObjObj_Dbl;
 import primal.primitive.DblPrim.Obj_Dbl;
 import primal.puller.Puller;
 import primal.puller.Puller2;
+import suite.adt.map.ListMultimap;
 import suite.primitive.Doubles.DoublesBuilder;
+import suite.primitive.adt.map.DblObjMap;
+import suite.primitive.streamlet.DblObjPuller;
 import suite.primitive.streamlet.DblStreamlet;
 
 public class AsDbl {
@@ -20,6 +25,22 @@ public class AsDbl {
 				b.append(fun1.apply(t));
 			return b.toDoubles().streamlet();
 		};
+	}
+
+	public static <V> DblObjPuller<V> read2(DblObjMap<V> map) {
+		return DblObjPuller.of(map.source());
+	}
+
+	public static <V> DblObjPuller<List<V>> read2(ListMultimap<Double, V> multimap) {
+		var iter = multimap.listEntries().iterator();
+		return DblObjPuller.of(pair -> {
+			var b = iter.hasNext();
+			if (b) {
+				var pair1 = iter.next();
+				pair.update(pair1.k, pair1.v);
+			}
+			return b;
+		});
 	}
 
 	public static <T> Obj_Dbl<Puller<T>> sum(Obj_Dbl<T> fun0) {

@@ -317,10 +317,7 @@ public class IntPuller implements PullerDefaults<Integer> {
 	public IntOpt opt() {
 		var c = pull();
 		if (c != empty)
-			if (pull() == empty)
-				return IntOpt.of(c);
-			else
-				return fail("more than one result");
+			return pull() == empty ? IntOpt.of(c) : fail("more than one result");
 		else
 			return IntOpt.none();
 	}

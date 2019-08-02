@@ -3,6 +3,7 @@ package suite.primitive.streamlet;
 import static primal.statics.Fail.fail;
 
 import java.io.Closeable;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
@@ -126,11 +127,11 @@ public class ChrObjStreamlet<V> implements StreamletDefaults<ChrObjPair<V>, ChrO
 	}
 
 	public ChrObjStreamlet<List<V>> groupBy() {
-		return streamlet(() -> spawn().groupBy());
+		return streamlet(() -> groupBy_());
 	}
 
 	public <V1> ChrObjStreamlet<V1> groupBy(Fun<Streamlet<V>, V1> fun) {
-		return streamlet(() -> spawn().groupBy().mapValue(list -> fun.apply(Read.from(list))));
+		return streamlet(() -> groupBy_().mapValue(list -> fun.apply(Read.from(list))));
 	}
 
 	@Override
@@ -252,21 +253,36 @@ public class ChrObjStreamlet<V> implements StreamletDefaults<ChrObjPair<V>, ChrO
 	}
 
 	public ChrObjMap<List<V>> toListMap() {
-		return spawn().toListMap();
+		var source = spawn().source();
+		var map = new ChrObjMap<List<V>>();
+		var pair = ChrObjPair.of(ChrPrim.EMPTYVALUE, (V) null);
+		while (source.source2(pair))
+			map.computeIfAbsent(pair.k, k_ -> new ArrayList<>()).add(pair.v);
+		return map;
 	}
 
 	public ChrObjMap<V> toMap() {
-		return spawn().toMap();
+		var source = spawn().source();
+		var map = new ChrObjMap<V>();
+		var pair = ChrObjPair.of(ChrPrim.EMPTYVALUE, (V) null);
+		while (source.source2(pair))
+			map.put(pair.k, pair.v);
+		return map;
 	}
 
 	public ListMultimap<Character, V> toMultimap() {
 		var map = new ListMultimap<Character, V>();
-		spawn().groupBy().concatMapValue(Puller::of).sink(map::put);
+		groupBy_().concatMapValue(Puller::of).sink(map::put);
 		return map;
 	}
 
 	public ObjChrMap<V> toObjChrMap() {
-		return spawn().toObjChrMap();
+		var source = spawn().source();
+		var pair = ChrObjPair.of(ChrPrim.EMPTYVALUE, (V) null);
+		var map = new ObjChrMap<V>();
+		while (source.source2(pair))
+			map.put(pair.v, pair.k);
+		return map;
 	}
 
 	public Set<ChrObjPair<V>> toSet() {
@@ -275,10 +291,7 @@ public class ChrObjStreamlet<V> implements StreamletDefaults<ChrObjPair<V>, ChrO
 
 	public ChrObjPair<V> uniqueResult() {
 		var pair = spawn().opt();
-		if (pair.k != ChrPrim.EMPTYVALUE)
-			return pair;
-		else
-			return fail("no result");
+		return pair.k != ChrPrim.EMPTYVALUE ? pair : fail("no result");
 	}
 
 	public Streamlet<V> values() {
@@ -298,6 +311,10 @@ public class ChrObjStreamlet<V> implements StreamletDefaults<ChrObjPair<V>, ChrO
 	private <V1> ChrObjStreamlet<V1> concatMapChrObj_(ChrObj_Obj<V, ChrObjStreamlet<V1>> fun) {
 		ChrObj_Obj<V, ChrObjPuller<V1>> bf = (k, v) -> fun.apply(k, v).puller();
 		return streamlet(() -> ChrObjPuller.of(spawn().concatMapChrObj(bf)));
+	}
+
+	private ChrObjPuller<List<V>> groupBy_() {
+		return ChrObjPuller.of(toListMap().source());
 	}
 
 	private <T> Streamlet<T> map_(ChrObj_Obj<V, T> fun) {

@@ -37,9 +37,6 @@ import primal.primitive.fp.LngObjFunUtil;
 import primal.puller.Puller;
 import primal.puller.Puller2;
 import primal.puller.PullerDefaults;
-import suite.adt.map.ListMultimap;
-import suite.primitive.adt.map.LngObjMap;
-import suite.primitive.adt.map.ObjLngMap;
 
 public class LngObjPuller<V> implements PullerDefaults<LngObjPair<V>> {
 
@@ -57,22 +54,6 @@ public class LngObjPuller<V> implements PullerDefaults<LngObjPair<V>> {
 
 	public static <V> LngObjPuller<V> empty() {
 		return of(LngObjFunUtil.nullSource());
-	}
-
-	public static <V> LngObjPuller<List<V>> of(ListMultimap<Long, V> multimap) {
-		var iter = multimap.listEntries().iterator();
-		return of(pair -> {
-			var b = iter.hasNext();
-			if (b) {
-				var pair1 = iter.next();
-				pair.update(pair1.k, pair1.v);
-			}
-			return b;
-		});
-	}
-
-	public static <V> LngObjPuller<V> of(LngObjMap<V> map) {
-		return of(map.source());
 	}
 
 	@SafeVarargs
@@ -224,10 +205,6 @@ public class LngObjPuller<V> implements PullerDefaults<LngObjPair<V>> {
 
 	public <O> Puller<O> flatMap(LngObj_Obj<V, Iterable<O>> fun) {
 		return Puller.of(FunUtil.flatten(LngObjFunUtil.map(fun, source)));
-	}
-
-	public LngObjPuller<List<V>> groupBy() {
-		return of(toListMap().source());
 	}
 
 	@Override
@@ -425,30 +402,6 @@ public class LngObjPuller<V> implements PullerDefaults<LngObjPair<V>> {
 		while (pull(pair = LngObjPair.of(empty, null)))
 			list.add(pair);
 		return list;
-	}
-
-	public LngObjMap<List<V>> toListMap() {
-		var map = new LngObjMap<List<V>>();
-		var pair = LngObjPair.of(empty, (V) null);
-		while (pull(pair))
-			map.computeIfAbsent(pair.k, k_ -> new ArrayList<>()).add(pair.v);
-		return map;
-	}
-
-	public LngObjMap<V> toMap() {
-		var map = new LngObjMap<V>();
-		var pair = LngObjPair.of(empty, (V) null);
-		while (source.source2(pair))
-			map.put(pair.k, pair.v);
-		return map;
-	}
-
-	public ObjLngMap<V> toObjLngMap() {
-		var pair = LngObjPair.of(empty, (V) null);
-		var map = new ObjLngMap<V>();
-		while (source.source2(pair))
-			map.put(pair.v, pair.k);
-		return map;
 	}
 
 	public Set<LngObjPair<V>> toSet() {

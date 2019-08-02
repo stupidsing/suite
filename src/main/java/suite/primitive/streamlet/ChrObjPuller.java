@@ -37,9 +37,6 @@ import primal.primitive.fp.ChrObjFunUtil;
 import primal.puller.Puller;
 import primal.puller.Puller2;
 import primal.puller.PullerDefaults;
-import suite.adt.map.ListMultimap;
-import suite.primitive.adt.map.ChrObjMap;
-import suite.primitive.adt.map.ObjChrMap;
 
 public class ChrObjPuller<V> implements PullerDefaults<ChrObjPair<V>> {
 
@@ -57,22 +54,6 @@ public class ChrObjPuller<V> implements PullerDefaults<ChrObjPair<V>> {
 
 	public static <V> ChrObjPuller<V> empty() {
 		return of(ChrObjFunUtil.nullSource());
-	}
-
-	public static <V> ChrObjPuller<List<V>> of(ListMultimap<Character, V> multimap) {
-		var iter = multimap.listEntries().iterator();
-		return of(pair -> {
-			var b = iter.hasNext();
-			if (b) {
-				var pair1 = iter.next();
-				pair.update(pair1.k, pair1.v);
-			}
-			return b;
-		});
-	}
-
-	public static <V> ChrObjPuller<V> of(ChrObjMap<V> map) {
-		return of(map.source());
 	}
 
 	@SafeVarargs
@@ -224,10 +205,6 @@ public class ChrObjPuller<V> implements PullerDefaults<ChrObjPair<V>> {
 
 	public <O> Puller<O> flatMap(ChrObj_Obj<V, Iterable<O>> fun) {
 		return Puller.of(FunUtil.flatten(ChrObjFunUtil.map(fun, source)));
-	}
-
-	public ChrObjPuller<List<V>> groupBy() {
-		return of(toListMap().source());
 	}
 
 	@Override
@@ -425,30 +402,6 @@ public class ChrObjPuller<V> implements PullerDefaults<ChrObjPair<V>> {
 		while (pull(pair = ChrObjPair.of(empty, null)))
 			list.add(pair);
 		return list;
-	}
-
-	public ChrObjMap<List<V>> toListMap() {
-		var map = new ChrObjMap<List<V>>();
-		var pair = ChrObjPair.of(empty, (V) null);
-		while (pull(pair))
-			map.computeIfAbsent(pair.k, k_ -> new ArrayList<>()).add(pair.v);
-		return map;
-	}
-
-	public ChrObjMap<V> toMap() {
-		var map = new ChrObjMap<V>();
-		var pair = ChrObjPair.of(empty, (V) null);
-		while (source.source2(pair))
-			map.put(pair.k, pair.v);
-		return map;
-	}
-
-	public ObjChrMap<V> toObjChrMap() {
-		var pair = ChrObjPair.of(empty, (V) null);
-		var map = new ObjChrMap<V>();
-		while (source.source2(pair))
-			map.put(pair.v, pair.k);
-		return map;
 	}
 
 	public Set<ChrObjPair<V>> toSet() {

@@ -317,10 +317,7 @@ public class DblPuller implements PullerDefaults<Double> {
 	public DblOpt opt() {
 		var c = pull();
 		if (c != empty)
-			if (pull() == empty)
-				return DblOpt.of(c);
-			else
-				return fail("more than one result");
+			return pull() == empty ? DblOpt.of(c) : fail("more than one result");
 		else
 			return DblOpt.none();
 	}

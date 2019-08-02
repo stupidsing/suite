@@ -37,9 +37,6 @@ import primal.primitive.fp.FltObjFunUtil;
 import primal.puller.Puller;
 import primal.puller.Puller2;
 import primal.puller.PullerDefaults;
-import suite.adt.map.ListMultimap;
-import suite.primitive.adt.map.FltObjMap;
-import suite.primitive.adt.map.ObjFltMap;
 
 public class FltObjPuller<V> implements PullerDefaults<FltObjPair<V>> {
 
@@ -57,22 +54,6 @@ public class FltObjPuller<V> implements PullerDefaults<FltObjPair<V>> {
 
 	public static <V> FltObjPuller<V> empty() {
 		return of(FltObjFunUtil.nullSource());
-	}
-
-	public static <V> FltObjPuller<List<V>> of(ListMultimap<Float, V> multimap) {
-		var iter = multimap.listEntries().iterator();
-		return of(pair -> {
-			var b = iter.hasNext();
-			if (b) {
-				var pair1 = iter.next();
-				pair.update(pair1.k, pair1.v);
-			}
-			return b;
-		});
-	}
-
-	public static <V> FltObjPuller<V> of(FltObjMap<V> map) {
-		return of(map.source());
 	}
 
 	@SafeVarargs
@@ -224,10 +205,6 @@ public class FltObjPuller<V> implements PullerDefaults<FltObjPair<V>> {
 
 	public <O> Puller<O> flatMap(FltObj_Obj<V, Iterable<O>> fun) {
 		return Puller.of(FunUtil.flatten(FltObjFunUtil.map(fun, source)));
-	}
-
-	public FltObjPuller<List<V>> groupBy() {
-		return of(toListMap().source());
 	}
 
 	@Override
@@ -425,30 +402,6 @@ public class FltObjPuller<V> implements PullerDefaults<FltObjPair<V>> {
 		while (pull(pair = FltObjPair.of(empty, null)))
 			list.add(pair);
 		return list;
-	}
-
-	public FltObjMap<List<V>> toListMap() {
-		var map = new FltObjMap<List<V>>();
-		var pair = FltObjPair.of(empty, (V) null);
-		while (pull(pair))
-			map.computeIfAbsent(pair.k, k_ -> new ArrayList<>()).add(pair.v);
-		return map;
-	}
-
-	public FltObjMap<V> toMap() {
-		var map = new FltObjMap<V>();
-		var pair = FltObjPair.of(empty, (V) null);
-		while (source.source2(pair))
-			map.put(pair.k, pair.v);
-		return map;
-	}
-
-	public ObjFltMap<V> toObjFltMap() {
-		var pair = FltObjPair.of(empty, (V) null);
-		var map = new ObjFltMap<V>();
-		while (source.source2(pair))
-			map.put(pair.v, pair.k);
-		return map;
 	}
 
 	public Set<FltObjPair<V>> toSet() {

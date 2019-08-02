@@ -37,9 +37,6 @@ import primal.primitive.fp.DblObjFunUtil;
 import primal.puller.Puller;
 import primal.puller.Puller2;
 import primal.puller.PullerDefaults;
-import suite.adt.map.ListMultimap;
-import suite.primitive.adt.map.DblObjMap;
-import suite.primitive.adt.map.ObjDblMap;
 
 public class DblObjPuller<V> implements PullerDefaults<DblObjPair<V>> {
 
@@ -57,22 +54,6 @@ public class DblObjPuller<V> implements PullerDefaults<DblObjPair<V>> {
 
 	public static <V> DblObjPuller<V> empty() {
 		return of(DblObjFunUtil.nullSource());
-	}
-
-	public static <V> DblObjPuller<List<V>> of(ListMultimap<Double, V> multimap) {
-		var iter = multimap.listEntries().iterator();
-		return of(pair -> {
-			var b = iter.hasNext();
-			if (b) {
-				var pair1 = iter.next();
-				pair.update(pair1.k, pair1.v);
-			}
-			return b;
-		});
-	}
-
-	public static <V> DblObjPuller<V> of(DblObjMap<V> map) {
-		return of(map.source());
 	}
 
 	@SafeVarargs
@@ -224,10 +205,6 @@ public class DblObjPuller<V> implements PullerDefaults<DblObjPair<V>> {
 
 	public <O> Puller<O> flatMap(DblObj_Obj<V, Iterable<O>> fun) {
 		return Puller.of(FunUtil.flatten(DblObjFunUtil.map(fun, source)));
-	}
-
-	public DblObjPuller<List<V>> groupBy() {
-		return of(toListMap().source());
 	}
 
 	@Override
@@ -425,30 +402,6 @@ public class DblObjPuller<V> implements PullerDefaults<DblObjPair<V>> {
 		while (pull(pair = DblObjPair.of(empty, null)))
 			list.add(pair);
 		return list;
-	}
-
-	public DblObjMap<List<V>> toListMap() {
-		var map = new DblObjMap<List<V>>();
-		var pair = DblObjPair.of(empty, (V) null);
-		while (pull(pair))
-			map.computeIfAbsent(pair.k, k_ -> new ArrayList<>()).add(pair.v);
-		return map;
-	}
-
-	public DblObjMap<V> toMap() {
-		var map = new DblObjMap<V>();
-		var pair = DblObjPair.of(empty, (V) null);
-		while (source.source2(pair))
-			map.put(pair.k, pair.v);
-		return map;
-	}
-
-	public ObjDblMap<V> toObjDblMap() {
-		var pair = DblObjPair.of(empty, (V) null);
-		var map = new ObjDblMap<V>();
-		while (source.source2(pair))
-			map.put(pair.v, pair.k);
-		return map;
 	}
 
 	public Set<DblObjPair<V>> toSet() {

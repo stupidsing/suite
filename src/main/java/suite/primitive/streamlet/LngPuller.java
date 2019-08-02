@@ -317,10 +317,7 @@ public class LngPuller implements PullerDefaults<Long> {
 	public LngOpt opt() {
 		var c = pull();
 		if (c != empty)
-			if (pull() == empty)
-				return LngOpt.of(c);
-			else
-				return fail("more than one result");
+			return pull() == empty ? LngOpt.of(c) : fail("more than one result");
 		else
 			return LngOpt.none();
 	}

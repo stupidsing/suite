@@ -1,12 +1,17 @@
 package suite.primitive;
 
+import java.util.List;
+
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
 import primal.primitive.FltPrim.ObjObj_Flt;
 import primal.primitive.FltPrim.Obj_Flt;
 import primal.puller.Puller;
 import primal.puller.Puller2;
+import suite.adt.map.ListMultimap;
 import suite.primitive.Floats.FloatsBuilder;
+import suite.primitive.adt.map.FltObjMap;
+import suite.primitive.streamlet.FltObjPuller;
 import suite.primitive.streamlet.FltStreamlet;
 
 public class AsFlt {
@@ -20,6 +25,22 @@ public class AsFlt {
 				b.append(fun1.apply(t));
 			return b.toFloats().streamlet();
 		};
+	}
+
+	public static <V> FltObjPuller<V> read2(FltObjMap<V> map) {
+		return FltObjPuller.of(map.source());
+	}
+
+	public static <V> FltObjPuller<List<V>> read2(ListMultimap<Float, V> multimap) {
+		var iter = multimap.listEntries().iterator();
+		return FltObjPuller.of(pair -> {
+			var b = iter.hasNext();
+			if (b) {
+				var pair1 = iter.next();
+				pair.update(pair1.k, pair1.v);
+			}
+			return b;
+		});
 	}
 
 	public static <T> Obj_Flt<Puller<T>> sum(Obj_Flt<T> fun0) {
