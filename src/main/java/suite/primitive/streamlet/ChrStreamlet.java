@@ -81,7 +81,7 @@ public class ChrStreamlet implements StreamletDefaults<Character, ChrPuller> {
 	}
 
 	public ChrStreamlet collect() {
-		Chars chars = toList_().toChars();
+		var chars = toList_();
 		return Chars_.of(chars.cs, chars.start, chars.end, 1);
 	}
 
@@ -123,11 +123,11 @@ public class ChrStreamlet implements StreamletDefaults<Character, ChrPuller> {
 	}
 
 	public <V> ChrObjStreamlet<CharsBuilder> groupBy() {
-		return new ChrObjStreamlet<>(() -> spawn().groupBy());
+		return new ChrObjStreamlet<>(this::groupBy_);
 	}
 
 	public <V> ChrObjStreamlet<V> groupBy(Fun<Chars, V> fun) {
-		return new ChrObjStreamlet<>(() -> spawn().groupBy(fun));
+		return new ChrObjStreamlet<>(() -> groupBy_().mapValue(list -> fun.apply(list.toChars())));
 	}
 
 	@Override
@@ -252,20 +252,26 @@ public class ChrStreamlet implements StreamletDefaults<Character, ChrPuller> {
 		return spawn().toArray();
 	}
 
-	public CharsBuilder toList() {
+	public Chars toList() {
 		return toList_();
 	}
 
 	public <K> ChrObjMap<CharsBuilder> toListMap() {
-		return spawn().toListMap();
+		return toListMap_();
 	}
 
 	public <K> ChrObjMap<CharsBuilder> toListMap(Chr_Chr valueFun) {
-		return spawn().toListMap(valueFun);
+		return toListMap_(valueFun);
 	}
 
-	public <K> ObjChrMap<K> toMap(Chr_Obj<K> keyFun) {
-		return spawn().toMap(keyFun);
+	public <K> ObjChrMap<K> toMap(Chr_Obj<K> kf0) {
+		var puller = spawn();
+		var kf1 = kf0.rethrow();
+		var map = new ObjChrMap<K>();
+		char c;
+		while ((c = puller.pull()) != ChrPrim.EMPTYVALUE)
+			map.put(kf1.apply(c), c);
+		return map;
 	}
 
 	public <K, V> Map<K, V> toMap(Chr_Obj<K> keyFun, Chr_Obj<V> valueFun) {
@@ -281,7 +287,12 @@ public class ChrStreamlet implements StreamletDefaults<Character, ChrPuller> {
 	}
 
 	public ChrSet toSet() {
-		return spawn().toSet();
+		var puller = spawn();
+		var set = new ChrSet();
+		char c;
+		while ((c = puller.pull()) != ChrPrim.EMPTYVALUE)
+			set.add(c);
+		return set;
 	}
 
 	public <K, V> Map<K, Set<V>> toSetMap(Chr_Obj<K> keyFun, Chr_Obj<V> valueFun) {
@@ -304,6 +315,10 @@ public class ChrStreamlet implements StreamletDefaults<Character, ChrPuller> {
 		return new Streamlet2<>(() -> spawn().concatMap2(t -> fun.apply(t).puller()));
 	}
 
+	private <V> ChrObjPuller<CharsBuilder> groupBy_() {
+		return ChrObjPuller.of(toListMap_().source());
+	}
+
 	private <O> Streamlet<O> map_(Chr_Obj<O> fun) {
 		return new Streamlet<>(() -> spawn().map(fun));
 	}
@@ -312,8 +327,21 @@ public class ChrStreamlet implements StreamletDefaults<Character, ChrPuller> {
 		return new Streamlet2<>(() -> spawn().map2(kf, vf));
 	}
 
-	private CharsBuilder toList_() {
+	private Chars toList_() {
 		return spawn().toList();
+	}
+
+	private ChrObjMap<CharsBuilder> toListMap_() {
+		return toListMap_(value -> value);
+	}
+
+	private ChrObjMap<CharsBuilder> toListMap_(Chr_Chr valueFun) {
+		var puller = spawn();
+		var map = new ChrObjMap<CharsBuilder>();
+		char c;
+		while ((c = puller.pull()) != ChrPrim.EMPTYVALUE)
+			map.computeIfAbsent(c, k_ -> new CharsBuilder()).append(valueFun.apply(c));
+		return map;
 	}
 
 	private ChrPuller spawn() {

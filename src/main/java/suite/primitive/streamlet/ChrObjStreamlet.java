@@ -127,7 +127,7 @@ public class ChrObjStreamlet<V> implements StreamletDefaults<ChrObjPair<V>, ChrO
 	}
 
 	public ChrObjStreamlet<List<V>> groupBy() {
-		return streamlet(() -> groupBy_());
+		return streamlet(this::groupBy_);
 	}
 
 	public <V1> ChrObjStreamlet<V1> groupBy(Fun<Streamlet<V>, V1> fun) {
@@ -253,12 +253,7 @@ public class ChrObjStreamlet<V> implements StreamletDefaults<ChrObjPair<V>, ChrO
 	}
 
 	public ChrObjMap<List<V>> toListMap() {
-		var source = spawn().source();
-		var map = new ChrObjMap<List<V>>();
-		var pair = ChrObjPair.of(ChrPrim.EMPTYVALUE, (V) null);
-		while (source.source2(pair))
-			map.computeIfAbsent(pair.k, k_ -> new ArrayList<>()).add(pair.v);
-		return map;
+		return toListMap_();
 	}
 
 	public ChrObjMap<V> toMap() {
@@ -314,7 +309,7 @@ public class ChrObjStreamlet<V> implements StreamletDefaults<ChrObjPair<V>, ChrO
 	}
 
 	private ChrObjPuller<List<V>> groupBy_() {
-		return ChrObjPuller.of(toListMap().source());
+		return ChrObjPuller.of(toListMap_().source());
 	}
 
 	private <T> Streamlet<T> map_(ChrObj_Obj<V, T> fun) {
@@ -331,6 +326,15 @@ public class ChrObjStreamlet<V> implements StreamletDefaults<ChrObjPair<V>, ChrO
 
 	private List<ChrObjPair<V>> toList_() {
 		return spawn().toList();
+	}
+
+	private ChrObjMap<List<V>> toListMap_() {
+		var source = spawn().source();
+		var map = new ChrObjMap<List<V>>();
+		var pair = ChrObjPair.of(ChrPrim.EMPTYVALUE, (V) null);
+		while (source.source2(pair))
+			map.computeIfAbsent(pair.k, k_ -> new ArrayList<>()).add(pair.v);
+		return map;
 	}
 
 	private ChrObjPuller<V> spawn() {

@@ -39,9 +39,6 @@ import primal.puller.Puller2;
 import primal.puller.PullerDefaults;
 import suite.primitive.Doubles;
 import suite.primitive.Doubles.DoublesBuilder;
-import suite.primitive.adt.map.DblObjMap;
-import suite.primitive.adt.map.ObjDblMap;
-import suite.primitive.adt.set.DblSet;
 
 public class DblPuller implements PullerDefaults<Double> {
 
@@ -217,14 +214,6 @@ public class DblPuller implements PullerDefaults<Double> {
 		return init;
 	}
 
-	public <V> DblObjPuller<DoublesBuilder> groupBy() {
-		return DblObjPuller.of(toListMap().source());
-	}
-
-	public <V> DblObjPuller<V> groupBy(Fun<Doubles, V> fun) {
-		return groupBy().mapValue(list -> fun.apply(list.toDoubles()));
-	}
-
 	@Override
 	public int hashCode() {
 		var h = 7;
@@ -331,7 +320,7 @@ public class DblPuller implements PullerDefaults<Double> {
 	}
 
 	public DblPuller reverse() {
-		return of(toList().toDoubles().reverse());
+		return of(toList().reverse());
 	}
 
 	public void sink(DblSink sink0) {
@@ -357,7 +346,7 @@ public class DblPuller implements PullerDefaults<Double> {
 	}
 
 	public DblPuller sort() {
-		return of(toList().toDoubles().sort());
+		return of(toList().sort());
 	}
 
 	public Puller<DblPuller> split(DblTest fun) {
@@ -382,37 +371,15 @@ public class DblPuller implements PullerDefaults<Double> {
 	}
 
 	public double[] toArray() {
-		var list = toList();
-		return list.toDoubles().toArray();
+		return toList().toArray();
 	}
 
-	public DoublesBuilder toList() {
+	public Doubles toList() {
 		var list = new DoublesBuilder();
 		double c;
 		while ((c = pull()) != empty)
 			list.append(c);
-		return list;
-	}
-
-	public <K> DblObjMap<DoublesBuilder> toListMap() {
-		return toListMap(value -> value);
-	}
-
-	public <K> DblObjMap<DoublesBuilder> toListMap(Dbl_Dbl valueFun) {
-		var map = new DblObjMap<DoublesBuilder>();
-		double c;
-		while ((c = pull()) != empty)
-			map.computeIfAbsent(c, k_ -> new DoublesBuilder()).append(valueFun.apply(c));
-		return map;
-	}
-
-	public <K> ObjDblMap<K> toMap(Dbl_Obj<K> keyFun) {
-		var kf1 = keyFun.rethrow();
-		var map = new ObjDblMap<K>();
-		double c;
-		while ((c = pull()) != empty)
-			map.put(kf1.apply(c), c);
-		return map;
+		return list.toDoubles();
 	}
 
 	public <K, V> Map<K, V> toMap(Dbl_Obj<K> kf0, Dbl_Obj<V> vf0) {
@@ -426,14 +393,6 @@ public class DblPuller implements PullerDefaults<Double> {
 				fail("duplicate key " + key);
 		}
 		return map;
-	}
-
-	public DblSet toSet() {
-		var set = new DblSet();
-		double c;
-		while ((c = pull()) != empty)
-			set.add(c);
-		return set;
 	}
 
 	public <U, R> Puller<R> zip(Puller<U> outlet1, DblObj_Obj<U, R> fun) {

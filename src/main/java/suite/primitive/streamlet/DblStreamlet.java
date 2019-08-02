@@ -81,7 +81,7 @@ public class DblStreamlet implements StreamletDefaults<Double, DblPuller> {
 	}
 
 	public DblStreamlet collect() {
-		Doubles doubles = toList_().toDoubles();
+		var doubles = toList_();
 		return Doubles_.of(doubles.cs, doubles.start, doubles.end, 1);
 	}
 
@@ -123,11 +123,11 @@ public class DblStreamlet implements StreamletDefaults<Double, DblPuller> {
 	}
 
 	public <V> DblObjStreamlet<DoublesBuilder> groupBy() {
-		return new DblObjStreamlet<>(() -> spawn().groupBy());
+		return new DblObjStreamlet<>(this::groupBy_);
 	}
 
 	public <V> DblObjStreamlet<V> groupBy(Fun<Doubles, V> fun) {
-		return new DblObjStreamlet<>(() -> spawn().groupBy(fun));
+		return new DblObjStreamlet<>(() -> groupBy_().mapValue(list -> fun.apply(list.toDoubles())));
 	}
 
 	@Override
@@ -252,20 +252,26 @@ public class DblStreamlet implements StreamletDefaults<Double, DblPuller> {
 		return spawn().toArray();
 	}
 
-	public DoublesBuilder toList() {
+	public Doubles toList() {
 		return toList_();
 	}
 
 	public <K> DblObjMap<DoublesBuilder> toListMap() {
-		return spawn().toListMap();
+		return toListMap_();
 	}
 
 	public <K> DblObjMap<DoublesBuilder> toListMap(Dbl_Dbl valueFun) {
-		return spawn().toListMap(valueFun);
+		return toListMap_(valueFun);
 	}
 
-	public <K> ObjDblMap<K> toMap(Dbl_Obj<K> keyFun) {
-		return spawn().toMap(keyFun);
+	public <K> ObjDblMap<K> toMap(Dbl_Obj<K> kf0) {
+		var puller = spawn();
+		var kf1 = kf0.rethrow();
+		var map = new ObjDblMap<K>();
+		double c;
+		while ((c = puller.pull()) != DblPrim.EMPTYVALUE)
+			map.put(kf1.apply(c), c);
+		return map;
 	}
 
 	public <K, V> Map<K, V> toMap(Dbl_Obj<K> keyFun, Dbl_Obj<V> valueFun) {
@@ -281,7 +287,12 @@ public class DblStreamlet implements StreamletDefaults<Double, DblPuller> {
 	}
 
 	public DblSet toSet() {
-		return spawn().toSet();
+		var puller = spawn();
+		var set = new DblSet();
+		double c;
+		while ((c = puller.pull()) != DblPrim.EMPTYVALUE)
+			set.add(c);
+		return set;
 	}
 
 	public <K, V> Map<K, Set<V>> toSetMap(Dbl_Obj<K> keyFun, Dbl_Obj<V> valueFun) {
@@ -304,6 +315,10 @@ public class DblStreamlet implements StreamletDefaults<Double, DblPuller> {
 		return new Streamlet2<>(() -> spawn().concatMap2(t -> fun.apply(t).puller()));
 	}
 
+	private <V> DblObjPuller<DoublesBuilder> groupBy_() {
+		return DblObjPuller.of(toListMap_().source());
+	}
+
 	private <O> Streamlet<O> map_(Dbl_Obj<O> fun) {
 		return new Streamlet<>(() -> spawn().map(fun));
 	}
@@ -312,8 +327,21 @@ public class DblStreamlet implements StreamletDefaults<Double, DblPuller> {
 		return new Streamlet2<>(() -> spawn().map2(kf, vf));
 	}
 
-	private DoublesBuilder toList_() {
+	private Doubles toList_() {
 		return spawn().toList();
+	}
+
+	private DblObjMap<DoublesBuilder> toListMap_() {
+		return toListMap_(value -> value);
+	}
+
+	private DblObjMap<DoublesBuilder> toListMap_(Dbl_Dbl valueFun) {
+		var puller = spawn();
+		var map = new DblObjMap<DoublesBuilder>();
+		double c;
+		while ((c = puller.pull()) != DblPrim.EMPTYVALUE)
+			map.computeIfAbsent(c, k_ -> new DoublesBuilder()).append(valueFun.apply(c));
+		return map;
 	}
 
 	private DblPuller spawn() {

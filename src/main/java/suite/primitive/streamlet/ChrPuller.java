@@ -39,9 +39,6 @@ import primal.puller.Puller2;
 import primal.puller.PullerDefaults;
 import suite.primitive.Chars;
 import suite.primitive.Chars.CharsBuilder;
-import suite.primitive.adt.map.ChrObjMap;
-import suite.primitive.adt.map.ObjChrMap;
-import suite.primitive.adt.set.ChrSet;
 
 public class ChrPuller implements PullerDefaults<Character> {
 
@@ -217,14 +214,6 @@ public class ChrPuller implements PullerDefaults<Character> {
 		return init;
 	}
 
-	public <V> ChrObjPuller<CharsBuilder> groupBy() {
-		return ChrObjPuller.of(toListMap().source());
-	}
-
-	public <V> ChrObjPuller<V> groupBy(Fun<Chars, V> fun) {
-		return groupBy().mapValue(list -> fun.apply(list.toChars()));
-	}
-
 	@Override
 	public int hashCode() {
 		var h = 7;
@@ -331,7 +320,7 @@ public class ChrPuller implements PullerDefaults<Character> {
 	}
 
 	public ChrPuller reverse() {
-		return of(toList().toChars().reverse());
+		return of(toList().reverse());
 	}
 
 	public void sink(ChrSink sink0) {
@@ -357,7 +346,7 @@ public class ChrPuller implements PullerDefaults<Character> {
 	}
 
 	public ChrPuller sort() {
-		return of(toList().toChars().sort());
+		return of(toList().sort());
 	}
 
 	public Puller<ChrPuller> split(ChrTest fun) {
@@ -382,37 +371,15 @@ public class ChrPuller implements PullerDefaults<Character> {
 	}
 
 	public char[] toArray() {
-		var list = toList();
-		return list.toChars().toArray();
+		return toList().toArray();
 	}
 
-	public CharsBuilder toList() {
+	public Chars toList() {
 		var list = new CharsBuilder();
 		char c;
 		while ((c = pull()) != empty)
 			list.append(c);
-		return list;
-	}
-
-	public <K> ChrObjMap<CharsBuilder> toListMap() {
-		return toListMap(value -> value);
-	}
-
-	public <K> ChrObjMap<CharsBuilder> toListMap(Chr_Chr valueFun) {
-		var map = new ChrObjMap<CharsBuilder>();
-		char c;
-		while ((c = pull()) != empty)
-			map.computeIfAbsent(c, k_ -> new CharsBuilder()).append(valueFun.apply(c));
-		return map;
-	}
-
-	public <K> ObjChrMap<K> toMap(Chr_Obj<K> keyFun) {
-		var kf1 = keyFun.rethrow();
-		var map = new ObjChrMap<K>();
-		char c;
-		while ((c = pull()) != empty)
-			map.put(kf1.apply(c), c);
-		return map;
+		return list.toChars();
 	}
 
 	public <K, V> Map<K, V> toMap(Chr_Obj<K> kf0, Chr_Obj<V> vf0) {
@@ -426,14 +393,6 @@ public class ChrPuller implements PullerDefaults<Character> {
 				fail("duplicate key " + key);
 		}
 		return map;
-	}
-
-	public ChrSet toSet() {
-		var set = new ChrSet();
-		char c;
-		while ((c = pull()) != empty)
-			set.add(c);
-		return set;
 	}
 
 	public <U, R> Puller<R> zip(Puller<U> outlet1, ChrObj_Obj<U, R> fun) {

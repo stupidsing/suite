@@ -81,7 +81,7 @@ public class IntStreamlet implements StreamletDefaults<Integer, IntPuller> {
 	}
 
 	public IntStreamlet collect() {
-		Ints ints = toList_().toInts();
+		var ints = toList_();
 		return Ints_.of(ints.cs, ints.start, ints.end, 1);
 	}
 
@@ -123,11 +123,11 @@ public class IntStreamlet implements StreamletDefaults<Integer, IntPuller> {
 	}
 
 	public <V> IntObjStreamlet<IntsBuilder> groupBy() {
-		return new IntObjStreamlet<>(() -> spawn().groupBy());
+		return new IntObjStreamlet<>(this::groupBy_);
 	}
 
 	public <V> IntObjStreamlet<V> groupBy(Fun<Ints, V> fun) {
-		return new IntObjStreamlet<>(() -> spawn().groupBy(fun));
+		return new IntObjStreamlet<>(() -> groupBy_().mapValue(list -> fun.apply(list.toInts())));
 	}
 
 	@Override
@@ -252,20 +252,26 @@ public class IntStreamlet implements StreamletDefaults<Integer, IntPuller> {
 		return spawn().toArray();
 	}
 
-	public IntsBuilder toList() {
+	public Ints toList() {
 		return toList_();
 	}
 
 	public <K> IntObjMap<IntsBuilder> toListMap() {
-		return spawn().toListMap();
+		return toListMap_();
 	}
 
 	public <K> IntObjMap<IntsBuilder> toListMap(Int_Int valueFun) {
-		return spawn().toListMap(valueFun);
+		return toListMap_(valueFun);
 	}
 
-	public <K> ObjIntMap<K> toMap(Int_Obj<K> keyFun) {
-		return spawn().toMap(keyFun);
+	public <K> ObjIntMap<K> toMap(Int_Obj<K> kf0) {
+		var puller = spawn();
+		var kf1 = kf0.rethrow();
+		var map = new ObjIntMap<K>();
+		int c;
+		while ((c = puller.pull()) != IntPrim.EMPTYVALUE)
+			map.put(kf1.apply(c), c);
+		return map;
 	}
 
 	public <K, V> Map<K, V> toMap(Int_Obj<K> keyFun, Int_Obj<V> valueFun) {
@@ -281,7 +287,12 @@ public class IntStreamlet implements StreamletDefaults<Integer, IntPuller> {
 	}
 
 	public IntSet toSet() {
-		return spawn().toSet();
+		var puller = spawn();
+		var set = new IntSet();
+		int c;
+		while ((c = puller.pull()) != IntPrim.EMPTYVALUE)
+			set.add(c);
+		return set;
 	}
 
 	public <K, V> Map<K, Set<V>> toSetMap(Int_Obj<K> keyFun, Int_Obj<V> valueFun) {
@@ -304,6 +315,10 @@ public class IntStreamlet implements StreamletDefaults<Integer, IntPuller> {
 		return new Streamlet2<>(() -> spawn().concatMap2(t -> fun.apply(t).puller()));
 	}
 
+	private <V> IntObjPuller<IntsBuilder> groupBy_() {
+		return IntObjPuller.of(toListMap_().source());
+	}
+
 	private <O> Streamlet<O> map_(Int_Obj<O> fun) {
 		return new Streamlet<>(() -> spawn().map(fun));
 	}
@@ -312,8 +327,21 @@ public class IntStreamlet implements StreamletDefaults<Integer, IntPuller> {
 		return new Streamlet2<>(() -> spawn().map2(kf, vf));
 	}
 
-	private IntsBuilder toList_() {
+	private Ints toList_() {
 		return spawn().toList();
+	}
+
+	private IntObjMap<IntsBuilder> toListMap_() {
+		return toListMap_(value -> value);
+	}
+
+	private IntObjMap<IntsBuilder> toListMap_(Int_Int valueFun) {
+		var puller = spawn();
+		var map = new IntObjMap<IntsBuilder>();
+		int c;
+		while ((c = puller.pull()) != IntPrim.EMPTYVALUE)
+			map.computeIfAbsent(c, k_ -> new IntsBuilder()).append(valueFun.apply(c));
+		return map;
 	}
 
 	private IntPuller spawn() {

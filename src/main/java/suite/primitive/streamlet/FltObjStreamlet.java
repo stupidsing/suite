@@ -127,7 +127,7 @@ public class FltObjStreamlet<V> implements StreamletDefaults<FltObjPair<V>, FltO
 	}
 
 	public FltObjStreamlet<List<V>> groupBy() {
-		return streamlet(() -> groupBy_());
+		return streamlet(this::groupBy_);
 	}
 
 	public <V1> FltObjStreamlet<V1> groupBy(Fun<Streamlet<V>, V1> fun) {
@@ -253,12 +253,7 @@ public class FltObjStreamlet<V> implements StreamletDefaults<FltObjPair<V>, FltO
 	}
 
 	public FltObjMap<List<V>> toListMap() {
-		var source = spawn().source();
-		var map = new FltObjMap<List<V>>();
-		var pair = FltObjPair.of(FltPrim.EMPTYVALUE, (V) null);
-		while (source.source2(pair))
-			map.computeIfAbsent(pair.k, k_ -> new ArrayList<>()).add(pair.v);
-		return map;
+		return toListMap_();
 	}
 
 	public FltObjMap<V> toMap() {
@@ -314,7 +309,7 @@ public class FltObjStreamlet<V> implements StreamletDefaults<FltObjPair<V>, FltO
 	}
 
 	private FltObjPuller<List<V>> groupBy_() {
-		return FltObjPuller.of(toListMap().source());
+		return FltObjPuller.of(toListMap_().source());
 	}
 
 	private <T> Streamlet<T> map_(FltObj_Obj<V, T> fun) {
@@ -331,6 +326,15 @@ public class FltObjStreamlet<V> implements StreamletDefaults<FltObjPair<V>, FltO
 
 	private List<FltObjPair<V>> toList_() {
 		return spawn().toList();
+	}
+
+	private FltObjMap<List<V>> toListMap_() {
+		var source = spawn().source();
+		var map = new FltObjMap<List<V>>();
+		var pair = FltObjPair.of(FltPrim.EMPTYVALUE, (V) null);
+		while (source.source2(pair))
+			map.computeIfAbsent(pair.k, k_ -> new ArrayList<>()).add(pair.v);
+		return map;
 	}
 
 	private FltObjPuller<V> spawn() {

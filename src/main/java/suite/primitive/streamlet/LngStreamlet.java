@@ -81,7 +81,7 @@ public class LngStreamlet implements StreamletDefaults<Long, LngPuller> {
 	}
 
 	public LngStreamlet collect() {
-		Longs longs = toList_().toLongs();
+		var longs = toList_();
 		return Longs_.of(longs.cs, longs.start, longs.end, 1);
 	}
 
@@ -123,11 +123,11 @@ public class LngStreamlet implements StreamletDefaults<Long, LngPuller> {
 	}
 
 	public <V> LngObjStreamlet<LongsBuilder> groupBy() {
-		return new LngObjStreamlet<>(() -> spawn().groupBy());
+		return new LngObjStreamlet<>(this::groupBy_);
 	}
 
 	public <V> LngObjStreamlet<V> groupBy(Fun<Longs, V> fun) {
-		return new LngObjStreamlet<>(() -> spawn().groupBy(fun));
+		return new LngObjStreamlet<>(() -> groupBy_().mapValue(list -> fun.apply(list.toLongs())));
 	}
 
 	@Override
@@ -252,20 +252,26 @@ public class LngStreamlet implements StreamletDefaults<Long, LngPuller> {
 		return spawn().toArray();
 	}
 
-	public LongsBuilder toList() {
+	public Longs toList() {
 		return toList_();
 	}
 
 	public <K> LngObjMap<LongsBuilder> toListMap() {
-		return spawn().toListMap();
+		return toListMap_();
 	}
 
 	public <K> LngObjMap<LongsBuilder> toListMap(Lng_Lng valueFun) {
-		return spawn().toListMap(valueFun);
+		return toListMap_(valueFun);
 	}
 
-	public <K> ObjLngMap<K> toMap(Lng_Obj<K> keyFun) {
-		return spawn().toMap(keyFun);
+	public <K> ObjLngMap<K> toMap(Lng_Obj<K> kf0) {
+		var puller = spawn();
+		var kf1 = kf0.rethrow();
+		var map = new ObjLngMap<K>();
+		long c;
+		while ((c = puller.pull()) != LngPrim.EMPTYVALUE)
+			map.put(kf1.apply(c), c);
+		return map;
 	}
 
 	public <K, V> Map<K, V> toMap(Lng_Obj<K> keyFun, Lng_Obj<V> valueFun) {
@@ -281,7 +287,12 @@ public class LngStreamlet implements StreamletDefaults<Long, LngPuller> {
 	}
 
 	public LngSet toSet() {
-		return spawn().toSet();
+		var puller = spawn();
+		var set = new LngSet();
+		long c;
+		while ((c = puller.pull()) != LngPrim.EMPTYVALUE)
+			set.add(c);
+		return set;
 	}
 
 	public <K, V> Map<K, Set<V>> toSetMap(Lng_Obj<K> keyFun, Lng_Obj<V> valueFun) {
@@ -304,6 +315,10 @@ public class LngStreamlet implements StreamletDefaults<Long, LngPuller> {
 		return new Streamlet2<>(() -> spawn().concatMap2(t -> fun.apply(t).puller()));
 	}
 
+	private <V> LngObjPuller<LongsBuilder> groupBy_() {
+		return LngObjPuller.of(toListMap_().source());
+	}
+
 	private <O> Streamlet<O> map_(Lng_Obj<O> fun) {
 		return new Streamlet<>(() -> spawn().map(fun));
 	}
@@ -312,8 +327,21 @@ public class LngStreamlet implements StreamletDefaults<Long, LngPuller> {
 		return new Streamlet2<>(() -> spawn().map2(kf, vf));
 	}
 
-	private LongsBuilder toList_() {
+	private Longs toList_() {
 		return spawn().toList();
+	}
+
+	private LngObjMap<LongsBuilder> toListMap_() {
+		return toListMap_(value -> value);
+	}
+
+	private LngObjMap<LongsBuilder> toListMap_(Lng_Lng valueFun) {
+		var puller = spawn();
+		var map = new LngObjMap<LongsBuilder>();
+		long c;
+		while ((c = puller.pull()) != LngPrim.EMPTYVALUE)
+			map.computeIfAbsent(c, k_ -> new LongsBuilder()).append(valueFun.apply(c));
+		return map;
 	}
 
 	private LngPuller spawn() {

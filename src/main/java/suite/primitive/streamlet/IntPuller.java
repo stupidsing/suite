@@ -39,9 +39,6 @@ import primal.puller.Puller2;
 import primal.puller.PullerDefaults;
 import suite.primitive.Ints;
 import suite.primitive.Ints.IntsBuilder;
-import suite.primitive.adt.map.IntObjMap;
-import suite.primitive.adt.map.ObjIntMap;
-import suite.primitive.adt.set.IntSet;
 
 public class IntPuller implements PullerDefaults<Integer> {
 
@@ -217,14 +214,6 @@ public class IntPuller implements PullerDefaults<Integer> {
 		return init;
 	}
 
-	public <V> IntObjPuller<IntsBuilder> groupBy() {
-		return IntObjPuller.of(toListMap().source());
-	}
-
-	public <V> IntObjPuller<V> groupBy(Fun<Ints, V> fun) {
-		return groupBy().mapValue(list -> fun.apply(list.toInts()));
-	}
-
 	@Override
 	public int hashCode() {
 		var h = 7;
@@ -331,7 +320,7 @@ public class IntPuller implements PullerDefaults<Integer> {
 	}
 
 	public IntPuller reverse() {
-		return of(toList().toInts().reverse());
+		return of(toList().reverse());
 	}
 
 	public void sink(IntSink sink0) {
@@ -357,7 +346,7 @@ public class IntPuller implements PullerDefaults<Integer> {
 	}
 
 	public IntPuller sort() {
-		return of(toList().toInts().sort());
+		return of(toList().sort());
 	}
 
 	public Puller<IntPuller> split(IntTest fun) {
@@ -382,37 +371,15 @@ public class IntPuller implements PullerDefaults<Integer> {
 	}
 
 	public int[] toArray() {
-		var list = toList();
-		return list.toInts().toArray();
+		return toList().toArray();
 	}
 
-	public IntsBuilder toList() {
+	public Ints toList() {
 		var list = new IntsBuilder();
 		int c;
 		while ((c = pull()) != empty)
 			list.append(c);
-		return list;
-	}
-
-	public <K> IntObjMap<IntsBuilder> toListMap() {
-		return toListMap(value -> value);
-	}
-
-	public <K> IntObjMap<IntsBuilder> toListMap(Int_Int valueFun) {
-		var map = new IntObjMap<IntsBuilder>();
-		int c;
-		while ((c = pull()) != empty)
-			map.computeIfAbsent(c, k_ -> new IntsBuilder()).append(valueFun.apply(c));
-		return map;
-	}
-
-	public <K> ObjIntMap<K> toMap(Int_Obj<K> keyFun) {
-		var kf1 = keyFun.rethrow();
-		var map = new ObjIntMap<K>();
-		int c;
-		while ((c = pull()) != empty)
-			map.put(kf1.apply(c), c);
-		return map;
+		return list.toInts();
 	}
 
 	public <K, V> Map<K, V> toMap(Int_Obj<K> kf0, Int_Obj<V> vf0) {
@@ -426,14 +393,6 @@ public class IntPuller implements PullerDefaults<Integer> {
 				fail("duplicate key " + key);
 		}
 		return map;
-	}
-
-	public IntSet toSet() {
-		var set = new IntSet();
-		int c;
-		while ((c = pull()) != empty)
-			set.add(c);
-		return set;
 	}
 
 	public <U, R> Puller<R> zip(Puller<U> outlet1, IntObj_Obj<U, R> fun) {

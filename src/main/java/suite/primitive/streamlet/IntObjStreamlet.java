@@ -127,7 +127,7 @@ public class IntObjStreamlet<V> implements StreamletDefaults<IntObjPair<V>, IntO
 	}
 
 	public IntObjStreamlet<List<V>> groupBy() {
-		return streamlet(() -> groupBy_());
+		return streamlet(this::groupBy_);
 	}
 
 	public <V1> IntObjStreamlet<V1> groupBy(Fun<Streamlet<V>, V1> fun) {
@@ -253,12 +253,7 @@ public class IntObjStreamlet<V> implements StreamletDefaults<IntObjPair<V>, IntO
 	}
 
 	public IntObjMap<List<V>> toListMap() {
-		var source = spawn().source();
-		var map = new IntObjMap<List<V>>();
-		var pair = IntObjPair.of(IntPrim.EMPTYVALUE, (V) null);
-		while (source.source2(pair))
-			map.computeIfAbsent(pair.k, k_ -> new ArrayList<>()).add(pair.v);
-		return map;
+		return toListMap_();
 	}
 
 	public IntObjMap<V> toMap() {
@@ -314,7 +309,7 @@ public class IntObjStreamlet<V> implements StreamletDefaults<IntObjPair<V>, IntO
 	}
 
 	private IntObjPuller<List<V>> groupBy_() {
-		return IntObjPuller.of(toListMap().source());
+		return IntObjPuller.of(toListMap_().source());
 	}
 
 	private <T> Streamlet<T> map_(IntObj_Obj<V, T> fun) {
@@ -331,6 +326,15 @@ public class IntObjStreamlet<V> implements StreamletDefaults<IntObjPair<V>, IntO
 
 	private List<IntObjPair<V>> toList_() {
 		return spawn().toList();
+	}
+
+	private IntObjMap<List<V>> toListMap_() {
+		var source = spawn().source();
+		var map = new IntObjMap<List<V>>();
+		var pair = IntObjPair.of(IntPrim.EMPTYVALUE, (V) null);
+		while (source.source2(pair))
+			map.computeIfAbsent(pair.k, k_ -> new ArrayList<>()).add(pair.v);
+		return map;
 	}
 
 	private IntObjPuller<V> spawn() {

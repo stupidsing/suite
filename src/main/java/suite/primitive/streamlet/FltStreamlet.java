@@ -81,7 +81,7 @@ public class FltStreamlet implements StreamletDefaults<Float, FltPuller> {
 	}
 
 	public FltStreamlet collect() {
-		Floats floats = toList_().toFloats();
+		var floats = toList_();
 		return Floats_.of(floats.cs, floats.start, floats.end, 1);
 	}
 
@@ -123,11 +123,11 @@ public class FltStreamlet implements StreamletDefaults<Float, FltPuller> {
 	}
 
 	public <V> FltObjStreamlet<FloatsBuilder> groupBy() {
-		return new FltObjStreamlet<>(() -> spawn().groupBy());
+		return new FltObjStreamlet<>(this::groupBy_);
 	}
 
 	public <V> FltObjStreamlet<V> groupBy(Fun<Floats, V> fun) {
-		return new FltObjStreamlet<>(() -> spawn().groupBy(fun));
+		return new FltObjStreamlet<>(() -> groupBy_().mapValue(list -> fun.apply(list.toFloats())));
 	}
 
 	@Override
@@ -252,20 +252,26 @@ public class FltStreamlet implements StreamletDefaults<Float, FltPuller> {
 		return spawn().toArray();
 	}
 
-	public FloatsBuilder toList() {
+	public Floats toList() {
 		return toList_();
 	}
 
 	public <K> FltObjMap<FloatsBuilder> toListMap() {
-		return spawn().toListMap();
+		return toListMap_();
 	}
 
 	public <K> FltObjMap<FloatsBuilder> toListMap(Flt_Flt valueFun) {
-		return spawn().toListMap(valueFun);
+		return toListMap_(valueFun);
 	}
 
-	public <K> ObjFltMap<K> toMap(Flt_Obj<K> keyFun) {
-		return spawn().toMap(keyFun);
+	public <K> ObjFltMap<K> toMap(Flt_Obj<K> kf0) {
+		var puller = spawn();
+		var kf1 = kf0.rethrow();
+		var map = new ObjFltMap<K>();
+		float c;
+		while ((c = puller.pull()) != FltPrim.EMPTYVALUE)
+			map.put(kf1.apply(c), c);
+		return map;
 	}
 
 	public <K, V> Map<K, V> toMap(Flt_Obj<K> keyFun, Flt_Obj<V> valueFun) {
@@ -281,7 +287,12 @@ public class FltStreamlet implements StreamletDefaults<Float, FltPuller> {
 	}
 
 	public FltSet toSet() {
-		return spawn().toSet();
+		var puller = spawn();
+		var set = new FltSet();
+		float c;
+		while ((c = puller.pull()) != FltPrim.EMPTYVALUE)
+			set.add(c);
+		return set;
 	}
 
 	public <K, V> Map<K, Set<V>> toSetMap(Flt_Obj<K> keyFun, Flt_Obj<V> valueFun) {
@@ -304,6 +315,10 @@ public class FltStreamlet implements StreamletDefaults<Float, FltPuller> {
 		return new Streamlet2<>(() -> spawn().concatMap2(t -> fun.apply(t).puller()));
 	}
 
+	private <V> FltObjPuller<FloatsBuilder> groupBy_() {
+		return FltObjPuller.of(toListMap_().source());
+	}
+
 	private <O> Streamlet<O> map_(Flt_Obj<O> fun) {
 		return new Streamlet<>(() -> spawn().map(fun));
 	}
@@ -312,8 +327,21 @@ public class FltStreamlet implements StreamletDefaults<Float, FltPuller> {
 		return new Streamlet2<>(() -> spawn().map2(kf, vf));
 	}
 
-	private FloatsBuilder toList_() {
+	private Floats toList_() {
 		return spawn().toList();
+	}
+
+	private FltObjMap<FloatsBuilder> toListMap_() {
+		return toListMap_(value -> value);
+	}
+
+	private FltObjMap<FloatsBuilder> toListMap_(Flt_Flt valueFun) {
+		var puller = spawn();
+		var map = new FltObjMap<FloatsBuilder>();
+		float c;
+		while ((c = puller.pull()) != FltPrim.EMPTYVALUE)
+			map.computeIfAbsent(c, k_ -> new FloatsBuilder()).append(valueFun.apply(c));
+		return map;
 	}
 
 	private FltPuller spawn() {

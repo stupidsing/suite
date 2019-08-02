@@ -127,7 +127,7 @@ public class DblObjStreamlet<V> implements StreamletDefaults<DblObjPair<V>, DblO
 	}
 
 	public DblObjStreamlet<List<V>> groupBy() {
-		return streamlet(() -> groupBy_());
+		return streamlet(this::groupBy_);
 	}
 
 	public <V1> DblObjStreamlet<V1> groupBy(Fun<Streamlet<V>, V1> fun) {
@@ -253,12 +253,7 @@ public class DblObjStreamlet<V> implements StreamletDefaults<DblObjPair<V>, DblO
 	}
 
 	public DblObjMap<List<V>> toListMap() {
-		var source = spawn().source();
-		var map = new DblObjMap<List<V>>();
-		var pair = DblObjPair.of(DblPrim.EMPTYVALUE, (V) null);
-		while (source.source2(pair))
-			map.computeIfAbsent(pair.k, k_ -> new ArrayList<>()).add(pair.v);
-		return map;
+		return toListMap_();
 	}
 
 	public DblObjMap<V> toMap() {
@@ -314,7 +309,7 @@ public class DblObjStreamlet<V> implements StreamletDefaults<DblObjPair<V>, DblO
 	}
 
 	private DblObjPuller<List<V>> groupBy_() {
-		return DblObjPuller.of(toListMap().source());
+		return DblObjPuller.of(toListMap_().source());
 	}
 
 	private <T> Streamlet<T> map_(DblObj_Obj<V, T> fun) {
@@ -331,6 +326,15 @@ public class DblObjStreamlet<V> implements StreamletDefaults<DblObjPair<V>, DblO
 
 	private List<DblObjPair<V>> toList_() {
 		return spawn().toList();
+	}
+
+	private DblObjMap<List<V>> toListMap_() {
+		var source = spawn().source();
+		var map = new DblObjMap<List<V>>();
+		var pair = DblObjPair.of(DblPrim.EMPTYVALUE, (V) null);
+		while (source.source2(pair))
+			map.computeIfAbsent(pair.k, k_ -> new ArrayList<>()).add(pair.v);
+		return map;
 	}
 
 	private DblObjPuller<V> spawn() {

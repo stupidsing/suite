@@ -127,7 +127,7 @@ public class LngObjStreamlet<V> implements StreamletDefaults<LngObjPair<V>, LngO
 	}
 
 	public LngObjStreamlet<List<V>> groupBy() {
-		return streamlet(() -> groupBy_());
+		return streamlet(this::groupBy_);
 	}
 
 	public <V1> LngObjStreamlet<V1> groupBy(Fun<Streamlet<V>, V1> fun) {
@@ -253,12 +253,7 @@ public class LngObjStreamlet<V> implements StreamletDefaults<LngObjPair<V>, LngO
 	}
 
 	public LngObjMap<List<V>> toListMap() {
-		var source = spawn().source();
-		var map = new LngObjMap<List<V>>();
-		var pair = LngObjPair.of(LngPrim.EMPTYVALUE, (V) null);
-		while (source.source2(pair))
-			map.computeIfAbsent(pair.k, k_ -> new ArrayList<>()).add(pair.v);
-		return map;
+		return toListMap_();
 	}
 
 	public LngObjMap<V> toMap() {
@@ -314,7 +309,7 @@ public class LngObjStreamlet<V> implements StreamletDefaults<LngObjPair<V>, LngO
 	}
 
 	private LngObjPuller<List<V>> groupBy_() {
-		return LngObjPuller.of(toListMap().source());
+		return LngObjPuller.of(toListMap_().source());
 	}
 
 	private <T> Streamlet<T> map_(LngObj_Obj<V, T> fun) {
@@ -331,6 +326,15 @@ public class LngObjStreamlet<V> implements StreamletDefaults<LngObjPair<V>, LngO
 
 	private List<LngObjPair<V>> toList_() {
 		return spawn().toList();
+	}
+
+	private LngObjMap<List<V>> toListMap_() {
+		var source = spawn().source();
+		var map = new LngObjMap<List<V>>();
+		var pair = LngObjPair.of(LngPrim.EMPTYVALUE, (V) null);
+		while (source.source2(pair))
+			map.computeIfAbsent(pair.k, k_ -> new ArrayList<>()).add(pair.v);
+		return map;
 	}
 
 	private LngObjPuller<V> spawn() {

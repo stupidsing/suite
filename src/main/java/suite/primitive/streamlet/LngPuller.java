@@ -39,9 +39,6 @@ import primal.puller.Puller2;
 import primal.puller.PullerDefaults;
 import suite.primitive.Longs;
 import suite.primitive.Longs.LongsBuilder;
-import suite.primitive.adt.map.LngObjMap;
-import suite.primitive.adt.map.ObjLngMap;
-import suite.primitive.adt.set.LngSet;
 
 public class LngPuller implements PullerDefaults<Long> {
 
@@ -217,14 +214,6 @@ public class LngPuller implements PullerDefaults<Long> {
 		return init;
 	}
 
-	public <V> LngObjPuller<LongsBuilder> groupBy() {
-		return LngObjPuller.of(toListMap().source());
-	}
-
-	public <V> LngObjPuller<V> groupBy(Fun<Longs, V> fun) {
-		return groupBy().mapValue(list -> fun.apply(list.toLongs()));
-	}
-
 	@Override
 	public int hashCode() {
 		var h = 7;
@@ -331,7 +320,7 @@ public class LngPuller implements PullerDefaults<Long> {
 	}
 
 	public LngPuller reverse() {
-		return of(toList().toLongs().reverse());
+		return of(toList().reverse());
 	}
 
 	public void sink(LngSink sink0) {
@@ -357,7 +346,7 @@ public class LngPuller implements PullerDefaults<Long> {
 	}
 
 	public LngPuller sort() {
-		return of(toList().toLongs().sort());
+		return of(toList().sort());
 	}
 
 	public Puller<LngPuller> split(LngTest fun) {
@@ -382,37 +371,15 @@ public class LngPuller implements PullerDefaults<Long> {
 	}
 
 	public long[] toArray() {
-		var list = toList();
-		return list.toLongs().toArray();
+		return toList().toArray();
 	}
 
-	public LongsBuilder toList() {
+	public Longs toList() {
 		var list = new LongsBuilder();
 		long c;
 		while ((c = pull()) != empty)
 			list.append(c);
-		return list;
-	}
-
-	public <K> LngObjMap<LongsBuilder> toListMap() {
-		return toListMap(value -> value);
-	}
-
-	public <K> LngObjMap<LongsBuilder> toListMap(Lng_Lng valueFun) {
-		var map = new LngObjMap<LongsBuilder>();
-		long c;
-		while ((c = pull()) != empty)
-			map.computeIfAbsent(c, k_ -> new LongsBuilder()).append(valueFun.apply(c));
-		return map;
-	}
-
-	public <K> ObjLngMap<K> toMap(Lng_Obj<K> keyFun) {
-		var kf1 = keyFun.rethrow();
-		var map = new ObjLngMap<K>();
-		long c;
-		while ((c = pull()) != empty)
-			map.put(kf1.apply(c), c);
-		return map;
+		return list.toLongs();
 	}
 
 	public <K, V> Map<K, V> toMap(Lng_Obj<K> kf0, Lng_Obj<V> vf0) {
@@ -426,14 +393,6 @@ public class LngPuller implements PullerDefaults<Long> {
 				fail("duplicate key " + key);
 		}
 		return map;
-	}
-
-	public LngSet toSet() {
-		var set = new LngSet();
-		long c;
-		while ((c = pull()) != empty)
-			set.add(c);
-		return set;
 	}
 
 	public <U, R> Puller<R> zip(Puller<U> outlet1, LngObj_Obj<U, R> fun) {

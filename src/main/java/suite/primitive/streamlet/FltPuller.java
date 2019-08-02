@@ -39,9 +39,6 @@ import primal.puller.Puller2;
 import primal.puller.PullerDefaults;
 import suite.primitive.Floats;
 import suite.primitive.Floats.FloatsBuilder;
-import suite.primitive.adt.map.FltObjMap;
-import suite.primitive.adt.map.ObjFltMap;
-import suite.primitive.adt.set.FltSet;
 
 public class FltPuller implements PullerDefaults<Float> {
 
@@ -217,14 +214,6 @@ public class FltPuller implements PullerDefaults<Float> {
 		return init;
 	}
 
-	public <V> FltObjPuller<FloatsBuilder> groupBy() {
-		return FltObjPuller.of(toListMap().source());
-	}
-
-	public <V> FltObjPuller<V> groupBy(Fun<Floats, V> fun) {
-		return groupBy().mapValue(list -> fun.apply(list.toFloats()));
-	}
-
 	@Override
 	public int hashCode() {
 		var h = 7;
@@ -331,7 +320,7 @@ public class FltPuller implements PullerDefaults<Float> {
 	}
 
 	public FltPuller reverse() {
-		return of(toList().toFloats().reverse());
+		return of(toList().reverse());
 	}
 
 	public void sink(FltSink sink0) {
@@ -357,7 +346,7 @@ public class FltPuller implements PullerDefaults<Float> {
 	}
 
 	public FltPuller sort() {
-		return of(toList().toFloats().sort());
+		return of(toList().sort());
 	}
 
 	public Puller<FltPuller> split(FltTest fun) {
@@ -382,37 +371,15 @@ public class FltPuller implements PullerDefaults<Float> {
 	}
 
 	public float[] toArray() {
-		var list = toList();
-		return list.toFloats().toArray();
+		return toList().toArray();
 	}
 
-	public FloatsBuilder toList() {
+	public Floats toList() {
 		var list = new FloatsBuilder();
 		float c;
 		while ((c = pull()) != empty)
 			list.append(c);
-		return list;
-	}
-
-	public <K> FltObjMap<FloatsBuilder> toListMap() {
-		return toListMap(value -> value);
-	}
-
-	public <K> FltObjMap<FloatsBuilder> toListMap(Flt_Flt valueFun) {
-		var map = new FltObjMap<FloatsBuilder>();
-		float c;
-		while ((c = pull()) != empty)
-			map.computeIfAbsent(c, k_ -> new FloatsBuilder()).append(valueFun.apply(c));
-		return map;
-	}
-
-	public <K> ObjFltMap<K> toMap(Flt_Obj<K> keyFun) {
-		var kf1 = keyFun.rethrow();
-		var map = new ObjFltMap<K>();
-		float c;
-		while ((c = pull()) != empty)
-			map.put(kf1.apply(c), c);
-		return map;
+		return list.toFloats();
 	}
 
 	public <K, V> Map<K, V> toMap(Flt_Obj<K> kf0, Flt_Obj<V> vf0) {
@@ -426,14 +393,6 @@ public class FltPuller implements PullerDefaults<Float> {
 				fail("duplicate key " + key);
 		}
 		return map;
-	}
-
-	public FltSet toSet() {
-		var set = new FltSet();
-		float c;
-		while ((c = pull()) != empty)
-			set.add(c);
-		return set;
 	}
 
 	public <U, R> Puller<R> zip(Puller<U> outlet1, FltObj_Obj<U, R> fun) {
