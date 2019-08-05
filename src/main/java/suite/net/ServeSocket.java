@@ -6,6 +6,7 @@ import static primal.statics.Fail.fail;
 import java.io.IOException;
 import java.io.InputStream;
 
+import primal.Nouns.Buffer;
 import primal.fp.Funs.Fun;
 import suite.cfg.Defaults;
 import suite.os.SocketUtil;
@@ -29,7 +30,7 @@ public class ServeSocket {
 
 	private Bytes read(InputStream is, int max) throws IOException {
 		var bb = new BytesBuilder();
-		var buffer = new byte[Defaults.bufferSize];
+		var buffer = new byte[Buffer.size];
 		int nBytesRead;
 
 		while ((nBytesRead = is.read(buffer, 0, min(max - bb.size(), buffer.length))) != -1) {

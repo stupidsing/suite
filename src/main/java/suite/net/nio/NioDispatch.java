@@ -19,6 +19,7 @@ import java.nio.channels.SocketChannel;
 import java.util.HashMap;
 import java.util.Map;
 
+import primal.Nouns.Buffer;
 import primal.Verbs.Close;
 import primal.Verbs.Get;
 import primal.fp.Funs.Iterate;
@@ -26,7 +27,6 @@ import primal.fp.Funs.Sink;
 import primal.fp.Funs2.Sink2;
 import primal.os.Log_;
 import suite.adt.PriorityQueue;
-import suite.cfg.Defaults;
 import suite.concurrent.Backoff;
 import suite.concurrent.Pool;
 import suite.net.NetUtil;
@@ -37,7 +37,7 @@ public class NioDispatch implements Closeable {
 
 	private boolean isRunning = true;
 	private Selector selector = Selector.open();
-	private ThreadLocal<byte[]> threadBuffer = ThreadLocal.withInitial(() -> new byte[Defaults.bufferSize]);
+	private ThreadLocal<byte[]> threadBuffer = ThreadLocal.withInitial(() -> new byte[Buffer.size]);
 
 	private PriorityQueue<TimeDispatch> timeDispatches = new PriorityQueue<>( //
 			TimeDispatch.class, //
@@ -98,13 +98,13 @@ public class NioDispatch implements Closeable {
 
 	public class Responder {
 		public Closeable listen(int port, Iterate<Bytes> fun, Sink<IOException> fail) {
-			Sink<IOException> failRequest = Log_::error;
+			Sink<IOException> log = Log_::error;
 
 			return asyncListen(port, rw -> {
 				PacketId packetId = new PacketId(rw);
 				new Object() {
 					public void run() {
-						packetId.read((id, bs) -> packetId.write(id, fun.apply(bs), v -> run(), failRequest), failRequest);
+						packetId.read((id, bs) -> packetId.write(id, fun.apply(bs), v -> run(), log), log);
 					}
 				}.run();
 			}, fail);
@@ -153,8 +153,9 @@ public class NioDispatch implements Closeable {
 					connected.f(rec = r);
 					okay.f(r);
 				}, ex -> {
+					var now = System.currentTimeMillis();
 					reset(ex);
-					timeDispatches.insert(new TimeDispatch(System.currentTimeMillis() + backoff.duration(), () -> connect(okay)));
+					timeDispatches.insert(new TimeDispatch(now + backoff.duration(), () -> connect(okay)));
 				});
 			else
 				okay.f(rec);
@@ -168,11 +169,11 @@ public class NioDispatch implements Closeable {
 	}
 
 	public class PacketId {
-		private Buffer buffer;
+		private BufferRw buffer;
 		private Packet packet;
 
 		public PacketId(AsyncRw rw) {
-			buffer = new Buffer(rw);
+			buffer = new BufferRw(rw);
 			packet = new Packet(buffer);
 		}
 
@@ -186,9 +187,9 @@ public class NioDispatch implements Closeable {
 	}
 
 	public class Packet {
-		private Buffer buffer;
+		private BufferRw buffer;
 
-		public Packet(Buffer buffer) {
+		public Packet(BufferRw buffer) {
 			this.buffer = buffer;
 		}
 
@@ -201,11 +202,11 @@ public class NioDispatch implements Closeable {
 		}
 	}
 
-	public class Buffer {
+	public class BufferRw {
 		private AsyncRw rw;
 		private BytesBuilder bb = new BytesBuilder();
 
-		public Buffer(AsyncRw rw) {
+		public BufferRw(AsyncRw rw) {
 			this.rw = rw;
 		}
 

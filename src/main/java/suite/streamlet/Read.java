@@ -114,16 +114,16 @@ public class Read {
 	}
 
 	public static Streamlet<String> lines(File file) {
-		return new Streamlet<>(() -> lines(ex(() -> new FileInputStream(file))));
+		return lines(ex(() -> new FileInputStream(file)));
 	}
 
-	public static Puller<String> lines(InputStream is) {
+	public static Streamlet<String> lines(InputStream is) {
 		return lines(new InputStreamReader(is, Utf8.charset)).closeAtEnd(is);
 	}
 
-	public static Puller<String> lines(Reader reader) {
+	public static Streamlet<String> lines(Reader reader) {
 		var br = new BufferedReader(reader);
-		return Puller.of(() -> ex(() -> ReadLine.from(br))).closeAtEnd(br).closeAtEnd(reader);
+		return new Streamlet<>(() -> Puller.of(() -> ex(() -> ReadLine.from(br))).closeAtEnd(br).closeAtEnd(reader));
 	}
 
 	public static Streamlet<Bytes> url(String url) {

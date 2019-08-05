@@ -7,14 +7,14 @@ import java.io.IOException;
 
 import org.junit.Test;
 
+import primal.Nouns.Buffer;
 import primal.fp.FunUtil;
-import suite.cfg.Defaults;
 
 public class LexerTest {
 
 	@Test
 	public void test() throws IOException {
-		var buffer = new char[Defaults.bufferSize];
+		var buffer = new char[Buffer.size];
 		var sb = new StringBuilder();
 		int nCharsRead;
 

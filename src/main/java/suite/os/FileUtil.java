@@ -14,10 +14,10 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import primal.Nouns.Buffer;
 import primal.Nouns.Utf8;
 import primal.Verbs.Build;
 import primal.Verbs.ReadFile;
-import suite.cfg.Defaults;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.To;
@@ -51,7 +51,7 @@ public class FileUtil {
 	public static String read(InputStream in) {
 		return Build.string(sb -> {
 			try (var is = in; var isr = new InputStreamReader(is, Utf8.charset); var br = new BufferedReader(isr)) {
-				var buffer = new char[Defaults.bufferSize];
+				var buffer = new char[Buffer.size];
 
 				while (br.ready()) {
 					var n = br.read(buffer);

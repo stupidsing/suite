@@ -203,6 +203,10 @@ public class Streamlet<T> implements StreamletDefaults<T, Opt<T>, Predicate<T>, 
 		return streamlet(() -> spawn().sortBy(fun));
 	}
 
+	public Streamlet<Puller<T>> split(Predicate<T> fun) {
+		return streamlet(() -> spawn().split(fun));
+	}
+
 	public Streamlet<T> take(int n) {
 		return streamlet(() -> spawn().take(n));
 	}

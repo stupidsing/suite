@@ -12,17 +12,17 @@ import java.io.Reader;
 import java.io.Writer;
 import java.net.SocketException;
 
+import primal.Nouns.Buffer;
 import primal.Verbs.Equals;
 import primal.Verbs.New;
 import primal.Verbs.Th;
-import suite.cfg.Defaults;
 
 public class Copy {
 
 	public static void readerToWriter(Reader in, Writer out) throws IOException {
 		try (var in_ = in) {
 			int len;
-			var buffer = new char[Defaults.bufferSize];
+			var buffer = new char[Buffer.size];
 			while (0 <= (len = in_.read(buffer)))
 				out.write(buffer, 0, len);
 		}
@@ -61,7 +61,7 @@ public class Copy {
 
 	public static void stream(InputStream in, OutputStream out) throws IOException {
 		try (var in_ = in) {
-			var buffer = new byte[Defaults.bufferSize];
+			var buffer = new byte[Buffer.size];
 			int len;
 			while (0 <= (len = in_.read(buffer))) {
 				out.write(buffer, 0, len);

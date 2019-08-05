@@ -8,9 +8,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.IntFunction;
 
+import primal.Nouns.Buffer;
 import primal.Verbs.Close;
 import primal.Verbs.New;
-import suite.cfg.Defaults;
 import suite.instructionexecutor.thunk.IndexedReader;
 import suite.instructionexecutor.thunk.IndexedSourceReader;
 import suite.node.Atom;
@@ -84,7 +84,7 @@ public class Intrinsics {
 
 	public static PerPointer<Chars> read(Reader reader) {
 		return IndexedSourceReader.of(() -> ex(() -> {
-			var buffer = new char[Defaults.bufferSize];
+			var buffer = new char[Buffer.size];
 			var nCharsRead = reader.read(buffer);
 			if (0 <= nCharsRead)
 				return Chars.of(buffer, 0, nCharsRead);

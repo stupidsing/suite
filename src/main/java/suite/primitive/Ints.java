@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
 
+import primal.Nouns.Buffer;
 import primal.Verbs.Build;
 import primal.Verbs.Compare;
 import primal.Verbs.Get;
@@ -20,7 +21,6 @@ import primal.primitive.IntPrim.IntSource;
 import primal.primitive.IntVerbs.CopyInt;
 import primal.primitive.puller.IntPuller;
 import primal.puller.Puller;
-import suite.cfg.Defaults;
 import suite.primitive.streamlet.IntStreamlet;
 
 public class Ints implements Iterable<Integer> {
@@ -363,7 +363,7 @@ public class Ints implements Iterable<Integer> {
 			if (capacity0 < capacity1) {
 				int capacity = max(capacity0, 4);
 				while (capacity < capacity1)
-					capacity = capacity < Defaults.bufferSize ? capacity << 1 : capacity * 3 / 2;
+					capacity = capacity < Buffer.size ? capacity << 1 : capacity * 3 / 2;
 
 				cs = Arrays.copyOf(cs, capacity);
 			}

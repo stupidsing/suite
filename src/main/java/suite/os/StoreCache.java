@@ -8,13 +8,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 
+import primal.Nouns.Buffer;
 import primal.Nouns.Utf8;
 import primal.Verbs.DeleteFile;
 import primal.Verbs.WriteFile;
 import primal.adt.Pair;
 import primal.fp.Funs.Source;
 import primal.puller.Puller;
-import suite.cfg.Defaults;
 import suite.cfg.HomeDir;
 import suite.http.HttpUtil;
 import suite.primitive.Bytes;
@@ -183,7 +183,7 @@ public class StoreCache {
 			public Bytes g() {
 				return ex(() -> {
 					if (cont) {
-						var vb = new byte[Defaults.bufferSize];
+						var vb = new byte[Buffer.size];
 						int n, nBytesRead = 0;
 						while (nBytesRead < vb.length && (cont &= 0 <= (n = dis.read(vb, nBytesRead, vb.length - nBytesRead))))
 							nBytesRead += n;

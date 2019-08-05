@@ -64,7 +64,7 @@ public class NioDispatchTest {
 			dispatch.asyncConnect( //
 					new InetSocketAddress(localHost, port), //
 					rw -> {
-						var buffer = dispatch.new Buffer(rw);
+						var buffer = dispatch.new BufferRw(rw);
 						buffer.writeAll(Bytes.concat(helloBytes, lfs), v -> buffer.readLine(lf, bytes -> {
 							assertEquals(helloBytes, bytes);
 							System.out.println("OK");
@@ -81,7 +81,7 @@ public class NioDispatchTest {
 	private Closeable listen(NioDispatch dispatch) throws IOException {
 		return dispatch.asyncListen(port, new Sink<>() {
 			public void f(AsyncRw rw) {
-				var buffer = dispatch.new Buffer(rw);
+				var buffer = dispatch.new BufferRw(rw);
 				buffer.readLine(lf, bytes -> buffer.writeAll(Bytes.concat(bytes, lfs), v -> f(rw), fail), fail);
 			}
 		});

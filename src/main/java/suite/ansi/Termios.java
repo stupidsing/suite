@@ -2,14 +2,14 @@ package suite.ansi;
 
 import java.io.Closeable;
 
-import suite.cfg.Defaults;
+import primal.Nouns.Buffer;
 import suite.streamlet.Read;
 
 public class Termios implements Closeable {
 
 	private LibcJna libc;
 	private char esc = (char) 27;
-	private byte[] termios0 = new byte[Defaults.bufferSize];
+	private byte[] termios0 = new byte[Buffer.size];
 
 	private Thread hook = new Thread(this::close);
 
@@ -34,7 +34,7 @@ public class Termios implements Closeable {
 	public Termios(LibcJna libc) {
 		this.libc = libc;
 
-		var termios1 = new byte[Defaults.bufferSize];
+		var termios1 = new byte[Buffer.size];
 		libc.tcgetattr(0, termios0);
 		libc.tcgetattr(0, termios1);
 		libc.cfmakeraw(termios1);

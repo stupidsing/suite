@@ -30,7 +30,7 @@ public class Pipe {
 
 		var command1 = command0;
 
-		return new Streamlet<>(() -> ex(() -> {
+		return ex(() -> {
 			var bis = new ByteArrayInputStream(sh.getBytes(Utf8.charset));
 
 			var process = ex(() -> Runtime.getRuntime().exec(command1));
@@ -57,7 +57,7 @@ public class Pipe {
 				Log_.info("END__ " + sh);
 				return process;
 			}));
-		}));
+		});
 	}
 
 }

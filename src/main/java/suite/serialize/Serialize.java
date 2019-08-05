@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import primal.Nouns.Buffer;
 import primal.Nouns.Utf8;
 import primal.Verbs.Equals;
 import primal.Verbs.New;
@@ -40,7 +41,7 @@ public class Serialize {
 	public Serializer<Integer> int_ = ser(SerInput::readInt, SerOutput::writeInt); // 4
 
 	private Inspect inspect;
-	private byte[] zeroes = new byte[Defaults.bufferSize];
+	private byte[] zeroes = new byte[Buffer.size];
 
 	private static <T> Serializer<T> ser(Deser<T> deser, Ser<T> ser) {
 		return new Serializer<>() {
@@ -175,7 +176,7 @@ public class Serialize {
 	public Serializer<Bytes> variableLengthBytes = new Serializer<>() {
 		public Bytes read(SerInput si) throws IOException {
 			var length = si.readInt();
-			var bs = length < Defaults.bufferSize ? new byte[length] : null;
+			var bs = length < Buffer.size ? new byte[length] : null;
 			si.readFully(bs);
 			return Bytes.of(bs);
 		}

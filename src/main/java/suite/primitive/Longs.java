@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
 
+import primal.Nouns.Buffer;
 import primal.Verbs.Build;
 import primal.Verbs.Compare;
 import primal.Verbs.Get;
@@ -20,7 +21,6 @@ import primal.primitive.LngPrim.LngSource;
 import primal.primitive.LngVerbs.CopyLng;
 import primal.primitive.puller.LngPuller;
 import primal.puller.Puller;
-import suite.cfg.Defaults;
 import suite.primitive.streamlet.LngStreamlet;
 
 public class Longs implements Iterable<Long> {
@@ -363,7 +363,7 @@ public class Longs implements Iterable<Long> {
 			if (capacity0 < capacity1) {
 				int capacity = max(capacity0, 4);
 				while (capacity < capacity1)
-					capacity = capacity < Defaults.bufferSize ? capacity << 1 : capacity * 3 / 2;
+					capacity = capacity < Buffer.size ? capacity << 1 : capacity * 3 / 2;
 
 				cs = Arrays.copyOf(cs, capacity);
 			}

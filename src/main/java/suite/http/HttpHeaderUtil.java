@@ -7,11 +7,11 @@ import java.io.InputStreamReader;
 import java.net.URLDecoder;
 import java.util.Map;
 
+import primal.Nouns.Buffer;
 import primal.Nouns.Utf8;
 import primal.Verbs.Build;
 import primal.Verbs.Equals;
 import primal.Verbs.Split;
-import suite.cfg.Defaults;
 import suite.persistent.PerList;
 import suite.streamlet.Read;
 
@@ -36,7 +36,7 @@ public class HttpHeaderUtil {
 		var reader = new InputStreamReader(is, Utf8.charset);
 
 		var query = Build.string(sb -> {
-			var buffer = new char[Defaults.bufferSize];
+			var buffer = new char[Buffer.size];
 			int nCharsRead;
 
 			while (0 <= (nCharsRead = ex(() -> reader.read(buffer))))

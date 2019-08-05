@@ -18,6 +18,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.TemporalAccessor;
 
+import primal.Nouns.Buffer;
 import primal.Nouns.Utf8;
 import primal.Verbs.Close;
 import primal.Verbs.New;
@@ -127,7 +128,7 @@ public class To {
 
 			public void close() throws IOException {
 				if (isOpen) {
-					var bs = new byte[Defaults.bufferSize];
+					var bs = new byte[Buffer.size];
 					while (0 <= read(bs, 0, bs.length))
 						;
 				}
@@ -154,7 +155,7 @@ public class To {
 	public static Puller<Bytes> puller(InputStream is) {
 		var bis = new BufferedInputStream(is);
 		return Puller.of(() -> {
-			var bs = new byte[Defaults.bufferSize];
+			var bs = new byte[Buffer.size];
 			var nBytesRead = ex(() -> bis.read(bs));
 			return 0 <= nBytesRead ? Bytes.of(bs, 0, nBytesRead) : null;
 		}).closeAtEnd(bis).closeAtEnd(is);
@@ -166,7 +167,7 @@ public class To {
 
 	public static Source<Bytes> source(InputStream is) {
 		return () -> {
-			var bs = new byte[Defaults.bufferSize];
+			var bs = new byte[Buffer.size];
 			var nBytesRead = ex(() -> is.read(bs));
 
 			if (0 <= nBytesRead)
