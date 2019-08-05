@@ -9,6 +9,7 @@ import java.util.Set;
 import primal.Verbs.Build;
 import primal.Verbs.Equals;
 import primal.Verbs.Get;
+import primal.Verbs.Is;
 import primal.Verbs.Range;
 import primal.Verbs.Split;
 import primal.adt.Pair;
@@ -56,7 +57,7 @@ public class HtmlUtil {
 		int pos0, posx = 0;
 
 		while (0 <= (pos0 = in.indexOf("<", posx)))
-			if ((posx = pos0 + 1) < in.length() && !Character.isWhitespace(in.charAt(posx)))
+			if ((posx = pos0 + 1) < in.length() && !Is.whitespace(in.charAt(posx)))
 				if (0 <= (posx = in.indexOf(">", posx)))
 					pairs.add(IntRange.of(pos0, ++posx));
 				else

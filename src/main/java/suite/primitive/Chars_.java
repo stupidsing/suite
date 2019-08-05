@@ -8,6 +8,7 @@ import primal.fp.Funs.Source;
 import primal.primitive.ChrPrim;
 import primal.primitive.ChrVerbs.CopyChr;
 import primal.primitive.Int_Chr;
+import primal.primitive.adt.ChrMutable;
 import primal.primitive.fp.ChrFunUtil;
 import primal.primitive.puller.ChrPuller;
 import primal.puller.Puller;

@@ -16,9 +16,9 @@ import primal.primitive.LngPrim;
 import primal.primitive.LngPrim.LngComparator;
 import primal.primitive.LngPrim.LngObjSource;
 import primal.primitive.LngPrim.LngObj_Obj;
+import primal.primitive.LngPrim.LngPred;
 import primal.primitive.LngPrim.LngSink;
 import primal.primitive.LngPrim.LngSource;
-import primal.primitive.LngPrim.LngTest;
 import primal.primitive.LngPrim.Lng_Obj;
 import primal.primitive.Lng_Lng;
 import primal.primitive.adt.pair.LngObjPair;
@@ -38,7 +38,7 @@ import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 
-public class LngStreamlet implements StreamletDefaults<Long, LngOpt, LngTest, LngPuller, LngSink, LngSource> {
+public class LngStreamlet implements StreamletDefaults<Long, LngOpt, LngPred, LngPuller, LngSink, LngSource> {
 
 	private Source<LngPuller> in;
 
@@ -104,7 +104,7 @@ public class LngStreamlet implements StreamletDefaults<Long, LngOpt, LngTest, Ln
 		return Get.clazz(object) == LngStreamlet.class ? Equals.ab(spawn(), ((LngStreamlet) object).spawn()) : false;
 	}
 
-	public LngStreamlet filter(LngTest fun) {
+	public LngStreamlet filter(LngPred fun) {
 		return streamlet(() -> spawn().filter(fun));
 	}
 
@@ -198,7 +198,7 @@ public class LngStreamlet implements StreamletDefaults<Long, LngOpt, LngTest, Ln
 		return spawn().minOrEmpty(comparator);
 	}
 
-	public Pair<LngStreamlet, LngStreamlet> partition(LngTest pred) {
+	public Pair<LngStreamlet, LngStreamlet> partition(LngPred pred) {
 		return Pair.of(filter(pred), filter(t -> !pred.test(t)));
 	}
 

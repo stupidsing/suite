@@ -22,7 +22,7 @@ import primal.primitive.LngPrim.LngObjPredicate;
 import primal.primitive.LngPrim.LngObjSink;
 import primal.primitive.LngPrim.LngObjSource;
 import primal.primitive.LngPrim.LngObj_Obj;
-import primal.primitive.LngPrim.LngTest;
+import primal.primitive.LngPrim.LngPred;
 import primal.primitive.adt.pair.LngObjPair;
 import primal.primitive.fp.LngObjFunUtil;
 import primal.primitive.puller.LngObjPuller;
@@ -111,7 +111,7 @@ public class LngObjStreamlet<V> implements StreamletDefaults<LngObjPair<V>, LngO
 		return streamlet(() -> spawn().filter(fun));
 	}
 
-	public LngObjStreamlet<V> filterKey(LngTest fun) {
+	public LngObjStreamlet<V> filterKey(LngPred fun) {
 		return streamlet(() -> spawn().filterKey(fun));
 	}
 

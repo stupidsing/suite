@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.IntPredicate;
 
+import primal.Verbs.Is;
 import primal.adt.Pair;
 import suite.os.FileUtil;
 
@@ -105,7 +106,7 @@ public class Sgf {
 	private PosPair<String> readIf(String in, int pos, IntPredicate predicate) {
 		var pos0 = pos;
 
-		while (pos0 < in.length() && Character.isWhitespace(in.charAt(pos0)))
+		while (pos0 < in.length() && Is.whitespace(in.charAt(pos0)))
 			pos0++;
 
 		var pos1 = pos0;

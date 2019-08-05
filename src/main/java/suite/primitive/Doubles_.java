@@ -8,6 +8,7 @@ import primal.fp.Funs.Source;
 import primal.primitive.DblPrim;
 import primal.primitive.DblVerbs.CopyDbl;
 import primal.primitive.Int_Dbl;
+import primal.primitive.adt.DblMutable;
 import primal.primitive.fp.DblFunUtil;
 import primal.primitive.puller.DblPuller;
 import primal.puller.Puller;

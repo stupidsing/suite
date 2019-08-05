@@ -9,6 +9,7 @@ import java.nio.file.Path;
 import java.util.Arrays;
 
 import primal.Nouns.Utf8;
+import primal.Verbs.DeleteFile;
 import primal.Verbs.WriteFile;
 import primal.adt.Pair;
 import primal.fp.Funs.Source;
@@ -59,7 +60,7 @@ public class StoreCache {
 		this.dir = dir;
 
 		var current = System.currentTimeMillis();
-		FileUtil.findPaths(dir).filter(path -> !isUpToDate(path, current)).forEach(FileUtil::delete);
+		FileUtil.findPaths(dir).filter(path -> !isUpToDate(path, current)).forEach(DeleteFile::on);
 	}
 
 	public <T> T reget(Source<T> source) {

@@ -37,22 +37,4 @@ public class FormatUtil {
 		});
 	}
 
-	public static String trimLeft(String s) {
-		var length = s.length();
-		var pos = 0;
-		do
-			if (!Character.isWhitespace(s.charAt(pos)))
-				break;
-		while (++pos < length);
-		return s.substring(pos);
-	}
-
-	public static String trimRight(String s) {
-		var pos = s.length();
-		while (0 <= --pos)
-			if (!Character.isWhitespace(s.charAt(pos)))
-				break;
-		return s.substring(0, pos + 1);
-	}
-
 }

@@ -3,6 +3,7 @@ package suite.ebnf.topdown;
 import static java.lang.Math.min;
 
 import primal.Verbs.Equals;
+import primal.Verbs.Is;
 import primal.Verbs.Range;
 import suite.os.UnicodeData;
 
@@ -145,7 +146,7 @@ public class Expect {
 
 	public int whitespace(String in, int length, int start) {
 		var pos = start;
-		while (pos < length && Character.isWhitespace(in.charAt(pos)))
+		while (pos < length && Is.whitespace(in.charAt(pos)))
 			pos++;
 		pos = comment(in, length, pos, "/*", "*/");
 		pos = comment(in, length, pos, "//", "\n");

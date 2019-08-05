@@ -8,6 +8,7 @@ import primal.fp.Funs.Source;
 import primal.primitive.FltPrim;
 import primal.primitive.FltVerbs.CopyFlt;
 import primal.primitive.Int_Flt;
+import primal.primitive.adt.FltMutable;
 import primal.primitive.fp.FltFunUtil;
 import primal.primitive.puller.FltPuller;
 import primal.puller.Puller;

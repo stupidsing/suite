@@ -11,6 +11,7 @@ import java.util.List;
 
 import org.apache.commons.codec.digest.Md5Crypt;
 
+import primal.Verbs.DeleteFile;
 import primal.Verbs.Get;
 import primal.Verbs.Mk;
 import primal.Verbs.WriteFile;
@@ -51,7 +52,7 @@ public class LibraryMain {
 				.partition((path, size) -> 0 < size);
 
 		// remove empty files
-		partition.v.sink((path, size) -> FileUtil.delete(path));
+		partition.v.sink((path, size) -> DeleteFile.on(path));
 
 		// get all file information
 		var path_fileInfos = partition.k //

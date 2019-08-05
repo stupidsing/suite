@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Comparator;
 
+import primal.Verbs.DeleteFile;
 import primal.adt.FixieArray;
 import primal.adt.Pair;
 import suite.btree.B_Tree;
@@ -16,7 +17,6 @@ import suite.file.impl.JournalledFileFactory;
 import suite.file.impl.SerializedFileFactory;
 import suite.fs.KeyDataStore;
 import suite.node.util.Singleton;
-import suite.os.FileUtil;
 import suite.serialize.SerInput;
 import suite.serialize.SerOutput;
 import suite.serialize.Serialize;
@@ -44,7 +44,7 @@ public class B_TreeBuilder<Key, Value> {
 			Serializer<Key> ks, //
 			Comparator<Key> cmp) {
 		if (isNew)
-			FileUtil.deleteIfExists(path);
+			DeleteFile.ifExists(path);
 
 		var jpf = JournalledFileFactory.open(path, pageSize);
 		var b_tree = new B_TreeBuilder<>(ks, ser.int_).build(jpf, nPages, cmp);

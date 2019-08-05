@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import primal.Verbs.Equals;
+import primal.Verbs.Is;
 import suite.node.io.Operator;
 import suite.node.io.Operator.Assoc;
 import suite.text.Preprocess.Run;
@@ -37,7 +38,7 @@ public class IndentationPreprocessor {
 		while (pos < length) {
 			var pos0 = pos;
 			char ch;
-			while (pos0 < length && (ch = in.charAt(pos0)) != '\n' && Character.isWhitespace(ch))
+			while (pos0 < length && (ch = in.charAt(pos0)) != '\n' && Is.whitespace(ch))
 				pos0++;
 
 			var segment = ParseUtil.searchPosition(in.toCharArray(), Segment.of(pos0, length), "\n", Assoc.RIGHT, false);

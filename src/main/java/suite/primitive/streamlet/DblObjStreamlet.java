@@ -22,7 +22,7 @@ import primal.primitive.DblPrim.DblObjPredicate;
 import primal.primitive.DblPrim.DblObjSink;
 import primal.primitive.DblPrim.DblObjSource;
 import primal.primitive.DblPrim.DblObj_Obj;
-import primal.primitive.DblPrim.DblTest;
+import primal.primitive.DblPrim.DblPred;
 import primal.primitive.adt.pair.DblObjPair;
 import primal.primitive.fp.DblObjFunUtil;
 import primal.primitive.puller.DblObjPuller;
@@ -111,7 +111,7 @@ public class DblObjStreamlet<V> implements StreamletDefaults<DblObjPair<V>, DblO
 		return streamlet(() -> spawn().filter(fun));
 	}
 
-	public DblObjStreamlet<V> filterKey(DblTest fun) {
+	public DblObjStreamlet<V> filterKey(DblPred fun) {
 		return streamlet(() -> spawn().filterKey(fun));
 	}
 

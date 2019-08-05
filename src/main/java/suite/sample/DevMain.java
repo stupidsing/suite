@@ -13,6 +13,7 @@ import primal.adt.Fixie_.FixieFun3;
 import primal.adt.Fixie_.FixieFun6;
 import primal.fp.Funs.Sink;
 import primal.primitive.IntPrim.IntSink;
+import primal.primitive.adt.IntMutable;
 import suite.ansi.Keyboard;
 import suite.ansi.Keyboard.VK;
 import suite.ansi.LibcJna;
@@ -21,7 +22,6 @@ import suite.os.FileUtil;
 import suite.persistent.PerRope.IRopeList;
 import suite.primitive.Chars_;
 import suite.primitive.Coord;
-import suite.primitive.IntMutable;
 import suite.primitive.Ints.IntsBuilder;
 
 // mvn compile exec:java -Dexec.mainClass=suite.sample.DevMain -Dexec.args="${COLUMNS} ${LINES}"

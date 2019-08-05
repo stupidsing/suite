@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 import primal.Nouns.Utf8;
+import primal.Verbs.DeleteFile;
 import primal.Verbs.Equals;
 import primal.Verbs.ReadFile;
 import primal.Verbs.ReadLine;
@@ -61,7 +62,7 @@ class Impl implements Snapshot {
 					if (data != null)
 						WriteFile.to(p).doWrite(os -> os.write(data.toArray()));
 					else
-						FileUtil.deleteIfExists(p);
+						DeleteFile.ifExists(p);
 				}
 			}
 		else {
@@ -173,7 +174,7 @@ class Impl implements Snapshot {
 			if (value != null)
 				WriteFile.to(p).doWrite(os -> os.write(value.toArray()));
 			else
-				FileUtil.deleteIfExists(p);
+				DeleteFile.ifExists(p);
 		}
 	}
 

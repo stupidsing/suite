@@ -6,8 +6,8 @@ import java.util.function.BiPredicate;
 
 import primal.Verbs.Build;
 import primal.Verbs.Equals;
+import primal.primitive.adt.LngMutable;
 import suite.persistent.PerList;
-import suite.primitive.LngMutable;
 import suite.streamlet.As;
 import suite.util.HtmlUtil;
 import suite.util.To;

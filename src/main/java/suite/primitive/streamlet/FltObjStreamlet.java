@@ -22,7 +22,7 @@ import primal.primitive.FltPrim.FltObjPredicate;
 import primal.primitive.FltPrim.FltObjSink;
 import primal.primitive.FltPrim.FltObjSource;
 import primal.primitive.FltPrim.FltObj_Obj;
-import primal.primitive.FltPrim.FltTest;
+import primal.primitive.FltPrim.FltPred;
 import primal.primitive.adt.pair.FltObjPair;
 import primal.primitive.fp.FltObjFunUtil;
 import primal.primitive.puller.FltObjPuller;
@@ -111,7 +111,7 @@ public class FltObjStreamlet<V> implements StreamletDefaults<FltObjPair<V>, FltO
 		return streamlet(() -> spawn().filter(fun));
 	}
 
-	public FltObjStreamlet<V> filterKey(FltTest fun) {
+	public FltObjStreamlet<V> filterKey(FltPred fun) {
 		return streamlet(() -> spawn().filterKey(fun));
 	}
 

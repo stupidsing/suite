@@ -6,10 +6,10 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import primal.Verbs.Sleep;
+import primal.adt.BooMutable;
 import suite.concurrent.Concurrent.DeadlockException;
 import suite.concurrent.Mutex.MutexLock;
 import suite.persistent.PerList;
-import suite.primitive.BooMutable;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 

@@ -5,12 +5,12 @@ import java.util.Map;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import primal.Verbs.DeleteFile;
 import primal.Verbs.ReadFile;
 import primal.Verbs.WriteFile;
 import suite.cfg.Defaults;
 import suite.inspect.Mapify;
 import suite.node.util.Singleton;
-import suite.os.FileUtil;
 
 /**
  * Keeps track of the package installed in local machine.
@@ -43,7 +43,7 @@ public class Keeper {
 	}
 
 	public void removePackageMemento(String packageName) {
-		FileUtil.delete(keeperDir.resolve(packageName));
+		DeleteFile.on(keeperDir.resolve(packageName));
 	}
 
 }

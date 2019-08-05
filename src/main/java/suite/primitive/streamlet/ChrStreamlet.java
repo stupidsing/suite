@@ -16,9 +16,9 @@ import primal.primitive.ChrPrim;
 import primal.primitive.ChrPrim.ChrComparator;
 import primal.primitive.ChrPrim.ChrObjSource;
 import primal.primitive.ChrPrim.ChrObj_Obj;
+import primal.primitive.ChrPrim.ChrPred;
 import primal.primitive.ChrPrim.ChrSink;
 import primal.primitive.ChrPrim.ChrSource;
-import primal.primitive.ChrPrim.ChrTest;
 import primal.primitive.ChrPrim.Chr_Obj;
 import primal.primitive.Chr_Chr;
 import primal.primitive.adt.pair.ChrObjPair;
@@ -38,7 +38,7 @@ import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 
-public class ChrStreamlet implements StreamletDefaults<Character, ChrOpt, ChrTest, ChrPuller, ChrSink, ChrSource> {
+public class ChrStreamlet implements StreamletDefaults<Character, ChrOpt, ChrPred, ChrPuller, ChrSink, ChrSource> {
 
 	private Source<ChrPuller> in;
 
@@ -104,7 +104,7 @@ public class ChrStreamlet implements StreamletDefaults<Character, ChrOpt, ChrTes
 		return Get.clazz(object) == ChrStreamlet.class ? Equals.ab(spawn(), ((ChrStreamlet) object).spawn()) : false;
 	}
 
-	public ChrStreamlet filter(ChrTest fun) {
+	public ChrStreamlet filter(ChrPred fun) {
 		return streamlet(() -> spawn().filter(fun));
 	}
 
@@ -198,7 +198,7 @@ public class ChrStreamlet implements StreamletDefaults<Character, ChrOpt, ChrTes
 		return spawn().minOrEmpty(comparator);
 	}
 
-	public Pair<ChrStreamlet, ChrStreamlet> partition(ChrTest pred) {
+	public Pair<ChrStreamlet, ChrStreamlet> partition(ChrPred pred) {
 		return Pair.of(filter(pred), filter(t -> !pred.test(t)));
 	}
 

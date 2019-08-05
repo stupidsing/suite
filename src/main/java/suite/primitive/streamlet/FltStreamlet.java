@@ -16,9 +16,9 @@ import primal.primitive.FltPrim;
 import primal.primitive.FltPrim.FltComparator;
 import primal.primitive.FltPrim.FltObjSource;
 import primal.primitive.FltPrim.FltObj_Obj;
+import primal.primitive.FltPrim.FltPred;
 import primal.primitive.FltPrim.FltSink;
 import primal.primitive.FltPrim.FltSource;
-import primal.primitive.FltPrim.FltTest;
 import primal.primitive.FltPrim.Flt_Obj;
 import primal.primitive.Flt_Flt;
 import primal.primitive.adt.pair.FltObjPair;
@@ -38,7 +38,7 @@ import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 
-public class FltStreamlet implements StreamletDefaults<Float, FltOpt, FltTest, FltPuller, FltSink, FltSource> {
+public class FltStreamlet implements StreamletDefaults<Float, FltOpt, FltPred, FltPuller, FltSink, FltSource> {
 
 	private Source<FltPuller> in;
 
@@ -104,7 +104,7 @@ public class FltStreamlet implements StreamletDefaults<Float, FltOpt, FltTest, F
 		return Get.clazz(object) == FltStreamlet.class ? Equals.ab(spawn(), ((FltStreamlet) object).spawn()) : false;
 	}
 
-	public FltStreamlet filter(FltTest fun) {
+	public FltStreamlet filter(FltPred fun) {
 		return streamlet(() -> spawn().filter(fun));
 	}
 
@@ -198,7 +198,7 @@ public class FltStreamlet implements StreamletDefaults<Float, FltOpt, FltTest, F
 		return spawn().minOrEmpty(comparator);
 	}
 
-	public Pair<FltStreamlet, FltStreamlet> partition(FltTest pred) {
+	public Pair<FltStreamlet, FltStreamlet> partition(FltPred pred) {
 		return Pair.of(filter(pred), filter(t -> !pred.test(t)));
 	}
 

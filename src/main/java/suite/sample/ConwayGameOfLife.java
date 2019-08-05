@@ -1,6 +1,7 @@
 package suite.sample;
 
 import primal.Verbs.Build;
+import primal.Verbs.Is;
 import suite.streamlet.Read;
 
 public class ConwayGameOfLife {
@@ -14,7 +15,7 @@ public class ConwayGameOfLife {
 		for (var line : s.split("\n")) {
 			var y = 0;
 			for (var ch : Read.chars(line))
-				game[x][y++] = !Character.isWhitespace(ch);
+				game[x][y++] = !Is.whitespace(ch);
 			x++;
 		}
 	}

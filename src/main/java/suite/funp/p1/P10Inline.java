@@ -7,6 +7,7 @@ import java.util.HashSet;
 import primal.Verbs.Equals;
 import primal.Verbs.Reverse;
 import primal.fp.Funs.Iterate;
+import primal.primitive.adt.IntMutable;
 import suite.funp.Funp_;
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.Fdt;
@@ -28,7 +29,6 @@ import suite.funp.P0.FunpVariable;
 import suite.inspect.Inspect;
 import suite.node.util.Singleton;
 import suite.persistent.PerMap;
-import suite.primitive.IntMutable;
 import suite.streamlet.Read;
 
 public class P10Inline {

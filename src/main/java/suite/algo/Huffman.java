@@ -30,47 +30,44 @@ public class Huffman<Unit> {
 	public Pair<List<IntObjPair<Unit>>, List<Boolean>> encode(List<Unit> input) {
 		var dictionary = build(input);
 		var source = Take.from(input);
+		var stack = new ArrayDeque<Boolean>();
 
-		var puller = Puller.of(new Source<Boolean>() {
-			private Node node = dictionary.root;
+		var puller = Puller.of((Source<Boolean>) () -> {
+			Node parent;
+			Unit unit;
 
-			public Boolean g() {
-				Node parent;
-				Unit unit;
+			while (stack.isEmpty())
+				if ((unit = source.g()) != null) {
+					var node = dictionary.nodeByUnit.get(unit);
+					while ((parent = node.parent) != null) {
+						stack.push(parent.node1 == node);
+						node = parent;
+					}
+				} else
+					return null;
 
-				while ((parent = node.parent) == null)
-					if ((unit = source.g()) != null)
-						node = dictionary.nodeByUnit.get(unit);
-					else
-						return null;
-
-				var b = parent.node1 == node;
-				node = parent;
-				return b;
-			}
+			return stack.pop();
 		});
 
 		return Pair.of(save(dictionary), puller.toList());
 	}
 
 	public List<Unit> decode(Pair<List<IntObjPair<Unit>>, List<Boolean>> input) {
-		return Puller.of(new Source<Unit>() {
-			private Node root = load(input.k).root;
-			private Source<Boolean> source = Take.from(input.v);
+		var root = load(input.k).root;
+		var source = Take.from(input.v);
 
-			public Unit g() {
-				var node = root;
-				Unit unit = null;
-				Boolean b;
+		return Puller.of((Source<Unit>) () -> {
+			var node = root;
+			Unit unit = null;
+			Boolean b;
 
-				while ((unit = node.unit) == null)
-					if ((b = source.g()) != null)
-						node = b ? node.node1 : node.node0;
-					else
-						break;
+			while ((unit = node.unit) == null)
+				if ((b = source.g()) != null)
+					node = b ? node.node1 : node.node0;
+				else
+					break;
 
-				return unit;
-			}
+			return unit;
 		}).toList();
 	}
 
@@ -81,7 +78,7 @@ public class Huffman<Unit> {
 		var clazz = (Class<Node>) (Class<?>) Node.class;
 
 		var nodes = histogram(input).map((count, unit) -> new Node(unit, count)).toList();
-		var pq = new PriorityQueue<>(clazz, 0, comparator);
+		var pq = new PriorityQueue<>(clazz, nodes.size(), comparator);
 
 		for (var node : nodes)
 			pq.insert(node);
@@ -94,30 +91,29 @@ public class Huffman<Unit> {
 
 		// root and root.unit must not be empty
 		var root0 = !pq.isEmpty() ? pq.extractMin() : dummy;
-		var root1 = root0.unit != null ? root0 : new Node(dummy, root0);
+		var root1 = root0.unit == null ? root0 : new Node(dummy, root0);
 		return new Dictionary(root1, Read.from(nodes).toMap(node -> node.unit));
 	}
 
 	private Dictionary load(List<IntObjPair<Unit>> list) {
 		var nodeByUnit = new HashMap<Unit, Node>();
 		var deque = new ArrayDeque<Node>();
-		Node node;
 
-		for (var pair : list) {
-			if (pair.k == 0)
-				node = dummy;
-			else if (pair.k == 1) {
-				var node1 = deque.pop();
-				var node0 = deque.pop();
-				node = new Node(node0, node1);
-			} else if (pair.k == 2) {
-				var unit = pair.v;
-				node = new Node(unit, 0);
-				nodeByUnit.put(unit, node);
-			} else
-				return fail();
-			deque.push(node);
-		}
+		for (var pair : list)
+			deque.push(pair.map((t, unit) -> {
+				if (t == 0)
+					return dummy;
+				else if (t == 1) {
+					var node1 = deque.pop();
+					var node0 = deque.pop();
+					return new Node(node0, node1);
+				} else if (t == 2) {
+					var node_ = new Node(unit, 0);
+					nodeByUnit.put(unit, node_);
+					return node_;
+				} else
+					return fail();
+			}));
 
 		return new Dictionary(deque.pop(), nodeByUnit);
 	}
@@ -139,6 +135,13 @@ public class Huffman<Unit> {
 		}.save(dictionary.root);
 
 		return list;
+	}
+
+	private IntObjStreamlet<Unit> histogram(Iterable<Unit> input) {
+		var histogram = new ObjIntMap<Unit>();
+		for (var unit : input)
+			histogram.update(unit, c -> (c != IntPrim.EMPTYVALUE ? c : 0) + 1);
+		return histogram.streamlet();
 	}
 
 	private class Dictionary {
@@ -170,13 +173,6 @@ public class Huffman<Unit> {
 			this.node1 = node1;
 			node0.parent = node1.parent = this;
 		}
-	}
-
-	private IntObjStreamlet<Unit> histogram(Iterable<Unit> input) {
-		var histogram = new ObjIntMap<Unit>();
-		for (var unit : input)
-			histogram.update(unit, c -> (c != IntPrim.EMPTYVALUE ? c : 0) + 1);
-		return histogram.streamlet();
 	}
 
 }

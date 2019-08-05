@@ -4,6 +4,8 @@ import static java.lang.Math.min;
 
 import java.util.Set;
 
+import primal.Verbs.Is;
+import primal.Verbs.Trim;
 import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Tree;
@@ -12,7 +14,6 @@ import suite.node.io.Operator;
 import suite.node.io.Operator.Assoc;
 import suite.node.io.TermOp;
 import suite.streamlet.Read;
-import suite.util.FormatUtil;
 
 public class PrettyPrinter {
 
@@ -202,7 +203,7 @@ public class PrettyPrinter {
 		name = (op == TermOp.BRACES ? " " : "") + name;
 		name += op == TermOp.AND___ || op == TermOp.OR____ ? " " : "";
 		if (isLineBegin())
-			name = FormatUtil.trimLeft(name);
+			name = Trim.left(name);
 		append(name);
 		return new OperatorPosition(currentLineIndent, getY());
 	}
@@ -221,7 +222,7 @@ public class PrettyPrinter {
 		var b = true;
 		var l = sb.substring(getLineBeginPosition(), getCurrentPosition());
 		for (var c : Read.chars(l))
-			b &= Character.isWhitespace(c);
+			b &= Is.whitespace(c);
 		return b;
 	}
 
@@ -239,7 +240,7 @@ public class PrettyPrinter {
 
 	private int getLineContentBeginPosition() {
 		var pos = getLineBeginPosition();
-		while (pos < getCurrentPosition() && Character.isWhitespace(sb.charAt(pos)))
+		while (pos < getCurrentPosition() && Is.whitespace(sb.charAt(pos)))
 			pos++;
 		return pos;
 	}

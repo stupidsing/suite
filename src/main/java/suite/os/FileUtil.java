@@ -24,20 +24,6 @@ import suite.util.To;
 
 public class FileUtil {
 
-	public static void delete(Path path) {
-		ex(() -> {
-			Files.delete(path);
-			return path;
-		});
-	}
-
-	public static void deleteIfExists(Path path) {
-		ex(() -> {
-			Files.deleteIfExists(path);
-			return path;
-		});
-	}
-
 	public static Path ext(Path path, String ext) {
 		return path.resolveSibling(path.getFileName() + ext);
 	}

@@ -40,10 +40,7 @@ public class AdaBoost {
 			var min = DblIntPair.of(Double.MIN_VALUE, -1);
 
 			forInt(xys.get(0).xs.length).sink(p -> {
-				var error = Read //
-						.from(xys) //
-						.map(xy -> xy.xs[p] == xy.y ? 0d : ws[p]) //
-						.toDouble(AsDbl.sum(e -> e));
+				var error = Read.from(xys).toDouble(AsDbl.sum(xy -> xy.xs[p] == xy.y ? 0d : ws[p]));
 
 				if (error < min.t0)
 					min.update(error, p);

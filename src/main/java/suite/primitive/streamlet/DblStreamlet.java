@@ -16,9 +16,9 @@ import primal.primitive.DblPrim;
 import primal.primitive.DblPrim.DblComparator;
 import primal.primitive.DblPrim.DblObjSource;
 import primal.primitive.DblPrim.DblObj_Obj;
+import primal.primitive.DblPrim.DblPred;
 import primal.primitive.DblPrim.DblSink;
 import primal.primitive.DblPrim.DblSource;
-import primal.primitive.DblPrim.DblTest;
 import primal.primitive.DblPrim.Dbl_Obj;
 import primal.primitive.Dbl_Dbl;
 import primal.primitive.adt.pair.DblObjPair;
@@ -38,7 +38,7 @@ import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 
-public class DblStreamlet implements StreamletDefaults<Double, DblOpt, DblTest, DblPuller, DblSink, DblSource> {
+public class DblStreamlet implements StreamletDefaults<Double, DblOpt, DblPred, DblPuller, DblSink, DblSource> {
 
 	private Source<DblPuller> in;
 
@@ -104,7 +104,7 @@ public class DblStreamlet implements StreamletDefaults<Double, DblOpt, DblTest, 
 		return Get.clazz(object) == DblStreamlet.class ? Equals.ab(spawn(), ((DblStreamlet) object).spawn()) : false;
 	}
 
-	public DblStreamlet filter(DblTest fun) {
+	public DblStreamlet filter(DblPred fun) {
 		return streamlet(() -> spawn().filter(fun));
 	}
 
@@ -198,7 +198,7 @@ public class DblStreamlet implements StreamletDefaults<Double, DblOpt, DblTest, 
 		return spawn().minOrEmpty(comparator);
 	}
 
-	public Pair<DblStreamlet, DblStreamlet> partition(DblTest pred) {
+	public Pair<DblStreamlet, DblStreamlet> partition(DblPred pred) {
 		return Pair.of(filter(pred), filter(t -> !pred.test(t)));
 	}
 

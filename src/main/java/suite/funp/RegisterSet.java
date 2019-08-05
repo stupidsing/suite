@@ -3,7 +3,7 @@ package suite.funp;
 import static primal.statics.Fail.fail;
 import static suite.util.Streamlet_.forInt;
 
-import primal.primitive.IntPrim.IntTest;
+import primal.primitive.IntPrim.IntPred;
 import suite.assembler.Amd64;
 import suite.assembler.Amd64.OpMem;
 import suite.assembler.Amd64.OpReg;
@@ -54,7 +54,7 @@ public class RegisterSet {
 		return get_(size, isAllowAllByteRegisters);
 	}
 
-	public OpReg[] list(IntTest pred) {
+	public OpReg[] list(IntPred pred) {
 		return forInt(nRegisters) //
 				.filter(this::isSet) //
 				.filter(pred) //

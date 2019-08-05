@@ -22,7 +22,7 @@ import primal.primitive.IntPrim.IntObjPredicate;
 import primal.primitive.IntPrim.IntObjSink;
 import primal.primitive.IntPrim.IntObjSource;
 import primal.primitive.IntPrim.IntObj_Obj;
-import primal.primitive.IntPrim.IntTest;
+import primal.primitive.IntPrim.IntPred;
 import primal.primitive.adt.pair.IntObjPair;
 import primal.primitive.fp.IntObjFunUtil;
 import primal.primitive.puller.IntObjPuller;
@@ -111,7 +111,7 @@ public class IntObjStreamlet<V> implements StreamletDefaults<IntObjPair<V>, IntO
 		return streamlet(() -> spawn().filter(fun));
 	}
 
-	public IntObjStreamlet<V> filterKey(IntTest fun) {
+	public IntObjStreamlet<V> filterKey(IntPred fun) {
 		return streamlet(() -> spawn().filterKey(fun));
 	}
 

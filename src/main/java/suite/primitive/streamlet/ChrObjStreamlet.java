@@ -22,7 +22,7 @@ import primal.primitive.ChrPrim.ChrObjPredicate;
 import primal.primitive.ChrPrim.ChrObjSink;
 import primal.primitive.ChrPrim.ChrObjSource;
 import primal.primitive.ChrPrim.ChrObj_Obj;
-import primal.primitive.ChrPrim.ChrTest;
+import primal.primitive.ChrPrim.ChrPred;
 import primal.primitive.adt.pair.ChrObjPair;
 import primal.primitive.fp.ChrObjFunUtil;
 import primal.primitive.puller.ChrObjPuller;
@@ -111,7 +111,7 @@ public class ChrObjStreamlet<V> implements StreamletDefaults<ChrObjPair<V>, ChrO
 		return streamlet(() -> spawn().filter(fun));
 	}
 
-	public ChrObjStreamlet<V> filterKey(ChrTest fun) {
+	public ChrObjStreamlet<V> filterKey(ChrPred fun) {
 		return streamlet(() -> spawn().filterKey(fun));
 	}
 

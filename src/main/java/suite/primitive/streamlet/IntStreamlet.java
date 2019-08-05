@@ -16,9 +16,9 @@ import primal.primitive.IntPrim;
 import primal.primitive.IntPrim.IntComparator;
 import primal.primitive.IntPrim.IntObjSource;
 import primal.primitive.IntPrim.IntObj_Obj;
+import primal.primitive.IntPrim.IntPred;
 import primal.primitive.IntPrim.IntSink;
 import primal.primitive.IntPrim.IntSource;
-import primal.primitive.IntPrim.IntTest;
 import primal.primitive.IntPrim.Int_Obj;
 import primal.primitive.Int_Int;
 import primal.primitive.adt.pair.IntObjPair;
@@ -38,7 +38,7 @@ import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 
-public class IntStreamlet implements StreamletDefaults<Integer, IntOpt, IntTest, IntPuller, IntSink, IntSource> {
+public class IntStreamlet implements StreamletDefaults<Integer, IntOpt, IntPred, IntPuller, IntSink, IntSource> {
 
 	private Source<IntPuller> in;
 
@@ -104,7 +104,7 @@ public class IntStreamlet implements StreamletDefaults<Integer, IntOpt, IntTest,
 		return Get.clazz(object) == IntStreamlet.class ? Equals.ab(spawn(), ((IntStreamlet) object).spawn()) : false;
 	}
 
-	public IntStreamlet filter(IntTest fun) {
+	public IntStreamlet filter(IntPred fun) {
 		return streamlet(() -> spawn().filter(fun));
 	}
 
@@ -198,7 +198,7 @@ public class IntStreamlet implements StreamletDefaults<Integer, IntOpt, IntTest,
 		return spawn().minOrEmpty(comparator);
 	}
 
-	public Pair<IntStreamlet, IntStreamlet> partition(IntTest pred) {
+	public Pair<IntStreamlet, IntStreamlet> partition(IntPred pred) {
 		return Pair.of(filter(pred), filter(t -> !pred.test(t)));
 	}
 

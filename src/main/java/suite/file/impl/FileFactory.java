@@ -7,13 +7,13 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
+import primal.Verbs.DeleteFile;
 import primal.Verbs.Equals;
 import primal.os.Log_;
 import suite.file.ExtentAllocator.Extent;
 import suite.file.ExtentFile;
 import suite.file.PageFile;
 import suite.node.util.Singleton;
-import suite.os.FileUtil;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
 import suite.serialize.SerInput;
@@ -118,7 +118,7 @@ public class FileFactory {
 
 	public static PageFile pageFile(Path path, boolean isCreate, int pageSize) {
 		if (isCreate)
-			FileUtil.deleteIfExists(path);
+			DeleteFile.ifExists(path);
 
 		var file = new RandomAccessibleFile(path);
 

@@ -8,8 +8,8 @@ import java.util.Random;
 
 import primal.fp.Funs.Sink;
 import primal.primitive.IntVerbs.CopyInt;
+import primal.primitive.adt.DblMutable;
 import suite.math.linalg.Vector;
-import suite.primitive.DblMutable;
 import suite.util.To;
 
 public class SelfOrganizingMap {

@@ -7,10 +7,10 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import primal.Verbs.Start;
+import primal.adt.BooMutable;
 import primal.os.Log_;
 import suite.os.SocketUtil;
 import suite.os.SocketUtil.Io;
-import suite.primitive.BooMutable;
 import suite.streamlet.Read;
 import suite.util.Copy;
 

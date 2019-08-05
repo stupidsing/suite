@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import primal.Verbs.Is;
 import primal.fp.Funs.Source;
 
 /**
@@ -78,8 +79,8 @@ public class Lexer {
 					sb.append(nextChar());
 				}
 				sb.append(nextChar());
-			} else if (Character.isWhitespace(ch)) {
-				while (!eof && Character.isWhitespace(peeked))
+			} else if (Is.whitespace(ch)) {
+				while (!eof && Is.whitespace(peeked))
 					sb.append(nextChar());
 				return nextToken();
 			} else if (ch == '/' && peeked == '/') { // single-line comment
