@@ -22,7 +22,7 @@ public class Fun23TreeTest {
 		var out0 = Formatter.dump(result0);
 		System.out.println("OUT:\n" + out0);
 
-		var nPars0 = Read.from(Read.chars(out0)).filter(c -> c == '(').size();
+		var nPars0 = Read.chars(out0).filter(c -> c == '(').size();
 		assertTrue(3 <= nPars0);
 
 		var fp1 = Suite.substitute("use 23-TREE ~ 0 until " + n / 2 + " | map_{remove} | apply | {" + list100 + "}");

@@ -21,10 +21,14 @@ import primal.fp.FunUtil;
 import primal.fp.FunUtil2;
 import primal.fp.Funs.Source;
 import primal.fp.Funs2.Source2;
+import primal.primitive.ChrPrim;
+import primal.primitive.ChrPrim.ChrSource;
+import primal.primitive.puller.ChrPuller;
 import primal.puller.Puller;
 import primal.puller.Puller2;
 import suite.http.HttpUtil;
 import suite.primitive.Bytes;
+import suite.primitive.streamlet.ChrStreamlet;
 import suite.util.To;
 
 public class Read {
@@ -49,12 +53,12 @@ public class Read {
 		return new Streamlet<>(() -> To.puller(is));
 	}
 
-	public static Streamlet<Character> chars(CharSequence s) {
-		return new Streamlet<>(() -> Puller.of(new Source<>() {
+	public static ChrStreamlet chars(CharSequence s) {
+		return new ChrStreamlet(() -> ChrPuller.of(new ChrSource() {
 			private int index = 0;
 
-			public Character g() {
-				return index < s.length() ? s.charAt(index++) : null;
+			public char g() {
+				return index < s.length() ? s.charAt(index++) : ChrPrim.EMPTYVALUE;
 			}
 		}));
 	}

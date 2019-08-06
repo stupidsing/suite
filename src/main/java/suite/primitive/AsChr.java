@@ -3,11 +3,14 @@ package suite.primitive;
 import java.util.List;
 
 import primal.adt.Pair;
+import primal.fp.FunUtil;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Sink;
 import primal.primitive.ChrPrim.ObjObj_Chr;
 import primal.primitive.ChrPrim.Obj_Chr;
+import primal.primitive.fp.ChrFunUtil;
 import primal.primitive.puller.ChrObjPuller;
+import primal.primitive.puller.ChrPuller;
 import primal.puller.Puller;
 import primal.puller.Puller2;
 import suite.adt.map.ListMultimap;
@@ -15,6 +18,7 @@ import suite.primitive.Chars.CharsBuilder;
 import suite.primitive.adt.map.ChrObjMap;
 import suite.primitive.streamlet.ChrObjStreamlet;
 import suite.primitive.streamlet.ChrStreamlet;
+import suite.streamlet.Read;
 
 public class AsChr {
 
@@ -22,6 +26,14 @@ public class AsChr {
 		var sb = new CharsBuilder();
 		sink.f(sb);
 		return sb.toChars();
+	}
+
+	@SafeVarargs
+	public static <T> ChrStreamlet concat(ChrStreamlet... streamlets) {
+		return new ChrStreamlet(() -> {
+			var source = Read.from(streamlets).puller().source();
+			return ChrPuller.of(ChrFunUtil.concat(FunUtil.map(st -> st.puller().source(), source)));
+		});
 	}
 
 	public static <T> Fun<Puller<T>, ChrStreamlet> lift(Obj_Chr<T> fun0) {

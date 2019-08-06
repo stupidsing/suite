@@ -98,8 +98,7 @@ public class Termios implements Closeable {
 	}
 
 	public void puts(String s) {
-		for (var ch : Read.chars(s))
-			libc.putchar(ch);
+		Read.chars(s).forEach(libc::putchar);
 	}
 
 	private void scroll_(int dir) {

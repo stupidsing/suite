@@ -207,23 +207,19 @@ public class Formatter {
 		String s1;
 		if (isDump)
 			if (!s0.isEmpty()) {
-				var quote = false;
-
-				quote |= s0.startsWith(ProverConstant.variablePrefix) //
-						|| s0.startsWith(ProverConstant.wildcardPrefix);
-
-				for (var c : Read.chars(s0))
-					quote |= !('0' <= c && c <= '9') //
-							&& !('a' <= c && c <= 'z') //
-							&& !('A' <= c && c <= 'Z') //
-							&& c != '.' && c != '-' && c != '_' && c != '$' && c != '!';
-
-				quote |= s0.contains(CommentPreprocessor.openGroupComment) //
+				var quote = false //
+						|| s0.startsWith(ProverConstant.variablePrefix) //
+						|| s0.startsWith(ProverConstant.wildcardPrefix) //
+						|| Read.chars(s0).isAny(c -> true //
+								&& !('0' <= c && c <= '9') //
+								&& !('a' <= c && c <= 'z') //
+								&& !('A' <= c && c <= 'Z') //
+								&& c != '.' && c != '-' && c != '_' && c != '$' && c != '!') //
+						|| s0.contains(CommentPreprocessor.openGroupComment) //
 						|| s0.contains(CommentPreprocessor.closeGroupComment) //
 						|| s0.contains(CommentPreprocessor.openLineComment) //
-						|| s0.contains(CommentPreprocessor.closeLineComment);
-
-				quote |= Is.integer(s0);
+						|| s0.contains(CommentPreprocessor.closeLineComment) //
+						|| Is.integer(s0);
 
 				s1 = quote ? Escaper.escape(s0, '\'') : s0;
 			} else

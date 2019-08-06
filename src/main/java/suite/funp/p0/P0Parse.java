@@ -66,7 +66,6 @@ import suite.persistent.PerMap;
 import suite.persistent.PerSet;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
-import suite.util.To;
 
 public class P0Parse {
 
@@ -277,9 +276,8 @@ public class P0Parse {
 				return FunpNumber.ofNumber(n.number);
 			}).applyIf(Str.class, str -> {
 				var vn = "s$" + Get.temp();
-				var fa = FunpArray.of(To //
+				var fa = FunpArray.of(Read //
 						.chars(str.value) //
-						.streamlet() //
 						.<Funp> map(ch -> FunpCoerce.of(Coerce.NUMBER, Coerce.BYTE, FunpNumber.ofNumber(ch))) //
 						.snoc(FunpCoerce.of(Coerce.NUMBER, Coerce.BYTE, FunpNumber.ofNumber(0))) //
 						.toList());

@@ -3,11 +3,14 @@ package suite.primitive;
 import java.util.List;
 
 import primal.adt.Pair;
+import primal.fp.FunUtil;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Sink;
 import primal.primitive.IntPrim.ObjObj_Int;
 import primal.primitive.IntPrim.Obj_Int;
+import primal.primitive.fp.IntFunUtil;
 import primal.primitive.puller.IntObjPuller;
+import primal.primitive.puller.IntPuller;
 import primal.puller.Puller;
 import primal.puller.Puller2;
 import suite.adt.map.ListMultimap;
@@ -15,6 +18,7 @@ import suite.primitive.Ints.IntsBuilder;
 import suite.primitive.adt.map.IntObjMap;
 import suite.primitive.streamlet.IntObjStreamlet;
 import suite.primitive.streamlet.IntStreamlet;
+import suite.streamlet.Read;
 
 public class AsInt {
 
@@ -22,6 +26,14 @@ public class AsInt {
 		var sb = new IntsBuilder();
 		sink.f(sb);
 		return sb.toInts();
+	}
+
+	@SafeVarargs
+	public static <T> IntStreamlet concat(IntStreamlet... streamlets) {
+		return new IntStreamlet(() -> {
+			var source = Read.from(streamlets).puller().source();
+			return IntPuller.of(IntFunUtil.concat(FunUtil.map(st -> st.puller().source(), source)));
+		});
 	}
 
 	public static <T> Fun<Puller<T>, IntStreamlet> lift(Obj_Int<T> fun0) {

@@ -3,11 +3,14 @@ package suite.primitive;
 import java.util.List;
 
 import primal.adt.Pair;
+import primal.fp.FunUtil;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Sink;
 import primal.primitive.LngPrim.ObjObj_Lng;
 import primal.primitive.LngPrim.Obj_Lng;
+import primal.primitive.fp.LngFunUtil;
 import primal.primitive.puller.LngObjPuller;
+import primal.primitive.puller.LngPuller;
 import primal.puller.Puller;
 import primal.puller.Puller2;
 import suite.adt.map.ListMultimap;
@@ -15,6 +18,7 @@ import suite.primitive.Longs.LongsBuilder;
 import suite.primitive.adt.map.LngObjMap;
 import suite.primitive.streamlet.LngObjStreamlet;
 import suite.primitive.streamlet.LngStreamlet;
+import suite.streamlet.Read;
 
 public class AsLng {
 
@@ -22,6 +26,14 @@ public class AsLng {
 		var sb = new LongsBuilder();
 		sink.f(sb);
 		return sb.toLongs();
+	}
+
+	@SafeVarargs
+	public static <T> LngStreamlet concat(LngStreamlet... streamlets) {
+		return new LngStreamlet(() -> {
+			var source = Read.from(streamlets).puller().source();
+			return LngPuller.of(LngFunUtil.concat(FunUtil.map(st -> st.puller().source(), source)));
+		});
 	}
 
 	public static <T> Fun<Puller<T>, LngStreamlet> lift(Obj_Lng<T> fun0) {

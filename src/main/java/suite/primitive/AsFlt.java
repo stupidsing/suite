@@ -3,11 +3,14 @@ package suite.primitive;
 import java.util.List;
 
 import primal.adt.Pair;
+import primal.fp.FunUtil;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Sink;
 import primal.primitive.FltPrim.ObjObj_Flt;
 import primal.primitive.FltPrim.Obj_Flt;
+import primal.primitive.fp.FltFunUtil;
 import primal.primitive.puller.FltObjPuller;
+import primal.primitive.puller.FltPuller;
 import primal.puller.Puller;
 import primal.puller.Puller2;
 import suite.adt.map.ListMultimap;
@@ -15,6 +18,7 @@ import suite.primitive.Floats.FloatsBuilder;
 import suite.primitive.adt.map.FltObjMap;
 import suite.primitive.streamlet.FltObjStreamlet;
 import suite.primitive.streamlet.FltStreamlet;
+import suite.streamlet.Read;
 
 public class AsFlt {
 
@@ -22,6 +26,14 @@ public class AsFlt {
 		var sb = new FloatsBuilder();
 		sink.f(sb);
 		return sb.toFloats();
+	}
+
+	@SafeVarargs
+	public static <T> FltStreamlet concat(FltStreamlet... streamlets) {
+		return new FltStreamlet(() -> {
+			var source = Read.from(streamlets).puller().source();
+			return FltPuller.of(FltFunUtil.concat(FunUtil.map(st -> st.puller().source(), source)));
+		});
 	}
 
 	public static <T> Fun<Puller<T>, FltStreamlet> lift(Obj_Flt<T> fun0) {

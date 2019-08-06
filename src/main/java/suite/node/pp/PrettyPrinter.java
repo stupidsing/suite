@@ -219,11 +219,8 @@ public class PrettyPrinter {
 	}
 
 	private boolean isLineBegin() {
-		var b = true;
 		var l = sb.substring(getLineBeginPosition(), getCurrentPosition());
-		for (var c : Read.chars(l))
-			b &= Is.whitespace(c);
-		return b;
+		return Read.chars(l).isAll(Is::whitespace);
 	}
 
 	private int getLineSize() {

@@ -49,10 +49,7 @@ public class ListMultimap<K, V> {
 	}
 
 	public boolean isEmpty() {
-		for (var value : map.values())
-			if (!value.isEmpty())
-				return false;
-		return true;
+		return listEntries().values().isAny(list -> !list.isEmpty());
 	}
 
 	public Set<K> keySet() {

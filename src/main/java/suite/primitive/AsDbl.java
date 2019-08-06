@@ -3,11 +3,14 @@ package suite.primitive;
 import java.util.List;
 
 import primal.adt.Pair;
+import primal.fp.FunUtil;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Sink;
 import primal.primitive.DblPrim.ObjObj_Dbl;
 import primal.primitive.DblPrim.Obj_Dbl;
+import primal.primitive.fp.DblFunUtil;
 import primal.primitive.puller.DblObjPuller;
+import primal.primitive.puller.DblPuller;
 import primal.puller.Puller;
 import primal.puller.Puller2;
 import suite.adt.map.ListMultimap;
@@ -15,6 +18,7 @@ import suite.primitive.Doubles.DoublesBuilder;
 import suite.primitive.adt.map.DblObjMap;
 import suite.primitive.streamlet.DblObjStreamlet;
 import suite.primitive.streamlet.DblStreamlet;
+import suite.streamlet.Read;
 
 public class AsDbl {
 
@@ -22,6 +26,14 @@ public class AsDbl {
 		var sb = new DoublesBuilder();
 		sink.f(sb);
 		return sb.toDoubles();
+	}
+
+	@SafeVarargs
+	public static <T> DblStreamlet concat(DblStreamlet... streamlets) {
+		return new DblStreamlet(() -> {
+			var source = Read.from(streamlets).puller().source();
+			return DblPuller.of(DblFunUtil.concat(FunUtil.map(st -> st.puller().source(), source)));
+		});
 	}
 
 	public static <T> Fun<Puller<T>, DblStreamlet> lift(Obj_Dbl<T> fun0) {
