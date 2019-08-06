@@ -8,6 +8,7 @@ import org.junit.Test;
 import primal.primitive.adt.pair.FltObjPair;
 import suite.math.linalg.Vector;
 import suite.math.numeric.Statistic;
+import suite.primitive.AsLng;
 import suite.primitive.Longs_;
 import suite.trade.data.TradeCfg;
 import suite.trade.data.TradeCfgImpl;
@@ -35,7 +36,7 @@ public class PairTest {
 		var ds1 = cfg.dataSource(symbol1, period);
 		var ts0 = Longs_.of(ds0.ts);
 		var ts1 = Longs_.of(ds1.ts);
-		var tradeTimes = Longs_.concat(ts0, ts1).distinct().sort().toArray();
+		var tradeTimes = AsLng.concat(ts0, ts1).distinct().sort().toArray();
 		var prices0 = ds0.alignBeforePrices(tradeTimes).prices;
 		var prices1 = ds1.alignBeforePrices(tradeTimes).prices;
 		var length = prices0.length;

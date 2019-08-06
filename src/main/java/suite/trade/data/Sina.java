@@ -7,10 +7,10 @@ import java.util.Map;
 import java.util.Set;
 
 import primal.Verbs.Build;
+import primal.primitive.adt.Bytes;
 import primal.puller.Puller;
 import suite.http.HttpUtil;
 import suite.node.util.Singleton;
-import suite.primitive.Bytes;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;

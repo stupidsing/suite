@@ -2,7 +2,7 @@ package suite.file;
 
 import java.io.Closeable;
 
-import suite.primitive.Bytes;
+import primal.primitive.adt.Bytes;
 
 public interface PageFile extends Closeable {
 

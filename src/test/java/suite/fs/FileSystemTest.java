@@ -11,11 +11,11 @@ import java.nio.file.Paths;
 import org.junit.Test;
 
 import primal.Nouns.Utf8;
+import primal.primitive.adt.Bytes;
 import suite.cfg.Defaults;
 import suite.fs.impl.B_TreeFileSystemImpl;
 import suite.fs.impl.LazyPbTreeFileSystemImpl;
 import suite.os.FileUtil;
-import suite.primitive.Bytes;
 import suite.streamlet.As;
 import suite.util.Copy;
 import suite.util.To;

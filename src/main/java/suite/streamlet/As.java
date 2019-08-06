@@ -27,6 +27,9 @@ import primal.primitive.IntPrim.Obj_Int;
 import primal.primitive.Int_Dbl;
 import primal.primitive.Int_Flt;
 import primal.primitive.Int_Int;
+import primal.primitive.adt.Bytes;
+import primal.primitive.adt.Bytes.BytesBuilder;
+import primal.primitive.adt.Chars;
 import primal.primitive.puller.IntPuller;
 import primal.puller.Puller;
 import primal.puller.Puller2;
@@ -34,10 +37,7 @@ import suite.adt.map.ListMultimap;
 import suite.primitive.AsChr;
 import suite.primitive.AsFlt;
 import suite.primitive.AsInt;
-import suite.primitive.Bytes;
-import suite.primitive.Bytes.BytesBuilder;
 import suite.primitive.Bytes_;
-import suite.primitive.Chars;
 import suite.primitive.adt.map.ObjIntMap;
 import suite.primitive.streamlet.FltStreamlet;
 import suite.primitive.streamlet.IntStreamlet;
@@ -83,11 +83,11 @@ public class As {
 
 	public static Fun<IntPuller, FltStreamlet> floats(Int_Flt fun0) {
 		var fun1 = fun0.rethrow();
-		return ts -> AsFlt.build(b -> {
+		return ts -> new FltStreamlet(AsFlt.build(b -> {
 			int c;
 			while ((c = ts.pull()) != IntPrim.EMPTYVALUE)
 				b.append(fun1.apply(c));
-		}).streamlet();
+		})::puller);
 	}
 
 	public static InputStream inputStream(Bytes bytes) {
@@ -96,13 +96,11 @@ public class As {
 
 	public static Fun<IntPuller, IntStreamlet> ints(Int_Int fun0) {
 		var fun1 = fun0.rethrow();
-		return ts -> {
-			return AsInt.build(b -> {
-				int c;
-				while ((c = ts.pull()) != IntPrim.EMPTYVALUE)
-					b.append(fun1.apply(c));
-			}).streamlet();
-		};
+		return ts -> new IntStreamlet(AsInt.build(b -> {
+			int c;
+			while ((c = ts.pull()) != IntPrim.EMPTYVALUE)
+				b.append(fun1.apply(c));
+		})::puller);
 	}
 
 	public static <T> String joined(Puller<T> puller) {

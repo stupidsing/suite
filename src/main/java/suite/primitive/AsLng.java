@@ -8,13 +8,15 @@ import primal.fp.Funs.Fun;
 import primal.fp.Funs.Sink;
 import primal.primitive.LngPrim.ObjObj_Lng;
 import primal.primitive.LngPrim.Obj_Lng;
+import primal.primitive.LngVerbs.CopyLng;
+import primal.primitive.adt.Longs;
+import primal.primitive.adt.Longs.LongsBuilder;
 import primal.primitive.fp.LngFunUtil;
 import primal.primitive.puller.LngObjPuller;
 import primal.primitive.puller.LngPuller;
 import primal.puller.Puller;
 import primal.puller.Puller2;
 import suite.adt.map.ListMultimap;
-import suite.primitive.Longs.LongsBuilder;
 import suite.primitive.adt.map.LngObjMap;
 import suite.primitive.streamlet.LngObjStreamlet;
 import suite.primitive.streamlet.LngStreamlet;
@@ -36,6 +38,38 @@ public class AsLng {
 		});
 	}
 
+	public static Longs concat(Longs... array) {
+		var length = 0;
+		for (var longs : array)
+			length += longs.size();
+		var cs1 = new long[length];
+		var i = 0;
+		for (var longs : array) {
+			var size_ = longs.size();
+			CopyLng.array(longs.cs, longs.start, cs1, i, size_);
+			i += size_;
+		}
+		return Longs.of(cs1);
+	}
+
+	public static long[] concat(long[]... array) {
+		var length = 0;
+		for (var fs : array)
+			length += fs.length;
+		var fs1 = new long[length];
+		var i = 0;
+		for (var fs : array) {
+			var length_ = fs.length;
+			CopyLng.array(fs, 0, fs1, i, length_);
+			i += length_;
+		}
+		return fs1;
+	}
+
+	public static Longs of(Puller<Longs> puller) {
+		return build(cb -> puller.forEach(cb::append));
+	}
+
 	public static <T> Fun<Puller<T>, LngStreamlet> lift(Obj_Lng<T> fun0) {
 		var fun1 = fun0.rethrow();
 		return ts -> {
@@ -43,7 +77,7 @@ public class AsLng {
 			T t;
 			while ((t = ts.pull()) != null)
 				b.append(fun1.apply(t));
-			return b.toLongs().streamlet();
+			return new LngStreamlet(b.toLongs()::puller);
 		};
 	}
 

@@ -3,6 +3,7 @@ package suite.ip;
 import java.nio.file.Path;
 import java.util.List;
 
+import primal.primitive.adt.Bytes;
 import suite.Suite;
 import suite.asm.StackAssembler;
 import suite.lp.kb.RuleSet;
@@ -10,7 +11,6 @@ import suite.lp.search.ProverBuilder.Finder;
 import suite.lp.search.SewingProverBuilder2;
 import suite.os.FileUtil;
 import suite.parser.IncludePreprocessor;
-import suite.primitive.Bytes;
 import suite.text.Preprocess;
 
 public class ImperativeCompiler {

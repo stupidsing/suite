@@ -19,8 +19,8 @@ import primal.Verbs.ReadLine;
 import primal.Verbs.Union;
 import primal.Verbs.WriteFile;
 import primal.adt.FixieArray;
+import primal.primitive.adt.Bytes;
 import suite.os.FileUtil;
-import suite.primitive.Bytes;
 import suite.streamlet.Read;
 import suite.text.TextUtil.BytesPair;
 

@@ -5,10 +5,10 @@ import static suite.util.Streamlet_.forInt;
 import java.util.List;
 
 import primal.primitive.DblPrim.Obj_Dbl;
+import primal.primitive.adt.Floats;
 import primal.primitive.adt.pair.DblIntPair;
 import suite.math.linalg.Vector;
 import suite.primitive.AsDbl;
-import suite.primitive.Floats;
 import suite.streamlet.Read;
 import suite.util.To;
 
@@ -54,7 +54,7 @@ public class AdaBoost {
 					ws[i] *= Math.exp(-(xy.y ? 1d : -1d) * alpha * d(xy.xs[p]));
 				}
 
-				vec.scaleOn(ws, 1d / Floats.of(ws).streamlet().sum()); // renormalize
+				vec.scaleOn(ws, 1d / Floats.of(ws).puller().sum()); // renormalize
 
 				return DblIntPair.of(alpha, p);
 			});

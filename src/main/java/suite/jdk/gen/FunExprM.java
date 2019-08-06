@@ -14,8 +14,8 @@ import primal.adt.Fixie_.FixieFun3;
 import primal.adt.Fixie_.FixieFun4;
 import primal.adt.Mutable;
 import primal.primitive.IntPrim.Obj_Int;
+import primal.primitive.adt.Ints.IntsBuilder;
 import suite.jdk.gen.FunExpression.FunExpr;
-import suite.primitive.Ints.IntsBuilder;
 
 /**
  * Functional expressions that can be handled by FunGenerateBytecode.java.

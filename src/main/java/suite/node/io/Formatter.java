@@ -5,6 +5,7 @@ import java.util.Set;
 
 import primal.Verbs.Equals;
 import primal.Verbs.Is;
+import primal.primitive.adt.Chars;
 import suite.lp.doer.ProverConstant;
 import suite.node.Atom;
 import suite.node.Data;
@@ -16,7 +17,6 @@ import suite.node.Str;
 import suite.node.Tree;
 import suite.node.Tuple;
 import suite.parser.CommentPreprocessor;
-import suite.primitive.Chars;
 import suite.streamlet.Read;
 
 /**

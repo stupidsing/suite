@@ -11,6 +11,7 @@ import java.util.function.IntFunction;
 import primal.Nouns.Buffer;
 import primal.Verbs.Close;
 import primal.Verbs.New;
+import primal.primitive.adt.Chars;
 import suite.instructionexecutor.thunk.IndexedReader;
 import suite.instructionexecutor.thunk.IndexedSourceReader;
 import suite.node.Atom;
@@ -18,7 +19,6 @@ import suite.node.Data;
 import suite.node.Node;
 import suite.node.Tree;
 import suite.persistent.PerPointer;
-import suite.primitive.Chars;
 
 public class Intrinsics {
 

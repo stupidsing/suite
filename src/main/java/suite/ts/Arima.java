@@ -9,12 +9,13 @@ import java.util.Random;
 
 import primal.primitive.DblPrim.DblSource;
 import primal.primitive.FltVerbs.CopyFlt;
+import primal.primitive.adt.Floats;
 import primal.primitive.adt.pair.DblObjPair;
 import primal.primitive.adt.pair.FltObjPair;
 import suite.math.linalg.Vector;
 import suite.math.numeric.Statistic;
 import suite.math.numeric.Statistic.LinearRegression;
-import suite.primitive.Floats;
+import suite.primitive.AsFlt;
 import suite.primitive.Floats_;
 import suite.streamlet.As;
 import suite.util.To;
@@ -79,7 +80,7 @@ public class Arima {
 		var mas = To.vector(q, i -> 1f);
 		var xs1 = nDiffs(xs0, d);
 		var arima = armaBackcast(xs1, ars, mas);
-		var xs2 = Floats_.concat(xs1, vec.of(arima.x1));
+		var xs2 = AsFlt.concat(xs1, vec.of(arima.x1));
 		return DblObjPair.of(nSums(xs2, d), arima);
 	}
 
@@ -89,7 +90,7 @@ public class Arima {
 		var length = xs.length;
 		var p = ars.length;
 		var q = mas.length;
-		var xsp = Floats_.concat(new float[p], xs);
+		var xsp = AsFlt.concat(new float[p], xs);
 		var epq = new float[length + q];
 		var arma = new Arma(ars, mas);
 
@@ -120,7 +121,7 @@ public class Arima {
 						int tq = t + q, tqm1 = tq - 1;
 						var lrxs0 = forInt(p).collect(As.floats(i -> xsp[tpm1 - i]));
 						var lrxs1 = forInt(q).collect(As.floats(i -> epq[tqm1 - i]));
-						return FltObjPair.of(xsp[tp], Floats_.concat(lrxs0, lrxs1).toArray());
+						return FltObjPair.of(xsp[tp], AsFlt.concat(lrxs0, lrxs1).toArray());
 					}));
 
 			System.out.println("iter " + iter + ", error = " + To.string(error) + lr);
@@ -139,7 +140,7 @@ public class Arima {
 	private DblObjPair<Arima_> arimaEm(float[] xs0, int p, int d, int q) {
 		var xs1 = nDiffs(xs0, d);
 		var arima = armaEm(xs1, p, q);
-		var xs2 = Floats_.concat(xs1, vec.of(arima.x1));
+		var xs2 = AsFlt.concat(xs1, vec.of(arima.x1));
 		return DblObjPair.of(nSums(xs2, d), arima);
 	}
 
@@ -167,7 +168,7 @@ public class Arima {
 						.map(t -> {
 							var tp = t + p;
 							var tq = t + q;
-							var lrxs = Floats_ //
+							var lrxs = AsFlt //
 									.concat(Floats_.reverse(xsp, t, tp), Floats_.reverse(epq, t, tq)) //
 									.toArray();
 							var lry = xsp[tp] - epq[tq];
@@ -211,7 +212,7 @@ public class Arima {
 	private DblObjPair<Arima_> arimaIa(float[] xs0, int p, int d, int q) {
 		var xs1 = nDiffs(xs0, d);
 		var arima = armaIa(xs1, p, q);
-		var xs2 = Floats_.concat(xs1, vec.of(arima.x1));
+		var xs2 = AsFlt.concat(xs1, vec.of(arima.x1));
 		return DblObjPair.of(nSums(xs2, d), arima);
 	}
 
@@ -240,7 +241,7 @@ public class Arima {
 					.map(t -> {
 						var tp = t + p;
 						int tq = t + q, tqm1 = tq - 1;
-						var lrxs = Floats_ //
+						var lrxs = AsFlt //
 								.concat(Floats_.reverse(xsp, t, tp),
 										forInt(iter_).collect(As.floats(i -> epqByIter[i][tqm1 - i]))) //
 								.toArray();
@@ -267,13 +268,13 @@ public class Arima {
 	public DblObjPair<Arima_> arimaMle(float[] xs0, int p, int d, int q) {
 		var xs1 = nDiffs(xs0, d);
 		var arima = armaMle(xs1, p, q);
-		var xs2 = Floats_.concat(xs1, vec.of(arima.x1));
+		var xs2 = AsFlt.concat(xs1, vec.of(arima.x1));
 		return DblObjPair.of(nSums(xs2, d), arima);
 	}
 
 	private Arima_ armaMle(float[] xs, int p, int q) {
 		var length = xs.length;
-		var xsp = Floats_.concat(new float[p], xs);
+		var xsp = AsFlt.concat(new float[p], xs);
 		var epq = new float[length + q];
 
 		class LogLikelihood implements DblSource {
@@ -321,7 +322,7 @@ public class Arima {
 			var lr = stat.linearRegression(forInt(length) //
 					.map(t -> {
 						var tqm1 = t + qm1;
-						var lrxs = Floats_.concat(Floats_.of(1f), forInt(iter_).collect(As.floats(i -> epqByIter[i][tqm1 - i])))
+						var lrxs = AsFlt.concat(Floats_.of(1f), forInt(iter_).collect(As.floats(i -> epqByIter[i][tqm1 - i])))
 								.toArray();
 						return FltObjPair.of(xs[t], lrxs);
 					}));

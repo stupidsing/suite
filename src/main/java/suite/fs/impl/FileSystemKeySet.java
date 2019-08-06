@@ -5,9 +5,9 @@ import java.util.List;
 import primal.Verbs.Concat;
 import primal.Verbs.First;
 import primal.Verbs.Right;
+import primal.primitive.adt.Bytes;
 import suite.fs.KeyDataStore;
 import suite.fs.impl.FileSystemKeyUtil.NameKey;
-import suite.primitive.Bytes;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 

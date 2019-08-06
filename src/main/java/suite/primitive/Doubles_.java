@@ -2,20 +2,17 @@ package suite.primitive;
 
 import static primal.statics.Rethrow.ex;
 
-import primal.fp.FunUtil;
 import primal.fp.Funs.Iterate;
 import primal.fp.Funs.Source;
 import primal.primitive.DblPrim;
-import primal.primitive.DblVerbs.CopyDbl;
 import primal.primitive.Int_Dbl;
 import primal.primitive.adt.DblMutable;
-import primal.primitive.fp.DblFunUtil;
+import primal.primitive.adt.Doubles;
+import primal.primitive.adt.Doubles.DoublesBuilder;
+import primal.primitive.adt.Doubles.WriteChar;
 import primal.primitive.puller.DblPuller;
 import primal.puller.Puller;
-import suite.primitive.Doubles.DoublesBuilder;
-import suite.primitive.Doubles.WriteChar;
 import suite.primitive.streamlet.DblStreamlet;
-import suite.streamlet.Read;
 
 public class Doubles_ {
 
@@ -27,42 +24,6 @@ public class Doubles_ {
 				return bufferSize <= (p0 = p1 = buffer.size());
 			}
 		});
-	}
-
-	@SafeVarargs
-	public static DblStreamlet concat(DblStreamlet... streamlets) {
-		return new DblStreamlet(() -> {
-			var source = Read.from(streamlets).puller().source();
-			return DblPuller.of(DblFunUtil.concat(FunUtil.map(DblStreamlet::source, source)));
-		});
-	}
-
-	public static double[] concat(double[]... array) {
-		var length = 0;
-		for (var fs : array)
-			length += fs.length;
-		var fs1 = new double[length];
-		var i = 0;
-		for (var fs : array) {
-			var length_ = fs.length;
-			CopyDbl.array(fs, 0, fs1, i, length_);
-			i += length_;
-		}
-		return fs1;
-	}
-
-	public static Doubles concat(Doubles... array) {
-		var length = 0;
-		for (var doubles : array)
-			length += doubles.size();
-		var cs1 = new double[length];
-		var i = 0;
-		for (var doubles : array) {
-			var size_ = doubles.size();
-			CopyDbl.array(doubles.cs, doubles.start, cs1, i, size_);
-			i += size_;
-		}
-		return Doubles.of(cs1);
 	}
 
 	public static void copy(Puller<Doubles> puller, WriteChar writer) {

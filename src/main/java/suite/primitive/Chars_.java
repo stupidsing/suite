@@ -2,20 +2,17 @@ package suite.primitive;
 
 import static primal.statics.Rethrow.ex;
 
-import primal.fp.FunUtil;
 import primal.fp.Funs.Iterate;
 import primal.fp.Funs.Source;
 import primal.primitive.ChrPrim;
-import primal.primitive.ChrVerbs.CopyChr;
 import primal.primitive.Int_Chr;
+import primal.primitive.adt.Chars;
+import primal.primitive.adt.Chars.CharsBuilder;
+import primal.primitive.adt.Chars.WriteChar;
 import primal.primitive.adt.ChrMutable;
-import primal.primitive.fp.ChrFunUtil;
 import primal.primitive.puller.ChrPuller;
 import primal.puller.Puller;
-import suite.primitive.Chars.CharsBuilder;
-import suite.primitive.Chars.WriteChar;
 import suite.primitive.streamlet.ChrStreamlet;
-import suite.streamlet.Read;
 
 public class Chars_ {
 
@@ -27,42 +24,6 @@ public class Chars_ {
 				return bufferSize <= (p0 = p1 = buffer.size());
 			}
 		});
-	}
-
-	@SafeVarargs
-	public static ChrStreamlet concat(ChrStreamlet... streamlets) {
-		return new ChrStreamlet(() -> {
-			var source = Read.from(streamlets).puller().source();
-			return ChrPuller.of(ChrFunUtil.concat(FunUtil.map(ChrStreamlet::source, source)));
-		});
-	}
-
-	public static char[] concat(char[]... array) {
-		var length = 0;
-		for (var fs : array)
-			length += fs.length;
-		var fs1 = new char[length];
-		var i = 0;
-		for (var fs : array) {
-			var length_ = fs.length;
-			CopyChr.array(fs, 0, fs1, i, length_);
-			i += length_;
-		}
-		return fs1;
-	}
-
-	public static Chars concat(Chars... array) {
-		var length = 0;
-		for (var chars : array)
-			length += chars.size();
-		var cs1 = new char[length];
-		var i = 0;
-		for (var chars : array) {
-			var size_ = chars.size();
-			CopyChr.array(chars.cs, chars.start, cs1, i, size_);
-			i += size_;
-		}
-		return Chars.of(cs1);
 	}
 
 	public static void copy(Puller<Chars> puller, WriteChar writer) {

@@ -20,6 +20,7 @@ import primal.Verbs.Instantiate;
 import primal.Verbs.New;
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
+import primal.primitive.adt.Chars;
 import suite.inspect.Inspect;
 import suite.node.Atom;
 import suite.node.Dict;
@@ -29,7 +30,6 @@ import suite.node.Reference;
 import suite.node.Str;
 import suite.node.Tree;
 import suite.node.io.TermOp;
-import suite.primitive.Chars;
 import suite.streamlet.Read;
 
 /**

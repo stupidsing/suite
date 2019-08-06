@@ -8,13 +8,15 @@ import primal.fp.Funs.Fun;
 import primal.fp.Funs.Sink;
 import primal.primitive.IntPrim.ObjObj_Int;
 import primal.primitive.IntPrim.Obj_Int;
+import primal.primitive.IntVerbs.CopyInt;
+import primal.primitive.adt.Ints;
+import primal.primitive.adt.Ints.IntsBuilder;
 import primal.primitive.fp.IntFunUtil;
 import primal.primitive.puller.IntObjPuller;
 import primal.primitive.puller.IntPuller;
 import primal.puller.Puller;
 import primal.puller.Puller2;
 import suite.adt.map.ListMultimap;
-import suite.primitive.Ints.IntsBuilder;
 import suite.primitive.adt.map.IntObjMap;
 import suite.primitive.streamlet.IntObjStreamlet;
 import suite.primitive.streamlet.IntStreamlet;
@@ -36,6 +38,38 @@ public class AsInt {
 		});
 	}
 
+	public static Ints concat(Ints... array) {
+		var length = 0;
+		for (var ints : array)
+			length += ints.size();
+		var cs1 = new int[length];
+		var i = 0;
+		for (var ints : array) {
+			var size_ = ints.size();
+			CopyInt.array(ints.cs, ints.start, cs1, i, size_);
+			i += size_;
+		}
+		return Ints.of(cs1);
+	}
+
+	public static int[] concat(int[]... array) {
+		var length = 0;
+		for (var fs : array)
+			length += fs.length;
+		var fs1 = new int[length];
+		var i = 0;
+		for (var fs : array) {
+			var length_ = fs.length;
+			CopyInt.array(fs, 0, fs1, i, length_);
+			i += length_;
+		}
+		return fs1;
+	}
+
+	public static Ints of(Puller<Ints> puller) {
+		return build(cb -> puller.forEach(cb::append));
+	}
+
 	public static <T> Fun<Puller<T>, IntStreamlet> lift(Obj_Int<T> fun0) {
 		var fun1 = fun0.rethrow();
 		return ts -> {
@@ -43,7 +77,7 @@ public class AsInt {
 			T t;
 			while ((t = ts.pull()) != null)
 				b.append(fun1.apply(t));
-			return b.toInts().streamlet();
+			return new IntStreamlet(b.toInts()::puller);
 		};
 	}
 

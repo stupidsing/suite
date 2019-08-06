@@ -3,11 +3,11 @@ package suite.fs.impl;
 import java.io.IOException;
 import java.nio.file.Path;
 
+import primal.primitive.adt.Bytes;
 import suite.btree.B_Tree;
 import suite.btree.impl.B_TreeBuilder;
 import suite.fs.FileSystem;
 import suite.fs.FileSystemMutator;
-import suite.primitive.Bytes;
 
 public class B_TreeFileSystemImpl implements FileSystem {
 

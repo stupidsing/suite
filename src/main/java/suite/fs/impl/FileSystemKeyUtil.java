@@ -8,9 +8,9 @@ import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.List;
 
+import primal.primitive.adt.Bytes;
+import primal.primitive.adt.Bytes.BytesBuilder;
 import suite.node.util.Singleton;
-import suite.primitive.Bytes;
-import suite.primitive.Bytes.BytesBuilder;
 import suite.serialize.Serialize;
 import suite.serialize.Serialize.Serializer;
 

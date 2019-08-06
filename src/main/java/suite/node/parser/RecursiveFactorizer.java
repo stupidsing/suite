@@ -3,11 +3,12 @@ package suite.node.parser;
 import java.util.ArrayList;
 import java.util.List;
 
+import primal.primitive.adt.Chars;
 import suite.node.io.Operator;
 import suite.node.io.Operator.Assoc;
 import suite.node.io.TermOp;
 import suite.node.parser.FactorizeResult.FTerminal;
-import suite.primitive.Chars;
+import suite.primitive.AsChr;
 import suite.text.Preprocess;
 import suite.text.Preprocess.Reverser;
 import suite.text.Segment;
@@ -40,7 +41,7 @@ public class RecursiveFactorizer {
 
 		// append possibly missed comments
 		var p = reverser.reverse(0);
-		return new FactorizeResult(Chars.concat(in.range(0, p), parsed.pre), parsed.node, parsed.post);
+		return new FactorizeResult(AsChr.concat(in.range(0, p), parsed.pre), parsed.node, parsed.post);
 	}
 
 	private FactorizeResult parse_(Chars chars, int fromOp) {

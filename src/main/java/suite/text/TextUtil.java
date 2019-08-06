@@ -9,9 +9,9 @@ import primal.Verbs.Build;
 import primal.Verbs.Concat;
 import primal.Verbs.Equals;
 import primal.Verbs.Right;
+import primal.primitive.adt.Bytes;
+import primal.primitive.adt.Bytes.BytesBuilder;
 import suite.lcs.Lccs;
-import suite.primitive.Bytes;
-import suite.primitive.Bytes.BytesBuilder;
 import suite.streamlet.Read;
 import suite.util.To;
 

@@ -5,7 +5,7 @@ import java.util.Arrays;
 
 import primal.primitive.IntLngSink;
 import primal.primitive.IntVerbs.CopyInt;
-import suite.primitive.Bytes;
+import primal.primitive.adt.Bytes;
 
 /**
  * https://en.wikipedia.org/wiki/SHA-2

@@ -7,6 +7,7 @@ import java.io.Writer;
 import java.util.ArrayList;
 
 import primal.fp.Funs.Iterate;
+import primal.primitive.adt.Chars;
 import suite.fp.intrinsic.Intrinsics;
 import suite.fp.intrinsic.Intrinsics.Intrinsic;
 import suite.fp.intrinsic.Intrinsics.IntrinsicCallback;
@@ -20,7 +21,6 @@ import suite.node.Node;
 import suite.node.Str;
 import suite.node.Tree;
 import suite.node.util.Comparer;
-import suite.primitive.Chars;
 import suite.util.To;
 
 public class FunInstructionExecutor extends InstructionExecutor {

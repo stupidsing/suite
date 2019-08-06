@@ -32,17 +32,15 @@ import primal.primitive.Flt_Dbl;
 import primal.primitive.IntInt_Dbl;
 import primal.primitive.IntPrim.Int_Obj;
 import primal.primitive.Int_Dbl;
+import primal.primitive.adt.Bytes;
+import primal.primitive.adt.Chars;
 import primal.puller.Puller;
 import suite.cfg.Defaults;
-import suite.primitive.Bytes;
-import suite.primitive.Chars;
 import suite.primitive.IoSink;
 import suite.serialize.SerOutput;
 import suite.streamlet.As;
 
 public class To {
-
-	private static String hexDigits = "0123456789ABCDEF";
 
 	public static <T> T[] array(int length, Class<T> clazz, Int_Obj<T> f) {
 		var ts = New.array(clazz, length);
@@ -85,22 +83,6 @@ public class To {
 			WriteFile.to(filename).doWrite(os -> Copy.stream(inputStream(puller), os));
 			return true;
 		};
-	}
-
-	public static String hex(long i) {
-		return Character.toString(hexDigits.charAt((int) (i & 0x0F)));
-	}
-
-	public static String hex2(long i) {
-		return hex(i >>> 4) + hex(i);
-	}
-
-	public static String hex4(long i) {
-		return hex2(i >>> 8 & 0xFF) + hex2(i & 0xFF);
-	}
-
-	public static String hex8(long i) {
-		return hex4(i >>> 16 & 0xFFFF) + hex4(i & 0xFFFF);
 	}
 
 	public static ReadStream inputStream(Puller<Bytes> puller) {

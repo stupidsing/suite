@@ -2,7 +2,7 @@ package suite.fs;
 
 import java.util.List;
 
-import suite.primitive.Bytes;
+import primal.primitive.adt.Bytes;
 
 public interface FileSystemMutator {
 

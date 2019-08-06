@@ -1,6 +1,6 @@
 package suite.fs;
 
-import suite.primitive.Bytes;
+import primal.primitive.adt.Bytes;
 import suite.streamlet.Streamlet;
 
 public interface KeyDataMutator<Key> {

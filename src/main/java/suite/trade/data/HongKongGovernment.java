@@ -9,9 +9,9 @@ import java.util.Locale;
 import java.util.Map;
 
 import primal.Verbs.Equals;
+import primal.primitive.adt.Floats.FloatsBuilder;
+import primal.primitive.adt.Longs.LongsBuilder;
 import suite.node.util.Singleton;
-import suite.primitive.Floats.FloatsBuilder;
-import suite.primitive.Longs.LongsBuilder;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.trade.Time;

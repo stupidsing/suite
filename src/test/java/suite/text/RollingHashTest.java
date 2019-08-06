@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import suite.primitive.Bytes;
+import primal.primitive.adt.Bytes;
 import suite.util.To;
 
 public class RollingHashTest {

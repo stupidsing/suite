@@ -12,6 +12,7 @@ import java.util.concurrent.TimeUnit;
 import primal.Nouns.Utf8;
 import primal.Verbs.WriteFile;
 import primal.os.Log_;
+import primal.primitive.adt.Bytes.BytesBuilder;
 import suite.lp.doer.Cloner;
 import suite.lp.predicate.PredicateUtil.BuiltinPredicate;
 import suite.node.Int;
@@ -20,7 +21,6 @@ import suite.node.Tree;
 import suite.node.io.Formatter;
 import suite.node.util.SuiteException;
 import suite.os.FileUtil;
-import suite.primitive.Bytes.BytesBuilder;
 import suite.util.To;
 
 public class IoPredicates {

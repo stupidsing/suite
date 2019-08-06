@@ -23,11 +23,11 @@ import primal.fp.Funs.Source;
 import primal.fp.Funs2.Source2;
 import primal.primitive.ChrPrim;
 import primal.primitive.ChrPrim.ChrSource;
+import primal.primitive.adt.Bytes;
 import primal.primitive.puller.ChrPuller;
 import primal.puller.Puller;
 import primal.puller.Puller2;
 import suite.http.HttpUtil;
-import suite.primitive.Bytes;
 import suite.primitive.streamlet.ChrStreamlet;
 import suite.util.To;
 

@@ -6,11 +6,11 @@ import java.util.List;
 
 import primal.Verbs.Equals;
 import primal.fp.Funs.Source;
+import primal.primitive.adt.Bytes;
+import primal.primitive.adt.Bytes.BytesBuilder;
 import suite.file.PageFile;
 import suite.fs.FileSystemMutator;
 import suite.fs.KeyDataStore;
-import suite.primitive.Bytes;
-import suite.primitive.Bytes.BytesBuilder;
 
 public class FileSystemMutatorImpl implements FileSystemMutator {
 

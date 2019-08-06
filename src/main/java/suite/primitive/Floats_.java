@@ -2,20 +2,17 @@ package suite.primitive;
 
 import static primal.statics.Rethrow.ex;
 
-import primal.fp.FunUtil;
 import primal.fp.Funs.Iterate;
 import primal.fp.Funs.Source;
 import primal.primitive.FltPrim;
-import primal.primitive.FltVerbs.CopyFlt;
 import primal.primitive.Int_Flt;
+import primal.primitive.adt.Floats;
+import primal.primitive.adt.Floats.FloatsBuilder;
+import primal.primitive.adt.Floats.WriteChar;
 import primal.primitive.adt.FltMutable;
-import primal.primitive.fp.FltFunUtil;
 import primal.primitive.puller.FltPuller;
 import primal.puller.Puller;
-import suite.primitive.Floats.FloatsBuilder;
-import suite.primitive.Floats.WriteChar;
 import suite.primitive.streamlet.FltStreamlet;
-import suite.streamlet.Read;
 
 public class Floats_ {
 
@@ -27,42 +24,6 @@ public class Floats_ {
 				return bufferSize <= (p0 = p1 = buffer.size());
 			}
 		});
-	}
-
-	@SafeVarargs
-	public static FltStreamlet concat(FltStreamlet... streamlets) {
-		return new FltStreamlet(() -> {
-			var source = Read.from(streamlets).puller().source();
-			return FltPuller.of(FltFunUtil.concat(FunUtil.map(FltStreamlet::source, source)));
-		});
-	}
-
-	public static float[] concat(float[]... array) {
-		var length = 0;
-		for (var fs : array)
-			length += fs.length;
-		var fs1 = new float[length];
-		var i = 0;
-		for (var fs : array) {
-			var length_ = fs.length;
-			CopyFlt.array(fs, 0, fs1, i, length_);
-			i += length_;
-		}
-		return fs1;
-	}
-
-	public static Floats concat(Floats... array) {
-		var length = 0;
-		for (var floats : array)
-			length += floats.size();
-		var cs1 = new float[length];
-		var i = 0;
-		for (var floats : array) {
-			var size_ = floats.size();
-			CopyFlt.array(floats.cs, floats.start, cs1, i, size_);
-			i += size_;
-		}
-		return Floats.of(cs1);
 	}
 
 	public static void copy(Puller<Floats> puller, WriteChar writer) {

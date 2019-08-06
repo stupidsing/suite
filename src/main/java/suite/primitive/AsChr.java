@@ -8,13 +8,15 @@ import primal.fp.Funs.Fun;
 import primal.fp.Funs.Sink;
 import primal.primitive.ChrPrim.ObjObj_Chr;
 import primal.primitive.ChrPrim.Obj_Chr;
+import primal.primitive.ChrVerbs.CopyChr;
+import primal.primitive.adt.Chars;
+import primal.primitive.adt.Chars.CharsBuilder;
 import primal.primitive.fp.ChrFunUtil;
 import primal.primitive.puller.ChrObjPuller;
 import primal.primitive.puller.ChrPuller;
 import primal.puller.Puller;
 import primal.puller.Puller2;
 import suite.adt.map.ListMultimap;
-import suite.primitive.Chars.CharsBuilder;
 import suite.primitive.adt.map.ChrObjMap;
 import suite.primitive.streamlet.ChrObjStreamlet;
 import suite.primitive.streamlet.ChrStreamlet;
@@ -36,6 +38,38 @@ public class AsChr {
 		});
 	}
 
+	public static Chars concat(Chars... array) {
+		var length = 0;
+		for (var chars : array)
+			length += chars.size();
+		var cs1 = new char[length];
+		var i = 0;
+		for (var chars : array) {
+			var size_ = chars.size();
+			CopyChr.array(chars.cs, chars.start, cs1, i, size_);
+			i += size_;
+		}
+		return Chars.of(cs1);
+	}
+
+	public static char[] concat(char[]... array) {
+		var length = 0;
+		for (var fs : array)
+			length += fs.length;
+		var fs1 = new char[length];
+		var i = 0;
+		for (var fs : array) {
+			var length_ = fs.length;
+			CopyChr.array(fs, 0, fs1, i, length_);
+			i += length_;
+		}
+		return fs1;
+	}
+
+	public static Chars of(Puller<Chars> puller) {
+		return build(cb -> puller.forEach(cb::append));
+	}
+
 	public static <T> Fun<Puller<T>, ChrStreamlet> lift(Obj_Chr<T> fun0) {
 		var fun1 = fun0.rethrow();
 		return ts -> {
@@ -43,7 +77,7 @@ public class AsChr {
 			T t;
 			while ((t = ts.pull()) != null)
 				b.append(fun1.apply(t));
-			return b.toChars().streamlet();
+			return new ChrStreamlet(b.toChars()::puller);
 		};
 	}
 

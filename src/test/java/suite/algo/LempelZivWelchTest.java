@@ -9,8 +9,8 @@ import org.junit.Test;
 
 import primal.Nouns.Utf8;
 import primal.fp.Funs.Source;
+import primal.primitive.adt.Bytes.BytesBuilder;
 import suite.os.FileUtil;
-import suite.primitive.Bytes.BytesBuilder;
 import suite.util.To;
 
 public class LempelZivWelchTest {

@@ -4,12 +4,12 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 
+import primal.primitive.adt.Bytes;
 import primal.primitive.adt.pair.IntObjPair;
 import suite.file.JournalledPageFile;
 import suite.file.PageFile;
 import suite.node.util.Singleton;
 import suite.os.FileUtil;
-import suite.primitive.Bytes;
 import suite.serialize.SerInput;
 import suite.serialize.SerOutput;
 import suite.serialize.Serialize;

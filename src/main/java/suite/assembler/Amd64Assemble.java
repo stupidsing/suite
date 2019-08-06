@@ -11,6 +11,8 @@ import java.util.Set;
 import java.util.function.Predicate;
 
 import primal.os.Log_;
+import primal.primitive.adt.Bytes;
+import primal.primitive.adt.Bytes.BytesBuilder;
 import suite.assembler.Amd64.Instruction;
 import suite.assembler.Amd64.OpImm;
 import suite.assembler.Amd64.OpImmLabel;
@@ -23,8 +25,6 @@ import suite.assembler.Amd64.OpRegXmm;
 import suite.assembler.Amd64.OpRegYmm;
 import suite.assembler.Amd64.Operand;
 import suite.inspect.Dump;
-import suite.primitive.Bytes;
-import suite.primitive.Bytes.BytesBuilder;
 import suite.primitive.Bytes_;
 
 // TODO validate number of operands

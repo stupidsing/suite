@@ -7,6 +7,8 @@ import primal.Verbs.First;
 import primal.Verbs.Last;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Iterate;
+import primal.primitive.adt.Chars;
+import primal.primitive.adt.Chars.CharsBuilder;
 import suite.Suite;
 import suite.inspect.Inspect;
 import suite.lp.doer.Generalizer;
@@ -18,8 +20,6 @@ import suite.node.Str;
 import suite.node.util.Rewrite;
 import suite.node.util.Singleton;
 import suite.primitive.AsChr;
-import suite.primitive.Chars;
-import suite.primitive.Chars.CharsBuilder;
 import suite.util.Nodify;
 import suite.util.To;
 

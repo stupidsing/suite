@@ -2,20 +2,17 @@ package suite.primitive;
 
 import static primal.statics.Rethrow.ex;
 
-import primal.fp.FunUtil;
 import primal.fp.Funs.Iterate;
 import primal.fp.Funs.Source;
 import primal.primitive.IntPrim;
-import primal.primitive.IntVerbs.CopyInt;
 import primal.primitive.Int_Int;
 import primal.primitive.adt.IntMutable;
-import primal.primitive.fp.IntFunUtil;
+import primal.primitive.adt.Ints;
+import primal.primitive.adt.Ints.IntsBuilder;
+import primal.primitive.adt.Ints.WriteChar;
 import primal.primitive.puller.IntPuller;
 import primal.puller.Puller;
-import suite.primitive.Ints.IntsBuilder;
-import suite.primitive.Ints.WriteChar;
 import suite.primitive.streamlet.IntStreamlet;
-import suite.streamlet.Read;
 
 public class Ints_ {
 
@@ -27,42 +24,6 @@ public class Ints_ {
 				return bufferSize <= (p0 = p1 = buffer.size());
 			}
 		});
-	}
-
-	@SafeVarargs
-	public static IntStreamlet concat(IntStreamlet... streamlets) {
-		return new IntStreamlet(() -> {
-			var source = Read.from(streamlets).puller().source();
-			return IntPuller.of(IntFunUtil.concat(FunUtil.map(IntStreamlet::source, source)));
-		});
-	}
-
-	public static int[] concat(int[]... array) {
-		var length = 0;
-		for (var fs : array)
-			length += fs.length;
-		var fs1 = new int[length];
-		var i = 0;
-		for (var fs : array) {
-			var length_ = fs.length;
-			CopyInt.array(fs, 0, fs1, i, length_);
-			i += length_;
-		}
-		return fs1;
-	}
-
-	public static Ints concat(Ints... array) {
-		var length = 0;
-		for (var ints : array)
-			length += ints.size();
-		var cs1 = new int[length];
-		var i = 0;
-		for (var ints : array) {
-			var size_ = ints.size();
-			CopyInt.array(ints.cs, ints.start, cs1, i, size_);
-			i += size_;
-		}
-		return Ints.of(cs1);
 	}
 
 	public static void copy(Puller<Ints> puller, WriteChar writer) {

@@ -1,5 +1,6 @@
 package suite.fp.intrinsic;
 
+import primal.primitive.adt.Chars;
 import primal.puller.Puller;
 import suite.fp.intrinsic.Intrinsics.Intrinsic;
 import suite.instructionexecutor.thunk.IPointerMapper;
@@ -9,7 +10,6 @@ import suite.node.Data;
 import suite.node.Int;
 import suite.node.Node;
 import suite.persistent.PerPointer;
-import suite.primitive.Chars;
 import suite.primitive.Chars_;
 import suite.util.To;
 

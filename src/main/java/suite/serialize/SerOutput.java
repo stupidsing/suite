@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import primal.io.WriteStream;
-import suite.primitive.Bytes;
+import primal.primitive.adt.Bytes;
 
 public class SerOutput extends WriteStream implements DataOutput {
 

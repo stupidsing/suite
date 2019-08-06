@@ -10,7 +10,7 @@ import java.nio.file.Path;
 
 import primal.Verbs.Close;
 import primal.Verbs.Mk;
-import suite.primitive.Bytes;
+import primal.primitive.adt.Bytes;
 
 public class RandomAccessibleFile implements Closeable {
 

@@ -18,9 +18,9 @@ import primal.Nouns.Utf8;
 import primal.Verbs.Start;
 import primal.fp.Funs.Sink;
 import primal.os.Log_;
+import primal.primitive.adt.Bytes;
 import primal.statics.Rethrow;
 import suite.net.nio.NioDispatch.AsyncRw;
-import suite.primitive.Bytes;
 
 public class NioDispatchTest {
 

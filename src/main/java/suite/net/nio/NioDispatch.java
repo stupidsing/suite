@@ -26,12 +26,12 @@ import primal.fp.Funs.Iterate;
 import primal.fp.Funs.Sink;
 import primal.fp.Funs2.Sink2;
 import primal.os.Log_;
+import primal.primitive.adt.Bytes;
+import primal.primitive.adt.Bytes.BytesBuilder;
 import suite.adt.PriorityQueue;
 import suite.concurrent.Backoff;
 import suite.concurrent.Pool;
 import suite.net.NetUtil;
-import suite.primitive.Bytes;
-import suite.primitive.Bytes.BytesBuilder;
 
 public class NioDispatch implements Closeable {
 

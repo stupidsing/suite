@@ -9,7 +9,7 @@ import org.junit.Test;
 
 import primal.primitive.adt.pair.DblObjPair;
 import suite.math.linalg.Vector;
-import suite.primitive.Floats_;
+import suite.primitive.AsFlt;
 import suite.streamlet.As;
 import suite.ts.Arima;
 import suite.ts.Arima.Arima_;
@@ -56,7 +56,7 @@ public class ArimaTest {
 	private float[] generate(int length, float[] ars, float[] mas) {
 		var p = ars.length;
 		var q = mas.length;
-		var xsp = Floats_.concat(To.vector(p, i -> 8f * random.nextDouble()), new float[length]);
+		var xsp = AsFlt.concat(To.vector(p, i -> 8f * random.nextDouble()), new float[length]);
 		var epq = To.vector(length + q, i -> random.nextGaussian());
 
 		for (var t = 0; t < length; t++) {

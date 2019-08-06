@@ -8,8 +8,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import primal.fp.Funs.Source;
+import primal.primitive.adt.Bytes;
 import suite.node.util.Singleton;
-import suite.primitive.Bytes;
 import suite.serialize.SerInput;
 import suite.serialize.SerOutput;
 import suite.serialize.Serialize.Serializer;

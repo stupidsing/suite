@@ -18,6 +18,7 @@ import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.Type;
 
 import primal.Verbs.Equals;
+import primal.primitive.adt.Ints.IntsBuilder;
 import suite.jdk.gen.FunExprM.ArrayFunExpr;
 import suite.jdk.gen.FunExprM.ArrayLengthFunExpr;
 import suite.jdk.gen.FunExprM.AssignLocalFunExpr;
@@ -46,7 +47,6 @@ import suite.jdk.gen.FunExprM.ProfileFunExpr;
 import suite.jdk.gen.FunExprM.SeqFunExpr;
 import suite.jdk.gen.FunExprM.VoidFunExpr;
 import suite.jdk.gen.FunExpression.FunExpr;
-import suite.primitive.Ints.IntsBuilder;
 import suite.primitive.adt.map.IntIntMap;
 import suite.primitive.adt.map.IntObjMap;
 import suite.streamlet.Read;

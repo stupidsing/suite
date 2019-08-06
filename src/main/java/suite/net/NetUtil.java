@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import suite.primitive.Bytes;
+import primal.primitive.adt.Bytes;
 
 public class NetUtil {
 

@@ -4,7 +4,7 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 
-import suite.primitive.Bytes;
+import primal.primitive.adt.Bytes;
 
 public class ImperativeCompilerTest {
 

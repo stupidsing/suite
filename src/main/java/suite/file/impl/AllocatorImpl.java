@@ -5,12 +5,12 @@ import static java.lang.Math.min;
 import java.io.IOException;
 
 import primal.primitive.IntPrim.Int_Obj;
+import primal.primitive.adt.Bytes;
+import primal.primitive.adt.Bytes.BytesBuilder;
 import suite.file.ExtentAllocator;
 import suite.file.PageAllocator;
 import suite.file.PageFile;
 import suite.file.SerializedPageFile;
-import suite.primitive.Bytes;
-import suite.primitive.Bytes.BytesBuilder;
 
 /**
  * Manage B-tree pages on disk.

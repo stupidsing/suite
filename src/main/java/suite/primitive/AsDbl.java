@@ -8,13 +8,15 @@ import primal.fp.Funs.Fun;
 import primal.fp.Funs.Sink;
 import primal.primitive.DblPrim.ObjObj_Dbl;
 import primal.primitive.DblPrim.Obj_Dbl;
+import primal.primitive.DblVerbs.CopyDbl;
+import primal.primitive.adt.Doubles;
+import primal.primitive.adt.Doubles.DoublesBuilder;
 import primal.primitive.fp.DblFunUtil;
 import primal.primitive.puller.DblObjPuller;
 import primal.primitive.puller.DblPuller;
 import primal.puller.Puller;
 import primal.puller.Puller2;
 import suite.adt.map.ListMultimap;
-import suite.primitive.Doubles.DoublesBuilder;
 import suite.primitive.adt.map.DblObjMap;
 import suite.primitive.streamlet.DblObjStreamlet;
 import suite.primitive.streamlet.DblStreamlet;
@@ -36,6 +38,38 @@ public class AsDbl {
 		});
 	}
 
+	public static Doubles concat(Doubles... array) {
+		var length = 0;
+		for (var doubles : array)
+			length += doubles.size();
+		var cs1 = new double[length];
+		var i = 0;
+		for (var doubles : array) {
+			var size_ = doubles.size();
+			CopyDbl.array(doubles.cs, doubles.start, cs1, i, size_);
+			i += size_;
+		}
+		return Doubles.of(cs1);
+	}
+
+	public static double[] concat(double[]... array) {
+		var length = 0;
+		for (var fs : array)
+			length += fs.length;
+		var fs1 = new double[length];
+		var i = 0;
+		for (var fs : array) {
+			var length_ = fs.length;
+			CopyDbl.array(fs, 0, fs1, i, length_);
+			i += length_;
+		}
+		return fs1;
+	}
+
+	public static Doubles of(Puller<Doubles> puller) {
+		return build(cb -> puller.forEach(cb::append));
+	}
+
 	public static <T> Fun<Puller<T>, DblStreamlet> lift(Obj_Dbl<T> fun0) {
 		var fun1 = fun0.rethrow();
 		return ts -> {
@@ -43,7 +77,7 @@ public class AsDbl {
 			T t;
 			while ((t = ts.pull()) != null)
 				b.append(fun1.apply(t));
-			return b.toDoubles().streamlet();
+			return new DblStreamlet(b.toDoubles()::puller);
 		};
 	}
 

@@ -3,8 +3,8 @@ package suite.sample;
 import java.util.zip.ZipFile;
 
 import primal.Verbs.Union;
+import primal.primitive.adt.Bytes;
 import suite.os.FileUtil;
-import suite.primitive.Bytes;
 import suite.streamlet.Read;
 import suite.text.TextUtil;
 import suite.util.RunUtil;

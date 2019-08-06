@@ -8,10 +8,10 @@ import java.io.InputStream;
 
 import primal.Nouns.Buffer;
 import primal.fp.Funs.Fun;
+import primal.primitive.adt.Bytes;
+import primal.primitive.adt.Bytes.BytesBuilder;
 import suite.cfg.Defaults;
 import suite.os.SocketUtil;
-import suite.primitive.Bytes;
-import suite.primitive.Bytes.BytesBuilder;
 
 public class ServeSocket {
 

@@ -11,12 +11,13 @@ import static suite.util.Streamlet_.forInt;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import primal.primitive.adt.Floats;
 import primal.primitive.adt.pair.FltObjPair;
 import suite.math.linalg.CholeskyDecomposition;
 import suite.math.linalg.Vector;
 import suite.math.numeric.Statistic;
 import suite.math.numeric.Statistic.LinearRegression;
-import suite.primitive.Floats;
+import suite.primitive.AsFlt;
 import suite.primitive.Ints_;
 import suite.streamlet.As;
 import suite.streamlet.Read;
@@ -48,7 +49,7 @@ public class TimeSeries {
 		var lr = stat.linearRegression(forInt(tor, length) //
 				.map(i -> FltObjPair.of(ydiffs[i],
 						// i - drift term, necessary?
-						Floats.concat(Floats.of(ys[i - 1], 1f, i), Floats.of(ydiffs, i - tor, i)).toArray())));
+						AsFlt.concat(Floats.of(ys[i - 1], 1f, i), Floats.of(ydiffs, i - tor, i)).toArray())));
 		return lr.tStatistic()[0];
 	}
 

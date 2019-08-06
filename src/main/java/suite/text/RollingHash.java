@@ -1,6 +1,6 @@
 package suite.text;
 
-import suite.primitive.Bytes;
+import primal.primitive.adt.Bytes;
 
 public class RollingHash {
 

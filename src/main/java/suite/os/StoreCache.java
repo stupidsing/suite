@@ -11,16 +11,16 @@ import java.util.Arrays;
 import primal.Nouns.Buffer;
 import primal.Nouns.Utf8;
 import primal.Verbs.DeleteFile;
+import primal.Verbs.Format;
 import primal.Verbs.WriteFile;
 import primal.adt.Pair;
 import primal.fp.Funs.Source;
+import primal.primitive.adt.Bytes;
 import primal.puller.Puller;
 import suite.cfg.HomeDir;
 import suite.http.HttpUtil;
-import suite.primitive.Bytes;
 import suite.serialize.SerOutput;
 import suite.streamlet.Streamlet;
-import suite.util.To;
 
 public class StoreCache {
 
@@ -202,7 +202,7 @@ public class StoreCache {
 	}
 
 	private Path path(Bytes key, int i, String suffix) {
-		var hex8 = To.hex8(key.hashCode());
+		var hex8 = Format.hex8(key.hashCode());
 		var dir1 = dir.resolve(hex8.substring(0, 2));
 		return dir1.resolve(hex8 + "." + i + suffix);
 	}

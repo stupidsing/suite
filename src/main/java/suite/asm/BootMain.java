@@ -4,9 +4,9 @@ import static primal.statics.Fail.fail;
 
 import java.nio.file.Paths;
 
+import primal.primitive.adt.Bytes;
 import suite.ip.ImperativeCompiler;
 import suite.os.FileUtil;
-import suite.primitive.Bytes;
 import suite.streamlet.Read;
 import suite.util.RunUtil;
 import suite.util.To;

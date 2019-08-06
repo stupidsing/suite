@@ -7,13 +7,13 @@ import java.util.List;
 import org.junit.Test;
 
 import primal.Nouns.Utf8;
+import primal.primitive.adt.Bytes;
 import suite.assembler.Amd64;
 import suite.assembler.Amd64.Insn;
 import suite.assembler.Amd64.Instruction;
 import suite.assembler.Amd64Assemble;
 import suite.assembler.Amd64Interpret;
 import suite.funp.Funp_;
-import suite.primitive.Bytes;
 import suite.util.RunUtil;
 
 // http://www.muppetlabs.com/~breadbox/software/tiny/teensy.html

@@ -13,9 +13,9 @@ import primal.Nouns.Utf8;
 import primal.Verbs.Get;
 import primal.Verbs.WriteFile;
 import primal.primitive.IntPrim.Int_Obj;
+import primal.primitive.adt.Bytes;
+import primal.primitive.adt.Bytes.BytesBuilder;
 import suite.cfg.Defaults;
-import suite.primitive.Bytes;
-import suite.primitive.Bytes.BytesBuilder;
 import suite.serialize.SerOutput;
 
 // http://www.muppetlabs.com/~breadbox/software/tiny/teensy.html

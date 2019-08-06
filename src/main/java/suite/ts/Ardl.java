@@ -7,7 +7,7 @@ import primal.primitive.FltVerbs.CopyFlt;
 import primal.primitive.adt.pair.FltObjPair;
 import suite.math.numeric.Statistic;
 import suite.math.numeric.Statistic.LinearRegression;
-import suite.primitive.Floats_;
+import suite.primitive.AsFlt;
 import suite.util.To;
 
 /**
@@ -45,7 +45,7 @@ public class Ardl {
 	}
 
 	private float[] getExplanatoryVariables(float[][] fsList, int it, int t) {
-		return Floats_.concat(To.array(fsList.length, float[].class, is -> {
+		return AsFlt.concat(To.array(fsList.length, float[].class, is -> {
 			var fsi = fsList[is];
 			var xs = new float[maxLag + (isIncludeCurrent ? 1 : 0)];
 			CopyFlt.array(fsi, t, xs, 0, maxLag);

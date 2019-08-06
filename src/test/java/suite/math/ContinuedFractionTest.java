@@ -7,9 +7,9 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
+import primal.primitive.adt.Ints;
+import primal.primitive.adt.Ints.IntsBuilder;
 import primal.primitive.adt.pair.IntIntPair;
-import suite.primitive.Ints;
-import suite.primitive.Ints.IntsBuilder;
 
 public class ContinuedFractionTest {
 

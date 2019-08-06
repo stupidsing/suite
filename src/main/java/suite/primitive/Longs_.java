@@ -2,20 +2,17 @@ package suite.primitive;
 
 import static primal.statics.Rethrow.ex;
 
-import primal.fp.FunUtil;
 import primal.fp.Funs.Iterate;
 import primal.fp.Funs.Source;
 import primal.primitive.Int_Lng;
 import primal.primitive.LngPrim;
-import primal.primitive.LngVerbs.CopyLng;
 import primal.primitive.adt.LngMutable;
-import primal.primitive.fp.LngFunUtil;
+import primal.primitive.adt.Longs;
+import primal.primitive.adt.Longs.LongsBuilder;
+import primal.primitive.adt.Longs.WriteChar;
 import primal.primitive.puller.LngPuller;
 import primal.puller.Puller;
-import suite.primitive.Longs.LongsBuilder;
-import suite.primitive.Longs.WriteChar;
 import suite.primitive.streamlet.LngStreamlet;
-import suite.streamlet.Read;
 
 public class Longs_ {
 
@@ -27,42 +24,6 @@ public class Longs_ {
 				return bufferSize <= (p0 = p1 = buffer.size());
 			}
 		});
-	}
-
-	@SafeVarargs
-	public static LngStreamlet concat(LngStreamlet... streamlets) {
-		return new LngStreamlet(() -> {
-			var source = Read.from(streamlets).puller().source();
-			return LngPuller.of(LngFunUtil.concat(FunUtil.map(LngStreamlet::source, source)));
-		});
-	}
-
-	public static long[] concat(long[]... array) {
-		var length = 0;
-		for (var fs : array)
-			length += fs.length;
-		var fs1 = new long[length];
-		var i = 0;
-		for (var fs : array) {
-			var length_ = fs.length;
-			CopyLng.array(fs, 0, fs1, i, length_);
-			i += length_;
-		}
-		return fs1;
-	}
-
-	public static Longs concat(Longs... array) {
-		var length = 0;
-		for (var longs : array)
-			length += longs.size();
-		var cs1 = new long[length];
-		var i = 0;
-		for (var longs : array) {
-			var size_ = longs.size();
-			CopyLng.array(longs.cs, longs.start, cs1, i, size_);
-			i += size_;
-		}
-		return Longs.of(cs1);
 	}
 
 	public static void copy(Puller<Longs> puller, WriteChar writer) {

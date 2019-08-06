@@ -8,6 +8,7 @@ import java.nio.ByteOrder;
 import java.util.List;
 
 import primal.Verbs.Build;
+import primal.Verbs.Format;
 import primal.adt.Pair;
 import primal.fp.Funs.Sink;
 import primal.os.Log_;
@@ -15,6 +16,8 @@ import primal.primitive.IntInt_Obj;
 import primal.primitive.LngLng_Obj;
 import primal.primitive.LngPrim.LngSink;
 import primal.primitive.LngPrim.Obj_Lng;
+import primal.primitive.adt.Bytes;
+import primal.primitive.adt.Bytes.BytesBuilder;
 import suite.assembler.Amd64.Insn;
 import suite.assembler.Amd64.Instruction;
 import suite.assembler.Amd64.OpImm;
@@ -22,12 +25,9 @@ import suite.assembler.Amd64.OpMem;
 import suite.assembler.Amd64.OpReg;
 import suite.assembler.Amd64.Operand;
 import suite.funp.Funp_;
-import suite.primitive.Bytes;
-import suite.primitive.Bytes.BytesBuilder;
 import suite.primitive.IntRange;
 import suite.primitive.LngRange;
 import suite.primitive.adt.map.LngIntMap;
-import suite.util.To;
 
 public class Amd64Interpret {
 
@@ -266,7 +266,7 @@ public class Amd64Interpret {
 					assign.f(address((OpMem) op1));
 					break;
 				case LOG:
-					Log_.info("value = " + To.hex8(source0));
+					Log_.info("value = " + Format.hex8(source0));
 					break;
 				case MOV:
 					assign.f(source1);
@@ -497,9 +497,9 @@ public class Amd64Interpret {
 			for (var i = 0; i < 8; i++)
 				sb.append((i % 2 == 0 ? "\n" : " ") //
 						+ amd64.regByName.inverse().get(amd64.reg32[i]) //
-						+ ":" + To.hex8(regs[i]));
+						+ ":" + Format.hex8(regs[i]));
 			sb.append("\nCMP = " + c);
-			sb.append("\n[" + To.hex8(eip) + "] INSTRUCTION = " + dump.dump(instruction));
+			sb.append("\n[" + Format.hex8(eip) + "] INSTRUCTION = " + dump.dump(instruction));
 		});
 	}
 
