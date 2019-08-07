@@ -9,7 +9,6 @@ import primal.fp.Funs.Fun;
 import primal.fp.Funs.Source;
 import suite.node.Node;
 import suite.node.io.Formatter;
-import suite.streamlet.As;
 import suite.streamlet.Read;
 
 public class VariableMapper<K> {
@@ -35,7 +34,7 @@ public class VariableMapper<K> {
 					.map2((key, index) -> display(key), (key, index) -> refs[index].finalNode()) //
 					.sortByKey(Compare::string) //
 					.map((k, v) -> k + " = " + Formatter.dump(v)) //
-					.collect(As.joinedBy(", "));
+					.toJoinedString(", ");
 		}
 
 		public Node getVariable(K variable) {

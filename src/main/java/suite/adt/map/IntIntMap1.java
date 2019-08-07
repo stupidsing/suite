@@ -15,7 +15,6 @@ import primal.primitive.puller.IntObjPuller;
 import primal.primitive.puller.IntPuller;
 import suite.primitive.streamlet.IntObjStreamlet;
 import suite.primitive.streamlet.IntStreamlet;
-import suite.streamlet.As;
 
 /**
  * Map with integer key and integer object value. EMPTYVALUE is not allowed in
@@ -96,7 +95,7 @@ public class IntIntMap1 {
 
 	@Override
 	public String toString() {
-		return streamlet().map((k, v) -> k + ":" + v + ",").collect(As::joined);
+		return streamlet().map((k, v) -> k + ":" + v + ",").toJoinedString();
 	}
 
 	public void update(int key, Int_Int fun) {

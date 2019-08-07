@@ -11,7 +11,7 @@ import java.util.Map;
 import primal.Verbs.Equals;
 import primal.primitive.Dbl_Dbl;
 import primal.primitive.FltPrim.Obj_Flt;
-import suite.primitive.AsDbl;
+import primal.primitive.fp.AsDbl;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
 import suite.util.To;

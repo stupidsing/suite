@@ -73,7 +73,7 @@ public class BackTestMain {
 		var content0 = Read //
 				.bytes(Paths.get("src/main/java/" + getClass().getName().replace('.', '/') + ".java")) //
 				.collect(As::utf8decode) //
-				.collect(As::joined);
+				.toJoinedString();
 
 		var content1 = ParseUtil.fit(content0, "// BEGIN", "// END").t1;
 

@@ -16,8 +16,8 @@ import primal.adt.Pair;
 import primal.adt.map.BiHashMap;
 import primal.adt.map.BiMap;
 import primal.fp.Funs.Fun;
+import primal.primitive.adt.IntRange;
 import primal.primitive.adt.pair.IntObjPair;
-import suite.primitive.IntRange;
 import suite.streamlet.Read;
 
 public class HtmlUtil {

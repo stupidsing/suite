@@ -19,7 +19,6 @@ import suite.node.io.Operator.Assoc;
 import suite.node.util.Singleton;
 import suite.object.MapObject;
 import suite.object.MapObject_;
-import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.ParseUtil;
@@ -281,7 +280,7 @@ public class Dump {
 				}
 				return Read.each(indent + s + tail);
 			}
-		}.split("\n", string, "").collect(As::joined);
+		}.split("\n", string, "").toJoinedString();
 	}
 
 	private static Streamlet<Pair<String, Callable<Object>>> readers(Object object) {

@@ -15,7 +15,6 @@ import suite.ebnf.lr.BuildLr.Reduce;
 import suite.ebnf.lr.BuildLr.State;
 import suite.parser.Lexer;
 import suite.persistent.PerList;
-import suite.streamlet.As;
 import suite.streamlet.Read;
 
 public class LrParse {
@@ -95,7 +94,7 @@ public class LrParse {
 				.map2((k, v) -> k.toString(), (k, v) -> v) //
 				.sortByKey(Compare::objects) //
 				.map((k, v) -> k + " = " + v + "\n") //
-				.collect(As.joinedBy("{\n", "", "}\n"));
+				.toJoinedString("{\n", "", "}\n");
 	}
 
 }

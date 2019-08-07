@@ -11,7 +11,6 @@ import primal.primitive.adt.Bytes;
 import primal.puller.Puller;
 import suite.http.HttpUtil;
 import suite.node.util.Singleton;
-import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.ParseUtil;
@@ -62,7 +61,7 @@ public class Sina {
 	private Streamlet<Factor> queryFactor_(Streamlet<String> symbols, boolean isCache) {
 		var url = "http://hq.sinajs.cn/?list=" + symbols //
 				.map(this::toSina) //
-				.collect(As.joinedBy(","));
+				.toJoinedString(",");
 
 		var data = ex(() -> {
 			Puller<Bytes> in;
@@ -77,7 +76,7 @@ public class Sina {
 						for (var i = 0; i < bytes.size(); i++)
 							sb.append((char) bytes.get(i));
 					})) //
-					.collect(As::joined);
+					.toJoinedString();
 		});
 
 		return Read //

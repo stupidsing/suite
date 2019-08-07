@@ -12,6 +12,7 @@ import primal.Verbs.Equals;
 import primal.Verbs.Get;
 import primal.adt.Opt;
 import primal.adt.Pair;
+import primal.adt.map.ListMultimap;
 import primal.fp.FunUtil;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Sink;
@@ -22,7 +23,6 @@ import primal.primitive.adt.pair.IntObjPair;
 import primal.primitive.puller.IntObjPuller;
 import primal.puller.Puller;
 import primal.streamlet.StreamletDefaults;
-import suite.adt.map.ListMultimap;
 import suite.primitive.streamlet.IntObjStreamlet;
 
 public class Streamlet<T> implements StreamletDefaults<T, Opt<T>, Predicate<T>, Puller<T>, Sink<T>, Source<T>> {
@@ -216,7 +216,7 @@ public class Streamlet<T> implements StreamletDefaults<T, Opt<T>, Predicate<T>, 
 	}
 
 	public String toLines() {
-		return map_(t -> t + "\n").collect(As::joined);
+		return map_(t -> t + "\n").toJoinedString();
 	}
 
 	public List<T> toList() {
@@ -257,7 +257,7 @@ public class Streamlet<T> implements StreamletDefaults<T, Opt<T>, Predicate<T>, 
 
 	@Override
 	public String toString() {
-		return map_(t -> "\n" + t).collect(As::joined);
+		return map_(t -> "\n" + t).toJoinedString();
 	}
 
 	public T uniqueResult() {

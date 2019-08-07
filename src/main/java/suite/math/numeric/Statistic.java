@@ -13,12 +13,12 @@ import primal.primitive.IntPrim.Obj_Int;
 import primal.primitive.Int_Dbl;
 import primal.primitive.Int_Flt;
 import primal.primitive.adt.IntMutable;
+import primal.primitive.adt.map.IntObjMap;
 import primal.primitive.adt.pair.FltObjPair;
 import primal.primitive.adt.pair.IntObjPair;
 import suite.math.linalg.CholeskyDecomposition;
 import suite.math.linalg.Matrix;
 import suite.math.linalg.Vector;
-import suite.primitive.adt.map.IntObjMap;
 import suite.streamlet.Streamlet;
 import suite.util.To;
 

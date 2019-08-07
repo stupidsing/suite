@@ -6,10 +6,10 @@ import static java.lang.Math.log1p;
 import primal.Verbs.Compare;
 import primal.fp.FunUtil;
 import primal.fp.Funs.Sink;
+import primal.primitive.fp.AsDbl;
 import suite.math.numeric.Statistic;
-import suite.primitive.AsDbl;
-import suite.primitive.AsFlt;
 import suite.primitive.Floats_;
+import suite.primitive.ReadFlt;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 import suite.trade.Instrument;
@@ -47,7 +47,7 @@ public class BackTester {
 					var txFee = sims.toDouble(AsDbl.sum(sim -> cfg.transactionFee(sim.account.transactionAmount())));
 
 					var returns = sims //
-							.collect(AsFlt.lift(sim -> (float) sim.annualReturn)) //
+							.collect(ReadFlt.lift(sim -> (float) sim.annualReturn)) //
 							.toArray();
 
 					var mv = stat.meanVariance(returns);

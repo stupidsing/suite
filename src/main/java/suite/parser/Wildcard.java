@@ -6,7 +6,7 @@ import primal.Verbs.Build;
 import primal.adt.Pair;
 import primal.fp.Funs.Source;
 import suite.persistent.PerList;
-import suite.primitive.AsChr;
+import suite.primitive.ReadChr;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 
@@ -36,7 +36,7 @@ public class Wildcard {
 					|| h1 == '*' && (isMatch2(p0, t1) || isMatch2(t0, p1)) //
 					|| h0 == h1 && isMatch2(t0, t1);
 		} else
-			return AsChr.concat(Read.chars(p0), Read.chars(p1)).isAll(c -> c == '*');
+			return ReadChr.concat(Read.chars(p0), Read.chars(p1)).isAll(c -> c == '*');
 	}
 
 	public static String[] match(String pattern, String input) {

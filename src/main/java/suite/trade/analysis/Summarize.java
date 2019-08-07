@@ -12,7 +12,6 @@ import primal.fp.Funs.Iterate;
 import primal.fp.Funs.Sink;
 import primal.primitive.Dbl_Dbl;
 import primal.primitive.adt.pair.LngFltPair;
-import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.trade.Account;
@@ -90,7 +89,7 @@ public class Summarize {
 					.keys() //
 					.map(Object::toString) //
 					.sort(Compare::string) //
-					.collect(As.joinedBy("/"));
+					.toJoinedString("/");
 
 			return percent(price1, pricex) //
 					+ ", " + percent(price0, pricex) //

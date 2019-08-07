@@ -13,11 +13,11 @@ import java.util.Arrays;
 
 import primal.primitive.adt.Floats;
 import primal.primitive.adt.pair.FltObjPair;
+import primal.primitive.fp.AsFlt;
 import suite.math.linalg.CholeskyDecomposition;
 import suite.math.linalg.Vector;
 import suite.math.numeric.Statistic;
 import suite.math.numeric.Statistic.LinearRegression;
-import suite.primitive.AsFlt;
 import suite.primitive.Ints_;
 import suite.streamlet.As;
 import suite.streamlet.Read;

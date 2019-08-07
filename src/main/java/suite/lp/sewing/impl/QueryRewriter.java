@@ -5,8 +5,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import primal.adt.map.ListMultimap;
 import suite.Suite;
-import suite.adt.map.ListMultimap;
 import suite.lp.kb.Prototype;
 import suite.lp.kb.Rule;
 import suite.node.Atom;
@@ -41,8 +41,8 @@ public class QueryRewriter {
 	}
 
 	public QueryRewriter(ListMultimap<Prototype, Rule> rules) {
-		infoByPrototype = Read.from2(rules.listEntries()).mapValue(PrototypeInfo::new).toMap();
-		rules1 = rules.entries().mapValue(this::rewriteRule).toMultimap();
+		infoByPrototype = Read.listEntries(rules).mapValue(PrototypeInfo::new).toMap();
+		rules1 = Read.from2(rules).mapValue(this::rewriteRule).toMultimap();
 	}
 
 	private Rule rewriteRule(Rule rule) {

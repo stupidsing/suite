@@ -15,7 +15,7 @@ import primal.Verbs.Right;
 import primal.fp.Funs.Iterate;
 import primal.primitive.IntInt_Obj;
 import primal.primitive.IntPrim.Int_Obj;
-import suite.primitive.AsInt;
+import primal.primitive.fp.AsInt;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 

@@ -10,7 +10,6 @@ import primal.Verbs.Compare;
 import primal.Verbs.Mk;
 import suite.os.Execute;
 import suite.os.FileUtil;
-import suite.streamlet.As;
 import suite.streamlet.Read;
 
 /**
@@ -85,7 +84,7 @@ public class OtfTest {
 				.sort(Compare::objects) //
 
 				// formality - this is actually a toList() and makes the data "stable."
-				.collect(As::joined);
+				.toJoinedString();
 
 		// output!
 		System.out.println(commands);

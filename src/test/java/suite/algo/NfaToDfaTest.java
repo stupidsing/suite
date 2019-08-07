@@ -8,9 +8,8 @@ import java.util.Set;
 
 import org.junit.Test;
 
+import primal.adt.map.ListMultimap;
 import primal.fp.Funs.Fun;
-import suite.adt.map.ListMultimap;
-import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 
@@ -75,7 +74,7 @@ public class NfaToDfaTest {
 								.concatMap((fr, m) -> Read //
 										.from2(m) //
 										.map((st, to) -> "\n" + fr + " [" + st + "] => " + to)))
-						.collect(As::joined);
+						.toJoinedString();
 			}
 		}
 

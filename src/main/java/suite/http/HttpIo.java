@@ -18,7 +18,6 @@ import primal.adt.FixieArray;
 import primal.adt.Opt;
 import primal.fp.Funs2.Fun2;
 import primal.io.ReadStream;
-import suite.streamlet.As;
 import suite.util.Copy;
 import suite.util.To;
 
@@ -66,7 +65,7 @@ public class HttpIo {
 		var url = (!server.isEmpty() ? "http://" + server + "/" : "") + path + (!query.isEmpty() ? "?" + query : "");
 
 		var s = request.method + " " + url + " HTTP/1.1\r\n" //
-				+ request.headers.streamlet().map((k, v) -> k + ": " + v + "\r\n").collect(As::joined) //
+				+ request.headers.streamlet().map((k, v) -> k + ": " + v + "\r\n").toJoinedString() //
 				+ "\r\n";
 
 		os.write(s.getBytes(Utf8.charset));
@@ -75,7 +74,7 @@ public class HttpIo {
 
 	public void writeResponse(OutputStream os, HttpResponse response) throws IOException {
 		var s = "HTTP/1.1 " + response.status + "\r\n" //
-				+ response.headers.streamlet().map((k, v) -> k + ": " + v + "\r\n").collect(As::joined) //
+				+ response.headers.streamlet().map((k, v) -> k + ": " + v + "\r\n").toJoinedString() //
 				+ "\r\n";
 
 		os.write(s.getBytes(Utf8.charset));

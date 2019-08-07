@@ -10,8 +10,8 @@ import java.util.Random;
 import primal.primitive.DblPrim.DblSource;
 import primal.primitive.FltVerbs.CopyFlt;
 import primal.primitive.adt.pair.FltObjPair;
+import primal.primitive.fp.AsFlt;
 import suite.math.numeric.Statistic;
-import suite.primitive.AsFlt;
 import suite.streamlet.As;
 import suite.util.To;
 

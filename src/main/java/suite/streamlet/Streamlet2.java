@@ -15,6 +15,7 @@ import primal.Verbs.Equals;
 import primal.Verbs.Get;
 import primal.adt.Fixie_.FixieFun3;
 import primal.adt.Pair;
+import primal.adt.map.ListMultimap;
 import primal.fp.FunUtil;
 import primal.fp.FunUtil2;
 import primal.fp.Funs.Fun;
@@ -25,7 +26,6 @@ import primal.fp.Funs2.Source2;
 import primal.puller.Puller;
 import primal.puller.Puller2;
 import primal.streamlet.StreamletDefaults;
-import suite.adt.map.ListMultimap;
 
 public class Streamlet2<K, V> implements StreamletDefaults<Pair<K, V>, Pair<K, V>, BiPredicate<K, V>, Puller2<K, V>, Sink2<K, V>, Source2<K, V>> {
 

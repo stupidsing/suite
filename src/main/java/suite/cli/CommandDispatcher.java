@@ -31,7 +31,6 @@ import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.Formatter;
 import suite.node.pp.PrettyPrinter;
-import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.util.CommandUtil;
 
@@ -239,7 +238,7 @@ public class CommandDispatcher {
 	}
 
 	private String parseInput(List<String> inputs) {
-		return Read.from(inputs).collect(As.joinedBy(" "));
+		return Read.from(inputs).toJoinedString(" ");
 	}
 
 	private void printEvaluated(Writer writer, Node node) throws IOException {

@@ -5,8 +5,9 @@ import static java.lang.Math.min;
 import primal.Verbs.Equals;
 import primal.adt.Pair;
 import primal.primitive.adt.Bytes;
+import primal.primitive.adt.map.IntObjMap;
 import primal.primitive.adt.pair.IntObjPair;
-import suite.primitive.adt.map.IntObjMap;
+import suite.primitive.ReadInt;
 import suite.primitive.adt.set.IntSet;
 import suite.text.RollingHash;
 import suite.text.Segment;
@@ -31,8 +32,8 @@ public class Lccs0 {
 			while (longest.v == null) {
 				var segments0 = hashSegments(bytes0, rollingSize);
 				var segments1 = hashSegments(bytes1, rollingSize);
-				var keys0 = segments0.streamlet().keys().toSet();
-				var keys1 = segments1.streamlet().keys().toSet();
+				var keys0 = ReadInt.from2(segments0).keys().toSet();
+				var keys1 = ReadInt.from2(segments1).keys().toSet();
 				var keys = IntSet.intersect(keys0, keys1).streamlet().toArray();
 
 				for (var key : keys) {

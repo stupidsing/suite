@@ -6,7 +6,7 @@ import java.util.Objects;
 
 import primal.Verbs.Equals;
 import primal.Verbs.Get;
-import suite.adt.map.ListMultimap;
+import primal.adt.map.ListMultimap;
 import suite.lp.doer.ProverConstant;
 import suite.node.Atom;
 import suite.node.Node;

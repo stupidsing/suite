@@ -15,6 +15,8 @@ import primal.Verbs.Equals;
 import primal.adt.IdentityKey;
 import primal.adt.Pair;
 import primal.primitive.IntPrim;
+import primal.primitive.adt.map.IntObjMap;
+import primal.primitive.adt.map.ObjIntMap;
 import primal.primitive.adt.pair.IntIntPair;
 import suite.lp.Trail;
 import suite.lp.doer.Binder;
@@ -30,9 +32,7 @@ import suite.node.Tuple;
 import suite.node.io.Rewrite_.NodeHead;
 import suite.node.io.Rewrite_.NodeRead;
 import suite.node.io.Rewrite_.ReadType;
-import suite.primitive.adt.map.IntObjMap;
-import suite.primitive.adt.map.ObjIntMap;
-import suite.streamlet.As;
+import suite.primitive.ReadInt;
 import suite.streamlet.Read;
 
 /**
@@ -142,9 +142,9 @@ public class Grapher {
 
 		var mapi0 = new IntObjMap<IdentityKey<Node>>();
 		var mapi1 = new IntObjMap<IdentityKey<Node>>();
-		for (var e : mapn0.streamlet())
+		for (var e : ReadInt.from2(mapn0))
 			mapi0.put(e.k, e.v);
-		for (var e : mapn1.streamlet())
+		for (var e : ReadInt.from2(mapn1))
 			mapi1.put(e.k, e.v);
 
 		var set = new HashSet<>();
@@ -333,7 +333,7 @@ public class Grapher {
 					s = Read //
 							.from(gn.children) //
 							.map(p -> p.t0 + ":" + p.t1 + ", ") //
-							.collect(As.joinedBy("dict(", ", ", ")"));
+							.toJoinedString("dict(", ", ", ")");
 					break;
 				case TERM:
 					s = Formatter.dump(gn.terminal);
@@ -345,7 +345,7 @@ public class Grapher {
 					s = Read //
 							.from(gn.children) //
 							.map(p -> p.t1 + ", ") //
-							.collect(As.joinedBy("tuple(", ", ", ")"));
+							.toJoinedString("tuple(", ", ", ")");
 					break;
 				default:
 					s = fail();

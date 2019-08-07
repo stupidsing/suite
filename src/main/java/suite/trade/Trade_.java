@@ -24,10 +24,9 @@ import primal.primitive.IntIntSink;
 import primal.primitive.adt.pair.IntFltPair;
 import primal.primitive.adt.pair.LngFltPair;
 import primal.primitive.adt.pair.LngIntPair;
+import primal.primitive.fp.AsInt;
 import primal.puller.Puller;
 import suite.math.Math_;
-import suite.primitive.AsInt;
-import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.trade.Account.Valuation;
@@ -136,7 +135,7 @@ public class Trade_ {
 	public static float dividend(Streamlet<Trade> trades, Fun<String, LngFltPair[]> fun, Dbl_Dbl feeFun) {
 		var sum = 0f;
 
-		for (var pair : trades.toMultimap(trade -> trade.symbol).listEntries()) {
+		for (var pair : Read.listEntries(trades.toMultimap(trade -> trade.symbol))) {
 			var dividends = fun.apply(pair.k);
 			var puller = Puller.of(pair.v);
 			LngIntPair tn = LngIntPair.of(0l, 0);
@@ -168,14 +167,14 @@ public class Trade_ {
 				.from2(portfolio) //
 				.sortBy((code, i) -> !Equals.string(code, Instrument.cashSymbol) ? code : "") //
 				.map((code, i) -> Math_.posNeg(i) + code + "*" + abs(i)) //
-				.collect(As::joined);
+				.toJoinedString();
 	}
 
 	public static String format(List<Trade> trades) {
 		return Read //
 				.from(trades) //
 				.filter(trade -> trade.buySell != 0) //
-				.collect(As::joined);
+				.toJoinedString();
 	}
 
 	public static Map<String, Integer> portfolio(Iterable<Trade> trades) {

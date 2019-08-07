@@ -9,6 +9,7 @@ import suite.lp.search.ProverBuilder.Builder;
 import suite.lp.search.ProverBuilder.Finder;
 import suite.lp.sewing.impl.QueryRewriter;
 import suite.node.Node;
+import suite.streamlet.Read;
 
 public class SewingProverBuilder2 implements Builder {
 
@@ -30,7 +31,7 @@ public class SewingProverBuilder2 implements Builder {
 
 		if (qr != null) {
 			ruleSet1 = Suite.newRuleSet();
-			qr.rules().entries().forEach(p -> ruleSet1.addRule(p.v));
+			Read.from2(qr.rules()).forEach(p -> ruleSet1.addRule(p.v));
 		} else
 			ruleSet1 = ruleSet;
 

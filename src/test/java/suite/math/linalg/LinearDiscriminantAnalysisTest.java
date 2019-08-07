@@ -7,8 +7,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 
+import primal.primitive.adt.map.IntObjMap;
 import suite.node.util.Singleton;
-import suite.primitive.adt.map.IntObjMap;
 import suite.streamlet.As;
 
 public class LinearDiscriminantAnalysisTest {

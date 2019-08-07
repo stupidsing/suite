@@ -16,6 +16,7 @@ import suite.math.sym.Sym.Ring;
 import suite.node.Int;
 import suite.node.Node;
 import suite.node.io.SwitchNode;
+import suite.primitive.ReadInt;
 
 public class DivisiblePolynomial<N> {
 
@@ -124,7 +125,7 @@ public class DivisiblePolynomial<N> {
 
 		var sum = format_.apply(n0);
 
-		for (var pair : poly.streamlet().sortByKey(Integer::compare)) {
+		for (var pair : ReadInt.from2(poly).sortByKey(Integer::compare)) {
 			var p = pair.k;
 			var power = p < 0 ? mul.inverse(powerFun.apply(-p)) : powerFun.apply(p);
 			sum = add.apply(mul.apply(format_.apply(pair.v), power), sum);

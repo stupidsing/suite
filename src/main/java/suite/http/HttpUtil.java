@@ -17,13 +17,13 @@ import org.apache.http.impl.client.HttpClients;
 
 import primal.Verbs.Sleep;
 import primal.adt.FixieArray;
+import primal.adt.map.ListMultimap;
 import primal.fp.Funs.Fun;
 import primal.io.ReadStream;
 import primal.os.Log_;
 import primal.primitive.adt.Bytes;
 import primal.primitive.adt.Chars;
 import primal.puller.Puller;
-import suite.adt.map.ListMultimap;
 import suite.concurrent.Backoff;
 import suite.primitive.Bytes_;
 import suite.streamlet.As;
@@ -133,7 +133,7 @@ public class HttpUtil {
 	}
 
 	public static Map<String, URI> resolveLinks(URI uri) {
-		var out = get(ex(() -> uri.toURL())).utf8().collect(As::joined);
+		var out = get(ex(() -> uri.toURL())).utf8().toJoinedString();
 		var links = new HashMap<String, URI>();
 		FixieArray<String> m;
 		while ((m = ParseUtil.fitCaseInsensitive(out, "<a", "href=\"", "\"", ">", "</a>")) != null) {

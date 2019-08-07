@@ -12,11 +12,13 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Map;
 
 import primal.Nouns.Utf8;
 import primal.Verbs.ReadLine;
 import primal.adt.Pair;
+import primal.adt.map.ListMultimap;
 import primal.fp.FunUtil;
 import primal.fp.FunUtil2;
 import primal.fp.Funs.Source;
@@ -109,6 +111,10 @@ public class Read {
 		return new Streamlet2<>(() -> Puller2.of(col));
 	}
 
+	public static <K, V> Streamlet2<K, V> from2(ListMultimap<K, V> multimap) {
+		return listEntries(multimap).concatMapValue(Read::from);
+	}
+
 	public static <K, V> Streamlet2<K, V> from2(Source<Source2<K, V>> source) {
 		return new Streamlet2<>(() -> Puller2.of(source.g()));
 	}
@@ -130,12 +136,16 @@ public class Read {
 		return new Streamlet<>(() -> Puller.of(() -> ex(() -> ReadLine.from(br))).closeAtEnd(br).closeAtEnd(reader));
 	}
 
-	public static Streamlet<Bytes> url(String url) {
-		return new Streamlet<>(HttpUtil.get(url)::out);
+	public static <K, V> Streamlet2<K, List<V>> listEntries(ListMultimap<K, V> multimap) {
+		return from2(multimap.map);
 	}
 
 	public static <K, V, C extends Collection<V>> Streamlet2<K, V> multimap(Map<K, C> map) {
 		return from2(map).concatMap2((k, l) -> from(l).map2(v -> k, v -> v));
+	}
+
+	public static Streamlet<Bytes> url(String url) {
+		return new Streamlet<>(HttpUtil.get(url)::out);
 	}
 
 }

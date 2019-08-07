@@ -254,7 +254,7 @@ public class ClusterProbeImpl implements ClusterProbe {
 				.from2(lastActiveTimeByPeer) //
 				.map((peer, lastActiveTime) -> "," + peer + "," + lastActiveTime) //
 				.cons(data.name() + "," + me) //
-				.collect(As::joined) //
+				.toJoinedString() //
 				.getBytes(Utf8.charset);
 	}
 

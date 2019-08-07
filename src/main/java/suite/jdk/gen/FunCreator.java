@@ -38,6 +38,7 @@ import suite.jdk.gen.pass.FunExpand;
 import suite.jdk.gen.pass.FunGenerateBytecode;
 import suite.jdk.gen.pass.FunRewrite;
 import suite.jdk.lambda.LambdaInterface;
+import suite.primitive.ReadInt;
 import suite.streamlet.Read;
 
 public class FunCreator<I> extends FunFactory {
@@ -197,7 +198,7 @@ public class FunCreator<I> extends FunFactory {
 			var bytes = cg.getJavaClass().getBytes();
 			var array = new Object[cp.getSize()];
 
-			fgb.constants.streamlet().sink((i, object) -> array[i] = object);
+			ReadInt.from2(fgb.constants).sink((i, object) -> array[i] = object);
 
 			className = clsName;
 			clazz = new UnsafeUtil().defineClass(interfaceClass, clsName, bytes, array);

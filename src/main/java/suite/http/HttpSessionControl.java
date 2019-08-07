@@ -8,7 +8,6 @@ import primal.Verbs.Build;
 import primal.Verbs.Equals;
 import primal.primitive.adt.LngMutable;
 import suite.persistent.PerList;
-import suite.streamlet.As;
 import suite.util.HtmlUtil;
 import suite.util.To;
 
@@ -103,7 +102,7 @@ public class HttpSessionControl {
 		}
 
 		private HttpResponse showLoginPage(PerList<String> redirectPath, boolean isLoginFailed) {
-			var redirectPath1 = redirectPath.streamlet().map(p -> "/" + p).collect(As::joined);
+			var redirectPath1 = redirectPath.streamlet().map(p -> "/" + p).toJoinedString();
 
 			return HttpResponse.of(To.puller("<html>" //
 					+ "<head><title>Login</title></head>" //

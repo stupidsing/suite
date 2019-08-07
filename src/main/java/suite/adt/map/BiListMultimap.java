@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Map;
 
 import primal.Verbs.Get;
+import primal.adt.map.ListMultimap;
+import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
 
 public class BiListMultimap<K, V> {
@@ -34,7 +36,7 @@ public class BiListMultimap<K, V> {
 	}
 
 	public Streamlet2<K, V> entries() {
-		return map.entries();
+		return Read.from2(map);
 	}
 
 	public List<V> get(K key) {

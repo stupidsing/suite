@@ -16,6 +16,7 @@ import primal.Verbs.Build;
 import primal.Verbs.New;
 import primal.Verbs.Start;
 import primal.adt.Pair;
+import primal.adt.map.ListMultimap;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Sink;
 import primal.fp.Funs.Source;
@@ -30,15 +31,14 @@ import primal.primitive.Int_Int;
 import primal.primitive.adt.Bytes;
 import primal.primitive.adt.Bytes.BytesBuilder;
 import primal.primitive.adt.Chars;
+import primal.primitive.adt.map.ObjIntMap;
+import primal.primitive.fp.AsChr;
+import primal.primitive.fp.AsFlt;
+import primal.primitive.fp.AsInt;
 import primal.primitive.puller.IntPuller;
 import primal.puller.Puller;
 import primal.puller.Puller2;
-import suite.adt.map.ListMultimap;
-import suite.primitive.AsChr;
-import suite.primitive.AsFlt;
-import suite.primitive.AsInt;
 import suite.primitive.Bytes_;
-import suite.primitive.adt.map.ObjIntMap;
 import suite.primitive.streamlet.FltStreamlet;
 import suite.primitive.streamlet.IntStreamlet;
 import suite.util.To;
@@ -101,27 +101,6 @@ public class As {
 			while ((c = ts.pull()) != IntPrim.EMPTYVALUE)
 				b.append(fun1.apply(c));
 		})::puller);
-	}
-
-	public static <T> String joined(Puller<T> puller) {
-		return As.<T> joinedBy("").apply(puller);
-	}
-
-	public static <T> Fun<Puller<T>, String> joinedBy(String delimiter) {
-		return joinedBy("", delimiter, "");
-	}
-
-	public static <T> Fun<Puller<T>, String> joinedBy(String before, String delimiter, String after) {
-		return puller -> "" //
-				+ before //
-				+ Build.string(sb -> {
-					puller.sink(s -> {
-						if (0 < sb.length())
-							sb.append(delimiter);
-						sb.append(s);
-					});
-				}) //
-				+ after;
 	}
 
 	public static Puller<String> lines(Puller<Bytes> puller) {

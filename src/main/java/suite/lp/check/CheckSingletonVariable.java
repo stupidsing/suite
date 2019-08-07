@@ -12,13 +12,14 @@ import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.Rewrite_.NodeRead;
+import suite.streamlet.Read;
 
 public class CheckSingletonVariable {
 
 	public void check(List<Rule> rules) {
 		var rulesByPrototype = Prototype.multimap(rules);
 
-		for (var e : rulesByPrototype.entries())
+		for (var e : Read.from2(rulesByPrototype))
 			e.map((prototype, rule) -> {
 				var scanner = new Scanner();
 				scanner.scan(rule.head);

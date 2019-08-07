@@ -7,13 +7,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import primal.Verbs.Left;
 import primal.primitive.IntPrim.Obj_Int;
+import primal.primitive.adt.map.IntObjMap;
+import primal.primitive.adt.map.ObjIntMap;
 import primal.primitive.adt.pair.DblObjPair;
 import primal.primitive.adt.pair.IntDblPair;
 import suite.math.linalg.Vector;
-import suite.primitive.AsInt;
-import suite.primitive.adt.map.IntObjMap;
-import suite.primitive.adt.map.ObjIntMap;
-import suite.streamlet.As;
+import suite.primitive.ReadInt;
 import suite.streamlet.Read;
 import suite.util.To;
 
@@ -33,10 +32,10 @@ public class KmeansCluster {
 	}
 
 	public <K> String result(Map<K, float[]> points, int k, int nIterations) {
-		return kMeansCluster(points, k, nIterations) //
-				.streamlet() //
+		return ReadInt //
+				.from2(kMeansCluster(points, k, nIterations)) //
 				.groupBy() //
-				.map((symbol, groups) -> Read.from(groups).map(Object::toString).collect(As.joinedBy(","))) //
+				.map((symbol, groups) -> Read.from(groups).map(Object::toString).toJoinedString(",")) //
 				.toLines();
 	}
 
@@ -51,7 +50,7 @@ public class KmeansCluster {
 	}
 
 	public int[] kMeansCluster(List<float[]> points, int k, int nIterations) {
-		return Read.from(points).collect(AsInt.lift(kMeansClusterClassifier(points, k, nIterations))).toArray();
+		return Read.from(points).collect(ReadInt.lift(kMeansClusterClassifier(points, k, nIterations))).toArray();
 	}
 
 	private Obj_Int<float[]> kMeansClusterClassifier(List<float[]> points, int k, int nIterations) {
@@ -84,7 +83,7 @@ public class KmeansCluster {
 				.take(points.size()) //
 				.forEach(bin -> map.computeIfAbsent(bin.t0, c -> new AtomicInteger()).incrementAndGet());
 
-		return map.streamlet().min((k, v) -> -v.v.get()).k;
+		return ReadInt.from2(map).min((k, v) -> -v.v.get()).k;
 	}
 
 	private int findNearest(float[] point, List<float[]> points) {

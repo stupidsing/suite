@@ -4,11 +4,11 @@ import java.util.List;
 
 import primal.Verbs.Compare;
 import primal.adt.Pair;
+import primal.primitive.adt.map.ObjIntMap;
 import suite.cfg.Defaults;
 import suite.node.util.Singleton;
-import suite.primitive.AsFlt;
-import suite.primitive.AsLng;
-import suite.primitive.adt.map.ObjIntMap;
+import suite.primitive.ReadFlt;
+import suite.primitive.ReadLng;
 import suite.streamlet.As;
 import suite.streamlet.Streamlet;
 import suite.trade.Time;
@@ -31,12 +31,12 @@ public class Quandl {
 					.sort((a0, a1) -> Compare.string(a0[0], a1[0])) //
 					.collect();
 
-			var ts = arrays.collect(AsLng.lift(array -> Time.of(array[0] + " 18:00:00").epochSec(-4))).toArray();
-			var opens = arrays.collect(AsFlt.lift(array -> Float.parseFloat(array[1]))).toArray();
-			var settles = arrays.collect(AsFlt.lift(array -> Float.parseFloat(array[6]))).toArray();
-			var lows = arrays.collect(AsFlt.lift(array -> Float.parseFloat(array[3]))).toArray();
-			var highs = arrays.collect(AsFlt.lift(array -> Float.parseFloat(array[2]))).toArray();
-			var volumes = arrays.collect(AsFlt.lift(array -> Float.parseFloat(array[7]))).toArray();
+			var ts = arrays.collect(ReadLng.lift(array -> Time.of(array[0] + " 18:00:00").epochSec(-4))).toArray();
+			var opens = arrays.collect(ReadFlt.lift(array -> Float.parseFloat(array[1]))).toArray();
+			var settles = arrays.collect(ReadFlt.lift(array -> Float.parseFloat(array[6]))).toArray();
+			var lows = arrays.collect(ReadFlt.lift(array -> Float.parseFloat(array[3]))).toArray();
+			var highs = arrays.collect(ReadFlt.lift(array -> Float.parseFloat(array[2]))).toArray();
+			var volumes = arrays.collect(ReadFlt.lift(array -> Float.parseFloat(array[7]))).toArray();
 
 			return DataSource.ofOhlcv(ts, opens, settles, lows, highs, volumes).range(period);
 		});

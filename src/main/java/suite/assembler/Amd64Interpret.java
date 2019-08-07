@@ -18,6 +18,9 @@ import primal.primitive.LngPrim.LngSink;
 import primal.primitive.LngPrim.Obj_Lng;
 import primal.primitive.adt.Bytes;
 import primal.primitive.adt.Bytes.BytesBuilder;
+import primal.primitive.adt.IntRange;
+import primal.primitive.adt.LngRange;
+import primal.primitive.adt.map.LngIntMap;
 import suite.assembler.Amd64.Insn;
 import suite.assembler.Amd64.Instruction;
 import suite.assembler.Amd64.OpImm;
@@ -25,9 +28,6 @@ import suite.assembler.Amd64.OpMem;
 import suite.assembler.Amd64.OpReg;
 import suite.assembler.Amd64.Operand;
 import suite.funp.Funp_;
-import suite.primitive.IntRange;
-import suite.primitive.LngRange;
-import suite.primitive.adt.map.LngIntMap;
 
 public class Amd64Interpret {
 

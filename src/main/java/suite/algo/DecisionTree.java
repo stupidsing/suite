@@ -8,9 +8,9 @@ import primal.primitive.IntPrim;
 import primal.primitive.IntPrim.Obj_Int;
 import primal.primitive.adt.pair.DblIntPair;
 import primal.primitive.adt.pair.IntObjPair;
+import primal.primitive.fp.AsDbl;
+import primal.primitive.fp.AsInt;
 import suite.adt.map.IntIntMap1;
-import suite.primitive.AsDbl;
-import suite.primitive.AsInt;
 import suite.streamlet.As;
 import suite.streamlet.Streamlet;
 

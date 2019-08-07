@@ -4,7 +4,6 @@ import java.io.InputStream;
 
 import primal.adt.Pair;
 import suite.persistent.PerList;
-import suite.streamlet.As;
 
 public class HttpRequest {
 
@@ -52,7 +51,7 @@ public class HttpRequest {
 	}
 
 	public String getLogString() {
-		return method + " " + paths.streamlet().collect(As.joinedBy("/"));
+		return method + " " + paths.streamlet().toJoinedString("/");
 	}
 
 }

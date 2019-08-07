@@ -9,7 +9,6 @@ import primal.puller.Puller;
 import suite.cfg.Defaults;
 import suite.os.Execute;
 import suite.primitive.Floats_;
-import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 
@@ -20,7 +19,7 @@ public class Plotty {
 	public boolean plot(Streamlet<float[]> xyts) {
 		var data = xyts //
 				.map(xyt -> Floats_.of(xyt).index().map((y, x) -> FltFltPair.of(x, y)).collect(this::xyt) + ",") //
-				.collect(As::joined);
+				.toJoinedString();
 
 		var file = Defaults.tmp("plot$" + Get.temp() + ".html");
 
@@ -41,8 +40,8 @@ public class Plotty {
 
 	private String xyt(Puller<FltFltPair> xys0) {
 		var xys1 = Read.from(xys0.toList());
-		var xs = xys1.map(xy -> xy.t0 + ",").collect(As::joined);
-		var ys = xys1.map(xy -> xy.t1 + ",").collect(As::joined);
+		var xs = xys1.map(xy -> xy.t0 + ",").toJoinedString();
+		var ys = xys1.map(xy -> xy.t1 + ",").toJoinedString();
 		return "{ x: [" + xs + "], y: [" + ys + "], type: 'scatter', }";
 	}
 

@@ -18,10 +18,10 @@ import primal.os.Log_;
 import primal.primitive.Int_Flt;
 import primal.primitive.adt.pair.FltObjPair;
 import primal.primitive.adt.pair.IntFltPair;
+import primal.primitive.fp.AsDbl;
 import suite.algo.KmeansCluster;
 import suite.math.numeric.Statistic;
 import suite.math.transform.DiscreteCosineTransform;
-import suite.primitive.AsDbl;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
@@ -165,7 +165,7 @@ public class StatisticalArbitrageTest {
 				.map2(factor -> factor.symbol, factor -> factor.pe) //
 				.sortByValue(Float::compare) //
 				.map((symbol, peRatio) -> Pair.of(symbol, peRatio).toString()) //
-				.collect(As.joinedBy("\n"));
+				.toJoinedString("\n");
 		System.out.println(out);
 	}
 
@@ -297,7 +297,7 @@ public class StatisticalArbitrageTest {
 				.mapValue(fun) //
 				.sortByValue(Double::compare) //
 				.map((symbol, value) -> Pair.of(symbol, value).toString()) //
-				.collect(As.joinedBy("\n"));
+				.toJoinedString("\n");
 	}
 
 	private AlignKeyDataSource<String> dataSources() {

@@ -16,11 +16,11 @@ import primal.Verbs.New;
 import primal.Verbs.Reverse;
 import primal.Verbs.Right;
 import primal.adt.Mutable;
+import primal.adt.map.ListMultimap;
 import primal.fp.Funs.Sink;
 import primal.fp.Funs.Source;
 import primal.os.Log_;
 import suite.Suite;
-import suite.adt.map.ListMultimap;
 import suite.lp.Configuration.ProverCfg;
 import suite.lp.compile.impl.CompileExpressionImpl;
 import suite.lp.doer.Binder;
@@ -213,9 +213,9 @@ public class SewingProverImpl implements ProverFactory {
 	}
 
 	private void compileAll() {
-		isHasCutByPrototype = rules.listEntries().mapValue(this::isHasCut).toMap();
+		isHasCutByPrototype = Read.listEntries(rules).mapValue(this::isHasCut).toMap();
 
-		for (var e : rules.listEntries()) {
+		for (var e : Read.listEntries(rules)) {
 			var prototype = e.k;
 			var rules = new ArrayList<>(e.v);
 			var traceLevel = traceLevel(prototype);

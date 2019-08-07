@@ -10,14 +10,14 @@ import primal.fp.Funs.Iterate;
 import primal.fp.Funs2.Fun2;
 import primal.primitive.IntPrim.Int_Obj;
 import primal.primitive.IntPrim.Obj_Int;
+import primal.primitive.adt.map.IntObjMap;
 import suite.BindArrayUtil.Pattern;
 import suite.math.sym.Sym.Ring;
 import suite.node.Int;
 import suite.node.Node;
 import suite.node.io.SwitchNode;
-import suite.primitive.adt.map.IntObjMap;
+import suite.primitive.ReadInt;
 import suite.primitive.streamlet.IntObjStreamlet;
-import suite.streamlet.As;
 
 public class Polynomial<N> {
 
@@ -112,7 +112,7 @@ public class Polynomial<N> {
 
 		var sum = format_.apply(n0);
 
-		for (var pair : poly.streamlet().sortByKey(Integer::compare)) {
+		for (var pair : ReadInt.from2(poly).sortByKey(Integer::compare)) {
 			var p = pair.k;
 			var power = p < 0 ? mul.inverse(powerFun.apply(-p)) : powerFun.apply(p);
 			sum = add.apply(mul.apply(format_.apply(pair.v), power), sum);
@@ -128,19 +128,19 @@ public class Polynomial<N> {
 
 	private Poly<N> mul(Poly<N> a, Poly<N> b) {
 		var c = polyOf();
-		for (var pair0 : a.streamlet())
-			for (var pair1 : b.streamlet())
+		for (var pair0 : ReadInt.from2(a))
+			for (var pair1 : ReadInt.from2(b))
 				c.add(pair0.k + pair1.k, mul_.apply(pair0.v, pair1.v));
 		return c;
 	}
 
 	private Poly<N> neg(Poly<N> a) {
-		return polyOf(a.streamlet().mapValue(neg_));
+		return polyOf(ReadInt.from2(a).mapValue(neg_));
 	}
 
 	private Poly<N> add(Poly<N> a, Poly<N> b) {
 		var c = polyOf();
-		for (var pair : IntObjStreamlet.concat(a.streamlet(), b.streamlet()))
+		for (var pair : IntObjStreamlet.concat(ReadInt.from2(a), ReadInt.from2(b)))
 			c.add(pair.k, pair.v);
 		return c;
 	}
@@ -184,7 +184,7 @@ public class Polynomial<N> {
 			return streamlet() //
 					.sortByKey((p0, p1) -> p1 - p0) //
 					.map((p, t) -> t + " * " + py.x + "^" + p) //
-					.collect(As.joinedBy(" + "));
+					.toJoinedString(" + ");
 		}
 
 		private void add(int power, N term) {
@@ -192,6 +192,10 @@ public class Polynomial<N> {
 			Iterate<N> i0 = t -> t != null ? t : n0;
 			Iterate<N> ix = t -> t != n0 ? t : null;
 			update(power, t -> ix.apply(py.add_.apply(i0.apply(t), term)));
+		}
+
+		private IntObjStreamlet<N> streamlet() {
+			return ReadInt.from2(this);
 		}
 	}
 

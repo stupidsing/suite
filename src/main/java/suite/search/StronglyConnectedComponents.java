@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.Set;
 
 import primal.adt.Pair;
-import suite.adt.map.ListMultimap;
+import primal.adt.map.ListMultimap;
 import suite.streamlet.Read;
 
 /**
@@ -45,7 +45,7 @@ public class StronglyConnectedComponents<V> {
 		this.dg = dg;
 
 		Map<V, Scc> sccs = Read.from(dg.vertices).map2(v -> new Scc(v)).toMap();
-		forwards = dg.forwards.entries().map2((u, v) -> sccs.get(u), (u, v) -> sccs.get(v)).toMultimap();
+		forwards = Read.from2(dg.forwards).map2((u, v) -> sccs.get(u), (u, v) -> sccs.get(v)).toMultimap();
 
 		for (var vscc : sccs.values())
 			if (!vscc.isVisited)

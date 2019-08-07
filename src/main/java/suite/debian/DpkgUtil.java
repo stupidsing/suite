@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 import primal.adt.Pair;
-import suite.adt.map.ListMultimap;
+import primal.adt.map.ListMultimap;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
@@ -74,7 +74,7 @@ public class DpkgUtil {
 	}
 
 	public Map<String, List<String>> getDependersOf(List<Map<String, String>> packages) {
-		return getDependeesOf(packages).entries().map2((k, v) -> v, (k, v) -> k).toListMap();
+		return Read.from2(getDependeesOf(packages)).map2((k, v) -> v, (k, v) -> k).toListMap();
 	}
 
 }

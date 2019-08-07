@@ -5,7 +5,6 @@ import java.util.Iterator;
 import primal.Verbs.Equals;
 import primal.Verbs.Get;
 import primal.adt.Pair;
-import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
@@ -69,7 +68,7 @@ public class PerMap<K extends Comparable<K>, V> implements Iterable<Pair<K, V>> 
 
 	@Override
 	public String toString() {
-		return Read.from(this).map(e -> e + ", ").collect(As.joinedBy("{ ", "", "}"));
+		return Read.from(this).map(e -> e + ", ").toJoinedString("{ ", "", "}");
 	}
 
 }

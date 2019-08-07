@@ -238,9 +238,7 @@ public class StockHistory {
 				time.ymdHms());
 		var s1 = Read.each(dividends, splits).concatMap(this::concat);
 		var s2 = Read.from2(data).concatMap((tag, fs) -> concat(fs).cons(tag));
-		return Streamlet //
-				.concat(s0, s1, s2) //
-				.collect(As.joinedBy("\n"));
+		return Streamlet.concat(s0, s1, s2).toJoinedString("\n");
 	}
 
 	private Streamlet<String> concat(LngFltPair[] pairs) {

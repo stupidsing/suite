@@ -8,8 +8,8 @@ import java.util.Random;
 import org.junit.Test;
 
 import primal.primitive.adt.pair.DblObjPair;
+import primal.primitive.fp.AsFlt;
 import suite.math.linalg.Vector;
-import suite.primitive.AsFlt;
 import suite.streamlet.As;
 import suite.ts.Arima;
 import suite.ts.Arima.Arima_;

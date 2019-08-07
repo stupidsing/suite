@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import suite.adt.map.ListMultimap;
+import primal.adt.map.ListMultimap;
 import suite.node.Node;
 
 /**

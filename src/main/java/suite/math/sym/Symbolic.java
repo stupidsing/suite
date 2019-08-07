@@ -26,6 +26,7 @@ import suite.node.Int;
 import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.SwitchNode;
+import suite.primitive.ReadInt;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 
@@ -377,7 +378,7 @@ public class Symbolic {
 
 			return polyize_(node, coefficientFun).map(map -> {
 				var sum = n0;
-				for (var pair : map.streamlet().sortByKey(Integer::compare)) {
+				for (var pair : ReadInt.from2(map).sortByKey(Integer::compare)) {
 					var p = pair.k;
 					var power = p < 0 ? inv(powerFun.apply(-p)) : powerFun.apply(p);
 					sum = add(mul(coefficientFun.apply(pair.v), power), sum);

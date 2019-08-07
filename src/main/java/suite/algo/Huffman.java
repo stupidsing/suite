@@ -13,10 +13,11 @@ import primal.Verbs.Take;
 import primal.adt.Pair;
 import primal.fp.Funs.Source;
 import primal.primitive.IntPrim;
+import primal.primitive.adt.map.ObjIntMap;
 import primal.primitive.adt.pair.IntObjPair;
 import primal.puller.Puller;
 import suite.adt.PriorityQueue;
-import suite.primitive.adt.map.ObjIntMap;
+import suite.primitive.ReadInt;
 import suite.primitive.streamlet.IntObjStreamlet;
 import suite.streamlet.Read;
 
@@ -141,7 +142,7 @@ public class Huffman<Unit> {
 		var histogram = new ObjIntMap<Unit>();
 		for (var unit : input)
 			histogram.update(unit, c -> (c != IntPrim.EMPTYVALUE ? c : 0) + 1);
-		return histogram.streamlet();
+		return ReadInt.from2(histogram);
 	}
 
 	private class Dictionary {

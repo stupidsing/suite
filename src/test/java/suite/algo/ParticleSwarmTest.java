@@ -13,9 +13,9 @@ import java.util.Random;
 import org.junit.Test;
 
 import primal.primitive.adt.pair.DblObjPair;
+import primal.primitive.fp.AsDbl;
 import suite.math.Math_;
 import suite.math.linalg.Vector;
-import suite.primitive.AsDbl;
 import suite.streamlet.Read;
 
 // https://medium.com/@deepulse/a-practical-guide-to-particle-swarm-optimization-c6a615113a71
