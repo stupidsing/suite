@@ -1,5 +1,6 @@
 package suite.util;
 
+import static java.lang.Math.abs;
 import static primal.statics.Fail.fail;
 import static primal.statics.Rethrow.ex;
 
@@ -170,11 +171,12 @@ public class To {
 	}
 
 	public static String string(double d) {
-		if (d < 1d)
+		var abs = abs(d);
+		if (abs < 1d)
 			return String.format("%.4f", d);
-		else if (d < 10d)
+		else if (abs < 10d)
 			return String.format("%.3f", d);
-		else if (d < 100d)
+		else if (abs < 100d)
 			return String.format("%.2f", d);
 		else
 			return String.format("%.1f", d);
