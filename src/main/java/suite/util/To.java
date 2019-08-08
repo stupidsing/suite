@@ -21,12 +21,10 @@ import java.time.temporal.TemporalAccessor;
 
 import primal.Nouns.Buffer;
 import primal.Nouns.Utf8;
-import primal.Verbs.Close;
 import primal.Verbs.New;
 import primal.Verbs.WriteFile;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Sink;
-import primal.fp.Funs.Source;
 import primal.io.ReadStream;
 import primal.primitive.DblPrim.Obj_Dbl;
 import primal.primitive.Flt_Dbl;
@@ -146,20 +144,6 @@ public class To {
 
 	public static Sink<String> sink(StringBuilder sb) {
 		return s -> sb.append("\n" + s);
-	}
-
-	public static Source<Bytes> source(InputStream is) {
-		return () -> {
-			var bs = new byte[Buffer.size];
-			var nBytesRead = ex(() -> is.read(bs));
-
-			if (0 <= nBytesRead)
-				return Bytes.of(bs, 0, nBytesRead);
-			else {
-				Close.quietly(is);
-				return null;
-			}
-		};
 	}
 
 	public static String string(Bytes bytes) {
