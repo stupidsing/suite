@@ -13,17 +13,17 @@ import java.nio.file.Path;
 import java.util.function.BiPredicate;
 
 import primal.Verbs.Equals;
+import primal.Verbs.Pull;
 import primal.fp.Funs.Sink;
 import primal.primitive.adt.Bytes;
 import primal.primitive.adt.LngMutable;
 import suite.persistent.PerList;
 import suite.persistent.PerMap;
-import suite.util.To;
 
 public interface HttpHandler {
 
 	public static HttpHandler ofData(String data) {
-		return request -> HttpResponse.of(To.puller(data));
+		return request -> HttpResponse.of(Pull.from(data));
 	}
 
 	public static HttpHandler ofDispatch(PerMap<String, HttpHandler> map) {
@@ -64,7 +64,7 @@ public interface HttpHandler {
 								.put("Content-Range", "bytes " + p0 + "-" + px + "/" + size) //
 								.put("Content-Type", "text/html; charset=UTF-8");
 
-						return HttpResponse.of(HttpResponse.HTTP206, empty, To.puller(new InputStream() {
+						return HttpResponse.of(HttpResponse.HTTP206, empty, Pull.from(new InputStream() {
 							public int read() throws IOException {
 								var pos = p.value();
 								if (pos != px) {
@@ -89,7 +89,7 @@ public interface HttpHandler {
 						}));
 					}
 
-					return HttpResponse.of(HttpResponse.HTTP200, To.puller(Files.newInputStream(path)), size);
+					return HttpResponse.of(HttpResponse.HTTP200, Pull.from(Files.newInputStream(path)), size);
 				}
 			else
 				return HttpResponse.of(HttpResponse.HTTP404);

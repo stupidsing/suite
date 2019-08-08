@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.function.BiPredicate;
 
 import primal.Nouns.Utf8;
+import primal.Verbs.Pull;
 import primal.Verbs.Sleep;
 import primal.Verbs.Start;
 import primal.primitive.adt.Bytes;
@@ -25,7 +26,6 @@ import suite.persistent.PerList;
 import suite.persistent.PerMap;
 import suite.telegram.TelegramBot;
 import suite.util.RunUtil;
-import suite.util.To;
 
 // mvn compile exec:java -Dexec.mainClass=suite.ServerMain
 public class ServerMain {
@@ -54,7 +54,7 @@ public class ServerMain {
 				.put("Cache-Control", PerList.of("no-cache")) //
 				.put("Content-Type", PerList.of("text/event-stream")));
 
-		HttpHandler handlerSite = request -> HttpResponse.of(To.puller("" //
+		HttpHandler handlerSite = request -> HttpResponse.of(Pull.from("" //
 				+ "<html>" //
 				+ "<br/>method = " + request.method //
 				+ "<br/>server = " + request.server //

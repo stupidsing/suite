@@ -6,10 +6,10 @@ import java.util.function.BiPredicate;
 
 import primal.Verbs.Build;
 import primal.Verbs.Equals;
+import primal.Verbs.Pull;
 import primal.primitive.adt.LngMutable;
 import suite.persistent.PerList;
 import suite.util.HtmlUtil;
-import suite.util.To;
 
 public class HttpSessionControl {
 
@@ -104,7 +104,7 @@ public class HttpSessionControl {
 		private HttpResponse showLoginPage(PerList<String> redirectPath, boolean isLoginFailed) {
 			var redirectPath1 = redirectPath.streamlet().map(p -> "/" + p).toJoinedString();
 
-			return HttpResponse.of(To.puller("<html>" //
+			return HttpResponse.of(Pull.from("<html>" //
 					+ "<head><title>Login</title></head>" //
 					+ "<body>" //
 					+ "<font face=\"Monospac821 BT,Monaco,Consolas\">" //

@@ -15,6 +15,7 @@ import org.apache.http.Header;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.HttpClients;
 
+import primal.Verbs.Pull;
 import primal.Verbs.Sleep;
 import primal.adt.FixieArray;
 import primal.adt.map.ListMultimap;
@@ -184,7 +185,7 @@ public class HttpUtil {
 		var statusCode = statusLine.getStatusCode();
 		var inputStream = response.getEntity().getContent();
 		var headers1 = Read.from(response.getAllHeaders()).map2(Header::getName, Header::getValue).toMultimap();
-		var out = To.puller(inputStream) //
+		var out = Pull.from(inputStream) //
 				.closeAtEnd(inputStream) //
 				.closeAtEnd(response) //
 				.closeAtEnd(client) //
@@ -211,7 +212,7 @@ public class HttpUtil {
 		}
 
 		var responseCode = conn.getResponseCode();
-		var out = To.puller(conn.getInputStream());
+		var out = Pull.from(conn.getInputStream());
 
 		if (responseCode == HttpURLConnection.HTTP_MOVED_PERM //
 				|| responseCode == HttpURLConnection.HTTP_MOVED_TEMP //

@@ -4,8 +4,6 @@ import static java.lang.Math.abs;
 import static primal.statics.Fail.fail;
 import static primal.statics.Rethrow.ex;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -127,19 +125,6 @@ public class To {
 
 	public static String percent(double d) {
 		return String.format("%.1f", d * 100d) + "%";
-	}
-
-	public static Puller<Bytes> puller(String data) {
-		return puller(new ByteArrayInputStream(data.getBytes(Utf8.charset)));
-	}
-
-	public static Puller<Bytes> puller(InputStream is) {
-		var bis = new BufferedInputStream(is);
-		return Puller.of(() -> {
-			var bs = new byte[Buffer.size];
-			var nBytesRead = ex(() -> bis.read(bs));
-			return 0 <= nBytesRead ? Bytes.of(bs, 0, nBytesRead) : null;
-		}).closeAtEnd(bis).closeAtEnd(is);
 	}
 
 	public static Sink<String> sink(StringBuilder sb) {

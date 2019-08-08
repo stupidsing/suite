@@ -12,6 +12,7 @@ import java.net.URLDecoder;
 
 import primal.Nouns.Utf8;
 import primal.Verbs.Equals;
+import primal.Verbs.Pull;
 import primal.Verbs.ReadLine;
 import primal.Verbs.Split;
 import primal.adt.FixieArray;
@@ -53,7 +54,7 @@ public class HttpIo {
 			var is1 = !cl.isEmpty() ? sizeLimitedInputStream(is0, cl.get()) : is0;
 
 			return Equals.string(protocol, "HTTP/1.1") //
-					? new HttpResponse(status, headers, To.puller(is1)) //
+					? new HttpResponse(status, headers, Pull.from(is1)) //
 					: fail("only HTTP/1.1 is supported");
 		});
 	}

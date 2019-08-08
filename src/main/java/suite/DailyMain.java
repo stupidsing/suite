@@ -63,7 +63,7 @@ public class DailyMain {
 	}
 
 	public static void main(String[] args) {
-		RunUtil.run(() -> new DailyMain().run());
+		RunUtil.run(new DailyMain()::run);
 	}
 
 	private boolean run() {

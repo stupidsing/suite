@@ -2,8 +2,8 @@ package suite.http;
 
 import org.junit.Test;
 
+import primal.Verbs.Pull;
 import suite.primitive.Bytes_;
-import suite.util.To;
 
 public class HttpUtilTest {
 
@@ -11,7 +11,7 @@ public class HttpUtilTest {
 	public void test() {
 		var result = HttpUtil //
 				.get("https://ywsing.onedse.com/") //
-				.in(To.puller("{\"key\": \"value\"}")) //
+				.in(Pull.from("{\"key\": \"value\"}")) //
 				.send();
 
 		System.out.println(result.responseCode);

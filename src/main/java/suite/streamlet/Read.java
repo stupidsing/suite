@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 import primal.Nouns.Utf8;
+import primal.Verbs.Pull;
 import primal.Verbs.ReadLine;
 import primal.adt.Pair;
 import primal.adt.map.ListMultimap;
@@ -31,7 +32,6 @@ import primal.puller.Puller;
 import primal.puller.Puller2;
 import suite.http.HttpUtil;
 import suite.primitive.streamlet.ChrStreamlet;
-import suite.util.To;
 
 public class Read {
 
@@ -43,16 +43,16 @@ public class Read {
 
 		return new Streamlet<>(() -> {
 			InputStream is = ex(() -> new FileInputStream(file));
-			return To.puller(is).closeAtEnd(is);
+			return Pull.from(is).closeAtEnd(is);
 		});
 	}
 
 	public static Streamlet<Bytes> bytes(String data) {
-		return new Streamlet<>(() -> To.puller(data));
+		return new Streamlet<>(() -> Pull.from(data));
 	}
 
 	public static Streamlet<Bytes> bytes(InputStream is) {
-		return new Streamlet<>(() -> To.puller(is));
+		return new Streamlet<>(() -> Pull.from(is));
 	}
 
 	public static ChrStreamlet chars(CharSequence s) {
