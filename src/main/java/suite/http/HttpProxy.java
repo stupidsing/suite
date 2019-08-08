@@ -4,9 +4,9 @@ import static primal.statics.Rethrow.ex;
 
 import java.net.Socket;
 
+import primal.MoreVerbs.Split;
 import primal.Nouns.Utf8;
 import primal.Verbs.ReadLine;
-import primal.Verbs.Split;
 import primal.Verbs.Start;
 import primal.fp.Funs.Fun;
 import primal.os.Log_;

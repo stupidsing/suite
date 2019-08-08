@@ -5,9 +5,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.DecimalFormat;
 
+import primal.MoreVerbs.Split;
 import primal.Nouns.Utf8;
 import primal.Verbs.Is;
-import primal.Verbs.Split;
 import primal.os.Log_;
 import suite.cfg.Defaults;
 import suite.os.Stopwatch;

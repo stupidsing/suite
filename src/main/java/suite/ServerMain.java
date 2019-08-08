@@ -7,8 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiPredicate;
 
+import primal.MoreVerbs.Pull;
 import primal.Nouns.Utf8;
-import primal.Verbs.Pull;
 import primal.Verbs.Sleep;
 import primal.Verbs.Start;
 import primal.primitive.adt.Bytes;

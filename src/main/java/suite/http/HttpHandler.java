@@ -12,8 +12,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.function.BiPredicate;
 
+import primal.MoreVerbs.Pull;
 import primal.Verbs.Equals;
-import primal.Verbs.Pull;
 import primal.fp.Funs.Sink;
 import primal.primitive.adt.Bytes;
 import primal.primitive.adt.LngMutable;

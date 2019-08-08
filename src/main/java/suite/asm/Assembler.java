@@ -7,10 +7,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import primal.MoreVerbs.Split;
 import primal.Nouns.Utf8;
 import primal.Verbs.Is;
 import primal.Verbs.Right;
-import primal.Verbs.Split;
 import primal.Verbs.Take;
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;

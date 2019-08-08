@@ -7,11 +7,11 @@ import java.io.InputStreamReader;
 import java.net.URLDecoder;
 import java.util.Map;
 
+import primal.MoreVerbs.Split;
 import primal.Nouns.Buffer;
 import primal.Nouns.Utf8;
 import primal.Verbs.Build;
 import primal.Verbs.Equals;
-import primal.Verbs.Split;
 import suite.persistent.PerList;
 import suite.streamlet.Read;
 

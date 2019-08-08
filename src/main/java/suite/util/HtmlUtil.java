@@ -6,12 +6,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import primal.MoreVerbs.Split;
 import primal.Verbs.Build;
 import primal.Verbs.Equals;
 import primal.Verbs.Get;
 import primal.Verbs.Is;
 import primal.Verbs.Range;
-import primal.Verbs.Split;
 import primal.adt.Pair;
 import primal.adt.map.BiHashMap;
 import primal.adt.map.BiMap;

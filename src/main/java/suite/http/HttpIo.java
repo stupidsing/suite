@@ -10,11 +10,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URLDecoder;
 
+import primal.MoreVerbs.Pull;
+import primal.MoreVerbs.Split;
 import primal.Nouns.Utf8;
 import primal.Verbs.Equals;
-import primal.Verbs.Pull;
 import primal.Verbs.ReadLine;
-import primal.Verbs.Split;
 import primal.adt.FixieArray;
 import primal.adt.Opt;
 import primal.fp.Funs2.Fun2;

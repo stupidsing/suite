@@ -2,7 +2,7 @@ package suite.http;
 
 import org.junit.Test;
 
-import primal.Verbs.Pull;
+import primal.MoreVerbs.Pull;
 import suite.primitive.Bytes_;
 
 public class HttpUtilTest {

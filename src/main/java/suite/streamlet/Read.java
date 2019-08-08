@@ -15,8 +15,8 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 
+import primal.MoreVerbs.Pull;
 import primal.Nouns.Utf8;
-import primal.Verbs.Pull;
 import primal.Verbs.ReadLine;
 import primal.adt.Pair;
 import primal.adt.map.ListMultimap;

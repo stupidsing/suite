@@ -4,9 +4,9 @@ import java.security.SecureRandom;
 import java.util.Random;
 import java.util.function.BiPredicate;
 
+import primal.MoreVerbs.Pull;
 import primal.Verbs.Build;
 import primal.Verbs.Equals;
-import primal.Verbs.Pull;
 import primal.primitive.adt.LngMutable;
 import suite.persistent.PerList;
 import suite.util.HtmlUtil;

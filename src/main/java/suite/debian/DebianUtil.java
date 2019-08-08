@@ -9,8 +9,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import primal.MoreVerbs.Split;
 import primal.Verbs.ReadFile;
-import primal.Verbs.Split;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 

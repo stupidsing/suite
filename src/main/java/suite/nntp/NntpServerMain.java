@@ -10,9 +10,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import primal.MoreVerbs.Split;
 import primal.Verbs.Equals;
 import primal.Verbs.ReadLine;
-import primal.Verbs.Split;
 import primal.io.WriteStream;
 import suite.os.SocketUtil;
 import suite.util.CommandUtil;

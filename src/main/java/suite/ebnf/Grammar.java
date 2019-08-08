@@ -4,8 +4,8 @@ import java.io.Reader;
 import java.util.List;
 import java.util.Map;
 
+import primal.MoreVerbs.Split;
 import primal.Verbs.Build;
-import primal.Verbs.Split;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 

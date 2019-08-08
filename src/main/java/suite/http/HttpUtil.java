@@ -15,7 +15,7 @@ import org.apache.http.Header;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.HttpClients;
 
-import primal.Verbs.Pull;
+import primal.MoreVerbs.Pull;
 import primal.Verbs.Sleep;
 import primal.adt.FixieArray;
 import primal.adt.map.ListMultimap;
