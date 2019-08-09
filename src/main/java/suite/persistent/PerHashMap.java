@@ -3,6 +3,7 @@ package suite.persistent;
 import primal.Verbs.Equals;
 import primal.adt.Pair;
 import primal.fp.Funs2.BinOp;
+import primal.fp.Funs2.Pair_;
 import primal.fp.Funs2.Source2;
 import primal.puller.Puller2;
 import suite.streamlet.Streamlet2;
@@ -27,7 +28,7 @@ public class PerHashMap<K, V> {
 		return new Streamlet2<>(() -> {
 			var source = set.streamlet().source();
 			return Puller2.of(new Source2<K, V>() {
-				public boolean source2(Pair<K, V> pair) {
+				public boolean source2(Pair_<K, V> pair) {
 					var pair1 = source.g();
 					if (pair1 != null) {
 						pair.update(pair1.k, pair1.v);
