@@ -7,6 +7,7 @@ import java.util.List;
 
 import primal.adt.Pair;
 import primal.fp.Funs.Iterate;
+import primal.streamlet.Streamlet2;
 import suite.node.Atom;
 import suite.node.Dict;
 import suite.node.Node;
@@ -15,7 +16,6 @@ import suite.node.Tree;
 import suite.node.Tuple;
 import suite.node.util.Comparer;
 import suite.streamlet.Read;
-import suite.streamlet.Streamlet2;
 
 public class Rewrite_ {
 

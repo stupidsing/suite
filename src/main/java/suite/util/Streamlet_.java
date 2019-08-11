@@ -1,7 +1,7 @@
 package suite.util;
 
-import suite.primitive.Ints_;
-import suite.primitive.streamlet.IntStreamlet;
+import primal.primitive.IntMoreVerbs.ReadInt;
+import primal.primitive.streamlet.IntStreamlet;
 
 public class Streamlet_ {
 
@@ -10,7 +10,7 @@ public class Streamlet_ {
 	}
 
 	public static IntStreamlet forInt(int s, int e) {
-		return Ints_.for_(s, e);
+		return ReadInt.for_(s, e);
 	}
 
 }

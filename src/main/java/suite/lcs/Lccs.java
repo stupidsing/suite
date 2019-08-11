@@ -8,11 +8,11 @@ import java.util.List;
 
 import primal.Verbs.Equals;
 import primal.adt.Pair;
+import primal.primitive.IntMoreVerbs.IntersectInt;
+import primal.primitive.IntMoreVerbs.ReadInt;
 import primal.primitive.adt.Bytes;
 import primal.primitive.adt.map.IntObjMap;
 import primal.primitive.adt.pair.IntObjPair;
-import suite.primitive.ReadInt;
-import suite.primitive.adt.set.IntSet;
 import suite.text.RollingHash;
 import suite.text.Segment;
 
@@ -36,7 +36,7 @@ public class Lccs {
 			var segmentLists1 = hashSegments(bytes1, rollingSize);
 			var keys0 = ReadInt.from2(segmentLists0).keys().toSet();
 			var keys1 = ReadInt.from2(segmentLists1).keys().toSet();
-			var keys = IntSet.intersect(keys0, keys1).streamlet().toArray();
+			var keys = ReadInt.from(IntersectInt.of(keys0, keys1)).toArray();
 
 			for (var key : keys)
 				for (var segment0 : segmentLists0.get(key))

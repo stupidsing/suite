@@ -9,9 +9,9 @@ import java.util.Set;
 
 import primal.adt.Pair;
 import primal.adt.map.ListMultimap;
+import primal.streamlet.Streamlet;
 import suite.streamlet.As;
 import suite.streamlet.Read;
-import suite.streamlet.Streamlet;
 
 public class DpkgUtil {
 

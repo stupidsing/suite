@@ -6,10 +6,10 @@ import primal.Verbs.Concat;
 import primal.Verbs.First;
 import primal.Verbs.Right;
 import primal.primitive.adt.Bytes;
+import primal.streamlet.Streamlet;
 import suite.fs.KeyDataStore;
 import suite.fs.impl.FileSystemKeyUtil.NameKey;
 import suite.streamlet.Read;
-import suite.streamlet.Streamlet;
 
 /**
  * Facilitates storage of unlimited length of filenames on the persistent

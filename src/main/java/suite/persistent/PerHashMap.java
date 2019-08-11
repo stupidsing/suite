@@ -6,7 +6,7 @@ import primal.fp.Funs2.BinOp;
 import primal.fp.Funs2.Pair_;
 import primal.fp.Funs2.Source2;
 import primal.puller.Puller2;
-import suite.streamlet.Streamlet2;
+import primal.streamlet.Streamlet2;
 
 public class PerHashMap<K, V> {
 

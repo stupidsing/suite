@@ -16,7 +16,7 @@ import primal.Verbs.Copy;
 import primal.fp.Funs.Source;
 import suite.cfg.Defaults;
 import suite.inspect.Dump;
-import suite.proxy.Intercept;
+import suite.jdk.proxy.Intercept;
 
 public class Log4j_ {
 

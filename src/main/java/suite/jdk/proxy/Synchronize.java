@@ -1,4 +1,4 @@
-package suite.proxy;
+package suite.jdk.proxy;
 
 public class Synchronize {
 

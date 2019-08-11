@@ -41,7 +41,3 @@ replace() {
 }
 
 replace src/main/java/suite/primitive/Chars_.java
-replace src/main/java/suite/primitive/adt/set/ChrSet.java
-replace src/main/java/suite/primitive/ReadChr.java
-replace src/main/java/suite/primitive/streamlet/ChrObjStreamlet.java
-replace src/main/java/suite/primitive/streamlet/ChrStreamlet.java

@@ -9,15 +9,15 @@ import primal.Verbs.Union;
 import primal.adt.Pair;
 import primal.fp.Funs.Sink;
 import primal.os.Log_;
+import primal.primitive.DblMoreVerbs.LiftDbl;
 import primal.primitive.fp.AsDbl;
+import primal.streamlet.Streamlet;
 import suite.math.Math_;
 import suite.node.util.Singleton;
 import suite.os.SerializedStoreCache;
-import suite.primitive.ReadDbl;
 import suite.serialize.Serialize;
 import suite.smtp.SmtpSslGmail;
 import suite.streamlet.Read;
-import suite.streamlet.Streamlet;
 import suite.trade.Account;
 import suite.trade.Instrument;
 import suite.trade.Time;
@@ -102,7 +102,7 @@ public class DailyMain {
 				.collect();
 
 		var requestTrades = strategyTrades.filterKey(strategy -> !Equals.string(strategy, sellPool));
-		var amounts = strategyTrades.values().collect(ReadDbl.lift(Trade::amount));
+		var amounts = strategyTrades.values().collect(LiftDbl.of(Trade::amount));
 		var buys_ = amounts.filter(amount -> 0d < amount).sum();
 		var sells = amounts.filter(amount -> amount < 0d).sum();
 

@@ -11,7 +11,7 @@ import primal.Verbs.Get;
 import primal.fp.FunUtil;
 import primal.fp.Funs.Source;
 import primal.puller.Puller;
-import suite.streamlet.Streamlet;
+import primal.streamlet.Streamlet;
 
 /**
  * Persistent linked list.

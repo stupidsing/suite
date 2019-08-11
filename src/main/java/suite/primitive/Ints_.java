@@ -4,15 +4,13 @@ import static primal.statics.Rethrow.ex;
 
 import primal.fp.Funs.Iterate;
 import primal.fp.Funs.Source;
-import primal.primitive.IntPrim;
 import primal.primitive.Int_Int;
-import primal.primitive.adt.IntMutable;
 import primal.primitive.adt.Ints;
 import primal.primitive.adt.Ints.IntsBuilder;
 import primal.primitive.adt.Ints.WriteChar;
 import primal.primitive.puller.IntPuller;
+import primal.primitive.streamlet.IntStreamlet;
 import primal.puller.Puller;
-import suite.primitive.streamlet.IntStreamlet;
 
 public class Ints_ {
 
@@ -32,24 +30,6 @@ public class Ints_ {
 			while ((ints = puller.pull()) != null)
 				writer.write(ints.cs, ints.start, ints.end - ints.start);
 			return ints;
-		});
-	}
-
-	public static IntStreamlet of(int... ts) {
-		return new IntStreamlet(() -> IntPuller.of(ts));
-	}
-
-	public static IntStreamlet of(int[] ts, int start, int end, int inc) {
-		return new IntStreamlet(() -> IntPuller.of(ts, start, end, inc));
-	}
-
-	public static IntStreamlet for_(int s, int e) {
-		return new IntStreamlet(() -> {
-			var m = IntMutable.of(s);
-			return IntPuller.of(() -> {
-				var c = m.increment();
-				return c < e ? c : IntPrim.EMPTYVALUE;
-			});
 		});
 	}
 

@@ -12,11 +12,11 @@ import primal.Verbs.Equals;
 import primal.Verbs.Right;
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
+import primal.streamlet.Streamlet2;
 import suite.ebnf.Grammar;
 import suite.ebnf.Grammar.GrammarType;
 import suite.persistent.PerList;
 import suite.streamlet.Read;
-import suite.streamlet.Streamlet2;
 
 public class BuildLr {
 

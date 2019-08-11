@@ -14,6 +14,7 @@ import primal.Verbs.Build;
 import primal.Verbs.Equals;
 import primal.adt.IdentityKey;
 import primal.adt.Pair;
+import primal.primitive.IntMoreVerbs.ReadInt;
 import primal.primitive.IntPrim;
 import primal.primitive.adt.map.IntObjMap;
 import primal.primitive.adt.map.ObjIntMap;
@@ -32,7 +33,6 @@ import suite.node.Tuple;
 import suite.node.io.Rewrite_.NodeHead;
 import suite.node.io.Rewrite_.NodeRead;
 import suite.node.io.Rewrite_.ReadType;
-import suite.primitive.ReadInt;
 import suite.streamlet.Read;
 
 /**

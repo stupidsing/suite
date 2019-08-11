@@ -12,16 +12,16 @@ import primal.Verbs.New;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Iterate;
 import primal.primitive.Dbl_Dbl;
+import primal.primitive.FltMoreVerbs.ReadFlt;
 import primal.primitive.IntPrim.Int_Obj;
 import primal.primitive.adt.DblMutable;
 import primal.puller.Puller;
+import primal.streamlet.Streamlet;
 import suite.math.Sigmoid;
 import suite.math.Tanh;
 import suite.math.linalg.Matrix;
-import suite.primitive.Floats_;
 import suite.streamlet.As;
 import suite.streamlet.Read;
-import suite.streamlet.Streamlet;
 import suite.util.To;
 
 public class NeuralNetwork {
@@ -402,7 +402,7 @@ public class NeuralNetwork {
 	private Layer<float[], float[]> softmaxLayer() {
 		return inputs -> {
 			var exps = To.vector(inputs, Math::exp);
-			var invSum = 1d / Floats_.of(exps).sum();
+			var invSum = 1d / ReadFlt.from(exps).sum();
 			var softmaxs = To.vector(exps, exp -> exp * invSum);
 			return new Out<>(softmaxs, errors -> {
 				var length = errors.length;

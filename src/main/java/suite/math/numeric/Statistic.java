@@ -16,10 +16,10 @@ import primal.primitive.adt.IntMutable;
 import primal.primitive.adt.map.IntObjMap;
 import primal.primitive.adt.pair.FltObjPair;
 import primal.primitive.adt.pair.IntObjPair;
+import primal.streamlet.Streamlet;
 import suite.math.linalg.CholeskyDecomposition;
 import suite.math.linalg.Matrix;
 import suite.math.linalg.Vector;
-import suite.streamlet.Streamlet;
 import suite.util.To;
 
 public class Statistic {

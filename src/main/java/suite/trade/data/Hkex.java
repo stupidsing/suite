@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import primal.Verbs.Equals;
 import primal.fp.Funs.Source;
+import primal.streamlet.Streamlet;
 import suite.http.HttpUtil;
 import suite.node.util.Singleton;
 import suite.os.Execute;
@@ -20,7 +21,6 @@ import suite.os.SerializedStoreCache;
 import suite.serialize.Serialize;
 import suite.streamlet.As;
 import suite.streamlet.Read;
-import suite.streamlet.Streamlet;
 import suite.trade.Instrument;
 import suite.util.To;
 

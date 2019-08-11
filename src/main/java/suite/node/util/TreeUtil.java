@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import primal.primitive.IntInt_Int;
+import primal.streamlet.Streamlet;
 import suite.node.Atom;
 import suite.node.Int;
 import suite.node.Node;
@@ -16,7 +17,6 @@ import suite.node.io.Operator;
 import suite.node.io.TermOp;
 import suite.primitive.IntInt_Bool;
 import suite.streamlet.Read;
-import suite.streamlet.Streamlet;
 
 public class TreeUtil {
 

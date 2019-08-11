@@ -6,7 +6,7 @@ import primal.Verbs.Build;
 import primal.fp.Funs.Source;
 import primal.os.Log_;
 import suite.inspect.Dump;
-import suite.proxy.Intercept;
+import suite.jdk.proxy.Intercept;
 
 public class LogUtil {
 

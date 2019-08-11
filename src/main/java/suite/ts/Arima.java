@@ -8,6 +8,8 @@ import java.util.Arrays;
 import java.util.Random;
 
 import primal.primitive.DblPrim.DblSource;
+import primal.primitive.FltMoreVerbs.ConcatFlt;
+import primal.primitive.FltMoreVerbs.ReadFlt;
 import primal.primitive.FltVerbs.CopyFlt;
 import primal.primitive.adt.Floats;
 import primal.primitive.adt.pair.DblObjPair;
@@ -17,7 +19,6 @@ import suite.math.linalg.Vector;
 import suite.math.numeric.Statistic;
 import suite.math.numeric.Statistic.LinearRegression;
 import suite.primitive.Floats_;
-import suite.primitive.ReadFlt;
 import suite.streamlet.As;
 import suite.util.To;
 
@@ -122,7 +123,7 @@ public class Arima {
 						int tq = t + q, tqm1 = tq - 1;
 						var lrxs0 = forInt(p).collect(As.floats(i -> xsp[tpm1 - i]));
 						var lrxs1 = forInt(q).collect(As.floats(i -> epq[tqm1 - i]));
-						return FltObjPair.of(xsp[tp], ReadFlt.concat(lrxs0, lrxs1).toArray());
+						return FltObjPair.of(xsp[tp], ConcatFlt.of(lrxs0, lrxs1).toArray());
 					}));
 
 			System.out.println("iter " + iter + ", error = " + To.string(error) + lr);
@@ -169,8 +170,8 @@ public class Arima {
 						.map(t -> {
 							var tp = t + p;
 							var tq = t + q;
-							var lrxs = ReadFlt //
-									.concat(Floats_.reverse(xsp, t, tp), Floats_.reverse(epq, t, tq)) //
+							var lrxs = ConcatFlt //
+									.of(Floats_.reverse(xsp, t, tp), Floats_.reverse(epq, t, tq)) //
 									.toArray();
 							var lry = xsp[tp] - epq[tq];
 							return FltObjPair.of(lry, lrxs);
@@ -242,8 +243,8 @@ public class Arima {
 					.map(t -> {
 						var tp = t + p;
 						int tq = t + q, tqm1 = tq - 1;
-						var lrxs = ReadFlt //
-								.concat(Floats_.reverse(xsp, t, tp),
+						var lrxs = ConcatFlt //
+								.of(Floats_.reverse(xsp, t, tp),
 										forInt(iter_).collect(As.floats(i -> epqByIter[i][tqm1 - i]))) //
 								.toArray();
 						return FltObjPair.of(xsp[tp], lrxs);
@@ -323,8 +324,8 @@ public class Arima {
 			var lr = stat.linearRegression(forInt(length) //
 					.map(t -> {
 						var tqm1 = t + qm1;
-						var lrxs = ReadFlt //
-								.concat(Floats_.of(1f), forInt(iter_).collect(As.floats(i -> epqByIter[i][tqm1 - i]))) //
+						var lrxs = ConcatFlt //
+								.of(ReadFlt.from(1f), forInt(iter_).collect(As.floats(i -> epqByIter[i][tqm1 - i]))) //
 								.toArray();
 						return FltObjPair.of(xs[t], lrxs);
 					}));

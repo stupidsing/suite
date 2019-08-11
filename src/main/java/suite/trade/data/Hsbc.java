@@ -8,10 +8,10 @@ import java.util.Map;
 import java.util.Set;
 
 import primal.Nouns.Utf8;
+import primal.streamlet.Streamlet;
 import suite.os.Execute;
 import suite.streamlet.As;
 import suite.streamlet.Read;
-import suite.streamlet.Streamlet;
 import suite.util.XmlUtil;
 
 public class Hsbc {

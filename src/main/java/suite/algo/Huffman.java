@@ -12,13 +12,13 @@ import java.util.Map;
 import primal.Verbs.Take;
 import primal.adt.Pair;
 import primal.fp.Funs.Source;
+import primal.primitive.IntMoreVerbs.ReadInt;
 import primal.primitive.IntPrim;
 import primal.primitive.adt.map.ObjIntMap;
 import primal.primitive.adt.pair.IntObjPair;
+import primal.primitive.streamlet.IntObjStreamlet;
 import primal.puller.Puller;
 import suite.adt.PriorityQueue;
-import suite.primitive.ReadInt;
-import suite.primitive.streamlet.IntObjStreamlet;
 import suite.streamlet.Read;
 
 /**

@@ -3,8 +3,8 @@ package suite.trade.data;
 import org.junit.Test;
 
 import primal.Verbs.Sleep;
+import primal.streamlet.Streamlet;
 import suite.http.HttpUtil;
-import suite.streamlet.Streamlet;
 import suite.trade.Forex;
 import suite.trade.TimeRange;
 import suite.util.To;

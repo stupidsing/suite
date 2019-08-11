@@ -8,16 +8,16 @@ import primal.adt.Opt;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Iterate;
 import primal.fp.Funs2.Fun2;
+import primal.primitive.IntMoreVerbs.ReadInt;
 import primal.primitive.IntPrim.Int_Obj;
 import primal.primitive.IntPrim.Obj_Int;
 import primal.primitive.adt.map.IntObjMap;
+import primal.primitive.streamlet.IntObjStreamlet;
 import suite.BindArrayUtil.Pattern;
 import suite.math.sym.Sym.Ring;
 import suite.node.Int;
 import suite.node.Node;
 import suite.node.io.SwitchNode;
-import suite.primitive.ReadInt;
-import suite.primitive.streamlet.IntObjStreamlet;
 
 public class Polynomial<N> {
 

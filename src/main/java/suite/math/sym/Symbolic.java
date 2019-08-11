@@ -9,8 +9,10 @@ import primal.fp.Funs.Fun;
 import primal.fp.Funs2.Fun2;
 import primal.primitive.DblPrim.Obj_Dbl;
 import primal.primitive.Dbl_Dbl;
+import primal.primitive.IntMoreVerbs.ReadInt;
 import primal.primitive.IntPrim.Int_Obj;
 import primal.primitive.IntPrim.Obj_Int;
+import primal.streamlet.Streamlet;
 import suite.BindArrayUtil.Pattern;
 import suite.Suite;
 import suite.jdk.gen.FunExpression.FunExpr;
@@ -26,9 +28,7 @@ import suite.node.Int;
 import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.SwitchNode;
-import suite.primitive.ReadInt;
 import suite.streamlet.Read;
-import suite.streamlet.Streamlet;
 
 public class Symbolic {
 

@@ -32,13 +32,13 @@ import primal.fp.Funs.Source;
 import primal.fp.Funs2.BinOp;
 import primal.jdk.UnsafeUtil;
 import primal.os.Log_;
+import primal.primitive.IntMoreVerbs.ReadInt;
 import suite.jdk.gen.FunExprM.FieldStaticFunExpr;
 import suite.jdk.gen.FunExpression.FunExpr;
 import suite.jdk.gen.pass.FunExpand;
 import suite.jdk.gen.pass.FunGenerateBytecode;
 import suite.jdk.gen.pass.FunRewrite;
 import suite.jdk.lambda.LambdaInterface;
-import suite.primitive.ReadInt;
 import suite.streamlet.Read;
 
 public class FunCreator<I> extends FunFactory {

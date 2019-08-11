@@ -2,9 +2,9 @@ package suite.trade.backalloc;
 
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
+import primal.streamlet.Streamlet;
+import primal.streamlet.Streamlet2;
 import suite.streamlet.Read;
-import suite.streamlet.Streamlet;
-import suite.streamlet.Streamlet2;
 import suite.trade.Instrument;
 import suite.trade.Time;
 import suite.trade.analysis.Factor;

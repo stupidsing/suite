@@ -5,11 +5,11 @@ import static suite.util.Streamlet_.forInt;
 
 import org.junit.Test;
 
+import primal.primitive.LngMoreVerbs.ConcatLng;
+import primal.primitive.LngMoreVerbs.ReadLng;
 import primal.primitive.adt.pair.FltObjPair;
 import suite.math.linalg.Vector;
 import suite.math.numeric.Statistic;
-import suite.primitive.Longs_;
-import suite.primitive.ReadLng;
 import suite.trade.data.TradeCfg;
 import suite.trade.data.TradeCfgImpl;
 
@@ -34,9 +34,9 @@ public class PairTest {
 	private void test(TimeRange period, String symbol0, String symbol1) {
 		var ds0 = cfg.dataSource(symbol0, period);
 		var ds1 = cfg.dataSource(symbol1, period);
-		var ts0 = Longs_.of(ds0.ts);
-		var ts1 = Longs_.of(ds1.ts);
-		var tradeTimes = ReadLng.concat(ts0, ts1).distinct().sort().toArray();
+		var ts0 = ReadLng.from(ds0.ts);
+		var ts1 = ReadLng.from(ds1.ts);
+		var tradeTimes = ConcatLng.of(ts0, ts1).distinct().sort().toArray();
 		var prices0 = ds0.alignBeforePrices(tradeTimes).prices;
 		var prices1 = ds1.alignBeforePrices(tradeTimes).prices;
 		var length = prices0.length;

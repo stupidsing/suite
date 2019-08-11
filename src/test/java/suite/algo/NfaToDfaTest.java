@@ -10,8 +10,8 @@ import org.junit.Test;
 
 import primal.adt.map.ListMultimap;
 import primal.fp.Funs.Fun;
+import primal.streamlet.Streamlet;
 import suite.streamlet.Read;
-import suite.streamlet.Streamlet;
 
 // https://www.geeksforgeeks.org/program-implement-nfa-epsilon-move-dfa-conversion/
 public class NfaToDfaTest {

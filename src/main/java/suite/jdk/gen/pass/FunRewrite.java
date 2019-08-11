@@ -12,6 +12,7 @@ import org.apache.bcel.generic.Type;
 
 import primal.Verbs.Get;
 import primal.adt.Pair;
+import primal.streamlet.Streamlet2;
 import suite.jdk.gen.FunCreator;
 import suite.jdk.gen.FunExprK.Declare0ParameterFunExpr;
 import suite.jdk.gen.FunExprK.Declare1ParameterFunExpr;
@@ -35,7 +36,6 @@ import suite.jdk.gen.FunFactory;
 import suite.jdk.gen.Type_;
 import suite.jdk.lambda.LambdaInterface;
 import suite.streamlet.Read;
-import suite.streamlet.Streamlet2;
 import suite.util.Switch;
 
 public class FunRewrite extends FunFactory {

@@ -26,9 +26,9 @@ import primal.primitive.adt.pair.LngFltPair;
 import primal.primitive.adt.pair.LngIntPair;
 import primal.primitive.fp.AsInt;
 import primal.puller.Puller;
+import primal.streamlet.Streamlet;
 import suite.math.Math_;
 import suite.streamlet.Read;
-import suite.streamlet.Streamlet;
 import suite.trade.Account.Valuation;
 import suite.trade.data.DataSource.Eod;
 

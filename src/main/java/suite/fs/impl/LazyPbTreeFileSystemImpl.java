@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 
 import primal.primitive.adt.Bytes;
+import primal.streamlet.Streamlet;
 import suite.file.JournalledPageFile;
 import suite.file.impl.FileFactory;
 import suite.file.impl.JournalledFileFactory;
@@ -16,7 +17,6 @@ import suite.fs.KeyValueStore;
 import suite.node.util.Singleton;
 import suite.persistent.LazyPbTreeStore;
 import suite.serialize.Serialize;
-import suite.streamlet.Streamlet;
 
 public class LazyPbTreeFileSystemImpl implements FileSystem {
 

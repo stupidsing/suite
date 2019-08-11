@@ -7,8 +7,8 @@ import java.util.Comparator;
 import java.util.Deque;
 
 import primal.fp.Funs.Source;
+import primal.streamlet.Streamlet;
 import suite.streamlet.Read;
-import suite.streamlet.Streamlet;
 
 /**
  * Persistent Red-Black tree implementation. However, node deletion is not

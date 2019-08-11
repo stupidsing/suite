@@ -2,10 +2,10 @@ package suite.http;
 
 import static primal.statics.Fail.fail;
 
+import primal.streamlet.Streamlet2;
 import suite.persistent.PerList;
 import suite.persistent.PerMap;
 import suite.streamlet.Read;
-import suite.streamlet.Streamlet2;
 
 public class HttpHeader {
 

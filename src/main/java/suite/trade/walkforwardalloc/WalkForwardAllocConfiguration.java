@@ -1,6 +1,6 @@
 package suite.trade.walkforwardalloc;
 
-import suite.streamlet.Streamlet;
+import primal.streamlet.Streamlet;
 import suite.trade.Instrument;
 
 public class WalkForwardAllocConfiguration {

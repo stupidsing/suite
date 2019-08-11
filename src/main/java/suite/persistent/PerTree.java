@@ -1,6 +1,6 @@
 package suite.persistent;
 
-import suite.streamlet.Streamlet;
+import primal.streamlet.Streamlet;
 
 public interface PerTree<T> {
 

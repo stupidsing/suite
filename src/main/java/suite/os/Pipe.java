@@ -10,8 +10,8 @@ import java.util.List;
 
 import primal.Nouns.Utf8;
 import primal.os.Log_;
+import primal.streamlet.Streamlet;
 import suite.streamlet.Read;
-import suite.streamlet.Streamlet;
 import suite.util.Copy;
 
 public class Pipe {

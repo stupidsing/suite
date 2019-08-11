@@ -17,10 +17,10 @@ import primal.adt.Pair;
 import primal.fp.Funs.Source;
 import primal.primitive.adt.Bytes;
 import primal.puller.Puller;
+import primal.streamlet.Streamlet;
 import suite.cfg.HomeDir;
 import suite.http.HttpUtil;
 import suite.serialize.SerOutput;
-import suite.streamlet.Streamlet;
 
 public class StoreCache {
 

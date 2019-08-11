@@ -6,11 +6,11 @@ import java.util.List;
 
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
+import primal.streamlet.Streamlet;
 import suite.rt.RayTracer.Ray;
 import suite.rt.RayTracer.RayHit;
 import suite.rt.RayTracer.RtObject;
 import suite.streamlet.Read;
-import suite.streamlet.Streamlet;
 
 public class RayHit_ {
 

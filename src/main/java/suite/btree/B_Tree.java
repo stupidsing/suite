@@ -4,9 +4,9 @@ import java.io.Closeable;
 import java.io.PrintStream;
 
 import primal.adt.Pair;
+import primal.streamlet.Streamlet;
 import suite.fs.KeyDataMutator;
 import suite.fs.KeyValueMutator;
-import suite.streamlet.Streamlet;
 
 public interface B_Tree<Key, Value> extends Closeable, KeyDataMutator<Key>, KeyValueMutator<Key, Value> {
 

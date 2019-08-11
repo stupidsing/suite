@@ -3,7 +3,7 @@ package suite.weiqi;
 import static primal.statics.Fail.fail;
 
 import primal.Verbs.Get;
-import suite.primitive.adt.set.IntSet;
+import primal.primitive.adt.set.IntSet;
 import suite.weiqi.Board.MoveType;
 import suite.weiqi.Weiqi.Occupation;
 

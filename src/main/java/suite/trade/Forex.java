@@ -1,7 +1,7 @@
 package suite.trade;
 
+import primal.streamlet.Streamlet2;
 import suite.streamlet.Read;
-import suite.streamlet.Streamlet2;
 
 public class Forex {
 

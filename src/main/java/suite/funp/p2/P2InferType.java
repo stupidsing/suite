@@ -26,6 +26,8 @@ import primal.primitive.adt.IntMutable;
 import primal.primitive.adt.IntRange;
 import primal.primitive.adt.map.ObjIntMap;
 import primal.primitive.fp.AsInt;
+import primal.streamlet.Streamlet;
+import primal.streamlet.Streamlet2;
 import suite.BindArrayUtil.Pattern;
 import suite.Suite;
 import suite.assembler.Amd64.OpReg;
@@ -108,8 +110,6 @@ import suite.node.util.Singleton;
 import suite.node.util.TreeUtil;
 import suite.persistent.PerMap;
 import suite.streamlet.Read;
-import suite.streamlet.Streamlet;
-import suite.streamlet.Streamlet2;
 import suite.util.Switch;
 
 /**

@@ -12,11 +12,11 @@ import java.util.Stack;
 import primal.Verbs.Equals;
 import primal.adt.Pair;
 import primal.primitive.adt.Bytes;
+import primal.streamlet.Streamlet;
 import suite.btree.B_Tree;
 import suite.file.PageAllocator;
 import suite.file.SerializedPageFile;
 import suite.streamlet.Read;
-import suite.streamlet.Streamlet;
 
 /**
  * B+ tree implementation.

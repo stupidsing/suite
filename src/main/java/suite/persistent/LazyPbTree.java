@@ -15,8 +15,8 @@ import primal.Verbs.Left;
 import primal.Verbs.Right;
 import primal.fp.Funs.Iterate;
 import primal.fp.Funs.Source;
+import primal.streamlet.Streamlet;
 import suite.streamlet.Read;
-import suite.streamlet.Streamlet;
 
 public class LazyPbTree<T> implements PerTree<T> {
 

@@ -3,8 +3,8 @@ package suite.trade.backalloc.strategy;
 import java.util.function.IntPredicate;
 
 import primal.primitive.IntInt_Int;
+import primal.streamlet.Streamlet2;
 import suite.streamlet.Read;
-import suite.streamlet.Streamlet2;
 import suite.trade.analysis.MovingAverage;
 import suite.trade.analysis.Oscillator;
 import suite.trade.backalloc.BackAllocator;

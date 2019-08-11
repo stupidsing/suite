@@ -5,8 +5,8 @@ import static primal.statics.Fail.fail;
 import java.util.Map;
 import java.util.Set;
 
+import primal.primitive.FltMoreVerbs.ReadFlt;
 import primal.primitive.Flt_Flt;
-import suite.primitive.Floats_;
 import suite.streamlet.Read;
 import suite.trade.Instrument;
 import suite.trade.TimeRange;
@@ -24,10 +24,10 @@ public class PriceFilter {
 	public DataSource dataSource(String symbol, TimeRange period) {
 		var ds = cfg.dataSource(s(symbol), period);
 		return DataSource.ofOhlcv(ds.ts, //
-				Floats_.of(ds.opens).mapFlt(priceFun).toArray(), //
-				Floats_.of(ds.closes).mapFlt(priceFun).toArray(), //
-				Floats_.of(ds.lows).mapFlt(priceFun).toArray(), //
-				Floats_.of(ds.highs).mapFlt(priceFun).toArray(), //
+				ReadFlt.from(ds.opens).mapFlt(priceFun).toArray(), //
+				ReadFlt.from(ds.closes).mapFlt(priceFun).toArray(), //
+				ReadFlt.from(ds.lows).mapFlt(priceFun).toArray(), //
+				ReadFlt.from(ds.highs).mapFlt(priceFun).toArray(), //
 				ds.volumes);
 	}
 

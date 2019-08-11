@@ -3,11 +3,11 @@ package suite.fp;
 import java.util.ArrayList;
 import java.util.List;
 
+import primal.streamlet.Streamlet;
 import suite.Suite;
 import suite.lp.Configuration.ProverCfg;
 import suite.node.Node;
 import suite.streamlet.Read;
-import suite.streamlet.Streamlet;
 
 public class FunCompilerCfg {
 

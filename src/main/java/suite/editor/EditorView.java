@@ -26,7 +26,7 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.WindowConstants;
 import javax.swing.text.JTextComponent;
 
-import suite.streamlet.Streamlet;
+import primal.streamlet.Streamlet;
 
 public class EditorView {
 

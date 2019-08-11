@@ -4,7 +4,7 @@ import java.util.Map;
 import java.util.Set;
 
 import primal.os.Log_;
-import suite.streamlet.Streamlet;
+import primal.streamlet.Streamlet;
 import suite.trade.Instrument;
 import suite.trade.Time;
 import suite.trade.TimeRange;

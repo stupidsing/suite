@@ -7,10 +7,10 @@ import java.util.ArrayList;
 import primal.adt.FixieArray;
 import primal.adt.Pair;
 import primal.fp.Funs.Iterate;
+import primal.streamlet.Streamlet;
 import suite.node.io.Operator;
 import suite.node.io.Operator.Assoc;
 import suite.streamlet.Read;
-import suite.streamlet.Streamlet;
 import suite.text.Segment;
 
 public class ParseUtil {

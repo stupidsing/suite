@@ -18,8 +18,8 @@ import primal.Nouns.Buffer;
 import primal.Nouns.Utf8;
 import primal.Verbs.Build;
 import primal.Verbs.ReadFile;
+import primal.streamlet.Streamlet;
 import suite.streamlet.Read;
-import suite.streamlet.Streamlet;
 import suite.util.To;
 
 public class FileUtil {

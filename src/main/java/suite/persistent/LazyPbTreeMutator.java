@@ -3,8 +3,8 @@ package suite.persistent;
 import primal.adt.Mutable;
 import primal.adt.Pair;
 import primal.fp.Funs.Iterate;
+import primal.streamlet.Streamlet;
 import suite.fs.KeyValueMutator;
-import suite.streamlet.Streamlet;
 
 public class LazyPbTreeMutator<K, V> implements KeyValueMutator<K, V> {
 

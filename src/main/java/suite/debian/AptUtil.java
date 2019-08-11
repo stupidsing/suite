@@ -7,8 +7,8 @@ import java.util.Map;
 import java.util.zip.GZIPInputStream;
 
 import primal.Verbs.Equals;
+import primal.streamlet.Streamlet;
 import suite.streamlet.Read;
-import suite.streamlet.Streamlet;
 import suite.util.To;
 
 public class AptUtil {

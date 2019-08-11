@@ -10,9 +10,9 @@ import primal.primitive.adt.pair.DblIntPair;
 import primal.primitive.adt.pair.IntObjPair;
 import primal.primitive.fp.AsDbl;
 import primal.primitive.fp.AsInt;
+import primal.streamlet.Streamlet;
 import suite.adt.map.IntIntMap1;
 import suite.streamlet.As;
-import suite.streamlet.Streamlet;
 
 public class DecisionTree {
 

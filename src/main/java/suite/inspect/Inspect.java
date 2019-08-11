@@ -12,9 +12,9 @@ import java.util.List;
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Iterate;
+import primal.streamlet.Streamlet;
 import suite.object.ObjectSupport;
 import suite.streamlet.Read;
-import suite.streamlet.Streamlet;
 import suite.util.Memoize;
 
 /**

@@ -4,7 +4,7 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 
 import primal.Verbs.Get;
-import suite.primitive.adt.set.IntSet;
+import primal.primitive.adt.set.IntSet;
 import suite.weiqi.Weiqi.Occupation;
 
 public class GameSet1 {

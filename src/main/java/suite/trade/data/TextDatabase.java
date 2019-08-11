@@ -15,11 +15,11 @@ import primal.Verbs.Equals;
 import primal.Verbs.Sleep;
 import primal.Verbs.WriteFile;
 import primal.primitive.adt.Bytes;
+import primal.streamlet.Streamlet;
 import suite.cfg.HomeDir;
 import suite.primitive.Bytes_;
 import suite.streamlet.As;
 import suite.streamlet.Read;
-import suite.streamlet.Streamlet;
 import suite.util.To;
 
 public class TextDatabase {

@@ -12,13 +12,13 @@ import java.util.List;
 import primal.Verbs.Build;
 import primal.Verbs.Compare;
 import primal.Verbs.Intersect;
+import primal.primitive.FltMoreVerbs.LiftFlt;
+import primal.primitive.LngMoreVerbs.LiftLng;
+import primal.primitive.LngMoreVerbs.ReadLng;
 import primal.primitive.adt.pair.LngFltPair;
-import suite.primitive.Longs_;
-import suite.primitive.ReadFlt;
-import suite.primitive.ReadLng;
+import primal.streamlet.Streamlet;
+import primal.streamlet.Streamlet2;
 import suite.streamlet.Read;
-import suite.streamlet.Streamlet;
-import suite.streamlet.Streamlet2;
 import suite.trade.Time;
 import suite.trade.TimeRange;
 import suite.trade.Trade_;
@@ -66,27 +66,27 @@ public class DataSource {
 		Streamlet<Long> tradeTimes;
 		if (Boolean.TRUE)
 			tradeTimes = dataSources // union
-					.concatMap(ds -> Longs_.of(ds.ts).map(t -> t)) //
+					.concatMap(ds -> ReadLng.from(ds.ts).map(t -> t)) //
 					.distinct();
 		else
 			tradeTimes = Read.from(Intersect.of(dataSources // intersect
-					.<Collection<Long>> map(ds -> Longs_.of(ds.ts).map(t -> t).toList()) //
+					.<Collection<Long>> map(ds -> ReadLng.from(ds.ts).map(t -> t).toList()) //
 					.toList()));
-		return tradeTimes.sort(Compare::objects).collect(ReadLng.lift(t -> t)).toArray();
+		return tradeTimes.sort(Compare::objects).collect(LiftLng.of(t -> t)).toArray();
 	}
 
 	public static DataSource of(Streamlet<Datum> data) {
-		return of(data.collect(ReadLng.lift(datum -> datum.t0)).toArray(), data);
+		return of(data.collect(LiftLng.of(datum -> datum.t0)).toArray(), data);
 	}
 
 	private static DataSource of(long[] ts, Streamlet<Datum> data) {
 		return ofOhlcv( //
 				ts, //
-				data.collect(ReadFlt.lift(datum -> datum.open)).toArray(), //
-				data.collect(ReadFlt.lift(datum -> datum.close)).toArray(), //
-				data.collect(ReadFlt.lift(datum -> datum.low)).toArray(), //
-				data.collect(ReadFlt.lift(datum -> datum.high)).toArray(), //
-				data.collect(ReadFlt.lift(datum -> datum.volume)).toArray());
+				data.collect(LiftFlt.of(datum -> datum.open)).toArray(), //
+				data.collect(LiftFlt.of(datum -> datum.close)).toArray(), //
+				data.collect(LiftFlt.of(datum -> datum.low)).toArray(), //
+				data.collect(LiftFlt.of(datum -> datum.high)).toArray(), //
+				data.collect(LiftFlt.of(datum -> datum.volume)).toArray());
 	}
 
 	public static DataSource of(long[] ts, float[] prices) {

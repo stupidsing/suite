@@ -5,8 +5,8 @@ import java.util.Map;
 import java.util.Set;
 
 import primal.fp.Funs2.Fun2;
+import primal.streamlet.Streamlet;
 import suite.streamlet.Read;
-import suite.streamlet.Streamlet;
 import suite.trade.Trade_;
 
 public class QuoteCache<K> {

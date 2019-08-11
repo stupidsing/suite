@@ -7,7 +7,7 @@ import java.util.Collections;
 
 import org.junit.Test;
 
-import suite.primitive.Ints_;
+import primal.primitive.IntMoreVerbs.ReadInt;
 
 public class SuffixArrayTest {
 
@@ -64,7 +64,7 @@ public class SuffixArrayTest {
 			}
 
 			var keys = new ArrayList<Key>();
-			Ints_.for_(0, length).sink(i -> keys.add(new Key(i)));
+			ReadInt.for_(0, length).sink(i -> keys.add(new Key(i)));
 			Collections.sort(keys);
 
 			orderByStart = new int[length];

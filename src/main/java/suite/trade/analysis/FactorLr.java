@@ -5,12 +5,12 @@ import static suite.util.Streamlet_.forInt;
 import java.util.List;
 import java.util.Map;
 
+import primal.streamlet.Streamlet;
 import suite.math.linalg.Matrix;
 import suite.math.numeric.Statistic;
 import suite.math.numeric.Statistic.LinearRegression;
 import suite.streamlet.As;
 import suite.streamlet.Read;
-import suite.streamlet.Streamlet;
 import suite.trade.Instrument;
 import suite.trade.Time;
 import suite.trade.TimeRange;

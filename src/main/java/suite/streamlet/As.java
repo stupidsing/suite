@@ -36,11 +36,12 @@ import primal.primitive.fp.AsChr;
 import primal.primitive.fp.AsFlt;
 import primal.primitive.fp.AsInt;
 import primal.primitive.puller.IntPuller;
+import primal.primitive.streamlet.FltStreamlet;
+import primal.primitive.streamlet.IntStreamlet;
 import primal.puller.Puller;
 import primal.puller.Puller2;
+import primal.streamlet.Streamlet;
 import suite.primitive.Bytes_;
-import suite.primitive.streamlet.FltStreamlet;
-import suite.primitive.streamlet.IntStreamlet;
 import suite.util.To;
 
 public class As {

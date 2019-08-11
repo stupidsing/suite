@@ -28,10 +28,12 @@ import primal.primitive.ChrPrim;
 import primal.primitive.ChrPrim.ChrSource;
 import primal.primitive.adt.Bytes;
 import primal.primitive.puller.ChrPuller;
+import primal.primitive.streamlet.ChrStreamlet;
 import primal.puller.Puller;
 import primal.puller.Puller2;
+import primal.streamlet.Streamlet;
+import primal.streamlet.Streamlet2;
 import suite.http.HttpUtil;
-import suite.primitive.streamlet.ChrStreamlet;
 
 public class Read {
 

@@ -4,15 +4,13 @@ import static primal.statics.Rethrow.ex;
 
 import primal.fp.Funs.Iterate;
 import primal.fp.Funs.Source;
-import primal.primitive.FltPrim;
 import primal.primitive.Int_Flt;
 import primal.primitive.adt.Floats;
 import primal.primitive.adt.Floats.FloatsBuilder;
 import primal.primitive.adt.Floats.WriteChar;
-import primal.primitive.adt.FltMutable;
 import primal.primitive.puller.FltPuller;
+import primal.primitive.streamlet.FltStreamlet;
 import primal.puller.Puller;
-import suite.primitive.streamlet.FltStreamlet;
 
 public class Floats_ {
 
@@ -32,24 +30,6 @@ public class Floats_ {
 			while ((floats = puller.pull()) != null)
 				writer.write(floats.cs, floats.start, floats.end - floats.start);
 			return floats;
-		});
-	}
-
-	public static FltStreamlet of(float... ts) {
-		return new FltStreamlet(() -> FltPuller.of(ts));
-	}
-
-	public static FltStreamlet of(float[] ts, int start, int end, int inc) {
-		return new FltStreamlet(() -> FltPuller.of(ts, start, end, inc));
-	}
-
-	public static FltStreamlet for_(float s, float e) {
-		return new FltStreamlet(() -> {
-			var m = FltMutable.of(s);
-			return FltPuller.of(() -> {
-				var c = m.increment();
-				return c < e ? c : FltPrim.EMPTYVALUE;
-			});
 		});
 	}
 

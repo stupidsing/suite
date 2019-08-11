@@ -5,9 +5,9 @@ import java.util.Iterator;
 import primal.Verbs.Equals;
 import primal.Verbs.Get;
 import primal.adt.Pair;
+import primal.streamlet.Streamlet;
+import primal.streamlet.Streamlet2;
 import suite.streamlet.Read;
-import suite.streamlet.Streamlet;
-import suite.streamlet.Streamlet2;
 
 public class PerMap<K extends Comparable<K>, V> implements Iterable<Pair<K, V>> {
 

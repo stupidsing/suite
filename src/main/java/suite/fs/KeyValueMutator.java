@@ -1,6 +1,6 @@
 package suite.fs;
 
-import suite.streamlet.Streamlet;
+import primal.streamlet.Streamlet;
 
 public interface KeyValueMutator<Key, Value> {
 

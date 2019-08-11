@@ -9,14 +9,14 @@ import java.util.Arrays;
 import org.junit.Test;
 
 import primal.os.Log_;
+import primal.primitive.FltMoreVerbs.ReadFlt;
+import primal.primitive.IntMoreVerbs.ReadInt;
 import primal.primitive.IntPrim.Int_Obj;
 import primal.primitive.adt.pair.IntFltPair;
 import suite.math.Tanh;
 import suite.math.linalg.VirtualVector;
 import suite.math.numeric.Statistic;
 import suite.math.transform.DiscreteCosineTransform;
-import suite.primitive.Floats_;
-import suite.primitive.Ints_;
 import suite.trade.Time;
 import suite.trade.TimeRange;
 import suite.trade.Trade_;
@@ -116,17 +116,17 @@ public class AnalyzeTimeSeriesTest {
 				+ "\nsymbol = " + symbol //
 				+ "\nlength = " + length //
 				+ "\nnYears = " + length * Trade_.invTradeDaysPerYear //
-				+ "\nups = " + Floats_.of(returns).filter(return_ -> 0f <= return_).size() //
+				+ "\nups = " + ReadFlt.from(returns).filter(return_ -> 0f <= return_).size() //
 				+ "\ndct period = " + max.t0 //
 				+ forInt(10).map(d -> "dct component [" + d + "d] = " + fds[d]) //
 				+ "\nreturn kelly = " + kelly //
 				+ "\nreturn skew = " + stat.skewness(returns) //
 				+ "\nreturn kurt = " + stat.kurtosis(returns) //
-				+ Ints_ //
-						.of(1, 2, 4, 8, 16, 32) //
+				+ ReadInt //
+						.from(1, 2, 4, 8, 16, 32) //
 						.map(d -> "mean reversion ols [" + d + "d] = " + ts.meanReversion(prices, d).coefficients[0]) //
-				+ Ints_ //
-						.of(4, 16) //
+				+ ReadInt //
+						.from(4, 16) //
 						.map(d -> "variance ratio [" + d + "d over 1d] = " + ts.varianceRatio(prices, d)) //
 				+ "\nreturn hurst = " + ts.hurst(prices, prices.length / 2) //
 				+ "\nhold " + cr.buySell(d -> 1d).invest(prices) //

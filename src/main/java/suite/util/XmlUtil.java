@@ -21,8 +21,8 @@ import org.xml.sax.SAXException;
 import primal.Nouns.Utf8;
 import primal.Verbs.Equals;
 import primal.fp.Funs.Source;
+import primal.streamlet.Streamlet;
 import suite.streamlet.Read;
-import suite.streamlet.Streamlet;
 
 public class XmlUtil {
 

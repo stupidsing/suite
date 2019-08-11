@@ -16,8 +16,8 @@ import primal.Verbs.Get;
 import primal.Verbs.Mk;
 import primal.Verbs.WriteFile;
 import primal.adt.Pair;
+import primal.streamlet.Streamlet;
 import suite.os.FileUtil;
-import suite.streamlet.Streamlet;
 import suite.util.RunUtil;
 import suite.util.To;
 

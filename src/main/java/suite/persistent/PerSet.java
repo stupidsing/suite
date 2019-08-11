@@ -6,7 +6,7 @@ import primal.Verbs.Build;
 import primal.Verbs.Compare;
 import primal.Verbs.Equals;
 import primal.Verbs.Get;
-import suite.streamlet.Streamlet;
+import primal.streamlet.Streamlet;
 
 public class PerSet<V extends Comparable<V>> implements Iterable<V> {
 

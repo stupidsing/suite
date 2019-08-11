@@ -16,8 +16,8 @@ import primal.fp.Funs.Iterate;
 import primal.primitive.IntInt_Obj;
 import primal.primitive.IntPrim.Int_Obj;
 import primal.primitive.fp.AsInt;
+import primal.streamlet.Streamlet;
 import suite.streamlet.Read;
-import suite.streamlet.Streamlet;
 
 public class PerRope<T> {
 

@@ -23,10 +23,10 @@ import primal.fp.Funs.Source;
 import primal.os.Log_;
 import primal.primitive.IntPrim.Int_Obj;
 import primal.statics.Rethrow;
+import primal.streamlet.Streamlet;
 import suite.net.cluster.impl.NioCluster;
 import suite.net.cluster.impl.NioClusterMap;
 import suite.streamlet.Read;
-import suite.streamlet.Streamlet;
 
 public class NioClusterMapTest {
 

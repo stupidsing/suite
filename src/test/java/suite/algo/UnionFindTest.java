@@ -5,7 +5,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import suite.primitive.adt.set.IntSet;
+import primal.primitive.adt.set.IntSet;
 
 public class UnionFindTest {
 

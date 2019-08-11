@@ -4,7 +4,7 @@ import static java.lang.Math.exp;
 
 import org.junit.Test;
 
-import suite.primitive.Floats_;
+import primal.primitive.FltMoreVerbs.ReadFlt;
 import suite.streamlet.Read;
 import suite.trade.TimeRange;
 import suite.trade.data.TradeCfg;
@@ -25,7 +25,7 @@ public class PlottyTest {
 
 	@Test
 	public void testLogistic() {
-		var logistics = Floats_.of(new float[] { .1f, 1f, 10f }).map(theta -> To.vector(1200, i -> {
+		var logistics = ReadFlt.from(new float[] { .1f, 1f, 10f }).map(theta -> To.vector(1200, i -> {
 			var x = (i - 600) * (1d / 100);
 			return 1d / (1d + exp(-theta * x));
 		}));

@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.function.Predicate;
 
 import primal.fp.Funs.Fun;
+import primal.streamlet.Streamlet;
 import suite.Suite;
 import suite.lp.Trail;
 import suite.lp.doer.Binder;
@@ -22,7 +23,6 @@ import suite.node.util.Rewrite;
 import suite.persistent.PerMap;
 import suite.persistent.PerSet;
 import suite.streamlet.Read;
-import suite.streamlet.Streamlet;
 
 /**
  * Constraint handling rules implementation.

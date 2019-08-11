@@ -11,9 +11,9 @@ import java.util.Map;
 import primal.Verbs.New;
 import primal.adt.IdentityKey;
 import primal.adt.Pair;
+import primal.streamlet.Streamlet;
 import suite.inspect.Inspect;
 import suite.node.util.Singleton;
-import suite.streamlet.Streamlet;
 
 public class AutoObject<T extends AutoObject<T>> extends BaseObject<T> implements Cloneable, CastDefaults<T> {
 

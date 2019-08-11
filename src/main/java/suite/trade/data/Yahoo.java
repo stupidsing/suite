@@ -19,17 +19,17 @@ import primal.Verbs.Compare;
 import primal.Verbs.Equals;
 import primal.Verbs.WriteFile;
 import primal.fp.Funs2.FoldOp;
+import primal.primitive.FltMoreVerbs.LiftFlt;
+import primal.primitive.LngMoreVerbs.LiftLng;
 import primal.primitive.adt.pair.LngFltPair;
+import primal.streamlet.Streamlet;
+import primal.streamlet.Streamlet2;
 import suite.cfg.HomeDir;
 import suite.http.HttpUtil;
 import suite.node.util.Singleton;
 import suite.os.LogUtil;
-import suite.primitive.ReadFlt;
-import suite.primitive.ReadLng;
 import suite.streamlet.As;
 import suite.streamlet.Read;
-import suite.streamlet.Streamlet;
-import suite.streamlet.Streamlet2;
 import suite.trade.Time;
 import suite.trade.TimeRange;
 import suite.util.To;
@@ -51,12 +51,12 @@ public class Yahoo {
 				.sort((a0, a1) -> Compare.objects(a0[0], a1[0])) //
 				.collect();
 
-		var ts = arrays.collect(ReadLng.lift(array -> closeTs(array[0]))).toArray();
-		var ops = arrays.collect(ReadFlt.lift(array -> Float.parseFloat(array[1]))).toArray();
-		var cls = arrays.collect(ReadFlt.lift(array -> Float.parseFloat(array[4]))).toArray();
-		var los = arrays.collect(ReadFlt.lift(array -> Float.parseFloat(array[3]))).toArray();
-		var his = arrays.collect(ReadFlt.lift(array -> Float.parseFloat(array[2]))).toArray();
-		var volumes = arrays.collect(ReadFlt.lift(array -> Float.parseFloat(array[5]))).toArray();
+		var ts = arrays.collect(LiftLng.of(array -> closeTs(array[0]))).toArray();
+		var ops = arrays.collect(LiftFlt.of(array -> Float.parseFloat(array[1]))).toArray();
+		var cls = arrays.collect(LiftFlt.of(array -> Float.parseFloat(array[4]))).toArray();
+		var los = arrays.collect(LiftFlt.of(array -> Float.parseFloat(array[3]))).toArray();
+		var his = arrays.collect(LiftFlt.of(array -> Float.parseFloat(array[2]))).toArray();
+		var volumes = arrays.collect(LiftFlt.of(array -> Float.parseFloat(array[5]))).toArray();
 
 		adjust(symbol, ts, ops);
 		adjust(symbol, ts, cls);
@@ -120,7 +120,7 @@ public class Yahoo {
 
 			var ts = jsons //
 					.flatMap(json_ -> json_.path("timestamp")) //
-					.collect(ReadLng.lift(t -> getOpenTimeBefore(exchange, t.longValue()))) //
+					.collect(LiftLng.of(t -> getOpenTimeBefore(exchange, t.longValue()))) //
 					.toArray();
 
 			var length = ts.length;
@@ -148,7 +148,7 @@ public class Yahoo {
 
 			var data = Streamlet2 //
 					.concat(dataJsons0, dataJsons1) //
-					.mapValue(json_ -> json_.collect(ReadFlt.lift(JsonNode::floatValue)).toArray()) //
+					.mapValue(json_ -> json_.collect(LiftFlt.of(JsonNode::floatValue)).toArray()) //
 					.filterValue(fs -> length <= fs.length) //
 					.mapValue(fs -> To.array(length, LngFltPair.class, i -> LngFltPair.of(ts[i], fs[i]))) //
 					.toMap();

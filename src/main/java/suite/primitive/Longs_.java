@@ -5,14 +5,12 @@ import static primal.statics.Rethrow.ex;
 import primal.fp.Funs.Iterate;
 import primal.fp.Funs.Source;
 import primal.primitive.Int_Lng;
-import primal.primitive.LngPrim;
-import primal.primitive.adt.LngMutable;
 import primal.primitive.adt.Longs;
 import primal.primitive.adt.Longs.LongsBuilder;
 import primal.primitive.adt.Longs.WriteChar;
 import primal.primitive.puller.LngPuller;
+import primal.primitive.streamlet.LngStreamlet;
 import primal.puller.Puller;
-import suite.primitive.streamlet.LngStreamlet;
 
 public class Longs_ {
 
@@ -32,24 +30,6 @@ public class Longs_ {
 			while ((longs = puller.pull()) != null)
 				writer.write(longs.cs, longs.start, longs.end - longs.start);
 			return longs;
-		});
-	}
-
-	public static LngStreamlet of(long... ts) {
-		return new LngStreamlet(() -> LngPuller.of(ts));
-	}
-
-	public static LngStreamlet of(long[] ts, int start, int end, int inc) {
-		return new LngStreamlet(() -> LngPuller.of(ts, start, end, inc));
-	}
-
-	public static LngStreamlet for_(long s, long e) {
-		return new LngStreamlet(() -> {
-			var m = LngMutable.of(s);
-			return LngPuller.of(() -> {
-				var c = m.increment();
-				return c < e ? c : LngPrim.EMPTYVALUE;
-			});
 		});
 	}
 

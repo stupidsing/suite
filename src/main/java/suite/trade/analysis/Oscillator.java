@@ -7,7 +7,7 @@ import static suite.util.Streamlet_.forInt;
 
 import java.util.Arrays;
 
-import suite.primitive.Floats_;
+import primal.primitive.FltMoreVerbs.ReadFlt;
 import suite.streamlet.As;
 import suite.trade.data.DataSource;
 import suite.ts.Quant;
@@ -72,7 +72,7 @@ public class Oscillator {
 		}
 
 		public float[] adx(int nDays) {
-			return ma.movingAvg(Floats_.of(dmi).mapFlt(Math::abs).toArray(), nDays);
+			return ma.movingAvg(ReadFlt.from(dmi).mapFlt(Math::abs).toArray(), nDays);
 		}
 	}
 

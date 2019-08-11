@@ -15,8 +15,7 @@ import primal.adt.map.ListMultimap;
 import suite.streamlet.Read;
 
 /**
- * http://en.wikipedia.org/wiki/Tarjan%27
- * s_strongly_connected_components_algorithm
+ * http://en.wikipedia.org/wiki/Tarjan%27s_strongly_connected_components_algorithm
  * 
  * @author ywsing
  */
@@ -44,7 +43,7 @@ public class StronglyConnectedComponents<V> {
 	public StronglyConnectedComponents(DirectedGraph<V> dg) {
 		this.dg = dg;
 
-		Map<V, Scc> sccs = Read.from(dg.vertices).map2(v -> new Scc(v)).toMap();
+		Map<V, Scc> sccs = Read.from(dg.vertices).map2(Scc::new).toMap();
 		forwards = Read.from2(dg.forwards).map2((u, v) -> sccs.get(u), (u, v) -> sccs.get(v)).toMultimap();
 
 		for (var vscc : sccs.values())

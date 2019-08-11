@@ -1,4 +1,4 @@
-package suite.proxy;
+package suite.jdk.proxy;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

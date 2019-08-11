@@ -20,6 +20,7 @@ import primal.adt.map.ListMultimap;
 import primal.fp.Funs.Sink;
 import primal.fp.Funs.Source;
 import primal.os.Log_;
+import primal.streamlet.Streamlet;
 import suite.Suite;
 import suite.lp.Configuration.ProverCfg;
 import suite.lp.compile.impl.CompileExpressionImpl;
@@ -54,7 +55,6 @@ import suite.node.util.TreeUtil;
 import suite.persistent.PerList;
 import suite.streamlet.As;
 import suite.streamlet.Read;
-import suite.streamlet.Streamlet;
 
 /**
  * Compile logical rules into lambda-sews and run them. Supposed to be faster

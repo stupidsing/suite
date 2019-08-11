@@ -11,6 +11,7 @@ import primal.fp.Funs.Fun;
 import primal.fp.Funs.Iterate;
 import primal.fp.Funs.Source;
 import primal.primitive.adt.IntMutable;
+import primal.streamlet.Streamlet2;
 import suite.Suite;
 import suite.assembler.Amd64;
 import suite.funp.Funp_;
@@ -65,7 +66,6 @@ import suite.node.util.TreeUtil;
 import suite.persistent.PerMap;
 import suite.persistent.PerSet;
 import suite.streamlet.Read;
-import suite.streamlet.Streamlet2;
 
 public class P0Parse {
 

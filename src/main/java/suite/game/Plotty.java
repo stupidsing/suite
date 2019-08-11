@@ -4,13 +4,13 @@ import java.io.File;
 
 import primal.Verbs.Get;
 import primal.Verbs.WriteFile;
+import primal.primitive.FltMoreVerbs.ReadFlt;
 import primal.primitive.adt.pair.FltFltPair;
 import primal.puller.Puller;
+import primal.streamlet.Streamlet;
 import suite.cfg.Defaults;
 import suite.os.Execute;
-import suite.primitive.Floats_;
 import suite.streamlet.Read;
-import suite.streamlet.Streamlet;
 
 public class Plotty {
 
@@ -18,7 +18,7 @@ public class Plotty {
 
 	public boolean plot(Streamlet<float[]> xyts) {
 		var data = xyts //
-				.map(xyt -> Floats_.of(xyt).index().map((y, x) -> FltFltPair.of(x, y)).collect(this::xyt) + ",") //
+				.map(xyt -> ReadFlt.from(xyt).index().map((y, x) -> FltFltPair.of(x, y)).collect(this::xyt) + ",") //
 				.toJoinedString();
 
 		var file = Defaults.tmp("plot$" + Get.temp() + ".html");

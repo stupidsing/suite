@@ -6,12 +6,12 @@ import static java.lang.Math.log1p;
 import primal.Verbs.Compare;
 import primal.fp.FunUtil;
 import primal.fp.Funs.Sink;
+import primal.primitive.FltMoreVerbs.LiftFlt;
+import primal.primitive.FltMoreVerbs.ReadFlt;
 import primal.primitive.fp.AsDbl;
+import primal.streamlet.Streamlet;
+import primal.streamlet.Streamlet2;
 import suite.math.numeric.Statistic;
-import suite.primitive.Floats_;
-import suite.primitive.ReadFlt;
-import suite.streamlet.Streamlet;
-import suite.streamlet.Streamlet2;
 import suite.trade.Instrument;
 import suite.trade.TimeRange;
 import suite.trade.backalloc.BackAllocTester;
@@ -47,11 +47,11 @@ public class BackTester {
 					var txFee = sims.toDouble(AsDbl.sum(sim -> cfg.transactionFee(sim.account.transactionAmount())));
 
 					var returns = sims //
-							.collect(ReadFlt.lift(sim -> (float) sim.annualReturn)) //
+							.collect(LiftFlt.of(sim -> (float) sim.annualReturn)) //
 							.toArray();
 
 					var mv = stat.meanVariance(returns);
-					var logCagr = Floats_.of(returns).mapFlt(return_ -> (float) log1p(return_)).average();
+					var logCagr = ReadFlt.from(returns).mapFlt(return_ -> (float) log1p(return_)).average();
 
 					return ">> cagr = " + To.string(expm1(logCagr)) //
 							+ ", sharpe = " + To.string(mv.mean / mv.standardDeviation()) //

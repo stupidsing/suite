@@ -9,10 +9,10 @@ import java.util.Set;
 import primal.Verbs.Build;
 import primal.primitive.adt.Bytes;
 import primal.puller.Puller;
+import primal.streamlet.Streamlet;
 import suite.http.HttpUtil;
 import suite.node.util.Singleton;
 import suite.streamlet.Read;
-import suite.streamlet.Streamlet;
 import suite.util.ParseUtil;
 
 public class Sina {

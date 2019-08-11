@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import primal.Verbs.Equals;
 import primal.Verbs.Get;
 import primal.adt.Range;
+import primal.streamlet.Streamlet;
 import suite.streamlet.Read;
-import suite.streamlet.Streamlet;
 
 public class TimeRange extends Range<Time> {
 

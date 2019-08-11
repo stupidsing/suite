@@ -4,15 +4,13 @@ import static primal.statics.Rethrow.ex;
 
 import primal.fp.Funs.Iterate;
 import primal.fp.Funs.Source;
-import primal.primitive.DblPrim;
 import primal.primitive.Int_Dbl;
-import primal.primitive.adt.DblMutable;
 import primal.primitive.adt.Doubles;
 import primal.primitive.adt.Doubles.DoublesBuilder;
 import primal.primitive.adt.Doubles.WriteChar;
 import primal.primitive.puller.DblPuller;
+import primal.primitive.streamlet.DblStreamlet;
 import primal.puller.Puller;
-import suite.primitive.streamlet.DblStreamlet;
 
 public class Doubles_ {
 
@@ -32,24 +30,6 @@ public class Doubles_ {
 			while ((doubles = puller.pull()) != null)
 				writer.write(doubles.cs, doubles.start, doubles.end - doubles.start);
 			return doubles;
-		});
-	}
-
-	public static DblStreamlet of(double... ts) {
-		return new DblStreamlet(() -> DblPuller.of(ts));
-	}
-
-	public static DblStreamlet of(double[] ts, int start, int end, int inc) {
-		return new DblStreamlet(() -> DblPuller.of(ts, start, end, inc));
-	}
-
-	public static DblStreamlet for_(double s, double e) {
-		return new DblStreamlet(() -> {
-			var m = DblMutable.of(s);
-			return DblPuller.of(() -> {
-				var c = m.increment();
-				return c < e ? c : DblPrim.EMPTYVALUE;
-			});
 		});
 	}
 

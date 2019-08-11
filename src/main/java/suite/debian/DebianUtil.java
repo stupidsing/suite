@@ -11,8 +11,8 @@ import java.util.Map;
 
 import primal.MoreVerbs.Split;
 import primal.Verbs.ReadFile;
+import primal.streamlet.Streamlet;
 import suite.streamlet.Read;
-import suite.streamlet.Streamlet;
 
 public class DebianUtil {
 

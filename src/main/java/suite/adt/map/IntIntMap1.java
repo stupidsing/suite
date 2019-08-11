@@ -7,14 +7,14 @@ import java.util.Arrays;
 import primal.primitive.IntIntSink;
 import primal.primitive.IntIntSource;
 import primal.primitive.IntPrim;
+import primal.primitive.IntPrim.IntObjPair_;
 import primal.primitive.IntPrim.IntObjSource;
 import primal.primitive.Int_Int;
 import primal.primitive.adt.pair.IntIntPair;
-import primal.primitive.adt.pair.IntObjPair;
 import primal.primitive.puller.IntObjPuller;
 import primal.primitive.puller.IntPuller;
-import suite.primitive.streamlet.IntObjStreamlet;
-import suite.primitive.streamlet.IntStreamlet;
+import primal.primitive.streamlet.IntObjStreamlet;
+import primal.primitive.streamlet.IntStreamlet;
 
 /**
  * Map with integer key and integer object value. EMPTYVALUE is not allowed in
@@ -135,7 +135,7 @@ public class IntIntMap1 {
 			var source = source_();
 			var pair0 = IntIntPair.of(0, 0);
 			return IntObjPuller.of(new IntObjSource<Integer>() {
-				public boolean source2(IntObjPair<Integer> pair) {
+				public boolean source2(IntObjPair_<Integer> pair) {
 					var b = source.source2(pair0);
 					if (b)
 						pair.update(pair0.t0, pair0.t1);

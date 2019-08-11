@@ -3,6 +3,7 @@ package suite.math.sym;
 import java.util.ArrayList;
 
 import primal.fp.Funs2.Fun2;
+import primal.streamlet.Streamlet;
 import suite.BindArrayUtil.Pattern;
 import suite.Suite;
 import suite.math.sym.Sym.Field;
@@ -13,7 +14,6 @@ import suite.node.io.Operator;
 import suite.node.io.TermOp;
 import suite.node.util.TreeUtil;
 import suite.streamlet.Read;
-import suite.streamlet.Streamlet;
 
 public class Express {
 
