@@ -4,6 +4,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import primal.Verbs.Mk;
+import primal.adt.Opt;
 
 public class HomeDir {
 
@@ -18,11 +19,12 @@ public class HomeDir {
 	}
 
 	private static Path getHomePath() {
-		String s = null;
-		s = s != null ? s : System.getenv("HOME");
-		s = s != null ? s : System.getenv("USERPROFILE");
-		var path = s != null ? Paths.get(s) : null;
-		return path != null ? path : Defaults.tmp;
+		return Opt //
+				.<String> of(null) //
+				.or(() -> System.getenv("HOME")) //
+				.or(() -> System.getenv("USERPROFILE")) //
+				.map(Paths::get) //
+				.get(() -> Defaults.tmp);
 	}
 
 }

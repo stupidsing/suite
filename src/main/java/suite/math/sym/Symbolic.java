@@ -196,7 +196,7 @@ public class Symbolic {
 			opt = new Rewrite(xs[i]).polyize(node, coeff -> simplify(coeff, xs, i + 1));
 		else
 			opt = rational(node);
-		return opt.or(() -> node);
+		return opt.or(() -> node).get();
 	}
 
 	private class Rewrite {
@@ -365,7 +365,7 @@ public class Symbolic {
 		}
 
 		private Node simplify(Node node) {
-			return polyize(node, coeff -> rational(coeff).or(() -> coeff)).or(() -> sumOfProducts(node));
+			return polyize(node, coeff -> rational(coeff).get(() -> coeff)).get(() -> sumOfProducts(node));
 		}
 
 		private Opt<Node> polyize(Node node, Fun<Node, Node> coefficientFun) { // polynomialize

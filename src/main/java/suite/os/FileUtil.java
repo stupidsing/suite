@@ -32,12 +32,12 @@ public class FileUtil {
 		return Read.from(() -> ex(() -> Files.walk(path).filter(Files::isRegularFile).iterator()));
 	}
 
-	public static String jarFilename() {
-		return ex(() -> FileUtil.class.getProtectionDomain().getCodeSource().getLocation().toURI().getFragment());
-	}
-
 	public static String homeDir() {
 		return System.getProperty("home.dir", ".");
+	}
+
+	public static String jarFilename() {
+		return ex(() -> FileUtil.class.getProtectionDomain().getCodeSource().getLocation().toURI().getFragment());
 	}
 
 	public static List<String> listZip(ZipFile zipFile) {

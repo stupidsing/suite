@@ -141,14 +141,16 @@ public class To {
 
 	public static String string(double d) {
 		var abs = abs(d);
+		String fmt;
 		if (abs < 1d)
-			return String.format("%.4f", d);
+			fmt = "%.4f";
 		else if (abs < 10d)
-			return String.format("%.3f", d);
+			fmt = "%.3f";
 		else if (abs < 100d)
-			return String.format("%.2f", d);
+			fmt = "%.2f";
 		else
-			return String.format("%.1f", d);
+			fmt = "%.1f";
+		return String.format(fmt, d);
 	}
 
 	public static String string(Instant instant) {
@@ -165,12 +167,10 @@ public class To {
 
 	public static String string(Throwable th) {
 		var sw = new StringWriter();
-
 		try (var sw_ = sw; var pw = new PrintWriter(sw_)) {
 			th.printStackTrace(pw);
 		} catch (IOException ex) {
 		}
-
 		return sw.toString();
 	}
 
