@@ -365,7 +365,6 @@ public class Serialize {
 				return boolean_.read(si) ? serializer.read(si) : null;
 			}
 
-			@Override
 			public void write(SerOutput so, T value) throws IOException {
 				var isNotNull = value != null;
 				boolean_.write(so, isNotNull);

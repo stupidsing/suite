@@ -4,6 +4,7 @@ import static suite.util.Streamlet_.forInt;
 
 import java.util.Random;
 
+import primal.adt.IntIntMap1;
 import primal.primitive.IntPrim;
 import primal.primitive.IntPrim.Obj_Int;
 import primal.primitive.adt.pair.DblIntPair;
@@ -11,7 +12,6 @@ import primal.primitive.adt.pair.IntObjPair;
 import primal.primitive.fp.AsDbl;
 import primal.primitive.fp.AsInt;
 import primal.streamlet.Streamlet;
-import suite.adt.map.IntIntMap1;
 import suite.streamlet.As;
 
 public class DecisionTree {
