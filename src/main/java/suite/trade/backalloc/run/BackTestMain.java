@@ -4,13 +4,13 @@ import static suite.util.Streamlet_.forInt;
 
 import java.nio.file.Paths;
 
+import primal.MoreVerbs.Decode;
 import primal.Verbs.Compare;
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
 import primal.streamlet.Streamlet;
 import suite.node.io.Operator.Assoc;
 import suite.parser.Wildcard;
-import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.trade.Instrument;
 import suite.trade.Time;
@@ -72,7 +72,7 @@ public class BackTestMain {
 
 		var content0 = Read //
 				.bytes(Paths.get("src/main/java/" + getClass().getName().replace('.', '/') + ".java")) //
-				.collect(As::utf8decode) //
+				.collect(Decode::utf8) //
 				.toJoinedString();
 
 		var content1 = ParseUtil.fit(content0, "// BEGIN", "// END").t1;

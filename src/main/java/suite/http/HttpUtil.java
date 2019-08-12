@@ -15,6 +15,7 @@ import org.apache.http.Header;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.HttpClients;
 
+import primal.MoreVerbs.Decode;
 import primal.MoreVerbs.Pull;
 import primal.Verbs.Sleep;
 import primal.adt.FixieArray;
@@ -77,7 +78,7 @@ public class HttpUtil {
 		}
 
 		public Puller<Chars> utf8() {
-			return out().collect(As::utf8decode);
+			return out().collect(Decode::utf8);
 		}
 
 		public Puller<Bytes> out() {
@@ -134,7 +135,7 @@ public class HttpUtil {
 	}
 
 	public static Map<String, URI> resolveLinks(URI uri) {
-		var out = get(ex(() -> uri.toURL())).utf8().toJoinedString();
+		var out = get(ex(uri::toURL)).utf8().toJoinedString();
 		var links = new HashMap<String, URI>();
 		FixieArray<String> m;
 		while ((m = ParseUtil.fitCaseInsensitive(out, "<a", "href=\"", "\"", ">", "</a>")) != null) {
