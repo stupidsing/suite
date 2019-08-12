@@ -1,5 +1,6 @@
 package suite.nn;
 
+import static java.lang.Math.abs;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static java.lang.Math.sqrt;
@@ -172,7 +173,7 @@ public class NeuralNetwork {
 	private Layer<float[], float[]> feedForwardRmspropLayer(int nInputs, int nOutputs) {
 		var learningRate_ = learningRate * .01d;
 		var weights = To.matrix(nInputs, nOutputs, (i, j) -> random());
-		var rmsProps = To.matrix(nInputs, nOutputs, (i, j) -> Math.abs(random()));
+		var rmsProps = To.matrix(nInputs, nOutputs, (i, j) -> abs(random()));
 
 		return inputs -> {
 			var outputs = Tanh.tanhOn(mtx.mul(inputs, weights));
@@ -200,7 +201,7 @@ public class NeuralNetwork {
 	private Layer<float[][], float[][]> feedForwardMinibatchRmspropLayer(int nInputs, int nOutputs) {
 		var learningRate_ = learningRate * .01d;
 		var weights = To.matrix(nInputs, nOutputs, (i, j) -> random());
-		var rmsProps = To.matrix(nInputs, nOutputs, (i, j) -> Math.abs(random()));
+		var rmsProps = To.matrix(nInputs, nOutputs, (i, j) -> abs(random()));
 
 		return inputs -> {
 			var nPoints = mtx.height(inputs);

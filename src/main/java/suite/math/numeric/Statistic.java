@@ -1,5 +1,6 @@
 package suite.math.numeric;
 
+import static java.lang.Math.PI;
 import static java.lang.Math.exp;
 import static java.lang.Math.log;
 import static java.lang.Math.sqrt;
@@ -150,7 +151,7 @@ public class Statistic {
 
 		public double logLikelihood() {
 			var variance = sst / (nDataPoints - nDepVariables - 1);
-			return -.5d * (nDataPoints * (log(2 * Math.PI) + log(variance)) + sse / variance);
+			return -.5d * (nDataPoints * (log(2 * PI) + log(variance)) + sse / variance);
 		}
 
 		// if f-statistic < .05d, we conclude R%2 != 0, the test is significant

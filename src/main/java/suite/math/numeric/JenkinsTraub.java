@@ -1,5 +1,6 @@
 package suite.math.numeric;
 
+import static java.lang.Math.PI;
 import static java.lang.Math.abs;
 import static java.lang.Math.sqrt;
 import static primal.statics.Fail.fail;
@@ -51,7 +52,7 @@ public class JenkinsTraub {
 				maxIterations *= 2;
 			}
 
-			var s = Complex.expi(2d * Math.PI * random.nextDouble()).scale(root);
+			var s = Complex.expi(2d * PI * random.nextDouble()).scale(root);
 			Complex ph;
 
 			Complex ar0 = Complex.sub(s, ph = ph(poly, h, s));

@@ -2,6 +2,7 @@ package suite.trade;
 
 import static java.lang.Math.abs;
 import static java.lang.Math.expm1;
+import static java.lang.Math.floor;
 import static java.lang.Math.log1p;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
@@ -223,7 +224,7 @@ public class Trade_ {
 					.map2((symbol, potential) -> {
 						var price = eodBySymbol.get(symbol).price;
 						var lotSize = instrumentBySymbol.get(symbol).lotSize;
-						return lotSize * (int) Math.floor(valuation * potential / (price * lotSize));
+						return lotSize * (int) floor(valuation * potential / (price * lotSize));
 					}) //
 					.toMap();
 

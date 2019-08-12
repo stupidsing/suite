@@ -1,5 +1,8 @@
 package suite.math;
 
+import static java.lang.Math.cos;
+import static java.lang.Math.sin;
+
 import primal.Verbs.Get;
 
 public class Complex {
@@ -21,7 +24,7 @@ public class Complex {
 	}
 
 	public static Complex expi(double e) {
-		return new Complex(Math.cos(e), Math.sin(e));
+		return new Complex(cos(e), sin(e));
 	}
 
 	public static Complex of(float r, float i) {

@@ -1,5 +1,7 @@
 package suite.algo;
 
+import static java.lang.Math.exp;
+import static java.lang.Math.log;
 import static suite.util.Streamlet_.forInt;
 
 import java.util.List;
@@ -47,11 +49,11 @@ public class AdaBoost {
 			});
 
 			return min.map((error, p) -> {
-				var alpha = Math.log((1d - error) / error) * .5d;
+				var alpha = log((1d - error) / error) * .5d;
 
 				for (var i = 0; i < n; i++) {
 					var xy = xys.get(i);
-					ws[i] *= Math.exp(-(xy.y ? 1d : -1d) * alpha * d(xy.xs[p]));
+					ws[i] *= exp(-(xy.y ? 1d : -1d) * alpha * d(xy.xs[p]));
 				}
 
 				vec.scaleOn(ws, 1d / Floats.of(ws).puller().sum()); // renormalize

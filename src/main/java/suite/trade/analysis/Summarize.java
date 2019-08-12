@@ -1,5 +1,8 @@
 package suite.trade.analysis;
 
+import static java.lang.Math.expm1;
+import static java.lang.Math.log;
+
 import java.time.LocalDate;
 import java.util.Map;
 
@@ -194,7 +197,7 @@ public class Summarize {
 			var nav0 = size - pnl;
 			var nav1 = nav0 + pnl + dividend - transactionSummary.transactionFee;
 			var rtn = nav1 / nav0;
-			var cagr = Math.expm1(Math.log(rtn) / nYears);
+			var cagr = expm1(log(rtn) / nYears);
 
 			return details //
 					.snoc("SIZ = " + To.string(size)) //

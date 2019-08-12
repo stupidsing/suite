@@ -1,6 +1,8 @@
 package suite.gpu;
 
+import static java.lang.Math.cos;
 import static java.lang.Math.min;
+import static java.lang.Math.sin;
 
 import org.bridj.Pointer;
 import org.junit.Test;
@@ -28,8 +30,8 @@ public class GpuTest {
 		var inp1 = Pointer.allocateFloats(n).order(byteOrder);
 
 		for (var i = 0; i < n; i++) {
-			inp0.set(i, (float) Math.cos(i));
-			inp1.set(i, (float) Math.sin(i));
+			inp0.set(i, (float) cos(i));
+			inp1.set(i, (float) sin(i));
 		}
 
 		var out = context.createBuffer(Usage.Output, Float.class, n);

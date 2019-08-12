@@ -1,5 +1,6 @@
 package suite.nn;
 
+import static java.lang.Math.abs;
 import static java.lang.Math.sqrt;
 import static org.junit.Assert.assertTrue;
 import static suite.util.Streamlet_.forInt;
@@ -78,7 +79,7 @@ public class NeuralNetworkMinibatchRmspropTest0 {
 			this.nInputs = nInputs;
 			this.nOutputs = nOutputs;
 			weights = To.matrix(nInputs, nOutputs, (i, j) -> random.nextGaussian() * initRate);
-			rmsProps = To.matrix(nInputs, nOutputs, (i, j) -> Math.abs(random.nextGaussian()) * initRate);
+			rmsProps = To.matrix(nInputs, nOutputs, (i, j) -> abs(random.nextGaussian()) * initRate);
 		}
 
 		private float[][] feed(float[][] inputs_) {

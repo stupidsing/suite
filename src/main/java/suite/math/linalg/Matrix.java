@@ -1,6 +1,8 @@
 package suite.math.linalg;
 
+import static java.lang.Math.cos;
 import static java.lang.Math.min;
+import static java.lang.Math.sin;
 import static primal.statics.Fail.fail;
 import static suite.util.Streamlet_.forInt;
 
@@ -336,26 +338,26 @@ public class Matrix {
 	}
 
 	public float[][] rotate(float angle) {
-		var sin = (float) Math.sin(angle);
-		var cos = (float) Math.cos(angle);
+		var sin = (float) sin(angle);
+		var cos = (float) cos(angle);
 		return new float[][] { { cos, -sin, }, { sin, cos, }, };
 	}
 
 	public float[][] rotateX(float angle) {
-		var sin = (float) Math.sin(angle);
-		var cos = (float) Math.cos(angle);
+		var sin = (float) sin(angle);
+		var cos = (float) cos(angle);
 		return new float[][] { { 0f, 0f, 0f, }, { 0f, cos, -sin, }, { 0f, sin, cos, }, };
 	}
 
 	public float[][] rotateY(float angle) {
-		var sin = (float) Math.sin(angle);
-		var cos = (float) Math.cos(angle);
+		var sin = (float) sin(angle);
+		var cos = (float) cos(angle);
 		return new float[][] { { cos, 0f, -sin, }, { 0f, 0f, 0f, }, { sin, 0f, cos, }, };
 	}
 
 	public float[][] rotateZ(float angle) {
-		var sin = (float) Math.sin(angle);
-		var cos = (float) Math.cos(angle);
+		var sin = (float) sin(angle);
+		var cos = (float) cos(angle);
 		return new float[][] { { cos, -sin, 0f, }, { sin, cos, 0f, }, { 0f, 0f, 0f, }, };
 	}
 

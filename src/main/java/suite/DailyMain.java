@@ -1,5 +1,7 @@
 package suite;
 
+import static java.lang.Math.round;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -182,7 +184,7 @@ public class DailyMain {
 					var latestPrice = prices[last];
 
 					var signal = strategy.analyze(prices).get(last);
-					var nShares = signal * instrument.lotSize * Math.round(factor / nHoldDays / (instrument.lotSize * latestPrice));
+					var nShares = signal * instrument.lotSize * round(factor / nHoldDays / (instrument.lotSize * latestPrice));
 					var trade = Trade.of(nShares, symbol, latestPrice);
 
 					if (signal != 0)

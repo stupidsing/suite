@@ -1,5 +1,8 @@
 package suite.math.transform;
 
+import static java.lang.Math.PI;
+import static java.lang.Math.cos;
+import static java.lang.Math.sin;
 import static primal.statics.Fail.fail;
 
 import java.util.HashMap;
@@ -56,8 +59,8 @@ public class FastFourierTransform0 {
 		if (cis != null) {
 			cisMap.put(count, cis = new Complex[count]);
 			for (var i = 0; i < count; i++) {
-				var angle = 2 * Math.PI * i / count;
-				cis[i] = Complex.of((float) Math.cos(angle), (float) -Math.sin(angle));
+				var angle = 2 * PI * i / count;
+				cis[i] = Complex.of((float) cos(angle), (float) -sin(angle));
 			}
 		}
 		return cis;

@@ -1,5 +1,6 @@
 package suite.algo;
 
+import static java.lang.Math.log;
 import static suite.util.Streamlet_.forInt;
 
 import java.util.Random;
@@ -104,7 +105,7 @@ public class DecisionTree {
 			hist0.update(datum.k, v -> (v != IntPrim.EMPTYVALUE ? v : 0) + 1);
 		var hist1 = hist0.values();
 		var sum = (double) hist1.sum();
-		return hist1.toDouble(As.sum(c -> Math.log(c / sum)));
+		return hist1.toDouble(As.sum(c -> log(c / sum)));
 	}
 
 	private int majority(Streamlet<IntObjPair<Object[]>> data) {

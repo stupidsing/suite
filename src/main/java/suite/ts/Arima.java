@@ -2,6 +2,7 @@ package suite.ts;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
+import static java.lang.Math.scalb;
 import static suite.util.Streamlet_.forInt;
 
 import java.util.Arrays;
@@ -152,8 +153,8 @@ public class Arima {
 		var length = xs.length;
 		var lengthp = length + p;
 		var lengthq = length + q;
-		var ars = To.vector(p, i -> Math.scalb(.5d, -i));
-		var mas = To.vector(q, i -> Math.scalb(.5d, -i));
+		var ars = To.vector(p, i -> scalb(.5d, -i));
+		var mas = To.vector(q, i -> scalb(.5d, -i));
 		var xsp = new float[lengthp];
 		var epq = To.vector(lengthq, i -> xs[max(0, min(xsp.length, i - q))] * .25f);
 

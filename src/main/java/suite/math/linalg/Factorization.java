@@ -1,5 +1,7 @@
 package suite.math.linalg;
 
+import static java.lang.Math.sqrt;
+
 import java.util.Random;
 
 import primal.adt.Pair;
@@ -48,7 +50,7 @@ public class Factorization {
 	public Pair<float[][], float[][]> sgd(float[][] v, int k) {
 		var eps = .25d;
 		var lambda = .01d;
-		var inv = 1d / Math.sqrt(k);
+		var inv = 1d / sqrt(k);
 		var height = mtx.height(v);
 		var width = mtx.width(v);
 		var w = To.matrix(height, k, (i, j) -> random.nextFloat() * inv);

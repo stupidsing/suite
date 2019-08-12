@@ -3,6 +3,7 @@ package suite.algo;
 import static java.lang.Math.abs;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
+import static java.lang.Math.sin;
 import static java.lang.Math.sqrt;
 import static org.junit.Assert.assertTrue;
 import static suite.util.Streamlet_.forInt;
@@ -111,7 +112,7 @@ public class ParticleSwarmTest {
 		var x = xs[0];
 		var y = xs[1];
 		var alpha = 418.982887d;
-		return Read.each(x, y).toDouble(AsDbl.sum(x_ -> alpha - Math.sin(sqrt(abs(x_)))));
+		return Read.each(x, y).toDouble(AsDbl.sum(x_ -> alpha - sin(sqrt(abs(x_)))));
 	}
 
 }

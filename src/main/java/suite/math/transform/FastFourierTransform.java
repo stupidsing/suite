@@ -1,5 +1,9 @@
 package suite.math.transform;
 
+import static java.lang.Math.PI;
+import static java.lang.Math.cos;
+import static java.lang.Math.sin;
+
 import suite.math.Complex;
 import suite.util.To;
 
@@ -33,12 +37,12 @@ public class FastFourierTransform {
 			fds[reverseBits(bits, i)] = tds[i];
 
 		for (var g = 2; g <= size; g <<= 1) {
-			var angleDiff = 2 * Math.PI / g;
+			var angleDiff = 2 * PI / g;
 			var cis = new Complex[g];
 
 			for (var i = 0; i < g; i++) {
 				var angle = angleDiff * i;
-				cis[i] = Complex.of((float) Math.cos(angle), (float) -Math.sin(angle));
+				cis[i] = Complex.of((float) cos(angle), (float) -sin(angle));
 			}
 
 			var step = g / 2;
@@ -102,12 +106,12 @@ public class FastFourierTransform {
 		for (var g = 2; g <= size; g <<= 1) {
 			var g2 = g * 2;
 			var cis = new float[g2];
-			var angleDiff = Math.PI / g;
+			var angleDiff = PI / g;
 
 			for (var i2 = 0; i2 < g2; i2 += 2) {
 				var angle = angleDiff * i2;
-				cis[i2 + 0] = (float) Math.cos(angle);
-				cis[i2 + 1] = (float) -Math.sin(angle);
+				cis[i2 + 0] = (float) cos(angle);
+				cis[i2 + 1] = (float) -sin(angle);
 			}
 
 			for (var i2 = 0; i2 < size2; i2 += g2)
