@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import primal.MoreVerbs.Read;
 import primal.Verbs.Build;
 import primal.fp.Funs.Sink;
 import primal.primitive.FltVerbs.CopyFlt;
@@ -12,7 +13,6 @@ import primal.primitive.LngVerbs.CopyLng;
 import primal.primitive.adt.Floats.FloatsBuilder;
 import primal.streamlet.Streamlet;
 import suite.math.numeric.Statistic;
-import suite.streamlet.Read;
 import suite.trade.Account;
 import suite.trade.Instrument;
 import suite.trade.Time;

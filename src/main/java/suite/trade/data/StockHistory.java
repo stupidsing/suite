@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import primal.MoreVerbs.Read;
 import primal.Verbs.Compare;
 import primal.Verbs.Equals;
 import primal.Verbs.Union;
@@ -16,7 +17,6 @@ import primal.primitive.adt.pair.LngFltPair;
 import primal.puller.Puller;
 import primal.streamlet.Streamlet;
 import suite.streamlet.As;
-import suite.streamlet.Read;
 import suite.trade.Time;
 import suite.trade.TimeRange;
 import suite.trade.data.DataSource.Datum;

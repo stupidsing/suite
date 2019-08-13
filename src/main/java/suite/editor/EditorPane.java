@@ -18,7 +18,7 @@ import primal.adt.Pair;
 import primal.fp.Funs.Fun;
 import primal.statics.Rethrow.SinkEx;
 import suite.streamlet.Pusher;
-import suite.streamlet.Read;
+import suite.streamlet.ReadChars;
 
 public class EditorPane extends JEditorPane {
 
@@ -33,7 +33,7 @@ public class EditorPane extends JEditorPane {
 			if (isSelectedText())
 				replaceLines(segment -> Build.string(sb -> {
 					sb.append("\t");
-					for (var ch : Read.chars(segment)) {
+					for (var ch : ReadChars.from(segment)) {
 						sb.append(ch);
 						sb.append(ch == 10 ? "\t" : "");
 					}

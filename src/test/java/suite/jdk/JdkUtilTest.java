@@ -2,15 +2,15 @@ package suite.jdk;
 
 import org.junit.Test;
 
+import primal.Nouns.Tmp;
 import primal.Verbs.Mk;
-import suite.cfg.Defaults;
 
 public class JdkUtilTest {
 
 	@Test
 	public void test() {
-		var srcDir = Defaults.tmp("src");
-		var binDir = Defaults.tmp("bin");
+		var srcDir = Tmp.path("src");
+		var binDir = Tmp.path("bin");
 		var className = "HelloWorld";
 
 		Mk.dir(srcDir);

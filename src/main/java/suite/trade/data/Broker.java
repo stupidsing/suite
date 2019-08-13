@@ -9,8 +9,9 @@ import primal.fp.Funs.Source;
 import primal.streamlet.Streamlet;
 import suite.cfg.Defaults;
 import suite.cfg.HomeDir;
+import suite.http.HttpUtil;
 import suite.streamlet.As;
-import suite.streamlet.Read;
+import suite.streamlet.ReadBytes;
 import suite.trade.Trade;
 import suite.util.Memoize;
 
@@ -30,7 +31,11 @@ public interface Broker {
 
 		private static Streamlet<Trade> queryHistory_() {
 			var path = HomeDir.resolve("home-data").resolve("stock.txt");
-			var bytes = Files.exists(path) ? Read.bytes(path) : Defaults.bindSecrets("stockUrl .0").map(Read::url);
+
+			var bytes = Files.exists(path) //
+					? ReadBytes.from(path) //
+					: Defaults.bindSecrets("stockUrl .0").map(url -> new Streamlet<>(HttpUtil.get(url)::out));
+
 			return bytes.collect(As::table).map(Trade::of).collect();
 		}
 

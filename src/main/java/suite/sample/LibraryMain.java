@@ -12,6 +12,7 @@ import java.util.List;
 import org.apache.commons.codec.digest.Md5Crypt;
 
 import primal.Verbs.DeleteFile;
+import primal.Verbs.Format;
 import primal.Verbs.Get;
 import primal.Verbs.Mk;
 import primal.Verbs.WriteFile;
@@ -19,7 +20,6 @@ import primal.adt.Pair;
 import primal.streamlet.Streamlet;
 import suite.os.FileUtil;
 import suite.util.RunUtil;
-import suite.util.To;
 
 /**
  * Maintains library of files, probably images or documents.
@@ -61,7 +61,7 @@ public class LibraryMain {
 
 					var tags = forInt(path.getNameCount()) //
 							.map(i -> path.getName(i).toString()) //
-							.cons(To.string(attrs.lastModifiedTime().toInstant())) //
+							.cons(Format.ymdHms(attrs.lastModifiedTime().toInstant())) //
 							.collect();
 
 					var fileInfo = new FileInfo();

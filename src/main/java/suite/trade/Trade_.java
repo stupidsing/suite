@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import primal.MoreVerbs.Read;
 import primal.Verbs.Equals;
 import primal.Verbs.Union;
 import primal.adt.Pair;
@@ -29,7 +30,6 @@ import primal.primitive.fp.AsInt;
 import primal.puller.Puller;
 import primal.streamlet.Streamlet;
 import suite.math.Math_;
-import suite.streamlet.Read;
 import suite.trade.Account.Valuation;
 import suite.trade.data.DataSource.Eod;
 
@@ -136,7 +136,7 @@ public class Trade_ {
 	public static float dividend(Streamlet<Trade> trades, Fun<String, LngFltPair[]> fun, Dbl_Dbl feeFun) {
 		var sum = 0f;
 
-		for (var pair : Read.listEntries(trades.toMultimap(trade -> trade.symbol))) {
+		for (var pair : Read.fromMultimap(trades.toMultimap(trade -> trade.symbol))) {
 			var dividends = fun.apply(pair.k);
 			var puller = Puller.of(pair.v);
 			LngIntPair tn = LngIntPair.of(0l, 0);

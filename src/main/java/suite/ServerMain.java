@@ -8,9 +8,12 @@ import java.util.List;
 import java.util.function.BiPredicate;
 
 import primal.MoreVerbs.Pull;
+import primal.Nouns.Tmp;
 import primal.Nouns.Utf8;
 import primal.Verbs.Sleep;
 import primal.Verbs.Start;
+import primal.persistent.PerList;
+import primal.persistent.PerMap;
 import primal.primitive.adt.Bytes;
 import suite.cfg.Defaults;
 import suite.http.HttpHandler;
@@ -22,8 +25,6 @@ import suite.node.Str;
 import suite.os.Execute;
 import suite.os.Schedule;
 import suite.os.Scheduler;
-import suite.persistent.PerList;
-import suite.persistent.PerMap;
 import suite.telegram.TelegramBot;
 import suite.util.RunUtil;
 
@@ -76,7 +77,7 @@ public class ServerMain {
 				.<String, HttpHandler>empty() //
 				.put("hello", HttpHandler.ofData("Hello world")) //
 				.put("html", HttpHandler.ofPath(Paths.get("src/main/html"))) //
-				.put("path", HttpHandler.ofPath(Defaults.tmp)) //
+				.put("path", HttpHandler.ofPath(Tmp.root)) //
 				.put("site", HttpHandler.ofSession(authenticate, handlerSite)) //
 				.put("sse", handlerSse));
 

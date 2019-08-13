@@ -4,6 +4,7 @@ import static primal.statics.Rethrow.ex;
 
 import java.net.Socket;
 
+import primal.MoreVerbs.Read;
 import primal.MoreVerbs.Split;
 import primal.Nouns.Utf8;
 import primal.Verbs.ReadLine;
@@ -12,7 +13,6 @@ import primal.fp.Funs.Fun;
 import primal.os.Log_;
 import primal.primitive.adt.pair.IntObjPair;
 import suite.os.SocketUtil;
-import suite.streamlet.Read;
 import suite.util.Copy;
 
 /**

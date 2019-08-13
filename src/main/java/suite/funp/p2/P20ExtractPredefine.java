@@ -2,6 +2,7 @@ package suite.funp.p2;
 
 import java.util.ArrayList;
 
+import primal.MoreVerbs.Read;
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.Fdt;
 import suite.funp.P0.FunpDefine;
@@ -12,7 +13,6 @@ import suite.funp.P0.FunpPredefine;
 import suite.funp.P0.FunpVariable;
 import suite.inspect.Inspect;
 import suite.node.util.Singleton;
-import suite.streamlet.Read;
 
 public class P20ExtractPredefine {
 

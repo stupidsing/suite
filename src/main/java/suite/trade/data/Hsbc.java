@@ -7,11 +7,11 @@ import java.io.ByteArrayInputStream;
 import java.util.Map;
 import java.util.Set;
 
+import primal.MoreVerbs.Read;
 import primal.Nouns.Utf8;
 import primal.streamlet.Streamlet;
 import suite.os.Execute;
 import suite.streamlet.As;
-import suite.streamlet.Read;
 import suite.util.XmlUtil;
 
 public class Hsbc {

@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import primal.MoreVerbs.Read;
 import primal.MoreVerbs.Split;
 import primal.Verbs.Build;
 import primal.Verbs.Equals;
@@ -18,7 +19,6 @@ import primal.adt.map.BiMap;
 import primal.fp.Funs.Fun;
 import primal.primitive.adt.IntRange;
 import primal.primitive.adt.pair.IntObjPair;
-import suite.streamlet.Read;
 
 public class HtmlUtil {
 

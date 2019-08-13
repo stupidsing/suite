@@ -2,12 +2,12 @@ package suite.trade.analysis;
 
 import java.util.List;
 
+import primal.MoreVerbs.Read;
 import primal.Verbs.Compare;
 import primal.adt.Pair;
 import primal.streamlet.Streamlet;
 import suite.math.linalg.Vector;
 import suite.math.numeric.Statistic;
-import suite.streamlet.Read;
 import suite.trade.Instrument;
 import suite.trade.Time;
 import suite.trade.TimeRange;

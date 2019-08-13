@@ -11,6 +11,7 @@ import static suite.util.Streamlet_.forInt;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import primal.MoreVerbs.Read;
 import primal.primitive.adt.Floats;
 import primal.primitive.adt.pair.FltObjPair;
 import primal.primitive.fp.AsFlt;
@@ -20,7 +21,6 @@ import suite.math.numeric.Statistic;
 import suite.math.numeric.Statistic.LinearRegression;
 import suite.primitive.Ints_;
 import suite.streamlet.As;
-import suite.streamlet.Read;
 import suite.trade.Trade_;
 import suite.util.To;
 

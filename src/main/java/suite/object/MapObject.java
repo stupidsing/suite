@@ -4,8 +4,8 @@ import static primal.statics.Rethrow.ex;
 
 import java.util.HashMap;
 
+import primal.MoreVerbs.Read;
 import primal.adt.IdentityKey;
-import suite.streamlet.Read;
 
 /**
  * An object having the following methods:

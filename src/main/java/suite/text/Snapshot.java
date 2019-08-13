@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import primal.MoreVerbs.Read;
 import primal.Nouns.Utf8;
 import primal.Verbs.DeleteFile;
 import primal.Verbs.Equals;
@@ -21,7 +22,6 @@ import primal.Verbs.WriteFile;
 import primal.adt.FixieArray;
 import primal.primitive.adt.Bytes;
 import suite.os.FileUtil;
-import suite.streamlet.Read;
 import suite.text.TextUtil.BytesPair;
 
 public interface Snapshot {

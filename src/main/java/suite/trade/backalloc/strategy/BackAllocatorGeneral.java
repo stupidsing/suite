@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.IntFunction;
 
+import primal.MoreVerbs.Read;
 import primal.Verbs.Equals;
 import primal.adt.Fixie;
 import primal.adt.Pair;
@@ -18,7 +19,6 @@ import primal.primitive.adt.pair.FltFltPair;
 import primal.streamlet.Streamlet;
 import primal.streamlet.Streamlet2;
 import suite.primitive.Ints_;
-import suite.streamlet.Read;
 import suite.trade.Instrument;
 import suite.trade.analysis.MovingAverage;
 import suite.trade.analysis.Oscillator;

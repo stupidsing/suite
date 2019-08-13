@@ -14,6 +14,7 @@ import java.util.Random;
 
 import org.junit.Test;
 
+import primal.MoreVerbs.Read;
 import primal.Verbs.New;
 import primal.Verbs.Sleep;
 import primal.Verbs.Start;
@@ -26,7 +27,6 @@ import primal.statics.Rethrow;
 import primal.streamlet.Streamlet;
 import suite.net.cluster.impl.NioCluster;
 import suite.net.cluster.impl.NioClusterMap;
-import suite.streamlet.Read;
 
 public class NioClusterMapTest {
 

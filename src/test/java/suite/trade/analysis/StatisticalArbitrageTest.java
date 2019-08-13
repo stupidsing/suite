@@ -10,6 +10,7 @@ import java.util.Random;
 
 import org.junit.Test;
 
+import primal.MoreVerbs.Read;
 import primal.Verbs.Equals;
 import primal.Verbs.Right;
 import primal.adt.Pair;
@@ -24,7 +25,6 @@ import suite.algo.KmeansCluster;
 import suite.math.numeric.Statistic;
 import suite.math.transform.DiscreteCosineTransform;
 import suite.streamlet.As;
-import suite.streamlet.Read;
 import suite.trade.Instrument;
 import suite.trade.Time;
 import suite.trade.TimeRange;

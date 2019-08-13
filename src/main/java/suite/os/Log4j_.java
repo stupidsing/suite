@@ -11,10 +11,10 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 
+import primal.Nouns.Tmp;
 import primal.Verbs.Build;
 import primal.Verbs.Copy;
 import primal.fp.Funs.Source;
-import suite.cfg.Defaults;
 import suite.inspect.Dump;
 import suite.jdk.proxy.Intercept;
 
@@ -60,7 +60,7 @@ public class Log4j_ {
 	}
 
 	public static void initLog4j(Level level) {
-		var logDir = Defaults.tmp("logs");
+		var logDir = Tmp.path("logs");
 
 		var layout = new PatternLayout("%d %-5p [%c{1}] %m%n");
 

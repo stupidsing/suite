@@ -3,6 +3,7 @@ package suite.lp.check;
 import java.util.List;
 import java.util.Map;
 
+import primal.MoreVerbs.Read;
 import primal.streamlet.Streamlet;
 import suite.BindArrayUtil.Pattern;
 import suite.Suite;
@@ -14,7 +15,6 @@ import suite.node.Tree;
 import suite.node.io.TermOp;
 import suite.node.util.TreeUtil;
 import suite.streamlet.As;
-import suite.streamlet.Read;
 
 public class CheckLogicUtil {
 

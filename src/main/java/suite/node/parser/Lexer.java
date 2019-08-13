@@ -3,10 +3,10 @@ package suite.node.parser;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import primal.MoreVerbs.Read;
 import primal.adt.Pair;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
-import suite.streamlet.Read;
 import suite.util.CommandUtil;
 
 /**

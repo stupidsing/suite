@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.junit.Test;
 
+import primal.MoreVerbs.Read;
 import primal.Verbs.Take;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Iterate;
@@ -29,7 +30,6 @@ import suite.node.util.Rewrite;
 import suite.node.util.Singleton;
 import suite.node.util.TreeUtil;
 import suite.os.FileUtil;
-import suite.streamlet.Read;
 import suite.util.Nodify;
 import suite.util.To;
 

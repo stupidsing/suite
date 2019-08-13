@@ -11,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import primal.MoreVerbs.Read;
 import primal.Verbs.Equals;
 import primal.fp.Funs.Source;
 import primal.streamlet.Streamlet;
@@ -20,7 +21,6 @@ import suite.os.Execute;
 import suite.os.SerializedStoreCache;
 import suite.serialize.Serialize;
 import suite.streamlet.As;
-import suite.streamlet.Read;
 import suite.trade.Instrument;
 import suite.util.To;
 

@@ -8,7 +8,7 @@ import java.io.IOException;
 
 import org.junit.Test;
 
-import suite.cfg.Defaults;
+import primal.Nouns.Tmp;
 import suite.file.impl.Database;
 
 public class DatabaseTest {
@@ -17,7 +17,7 @@ public class DatabaseTest {
 
 	@Test
 	public void testRollback() throws IOException {
-		try (var database = Database.openNew(Defaults.tmp("database"))) {
+		try (var database = Database.openNew(Tmp.path("database"))) {
 			database.transact(tx -> {
 				for (var i = 0; i < nRecords; i++)
 					tx.put(i, "sample");
@@ -26,14 +26,14 @@ public class DatabaseTest {
 		} catch (RuntimeException ex) {
 		}
 
-		try (var database = Database.open(Defaults.tmp("database"))) {
+		try (var database = Database.open(Tmp.path("database"))) {
 			assertNull(database.transact(tx -> tx.get(0)));
 		}
 	}
 
 	@Test
 	public void testUpdate() throws IOException {
-		try (var database = Database.open(Defaults.tmp("database"))) {
+		try (var database = Database.open(Tmp.path("database"))) {
 			database.transact(tx -> {
 				for (var i = 0; i < nRecords; i++)
 					tx.put(i, "sample");

@@ -7,8 +7,8 @@ import java.util.Set;
 
 import org.junit.Test;
 
+import primal.MoreVerbs.Read;
 import primal.adt.Pair;
-import suite.streamlet.Read;
 
 public class StronglyConnectedComponentsTest {
 

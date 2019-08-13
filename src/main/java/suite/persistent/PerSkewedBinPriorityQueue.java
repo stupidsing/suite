@@ -2,6 +2,8 @@ package suite.persistent;
 
 import java.util.Comparator;
 
+import primal.persistent.PerList;
+
 /**
  * Persistent skewed binomial priority queue, implemented using sparse-list of
  * trees.

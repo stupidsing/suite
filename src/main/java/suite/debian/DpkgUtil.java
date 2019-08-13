@@ -7,11 +7,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import primal.MoreVerbs.Read;
 import primal.adt.Pair;
 import primal.adt.map.ListMultimap;
 import primal.streamlet.Streamlet;
 import suite.streamlet.As;
-import suite.streamlet.Read;
+import suite.streamlet.ReadLines;
 
 public class DpkgUtil {
 
@@ -38,7 +39,7 @@ public class DpkgUtil {
 			files = files.snoc(new File(dir + packageName + ":" + arch + ".list"));
 
 		var file = files.filter(File::exists).first();
-		return file != null ? Read.lines(file) : null;
+		return file != null ? ReadLines.from(file) : null;
 	}
 
 	public Set<String> getDependeeSet(List<Map<String, String>> packages, Set<String> set0) {

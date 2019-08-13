@@ -5,8 +5,8 @@ import java.util.Map;
 
 import org.junit.Test;
 
+import primal.MoreVerbs.Read;
 import primal.os.Log_;
-import suite.streamlet.Read;
 import suite.trade.Forex;
 import suite.trade.Instrument;
 import suite.trade.TimeRange;

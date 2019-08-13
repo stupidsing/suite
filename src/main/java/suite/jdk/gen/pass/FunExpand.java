@@ -4,6 +4,7 @@ import static primal.statics.Rethrow.ex;
 
 import org.apache.bcel.generic.Type;
 
+import primal.MoreVerbs.Read;
 import primal.Verbs.Equals;
 import primal.primitive.fp.AsInt;
 import suite.inspect.Inspect;
@@ -20,7 +21,6 @@ import suite.jdk.gen.FunExprM.If1FunExpr;
 import suite.jdk.gen.FunExpression.FunExpr;
 import suite.jdk.gen.FunFactory;
 import suite.node.util.Singleton;
-import suite.streamlet.Read;
 import suite.util.Switch;
 
 public class FunExpand extends FunFactory {

@@ -1,5 +1,6 @@
 package suite.funp.p0;
 
+import primal.persistent.PerMap;
 import suite.Suite;
 import suite.lp.Trail;
 import suite.lp.doer.Binder;
@@ -7,7 +8,6 @@ import suite.lp.doer.Generalizer;
 import suite.lp.kb.Prototype;
 import suite.node.Node;
 import suite.node.Tree;
-import suite.persistent.PerMap;
 
 public class P01Expand {
 

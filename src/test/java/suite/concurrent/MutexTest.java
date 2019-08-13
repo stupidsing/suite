@@ -5,13 +5,13 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+import primal.MoreVerbs.Read;
 import primal.Verbs.Sleep;
 import primal.adt.BooMutable;
+import primal.persistent.PerList;
 import suite.concurrent.Concurrent.DeadlockException;
 import suite.concurrent.Mutex.MutexLock;
-import suite.persistent.PerList;
 import suite.streamlet.As;
-import suite.streamlet.Read;
 
 public class MutexTest {
 

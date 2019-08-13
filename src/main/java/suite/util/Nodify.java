@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import primal.MoreVerbs.Read;
 import primal.Verbs.Instantiate;
 import primal.Verbs.New;
 import primal.adt.Pair;
@@ -30,7 +31,6 @@ import suite.node.Reference;
 import suite.node.Str;
 import suite.node.Tree;
 import suite.node.io.TermOp;
-import suite.streamlet.Read;
 
 /**
  * Convert (supposedly) any Java structures to nodes.

@@ -17,10 +17,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import primal.MoreVerbs.Read;
 import primal.Verbs.Instantiate;
 import primal.Verbs.New;
 import primal.fp.Funs.Iterate;
-import suite.streamlet.Read;
 import suite.util.Switch;
 import suite.util.To;
 import suite.util.Util;

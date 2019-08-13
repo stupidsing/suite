@@ -9,12 +9,12 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
+import primal.MoreVerbs.Read;
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Iterate;
 import primal.streamlet.Streamlet;
 import suite.object.ObjectSupport;
-import suite.streamlet.Read;
 import suite.util.Memoize;
 
 /**

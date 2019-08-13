@@ -4,10 +4,10 @@ import static primal.statics.Fail.fail;
 
 import java.nio.file.Paths;
 
+import primal.MoreVerbs.Read;
 import primal.primitive.adt.Bytes;
 import suite.ip.ImperativeCompiler;
 import suite.os.FileUtil;
-import suite.streamlet.Read;
 import suite.util.RunUtil;
 import suite.util.To;
 

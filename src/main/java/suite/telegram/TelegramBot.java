@@ -10,9 +10,9 @@ import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
+import primal.Nouns.Tmp;
 import primal.Verbs.Sleep;
 import primal.fp.Funs2.FoldOp;
-import suite.cfg.Defaults;
 
 public class TelegramBot {
 
@@ -29,7 +29,7 @@ public class TelegramBot {
 				}
 
 				public String getBotToken() {
-					var path = Defaults.tmp("kowloonbot.token");
+					var path = Tmp.path("kowloonbot.token");
 					return ex(() -> Files.readAllLines(path)).iterator().next();
 				}
 

@@ -5,7 +5,7 @@ import java.util.zip.ZipFile;
 import primal.Verbs.Union;
 import primal.primitive.adt.Bytes;
 import suite.os.FileUtil;
-import suite.streamlet.Read;
+import suite.streamlet.ReadBytes;
 import suite.text.TextUtil;
 import suite.util.RunUtil;
 
@@ -33,8 +33,8 @@ public class CompareZipMain {
 				var b = e0 != null && e1 != null;
 
 				if (b) {
-					var bytes0 = Read.bytes(zf0.getInputStream(e0)).collect(Bytes::of);
-					var bytes1 = Read.bytes(zf1.getInputStream(e1)).collect(Bytes::of);
+					var bytes0 = ReadBytes.from(zf0.getInputStream(e0)).collect(Bytes::of);
+					var bytes1 = ReadBytes.from(zf1.getInputStream(e1)).collect(Bytes::of);
 					b = !textUtil.isDiff(textUtil.diff(bytes0, bytes1));
 					if (!b)
 						System.out.println(name + " differs");

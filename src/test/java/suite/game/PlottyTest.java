@@ -4,8 +4,8 @@ import static java.lang.Math.exp;
 
 import org.junit.Test;
 
+import primal.MoreVerbs.Read;
 import primal.primitive.FltMoreVerbs.ReadFlt;
-import suite.streamlet.Read;
 import suite.trade.TimeRange;
 import suite.trade.data.TradeCfg;
 import suite.trade.data.TradeCfgImpl;

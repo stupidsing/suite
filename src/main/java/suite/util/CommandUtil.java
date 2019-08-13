@@ -5,8 +5,8 @@ import static java.lang.Math.min;
 
 import java.util.Map;
 
+import primal.MoreVerbs.Read;
 import primal.adt.Pair;
-import suite.streamlet.Read;
 
 public class CommandUtil<Command> {
 

@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import primal.MoreVerbs.Read;
 import primal.adt.IdentityKey;
 import primal.adt.Pair;
 import primal.adt.map.BiHashMap;
@@ -28,7 +29,6 @@ import suite.serialize.SerOutput;
 import suite.serialize.Serialize;
 import suite.serialize.Serialize.Serializer;
 import suite.streamlet.As;
-import suite.streamlet.Read;
 import suite.util.To;
 
 public class LazyPbTreeExtentFilePersister<T> implements LazyPbTreePersister<Extent, T> {

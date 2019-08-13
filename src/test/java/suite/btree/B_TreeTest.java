@@ -11,9 +11,9 @@ import java.util.Random;
 import org.junit.Before;
 import org.junit.Test;
 
+import primal.Nouns.Tmp;
 import primal.Verbs.Compare;
 import suite.btree.impl.B_TreeBuilder;
-import suite.cfg.Defaults;
 import suite.file.impl.JournalledFileFactory;
 import suite.node.util.Singleton;
 import suite.primitive.Ints_;
@@ -38,7 +38,7 @@ public class B_TreeTest {
 	@Test
 	public void testDump() throws IOException {
 		var pageSize = 4096;
-		var path = Defaults.tmp("b_tree-dump");
+		var path = Tmp.path("b_tree-dump");
 
 		Files.deleteIfExists(path);
 		var builder = new B_TreeBuilder<>(ser.int_, ser.string(16));
@@ -60,7 +60,7 @@ public class B_TreeTest {
 	@Test
 	public void testAccess() throws IOException {
 		var pageSize = 4096;
-		var path = Defaults.tmp("b_tree-file");
+		var path = Tmp.path("b_tree-file");
 
 		Files.deleteIfExists(path);
 		var builder = new B_TreeBuilder<>(ser.int_, ser.string(16));
@@ -97,7 +97,7 @@ public class B_TreeTest {
 	public void testInsertPerformance() throws IOException {
 		var nKeys = 16384;
 		var pageSize = 4096;
-		var path = Defaults.tmp("b_tree-file");
+		var path = Tmp.path("b_tree-file");
 
 		keys = Ints_.toArray(nKeys, i -> i);
 

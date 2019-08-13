@@ -10,12 +10,12 @@ import java.util.List;
 
 import org.junit.Test;
 
+import primal.MoreVerbs.Read;
 import primal.Verbs.Compare;
+import primal.persistent.PerSet;
 import suite.os.FileUtil;
-import suite.persistent.PerSet;
 import suite.search.DirectedGraph;
 import suite.search.StronglyConnectedComponents;
-import suite.streamlet.Read;
 
 public class DependencyTest {
 

@@ -10,6 +10,7 @@ import java.util.Map;
 
 import org.apache.bcel.generic.Type;
 
+import primal.MoreVerbs.Read;
 import primal.Verbs.Get;
 import primal.adt.Pair;
 import primal.streamlet.Streamlet2;
@@ -35,7 +36,6 @@ import suite.jdk.gen.FunExpression.FunExpr;
 import suite.jdk.gen.FunFactory;
 import suite.jdk.gen.Type_;
 import suite.jdk.lambda.LambdaInterface;
-import suite.streamlet.Read;
 import suite.util.Switch;
 
 public class FunRewrite extends FunFactory {

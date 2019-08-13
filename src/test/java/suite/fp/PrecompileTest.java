@@ -6,11 +6,11 @@ import java.util.List;
 
 import org.junit.Test;
 
+import primal.MoreVerbs.Read;
 import suite.Suite;
 import suite.lp.Configuration.ProverCfg;
 import suite.os.LogUtil;
 import suite.sample.Profiler;
-import suite.streamlet.Read;
 
 public class PrecompileTest {
 

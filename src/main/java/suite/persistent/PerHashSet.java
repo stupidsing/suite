@@ -1,6 +1,7 @@
 package suite.persistent;
 
 import primal.fp.Funs2.BinOp;
+import primal.persistent.PerList;
 import primal.streamlet.Streamlet;
 
 public class PerHashSet<V> {

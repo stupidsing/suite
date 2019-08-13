@@ -9,9 +9,9 @@ import javax.imageio.ImageIO;
 
 import org.junit.Test;
 
+import primal.Nouns.Tmp;
 import primal.Verbs.Get;
 import primal.Verbs.WriteFile;
-import suite.cfg.Defaults;
 import suite.editor.ImageViewer;
 import suite.math.R3;
 import suite.rt.RayTracer.LightSource;
@@ -198,7 +198,7 @@ public class RayTracerTest {
 	}
 
 	private void rasterize(RayTracer rayTracer) throws IOException {
-		var path = Defaults.tmp(Get.stackTrace(3).getMethodName() + ".png");
+		var path = Tmp.path(Get.stackTrace(3).getMethodName() + ".png");
 		var bufferedImage = rayTracer.trace(640, 480, 640);
 		if (Boolean.TRUE)
 			WriteFile.to(path).doWrite(os -> ImageIO.write(bufferedImage, "png", os));

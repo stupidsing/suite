@@ -8,10 +8,10 @@ import java.util.Set;
 
 import org.junit.Test;
 
+import primal.MoreVerbs.Read;
 import primal.adt.map.ListMultimap;
 import primal.fp.Funs.Fun;
 import primal.streamlet.Streamlet;
-import suite.streamlet.Read;
 
 // https://www.geeksforgeeks.org/program-implement-nfa-epsilon-move-dfa-conversion/
 public class NfaToDfaTest {

@@ -5,17 +5,16 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Map;
 
+import primal.MoreVerbs.Read;
 import primal.Verbs.Compare;
 import primal.adt.Pair;
-import primal.fp.Funs.Source;
+import primal.persistent.PerList;
 import primal.puller.Puller;
 import suite.ebnf.Ebnf.Ast;
 import suite.ebnf.Grammar;
 import suite.ebnf.lr.BuildLr.Reduce;
 import suite.ebnf.lr.BuildLr.State;
 import suite.parser.Lexer;
-import suite.persistent.PerList;
-import suite.streamlet.Read;
 
 public class LrParse {
 
@@ -38,17 +37,17 @@ public class LrParse {
 	}
 
 	public Ast parse(String in) {
-		var source = Puller.of(new Lexer(in).tokens()).map(Ast::new).source();
+		var puller = new Lexer(in).tokens().map(Ast::new);
 
 		System.out.println("shifts/reduces = " + list(buildLr.fsm));
 		System.out.println("Initial state = " + buildLr.state0);
 
-		return parse(source, buildLr.state0);
+		return parse(puller, buildLr.state0);
 	}
 
-	private Ast parse(Source<Ast> tokens, State state) {
+	private Ast parse(Puller<Ast> tokens, State state) {
 		var stack = new ArrayDeque<Pair<Ast, State>>();
-		var token = tokens.g();
+		var token = tokens.pull();
 
 		while (true) {
 			var lookahead = token != null ? token.entity : "EOF";
@@ -57,7 +56,7 @@ public class LrParse {
 			if (sr.k != null) { // shift
 				stack.push(Pair.of(token, state));
 				state = sr.k;
-				token = tokens.g();
+				token = tokens.pull();
 			} else { // reduce
 				var reduce = sr.v;
 				var nodes = PerList.<Ast> end();

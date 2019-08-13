@@ -9,6 +9,7 @@ import static suite.util.Streamlet_.forInt;
 import java.lang.reflect.Array;
 import java.util.Random;
 
+import primal.MoreVerbs.Read;
 import primal.Verbs.New;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Iterate;
@@ -22,7 +23,6 @@ import suite.math.Sigmoid;
 import suite.math.Tanh;
 import suite.math.linalg.Matrix;
 import suite.streamlet.As;
-import suite.streamlet.Read;
 import suite.util.To;
 
 public class NeuralNetwork {

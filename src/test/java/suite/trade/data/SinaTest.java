@@ -4,8 +4,8 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 
+import primal.MoreVerbs.Read;
 import suite.inspect.Dump;
-import suite.streamlet.Read;
 
 public class SinaTest {
 

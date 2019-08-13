@@ -9,6 +9,7 @@ import java.util.List;
 import org.apache.bcel.generic.ArrayType;
 import org.apache.bcel.generic.Type;
 
+import primal.MoreVerbs.Read;
 import primal.fp.Funs.Fun;
 import suite.jdk.gen.FunExprK.PlaceholderFunExpr;
 import suite.jdk.gen.FunExprL.ApplyFunExpr;
@@ -35,7 +36,6 @@ import suite.jdk.gen.FunExprM.SeqFunExpr;
 import suite.jdk.gen.FunExprM.VoidFunExpr;
 import suite.jdk.gen.FunExpression.FunExpr;
 import suite.jdk.gen.Type_;
-import suite.streamlet.Read;
 import suite.util.Util;
 
 public class FunTypeInformation {

@@ -5,12 +5,12 @@ import static suite.util.Streamlet_.forInt;
 
 import java.util.List;
 
+import primal.MoreVerbs.Read;
 import primal.fp.Funs.Fun;
 import suite.math.linalg.CholeskyDecomposition;
 import suite.math.linalg.Matrix;
 import suite.math.linalg.Vector;
 import suite.streamlet.As;
-import suite.streamlet.Read;
 import suite.util.To;
 
 /**

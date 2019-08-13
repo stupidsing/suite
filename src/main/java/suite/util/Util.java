@@ -11,11 +11,11 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import javassist.Modifier;
+import primal.MoreVerbs.Read;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Sink;
 import primal.fp.Funs.Source;
 import primal.fp.Funs2.Fun2;
-import suite.streamlet.Read;
 
 public class Util {
 

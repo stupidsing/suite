@@ -8,7 +8,7 @@ import java.util.Set;
 
 import primal.adt.Pair;
 import suite.streamlet.As;
-import suite.streamlet.Read;
+import suite.streamlet.ReadLines;
 
 public class UnicodeData {
 
@@ -16,8 +16,8 @@ public class UnicodeData {
 
 	public UnicodeData() {
 		try (var is = getClass().getResourceAsStream("UnicodeData.txt")) {
-			classByChars = Read //
-					.lines(is) //
+			classByChars = ReadLines //
+					.from(is) //
 					.map(line -> line.split(";")) //
 					.map(a -> Pair.of(a[2], (char) Integer.parseInt(a[0], 16))) //
 					.collect(As::setMap);

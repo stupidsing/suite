@@ -18,11 +18,11 @@ import org.w3c.dom.ls.DOMImplementationLS;
 import org.w3c.dom.ls.LSSerializer;
 import org.xml.sax.SAXException;
 
+import primal.MoreVerbs.Read;
 import primal.Nouns.Utf8;
 import primal.Verbs.Equals;
 import primal.fp.Funs.Source;
 import primal.streamlet.Streamlet;
-import suite.streamlet.Read;
 
 public class XmlUtil {
 

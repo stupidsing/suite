@@ -2,6 +2,7 @@ package suite.funp.p0;
 
 import static suite.util.Streamlet_.forInt;
 
+import primal.persistent.PerSet;
 import primal.primitive.IntPrim.IntObj_Obj;
 import primal.primitive.IntPrim.Int_Obj;
 import suite.funp.Funp_.Funp;
@@ -23,7 +24,6 @@ import suite.funp.P0.FunpTagValue;
 import suite.funp.P0.FunpTree;
 import suite.funp.P0.FunpVariable;
 import suite.node.io.TermOp;
-import suite.persistent.PerSet;
 import suite.util.Switch;
 
 public class P03Bind {

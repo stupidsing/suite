@@ -6,12 +6,12 @@ import static suite.util.Streamlet_.forInt;
 
 import java.util.List;
 
+import primal.MoreVerbs.Read;
 import primal.primitive.DblPrim.Obj_Dbl;
 import primal.primitive.adt.Floats;
 import primal.primitive.adt.pair.DblIntPair;
 import primal.primitive.fp.AsDbl;
 import suite.math.linalg.Vector;
-import suite.streamlet.Read;
 import suite.util.To;
 
 /**

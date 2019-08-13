@@ -7,7 +7,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.function.Predicate;
 
+import primal.MoreVerbs.Read;
 import primal.fp.Funs.Fun;
+import primal.persistent.PerMap;
+import primal.persistent.PerSet;
 import primal.streamlet.Streamlet;
 import suite.Suite;
 import suite.lp.Trail;
@@ -20,9 +23,6 @@ import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.TermOp;
 import suite.node.util.Rewrite;
-import suite.persistent.PerMap;
-import suite.persistent.PerSet;
-import suite.streamlet.Read;
 
 /**
  * Constraint handling rules implementation.

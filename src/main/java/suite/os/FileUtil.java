@@ -14,12 +14,12 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import primal.MoreVerbs.Read;
 import primal.Nouns.Buffer;
 import primal.Nouns.Utf8;
 import primal.Verbs.Build;
 import primal.Verbs.ReadFile;
 import primal.streamlet.Streamlet;
-import suite.streamlet.Read;
 import suite.util.To;
 
 public class FileUtil {

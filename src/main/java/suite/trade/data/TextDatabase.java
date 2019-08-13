@@ -10,6 +10,7 @@ import java.util.Objects;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import primal.MoreVerbs.Read;
 import primal.Verbs.Compare;
 import primal.Verbs.Equals;
 import primal.Verbs.Sleep;
@@ -19,7 +20,7 @@ import primal.streamlet.Streamlet;
 import suite.cfg.HomeDir;
 import suite.primitive.Bytes_;
 import suite.streamlet.As;
-import suite.streamlet.Read;
+import suite.streamlet.ReadBytes;
 import suite.util.To;
 
 public class TextDatabase {
@@ -86,7 +87,7 @@ public class TextDatabase {
 	}
 
 	private void merge(Path path) {
-		Read.bytes(path).collect(As::lines).map(this::toDatum).forEach(this::merge);
+		ReadBytes.from(path).collect(As::lines).map(this::toDatum).forEach(this::merge);
 	}
 
 	private void merge(Datum datum) {

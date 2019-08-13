@@ -6,6 +6,7 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Set;
 
+import primal.MoreVerbs.Read;
 import primal.Verbs.Get;
 import primal.adt.Pair;
 import primal.fp.Funs2.Fun2;
@@ -26,7 +27,6 @@ import suite.funp.P0.FunpVariable;
 import suite.funp.P2.FunpLambdaCapture;
 import suite.inspect.Inspect;
 import suite.node.util.Singleton;
-import suite.streamlet.Read;
 
 public class P21CaptureLambda {
 

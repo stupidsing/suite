@@ -2,7 +2,7 @@ package suite.concurrent;
 
 import java.util.ArrayList;
 
-import suite.persistent.PerList;
+import primal.persistent.PerList;
 
 public class LockFreeQueue<T> {
 

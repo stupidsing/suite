@@ -8,15 +8,15 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import primal.MoreVerbs.Read;
 import primal.Verbs.Equals;
 import primal.Verbs.Right;
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
+import primal.persistent.PerList;
 import primal.streamlet.Streamlet2;
 import suite.ebnf.Grammar;
 import suite.ebnf.Grammar.GrammarType;
-import suite.persistent.PerList;
-import suite.streamlet.Read;
 
 public class BuildLr {
 

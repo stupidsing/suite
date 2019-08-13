@@ -11,7 +11,7 @@ import java.util.List;
 import primal.Nouns.Utf8;
 import primal.os.Log_;
 import primal.streamlet.Streamlet;
-import suite.streamlet.Read;
+import suite.streamlet.ReadLines;
 import suite.util.Copy;
 
 public class Pipe {
@@ -46,7 +46,7 @@ public class Pipe {
 			for (var thread : threads)
 				thread.start();
 
-			return Read.lines(pis).closeAtEnd(() -> ex(() -> {
+			return ReadLines.from(pis).closeAtEnd(() -> ex(() -> {
 				var code = process.waitFor();
 				if (code == 0)
 					for (var thread : threads)

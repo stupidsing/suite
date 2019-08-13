@@ -5,6 +5,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import primal.persistent.PerList;
 import suite.Suite;
 import suite.jdk.Handler;
 import suite.lp.check.CheckLogic;
@@ -15,7 +16,6 @@ import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.TermOp;
 import suite.os.FileUtil;
-import suite.persistent.PerList;
 import suite.util.To;
 
 public interface RuleSet {

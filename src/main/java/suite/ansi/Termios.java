@@ -3,7 +3,7 @@ package suite.ansi;
 import java.io.Closeable;
 
 import primal.Nouns.Buffer;
-import suite.streamlet.Read;
+import suite.streamlet.ReadChars;
 
 public class Termios implements Closeable {
 
@@ -98,7 +98,7 @@ public class Termios implements Closeable {
 	}
 
 	public void puts(String s) {
-		Read.chars(s).forEach(libc::putchar);
+		ReadChars.from(s).forEach(libc::putchar);
 	}
 
 	private void scroll_(int dir) {

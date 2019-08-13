@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
+import primal.MoreVerbs.Read;
 import primal.Verbs.Compare;
 import suite.node.Atom;
 import suite.node.Dict;
@@ -20,7 +21,6 @@ import suite.node.tree.TreeAnd;
 import suite.node.tree.TreeOp;
 import suite.node.tree.TreeOr;
 import suite.node.tree.TreeTuple;
-import suite.streamlet.Read;
 
 public class Comparer implements Comparator<Node> {
 

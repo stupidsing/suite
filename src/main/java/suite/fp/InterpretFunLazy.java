@@ -7,10 +7,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import primal.MoreVerbs.Read;
 import primal.adt.Mutable;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Iterate;
 import primal.fp.Funs2.BiFun;
+import primal.persistent.PerMap;
 import suite.Suite;
 import suite.lp.Trail;
 import suite.lp.doer.Binder;
@@ -27,8 +29,6 @@ import suite.node.io.SwitchNode;
 import suite.node.io.TermOp;
 import suite.node.util.Comparer;
 import suite.node.util.TreeUtil;
-import suite.persistent.PerMap;
-import suite.streamlet.Read;
 import suite.util.To;
 
 public class InterpretFunLazy {

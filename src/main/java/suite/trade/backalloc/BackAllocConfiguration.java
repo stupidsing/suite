@@ -1,8 +1,8 @@
 package suite.trade.backalloc;
 
+import primal.MoreVerbs.Read;
 import primal.fp.Funs.Fun;
 import primal.streamlet.Streamlet;
-import suite.streamlet.Read;
 import suite.trade.Instrument;
 import suite.trade.Time;
 import suite.trade.backalloc.strategy.BackAllocator_;

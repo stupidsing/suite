@@ -10,9 +10,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import primal.MoreVerbs.Read;
 import primal.adt.Pair;
 import primal.adt.map.ListMultimap;
-import suite.streamlet.Read;
 
 /**
  * http://en.wikipedia.org/wiki/Tarjan%27s_strongly_connected_components_algorithm

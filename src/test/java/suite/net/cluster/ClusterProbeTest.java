@@ -12,10 +12,10 @@ import java.util.Map;
 
 import org.junit.Test;
 
+import primal.MoreVerbs.Read;
 import primal.Verbs.Sleep;
 import primal.statics.Rethrow;
 import suite.net.cluster.impl.ClusterProbeImpl;
-import suite.streamlet.Read;
 
 public class ClusterProbeTest {
 

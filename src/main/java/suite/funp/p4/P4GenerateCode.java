@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import primal.MoreVerbs.Read;
 import primal.adt.Fixie_.FixieFun3;
 import primal.adt.Fixie_.FixieFun5;
 import primal.adt.Mutable;
@@ -69,7 +70,6 @@ import suite.node.Atom;
 import suite.node.io.Operator.Assoc;
 import suite.node.io.TermOp;
 import suite.node.util.TreeUtil;
-import suite.streamlet.Read;
 import suite.util.Switch;
 
 public class P4GenerateCode {

@@ -5,8 +5,8 @@ import static suite.util.Streamlet_.forInt;
 import java.util.Map;
 import java.util.Random;
 
+import primal.MoreVerbs.Read;
 import primal.Verbs.Compare;
-import suite.streamlet.Read;
 import suite.trade.Time;
 import suite.trade.backalloc.BackAllocator;
 import suite.trade.data.DataSource;

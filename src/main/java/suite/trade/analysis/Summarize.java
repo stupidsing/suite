@@ -6,6 +6,7 @@ import static java.lang.Math.log;
 import java.time.LocalDate;
 import java.util.Map;
 
+import primal.MoreVerbs.Read;
 import primal.Verbs.Build;
 import primal.Verbs.Compare;
 import primal.adt.Fixie;
@@ -16,7 +17,6 @@ import primal.fp.Funs.Sink;
 import primal.primitive.Dbl_Dbl;
 import primal.primitive.adt.pair.LngFltPair;
 import primal.streamlet.Streamlet;
-import suite.streamlet.Read;
 import suite.trade.Account;
 import suite.trade.Account.TransactionSummary;
 import suite.trade.Time;

@@ -3,7 +3,7 @@ package suite.http;
 import java.io.InputStream;
 
 import primal.adt.Pair;
-import suite.persistent.PerList;
+import primal.persistent.PerList;
 
 public class HttpRequest {
 

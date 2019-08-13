@@ -4,7 +4,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import suite.streamlet.Read;
+import primal.MoreVerbs.Read;
 import suite.trade.TimeRange;
 import suite.trade.Trade_;
 import suite.trade.analysis.Summarize;

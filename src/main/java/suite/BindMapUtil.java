@@ -2,13 +2,13 @@ package suite;
 
 import java.util.Map;
 
+import primal.MoreVerbs.Read;
 import primal.fp.Funs.Fun;
 import suite.lp.compile.impl.CompileBinderImpl;
 import suite.lp.doer.BinderFactory.BindEnv;
 import suite.lp.sewing.impl.SewingGeneralizerImpl;
 import suite.node.Node;
 import suite.node.io.Formatter;
-import suite.streamlet.Read;
 import suite.util.Memoize;
 
 public class BindMapUtil {

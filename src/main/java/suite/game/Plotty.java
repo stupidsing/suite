@@ -2,15 +2,15 @@ package suite.game;
 
 import java.io.File;
 
+import primal.MoreVerbs.Read;
+import primal.Nouns.Tmp;
 import primal.Verbs.Get;
 import primal.Verbs.WriteFile;
 import primal.primitive.FltMoreVerbs.ReadFlt;
 import primal.primitive.adt.pair.FltFltPair;
 import primal.puller.Puller;
 import primal.streamlet.Streamlet;
-import suite.cfg.Defaults;
 import suite.os.Execute;
-import suite.streamlet.Read;
 
 public class Plotty {
 
@@ -21,7 +21,7 @@ public class Plotty {
 				.map(xyt -> ReadFlt.from(xyt).index().map((y, x) -> FltFltPair.of(x, y)).collect(this::xyt) + ",") //
 				.toJoinedString();
 
-		var file = Defaults.tmp("plot$" + Get.temp() + ".html");
+		var file = Tmp.path("plot$" + Get.temp() + ".html");
 
 		WriteFile.to(file).writeAndClose("" //
 				+ "<head><script src='https://cdn.plot.ly/plotly-latest.min.js'></script></head>" //

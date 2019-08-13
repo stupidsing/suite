@@ -3,6 +3,7 @@ package suite.lp.sewing.impl;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import primal.MoreVerbs.Read;
 import suite.lp.doer.GeneralizerFactory;
 import suite.lp.doer.ProverConstant;
 import suite.lp.sewing.VariableMapper;
@@ -14,7 +15,6 @@ import suite.node.Suspend;
 import suite.node.Tree;
 import suite.node.Tuple;
 import suite.node.io.TermOp;
-import suite.streamlet.Read;
 import suite.util.To;
 
 public class SewingGeneralizerImpl implements GeneralizerFactory {

@@ -23,6 +23,7 @@ import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.Type;
 
+import primal.MoreVerbs.Read;
 import primal.Verbs.Get;
 import primal.Verbs.New;
 import primal.adt.Pair;
@@ -39,7 +40,6 @@ import suite.jdk.gen.pass.FunExpand;
 import suite.jdk.gen.pass.FunGenerateBytecode;
 import suite.jdk.gen.pass.FunRewrite;
 import suite.jdk.lambda.LambdaInterface;
-import suite.streamlet.Read;
 
 public class FunCreator<I> extends FunFactory {
 

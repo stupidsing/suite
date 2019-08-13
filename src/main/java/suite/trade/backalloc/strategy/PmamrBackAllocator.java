@@ -3,8 +3,8 @@ package suite.trade.backalloc.strategy;
 import static java.lang.Math.log;
 import static java.lang.Math.log1p;
 
+import primal.MoreVerbs.Read;
 import suite.math.numeric.Statistic.LinearRegression;
-import suite.streamlet.Read;
 import suite.trade.Instrument;
 import suite.trade.TimeRange;
 import suite.trade.Trade_;

@@ -2,6 +2,7 @@ package suite.lp.compile.impl;
 
 import java.util.Map;
 
+import primal.MoreVerbs.Read;
 import primal.adt.Pair;
 import primal.fp.Funs.Iterate;
 import suite.jdk.gen.FunCreator;
@@ -18,7 +19,6 @@ import suite.node.Str;
 import suite.node.Tree;
 import suite.node.Tuple;
 import suite.node.io.SwitchNode;
-import suite.streamlet.Read;
 
 public class CompileClonerImpl implements ClonerFactory {
 

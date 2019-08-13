@@ -1,5 +1,6 @@
 package suite.lp.sewing.impl;
 
+import primal.MoreVerbs.Read;
 import suite.lp.doer.Binder;
 import suite.lp.doer.BinderFactory;
 import suite.node.Atom;
@@ -10,7 +11,6 @@ import suite.node.Str;
 import suite.node.Tree;
 import suite.node.Tuple;
 import suite.node.io.SwitchNode;
-import suite.streamlet.Read;
 
 public class SewingBinderImpl extends SewingClonerImpl implements BinderFactory {
 

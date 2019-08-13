@@ -4,11 +4,11 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+import primal.MoreVerbs.Read;
 import primal.adt.Pair;
 import primal.fp.Funs2.BinOp;
 import suite.math.linalg.Matrix;
 import suite.math.linalg.Vector;
-import suite.streamlet.Read;
 
 public class NeuralNetworkMinibatchRmspropTest {
 

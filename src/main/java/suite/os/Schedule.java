@@ -5,8 +5,8 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.function.Predicate;
 
+import primal.MoreVerbs.Read;
 import primal.fp.Funs.Source;
-import suite.streamlet.Read;
 
 public class Schedule {
 

@@ -4,11 +4,11 @@ import static suite.util.Streamlet_.forInt;
 
 import java.util.List;
 
+import primal.MoreVerbs.Read;
 import primal.adt.Pair;
 import primal.streamlet.Streamlet2;
 import suite.math.linalg.CholeskyDecomposition;
 import suite.math.numeric.Statistic;
-import suite.streamlet.Read;
 import suite.trade.Trade_;
 import suite.ts.TimeSeries;
 import suite.util.To;

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import primal.MoreVerbs.Read;
 import primal.Verbs.Equals;
 import primal.Verbs.Union;
 import primal.adt.Pair;
@@ -19,7 +20,6 @@ import suite.node.util.Singleton;
 import suite.os.SerializedStoreCache;
 import suite.serialize.Serialize;
 import suite.smtp.SmtpSslGmail;
-import suite.streamlet.Read;
 import suite.trade.Account;
 import suite.trade.Instrument;
 import suite.trade.Time;

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import suite.streamlet.Read;
+import suite.streamlet.ReadChars;
 import suite.text.Preprocess.Run;
 import suite.util.ParseUtil;
 
@@ -59,7 +59,7 @@ public class CommentPreprocessor {
 	}
 
 	private boolean isWhitespaces(String in) {
-		return Read.chars(in).isAll(whitespaces::contains);
+		return ReadChars.from(in).isAll(whitespaces::contains);
 	}
 
 }

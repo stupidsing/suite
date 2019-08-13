@@ -4,7 +4,7 @@ import java.util.ArrayDeque;
 import java.util.Iterator;
 
 import primal.Verbs.Equals;
-import suite.persistent.PerList;
+import primal.persistent.PerList;
 
 public class Bag<S> implements Iterable<S> {
 

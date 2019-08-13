@@ -4,12 +4,12 @@ import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Set;
 
+import primal.MoreVerbs.Read;
 import primal.Verbs.Compare;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Source;
 import suite.node.Node;
 import suite.node.io.Formatter;
-import suite.streamlet.Read;
 
 public class VariableMapper<K> {
 

@@ -8,9 +8,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import primal.MoreVerbs.Read;
 import primal.fp.Funs.Source;
 import primal.streamlet.Streamlet;
-import suite.streamlet.Read;
 
 public class TwoPassIndex {
 

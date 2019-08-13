@@ -5,9 +5,9 @@ import static primal.statics.Fail.fail;
 import java.util.Map;
 import java.util.Set;
 
+import primal.MoreVerbs.Read;
 import primal.primitive.FltMoreVerbs.ReadFlt;
 import primal.primitive.Flt_Flt;
-import suite.streamlet.Read;
 import suite.trade.Instrument;
 import suite.trade.TimeRange;
 

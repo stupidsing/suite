@@ -11,11 +11,6 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.Array;
 import java.net.URL;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.temporal.TemporalAccessor;
 
 import primal.Nouns.Buffer;
 import primal.Nouns.Utf8;
@@ -32,7 +27,6 @@ import primal.primitive.Int_Dbl;
 import primal.primitive.adt.Bytes;
 import primal.primitive.adt.Chars;
 import primal.puller.Puller;
-import suite.cfg.Defaults;
 import suite.primitive.IoSink;
 import suite.serialize.SerOutput;
 import suite.streamlet.As;
@@ -69,10 +63,6 @@ public class To {
 
 	public static Chars chars(String s) {
 		return Chars.of(s.toCharArray());
-	}
-
-	public static LocalDate date(String s) {
-		return LocalDate.parse(s, Defaults.dateFormat);
 	}
 
 	public static Fun<Puller<Bytes>, Boolean> file(String filename) {
@@ -153,18 +143,6 @@ public class To {
 		return String.format(fmt, d);
 	}
 
-	public static String string(Instant instant) {
-		return ymdHms(instant);
-	}
-
-	public static String string(LocalDate date) {
-		return Defaults.dateFormat.format(date);
-	}
-
-	public static String string(LocalDateTime time) {
-		return ymdHms(time);
-	}
-
 	public static String string(Throwable th) {
 		var sw = new StringWriter();
 		try (var sw_ = sw; var pw = new PrintWriter(sw_)) {
@@ -172,10 +150,6 @@ public class To {
 		} catch (IOException ex) {
 		}
 		return sw.toString();
-	}
-
-	public static LocalDateTime time(String s) {
-		return LocalDateTime.parse(s, Defaults.dateTimeFormat);
 	}
 
 	public static URL url(String s) {
@@ -195,14 +169,6 @@ public class To {
 		for (var i = 0; i < length; i++)
 			fs[i] = (float) f.apply(i);
 		return fs;
-	}
-
-	public static String ymdHms(long time) {
-		return ymdHms(LocalDateTime.ofInstant(Instant.ofEpochMilli(time), ZoneId.systemDefault()));
-	}
-
-	private static String ymdHms(TemporalAccessor ta) {
-		return Defaults.dateTimeFormat.format(ta);
 	}
 
 }

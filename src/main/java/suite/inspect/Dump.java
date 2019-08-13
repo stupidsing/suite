@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
+import primal.MoreVerbs.Read;
 import primal.Verbs.Build;
 import primal.Verbs.Get;
 import primal.Verbs.Left;
@@ -20,7 +21,6 @@ import suite.node.io.Operator.Assoc;
 import suite.node.util.Singleton;
 import suite.object.MapObject;
 import suite.object.MapObject_;
-import suite.streamlet.Read;
 import suite.util.ParseUtil;
 import suite.util.Switch;
 import suite.util.Util;

@@ -7,11 +7,11 @@ import java.util.List;
 
 import org.junit.Test;
 
+import primal.MoreVerbs.Read;
 import primal.adt.Pair;
 import primal.primitive.fp.AsDbl;
 import suite.primitive.Ints_;
 import suite.primitive.Longs_;
-import suite.streamlet.Read;
 import suite.trade.Time;
 import suite.trade.data.DataSource;
 

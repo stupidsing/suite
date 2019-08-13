@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import primal.MoreVerbs.Read;
 import primal.Nouns.Buffer;
 import primal.Nouns.Utf8;
 import primal.Verbs.Equals;
@@ -25,7 +26,6 @@ import primal.primitive.adt.Bytes;
 import suite.cfg.Defaults;
 import suite.file.ExtentAllocator.Extent;
 import suite.inspect.Inspect;
-import suite.streamlet.Read;
 import suite.util.Memoize;
 import suite.util.To;
 

@@ -6,9 +6,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.zip.GZIPInputStream;
 
+import primal.MoreVerbs.Read;
 import primal.Verbs.Equals;
 import primal.streamlet.Streamlet;
-import suite.streamlet.Read;
 import suite.util.To;
 
 public class AptUtil {

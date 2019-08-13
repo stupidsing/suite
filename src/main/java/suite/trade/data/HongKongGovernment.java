@@ -8,12 +8,12 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import primal.MoreVerbs.Read;
 import primal.Verbs.Equals;
 import primal.primitive.adt.Floats.FloatsBuilder;
 import primal.primitive.adt.Longs.LongsBuilder;
 import suite.node.util.Singleton;
 import suite.streamlet.As;
-import suite.streamlet.Read;
 import suite.trade.Time;
 import suite.util.ParseUtil;
 

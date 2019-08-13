@@ -2,11 +2,11 @@ package suite.trade.backalloc.strategy;
 
 import java.util.List;
 
+import primal.MoreVerbs.Read;
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
 import primal.primitive.Int_Dbl;
 import primal.primitive.fp.AsDbl;
-import suite.streamlet.Read;
 import suite.trade.backalloc.BackAllocator;
 import suite.trade.data.DataSource;
 import suite.trade.singlealloc.BuySellStrategy;

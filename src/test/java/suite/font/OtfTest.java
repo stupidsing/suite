@@ -6,11 +6,11 @@ import java.util.List;
 
 import org.junit.Test;
 
+import primal.MoreVerbs.Read;
 import primal.Verbs.Compare;
 import primal.Verbs.Mk;
 import suite.os.Execute;
 import suite.os.FileUtil;
-import suite.streamlet.Read;
 
 /**
  * I've got like hundreds of TrueType fonts in my computer, which should reside

@@ -6,13 +6,13 @@ import static primal.statics.Rethrow.ex;
 import java.util.Map;
 import java.util.Set;
 
+import primal.MoreVerbs.Read;
 import primal.Verbs.Build;
 import primal.primitive.adt.Bytes;
 import primal.puller.Puller;
 import primal.streamlet.Streamlet;
 import suite.http.HttpUtil;
 import suite.node.util.Singleton;
-import suite.streamlet.Read;
 import suite.util.ParseUtil;
 
 public class Sina {

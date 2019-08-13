@@ -3,6 +3,7 @@ package suite.cfg;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import primal.Nouns.Tmp;
 import primal.Verbs.Mk;
 import primal.adt.Opt;
 
@@ -24,7 +25,7 @@ public class HomeDir {
 				.or(() -> System.getenv("HOME")) //
 				.or(() -> System.getenv("USERPROFILE")) //
 				.map(Paths::get) //
-				.get(() -> Defaults.tmp);
+				.get(() -> Tmp.root);
 	}
 
 }

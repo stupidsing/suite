@@ -4,12 +4,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import primal.MoreVerbs.Read;
 import primal.Verbs.Get;
 import primal.adt.Mutable;
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Iterate;
 import primal.fp.Funs.Source;
+import primal.persistent.PerMap;
+import primal.persistent.PerSet;
 import primal.primitive.adt.IntMutable;
 import primal.streamlet.Streamlet2;
 import suite.Suite;
@@ -63,9 +66,7 @@ import suite.node.io.SwitchNode;
 import suite.node.io.TermOp;
 import suite.node.util.Singleton;
 import suite.node.util.TreeUtil;
-import suite.persistent.PerMap;
-import suite.persistent.PerSet;
-import suite.streamlet.Read;
+import suite.streamlet.ReadChars;
 
 public class P0Parse {
 
@@ -276,8 +277,8 @@ public class P0Parse {
 				return FunpNumber.ofNumber(n.number);
 			}).applyIf(Str.class, str -> {
 				var vn = "s$" + Get.temp();
-				var fa = FunpArray.of(Read //
-						.chars(str.value) //
+				var fa = FunpArray.of(ReadChars //
+						.from(str.value) //
 						.<Funp> map(ch -> FunpCoerce.of(Coerce.NUMBER, Coerce.BYTE, FunpNumber.ofNumber(ch))) //
 						.snoc(FunpCoerce.of(Coerce.NUMBER, Coerce.BYTE, FunpNumber.ofNumber(0))) //
 						.toList());

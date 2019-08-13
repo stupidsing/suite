@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.IdentityHashMap;
 import java.util.Map;
 
+import primal.MoreVerbs.Read;
 import primal.streamlet.Streamlet;
 import suite.Suite;
 import suite.assembler.Amd64.Insn;
@@ -17,7 +18,6 @@ import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Tree;
 import suite.node.io.TermOp;
-import suite.streamlet.Read;
 
 public class Amd64Parse {
 

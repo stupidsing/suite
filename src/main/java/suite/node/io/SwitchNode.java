@@ -5,6 +5,7 @@ import static primal.statics.Rethrow.ex;
 
 import java.util.List;
 
+import primal.MoreVerbs.Read;
 import primal.adt.FixieArray;
 import primal.adt.Fixie_.FixieFun0;
 import primal.adt.Fixie_.FixieFun1;
@@ -22,7 +23,6 @@ import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Tree;
 import suite.primitive.IoSink;
-import suite.streamlet.Read;
 
 public class SwitchNode<R> {
 

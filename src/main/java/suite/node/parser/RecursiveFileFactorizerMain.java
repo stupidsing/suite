@@ -5,12 +5,12 @@ import static primal.statics.Rethrow.ex;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+import primal.MoreVerbs.Read;
 import primal.Nouns.Utf8;
 import primal.adt.Pair;
+import primal.parser.Wildcard;
 import suite.node.io.TermOp;
 import suite.os.FileUtil;
-import suite.parser.Wildcard;
-import suite.streamlet.Read;
 import suite.util.RunUtil;
 
 // mAIN=suite.node.parser.RecursiveFileFactorizerMain ./run.sh

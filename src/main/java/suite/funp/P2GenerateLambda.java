@@ -4,8 +4,10 @@ import static primal.statics.Fail.fail;
 
 import java.util.Map;
 
+import primal.MoreVerbs.Read;
 import primal.Verbs.Get;
 import primal.fp.Funs.Fun;
+import primal.persistent.PerMap;
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.Fdt;
 import suite.funp.P0.FunpApply;
@@ -32,8 +34,6 @@ import suite.funp.P0.FunpTree2;
 import suite.funp.P0.FunpVariable;
 import suite.node.io.TermOp;
 import suite.node.util.TreeUtil;
-import suite.persistent.PerMap;
-import suite.streamlet.Read;
 import suite.util.To;
 
 public class P2GenerateLambda {

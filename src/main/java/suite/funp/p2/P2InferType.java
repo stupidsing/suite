@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.BiPredicate;
 
+import primal.MoreVerbs.Read;
 import primal.Verbs.Equals;
 import primal.Verbs.Get;
 import primal.adt.Fixie;
@@ -22,6 +23,7 @@ import primal.adt.Mutable;
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Source;
+import primal.persistent.PerMap;
 import primal.primitive.adt.IntMutable;
 import primal.primitive.adt.IntRange;
 import primal.primitive.adt.map.ObjIntMap;
@@ -108,8 +110,6 @@ import suite.node.io.SwitchNode;
 import suite.node.io.TermOp;
 import suite.node.util.Singleton;
 import suite.node.util.TreeUtil;
-import suite.persistent.PerMap;
-import suite.streamlet.Read;
 import suite.util.Switch;
 
 /**

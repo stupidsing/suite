@@ -2,6 +2,7 @@ package suite.math.sym;
 
 import java.util.ArrayList;
 
+import primal.MoreVerbs.Read;
 import primal.fp.Funs2.Fun2;
 import primal.streamlet.Streamlet;
 import suite.BindArrayUtil.Pattern;
@@ -13,7 +14,6 @@ import suite.node.Tree;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
 import suite.node.util.TreeUtil;
-import suite.streamlet.Read;
 
 public class Express {
 

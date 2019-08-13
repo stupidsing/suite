@@ -13,7 +13,7 @@ import suite.node.io.Formatter;
 import suite.node.io.Operator;
 import suite.node.io.Operator.Assoc;
 import suite.node.io.TermOp;
-import suite.streamlet.Read;
+import suite.streamlet.ReadChars;
 
 public class PrettyPrinter {
 
@@ -220,7 +220,7 @@ public class PrettyPrinter {
 
 	private boolean isLineBegin() {
 		var l = sb.substring(getLineBeginPosition(), getCurrentPosition());
-		return Read.chars(l).isAll(Is::whitespace);
+		return ReadChars.from(l).isAll(Is::whitespace);
 	}
 
 	private int getLineSize() {

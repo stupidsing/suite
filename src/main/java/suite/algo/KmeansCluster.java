@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import primal.MoreVerbs.Read;
 import primal.Verbs.Left;
 import primal.primitive.IntMoreVerbs.LiftInt;
 import primal.primitive.IntMoreVerbs.ReadInt;
@@ -14,7 +15,6 @@ import primal.primitive.adt.map.ObjIntMap;
 import primal.primitive.adt.pair.DblObjPair;
 import primal.primitive.adt.pair.IntDblPair;
 import suite.math.linalg.Vector;
-import suite.streamlet.Read;
 import suite.util.To;
 
 public class KmeansCluster {

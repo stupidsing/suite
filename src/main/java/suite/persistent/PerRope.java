@@ -7,6 +7,7 @@ import static primal.statics.Fail.fail;
 import java.util.ArrayDeque;
 import java.util.List;
 
+import primal.MoreVerbs.Read;
 import primal.Verbs.Concat;
 import primal.Verbs.First;
 import primal.Verbs.Last;
@@ -17,7 +18,6 @@ import primal.primitive.IntInt_Obj;
 import primal.primitive.IntPrim.Int_Obj;
 import primal.primitive.fp.AsInt;
 import primal.streamlet.Streamlet;
-import suite.streamlet.Read;
 
 public class PerRope<T> {
 

@@ -17,6 +17,7 @@ import org.apache.bcel.generic.NEW;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.Type;
 
+import primal.MoreVerbs.Read;
 import primal.Verbs.Equals;
 import primal.primitive.adt.Ints.IntsBuilder;
 import primal.primitive.adt.map.IntIntMap;
@@ -49,7 +50,6 @@ import suite.jdk.gen.FunExprM.ProfileFunExpr;
 import suite.jdk.gen.FunExprM.SeqFunExpr;
 import suite.jdk.gen.FunExprM.VoidFunExpr;
 import suite.jdk.gen.FunExpression.FunExpr;
-import suite.streamlet.Read;
 
 public class FunGenerateBytecode {
 

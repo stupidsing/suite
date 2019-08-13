@@ -2,8 +2,8 @@ package suite.trade.analysis;
 
 import org.junit.Test;
 
+import primal.MoreVerbs.Read;
 import primal.streamlet.Streamlet;
-import suite.streamlet.Read;
 import suite.trade.Instrument;
 import suite.trade.Time;
 import suite.trade.Usex;

@@ -9,10 +9,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import primal.MoreVerbs.Read;
 import primal.MoreVerbs.Split;
 import primal.Verbs.ReadFile;
 import primal.streamlet.Streamlet;
-import suite.streamlet.Read;
 
 public class DebianUtil {
 

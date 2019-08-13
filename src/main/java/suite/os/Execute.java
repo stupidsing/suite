@@ -9,11 +9,11 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 
+import primal.MoreVerbs.Read;
 import primal.Nouns.Utf8;
 import primal.Verbs.Th;
 import primal.os.Log_;
 import primal.statics.Fail.InterruptedRuntimeException;
-import suite.streamlet.Read;
 import suite.util.Copy;
 import suite.util.To;
 

@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import primal.MoreVerbs.Read;
 import primal.Verbs.Equals;
 import primal.Verbs.Last;
 import primal.Verbs.Left;
@@ -20,6 +21,7 @@ import primal.adt.map.ListMultimap;
 import primal.fp.Funs.Sink;
 import primal.fp.Funs.Source;
 import primal.os.Log_;
+import primal.persistent.PerList;
 import primal.streamlet.Streamlet;
 import suite.Suite;
 import suite.lp.Configuration.ProverCfg;
@@ -52,9 +54,7 @@ import suite.node.io.TermOp;
 import suite.node.util.Rewrite;
 import suite.node.util.SuiteException;
 import suite.node.util.TreeUtil;
-import suite.persistent.PerList;
 import suite.streamlet.As;
-import suite.streamlet.Read;
 
 /**
  * Compile logical rules into lambda-sews and run them. Supposed to be faster
@@ -213,9 +213,9 @@ public class SewingProverImpl implements ProverFactory {
 	}
 
 	private void compileAll() {
-		isHasCutByPrototype = Read.listEntries(rules).mapValue(this::isHasCut).toMap();
+		isHasCutByPrototype = Read.fromMultimap(rules).mapValue(this::isHasCut).toMap();
 
-		for (var e : Read.listEntries(rules)) {
+		for (var e : Read.fromMultimap(rules)) {
 			var prototype = e.k;
 			var rules = new ArrayList<>(e.v);
 			var traceLevel = traceLevel(prototype);

@@ -12,8 +12,9 @@ import java.util.Locale;
 import java.util.Objects;
 
 import primal.Verbs.Equals;
+import primal.Verbs.Format;
 import primal.Verbs.Get;
-import suite.util.To;
+import primal.Verbs.Parse;
 
 /**
  * Wraps LocalDateTime with a shorter class name.
@@ -53,11 +54,11 @@ public class Time implements Comparable<Time> {
 	}
 
 	public static Time ofYmd(String s) {
-		return of(To.date(s).atStartOfDay());
+		return of(Parse.ymd(s).atStartOfDay());
 	}
 
 	public static Time ofYmdHms(String s) {
-		return of(To.time(s));
+		return of(Parse.ymdhms(s));
 	}
 
 	public static Time of(int y, int m, int d) {
@@ -170,7 +171,7 @@ public class Time implements Comparable<Time> {
 	}
 
 	public String ymd() {
-		return To.string(dateTime.toLocalDate());
+		return Format.ymd(dateTime.toLocalDate());
 	}
 
 	public String ymdHms() {
@@ -198,7 +199,7 @@ public class Time implements Comparable<Time> {
 	}
 
 	private String ymdHms_() {
-		return To.string(dateTime);
+		return Format.ymdHms(dateTime);
 	}
 
 }

@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import primal.MoreVerbs.Read;
 import primal.adt.IdentityKey;
 import primal.adt.Pair;
 import suite.Suite;
@@ -22,7 +23,6 @@ import suite.node.io.SwitchNode;
 import suite.node.io.TermOp;
 import suite.node.tree.TreeTuple;
 import suite.node.util.TreeUtil;
-import suite.streamlet.Read;
 
 public class CheckType {
 

@@ -7,6 +7,7 @@ import java.util.Deque;
 import java.util.List;
 import java.util.Map;
 
+import primal.MoreVerbs.Read;
 import primal.Verbs.Equals;
 import primal.fp.Funs.Source;
 import primal.os.Log_;
@@ -16,7 +17,6 @@ import suite.ebnf.Grammar;
 import suite.ebnf.Grammar.GrammarType;
 import suite.ebnf.topdown.Expect.ExpectFun;
 import suite.primitive.Coord;
-import suite.streamlet.Read;
 
 /**
  * Backtracking LL parser for Backus-Naur form grammars.

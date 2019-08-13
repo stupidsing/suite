@@ -8,10 +8,10 @@ import java.io.Writer;
 
 import org.junit.Test;
 
+import primal.Nouns.Tmp;
 import primal.Verbs.Get;
 import primal.Verbs.Sleep;
 import suite.Suite;
-import suite.cfg.Defaults;
 
 public class FilterTest {
 
@@ -70,7 +70,7 @@ public class FilterTest {
 					System.out.println("Dump heap to check memory now");
 					System.out.println("" //
 							+ "jmap -histo " + Get.pid() //
-							+ " | tee " + Defaults.tmp("jmap") //
+							+ " | tee " + Tmp.path("jmap") //
 							+ " | less");
 					Sleep.quietly(10 * 1000l);
 				}

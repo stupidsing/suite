@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+import primal.MoreVerbs.Read;
 import primal.Verbs.Build;
 import primal.Verbs.Equals;
 import primal.adt.IdentityKey;
@@ -33,7 +34,6 @@ import suite.node.Tuple;
 import suite.node.io.Rewrite_.NodeHead;
 import suite.node.io.Rewrite_.NodeRead;
 import suite.node.io.Rewrite_.ReadType;
-import suite.streamlet.Read;
 
 /**
  * Converts a node into graph representation. The nodes link to other nodes via

@@ -8,12 +8,12 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import primal.MoreVerbs.Read;
 import primal.Verbs.Equals;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs2.Fun2;
 import primal.os.Log_;
 import primal.streamlet.Streamlet;
-import suite.streamlet.Read;
 import suite.trade.Instrument;
 import suite.trade.Time;
 import suite.trade.TimeRange;

@@ -9,10 +9,10 @@ import java.util.Random;
 
 import org.junit.Test;
 
+import primal.MoreVerbs.Read;
 import suite.math.Tanh;
 import suite.math.linalg.Matrix;
 import suite.streamlet.As;
-import suite.streamlet.Read;
 import suite.util.To;
 
 // https://gist.github.com/k15z/d6e986c4760fddf47061e3e383f139a4

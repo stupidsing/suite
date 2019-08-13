@@ -4,8 +4,8 @@ import java.util.Map;
 
 import org.junit.Test;
 
+import primal.MoreVerbs.Read;
 import primal.fp.Funs.Fun;
-import suite.streamlet.Read;
 import suite.trade.Trade;
 import suite.trade.analysis.Summarize;
 import suite.util.To;

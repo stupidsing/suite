@@ -3,6 +3,7 @@ package suite.math.sym;
 import java.util.ArrayList;
 import java.util.List;
 
+import primal.MoreVerbs.Read;
 import primal.Verbs.Concat;
 import primal.adt.Opt;
 import primal.fp.Funs.Fun;
@@ -28,7 +29,6 @@ import suite.node.Int;
 import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.SwitchNode;
-import suite.streamlet.Read;
 
 public class Symbolic {
 

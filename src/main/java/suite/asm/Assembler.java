@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import primal.MoreVerbs.Read;
 import primal.MoreVerbs.Split;
 import primal.Nouns.Utf8;
 import primal.Verbs.Is;
@@ -34,7 +35,6 @@ import suite.node.Str;
 import suite.node.Tree;
 import suite.node.io.SwitchNode;
 import suite.parser.CommentPreprocessor;
-import suite.streamlet.Read;
 import suite.text.Preprocess;
 import suite.text.Preprocess.Run;
 

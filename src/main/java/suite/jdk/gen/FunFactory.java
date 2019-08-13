@@ -7,6 +7,7 @@ import org.apache.bcel.Const;
 import org.apache.bcel.generic.BasicType;
 import org.apache.bcel.generic.Type;
 
+import primal.MoreVerbs.Read;
 import primal.Verbs.Equals;
 import primal.adt.Mutable;
 import primal.fp.Funs.Iterate;
@@ -42,7 +43,6 @@ import suite.jdk.gen.FunExprM.VoidFunExpr;
 import suite.jdk.gen.FunExpression.FunExpr;
 import suite.jdk.lambda.LambdaInstance;
 import suite.node.util.Singleton;
-import suite.streamlet.Read;
 
 public class FunFactory {
 

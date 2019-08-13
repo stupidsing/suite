@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import primal.MoreVerbs.Read;
 import primal.Verbs.Take;
 import primal.adt.Pair;
 import primal.fp.Funs.Source;
@@ -19,7 +20,6 @@ import primal.primitive.adt.pair.IntObjPair;
 import primal.primitive.streamlet.IntObjStreamlet;
 import primal.puller.Puller;
 import suite.adt.PriorityQueue;
-import suite.streamlet.Read;
 
 /**
  * Huffman compression.

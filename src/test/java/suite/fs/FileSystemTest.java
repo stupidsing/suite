@@ -10,9 +10,9 @@ import java.nio.file.Paths;
 
 import org.junit.Test;
 
+import primal.Nouns.Tmp;
 import primal.Nouns.Utf8;
 import primal.primitive.adt.Bytes;
-import suite.cfg.Defaults;
 import suite.fs.impl.B_TreeFileSystemImpl;
 import suite.fs.impl.LazyPbTreeFileSystemImpl;
 import suite.os.FileUtil;
@@ -28,24 +28,24 @@ public class FileSystemTest {
 
 	@Test
 	public void testB_TreeFileSystem0() throws IOException {
-		testB_Tree(Defaults.tmp("b_tree-fs0"), true, this::testWriteOneFile);
+		testB_Tree(Tmp.path("b_tree-fs0"), true, this::testWriteOneFile);
 	}
 
 	@Test
 	public void testB_TreeFileSystem1() throws IOException {
-		testB_Tree(Defaults.tmp("b_tree-fs1"), true, this::testWriteFiles);
-		testB_Tree(Defaults.tmp("b_tree-fs1"), false, this::testReadFile);
+		testB_Tree(Tmp.path("b_tree-fs1"), true, this::testWriteFiles);
+		testB_Tree(Tmp.path("b_tree-fs1"), false, this::testReadFile);
 	}
 
 	@Test
 	public void testLazyIbTreeFileSystem0() throws IOException {
-		testLazyIbTree(Defaults.tmp("lazyIbTree-fs0"), true, this::testWriteOneFile);
+		testLazyIbTree(Tmp.path("lazyIbTree-fs0"), true, this::testWriteOneFile);
 	}
 
 	@Test
 	public void testLazyIbTreeFileSystem1() throws IOException {
-		testLazyIbTree(Defaults.tmp("lazyIbTree-fs1"), true, this::testWriteFiles);
-		testLazyIbTree(Defaults.tmp("lazyIbTree-fs1"), false, this::testReadFile);
+		testLazyIbTree(Tmp.path("lazyIbTree-fs1"), true, this::testWriteFiles);
+		testLazyIbTree(Tmp.path("lazyIbTree-fs1"), false, this::testReadFile);
 	}
 
 	private void testB_Tree(Path path, boolean isNew, TestCase testCase) throws IOException {

@@ -7,7 +7,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.function.Predicate;
 
+import primal.MoreVerbs.Read;
 import primal.fp.Funs.Sink;
+import primal.persistent.PerList;
 import suite.adt.map.BiListMultimap;
 import suite.assembler.Amd64;
 import suite.assembler.Amd64.Insn;
@@ -18,8 +20,6 @@ import suite.assembler.Amd64.OpMem;
 import suite.assembler.Amd64.OpReg;
 import suite.assembler.Amd64.Operand;
 import suite.funp.Funp_;
-import suite.persistent.PerList;
-import suite.streamlet.Read;
 
 public class P4Emit {
 

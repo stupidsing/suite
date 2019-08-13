@@ -4,8 +4,10 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 
+import primal.MoreVerbs.Read;
 import primal.adt.Pair;
 import primal.fp.Funs.Source;
+import primal.persistent.PerMap;
 import primal.primitive.adt.Bytes;
 import suite.Suite;
 import suite.assembler.Amd64;
@@ -27,8 +29,6 @@ import suite.inspect.Inspect;
 import suite.node.Node;
 import suite.node.util.Singleton;
 import suite.object.CastDefaults;
-import suite.persistent.PerMap;
-import suite.streamlet.Read;
 import suite.util.RunUtil;
 
 public class Funp_ {

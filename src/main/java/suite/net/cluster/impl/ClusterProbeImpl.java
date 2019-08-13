@@ -14,8 +14,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import primal.MoreVerbs.Read;
 import primal.Nouns.Utf8;
 import primal.Verbs.Equals;
+import primal.Verbs.Format;
 import primal.os.Log_;
 import primal.primitive.adt.pair.IntIntPair;
 import suite.net.NetUtil;
@@ -23,7 +25,6 @@ import suite.net.ThreadService;
 import suite.net.cluster.ClusterProbe;
 import suite.streamlet.As;
 import suite.streamlet.Pusher;
-import suite.streamlet.Read;
 import suite.util.To;
 
 /**
@@ -272,7 +273,7 @@ public class ClusterProbeImpl implements ClusterProbe {
 	public String toString() {
 		return Read //
 				.from2(lastActiveTimeByPeer) //
-				.map((peer, lastActiveTime) -> peer + " (last-active = " + To.ymdHms(lastActiveTime) + ")") //
+				.map((peer, lastActiveTime) -> peer + " (last-active = " + Format.ymdHms(lastActiveTime) + ")") //
 				.collect(As.conc("\n"));
 	}
 

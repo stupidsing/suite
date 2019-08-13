@@ -3,12 +3,12 @@ package suite.ansi;
 import java.util.ArrayList;
 import java.util.List;
 
+import primal.MoreVerbs.Read;
 import primal.adt.Pair;
 import primal.fp.Funs.Sink;
 import suite.adt.Trie;
 import suite.streamlet.Pusher;
 import suite.streamlet.Pusher.Redirector;
-import suite.streamlet.Read;
 
 public class Keyboard {
 

@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
+import primal.MoreVerbs.Read;
 import primal.Verbs.Equals;
 import primal.Verbs.Get;
 import primal.adt.map.ListMultimap;
@@ -14,7 +15,6 @@ import suite.node.Reference;
 import suite.node.Tree;
 import suite.node.Tuple;
 import suite.node.tree.TreeTuple;
-import suite.streamlet.Read;
 
 /**
  * Index rules by the first atom in their heads.

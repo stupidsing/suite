@@ -7,6 +7,8 @@ import org.junit.Test;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs2.Fun2;
 import primal.os.Log_;
+import primal.persistent.PerList;
+import primal.persistent.PerMap;
 import suite.Suite;
 import suite.lp.Trail;
 import suite.lp.doer.Binder;
@@ -18,8 +20,6 @@ import suite.node.Tree;
 import suite.node.io.Formatter;
 import suite.node.io.SwitchNode;
 import suite.node.io.TermOp;
-import suite.persistent.PerList;
-import suite.persistent.PerMap;
 
 /**
  * TODO ZFC

@@ -12,12 +12,12 @@ import org.apache.commons.logging.LogFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import primal.MoreVerbs.Read;
+import primal.parser.Wildcard;
 import suite.os.FileUtil;
-import suite.parser.Wildcard;
 import suite.pkgmanager.action.ExecCommandAction;
 import suite.pkgmanager.action.ExtractFileAction;
 import suite.pkgmanager.action.InstallAction;
-import suite.streamlet.Read;
 
 public class PackageManager {
 

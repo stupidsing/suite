@@ -8,7 +8,6 @@ import java.io.IOException;
 import org.junit.Test;
 
 import primal.Nouns.Buffer;
-import primal.fp.FunUtil;
 
 public class LexerTest {
 
@@ -25,7 +24,7 @@ public class LexerTest {
 
 		var nTokens = 0;
 
-		for (var token : FunUtil.iter(new Lexer(sb.toString()).tokens())) {
+		for (var token : new Lexer(sb.toString()).tokens()) {
 			assertNotNull(token);
 			nTokens++;
 		}

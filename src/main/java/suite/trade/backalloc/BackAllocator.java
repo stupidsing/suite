@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.function.IntPredicate;
 import java.util.function.Predicate;
 
+import primal.MoreVerbs.Read;
 import primal.Verbs.Compare;
 import primal.Verbs.Equals;
 import primal.Verbs.Union;
@@ -25,7 +26,6 @@ import primal.primitive.adt.pair.DblFltPair;
 import primal.primitive.fp.AsDbl;
 import primal.streamlet.Streamlet;
 import suite.math.numeric.Statistic;
-import suite.streamlet.Read;
 import suite.trade.Instrument;
 import suite.trade.Time;
 import suite.trade.Trade_;
@@ -377,7 +377,7 @@ public interface BackAllocator {
 
 				// re-assemble the entries into current profile
 				return Read //
-						.multimap(entriesBySymbol) //
+						.fromListMap(entriesBySymbol) //
 						.groupBy(entries -> entries.toDouble(AsDbl.sum(pair -> pair.t0))) //
 						.toList();
 			};

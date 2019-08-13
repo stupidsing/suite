@@ -3,7 +3,7 @@ package suite.node.io;
 import primal.Verbs.Build;
 import primal.Verbs.Is;
 import primal.os.Log_;
-import suite.streamlet.Read;
+import suite.streamlet.ReadChars;
 
 public class Escaper {
 
@@ -11,7 +11,7 @@ public class Escaper {
 		return Build.string(sb -> {
 			sb.append(quote);
 
-			for (var ch : Read.chars(s))
+			for (var ch : ReadChars.from(s))
 				if (Is.whitespace(ch) && ch != ' ')
 					if (256 <= ch)
 						sb.append(encodeHex16(ch >> 8));

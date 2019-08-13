@@ -1,5 +1,6 @@
 package suite.funp.p3;
 
+import primal.MoreVerbs.Read;
 import primal.adt.Pair;
 import primal.fp.Funs2.Fun2;
 import primal.primitive.IntInt_Int;
@@ -22,7 +23,6 @@ import suite.node.io.TermOp;
 import suite.node.util.Singleton;
 import suite.node.util.TreeUtil;
 import suite.primitive.IntInt_Bool;
-import suite.streamlet.Read;
 
 public class P3Optimize {
 

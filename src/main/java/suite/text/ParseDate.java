@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.Set;
 
-import suite.streamlet.Read;
+import primal.MoreVerbs.Read;
 
 /**
  * A smart, generic date and time parser.

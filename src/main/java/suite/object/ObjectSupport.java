@@ -7,7 +7,7 @@ import primal.Verbs.Build;
 import primal.Verbs.Compare;
 import primal.Verbs.Equals;
 import primal.fp.Funs.Fun;
-import suite.persistent.PerList;
+import primal.persistent.PerList;
 
 public class ObjectSupport<T> {
 

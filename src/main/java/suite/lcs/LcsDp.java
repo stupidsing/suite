@@ -7,7 +7,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import primal.Verbs.Equals;
-import suite.persistent.PerList;
+import primal.persistent.PerList;
 
 /**
  * Longest common subsequence using dynamic programming.

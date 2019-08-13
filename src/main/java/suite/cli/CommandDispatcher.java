@@ -6,6 +6,7 @@ import java.io.Reader;
 import java.io.Writer;
 import java.util.List;
 
+import primal.MoreVerbs.Read;
 import primal.Verbs.Is;
 import primal.Verbs.Range;
 import primal.Verbs.Take;
@@ -31,7 +32,6 @@ import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.Formatter;
 import suite.node.pp.PrettyPrinter;
-import suite.streamlet.Read;
 import suite.util.CommandUtil;
 
 /**

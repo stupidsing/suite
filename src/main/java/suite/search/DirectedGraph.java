@@ -7,10 +7,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import primal.MoreVerbs.Read;
 import primal.adt.Pair;
 import primal.adt.map.ListMultimap;
 import primal.streamlet.Streamlet;
-import suite.streamlet.Read;
 
 public class DirectedGraph<V> {
 

@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import primal.MoreVerbs.Read;
 import primal.Verbs.Equals;
 import primal.Verbs.Right;
 import primal.adt.IdentityKey;
@@ -23,7 +24,6 @@ import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Tree;
 import suite.node.io.TermOp;
-import suite.streamlet.Read;
 
 public class InstructionExtractor implements AutoCloseable {
 

@@ -5,6 +5,7 @@ import static primal.statics.Rethrow.ex;
 
 import java.util.List;
 
+import primal.MoreVerbs.Read;
 import primal.Verbs.Equals;
 import primal.adt.Fixie_.FixieFun0;
 import primal.adt.Fixie_.FixieFun1;
@@ -17,7 +18,6 @@ import primal.adt.Fixie_.FixieFun7;
 import primal.adt.Fixie_.FixieFun8;
 import primal.adt.Fixie_.FixieFun9;
 import primal.adt.Fixie_.FixieFunA;
-import suite.streamlet.Read;
 
 public class MapObject_ {
 

@@ -5,13 +5,14 @@ import static suite.util.Streamlet_.forInt;
 import java.nio.file.Paths;
 
 import primal.MoreVerbs.Decode;
+import primal.MoreVerbs.Read;
 import primal.Verbs.Compare;
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
+import primal.parser.Wildcard;
 import primal.streamlet.Streamlet;
 import suite.node.io.Operator.Assoc;
-import suite.parser.Wildcard;
-import suite.streamlet.Read;
+import suite.streamlet.ReadBytes;
 import suite.trade.Instrument;
 import suite.trade.Time;
 import suite.trade.TimeRange;
@@ -70,8 +71,8 @@ public class BackTestMain {
 				}) //
 				.collect();
 
-		var content0 = Read //
-				.bytes(Paths.get("src/main/java/" + getClass().getName().replace('.', '/') + ".java")) //
+		var content0 = ReadBytes //
+				.from(Paths.get("src/main/java/" + getClass().getName().replace('.', '/') + ".java")) //
 				.collect(Decode::utf8) //
 				.toJoinedString();
 

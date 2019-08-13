@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import primal.MoreVerbs.Read;
 import primal.Verbs.Build;
 import primal.Verbs.Compare;
 import primal.Verbs.Intersect;
@@ -18,7 +19,6 @@ import primal.primitive.LngMoreVerbs.ReadLng;
 import primal.primitive.adt.pair.LngFltPair;
 import primal.streamlet.Streamlet;
 import primal.streamlet.Streamlet2;
-import suite.streamlet.Read;
 import suite.trade.Time;
 import suite.trade.TimeRange;
 import suite.trade.Trade_;

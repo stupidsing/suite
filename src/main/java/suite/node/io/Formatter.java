@@ -17,7 +17,7 @@ import suite.node.Str;
 import suite.node.Tree;
 import suite.node.Tuple;
 import suite.parser.CommentPreprocessor;
-import suite.streamlet.Read;
+import suite.streamlet.ReadChars;
 
 /**
  * Formats a node for human-readable purpose (display), or for
@@ -210,7 +210,7 @@ public class Formatter {
 				var quote = false //
 						|| s0.startsWith(ProverConstant.variablePrefix) //
 						|| s0.startsWith(ProverConstant.wildcardPrefix) //
-						|| Read.chars(s0).isAny(c -> true //
+						|| ReadChars.from(s0).isAny(c -> true //
 								&& !('0' <= c && c <= '9') //
 								&& !('a' <= c && c <= 'z') //
 								&& !('A' <= c && c <= 'Z') //

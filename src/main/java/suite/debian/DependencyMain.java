@@ -10,12 +10,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import primal.MoreVerbs.Read;
 import primal.Verbs.Compare;
 import primal.Verbs.Equals;
 import primal.Verbs.Union;
 import suite.debian.AptUtil.Repo;
 import suite.os.FileUtil;
-import suite.streamlet.Read;
 import suite.util.RunUtil;
 
 public class DependencyMain {

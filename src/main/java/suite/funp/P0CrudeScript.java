@@ -6,6 +6,7 @@ import static primal.statics.Rethrow.ex;
 import java.io.FileReader;
 import java.util.ArrayList;
 
+import primal.MoreVerbs.Read;
 import primal.adt.Pair;
 import primal.primitive.IntPrim.Obj_Int;
 import primal.statics.Fail;
@@ -34,7 +35,6 @@ import suite.node.Tree;
 import suite.node.io.SwitchNode;
 import suite.node.io.TermOp;
 import suite.node.tree.TreeTuple;
-import suite.streamlet.Read;
 
 public class P0CrudeScript {
 

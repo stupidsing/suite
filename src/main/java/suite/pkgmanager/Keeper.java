@@ -5,10 +5,10 @@ import java.util.Map;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import primal.Nouns.Tmp;
 import primal.Verbs.DeleteFile;
 import primal.Verbs.ReadFile;
 import primal.Verbs.WriteFile;
-import suite.cfg.Defaults;
 import suite.inspect.Mapify;
 import suite.node.util.Singleton;
 
@@ -19,7 +19,7 @@ import suite.node.util.Singleton;
  */
 public class Keeper {
 
-	private Path keeperDir = Defaults.tmp("keeper");
+	private Path keeperDir = Tmp.path("keeper");
 
 	private ObjectMapper om;
 	private Mapify mapify = Singleton.me.mapify;

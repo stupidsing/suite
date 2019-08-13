@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import primal.MoreVerbs.Read;
 import primal.adt.map.ListMultimap;
 import suite.Suite;
 import suite.lp.kb.Prototype;
@@ -16,7 +17,6 @@ import suite.node.Tuple;
 import suite.node.io.TermOp;
 import suite.node.util.TreeUtil;
 import suite.streamlet.As;
-import suite.streamlet.Read;
 
 /**
  * Converts query to tuple syntax for better performance.
@@ -41,7 +41,7 @@ public class QueryRewriter {
 	}
 
 	public QueryRewriter(ListMultimap<Prototype, Rule> rules) {
-		infoByPrototype = Read.listEntries(rules).mapValue(PrototypeInfo::new).toMap();
+		infoByPrototype = Read.fromMultimap(rules).mapValue(PrototypeInfo::new).toMap();
 		rules1 = Read.from2(rules).mapValue(this::rewriteRule).toMultimap();
 	}
 

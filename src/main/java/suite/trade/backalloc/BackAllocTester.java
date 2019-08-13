@@ -7,11 +7,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import primal.MoreVerbs.Read;
 import primal.fp.Funs.Sink;
 import primal.os.Log_;
 import primal.streamlet.Streamlet;
 import suite.math.numeric.Statistic;
-import suite.streamlet.Read;
 import suite.trade.Account;
 import suite.trade.Instrument;
 import suite.trade.Time;

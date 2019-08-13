@@ -7,8 +7,8 @@ import java.util.function.BiPredicate;
 import primal.MoreVerbs.Pull;
 import primal.Verbs.Build;
 import primal.Verbs.Equals;
+import primal.persistent.PerList;
 import primal.primitive.adt.LngMutable;
-import suite.persistent.PerList;
 import suite.util.HtmlUtil;
 
 public class HttpSessionControl {

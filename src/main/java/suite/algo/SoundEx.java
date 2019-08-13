@@ -3,7 +3,7 @@ package suite.algo;
 import static primal.statics.Fail.fail;
 
 import primal.Verbs.Build;
-import suite.streamlet.Read;
+import suite.streamlet.ReadChars;
 
 public class SoundEx {
 
@@ -62,7 +62,7 @@ public class SoundEx {
 
 	private String replace(String word, String match, String replace) {
 		return Build.string(sb -> {
-			for (var ch : Read.chars(word))
+			for (var ch : ReadChars.from(word))
 				sb.append(match.indexOf(ch) < 0 ? ch : replace);
 		});
 	}

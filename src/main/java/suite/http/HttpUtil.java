@@ -17,6 +17,7 @@ import org.apache.http.impl.client.HttpClients;
 
 import primal.MoreVerbs.Decode;
 import primal.MoreVerbs.Pull;
+import primal.MoreVerbs.Read;
 import primal.Verbs.Sleep;
 import primal.adt.FixieArray;
 import primal.adt.map.ListMultimap;
@@ -29,7 +30,6 @@ import primal.puller.Puller;
 import suite.concurrent.Backoff;
 import suite.primitive.Bytes_;
 import suite.streamlet.As;
-import suite.streamlet.Read;
 import suite.util.Memoize;
 import suite.util.ParseUtil;
 import suite.util.To;

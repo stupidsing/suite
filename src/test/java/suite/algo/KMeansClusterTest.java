@@ -9,9 +9,9 @@ import java.util.Random;
 
 import org.junit.Test;
 
+import primal.MoreVerbs.Read;
 import primal.fp.Funs.Source;
 import suite.math.linalg.Vector;
-import suite.streamlet.Read;
 
 public class KMeansClusterTest {
 

@@ -15,10 +15,10 @@ import java.util.function.BiPredicate;
 import primal.MoreVerbs.Pull;
 import primal.Verbs.Equals;
 import primal.fp.Funs.Sink;
+import primal.persistent.PerList;
+import primal.persistent.PerMap;
 import primal.primitive.adt.Bytes;
 import primal.primitive.adt.LngMutable;
-import suite.persistent.PerList;
-import suite.persistent.PerMap;
 
 public interface HttpHandler {
 

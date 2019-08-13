@@ -8,12 +8,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import primal.MoreVerbs.Read;
 import primal.Verbs.Equals;
 import primal.primitive.Dbl_Dbl;
 import primal.primitive.FltPrim.Obj_Flt;
 import primal.primitive.fp.AsDbl;
 import primal.streamlet.Streamlet2;
-import suite.streamlet.Read;
 import suite.util.To;
 
 public class Account {

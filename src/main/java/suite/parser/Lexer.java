@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Set;
 
 import primal.Verbs.Is;
-import primal.fp.Funs.Source;
+import primal.puller.Puller;
 
 /**
  * Lexical analyzer.
@@ -55,8 +55,8 @@ public class Lexer {
 
 	}
 
-	public Source<String> tokens() {
-		return () -> !eof ? nextToken() : null;
+	public Puller<String> tokens() {
+		return Puller.of(() -> !eof ? nextToken() : null);
 	}
 
 	private String nextToken() {

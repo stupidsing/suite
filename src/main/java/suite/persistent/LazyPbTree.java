@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+import primal.MoreVerbs.Read;
 import primal.Verbs.Build;
 import primal.Verbs.Concat;
 import primal.Verbs.First;
@@ -15,8 +16,8 @@ import primal.Verbs.Left;
 import primal.Verbs.Right;
 import primal.fp.Funs.Iterate;
 import primal.fp.Funs.Source;
+import primal.persistent.PerTree;
 import primal.streamlet.Streamlet;
-import suite.streamlet.Read;
 
 public class LazyPbTree<T> implements PerTree<T> {
 

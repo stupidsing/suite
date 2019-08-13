@@ -4,10 +4,11 @@ import java.io.Reader;
 import java.util.List;
 import java.util.Map;
 
+import primal.MoreVerbs.Read;
 import primal.MoreVerbs.Split;
 import primal.Verbs.Build;
 import suite.streamlet.As;
-import suite.streamlet.Read;
+import suite.streamlet.ReadLines;
 
 public class Grammar {
 
@@ -32,8 +33,8 @@ public class Grammar {
 	public static Map<String, Grammar> parse(Reader reader) {
 		var breakdown = new Breakdown();
 
-		return Read //
-				.lines(reader) //
+		return ReadLines //
+				.from(reader) //
 				.filter(line -> !line.isEmpty() && !line.startsWith("#")) //
 				.map(line -> line.replace('\t', ' ')) //
 				.split(line -> !line.startsWith(" ")) //
