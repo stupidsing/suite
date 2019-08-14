@@ -5,6 +5,7 @@ import static suite.util.Streamlet_.forInt;
 import java.nio.file.Paths;
 
 import primal.MoreVerbs.Decode;
+import primal.MoreVerbs.Fit;
 import primal.MoreVerbs.Read;
 import primal.Verbs.Compare;
 import primal.adt.Pair;
@@ -76,7 +77,7 @@ public class BackTestMain {
 				.collect(Decode::utf8) //
 				.toJoinedString();
 
-		var content1 = ParseUtil.fit(content0, "// BEGIN", "// END").t1;
+		var content1 = Fit.parts(content0, "// BEGIN", "// END").t1;
 
 		System.out.println(content1);
 		System.out.println(runner.conclude(simulationByKey));

@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import primal.Verbs.Current;
+import primal.Adjectives.Current;
 import suite.Suite;
 import suite.inspect.Dump;
 import suite.node.Int;

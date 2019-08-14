@@ -6,6 +6,7 @@ import static primal.statics.Rethrow.ex;
 import java.util.Map;
 import java.util.Set;
 
+import primal.MoreVerbs.Fit;
 import primal.MoreVerbs.Read;
 import primal.Verbs.Build;
 import primal.primitive.adt.Bytes;
@@ -13,7 +14,6 @@ import primal.puller.Puller;
 import primal.streamlet.Streamlet;
 import suite.http.HttpUtil;
 import suite.node.util.Singleton;
-import suite.util.ParseUtil;
 
 public class Sina {
 
@@ -81,7 +81,7 @@ public class Sina {
 
 		return Read //
 				.from(data.split("\n")) //
-				.map(line -> ParseUtil.fit(line, "var hq_str_", "=\"", "\"").map((t0, t1, t2) -> {
+				.map(line -> Fit.parts(line, "var hq_str_", "=\"", "\"").map((t0, t1, t2) -> {
 
 					// var hq_str_rt_hk00005="xxx";
 					// where xxx is a single comma-separated line like this

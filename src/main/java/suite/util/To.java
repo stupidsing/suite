@@ -1,6 +1,5 @@
 package suite.util;
 
-import static java.lang.Math.abs;
 import static primal.statics.Fail.fail;
 import static primal.statics.Rethrow.ex;
 
@@ -14,6 +13,7 @@ import java.net.URL;
 
 import primal.Nouns.Buffer;
 import primal.Nouns.Utf8;
+import primal.Verbs.Format;
 import primal.Verbs.New;
 import primal.Verbs.WriteFile;
 import primal.fp.Funs.Fun;
@@ -130,17 +130,7 @@ public class To {
 	}
 
 	public static String string(double d) {
-		var abs = abs(d);
-		String fmt;
-		if (abs < 1d)
-			fmt = "%.4f";
-		else if (abs < 10d)
-			fmt = "%.3f";
-		else if (abs < 100d)
-			fmt = "%.2f";
-		else
-			fmt = "%.1f";
-		return String.format(fmt, d);
+		return Format.value(d);
 	}
 
 	public static String string(Throwable th) {

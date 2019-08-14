@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import primal.MoreVerbs.Fit;
 import primal.MoreVerbs.Read;
 import primal.Verbs.Equals;
 import primal.primitive.adt.Floats.FloatsBuilder;
@@ -15,7 +16,6 @@ import primal.primitive.adt.Longs.LongsBuilder;
 import suite.node.util.Singleton;
 import suite.streamlet.As;
 import suite.trade.Time;
-import suite.util.ParseUtil;
 
 public class HongKongGovernment {
 
@@ -58,7 +58,7 @@ public class HongKongGovernment {
 							+ "&language=english&B1=Confirm#") //
 					.collect(As::string);
 
-			var data = ParseUtil.fit(html, "<pre>", "</pre>").t1;
+			var data = Fit.parts(html, "<pre>", "</pre>").t1;
 
 			ts.append(t);
 			fs0.append(getFloatValue(data, "Maximum Air Temperature", "C"));
@@ -73,7 +73,7 @@ public class HongKongGovernment {
 	}
 
 	private float getFloatValue(String data, String s0, String s1) {
-		return Float.parseFloat(ParseUtil.fit(data, s0, s1).t1.replace(" ", ""));
+		return Float.parseFloat(Fit.parts(data, s0, s1).t1.replace(" ", ""));
 	}
 
 }

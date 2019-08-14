@@ -16,6 +16,7 @@ import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.HttpClients;
 
 import primal.MoreVerbs.Decode;
+import primal.MoreVerbs.Fit;
 import primal.MoreVerbs.Pull;
 import primal.MoreVerbs.Read;
 import primal.Verbs.Sleep;
@@ -31,7 +32,6 @@ import suite.concurrent.Backoff;
 import suite.primitive.Bytes_;
 import suite.streamlet.As;
 import suite.util.Memoize;
-import suite.util.ParseUtil;
 import suite.util.To;
 
 public class HttpUtil {
@@ -138,7 +138,7 @@ public class HttpUtil {
 		var out = get(ex(uri::toURL)).utf8().toJoinedString();
 		var links = new HashMap<String, URI>();
 		FixieArray<String> m;
-		while ((m = ParseUtil.fitCaseInsensitive(out, "<a", "href=\"", "\"", ">", "</a>")) != null) {
+		while ((m = Fit.partsCaseInsensitive(out, "<a", "href=\"", "\"", ">", "</a>")) != null) {
 			var href = m.t2;
 			if (!href.startsWith("javascript:"))
 				links.putIfAbsent(m.t4, uri.resolve(href));
@@ -181,12 +181,13 @@ public class HttpUtil {
 		};
 
 		var response = client.execute(request);
-
 		var statusLine = response.getStatusLine();
 		var statusCode = statusLine.getStatusCode();
 		var inputStream = response.getEntity().getContent();
 		var headers1 = Read.from(response.getAllHeaders()).map2(Header::getName, Header::getValue).toMultimap();
-		var out = Pull.from(inputStream) //
+
+		var out = Pull //
+				.from(inputStream) //
 				.closeAtEnd(inputStream) //
 				.closeAtEnd(response) //
 				.closeAtEnd(client) //

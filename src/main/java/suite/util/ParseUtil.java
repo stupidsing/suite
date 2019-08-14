@@ -5,9 +5,7 @@ import static primal.statics.Fail.fail;
 import java.util.ArrayList;
 
 import primal.MoreVerbs.Read;
-import primal.adt.FixieArray;
 import primal.adt.Pair;
-import primal.fp.Funs.Iterate;
 import primal.streamlet.Streamlet;
 import suite.node.io.Operator;
 import suite.node.io.Operator.Assoc;
@@ -15,30 +13,6 @@ import suite.streamlet.ReadChars;
 import suite.text.Segment;
 
 public class ParseUtil {
-
-	public static FixieArray<String> fit(String in, String... parts) {
-		return fit(in, parts, s -> s);
-	}
-
-	public static FixieArray<String> fitCaseInsensitive(String in, String... parts) {
-		return fit(in, parts, String::toLowerCase);
-	}
-
-	private static FixieArray<String> fit(String in, String[] parts, Iterate<String> lower) {
-		var outs = new ArrayList<String>();
-		var inl = lower.apply(in);
-		var p = 0;
-		for (var part : parts) {
-			var p1 = inl.indexOf(lower.apply(part), p);
-			if (0 <= p1) {
-				outs.add(in.substring(p, p1));
-				p = p1 + part.length();
-			} else
-				return null;
-		}
-		outs.add(in.substring(p));
-		return FixieArray.of(outs);
-	}
 
 	public static Streamlet<String> searchn(String s, String name, Assoc assoc) {
 		var pair = iter(s, name, assoc);
