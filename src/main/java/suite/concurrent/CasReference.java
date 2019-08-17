@@ -26,6 +26,7 @@ public class CasReference<T> {
 	}
 
 	public T apply(Iterate<T> fun) {
+		var backoff = new Backoff();
 		while (true) {
 			var arr = new int[1];
 			var t0 = asr.get(arr);
@@ -35,7 +36,7 @@ public class CasReference<T> {
 				if (asr.compareAndSet(t0, t1, stamp, stamp + 1))
 					return t1;
 				else
-					new Backoff().yield();
+					backoff.yield();
 			else
 				return fail("stamp overflow");
 		}

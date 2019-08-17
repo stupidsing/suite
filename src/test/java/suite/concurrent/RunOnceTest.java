@@ -12,13 +12,13 @@ import primal.Verbs.New;
 import primal.Verbs.Sleep;
 import primal.Verbs.Start;
 
-public class FutTest {
+public class RunOnceTest {
 
 	@Test
 	public void test() {
 		var value = 1;
 
-		var fut = Fut.of(() -> {
+		var fut = RunOnce.of(() -> {
 			Sleep.quietly(1000l);
 			System.out.println("Evaluated");
 			return value;
