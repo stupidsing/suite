@@ -2,7 +2,6 @@ package suite.funp.p0;
 
 import primal.persistent.PerMap;
 import suite.Suite;
-import suite.lp.Trail;
 import suite.lp.doer.Binder;
 import suite.lp.doer.Generalizer;
 import suite.lp.kb.Prototype;
@@ -27,12 +26,9 @@ public class P01Expand {
 			var g = new Generalizer();
 			var t0 = g.generalize(m[0]);
 			var t1 = g.generalize(m[1]);
-			var trail = new Trail();
 
-			if (Binder.bind(node, t0, trail))
+			if (Binder.bind(node, t0))
 				return e(t1);
-			else
-				trail.unwindAll();
 		}
 
 		var tree = Tree.decompose(node);

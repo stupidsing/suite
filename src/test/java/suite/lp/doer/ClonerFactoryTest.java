@@ -5,7 +5,6 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import suite.Suite;
-import suite.lp.Trail;
 import suite.lp.compile.impl.CompileClonerImpl;
 import suite.lp.sewing.impl.SewingClonerImpl;
 
@@ -26,7 +25,7 @@ public class ClonerFactoryTest {
 			var node = new Generalizer().generalize(Suite.parse(pattern));
 			var p = cf.cloner(node);
 
-			assertTrue(Binder.bind(p.apply(cf.mapper().env()), Suite.parse(match), new Trail()));
+			assertTrue(Binder.bind(p.apply(cf.mapper().env()), Suite.parse(match)));
 		}
 	}
 

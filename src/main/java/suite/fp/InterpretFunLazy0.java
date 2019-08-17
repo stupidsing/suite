@@ -8,7 +8,6 @@ import primal.fp.Funs.Fun;
 import primal.fp.Funs.Iterate;
 import primal.persistent.PerMap;
 import suite.Suite;
-import suite.lp.Trail;
 import suite.lp.doer.Binder;
 import suite.node.Atom;
 import suite.node.Int;
@@ -81,7 +80,7 @@ public class InterpretFunLazy0 {
 			}
 
 			private boolean bind(Node t0, Node t1) {
-				return Binder.bind(t0, t1, new Trail()) ? true : fail();
+				return Binder.bind(t0, t1) ? true : fail();
 			}
 		}
 

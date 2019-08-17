@@ -13,6 +13,14 @@ import suite.node.Tuple;
 
 public class Binder {
 
+	public static boolean bind(Node n0, Node n1) {
+		var trail = new Trail();
+		var b = bind(n0, n1, trail);
+		if (!b)
+			trail.unwindAll();
+		return b;
+	}
+
 	public static boolean bind(Node n0, Node n1, Trail trail) {
 		n0 = n0.finalNode();
 		n1 = n1.finalNode();

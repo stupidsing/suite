@@ -21,7 +21,6 @@ import suite.Suite;
 import suite.asm.Assembler.Asm;
 import suite.assembler.Amd64Assemble;
 import suite.assembler.Amd64Parse;
-import suite.lp.Trail;
 import suite.lp.doer.Binder;
 import suite.lp.doer.Generalizer;
 import suite.lp.kb.RuleSet;
@@ -93,12 +92,11 @@ public class Assembler {
 	public Bytes assemble(Node input) {
 		var lnis = new ArrayList<Pair<Reference, Node>>();
 		var generalizer = new Generalizer();
-		var trail = new Trail();
 
 		for (var node : Tree.read(input))
 			new SwitchNode<Boolean>(generalizer.generalize(node) //
 			).match(".0 = .1", (l, r) -> {
-				return Binder.bind(l, r, trail) || failBool("bind failed");
+				return Binder.bind(l, r) || failBool("bind failed");
 			}).match(".0 .1", (l, r) -> {
 				return lnis.add(Pair.of((Reference) l, r));
 			}).nonNullResult();

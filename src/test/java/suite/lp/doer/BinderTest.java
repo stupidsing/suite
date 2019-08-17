@@ -8,7 +8,6 @@ import java.util.HashMap;
 
 import org.junit.Test;
 
-import suite.lp.Trail;
 import suite.node.Atom;
 import suite.node.Dict;
 import suite.node.Int;
@@ -56,7 +55,7 @@ public class BinderTest {
 	}
 
 	private boolean bind(Node n0, Node n1) {
-		return Binder.bind(n0, n1, new Trail());
+		return Binder.bind(n0, n1);
 	}
 
 }

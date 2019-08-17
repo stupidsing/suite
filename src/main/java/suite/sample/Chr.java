@@ -145,7 +145,7 @@ public class Chr {
 		var generalizer = new Generalizer();
 		Atom a = atom(".a"), b = atom(".b");
 
-		if (Binder.bind(then, generalizer.generalize(Suite.substitute(".0 = .1", a, b)), new Trail())) {
+		if (Binder.bind(then, generalizer.generalize(Suite.substitute(".0 = .1", a, b)))) {
 
 			// built-in syntactic equality
 			var from = generalizer.getVariable(a);

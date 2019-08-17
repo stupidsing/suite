@@ -10,7 +10,6 @@ import primal.os.Log_;
 import primal.persistent.PerList;
 import primal.persistent.PerMap;
 import suite.Suite;
-import suite.lp.Trail;
 import suite.lp.doer.Binder;
 import suite.lp.doer.Cloner;
 import suite.lp.doer.Generalizer;
@@ -142,7 +141,7 @@ public class VerifyTest {
 			}).match(".0 | choose_{.1}", (a, b) -> {
 				var list = verify(a);
 				for (var node : Tree.read(list))
-					if (Binder.bind(node, new Generalizer().generalize(b), new Trail()))
+					if (Binder.bind(node, new Generalizer().generalize(b)))
 						return node;
 				return fail("cannot verify " + proof);
 			}).match(".0 | choose .1", (a, b) -> {
@@ -153,14 +152,14 @@ public class VerifyTest {
 						return tree.getRight();
 				return fail("cannot verify " + proof);
 			}).match("contradict .0 := .1 ~ .2", (a, b, c) -> {
-				var x = Binder.bind(new Verify(defs, rules.put(Atom.name(a), b)).verify(c), Atom.FALSE, new Trail());
+				var x = Binder.bind(new Verify(defs, rules.put(Atom.name(a), b)).verify(c), Atom.FALSE);
 				return x ? Suite.substitute("not .0", b) : fail("cannot verify " + proof);
 			}).match(".0 | expand .1", (a, b) -> {
 				var def = defs.get(Atom.name(b)).clone_();
 				return replace(verify(a), def.t0, def.t1);
 			}).match(".0 | fulfill .1", (a, b) -> {
 				var m1 = Suite.pattern(".0 => .1").match(new Generalizer().generalize(verify(b)));
-				var x = m1 != null && Binder.bind(verify(a), m1[0], new Trail());
+				var x = m1 != null && Binder.bind(verify(a), m1[0]);
 				return x ? m1[1] : fail("cannot verify " + proof);
 			}).match(".0 | fulfill-by .1", (a, b) -> {
 				return verify(Suite.substitute(".0 | fulfill .1", b, a));
@@ -169,13 +168,13 @@ public class VerifyTest {
 			}).match(".0 | nat.mi .1 .2", (a, b, c) -> {
 				Fun<Node, Node> fun = value -> {
 					var generalizer = new Generalizer();
-					Binder.bind(generalizer.generalize(b), value, new Trail());
+					Binder.bind(generalizer.generalize(b), value);
 					return generalizer.generalize(c);
 				};
 				var t = Atom.temp();
 				var init = fun.apply(Suite.parse("0"));
 				var succ = Suite.substitute(".0 => .1", t, fun.apply(Suite.substitute("succ .0", t)));
-				Binder.bind(verify(a), Tree.ofAnd(init, succ), new Trail());
+				Binder.bind(verify(a), Tree.ofAnd(init, succ));
 				return Suite.substitute("is.nat .N => .0", fun.apply(Suite.parse(".N")));
 			}).match(".0 | rexpand .1", (a, b) -> {
 				var def = defs.get(Atom.name(b)).clone_();
@@ -191,7 +190,7 @@ public class VerifyTest {
 
 		public Verify extend(String lemma, String proof) {
 			var node = extend_(proof);
-			var x = Binder.bind(Suite.parse(lemma), node, new Trail());
+			var x = Binder.bind(Suite.parse(lemma), node);
 			return x ? new Verify(defs, rules.put(lemma, node)) : fail();
 		}
 
@@ -213,18 +212,16 @@ public class VerifyTest {
 				var generalizer = new Generalizer();
 				var t0 = generalizer.generalize(from);
 				var t1 = generalizer.generalize(to);
-				var trail = new Trail();
 
-				if (Binder.bind(node_, t0, trail))
+				if (Binder.bind(node_, t0))
 					return t1;
-				else
-					trail.unwindAll();
+				else {
+					var tree = Tree.decompose(node_);
 
-				var tree = Tree.decompose(node_);
-
-				return tree != null //
-						? Tree.of(tree.getOperator(), replace(tree.getLeft()), replace(tree.getRight())) //
-						: node_;
+					return tree != null //
+							? Tree.of(tree.getOperator(), replace(tree.getLeft()), replace(tree.getRight())) //
+							: node_;
+				}
 			}
 		}.replace(node);
 	}

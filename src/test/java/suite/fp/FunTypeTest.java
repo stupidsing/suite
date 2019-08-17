@@ -7,7 +7,6 @@ import static primal.statics.Fail.fail;
 import org.junit.Test;
 
 import suite.Suite;
-import suite.lp.Trail;
 import suite.lp.doer.Binder;
 import suite.lp.sewing.impl.SewingGeneralizerImpl;
 import suite.node.Node;
@@ -196,10 +195,8 @@ public class FunTypeTest {
 	}
 
 	private void checkType(String fps, String bindTo, String ts) {
-		var trail = new Trail();
 		var type = getType(fps);
-
-		assertTrue(Binder.bind(type, SewingGeneralizerImpl.generalize(Suite.parse(bindTo)), trail));
+		assertTrue(Binder.bind(type, SewingGeneralizerImpl.generalize(Suite.parse(bindTo))));
 		assertTrue(Comparer.comparer.compare(Suite.parse(ts), type) == 0);
 	}
 

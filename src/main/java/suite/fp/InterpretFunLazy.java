@@ -14,7 +14,6 @@ import primal.fp.Funs.Iterate;
 import primal.fp.Funs2.BiFun;
 import primal.persistent.PerMap;
 import suite.Suite;
-import suite.lp.Trail;
 import suite.lp.doer.Binder;
 import suite.lp.doer.Prover;
 import suite.node.Atom;
@@ -188,7 +187,7 @@ public class InterpretFunLazy {
 			}
 
 			private boolean bind(Node t0, Node t1) {
-				return Binder.bind(t0, t1, new Trail()) ? true : fail();
+				return Binder.bind(t0, t1) ? true : fail();
 			}
 
 			private Node get(Node var) {
