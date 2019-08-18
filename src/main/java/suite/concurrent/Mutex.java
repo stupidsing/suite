@@ -8,7 +8,7 @@ import java.util.WeakHashMap;
 import java.util.concurrent.atomic.AtomicReference;
 
 import primal.Verbs.Wait;
-import suite.concurrent.Concurrent.DeadlockException;
+import suite.concurrent.stm.Concurrent.DeadlockException;
 
 /**
  * Mutual exclusion lock with deadlock detection.

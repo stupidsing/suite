@@ -19,7 +19,7 @@ public class Bag<S> implements Iterable<S> {
 			var queue = new ArrayDeque<S>();
 			for (var s_ : list0)
 				if (!Equals.ab(s, s_))
-					queue.addLast(s_);
+					queue.push(s_);
 			var list1 = PerList.<S> end();
 			S s_;
 			while ((s_ = queue.pop()) != null)

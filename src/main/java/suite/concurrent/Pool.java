@@ -15,7 +15,7 @@ public class Pool<T> {
 	@SafeVarargs
 	public static <T> Pool<T> of(T... ts) {
 		var pool = new Pool<T>();
-		pool.availables.addAll(Arrays.<T> asList(ts));
+		pool.availables.addAll(Arrays.asList(ts));
 		return pool;
 	}
 

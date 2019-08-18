@@ -23,7 +23,7 @@ public class SimpleCgiServerMain {
 	}
 
 	public static void main(String[] args) {
-		RunUtil.run(() -> new SimpleCgiServerMain().run());
+		RunUtil.run(new SimpleCgiServerMain()::run);
 	}
 
 	private boolean run() {

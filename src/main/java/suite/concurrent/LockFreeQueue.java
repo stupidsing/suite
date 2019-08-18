@@ -1,7 +1,6 @@
 package suite.concurrent;
 
-import java.util.ArrayList;
-
+import primal.adt.Mutable;
 import primal.persistent.PerList;
 
 public class LockFreeQueue<T> {
@@ -26,8 +25,7 @@ public class LockFreeQueue<T> {
 	 * @return null if the queue is empty.
 	 */
 	public T dequeue() {
-		var result = new ArrayList<T>();
-		result.add(null);
+		var result = Mutable.<T> nil();
 
 		cas.apply(fb0 -> {
 			var back = fb0.back;
@@ -38,15 +36,15 @@ public class LockFreeQueue<T> {
 				back = PerList.end();
 			}
 			if (!front.isEmpty()) {
-				result.set(0, front.head);
+				result.set(front.head);
 				return new BackFront(back, front.tail);
 			} else {
-				result.set(0, null);
+				result.set(null);
 				return fb0;
 			}
 		});
 
-		return result.get(0);
+		return result.value();
 	}
 
 }

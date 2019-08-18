@@ -140,7 +140,7 @@ public class DependencyMain {
 			supplementaryList);
 
 	public static void main(String[] args) {
-		RunUtil.run(() -> new DependencyMain().run());
+		RunUtil.run(new DependencyMain()::run);
 	}
 
 	private boolean run() throws IOException {

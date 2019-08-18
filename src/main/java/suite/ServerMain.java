@@ -32,7 +32,7 @@ import suite.util.RunUtil;
 public class ServerMain {
 
 	public static void main(String[] args) {
-		RunUtil.run(() -> new ServerMain().run());
+		RunUtil.run(new ServerMain()::run);
 
 		Execute.shell("x-www-browser http://127.0.0.1:8051/html/render.html");
 		// Execute.shell("x-www-browser http://127.0.0.1:8051/site");

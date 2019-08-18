@@ -13,7 +13,7 @@ public class StatusMain {
 	private TradeCfg cfg = new TradeCfgImpl();
 
 	public static void main(String[] args) {
-		RunUtil.run(() -> new StatusMain().run());
+		RunUtil.run(new StatusMain()::run);
 	}
 
 	private boolean run() {

@@ -11,7 +11,7 @@ public class MandelbrotMain {
 	private int height = 768;
 
 	public static void main(String[] args) {
-		RunUtil.run(() -> new MandelbrotMain().run());
+		RunUtil.run(new MandelbrotMain()::run);
 	}
 
 	private boolean run() {

@@ -9,8 +9,8 @@ import primal.MoreVerbs.Read;
 import primal.Verbs.Sleep;
 import primal.adt.BooMutable;
 import primal.persistent.PerList;
-import suite.concurrent.Concurrent.DeadlockException;
 import suite.concurrent.Mutex.MutexLock;
+import suite.concurrent.stm.Concurrent.DeadlockException;
 import suite.streamlet.As;
 
 public class MutexTest {

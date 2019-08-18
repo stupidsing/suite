@@ -18,7 +18,7 @@ import suite.util.RunUtil;
 public class TelnetServerMain {
 
 	public static void main(String[] args) {
-		RunUtil.run(() -> new TelnetServerMain().run());
+		RunUtil.run(new TelnetServerMain()::run);
 	}
 
 	private boolean run() {

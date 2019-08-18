@@ -8,7 +8,7 @@ import suite.util.RunUtil;
 public class PlotMain {
 
 	public static void main(String[] args) {
-		RunUtil.run(() -> new PlotMain().run());
+		RunUtil.run(new PlotMain()::run);
 	}
 
 	private boolean run() {

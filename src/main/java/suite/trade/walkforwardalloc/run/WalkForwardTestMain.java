@@ -19,7 +19,7 @@ public class WalkForwardTestMain {
 	private TradeCfg cfg = new TradeCfgImpl();
 
 	public static void main(String[] args) {
-		RunUtil.run(() -> new WalkForwardTestMain().run());
+		RunUtil.run(new WalkForwardTestMain()::run);
 	}
 
 	private boolean run() {

@@ -8,10 +8,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Source;
 import primal.streamlet.Streamlet;
-import suite.concurrent.ObstructionFreeStm;
-import suite.concurrent.ObstructionFreeStm.Memory;
-import suite.concurrent.Stm;
-import suite.concurrent.Stm.TransactionStatus;
+import suite.concurrent.stm.ObstructionFreeStm;
+import suite.concurrent.stm.Stm;
+import suite.concurrent.stm.ObstructionFreeStm.Memory;
+import suite.concurrent.stm.Stm.TransactionStatus;
 import suite.fs.KeyValueMutator;
 import suite.fs.KeyValueStore;
 

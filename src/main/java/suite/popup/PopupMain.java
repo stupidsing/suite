@@ -31,7 +31,7 @@ import suite.util.RunUtil;
 public class PopupMain {
 
 	public static void main(String[] args) {
-		RunUtil.run(() -> new PopupMain().run());
+		RunUtil.run(new PopupMain()::run);
 	}
 
 	private boolean run() throws Exception {

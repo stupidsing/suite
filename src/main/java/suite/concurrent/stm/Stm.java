@@ -1,6 +1,8 @@
-package suite.concurrent;
+package suite.concurrent.stm;
 
 import java.util.concurrent.atomic.AtomicInteger;
+
+import suite.concurrent.Mutex;
 
 public class Stm {
 

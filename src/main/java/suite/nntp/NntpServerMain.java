@@ -27,7 +27,7 @@ public class NntpServerMain {
 	private Nntp nntp;
 
 	public static void main(String[] args) {
-		RunUtil.run(() -> new NntpServerMain().run());
+		RunUtil.run(new NntpServerMain()::run);
 	}
 
 	private boolean run() {

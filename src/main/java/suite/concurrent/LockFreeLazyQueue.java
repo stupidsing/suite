@@ -1,7 +1,6 @@
 package suite.concurrent;
 
-import java.util.ArrayList;
-
+import primal.adt.Mutable;
 import primal.adt.Pair;
 
 public class LockFreeLazyQueue<T> {
@@ -36,14 +35,13 @@ public class LockFreeLazyQueue<T> {
 	 * @return null if the queue is empty.
 	 */
 	public T dequeue() {
-		var list = new ArrayList<T>();
-		list.add(null);
+		var result = Mutable.<T> nil();
 		cas.apply(backFront -> {
 			var pair = dequeue_(backFront);
-			list.set(0, pair.k);
+			result.set(pair.k);
 			return pair.v;
 		});
-		return list.get(0);
+		return result.value();
 	}
 
 	private BackFront enqueue_(T t, BackFront bf0) {

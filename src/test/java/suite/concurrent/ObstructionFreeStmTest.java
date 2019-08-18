@@ -13,9 +13,10 @@ import java.util.stream.IntStream;
 import org.junit.Before;
 import org.junit.Test;
 
-import suite.concurrent.ObstructionFreeStm.Memory;
-import suite.concurrent.Stm.Transaction;
-import suite.concurrent.Stm.TransactionStatus;
+import suite.concurrent.stm.ObstructionFreeStm;
+import suite.concurrent.stm.ObstructionFreeStm.Memory;
+import suite.concurrent.stm.Stm.Transaction;
+import suite.concurrent.stm.Stm.TransactionStatus;
 
 public class ObstructionFreeStmTest {
 

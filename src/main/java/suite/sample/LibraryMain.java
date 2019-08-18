@@ -41,7 +41,7 @@ public class LibraryMain {
 	}
 
 	public static void main(String[] args) {
-		RunUtil.run(() -> new LibraryMain().run());
+		RunUtil.run(new LibraryMain()::run);
 	}
 
 	private boolean run() {

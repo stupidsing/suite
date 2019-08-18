@@ -31,7 +31,7 @@ public class WalkForwardRecorderMain {
 	private TradeCfg cfg = new TradeCfgImpl();
 
 	public static void main(String[] args) {
-		RunUtil.run(() -> new WalkForwardRecorderMain().run());
+		RunUtil.run(new WalkForwardRecorderMain()::run);
 	}
 
 	private boolean run() {

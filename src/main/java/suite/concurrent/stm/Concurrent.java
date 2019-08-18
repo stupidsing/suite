@@ -1,4 +1,4 @@
-package suite.concurrent;
+package suite.concurrent.stm;
 
 public class Concurrent {
 

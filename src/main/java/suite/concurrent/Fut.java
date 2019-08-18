@@ -2,9 +2,10 @@ package suite.concurrent;
 
 import static primal.statics.Fail.fail;
 
-import primal.adt.Mutable;
+import primal.Verbs.Wait;
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
+import primal.fp.Funs.Iterate;
 import primal.fp.Funs.Sink;
 import primal.fp.Funs.Source;
 import primal.os.Log_;
@@ -83,28 +84,62 @@ public class Fut<T> {
 		complete_(h1);
 	}
 
+	public T get() {
+		var o = new Object() {
+			private T t;
+			private Exception ex;
+
+			public synchronized void set(T t_) {
+				t = t_;
+				notify();
+			}
+
+			public synchronized void set(Exception ex_) {
+				ex = ex_;
+				notify();
+			}
+		};
+
+		synchronized (o) {
+			handle(o::set, o::set);
+			while (o.t == null && o.ex == null)
+				Wait.object(o);
+		}
+
+		if (o.t != null)
+			return o.t;
+		else if (o.ex instanceof RuntimeException)
+			throw (RuntimeException) o.ex;
+		else
+			throw new RuntimeException(o.ex);
+	}
+
 	public void handle(Sink<T> okay) {
 		handle(okay, Log_::error);
 	}
 
 	public void handle(Sink<T> okay, Sink<Exception> fail) {
-		var mut = Mutable.<H1Completed> nil();
+		var fun = new Iterate<Holder>() {
+			private H1Completed h1;
 
-		ref.apply(h -> {
-			if (h instanceof Fut.H0Running) {
-				@SuppressWarnings("unchecked")
-				var h0 = (Fut<T>.H0Running) h;
-				return new H0Running(PerList.cons(Pair.of(okay, fail), h0.handlers));
-			} else if (h instanceof Fut.H1Completed) {
-				@SuppressWarnings("unchecked")
-				var h1 = (Fut<T>.H1Completed) h;
-				mut.set(h1);
-				return h;
-			} else
-				return fail();
-		});
+			public Holder apply(Holder h) {
+				if (h instanceof Fut.H0Running) {
+					@SuppressWarnings("unchecked")
+					var h0 = (Fut<T>.H0Running) h;
+					return new H0Running(PerList.cons(Pair.of(okay, fail), h0.handlers));
+				} else if (h instanceof Fut.H1Completed) {
+					@SuppressWarnings("unchecked")
+					var h1_ = (Fut<T>.H1Completed) h;
+					h1 = h1_;
+					return h;
+				} else
+					return fail();
+			}
+		};
 
-		var h1 = mut.value();
+		ref.apply(fun);
+
+		var h1 = fun.h1;
 
 		if (h1 != null)
 			h1.handle(okay, fail);
@@ -117,19 +152,23 @@ public class Fut<T> {
 	}
 
 	private void complete_(H1Completed h1) {
-		var mut = Mutable.<H0Running> nil();
+		var fun = new Iterate<Holder>() {
+			private H0Running h0;
 
-		ref.apply(h -> {
-			if (h instanceof Fut.H0Running) {
-				@SuppressWarnings("unchecked")
-				var h0 = (Fut<T>.H0Running) h;
-				mut.set(h0);
-				return h1;
-			} else
-				return fail("already completed");
-		});
+			public Holder apply(Holder h) {
+				if (h instanceof Fut.H0Running) {
+					@SuppressWarnings("unchecked")
+					var h0_ = (Fut<T>.H0Running) h;
+					h0 = h0_;
+					return h1;
+				} else
+					return fail("already completed");
+			}
+		};
 
-		var h0 = mut.value();
+		ref.apply(fun);
+
+		var h0 = fun.h0;
 
 		if (h0 != null)
 			for (var pair : h0.handlers)

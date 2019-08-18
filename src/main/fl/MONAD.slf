@@ -1,11 +1,11 @@
 use external STANDARD ~
 define nothing := atom:Nothing ~
-define getm* := (:t => any -> n^Mutable :t -> Do^:t) of (scope => var =>
+define getm~ := (:t => any -> n^Mutable :t -> Do^:t) of (scope => var =>
 	do (
 		call%i-v2_{atom:INTRN!MonadIntrinsics.get | get%i}_{scope}_{var}
 	)
 ) ~
-define setm* := (:t => any -> n^Mutable :t -> :t -> Do^any) of (scope => var => value =>
+define setm~ := (:t => any -> n^Mutable :t -> :t -> Do^any) of (scope => var => value =>
 	do (
 		call%i-v3_{atom:INTRN!MonadIntrinsics.put | get%i}_{scope}_{var}_{value}
 	)

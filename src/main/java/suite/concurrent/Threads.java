@@ -8,6 +8,7 @@ import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
 
+import primal.Verbs.RunnableEx;
 import primal.Verbs.Sleep;
 import primal.Verbs.Start;
 import primal.fp.Funs.Sink;
@@ -33,9 +34,9 @@ public class Threads implements AutoCloseable {
 
 	private class ThreadData extends Condition {
 		private volatile int state;
-		private Deque<Runnable> queue = new ArrayDeque<>();
+		private Deque<RunnableEx> queue = new ArrayDeque<>();
 
-		private void doQueue(Sink<Deque<Runnable>> sink) {
+		private void doQueue(Sink<Deque<RunnableEx>> sink) {
 			lock(() -> {
 				sink.f(queue);
 				updateState();
@@ -75,7 +76,7 @@ public class Threads implements AutoCloseable {
 	private void dispatchLoop(ThreadData td) {
 		while (td.state != STOPPED) {
 			var cond = new Cond() {
-				private Runnable runnable;
+				private RunnableEx runnable;
 				private ThreadData maxThread;
 
 				public boolean ok() {
@@ -113,7 +114,7 @@ public class Threads implements AutoCloseable {
 			if (frThread != null && frThread.state == TOOMUCH) {
 				td.satisfy(() -> {
 					if (td.state == BORED__) {
-						var list = new ArrayList<Runnable>();
+						var list = new ArrayList<RunnableEx>();
 
 						// steal jobs from the long queue of our thread
 						frThread.doQueue(queue -> {
@@ -134,7 +135,7 @@ public class Threads implements AutoCloseable {
 		}
 	}
 
-	public void execute(Runnable runnable) {
+	public void execute(RunnableEx runnable) {
 		var me = Thread.currentThread();
 		var td0 = threadDataByThread.get(me);
 		var td1 = td0 != null ? td0 : boredThread;
