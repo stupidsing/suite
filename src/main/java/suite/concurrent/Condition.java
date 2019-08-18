@@ -10,7 +10,11 @@ public class Condition {
 		public boolean ok();
 	}
 
-	public synchronized void satisfyOne(Runnable sat) {
+	public synchronized void lock(Runnable sat) {
+		sat.run();
+	}
+
+	public synchronized void satisfy(Runnable sat) {
 		sat.run();
 		notify();
 	}

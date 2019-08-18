@@ -38,8 +38,20 @@ public class Fut<T> {
 	}
 
 	public static Fut<Boolean> begin() {
-		var fut = new Fut<Boolean>();
-		fut.complete(true);
+		return begin(true);
+	}
+
+	public static <T> Fut<T> begin(T t) {
+		return of(fut -> fut.complete(t));
+	}
+
+	public static <T> Fut<T> of(Source<T> source) {
+		return of(fut -> applyOr(source::g, fut::complete, fut::error));
+	}
+
+	public static <T> Fut<T> of(Sink<Fut<T>> sink) {
+		var fut = new Fut<T>();
+		sink.f(fut);
 		return fut;
 	}
 
@@ -47,27 +59,7 @@ public class Fut<T> {
 		return new Fut<T>();
 	}
 
-	public static <T> Fut<T> of(Sink<Sink<T>> sink) {
-		var fut = new Fut<T>();
-		try {
-			sink.f(fut::complete);
-		} catch (Exception ex) {
-			fut.error(ex);
-		}
-		return fut;
-	}
-
 	private Fut() {
-	}
-
-	public static <T> Fut<T> of(Source<T> source) {
-		var fut = new Fut<T>();
-		try {
-			fut.complete(source.g());
-		} catch (Exception ex) {
-			fut.error(ex);
-		}
-		return fut;
 	}
 
 	public void complete(T t) {
@@ -77,9 +69,12 @@ public class Fut<T> {
 	}
 
 	public <U> Fut<U> concatMap(Fun<T, Fut<U>> fun) {
-		var fut = new Fut<U>();
-		handle(t0 -> fun.apply(t0).handle(fut::complete, fut::error), fut::error);
-		return fut;
+		return of(fut0 -> handle( //
+				t -> Fut.applyOr( //
+						() -> fun.apply(t), //
+						fut1 -> fut1.handle(fut0::complete, fut0::error), //
+						fut0::error), //
+				fut0::error));
 	}
 
 	public void error(Exception ex) {
@@ -116,9 +111,9 @@ public class Fut<T> {
 	}
 
 	public <U> Fut<U> map(Fun<T, U> fun) {
-		var fut = new Fut<U>();
-		handle(t -> fut.complete(fun.apply(t)), fut::error);
-		return fut;
+		return of(fut -> handle( //
+				t -> applyOr(() -> fun.apply(t), fut::complete, fut::error), //
+				fut::error));
 	}
 
 	private void complete_(H1Completed h1) {
@@ -139,6 +134,14 @@ public class Fut<T> {
 		if (h0 != null)
 			for (var pair : h0.handlers)
 				h1.handle(pair.k, pair.v);
+	}
+
+	private static <T> void applyOr(Source<T> source, Sink<T> okay, Sink<Exception> fail) {
+		try {
+			okay.f(source.g());
+		} catch (Exception ex) {
+			fail.f(ex);
+		}
 	}
 
 }
