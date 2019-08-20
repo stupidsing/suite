@@ -9,6 +9,7 @@ import java.util.function.Predicate;
 
 import com.sun.jna.Native;
 
+import primal.Verbs.ReadString;
 import primal.adt.Fixie_.FixieFun3;
 import primal.adt.Fixie_.FixieFun6;
 import primal.fp.Funs.Sink;
@@ -19,7 +20,6 @@ import suite.ansi.Keyboard;
 import suite.ansi.Keyboard.VK;
 import suite.ansi.LibcJna;
 import suite.ansi.Termios;
-import suite.os.FileUtil;
 import suite.persistent.PerRope.IRopeList;
 import suite.primitive.Chars_;
 import suite.primitive.Coord;
@@ -45,8 +45,8 @@ public class DevMain {
 	}
 
 	private void run() {
-		// var input = FileUtil.read("src/main/java/suite/dev/DevMain.java");
-		var input = FileUtil.read("src/main/il/buddy-allocator.il");
+		// var input = ReadString.from("src/main/java/suite/dev/DevMain.java");
+		var input = ReadString.from("src/main/il/buddy-allocator.il");
 		var inputText = text(IRopeList.of(input));
 
 		try (var termios = new Termios(libc);) {

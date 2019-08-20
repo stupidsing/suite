@@ -4,8 +4,8 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import primal.Verbs.Range;
 import primal.Verbs.ReadFile;
+import primal.Verbs.Substring;
 import primal.io.ReadStream;
 import suite.inspect.Dump;
 import suite.util.HtmlUtil.HtmlNode;
@@ -68,7 +68,7 @@ public class HtmlUtilTest {
 					}
 				} else if (h.tag.startsWith("<!--") && h.tag.endsWith("-->")) {
 					sb.append("rd.dom(vm => document.createComment(");
-					s(Range.of(h.tag, 4, -3).trim());
+					s(Substring.of(h.tag, 4, -3).trim());
 					sb.append("))");
 				} else {
 					sb.append("rd.dom(vm => document.createTextNode(");

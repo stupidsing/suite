@@ -8,9 +8,9 @@ import java.util.List;
 import org.junit.Test;
 
 import primal.Nouns.Utf8;
+import primal.Verbs.ReadString;
 import primal.fp.Funs.Source;
 import primal.primitive.adt.Bytes.BytesBuilder;
-import suite.os.FileUtil;
 import suite.util.To;
 
 public class LempelZivWelchTest {
@@ -35,7 +35,7 @@ public class LempelZivWelchTest {
 
 	@Test
 	public void test3() {
-		var s = FileUtil.read("src/main/java/suite/algo/LempelZivWelch.java");
+		var s = ReadString.from("src/main/java/suite/algo/LempelZivWelch.java");
 		assertEquals(s, doTest(s));
 	}
 

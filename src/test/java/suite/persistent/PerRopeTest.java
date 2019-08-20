@@ -7,7 +7,7 @@ import java.util.Random;
 
 import org.junit.Test;
 
-import suite.os.FileUtil;
+import primal.Verbs.ReadString;
 import suite.persistent.PerRope.IRopeList;
 import suite.primitive.Chars_;
 
@@ -43,7 +43,7 @@ public class PerRopeTest {
 
 	@Test
 	public void testFile() {
-		var inputText = IRopeList.of(FileUtil.read("src/main/java/suite/sample/DevMain.java"));
+		var inputText = IRopeList.of(ReadString.from("src/main/java/suite/sample/DevMain.java"));
 		inputText.right(inputText.size);
 	}
 

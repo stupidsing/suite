@@ -8,7 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import suite.os.FileUtil;
+import primal.Verbs.ReadString;
 import suite.text.Preprocess.Run;
 import suite.util.ParseUtil;
 
@@ -56,7 +56,7 @@ public class IncludePreprocessor {
 			var path = dir.resolve(in.substring(pos0 + open.length(), pos1));
 
 			if (included.add(path.toAbsolutePath()))
-				doIncludes(path.getParent(), FileUtil.read(path), false, runs);
+				doIncludes(path.getParent(), ReadString.from(path), false, runs);
 
 			start = pos1 + close.length();
 		}

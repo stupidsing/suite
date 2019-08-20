@@ -5,12 +5,12 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 
+import primal.Verbs.ReadString;
 import primal.fp.Funs.Source;
 import suite.node.Tree;
 import suite.node.io.Formatter;
 import suite.node.io.TermOp;
 import suite.node.pp.PrettyPrinter;
-import suite.os.FileUtil;
 import suite.os.LogUtil;
 
 public class IterativeParserTest {
@@ -19,7 +19,7 @@ public class IterativeParserTest {
 
 	@Test
 	public void testParseAuto() {
-		var in = FileUtil.read("src/main/ll/auto.sl");
+		var in = ReadString.from("src/main/ll/auto.sl");
 		var node = iterativeParser.parse(in);
 		System.out.println(new PrettyPrinter().prettyPrint(node));
 		assertNotNull(Tree.decompose(node));
@@ -60,7 +60,7 @@ public class IterativeParserTest {
 
 	@Test
 	public void testParseFile() {
-		var in = FileUtil.read("src/main/ll/fc/fc.sl");
+		var in = ReadString.from("src/main/ll/fc/fc.sl");
 		var node = iterativeParser.parse(in);
 		System.out.println(new PrettyPrinter().prettyPrint(node));
 		assertNotNull(Tree.decompose(node));
@@ -73,7 +73,7 @@ public class IterativeParserTest {
 
 	@Test
 	public void testParsePerformance() {
-		var in = FileUtil.read("src/main/fl/STANDARD.slf");
+		var in = ReadString.from("src/main/fl/STANDARD.slf");
 		Source<Boolean> test = () -> {
 			for (var i = 0; i < 20; i++)
 				iterativeParser.parse(in);

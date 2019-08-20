@@ -12,7 +12,7 @@ import primal.Verbs.Build;
 import primal.Verbs.Equals;
 import primal.Verbs.Get;
 import primal.Verbs.Is;
-import primal.Verbs.Range;
+import primal.Verbs.Substring;
 import primal.adt.Pair;
 import primal.adt.map.BiHashMap;
 import primal.adt.map.BiMap;
@@ -39,12 +39,12 @@ public class HtmlUtil {
 			this.tag = tag;
 			if (name != null)
 				attrs = Read //
-						.from(Range.of(tag, 1, -1).split(" ")) //
+						.from(Substring.of(tag, 1, -1).split(" ")) //
 						.skip(1) //
 						.map(kv -> Split.strl(kv, "=")) //
 						.map(Pair.mapSnd(v -> {
 							var isQuoted = v.startsWith("'") && v.endsWith("'") || v.startsWith("\"") && v.endsWith("\"");
-							return !isQuoted ? v : Range.of(v, 1, -1);
+							return !isQuoted ? v : Substring.of(v, 1, -1);
 						})) //
 						.toList();
 			else
@@ -160,7 +160,7 @@ public class HtmlUtil {
 						String entity;
 
 						if (Get.ch(key, 1) == '#')
-							sb.append((char) Integer.parseInt(Range.of(key, 2, -1)));
+							sb.append((char) Integer.parseInt(Substring.of(key, 2, -1)));
 						else if ((entity = charByEscapeToken.get(key)) != null)
 							sb.append(entity);
 						else

@@ -8,7 +8,7 @@ import java.util.List;
 
 import primal.MoreVerbs.Read;
 import primal.Verbs.Is;
-import primal.Verbs.Range;
+import primal.Verbs.Substring;
 import primal.Verbs.Take;
 import primal.fp.Funs.Sink;
 import primal.fp.Funs.Source;
@@ -104,7 +104,7 @@ public class CommandDispatcher {
 		input = pair.v.trim();
 
 		if (input.endsWith("#"))
-			input = Range.of(input, 0, -1);
+			input = Substring.of(input, 0, -1);
 
 		var node = Suite.parse(input.trim());
 

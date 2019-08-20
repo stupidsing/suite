@@ -5,6 +5,7 @@ import java.nio.file.Paths;
 
 import org.junit.Test;
 
+import primal.Verbs.ReadString;
 import primal.Verbs.Sort;
 import suite.os.FileUtil;
 
@@ -22,10 +23,10 @@ public class TwoPassIndexTest {
 		var indexer = new TwoPassIndex();
 
 		for (var filename : filenames)
-			indexer.pass0(filename, FileUtil.read(filename));
+			indexer.pass0(filename, ReadString.from(filename));
 
 		for (var filename : filenames)
-			indexer.pass1(filename, FileUtil.read(filename));
+			indexer.pass1(filename, ReadString.from(filename));
 
 		var entries = Sort.list( //
 				indexer.getReferencesByWord().entrySet(), //

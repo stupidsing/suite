@@ -5,8 +5,8 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+import primal.Verbs.ReadString;
 import suite.Suite;
-import suite.os.FileUtil;
 
 public class LogicCompilerTest {
 
@@ -19,8 +19,8 @@ public class LogicCompilerTest {
 	}
 
 	@Test
-	public void testAuto() {
-		var preds = FileUtil.read("src/main/ll/auto.sl");
+	public void testAuto() { 
+		var preds = ReadString.from("src/main/ll/auto.sl");
 		String goal = "(" + preds + ") ~ member (a, b, c,) c";
 		assertTrue(Suite.proveLogic(goal));
 	}

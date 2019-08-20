@@ -10,6 +10,7 @@ import java.util.List;
 import org.junit.Test;
 
 import primal.MoreVerbs.Read;
+import primal.Verbs.ReadString;
 import primal.Verbs.Take;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Iterate;
@@ -29,7 +30,6 @@ import suite.node.parser.FactorizeResult.FTree;
 import suite.node.util.Rewrite;
 import suite.node.util.Singleton;
 import suite.node.util.TreeUtil;
-import suite.os.FileUtil;
 import suite.util.Nodify;
 import suite.util.To;
 
@@ -41,7 +41,7 @@ public class RecursiveFactorizerTest {
 
 	@Test
 	public void testParseUnparse() {
-		var s0 = FileUtil.read("src/main/ll/auto.sl").trim();
+		var s0 = ReadString.from("src/main/ll/auto.sl").trim();
 		var fr = recursiveFactorizer.parse(s0);
 		var sx = fr.unparse();
 		assertEquals(s0, sx);
@@ -59,7 +59,7 @@ public class RecursiveFactorizerTest {
 
 	@Test
 	public void testDirectReplace() {
-		var s0 = FileUtil.read("src/main/ll/ic/ic.sl").trim();
+		var s0 = ReadString.from("src/main/ll/ic/ic.sl").trim();
 		var fr0 = recursiveFactorizer.parse(s0);
 		var frx = transform(fr0);
 		var sx = frx.unparse();
@@ -96,7 +96,7 @@ public class RecursiveFactorizerTest {
 	public void testRefactorRewrite0() {
 		var pred0 = "ic-compile-better-option";
 		var predx = "ic-new-compile-better-option";
-		var sx = rewriteNewArgument(pred0, predx, ".type", FileUtil.read("src/main/ll/ic/ic.sl").trim());
+		var sx = rewriteNewArgument(pred0, predx, ".type", ReadString.from("src/main/ll/ic/ic.sl").trim());
 
 		System.out.println(sx);
 		assertFalse(sx.contains(pred0));
@@ -169,7 +169,7 @@ public class RecursiveFactorizerTest {
 	public void testRefactorRewrite1() {
 		var pred0 = "ic-compile-better-option .0 .1 .2";
 		var predx = "ic-new-compile-better-option .0 .1 .2 .type";
-		var sx = recursiveFactorizer.rewrite(pred0, predx, FileUtil.read("src/main/ll/ic/ic.sl").trim());
+		var sx = recursiveFactorizer.rewrite(pred0, predx, ReadString.from("src/main/ll/ic/ic.sl").trim());
 
 		System.out.println(sx);
 		assertFalse(sx.contains(pred0));

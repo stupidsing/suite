@@ -4,6 +4,7 @@ import static primal.statics.Fail.fail;
 
 import java.util.ArrayList;
 
+import primal.Verbs.ReadString;
 import primal.adt.FixieArray;
 import primal.fp.Funs.Source;
 import suite.Suite;
@@ -13,7 +14,6 @@ import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Reference;
 import suite.node.io.Formatter;
-import suite.os.FileUtil;
 import suite.util.Memoize;
 
 public class Defaults {
@@ -47,7 +47,7 @@ public class Defaults {
 
 	private static Source<Prover> memoizeSecrets = Memoize.source(() -> {
 		var rs = Suite.newRuleSet();
-		var text = FileUtil.read(HomeDir.resolve("private/secrets.sl"));
+		var text = ReadString.from(HomeDir.resolve("private/secrets.sl"));
 		rs.importFrom(Suite.parse(text));
 		return new Prover(rs);
 	});

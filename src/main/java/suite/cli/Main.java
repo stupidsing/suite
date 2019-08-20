@@ -17,11 +17,11 @@ import java.util.List;
 import primal.Nouns.Utf8;
 import primal.Verbs.Close;
 import primal.Verbs.Equals;
+import primal.Verbs.ReadString;
 import primal.Verbs.Take;
 import primal.os.Log_;
 import suite.Suite;
 import suite.net.ServeSocket;
-import suite.os.FileUtil;
 import suite.util.ParseUtil;
 import suite.util.RunUtil;
 
@@ -99,7 +99,7 @@ public class Main implements AutoCloseable {
 	}
 
 	private String readScript(String filename) {
-		var contents = FileUtil.read(filename);
+		var contents = ReadString.from(filename);
 		if (contents.startsWith("#")) // skips first line comment
 			contents = contents.substring(contents.indexOf('\n') + 1);
 		return contents;

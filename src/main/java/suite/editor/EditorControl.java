@@ -11,6 +11,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
 import primal.Nouns.Utf8;
+import primal.Verbs.ReadString;
 import primal.Verbs.Start;
 import primal.Verbs.WriteFile;
 import primal.fp.Funs.Iterate;
@@ -193,14 +194,14 @@ public class EditorControl {
 
 			process.waitFor();
 
-			return FileUtil.read(process.getInputStream());
+			return ReadString.from(process.getInputStream());
 		});
 
 		editor.setText(text1);
 	}
 
 	private void load(String filename) {
-		var text = FileUtil.read(filename);
+		var text = ReadString.from(filename);
 
 		var editor = view.getEditor();
 		editor.setText(text);

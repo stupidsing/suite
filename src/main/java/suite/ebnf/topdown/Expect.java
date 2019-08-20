@@ -4,7 +4,7 @@ import static java.lang.Math.min;
 
 import primal.Verbs.Equals;
 import primal.Verbs.Is;
-import primal.Verbs.Range;
+import primal.Verbs.Substring;
 import suite.os.UnicodeData;
 
 public class Expect {
@@ -105,11 +105,11 @@ public class Expect {
 	public int comment(String in, int length, int start, String sm, String em) {
 		int sl = sm.length(), el = em.length();
 		int pos = start, end;
-		if (pos < length && Equals.string(Range.of(in, pos, pos + sl), sm)) {
+		if (pos < length && Equals.string(Substring.of(in, pos, pos + sl), sm)) {
 			pos += 2;
-			while (pos < length && !Equals.string(Range.of(in, pos, pos + el), em))
+			while (pos < length && !Equals.string(Substring.of(in, pos, pos + el), em))
 				pos++;
-			if (pos < length && Equals.string(Range.of(in, pos, pos + el), em)) {
+			if (pos < length && Equals.string(Substring.of(in, pos, pos + el), em)) {
 				pos += 2;
 				end = pos;
 			} else

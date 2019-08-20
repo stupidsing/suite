@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.function.IntPredicate;
 
 import primal.Verbs.Is;
+import primal.Verbs.ReadString;
 import primal.adt.Pair;
-import suite.os.FileUtil;
 
 // curl http://www.flygo.net/mjxj/WeiQiTianDi/dlxs_sdl.sgf | iconv -c -f CN-GB -t UTF-8
 public class Sgf {
@@ -24,7 +24,7 @@ public class Sgf {
 	}
 
 	public Node fromFile(String filename) {
-		return from(FileUtil.read(filename));
+		return from(ReadString.from(filename));
 	}
 
 	public Node from(String in) {

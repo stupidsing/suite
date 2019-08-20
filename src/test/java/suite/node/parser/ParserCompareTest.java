@@ -4,9 +4,9 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
+import primal.Verbs.ReadString;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
-import suite.os.FileUtil;
 
 public class ParserCompareTest {
 
@@ -18,7 +18,7 @@ public class ParserCompareTest {
 	public void test() {
 		test(" test");
 		test("1 : 2 * (3 - 4)");
-		test(FileUtil.read("src/main/ll/auto.sl"));
+		test(ReadString.from("src/main/ll/auto.sl"));
 	}
 
 	private void test(String in) {

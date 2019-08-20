@@ -2,8 +2,8 @@ package suite.node.pp;
 
 import org.junit.Test;
 
+import primal.Verbs.ReadString;
 import suite.Suite;
-import suite.os.FileUtil;
 
 public class PrettyPrinterTest {
 
@@ -11,12 +11,12 @@ public class PrettyPrinterTest {
 
 	@Test
 	public void test0() {
-		System.out.println(prettyPrinter.prettyPrint(Suite.parse(FileUtil.read("src/main/ll/fc/fc.sl"))));
+		System.out.println(prettyPrinter.prettyPrint(Suite.parse(ReadString.from("src/main/ll/fc/fc.sl"))));
 	}
 
 	@Test
 	public void test1() {
-		System.out.println(prettyPrinter.prettyPrint(Suite.parse(FileUtil.read("src/main/fl/STANDARD.slf"))));
+		System.out.println(prettyPrinter.prettyPrint(Suite.parse(ReadString.from("src/main/fl/STANDARD.slf"))));
 	}
 
 }

@@ -2,7 +2,7 @@ package suite.node.parser;
 
 import primal.Verbs.Get;
 import primal.Verbs.Is;
-import primal.Verbs.Range;
+import primal.Verbs.Substring;
 import primal.os.Log_;
 import suite.node.Atom;
 import suite.node.Int;
@@ -26,10 +26,10 @@ public class TerminalParser {
 				return Int.of(s.charAt(2));
 
 			if (first == '"' && last == '"')
-				return new Str(Escaper.unescape(Range.of(s, 1, -1), "\""));
+				return new Str(Escaper.unescape(Substring.of(s, 1, -1), "\""));
 
 			if (first == '\'' && last == '\'')
-				s = Escaper.unescape(Range.of(s, 1, -1), "'");
+				s = Escaper.unescape(Substring.of(s, 1, -1), "'");
 			else {
 				s = s.trim(); // trim unquoted atoms
 				if (!ParseUtil.isParseable(s))

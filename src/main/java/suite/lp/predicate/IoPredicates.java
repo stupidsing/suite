@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 import java.util.concurrent.TimeUnit;
 
 import primal.Nouns.Utf8;
+import primal.Verbs.ReadString;
 import primal.Verbs.WriteFile;
 import primal.os.Log_;
 import primal.primitive.adt.Bytes.BytesBuilder;
@@ -54,7 +55,7 @@ public class IoPredicates {
 
 	public BuiltinPredicate fileRead = PredicateUtil.fun(n -> {
 		var filename = Formatter.display(n);
-		return new Str(FileUtil.read(filename));
+		return new Str(ReadString.from(filename));
 	});
 
 	public BuiltinPredicate fileTime = PredicateUtil.fun(n -> {

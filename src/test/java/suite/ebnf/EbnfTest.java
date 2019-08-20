@@ -10,8 +10,8 @@ import java.io.StringReader;
 
 import org.junit.Test;
 
+import primal.Verbs.ReadString;
 import suite.node.parser.FactorizeResult;
-import suite.os.FileUtil;
 
 public class EbnfTest {
 
@@ -63,7 +63,7 @@ public class EbnfTest {
 	@Test
 	public void testJava() throws IOException {
 		var ebnf = new Ebnf(new FileReader("src/main/ebnf/java.ebnf"));
-		var s = FileUtil.read("src/test/java/suite/ebnf/EbnfTest.java");
+		var s = ReadString.from("src/test/java/suite/ebnf/EbnfTest.java");
 		System.out.println(new Dump(ebnf.parse("CompilationUnit", s), s));
 	}
 

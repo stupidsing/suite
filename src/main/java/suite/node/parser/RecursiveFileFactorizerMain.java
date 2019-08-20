@@ -7,6 +7,7 @@ import java.nio.file.Paths;
 
 import primal.MoreVerbs.Read;
 import primal.Nouns.Utf8;
+import primal.Verbs.ReadString;
 import primal.adt.Pair;
 import primal.parser.Wildcard;
 import suite.node.io.TermOp;
@@ -28,7 +29,7 @@ public class RecursiveFileFactorizerMain {
 						var recursiveFactorizer = new RecursiveFactorizer(TermOp.values());
 
 						var bs = fts //
-								.fold(FileUtil.read(path), (s_, ft) -> recursiveFactorizer.rewrite(ft.k, ft.v, s_)) //
+								.fold(ReadString.from(path), (s_, ft) -> recursiveFactorizer.rewrite(ft.k, ft.v, s_)) //
 								.getBytes(Utf8.charset);
 
 						ex(() -> Files.write(path, bs));

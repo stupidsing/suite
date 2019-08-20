@@ -11,7 +11,7 @@ import primal.MoreVerbs.Read;
 import primal.Verbs.Build;
 import primal.Verbs.Get;
 import primal.Verbs.Left;
-import primal.Verbs.Range;
+import primal.Verbs.Substring;
 import primal.adt.Pair;
 import primal.fp.Funs.Sink;
 import primal.os.Log_;
@@ -270,7 +270,7 @@ public class Dump {
 
 						if (last == close && 0 <= pos) {
 							var left = Left.of(s, pos);
-							var right = Range.of(s, pos + 1, -1);
+							var right = Substring.of(s, pos + 1, -1);
 							return Streamlet.concat( //
 									Read.each(indent + left + open), //
 									split(indent + "  ", right, ""), //

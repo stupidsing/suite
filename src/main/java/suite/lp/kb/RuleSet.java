@@ -5,6 +5,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import primal.Verbs.ReadString;
 import primal.persistent.PerList;
 import suite.Suite;
 import suite.jdk.Handler;
@@ -43,7 +44,7 @@ public interface RuleSet {
 	}
 
 	public default boolean importUrl(URL url) throws IOException {
-		return importFrom(Suite.parse(FileUtil.read(url.openStream())));
+		return importFrom(Suite.parse(ReadString.from(url.openStream())));
 	}
 
 	public default boolean importFrom(Node node) {

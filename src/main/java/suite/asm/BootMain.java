@@ -5,9 +5,9 @@ import static primal.statics.Fail.fail;
 import java.nio.file.Paths;
 
 import primal.MoreVerbs.Read;
+import primal.Verbs.ReadString;
 import primal.primitive.adt.Bytes;
 import suite.ip.ImperativeCompiler;
-import suite.os.FileUtil;
 import suite.util.RunUtil;
 import suite.util.To;
 
@@ -19,7 +19,7 @@ public class BootMain {
 	}
 
 	public static boolean main() {
-		var bootLoader = new Assembler(16).assemble(FileUtil.read("src/main/asm/bootloader.asm"));
+		var bootLoader = new Assembler(16).assemble(ReadString.from("src/main/asm/bootloader.asm"));
 		var kernel = new ImperativeCompiler().compile(0x40000, Paths.get("src/main/il/kernel.il"));
 
 		if (bootLoader.size() == 512 && kernel.size() < 65536) {
