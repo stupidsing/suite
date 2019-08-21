@@ -30,7 +30,7 @@ public class Threads implements AutoCloseable {
 
 	private Map<Thread, ThreadData> threadDataByThread = new HashMap<>();
 
-	private volatile ThreadData boredThread; // thread with least workload, i.e. shortest queue
+	private volatile ThreadData boredThread; // thread with the least workload, i.e. shortest queue
 
 	private class ThreadData extends Condition {
 		private volatile int state;
