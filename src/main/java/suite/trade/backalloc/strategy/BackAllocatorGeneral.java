@@ -16,9 +16,9 @@ import primal.adt.Pair;
 import primal.fp.Funs.Fun;
 import primal.primitive.IntInt_Obj;
 import primal.primitive.adt.pair.FltFltPair;
+import primal.primitive.fp.AsInt;
 import primal.streamlet.Streamlet;
 import primal.streamlet.Streamlet2;
-import suite.primitive.Ints_;
 import suite.trade.Instrument;
 import suite.trade.analysis.MovingAverage;
 import suite.trade.analysis.Oscillator;
@@ -356,7 +356,7 @@ public class BackAllocatorGeneral {
 						var prices = ds.prices;
 						var length = prices.length;
 
-						IntFunction<int[]> getDays = c -> Ints_.toArray(length, i -> {
+						IntFunction<int[]> getDays = c -> AsInt.array(length, i -> {
 							var price = prices[i];
 							int j = i, j1;
 							while (0 <= (j1 = j - 1) && Quant.sign(prices[j1], price) == c)

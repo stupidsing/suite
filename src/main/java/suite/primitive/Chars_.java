@@ -4,7 +4,6 @@ import static primal.statics.Rethrow.ex;
 
 import primal.fp.Funs.Iterate;
 import primal.fp.Funs.Source;
-import primal.primitive.Int_Chr;
 import primal.primitive.adt.Chars;
 import primal.primitive.adt.Chars.CharsBuilder;
 import primal.primitive.adt.Chars.WriteChar;
@@ -54,13 +53,6 @@ public class Chars_ {
 				return b;
 			}
 		});
-	}
-
-	public static char[] toArray(int length, Int_Chr f) {
-		var cs = new char[length];
-		for (var i = 0; i < length; i++)
-			cs[i] = f.apply(i);
-		return cs;
 	}
 
 	private static abstract class BufferedSource implements Source<Chars> {

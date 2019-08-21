@@ -5,7 +5,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 import primal.primitive.Int_Int;
-import suite.primitive.Ints_;
+import primal.primitive.fp.AsInt;
 
 public class BinarySearchTest {
 
@@ -27,7 +27,7 @@ public class BinarySearchTest {
 
 	private void testAsc(int l) {
 		Int_Int f = i -> i;
-		var is = Ints_.toArray(l, f);
+		var is = AsInt.array(l, f);
 
 		assertEquals(0, searchAsc(is, Integer.MIN_VALUE));
 		assertEquals(l, searchAsc(is, Integer.MAX_VALUE));
@@ -38,7 +38,7 @@ public class BinarySearchTest {
 
 	private void testDesc(int l) {
 		Int_Int f = i -> l + 1 - i;
-		var is = Ints_.toArray(l, f);
+		var is = AsInt.array(l, f);
 
 		assertEquals(l - 1, searchDesc(is, Integer.MIN_VALUE));
 		assertEquals(-1, searchDesc(is, Integer.MAX_VALUE));

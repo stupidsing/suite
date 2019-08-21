@@ -8,15 +8,15 @@ import java.util.Random;
 import org.junit.Test;
 
 import primal.Verbs.ReadString;
+import primal.primitive.fp.AsChr;
 import suite.persistent.PerRope.IRopeList;
-import suite.primitive.Chars_;
 
 public class PerRopeTest {
 
 	@Test
 	public void test() {
 		var length = 1024;
-		var s = new String(Chars_.toArray(length, c -> (char) c));
+		var s = new String(AsChr.array(length, c -> (char) c));
 		var rope = new PerRope<>(IRopeList.of(""));
 		var p = 0;
 

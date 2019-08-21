@@ -4,7 +4,6 @@ import static primal.statics.Rethrow.ex;
 
 import primal.fp.Funs.Iterate;
 import primal.fp.Funs.Source;
-import primal.primitive.Int_Int;
 import primal.primitive.adt.Ints;
 import primal.primitive.adt.Ints.IntsBuilder;
 import primal.primitive.adt.Ints.WriteChar;
@@ -54,13 +53,6 @@ public class Ints_ {
 				return b;
 			}
 		});
-	}
-
-	public static int[] toArray(int length, Int_Int f) {
-		var cs = new int[length];
-		for (var i = 0; i < length; i++)
-			cs[i] = f.apply(i);
-		return cs;
 	}
 
 	private static abstract class BufferedSource implements Source<Ints> {

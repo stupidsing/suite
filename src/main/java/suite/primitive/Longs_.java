@@ -4,7 +4,6 @@ import static primal.statics.Rethrow.ex;
 
 import primal.fp.Funs.Iterate;
 import primal.fp.Funs.Source;
-import primal.primitive.Int_Lng;
 import primal.primitive.adt.Longs;
 import primal.primitive.adt.Longs.LongsBuilder;
 import primal.primitive.adt.Longs.WriteChar;
@@ -54,13 +53,6 @@ public class Longs_ {
 				return b;
 			}
 		});
-	}
-
-	public static long[] toArray(int length, Int_Lng f) {
-		var cs = new long[length];
-		for (var i = 0; i < length; i++)
-			cs[i] = f.apply(i);
-		return cs;
 	}
 
 	private static abstract class BufferedSource implements Source<Longs> {

@@ -4,7 +4,6 @@ import static primal.statics.Rethrow.ex;
 
 import primal.fp.Funs.Iterate;
 import primal.fp.Funs.Source;
-import primal.primitive.Int_Dbl;
 import primal.primitive.adt.Doubles;
 import primal.primitive.adt.Doubles.DoublesBuilder;
 import primal.primitive.adt.Doubles.WriteChar;
@@ -54,13 +53,6 @@ public class Doubles_ {
 				return b;
 			}
 		});
-	}
-
-	public static double[] toArray(int length, Int_Dbl f) {
-		var cs = new double[length];
-		for (var i = 0; i < length; i++)
-			cs[i] = f.apply(i);
-		return cs;
 	}
 
 	private static abstract class BufferedSource implements Source<Doubles> {

@@ -16,12 +16,12 @@ import primal.fp.Funs.Sink;
 import primal.primitive.IntPrim.IntSink;
 import primal.primitive.adt.IntMutable;
 import primal.primitive.adt.Ints.IntsBuilder;
+import primal.primitive.fp.AsChr;
 import suite.ansi.Keyboard;
 import suite.ansi.Keyboard.VK;
 import suite.ansi.LibcJna;
 import suite.ansi.Termios;
 import suite.persistent.PerRope.IRopeList;
-import suite.primitive.Chars_;
 import suite.primitive.Coord;
 
 // mvn compile exec:java -Dexec.mainClass=suite.sample.DevMain -Dexec.args="${COLUMNS} ${LINES}"
@@ -299,7 +299,7 @@ public class DevMain {
 		private String get(int px, int py, int length) {
 			var i0 = start(py) + px;
 			var ix = end(py);
-			return new String(Chars_.toArray(length, i_ -> {
+			return new String(AsChr.array(length, i_ -> {
 				var i = i_ + i0;
 				return i < ix ? chars.get.apply(i) : ' ';
 			}));

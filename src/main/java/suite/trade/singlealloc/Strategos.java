@@ -3,9 +3,9 @@ package suite.trade.singlealloc;
 import java.util.Arrays;
 
 import primal.primitive.FltVerbs.CopyFlt;
+import primal.primitive.fp.AsInt;
 import suite.math.linalg.Vector;
 import suite.math.transform.DiscreteCosineTransform;
-import suite.primitive.Ints_;
 import suite.trade.analysis.MovingAverage;
 import suite.trade.singlealloc.BuySellStrategy.GetBuySell;
 import suite.ts.Quant;
@@ -72,7 +72,7 @@ public class Strategos {
 
 	// buy/sell if ratio is positive/negative; sell/buy nHoldDays after
 	private GetBuySell holdFixedDays(int nDays, int nHoldDays, GetBuySell gbs) {
-		var buySells = Ints_.toArray(nDays, gbs::get);
+		var buySells = AsInt.array(nDays, gbs::get);
 
 		return day -> {
 			var buySell0 = nHoldDays < day ? -buySells[day - nHoldDays] : 0;

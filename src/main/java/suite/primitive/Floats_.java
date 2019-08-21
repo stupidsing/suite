@@ -4,7 +4,6 @@ import static primal.statics.Rethrow.ex;
 
 import primal.fp.Funs.Iterate;
 import primal.fp.Funs.Source;
-import primal.primitive.Int_Flt;
 import primal.primitive.adt.Floats;
 import primal.primitive.adt.Floats.FloatsBuilder;
 import primal.primitive.adt.Floats.WriteChar;
@@ -54,13 +53,6 @@ public class Floats_ {
 				return b;
 			}
 		});
-	}
-
-	public static float[] toArray(int length, Int_Flt f) {
-		var cs = new float[length];
-		for (var i = 0; i < length; i++)
-			cs[i] = f.apply(i);
-		return cs;
 	}
 
 	private static abstract class BufferedSource implements Source<Floats> {

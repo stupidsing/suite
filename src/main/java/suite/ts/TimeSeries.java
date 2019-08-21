@@ -15,11 +15,11 @@ import primal.MoreVerbs.Read;
 import primal.primitive.adt.Floats;
 import primal.primitive.adt.pair.FltObjPair;
 import primal.primitive.fp.AsFlt;
+import primal.primitive.fp.AsInt;
 import suite.math.linalg.CholeskyDecomposition;
 import suite.math.linalg.Vector;
 import suite.math.numeric.Statistic;
 import suite.math.numeric.Statistic.LinearRegression;
-import suite.primitive.Ints_;
 import suite.streamlet.As;
 import suite.trade.Trade_;
 import suite.util.To;
@@ -94,7 +94,7 @@ public class TimeSeries {
 	// epchan
 	public double hurst(float[] ys, int tor) {
 		var logys = To.vector(ys, Math::log);
-		var tors = Ints_.toArray(tor, t -> t + 1);
+		var tors = AsInt.array(tor, t -> t + 1);
 		var logVrs = To.vector(tor, t -> {
 			var diffs = dropDiff_(tors[t], logys);
 			var diffs2 = To.vector(diffs, diff -> diff * diff);

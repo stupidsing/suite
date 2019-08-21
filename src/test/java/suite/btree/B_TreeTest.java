@@ -13,10 +13,10 @@ import org.junit.Test;
 
 import primal.Nouns.Tmp;
 import primal.Verbs.Compare;
+import primal.primitive.fp.AsInt;
 import suite.btree.impl.B_TreeBuilder;
 import suite.file.impl.JournalledFileFactory;
 import suite.node.util.Singleton;
-import suite.primitive.Ints_;
 import suite.sample.Profiler;
 import suite.serialize.Serialize;
 import suite.util.To;
@@ -32,7 +32,7 @@ public class B_TreeTest {
 
 	@Before
 	public void before() {
-		keys = Ints_.toArray(nKeys, i -> i);
+		keys = AsInt.array(nKeys, i -> i);
 	}
 
 	@Test
@@ -99,7 +99,7 @@ public class B_TreeTest {
 		var pageSize = 4096;
 		var path = Tmp.path("b_tree-file");
 
-		keys = Ints_.toArray(nKeys, i -> i);
+		keys = AsInt.array(nKeys, i -> i);
 
 		for (var i = 0; i < nKeys; i++) {
 			var j = random.nextInt(nKeys);

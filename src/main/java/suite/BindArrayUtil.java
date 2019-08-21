@@ -3,12 +3,12 @@ package suite;
 import java.util.ArrayList;
 
 import primal.fp.Funs.Fun;
+import primal.primitive.fp.AsInt;
 import suite.lp.compile.impl.CompileBinderImpl;
 import suite.lp.doer.BinderFactory.BindEnv;
 import suite.lp.sewing.impl.SewingGeneralizerImpl;
 import suite.node.Atom;
 import suite.node.Node;
-import suite.primitive.Ints_;
 import suite.util.Memoize;
 import suite.util.To;
 
@@ -42,8 +42,8 @@ public class BindArrayUtil {
 			atoms.add(atom);
 
 		var size = atoms.size();
-		var sgi = Ints_.toArray(size, i -> sgm.getIndex(atoms.get(i)));
-		var cbi = Ints_.toArray(size, i -> cbm.getIndex(ne.env.refs[sgi[i]]));
+		var sgi = AsInt.array(size, i -> sgm.getIndex(atoms.get(i)));
+		var cbi = AsInt.array(size, i -> cbm.getIndex(ne.env.refs[sgi[i]]));
 
 		return new Pattern() {
 			public Node[] match(Node node) {
