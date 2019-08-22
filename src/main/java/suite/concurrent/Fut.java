@@ -70,8 +70,8 @@ public class Fut<T> {
 	}
 
 	public <U> Fut<U> concatMap(Fun<T, Fut<U>> fun) {
-		return of(fut0 -> handle( //
-				t -> Fut.applyOr( //
+		return of(fut0 -> handle(t -> Fut //
+				.applyOr( //
 						() -> fun.apply(t), //
 						fut1 -> fut1.handle(fut0::complete, fut0::error), //
 						fut0::error), //
