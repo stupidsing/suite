@@ -120,8 +120,12 @@ define !cat () :=
 	)
 ~
 
+define !guess () := 0
+~
+
 {
 	!cat,
+	!guess,
 	!get.char,
 	!get.line,
 	!get.number,
