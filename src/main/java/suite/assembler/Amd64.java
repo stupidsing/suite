@@ -98,6 +98,8 @@ public class Amd64 {
 		PUSHA, //
 		PUSHF, //
 		RDMSR, //
+		RDTSC, //
+		RDTSCP, //
 		REP, //
 		REPE, //
 		REPNE, //

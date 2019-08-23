@@ -1030,9 +1030,9 @@ public class P2InferType {
 	}
 
 	private int getTypeSize(Node n0) {
-		var n = n0.finalNode();
 		Collection<Reference> structMembers;
 		Node[] m, d;
+		var n = n0.finalNode();
 		if (n == typeBoolean)
 			return Funp_.booleanSize;
 		else if ((m = typePatDecor.match(n)) != null)

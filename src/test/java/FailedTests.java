@@ -8,6 +8,7 @@ import org.junit.Test;
 
 import suite.Suite;
 import suite.fp.FunRbTreeTest;
+import suite.funp.Funp_;
 import suite.ip.ImperativeCompiler;
 
 public class FailedTests {
@@ -78,6 +79,12 @@ public class FailedTests {
 		var rs = Suite.newRuleSet();
 		rs.importPath("auto.sl");
 		assertTrue(Suite.proveLogic(rs, "repeat, fail"));
+	}
+
+	// should we show "field not found" instead of "cannot get size of type xxx"?
+	@Test
+	public void testStruct() {
+		Funp_.main(false).compile(0, "define s := { a: 1, } ~ s/b");
 	}
 
 	// takes 11 seconds to type check

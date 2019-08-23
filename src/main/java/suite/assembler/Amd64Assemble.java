@@ -613,6 +613,12 @@ public class Amd64Assemble {
 		case RDMSR:
 			encode = new InsnCode(bs(0x0F, 0x32));
 			break;
+		case RDTSC:
+			encode = new InsnCode(bs(0x0F, 0x31));
+			break;
+		case RDTSCP:
+			encode = new InsnCode(bs(0x0F, 0x01, 0x09));
+			break;
 		case REP:
 			encode = assemble(0xF3);
 			break;

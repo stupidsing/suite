@@ -37,15 +37,14 @@ public class WriteElf {
 
 	public Execute exec(byte[] input, Int_Obj<Bytes> source) {
 		var path = Tmp.path("a.out." + Get.temp());
-
-		write(org, source.apply(org + elfHeaderSize), path);
+		write(source, path);
 		return new Execute(new String[] { path.toString(), }, input);
 	}
 
-	private void write(int org, Bytes code, Path path) {
+	public void write(Int_Obj<Bytes> source, Path path) {
 		WriteFile.to(path).doWrite(os -> {
 			try (var do_ = SerOutput.of(os)) {
-				write(org, code, do_);
+				write(source.apply(org + elfHeaderSize), do_);
 			}
 		});
 
@@ -59,12 +58,12 @@ public class WriteElf {
 				PosixFilePermission.OWNER_WRITE))));
 	}
 
-	private void write(int org, Bytes code, SerOutput do_) throws IOException {
-		do_.writeBytes(isAmd64 ? header64(org, code, do_) : header32(org, code, do_));
+	private void write(Bytes code, SerOutput do_) throws IOException {
+		do_.writeBytes(isAmd64 ? header64(code, do_) : header32(code, do_));
 		do_.writeBytes(code);
 	}
 
-	private Bytes header32(int org, Bytes code, SerOutput do_) throws IOException {
+	private Bytes header32(Bytes code, SerOutput do_) throws IOException {
 		return new Write_() //
 				.db(0x7F) // e_ident
 				.append("ELF".getBytes(Utf8.charset)) //
@@ -94,7 +93,7 @@ public class WriteElf {
 				.toBytes();
 	}
 
-	private Bytes header64(int org, Bytes code, SerOutput do_) throws IOException {
+	private Bytes header64(Bytes code, SerOutput do_) throws IOException {
 		return new Write_() //
 				.db(0x7F) // e_ident
 				.append("ELF".getBytes(Utf8.charset)) //

@@ -6,8 +6,10 @@ import java.util.List;
 
 import org.junit.Test;
 
+import primal.Nouns.Tmp;
 import primal.Nouns.Utf8;
 import primal.primitive.adt.Bytes;
+import primal.primitive.adt.pair.IntObjPair;
 import suite.assembler.Amd64;
 import suite.assembler.Amd64.Insn;
 import suite.assembler.Amd64.Instruction;
@@ -60,6 +62,12 @@ public class ElfTest {
 		test(100, "fold (n := 0 # n < 100 # n + 1 # n)", "");
 	}
 
+	@Test
+	public void testGuess() {
+		var program = "do! (consult \"io.fp\")/!guess {}";
+		elf.write(offset -> Funp_.main(true).compile(offset, program).v, Tmp.path("a.out"));
+	}
+
 	// io :: a -> io a
 	// io.cat :: io a -> (a -> io b) -> io b
 	@Test
@@ -91,6 +99,11 @@ public class ElfTest {
 	}
 
 	@Test
+	public void testRdtscp() {
+		execute("consult \"asm.${platform}.fp\" ~ do! (!asm.rdtscp and +x7FFFFFFF % 100)", "");
+	}
+
+	@Test
 	public void testZero() {
 		test(0, "0", "");
 	}
@@ -100,19 +113,24 @@ public class ElfTest {
 	}
 
 	private void test(int code, String program, String input, String expected) {
+		var result = execute(program, input);
+		assertEquals(code, result.k);
+		assertEquals(expected, result.v);
+	}
+
+	private IntObjPair<String> execute(String program, String input) {
 		var ibs = Bytes.of(input.getBytes(Utf8.charset));
-		var ebs = Bytes.of(expected.getBytes(Utf8.charset));
 		var main = Funp_.main(true);
+		var result = IntObjPair.of(0, "");
 
 		if (Boolean.TRUE && RunUtil.isLinux()) { // not Windows => run ELF
 			var exec = elf.exec(ibs.toArray(), offset -> main.compile(offset, program).v);
-			assertEquals(code, exec.code);
-			assertEquals(expected, exec.out);
+			result.update(exec.code, exec.out);
 		} else { // Windows => interpret assembly
 			var pair = main.compile(interpret.codeStart, program);
-			assertEquals(code, interpret.interpret(pair, ibs));
-			assertEquals(ebs, interpret.out.toBytes());
+			result.update(interpret.interpret(pair, ibs), new String(interpret.out.toBytes().toArray(), Utf8.charset));
 		}
+		return result;
 	}
 
 }
