@@ -617,7 +617,7 @@ public class Amd64Assemble {
 			encode = new InsnCode(bs(0x0F, 0x31));
 			break;
 		case RDTSCP:
-			encode = new InsnCode(bs(0x0F, 0x01, 0x09));
+			encode = new InsnCode(bs(0x0F, 0x01, 0xF9));
 			break;
 		case REP:
 			encode = assemble(0xF3);
