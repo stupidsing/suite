@@ -4,7 +4,7 @@ consult "linux.fp" ~
 
 expand buffer.size := 256 ~
 
-define !new.mut.number init := do!
+define.global !new.mut.number init := do!
 	type init = number ~
 	let pointer := !new^ init ~
 	!assign pointer* := init ~
@@ -37,7 +37,7 @@ define.global !get.char () := do!
 	buffer [s0]
 ~
 
-define !get.line (pointer, length) :=
+define.global !get.line (pointer, length) :=
 	for! (
 		(n, ch) := (0, !get.char ()) #
 		n < length && number:byte ch != 10 #
@@ -47,19 +47,21 @@ define !get.line (pointer, length) :=
 	)
 ~
 
-define !get.number () := do!
+define.global !get.number () := do!
 	let !gc () := do! number:byte !get.char () ~
 	let ch0 := !gc () ~
 	let positive := ch0 != number '-' ~
 	fold (
 		(n, ch) := (0, if positive then ch0 else !gc ()) #
-		number '0' <= ch && ch <= number '9' #
+		let b0 := number '0' <= ch ~
+		let b1 := ch <= number '9' ~
+		b0 && b1 #
 		(n * 10 + ch - number '0', !gc ()) #
 		if positive then n else (0 - n)
 	)
 ~
 
-define !get.string (pointer, length) :=
+define.global !get.string (pointer, length) :=
 	for! (
 		(n, b) := (0, true) #
 		n < length && b #
@@ -75,11 +77,11 @@ define.global !put.char ch :=
 	!write.all (address.of predef [ch,], 1)
 ~
 
-define !put.line () :=
+define.global !put.line () :=
 	!put.char byte 10
 ~
 
-define !put.number n :=
+define.global !put.number n :=
 	let {
 		!put.number_ i := do!
 			if (0 < i) then (
@@ -98,7 +100,7 @@ define !put.number n :=
 	|| !put.char byte '0'
 ~
 
-define !put.string s :=
+define.global !put.string s :=
 	for! (
 		i := 0 #
 		s* [i] != byte 0 #
@@ -108,7 +110,7 @@ define !put.string s :=
 	)
 ~
 
-define !cat () :=
+define.global !cat () :=
 	for! (
 		n := 1 #
 		n != 0 #
@@ -120,12 +122,8 @@ define !cat () :=
 	)
 ~
 
-define !guess () := 0
-~
-
 {
 	!cat,
-	!guess,
 	!get.char,
 	!get.line,
 	!get.number,

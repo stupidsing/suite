@@ -64,8 +64,9 @@ public class ElfTest {
 
 	@Test
 	public void testGuess() {
-		var program = "do! (consult \"io.fp\")/!guess {}";
-		elf.write(offset -> Funp_.main(true).compile(offset, program).v, Tmp.path("a.out"));
+		var program = "do! (consult \"guess.fp\")/!guess {}";
+		elf.write(offset -> Funp_.main(false).compile(offset, program).v, Tmp.path("guess"));
+		elf.write(offset -> Funp_.main(true).compile(offset, program).v, Tmp.path("guess"));
 	}
 
 	// io :: a -> io a
@@ -73,7 +74,7 @@ public class ElfTest {
 	@Test
 	public void testIo() {
 		var text = "garbage\n";
-		var program = "do! !! (consult \"io.fp\")/!cat {}";
+		var program = "do! (consult \"io.fp\")/!cat {}";
 		test(0, program, text);
 	}
 
@@ -99,7 +100,8 @@ public class ElfTest {
 	}
 
 	@Test
-	public void testRdtscp() {
+	public void testRdtsc() {
+		execute("consult \"asm.${platform}.fp\" ~ do! (!asm.rdtsc and +x7FFFFFFF % 100)", "");
 		execute("consult \"asm.${platform}.fp\" ~ do! (!asm.rdtscp and +x7FFFFFFF % 100)", "");
 	}
 
@@ -121,7 +123,7 @@ public class ElfTest {
 	private IntObjPair<String> execute(String program, String input) {
 		var ibs = Bytes.of(input.getBytes(Utf8.charset));
 		var main = Funp_.main(true);
-		var result = IntObjPair.of(0, "");
+		var result = IntObjPair.of(-1, "-");
 
 		if (Boolean.TRUE && RunUtil.isLinux()) { // not Windows => run ELF
 			var exec = elf.exec(ibs.toArray(), offset -> main.compile(offset, program).v);
@@ -130,6 +132,7 @@ public class ElfTest {
 			var pair = main.compile(interpret.codeStart, program);
 			result.update(interpret.interpret(pair, ibs), new String(interpret.out.toBytes().toArray(), Utf8.charset));
 		}
+
 		return result;
 	}
 
