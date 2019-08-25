@@ -108,7 +108,7 @@ public class P10Inline {
 					FunpDefine define;
 
 					while ((define = n0.cast(FunpDefine.class)) != null //
-							&& define.fdt == Fdt.L_MONO //
+							&& Fdt.isLocal(define.fdt) //
 							&& define.value instanceof FunpDontCare) {
 						vns.add(define.vn);
 						n0 = define.expr;
