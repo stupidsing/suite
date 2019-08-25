@@ -1,8 +1,11 @@
 define io := consult "io.fp" ~
 
-define !get.number := io/!get.number ~
-define !put.line := io/!put.line ~
-define !put.number := io/!put.number ~
+define {
+	!get.number,
+	!put.line,
+	!put.number,
+} := io ~
+
 define !put.string := io/!put.string ~
 
 consult "linux.fp" ~
