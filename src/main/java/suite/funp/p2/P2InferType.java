@@ -490,12 +490,6 @@ public class P2InferType {
 					var var = global(address, 0, size);
 					var e1 = new Erase(scope, env.replace(vn, var), me);
 					return FunpAllocGlobal.of(size, erase(value, vn), e1.erase(expr), address);
-				} else if (fdt == Fdt.L_HEAP) {
-					var t = new Reference();
-					unify(n, typeOf(value), typeRefOf(t));
-					var size = getTypeSize(t);
-					var alloc = FunpHeapAlloc.of(size);
-					return defineLocal(f, vn, alloc, expr, ps);
 				} else if (Fdt.isLocal(fdt))
 					return defineLocal(f, vn, value, expr);
 				else if (fdt == Fdt.VIRT)

@@ -18,7 +18,7 @@ import suite.funp.P0.FunpDefineRec;
 import suite.funp.P0.FunpDeref;
 import suite.funp.P0.FunpDoAssignRef;
 import suite.funp.P0.FunpDoAssignVar;
-import suite.funp.P0.FunpDontCare;
+import suite.funp.P0.FunpDoHeapNew;
 import suite.funp.P0.FunpField;
 import suite.funp.P0.FunpLambda;
 import suite.funp.P0.FunpReference;
@@ -144,7 +144,7 @@ public class P21CaptureLambda {
 						var struct = FunpStruct.of(captures);
 						var lc = FunpLambdaCapture.of(pcap, li.cap, struct, vn, c(expr));
 						var assign = FunpDoAssignRef.of(FunpReference.of(FunpDeref.of(pcap)), struct, lc);
-						return FunpDefine.of(pcapn, FunpDontCare.of(), assign, Fdt.L_HEAP);
+						return FunpDefine.of(pcapn, FunpDoHeapNew.of(), assign, Fdt.L_MONO);
 
 						// FIXME now we free the capture immediately after first invocation; cannot
 						// invoke again
