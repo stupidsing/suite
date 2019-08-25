@@ -262,7 +262,7 @@ public class P2InferType {
 				unify(n, infer(reference), typeRefOf(infer(value)));
 				return infer(expr);
 			})).applyIf(FunpDoAssignVar.class, f -> f.apply((var, value, expr) -> {
-				unify(n, getVariable(var), infer(value));
+				unify(n, getVariable(var, false), infer(value));
 				return infer(expr);
 			})).applyIf(FunpDoEvalIo.class, f -> f.apply(expr -> {
 				var t = new Reference();
@@ -436,7 +436,11 @@ public class P2InferType {
 		}
 
 		private Node getVariable(FunpVariable var) {
-			return env.get(var.vn).map((type, tv) -> Fdt.isPoly(type) ? cloneType(tv) : tv);
+			return getVariable(var, true);
+		}
+
+		private Node getVariable(FunpVariable var, boolean isCloneType) {
+			return env.get(var.vn).map((type, tv) -> isCloneType && Fdt.isPoly(type) ? cloneType(tv) : tv);
 		}
 	}
 
