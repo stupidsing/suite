@@ -34,7 +34,7 @@ define.global !get.char () := do!
 	let (s1, e1) := if (s0 < e0) then start.end else (0, !read (address.of buffer, buffer.size)) ~
 	assert (s1 < e1) ~
 	!assign start.end := (s1 + 1, e1) ~
-	buffer [s0]
+	buffer [s1]
 ~
 
 define.global !get.line (pointer, length) :=
