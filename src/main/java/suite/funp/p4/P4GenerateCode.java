@@ -493,8 +493,10 @@ public class P4GenerateCode {
 				var out = compile(expr);
 
 				if (isOutSpec) {
+					var p0reg = pop0 != null ? pushRegs[pop0.reg] : null;
+					var p1reg = pop1 != null ? pushRegs[pop1.reg] : null;
 					for (var pair : saves.value())
-						if (pair.k != pop0 && pair.k != pop1)
+						if (pair.k != p0reg && pair.k != p1reg)
 							em.mov(pair.k, compileFrame(pair.v, pair.k.size));
 					return out;
 				} else {
