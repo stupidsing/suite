@@ -7,6 +7,7 @@ import static suite.util.Streamlet_.forInt;
 
 import java.util.Arrays;
 
+import primal.adt.Pair;
 import primal.primitive.FltMoreVerbs.ReadFlt;
 import suite.streamlet.As;
 import suite.trade.data.DataSource;
@@ -16,6 +17,38 @@ import suite.util.To;
 public class Oscillator {
 
 	private MovingAverage ma = new MovingAverage();
+
+	// https://blog.goodaudience.com/technical-analysis-using-the-aroon-indicator-2981b342c23
+	public Pair<float[], float[]> aroon(float[] prices, int n) {
+		var length = prices.length;
+		var inv_n = 1d / n;
+		var aroonUp = new float[length];
+		var aroonDn = new float[length];
+		var mini = 0;
+		var maxi = 0;
+
+		for (var i = 0; i < length; i++) {
+			if (prices[i] <= prices[mini])
+				mini = i;
+			if (prices[maxi] <= prices[i])
+				maxi = i;
+
+			if (mini <= i - n)
+				for (var j = Math.max(0, i - n); ++j <= i;)
+					if (prices[j] <= prices[mini])
+						mini = j;
+
+			if (maxi <= i - n)
+				for (var j = Math.max(0, i - n); ++j <= i;)
+					if (prices[maxi] <= prices[j])
+						maxi = j;
+
+			aroonUp[i] = (float) ((n - i + maxi) * inv_n);
+			aroonDn[i] = (float) ((n - i + mini) * inv_n);
+		}
+
+		return Pair.of(aroonUp, aroonDn);
+	}
 
 	// active true range
 	public float[] atr(DataSource ds) {
