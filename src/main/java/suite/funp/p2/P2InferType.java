@@ -743,6 +743,9 @@ public class P2InferType {
 			var var = local(f, operand, scope, offset, 0, size);
 			var expr1 = new Erase(scope, env.replace(vn, var), me).erase(expr);
 
+			// the register allocation in sub-expressions would have priority.
+			// if already many register allocation in the value expression, we would not do
+			// further.
 			var depth = new Object() {
 				private int c(Funp node) {
 					var depth = IntMutable.of(0);
