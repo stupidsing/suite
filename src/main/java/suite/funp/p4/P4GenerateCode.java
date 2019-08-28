@@ -464,7 +464,10 @@ public class P4GenerateCode {
 					return fail();
 			})).applyIf(FunpNumber.class, f -> {
 				return returnOp(imm(f));
-			}).applyIf(FunpOperand.class, f -> f.apply(op -> {
+			}).applyIf(FunpOp.class, f -> f.apply((opSize, op, lhs, rhs) -> {
+				var assoc = op instanceof TermOp ? ((TermOp) op).assoc() : Assoc.RIGHT;
+				return returnOp(compileTree(opSize, n, op, assoc, lhs, rhs));
+			})).applyIf(FunpOperand.class, f -> f.apply(op -> {
 				return returnOp(op.value());
 			})).applyIf(FunpRoutine.class, f -> f.apply((frame, expr, is, os) -> {
 				OpReg _ax = amd64.regs(os)[axReg];
@@ -510,9 +513,6 @@ public class P4GenerateCode {
 						em.mov(pair.k, compileFrame(pair.v, pair.k.size));
 					return new CompileOut(op0, op1);
 				}
-			})).applyIf(FunpOp.class, f -> f.apply((opSize, op, lhs, rhs) -> {
-				var assoc = op instanceof TermOp ? ((TermOp) op).assoc() : Assoc.RIGHT;
-				return returnOp(compileTree(opSize, n, op, assoc, lhs, rhs));
 			})).nonNullResult();
 		}
 
@@ -838,7 +838,8 @@ public class P4GenerateCode {
 		}
 
 		private OpReg compileLoadMasked(int size, Funp node, Operand opOther) {
-			var op = compileLoad(size, node);
+			var p0reg = pop0 != null ? amd64.regs(size)[pop0.reg] : null;
+			var op = isOutSpec && p0reg != opOther ? compileSpec(node, p0reg) : compileReg(size, node);
 			return em.mov(rs.contains(op) ? rs.mask(opOther).get(size) : op, op);
 		}
 

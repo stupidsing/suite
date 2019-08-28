@@ -17,20 +17,20 @@ define !guess () := do!
 	!put.line () ~
 	!put.string "hello, please guess%0A" ~
 	fold (
-		guess := !get.number () #
+		(n, guess) := (1, !get.number ()) #
 		guess != answer #
 		if (guess < answer) then (
 			!put.string "higher...%0A" ~
-			!get.number ()
+			(n + 1, !get.number ())
 		) else if (answer < guess) then (
 			!put.string "lower...%0A" ~
-			!get.number ()
+			(n + 1, !get.number ())
 		) else (
 			error
 		) #
-		!put.string "you got it, it is " ~
-		!put.number answer ~
-		!put.line () ~
+		!put.string "you got it in " ~
+		!put.number n ~
+		!put.string " guesses!%0A" ~
 		0
 	)
 ~
