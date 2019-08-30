@@ -74,6 +74,11 @@ public class FunpTest {
 	}
 
 	@Test
+	public void testCase() {
+		test(5, "define i := 4 ~ case || (i = 0) => 1 || (i = 2) => 3 || (i = 4) => 5 || 6");
+	}
+
+	@Test
 	public void testCoerce() {
 		test(1, "define i := 1 ~ define b := byte:number i ~ i");
 	}

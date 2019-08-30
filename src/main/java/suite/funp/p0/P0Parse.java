@@ -99,7 +99,7 @@ public class P0Parse {
 			).match("!! .0", a -> {
 				return checkDo(() -> FunpDoEvalIo.of(p(a)));
 			}).match("!! .0 ~ .1", (a, b) -> {
-				var lambda = lambda(dontCare, b);
+				var lambda = bind().lambda(dontCare, b);
 				return checkDo(() -> FunpDefine.of(lambda.vn, p(a), lambda.expr, Fdt.L_IOAP));
 			}).match(".0:.1 .2", (a, b, c) -> {
 				var c0 = Coerce.valueOf(Atom.name(b).toUpperCase());
@@ -113,12 +113,12 @@ public class P0Parse {
 			}).match(".0 .1 ~ .2", (a, b, c) -> {
 				if (isBang(a)) {
 					var apply = FunpApply.of(p(b), p(a));
-					var lambda = lambda(dontCare, c);
+					var lambda = bind().lambda(dontCare, c);
 					return checkDo(() -> FunpDefine.of(lambda.vn, apply, lambda.expr, Fdt.L_IOAP));
 				} else
 					return null;
 			}).match(".0 => .1", (a, b) -> {
-				return lambdaSeparate(a, b);
+				return bind().lambdaSeparate(a, b);
 			}).match(".0 | .1", (a, b) -> {
 				return FunpApply.of(p(a), p(b));
 			}).match(".0 [.1]", (a, b) -> {
@@ -172,7 +172,7 @@ public class P0Parse {
 			}).match("byte .0", a -> {
 				return FunpCoerce.of(Coerce.NUMBER, Coerce.BYTE, FunpNumber.ofNumber(num(a)));
 			}).match("capture (.0 => .1)", (a, b) -> {
-				return capture(lambdaSeparate(a, b));
+				return capture(bind().lambdaSeparate(a, b));
 			}).match("case || .0", a -> {
 				return new Object() {
 					private Funp d(Node n) {
@@ -183,24 +183,24 @@ public class P0Parse {
 			}).match("define .0 := .1 ~ .2", (a, b, c) -> {
 				var tree = Tree.decompose(a, TermOp.TUPLE_);
 				if (tree == null || !isId(tree.getLeft())) {
-					var lambda = lambda(a, c);
+					var lambda = bind().lambda(a, c);
 					return FunpDefine.of(lambda.vn, p(b), lambda.expr, Fdt.L_POLY);
 				} else
 					return null;
 				// return parse(Suite.subst("poly .1 | (.0 => .2)", m));
 			}).match("define .0 .1 := .2 ~ .3", (a, b, c, d) -> {
-				return define(Fdt.L_POLY, a, lambdaSeparate(b, c), d);
+				return define(Fdt.L_POLY, a, bind().lambdaSeparate(b, c), d);
 			}).match("define { .0 } ~ .1", (a, b) -> {
 				return defineList(a, b, Fdt.L_POLY);
 			}).match("define.global .0 := .1 ~ .2", (a, b, c) -> {
 				var tree = Tree.decompose(a, TermOp.TUPLE_);
 				if (tree == null || !isId(tree.getLeft())) {
-					var lambda = lambda(a, c);
+					var lambda = bind().lambda(a, c);
 					return FunpDefine.of(lambda.vn, p(b), lambda.expr, Fdt.G_POLY);
 				} else
 					return null;
 			}).match("define.global .0 .1 := .2 ~ .3", (a, b, c, d) -> {
-				return define(Fdt.G_POLY, a, lambdaSeparate(b, c), d);
+				return define(Fdt.G_POLY, a, bind().lambdaSeparate(b, c), d);
 			}).match("define.global { .0 } ~ .1", (a, b) -> {
 				return defineList(a, b, Fdt.G_POLY);
 			}).match("define.virtual .0 := .1 ~ .2", (a, b, c) -> {
@@ -214,30 +214,30 @@ public class P0Parse {
 			}).match("for! (.0 := .1 # .2 # .3 # .4)", (a, b, c, d, e) -> {
 				return do_(parse -> parse.fold(a, b, c, d, e));
 			}).match("if (`.0` = .1) then .2 else .3", (a, b, c, d) -> {
-				return bind(a, b, c, d);
+				return bind(). bind(a, b, c, d);
 			}).match("if .0 then .1 else .2", (a, b, c) -> {
 				return FunpIf.of(p(a), p(b), p(c));
 			}).match("let .0 := .1 ~ .2", (a, b, c) -> {
 				var tree = Tree.decompose(a, TermOp.TUPLE_);
 				if (tree == null || !isId(tree.getLeft())) {
-					var lambda = lambda(a, c);
+					var lambda = bind(Fdt.L_MONO).lambda(a, c);
 					return FunpDefine.of(lambda.vn, p(b), lambda.expr, Fdt.L_MONO);
 				} else
 					return null;
 				// return parse(Suite.subst(".1 | (.0 => .2)", m));
 			}).match("let .0 .1 := .2 ~ .3", (a, b, c, d) -> {
-				return define(Fdt.L_MONO, a, lambdaSeparate(b, c), d);
+				return define(Fdt.L_MONO, a, bind(Fdt.L_MONO).lambdaSeparate(b, c), d);
 			}).match("let { .0 } ~ .1", (a, b) -> {
 				return defineList(a, b, Fdt.L_MONO);
 			}).match("let.global .0 := .1 ~ .2", (a, b, c) -> {
 				var tree = Tree.decompose(a, TermOp.TUPLE_);
 				if (tree == null || !isId(tree.getLeft())) {
-					var lambda = lambda(a, c);
+					var lambda = bind(Fdt.G_MONO).lambda(a, c);
 					return FunpDefine.of(lambda.vn, p(b), lambda.expr, Fdt.G_MONO);
 				} else
 					return null;
 			}).match("let.global .0 .1 := .2 ~ .3", (a, b, c, d) -> {
-				return define(Fdt.G_MONO, a, lambdaSeparate(b, c), d);
+				return define(Fdt.G_MONO, a, bind(Fdt.G_MONO).lambdaSeparate(b, c), d);
 			}).match("let.global { .0 } ~ .1", (a, b) -> {
 				return defineList(a, b, Fdt.G_MONO);
 			}).match("me", () -> {
@@ -324,7 +324,7 @@ public class P0Parse {
 		}
 
 		private Funp fold(Node a, Node b, Node c, Node d, Node e) {
-			var lf = nv(doToken).lambda(a, true);
+			var lf = nv(doToken).bind().lambda(a, true);
 			var lc = lf.apply(c);
 			var ld = lf.apply(d);
 			var le = lf.apply(e);
@@ -367,24 +367,6 @@ public class P0Parse {
 					.map2(Pair::fst, Pair::snd);
 		}
 
-		private FunpLambda lambdaSeparate(Node a, Node b) {
-			return lambda(a, false).apply(b);
-		}
-
-		private FunpLambda lambda(Node a, Node b) {
-			return lambda(a, true).apply(b);
-		}
-
-		private Fun<Node, FunpLambda> lambda(Node a, boolean isPassDo) {
-			var isVar = isVar(a);
-			var vn = isVar ? Atom.name(a) : "l$" + Get.temp();
-			var nv = isPassDo ? nv(vn) : new Parse(vns.replace(vn).remove(doToken));
-			return b -> {
-				var f = isVar ? nv.p(b) : nv.bind(a, Atom.of(vn), b);
-				return FunpLambda.of(vn, f, false);
-			};
-		}
-
 		private int num(Node a) {
 			var s = a instanceof Atom ? Atom.name(a) : null;
 			if (s != null)
@@ -395,27 +377,59 @@ public class P0Parse {
 				return Funp_.fail(null, "not a number");
 		}
 
-		private Funp bind(Node a, Node b, Node c) {
-			return bind(a, b, c, Suite.parse("error"));
+		private Bind bind() {
+			return bind(Fdt.L_MONO);
 		}
 
-		private Funp bind(Node a, Node b, Node c, Node d) {
-			var vnsMutable = Mutable.of(PerSet.<String> empty());
+		private Bind bind(Fdt fdt) {
+			var bind = new Bind();
+			bind.fdt = fdt;
+			return bind;
+		}
 
-			Iterate<Funp> iter = be -> inspect.rewrite(be, Funp.class,
-					n_ -> n_.cast(FunpVariableNew.class, f -> f.apply(vn -> {
-						vnsMutable.update(vnsMutable.value().replace(vn));
-						return FunpVariable.of(vn);
-					})));
+		private class Bind {
+			private Fdt fdt;
 
-			var be = iter.apply(p(a));
-			var vns_ = vnsMutable.value();
-			var value = p(b);
-			var then = new Parse(vns_.streamlet().fold(vns, PerSet::add)).p(c);
-			var else_ = p(d);
-			var f0 = new P03Bind(vns_).bind(be, value, then, else_);
-			var f1 = FunpTypeCheck.of(be, value, f0);
-			return vns_.streamlet().<Funp> fold(f1, (f, vn) -> FunpDefine.of(vn, FunpDontCare.of(), f, Fdt.L_MONO));
+			private FunpLambda lambdaSeparate(Node a, Node b) {
+				return lambda(a, false).apply(b);
+			}
+
+			private FunpLambda lambda(Node a, Node b) {
+				return lambda(a, true).apply(b);
+			}
+
+			private Fun<Node, FunpLambda> lambda(Node a, boolean isPassDo) {
+				var isVar = isVar(a);
+				var vn = isVar ? Atom.name(a) : "l$" + Get.temp();
+				var nv = isPassDo ? nv(vn) : new Parse(vns.replace(vn).remove(doToken));
+				return b -> {
+					var f = isVar ? nv.p(b) : nv.bind(fdt).bind(a, Atom.of(vn), b);
+					return FunpLambda.of(vn, f, false);
+				};
+			}
+
+			private Funp bind(Node a, Node b, Node c) {
+				return bind(a, b, c, Suite.parse("error"));
+			}
+
+			private Funp bind(Node a, Node b, Node c, Node d) {
+				var vnsMutable = Mutable.of(PerSet.<String> empty());
+
+				Iterate<Funp> iter = be -> inspect.rewrite(be, Funp.class,
+						n_ -> n_.cast(FunpVariableNew.class, f -> f.apply(vn -> {
+							vnsMutable.update(vnsMutable.value().replace(vn));
+							return FunpVariable.of(vn);
+						})));
+
+				var be = iter.apply(p(a));
+				var vns_ = vnsMutable.value();
+				var value = p(b);
+				var then = new Parse(vns_.streamlet().fold(vns, PerSet::add)).p(c);
+				var else_ = p(d);
+				var f0 = new P03Bind(vns_).bind(be, value, then, else_);
+				var f1 = FunpTypeCheck.of(be, value, f0);
+				return vns_.streamlet().<Funp> fold(f1, (f, vn) -> FunpDefine.of(vn, FunpDontCare.of(), f, fdt));
+			}
 		}
 
 		private boolean isList(Node l) {
