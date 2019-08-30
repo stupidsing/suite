@@ -99,7 +99,7 @@ public class P0Parse {
 			).match("!! .0", a -> {
 				return checkDo(() -> FunpDoEvalIo.of(p(a)));
 			}).match("!! .0 ~ .1", (a, b) -> {
-				var lambda = bind().lambda(dontCare, b);
+				var lambda = bind(Fdt.L_MONO).lambda(dontCare, b);
 				return checkDo(() -> FunpDefine.of(lambda.vn, p(a), lambda.expr, Fdt.L_IOAP));
 			}).match(".0:.1 .2", (a, b, c) -> {
 				var c0 = Coerce.valueOf(Atom.name(b).toUpperCase());
@@ -113,12 +113,12 @@ public class P0Parse {
 			}).match(".0 .1 ~ .2", (a, b, c) -> {
 				if (isBang(a)) {
 					var apply = FunpApply.of(p(b), p(a));
-					var lambda = bind().lambda(dontCare, c);
+					var lambda = bind(Fdt.L_MONO).lambda(dontCare, c);
 					return checkDo(() -> FunpDefine.of(lambda.vn, apply, lambda.expr, Fdt.L_IOAP));
 				} else
 					return null;
 			}).match(".0 => .1", (a, b) -> {
-				return bind().lambdaSeparate(a, b);
+				return bind(Fdt.L_MONO).lambdaSeparate(a, b);
 			}).match(".0 | .1", (a, b) -> {
 				return FunpApply.of(p(a), p(b));
 			}).match(".0 [.1]", (a, b) -> {
@@ -172,7 +172,7 @@ public class P0Parse {
 			}).match("byte .0", a -> {
 				return FunpCoerce.of(Coerce.NUMBER, Coerce.BYTE, FunpNumber.ofNumber(num(a)));
 			}).match("capture (.0 => .1)", (a, b) -> {
-				return capture(bind().lambdaSeparate(a, b));
+				return capture(bind(Fdt.L_MONO).lambdaSeparate(a, b));
 			}).match("case || .0", a -> {
 				return new Object() {
 					private Funp d(Node n) {
@@ -214,7 +214,7 @@ public class P0Parse {
 			}).match("for! (.0 := .1 # .2 # .3 # .4)", (a, b, c, d, e) -> {
 				return do_(parse -> parse.fold(a, b, c, d, e));
 			}).match("if (`.0` = .1) then .2 else .3", (a, b, c, d) -> {
-				return bind(). bind(a, b, c, d);
+				return bind(Fdt.L_MONO).bind(a, b, c, d);
 			}).match("if .0 then .1 else .2", (a, b, c) -> {
 				return FunpIf.of(p(a), p(b), p(c));
 			}).match("let .0 := .1 ~ .2", (a, b, c) -> {
@@ -324,7 +324,7 @@ public class P0Parse {
 		}
 
 		private Funp fold(Node a, Node b, Node c, Node d, Node e) {
-			var lf = nv(doToken).bind().lambda(a, true);
+			var lf = nv(doToken).bind(Fdt.L_MONO).lambda(a, true);
 			var lc = lf.apply(c);
 			var ld = lf.apply(d);
 			var le = lf.apply(e);
