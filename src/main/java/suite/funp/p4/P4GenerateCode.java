@@ -168,8 +168,11 @@ public class P4GenerateCode {
 
 		return p4emit.generate(p4emit.label(), em -> {
 			labelPointer = em.spawn(em1 -> em1.emit(Insn.D, amd64.imm32(0l))).in;
-			freeChainPointer = em
-					.spawn(em1 -> em1.emit(Insn.DS, amd64.imm32(allocSizes.length * ps), amd64.imm8(0l))).in;
+
+			freeChainPointer = em.spawn(em1 -> em1.emit( //
+					Insn.DS, //
+					amd64.imm32(allocSizes.length * ps), //
+					amd64.imm8(0l))).in;
 
 			var prolog_amd64 = List.of( //
 					"MOV (RAX, DWORD +x00000009)", //
