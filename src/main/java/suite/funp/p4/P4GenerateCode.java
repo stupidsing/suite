@@ -108,21 +108,6 @@ public class P4GenerateCode {
 	private OpReg p2_eax = pointerRegs[axReg];
 	private OpReg p2_edx = pointerRegs[dxReg];
 
-	private OpImm labelPointer;
-	private OpImm freeChainPointer;
-
-	private int[] allocSizes = { //
-			4, //
-			8, 12, //
-			16, 20, 24, //
-			32, 40, 48, 56, //
-			64, 80, 96, 112, //
-			128, 160, 192, 224, //
-			256, 320, 384, 448, //
-			512, 640, 768, 896, //
-			1024, 1280, 1536, 1792, //
-			16777216, };
-
 	private Map<Object, Insn> insnByOp = Map.ofEntries( //
 			entry(TermOp.BIGOR_, Insn.OR), //
 			entry(TermOp.BIGAND, Insn.AND), //
@@ -167,13 +152,6 @@ public class P4GenerateCode {
 		var p = new Amd64Parse();
 
 		return p4emit.generate(p4emit.label(), em -> {
-			labelPointer = em.spawn(em1 -> em1.emit(Insn.D, amd64.imm32(0l))).in;
-
-			freeChainPointer = em.spawn(em1 -> em1.emit( //
-					Insn.DS, //
-					amd64.imm32(allocSizes.length * ps), //
-					amd64.imm8(0l))).in;
-
 			var prolog_amd64 = List.of( //
 					"MOV (RAX, DWORD +x00000009)", //
 					"XOR (RDI, RDI)", //
@@ -201,7 +179,7 @@ public class P4GenerateCode {
 			for (var i : isAmd64 ? prolog_amd64 : prolog_i686)
 				em.emit(p.parse(Suite.parse(i)));
 
-			em.mov(amd64.mem(labelPointer, ps), pointerRegs[axReg]);
+			alloc.init(em, pointerRegs[axReg]);
 
 			if (isUseEbp)
 				em.mov(_bp, _sp);
@@ -348,31 +326,10 @@ public class P4GenerateCode {
 			}).applyIf(FunpFramePointer.class, t -> {
 				return returnOp(compileFramePointer());
 			}).applyIf(FunpHeapAlloc.class, f -> f.apply(size -> {
-				return compileHeap(size, (c1, allocSize, fcp) -> {
-					var ra = isOutSpec ? pop0 : c1.rs.get(ps);
-					var labelEnd = em.label();
-
-					var labelAlloc = c1.spawn(c2 -> {
-						var pointer = amd64.mem(labelPointer, ps);
-						c2.em.mov(ra, pointer);
-						c2.em.addImm(pointer, allocSize);
-					}, labelEnd);
-
-					c1.em.mov(ra, fcp);
-					c1.em.emit(Insn.OR, ra, ra);
-					c1.em.emit(Insn.JZ, labelAlloc);
-					c1.mask(ra).mov(fcp, amd64.mem(ra, 0, ps));
-					c1.em.label(labelEnd);
-					return c1.returnOp(ra);
-				});
+				return alloc.alloc(this, size);
 			})).applyIf(FunpHeapDealloc.class, f -> f.apply((size, reference, expr) -> {
 				var out = compile(expr);
-				return mask(pop0, pop1, out.op0, out.op1).compileHeap(size, (c1, allocSize, fcp) -> {
-					var ref = c1.compilePsReg(reference);
-					c1.mask(ref).mov(amd64.mem(ref, 0, ps), fcp);
-					c1.mov(fcp, ref);
-					return out;
-				});
+				return alloc.dealloc(mask(pop0, pop1, out.op0, out.op1), size, reference, out);
 			})).applyIf(FunpIf.class, f -> f.apply((if_, then_, else_) -> {
 				Sink2<Compile0, Funp> compile0, compile1;
 				Source<CompileOut> out;
@@ -710,14 +667,6 @@ public class P4GenerateCode {
 				else
 					moveBlock.run();
 			}
-		}
-
-		private CompileOut compileHeap(int size, FixieFun3<Compile0, Integer, OpMem, CompileOut> fun) {
-			var pair = getAllocSize(size);
-			var rf = em.mov(rs.get(ps), freeChainPointer);
-			em.addImm(rf, pair.t0 * ps);
-			var fcp = amd64.mem(rf, 0, ps);
-			return fun.apply(mask(fcp), pair.t1, fcp);
 		}
 
 		// if operator is Insn.CMP, this would return a 1-byte operand.
@@ -1088,15 +1037,6 @@ public class P4GenerateCode {
 				sink.f(nc(rs_, fd_));
 		}
 
-		private IntIntPair getAllocSize(int size) {
-			for (var i = 0; i < allocSizes.length; i++) {
-				var allocSize = allocSizes[i];
-				if (size <= allocSize)
-					return IntIntPair.of(i, allocSize);
-			}
-			return fail();
-		}
-
 		private int getAlignedSize(int size) {
 			var ism1 = pushSize - 1;
 			return (size + ism1) & ~ism1;
@@ -1133,6 +1073,85 @@ public class P4GenerateCode {
 
 		private Compile0 nc(RegisterSet rs, int fd) {
 			return new Compile0(result, em, target, pop0, pop1, rs, fd);
+		}
+	}
+
+	private Alloc alloc = new Alloc();
+
+	private class Alloc {
+		private OpImm labelPointer;
+		private OpImm freeChainTablePointer;
+
+		private int[] allocSizes = { //
+				4, //
+				8, 12, //
+				16, 20, 24, //
+				32, 40, 48, 56, //
+				64, 80, 96, 112, //
+				128, 160, 192, 224, //
+				256, 320, 384, 448, //
+				512, 640, 768, 896, //
+				1024, 1280, 1536, 1792, //
+				16777216, };
+
+		private void init(Emit em, OpReg bufferStart) {
+			labelPointer = em.spawn(em1 -> em1.emit(Insn.D, amd64.imm32(0l))).in;
+
+			freeChainTablePointer = em.spawn(em1 -> em1.emit( //
+					Insn.DS, //
+					amd64.imm32(allocSizes.length * ps), //
+					amd64.imm8(0l))).in;
+
+			em.mov(amd64.mem(labelPointer, ps), bufferStart);
+		}
+
+		private CompileOut alloc(Compile0 c0, int size) {
+			return compileHeap(c0, size, (c1, allocSize, fcp) -> {
+				var ra = c0.isOutSpec ? c0.pop0 : c1.rs.get(ps);
+				var em = c1.em;
+				var labelEnd = em.label();
+
+				var labelAlloc = c1.spawn(c2 -> {
+					var pointer = amd64.mem(labelPointer, ps);
+					c2.em.mov(ra, pointer);
+					c2.em.addImm(pointer, allocSize);
+				}, labelEnd);
+
+				c1.em.mov(ra, fcp);
+				c1.em.emit(Insn.OR, ra, ra);
+				c1.em.emit(Insn.JZ, labelAlloc);
+				c1.mask(ra).mov(fcp, amd64.mem(ra, 0, ps));
+				c1.em.label(labelEnd);
+
+				return c1.returnOp(ra);
+			});
+		}
+
+		private CompileOut dealloc(Compile0 c0, int size, Funp reference, CompileOut out) {
+			return compileHeap(c0, size, (c1, allocSize, fcp) -> {
+				var ref = c1.compilePsReg(reference);
+				c1.mask(ref).mov(amd64.mem(ref, 0, ps), fcp);
+				c1.mov(fcp, ref);
+				return out;
+			});
+		}
+
+		private CompileOut compileHeap(Compile0 c0, int size, FixieFun3<Compile0, Integer, OpMem, CompileOut> fun) {
+			return getAllocSize(size).map((index, allocSize) -> {
+				var rf = c0.em.mov(c0.rs.get(ps), freeChainTablePointer);
+				c0.em.addImm(rf, index * ps);
+				var fcp = amd64.mem(rf, 0, ps);
+				return fun.apply(c0.mask(fcp), allocSize, fcp);
+			});
+		}
+
+		private IntIntPair getAllocSize(int size) {
+			for (var i = 0; i < allocSizes.length; i++) {
+				var allocSize = allocSizes[i];
+				if (size <= allocSize)
+					return IntIntPair.of(i, allocSize);
+			}
+			return fail();
 		}
 	}
 
