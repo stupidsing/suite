@@ -790,9 +790,9 @@ public class P4GenerateCode {
 		}
 
 		private OpReg compileLoadMasked(int size, Funp node, Operand opOther) {
-			var p0reg = pop0 != null ? amd64.regs(size)[pop0.reg] : null;
-			var op = isOutSpec && p0reg != opOther ? compileSpec(node, p0reg) : compileReg(size, node);
-			return em.mov(rs.contains(op) ? rs.mask(opOther).get(size) : op, op);
+			var rs1 = rs.mask(opOther);
+			var op = isOutSpec ? compileSpec(node, rs1.get(amd64.regs(size)[pop0.reg])) : compileReg(size, node);
+			return em.mov(rs.contains(op) ? rs1.get(size) : op, op);
 		}
 
 		private Operand compileRoutine(Sink<Compile0> sink) {
