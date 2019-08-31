@@ -477,7 +477,7 @@ public class P2InferType {
 			})).applyIf(FunpArray.class, f -> f.apply(elements -> {
 				var te = new Reference();
 				unify(n, type0, typeArrayOf(null, te));
-				var elementSize = getTypeSize(te);
+				var elementSize = elements.size() != 0 ? getTypeSize(te) : 0;
 				var offset = 0;
 				var list = new ArrayList<Pair<Funp, IntRange>>();
 				for (var element : elements) {
@@ -1044,8 +1044,8 @@ public class P2InferType {
 			return Funp_.booleanSize;
 		else if ((m = typePatDecor.match(n)) != null)
 			if ((d = typeDecorArray.match(m[0])) != null) {
-				var size = d[0];
-				return size instanceof Int ? getTypeSize(m[1]) * Int.num(size) : fail();
+				int size = Int.num(d[0]);
+				return size != 0 ? getTypeSize(m[1]) * size : 0;
 			} else if ((d = typeDecorIo.match(m[0])) != null)
 				return getTypeSize(m[1]);
 			else if ((d = typeDecorRef.match(m[0])) != null)
