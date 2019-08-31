@@ -329,7 +329,8 @@ public class P4GenerateCode {
 				return alloc.alloc(this, size);
 			})).applyIf(FunpHeapDealloc.class, f -> f.apply((size, reference, expr) -> {
 				var out = compile(expr);
-				return alloc.dealloc(mask(pop0, pop1, out.op0, out.op1), size, reference, out);
+				alloc.dealloc(mask(pop0, pop1, out.op0, out.op1), size, reference);
+				return out;
 			})).applyIf(FunpIf.class, f -> f.apply((if_, then_, else_) -> {
 				Sink2<Compile0, Funp> compile0, compile1;
 				Source<CompileOut> out;
@@ -1127,12 +1128,12 @@ public class P4GenerateCode {
 			});
 		}
 
-		private CompileOut dealloc(Compile0 c0, int size, Funp reference, CompileOut out) {
-			return compileHeap(c0, size, (c1, allocSize, fcp) -> {
+		private void dealloc(Compile0 c0, int size, Funp reference) {
+			compileHeap(c0, size, (c1, allocSize, fcp) -> {
 				var ref = c1.compilePsReg(reference);
 				c1.mask(ref).mov(amd64.mem(ref, 0, ps), fcp);
 				c1.mov(fcp, ref);
-				return out;
+				return null;
 			});
 		}
 
