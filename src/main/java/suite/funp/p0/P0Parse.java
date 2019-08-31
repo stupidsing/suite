@@ -42,6 +42,7 @@ import suite.funp.P0.FunpIf;
 import suite.funp.P0.FunpIndex;
 import suite.funp.P0.FunpIo;
 import suite.funp.P0.FunpLambda;
+import suite.funp.P0.FunpLambdaFree;
 import suite.funp.P0.FunpMe;
 import suite.funp.P0.FunpNumber;
 import suite.funp.P0.FunpPredefine;
@@ -262,6 +263,8 @@ public class P0Parse {
 				return FunpTypeCheck.of(p(a), null, p(b));
 			}).match("type .0 = .1 ~ .2", (a, b, c) -> {
 				return FunpTypeCheck.of(p(a), p(b), p(c));
+			}).match("uncapture .0 ~ .1", (a, b) -> {
+				return FunpLambdaFree.of(p(a), p(b));
 			}).match(Atom.FALSE, () -> {
 				return FunpBoolean.of(false);
 			}).match(Atom.NIL, () -> {

@@ -374,6 +374,22 @@ public class P0 {
 		}
 	}
 
+	public static class FunpLambdaFree implements Funp, P2.End {
+		public Funp lambda;
+		public Funp expr;
+
+		public static FunpLambdaFree of(Funp lambda, Funp expr) {
+			var f = new FunpLambdaFree();
+			f.lambda = lambda;
+			f.expr = expr;
+			return f;
+		}
+
+		public <R> R apply(FixieFun2<Funp, Funp, R> fun) {
+			return fun.apply(lambda, expr);
+		}
+	}
+
 	public static class FunpMe implements Funp, P4.End {
 		public static FunpMe of() {
 			return new FunpMe();

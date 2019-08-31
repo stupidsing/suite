@@ -60,6 +60,7 @@ import suite.funp.P0.FunpIf;
 import suite.funp.P0.FunpIndex;
 import suite.funp.P0.FunpIo;
 import suite.funp.P0.FunpLambda;
+import suite.funp.P0.FunpLambdaFree;
 import suite.funp.P0.FunpMe;
 import suite.funp.P0.FunpNumber;
 import suite.funp.P0.FunpReference;
@@ -320,6 +321,9 @@ public class P2InferType {
 						.replace(frameVar.vn, Pair.of(Fdt.L_MONO, tf)) //
 						.replace(vn, Pair.of(Fdt.L_MONO, tv));
 				return typeLambdaOf(tv, new Infer(env1, checks, null).infer(expr));
+			})).applyIf(FunpLambdaFree.class, f -> f.apply((lambda, expr) -> {
+				unify(infer(lambda), typeLambdaOf(new Reference(), new Reference()));
+				return infer(expr);
 			})).applyIf(FunpMe.class, f -> {
 				return me;
 			}).applyIf(FunpNumber.class, f -> {
@@ -612,6 +616,8 @@ public class P2InferType {
 				var expr1 = new Erase(1, env1, null).erase(expr);
 				var expr2 = FunpHeapDealloc.of(size, FunpMemory.of(FunpFramePointer.of(), 0, ps), expr1);
 				return eraseRoutine(lt, fp, expr2);
+			})).applyIf(FunpLambdaFree.class, f -> f.apply((lambda, expr) -> {
+				return FunpHeapDealloc.of(fail(), FunpMemory.of(getAddress(lambda), 0, ps), erase(expr));
 			})).applyIf(FunpMe.class, f -> {
 				return me.get(scope);
 			}).applyIf(FunpReference.class, f -> f.apply(expr -> {
