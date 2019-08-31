@@ -8,11 +8,11 @@ import java.util.Map;
 import java.util.Set;
 
 import primal.MoreVerbs.Read;
+import primal.MoreVerbs.ReadLines;
 import primal.adt.Pair;
 import primal.adt.map.ListMultimap;
 import primal.streamlet.Streamlet;
 import suite.streamlet.As;
-import suite.streamlet.ReadLines;
 
 public class DpkgUtil {
 

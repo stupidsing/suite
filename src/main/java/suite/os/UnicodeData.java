@@ -6,9 +6,9 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
 
+import primal.MoreVerbs.ReadLines;
 import primal.adt.Pair;
 import suite.streamlet.As;
-import suite.streamlet.ReadLines;
 
 public class UnicodeData {
 

@@ -5,10 +5,10 @@ import java.util.List;
 import java.util.Map;
 
 import primal.MoreVerbs.Read;
+import primal.MoreVerbs.ReadLines;
 import primal.MoreVerbs.Split;
 import primal.Verbs.Build;
 import suite.streamlet.As;
-import suite.streamlet.ReadLines;
 
 public class Grammar {
 

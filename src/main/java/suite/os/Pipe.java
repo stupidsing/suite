@@ -8,10 +8,10 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 
+import primal.MoreVerbs.ReadLines;
 import primal.Nouns.Utf8;
 import primal.os.Log_;
 import primal.streamlet.Streamlet;
-import suite.streamlet.ReadLines;
 import suite.util.Copy;
 
 public class Pipe {
