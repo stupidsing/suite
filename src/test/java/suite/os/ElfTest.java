@@ -58,6 +58,11 @@ public class ElfTest {
 	}
 
 	@Test
+	public void testCapture() {
+		test(46, "define m := 31 ~ let l := capture (n => n + m) ~ 15 | l", "");
+	}
+
+	@Test
 	public void testFold() {
 		test(100, "fold (n := 0 # n < 100 # n + 1 # n)", "");
 	}

@@ -40,7 +40,7 @@ public class FunpTest {
 
 	@Test
 	public void testCapture() {
-		test(31, "define m := 31 ~ 15 | capture (n => m)");
+		test(46, "define m := 31 ~ let l := capture (n => n + m) ~ 15 | l");
 
 		// unreliable when optimized. the optimizer would substitute the variable
 		// definition that makes the capture time latter than the assignment to m.
