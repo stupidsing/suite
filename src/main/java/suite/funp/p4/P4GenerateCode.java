@@ -9,8 +9,6 @@ import java.util.Map;
 import java.util.Set;
 
 import primal.MoreVerbs.Read;
-import primal.adt.Fixie;
-import primal.adt.Fixie_.Fixie3;
 import primal.adt.Fixie_.FixieFun5;
 import primal.adt.Mutable;
 import primal.adt.Pair;
@@ -21,7 +19,6 @@ import primal.fp.Funs2.Sink2;
 import primal.primitive.IntPrim;
 import primal.primitive.IntPrim.IntObj_Obj;
 import primal.primitive.adt.Bytes;
-import primal.primitive.adt.pair.IntIntPair;
 import suite.Suite;
 import suite.assembler.Amd64;
 import suite.assembler.Amd64.Insn;
@@ -135,6 +132,7 @@ public class P4GenerateCode {
 			entry(TreeUtil.SHL, Insn.SHL), //
 			entry(TreeUtil.SHR, Insn.SHR));
 
+	private P4Alloc p4alloc = new P4Alloc();
 	private P4DecomposeOperand p4deOp;
 	private P4Emit p4emit = new P4Emit();
 
@@ -180,7 +178,7 @@ public class P4GenerateCode {
 			for (var i : isAmd64 ? prolog_amd64 : prolog_i686)
 				em.emit(p.parse(Suite.parse(i)));
 
-			alloc.init(em, pointerRegs[axReg]);
+			p4alloc.init(em, pointerRegs[axReg]);
 
 			if (isUseEbp)
 				em.mov(_bp, _sp);
@@ -202,14 +200,14 @@ public class P4GenerateCode {
 		return asm.assemble(offset, instructions, dump);
 	}
 
-	private class Compile0 {
-		private Emit em;
-		private Result result;
-		private boolean isOutSpec;
-		private FunpMemory target; // only for Result.ASSIGN
-		private OpReg pop0, pop1; // only for Result.ISSPEC, PS2SPEC
-		private RegisterSet rs;
-		private int fd;
+	public class Compile0 {
+		public final Emit em;
+		public final Result result;
+		public final boolean isOutSpec;
+		public final FunpMemory target; // only for Result.ASSIGN
+		public final OpReg pop0, pop1; // only for Result.ISSPEC, PS2SPEC
+		public final RegisterSet rs;
+		public final int fd;
 
 		private Compile0(Result result, Emit emit, FunpMemory target, OpReg pop0, OpReg pop1, RegisterSet rs, int fd) {
 			this.em = emit;
@@ -328,16 +326,16 @@ public class P4GenerateCode {
 				return returnOp(compileFramePointer());
 			}).applyIf(FunpHeapAlloc.class, f -> f.apply(size -> {
 				if (0 <= size)
-					return alloc.alloc(this, size);
+					return p4alloc.alloc(this, size);
 				else
-					return alloc.allocVariableSize(this, size);
+					return p4alloc.allocVs(this, size);
 			})).applyIf(FunpHeapDealloc.class, f -> f.apply((size, reference, expr) -> {
 				var out = compile(expr);
 				var c1 = mask(pop0, pop1, out.op0, out.op1);
 				if (0 <= size)
-					alloc.dealloc(c1, size, reference);
+					p4alloc.dealloc(c1, size, reference);
 				else
-					alloc.deallocVariableSize(c1, reference);
+					p4alloc.deallocVs(c1, reference);
 				return out;
 			})).applyIf(FunpIf.class, f -> f.apply((if_, then_, else_) -> {
 				Sink2<Compile0, Funp> compile0, compile1;
@@ -512,7 +510,7 @@ public class P4GenerateCode {
 				return fail();
 		}
 
-		private CompileOut returnDontCare() {
+		public CompileOut returnDontCare() {
 			var regs = amd64.regs(result.regSize);
 			if (result.t == Rt.ASSIGN || result.t == Rt.SPEC)
 				return new CompileOut();
@@ -524,7 +522,7 @@ public class P4GenerateCode {
 				return fail();
 		}
 
-		private CompileOut returnOp(Operand op) {
+		public CompileOut returnOp(Operand op) {
 			if (result.t == Rt.ASSIGN) {
 				var opt0 = p4deOp.decomposeFunpMemory(fd, target);
 				var opt1 = opt0 != null //
@@ -544,7 +542,7 @@ public class P4GenerateCode {
 			return new CompileOut();
 		}
 
-		private CompileOut return2Op(Operand op0, Operand op1) {
+		public CompileOut return2Op(Operand op0, Operand op1) {
 			var size0 = op0.size;
 			var size1 = op1.size;
 
@@ -935,23 +933,23 @@ public class P4GenerateCode {
 			nc(ASSIGN, target, null, null).compile(n);
 		}
 
-		private Operand compileIsOp(Funp n) {
+		public Operand compileIsOp(Funp n) {
 			return compileOp(is, n);
 		}
 
-		private OpReg compileIsReg(Funp n) {
+		public OpReg compileIsReg(Funp n) {
 			return compileReg(is, n);
 		}
 
-		private Operand compilePsOp(Funp n) {
+		public Operand compilePsOp(Funp n) {
 			return compileOp(ps, n);
 		}
 
-		private OpReg compilePsReg(Funp n) {
+		public OpReg compilePsReg(Funp n) {
 			return compileReg(ps, n);
 		}
 
-		private CompileOut compilePs2Op(Funp n) {
+		public CompileOut compilePs2Op(Funp n) {
 			return compile2Op(ps, n);
 		}
 
@@ -1003,7 +1001,7 @@ public class P4GenerateCode {
 			return opResult;
 		}
 
-		private OpReg lea(OpMem opMem) {
+		public OpReg lea(OpMem opMem) {
 			var op = em.lea(opMem);
 			if (op instanceof OpReg)
 				return (OpReg) op;
@@ -1015,7 +1013,7 @@ public class P4GenerateCode {
 			}
 		}
 
-		private <T extends Operand> T mov(T op0, Operand op1) {
+		public <T extends Operand> T mov(T op0, Operand op1) {
 			if (op0 instanceof OpMem && op1 instanceof OpMem) {
 				var oldOp1 = op1;
 				em.mov(op1 = rs.mask(op0, op1).get(op1.size, isAmd64), oldOp1);
@@ -1051,15 +1049,15 @@ public class P4GenerateCode {
 			return (size + ism1) & ~ism1;
 		}
 
-		private Compile0 mask(Operand... ops) {
+		public Compile0 mask(Operand... ops) {
 			return nc(rs.mask(ops), fd);
 		}
 
-		private OpImmLabel spawn(Sink<Compile0> sink) {
+		public OpImmLabel spawn(Sink<Compile0> sink) {
 			return spawn(sink, null);
 		}
 
-		private OpImmLabel spawn(Sink<Compile0> sink, OpImmLabel out) {
+		public OpImmLabel spawn(Sink<Compile0> sink, OpImmLabel out) {
 			return spawn(em.label(), sink, out);
 		}
 
@@ -1085,105 +1083,8 @@ public class P4GenerateCode {
 		}
 	}
 
-	private Alloc alloc = new Alloc();
-
-	private class Alloc {
-		private OpImm labelPointer;
-		private OpImm freeChainTablePointer;
-
-		private int[] allocSizes = { //
-				4, //
-				8, 12, //
-				16, 20, 24, //
-				32, 40, 48, 56, //
-				64, 80, 96, 112, //
-				128, 160, 192, 224, //
-				256, 320, 384, 448, //
-				512, 640, 768, 896, //
-				1024, 1280, 1536, 1792, //
-				16777216, };
-
-		private void init(Emit em, OpReg bufferStart) {
-			labelPointer = em.spawn(em1 -> em1.emit(Insn.D, amd64.imm32(0l))).in;
-
-			freeChainTablePointer = em.spawn(em1 -> em1.emit( //
-					Insn.DS, //
-					amd64.imm32(allocSizes.length * ps), //
-					amd64.imm8(0l))).in;
-
-			em.mov(amd64.mem(labelPointer, ps), bufferStart);
-		}
-
-		private CompileOut allocVariableSize(Compile0 c0, int size) {
-			return alloc_(c0, size + ps).map((c1, pair, r) -> {
-				c1.em.mov(amd64.mem(r, 0, ps), amd64.imm32(pair.t0 * ps));
-				c1.em.addImm(r, ps);
-				return c1.returnOp(r);
-			});
-		}
-
-		private void deallocVariableSize(Compile0 c0, Funp reference) {
-			var ref = c0.compilePsReg(reference);
-			c0.em.addImm(ref, -ps);
-			dealloc(c0, ref, amd64.mem(ref, 0, ps));
-		}
-
-		private CompileOut alloc(Compile0 c0, int size) {
-			return alloc_(c0, size).map((c1, pair, r) -> c1.returnOp(r));
-		}
-
-		private Fixie3<Compile0, IntIntPair, OpReg> alloc_(Compile0 c0, int size) {
-			var pair = getAllocSize(size);
-			var rf = c0.em.mov(c0.rs.get(ps), freeChainTablePointer);
-			c0.em.addImm(rf, pair.t0 * ps);
-			var fcp = amd64.mem(rf, 0, ps);
-
-			var c1 = c0.mask(fcp);
-			var ra = c0.isOutSpec ? c0.pop0 : c1.rs.get(ps);
-			var labelEnd = c1.em.label();
-
-			c1.em.mov(ra, fcp);
-			c1.em.emit(Insn.OR, ra, ra);
-			c1.em.emit(Insn.JZ, c1.spawn(c2 -> {
-				var pointer = amd64.mem(labelPointer, ps);
-				c2.em.mov(ra, pointer);
-				c2.em.addImm(pointer, pair.t1);
-			}, labelEnd));
-
-			c1.mask(ra).mov(fcp, amd64.mem(ra, 0, ps));
-			c1.em.label(labelEnd);
-
-			return Fixie.of(c1, pair, ra);
-		}
-
-		private void dealloc(Compile0 c0, int size, Funp reference) {
-			var ref = c0.compilePsReg(reference);
-			dealloc(c0, ref, amd64.imm(size * ps, ps));
-		}
-
-		private void dealloc(Compile0 c0, OpReg ref, Operand opOffset) {
-			var c1 = c0.mask(ref);
-			var rf = c1.em.mov(c1.rs.get(ps), freeChainTablePointer);
-			c1.em.emit(Insn.ADD, rf, opOffset);
-			var fcp = amd64.mem(rf, 0, ps);
-
-			var c2 = c1.mask(fcp);
-			c2.mov(amd64.mem(ref, 0, ps), fcp);
-			c2.mov(fcp, ref);
-		}
-
-		private IntIntPair getAllocSize(int size) {
-			for (var i = 0; i < allocSizes.length; i++) {
-				var allocSize = allocSizes[i];
-				if (size <= allocSize)
-					return IntIntPair.of(i, allocSize);
-			}
-			return fail();
-		}
-	}
-
-	private class CompileOut {
-		private Operand op0, op1;
+	public class CompileOut {
+		public final Operand op0, op1;
 
 		private CompileOut() {
 			this(null);
