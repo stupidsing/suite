@@ -162,6 +162,7 @@ public class P2InferType {
 					&& (getTypeSize(t) == is || failBool("invalid return type"));
 
 			if (b) {
+				// first pass to estimate variable usage; second pass to assign registers to variables
 				var erase = new Erase(0, PerMap.empty(), null);
 				erase.erase(n2); // first pass
 				return erase.erase(n2); // second pass
