@@ -136,9 +136,10 @@ public class P21CaptureLambda {
 				).applyIf(FunpDoAssignVar.class, f -> f.apply((var, value, expr) -> {
 					var accessor = accessors.get(var);
 					if (accessor != null) {
+						var value_ = c(value);
 						var ref = FunpReference.of(accessor);
-						var assign = FunpDoAssignRef.of(ref, c(value), c(expr));
-						return FunpTypeAssign.of(var, value, assign);
+						var assign = FunpDoAssignRef.of(ref, value_, c(expr));
+						return FunpTypeAssign.of(var, value_, assign);
 					} else
 						return null;
 				})).applyIf(FunpLambda.class, f -> f.apply((vn, expr, isCapture) -> {

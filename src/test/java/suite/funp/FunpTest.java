@@ -132,6 +132,8 @@ public class FunpTest {
 				+ "	{ g, } \n" //
 				+ "~ \n" //
 				+ "() | module/g");
+
+		test(9, "define.global max (a, b) := if (a < b) then b else a ~ max (8, 9)");
 	}
 
 	@Test
