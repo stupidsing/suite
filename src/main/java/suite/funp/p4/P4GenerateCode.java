@@ -998,9 +998,11 @@ public class P4GenerateCode {
 				}
 				em.jumpLabel(neqLabel, endLabel);
 			}, _cx, _si, _di);
+
 			return opResult;
 		}
 
+		// loads the address of a memory operand
 		public OpReg lea(OpMem opMem) {
 			var op = em.lea(opMem);
 			if (op instanceof OpReg)
@@ -1013,6 +1015,7 @@ public class P4GenerateCode {
 			}
 		}
 
+		// allows moving any operand to another; uses an intermediate register if required
 		public <T extends Operand> T mov(T op0, Operand op1) {
 			if (op0 instanceof OpMem && op1 instanceof OpMem) {
 				var oldOp1 = op1;
