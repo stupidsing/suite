@@ -1,16 +1,15 @@
-define io := consult "io.fp" ~
+define.global io := consult "io.fp" ~
 
-define {
+define.global {
 	!get.number,
 	!put.line,
 	!put.number,
+	!put.string,
 } := io ~
-
-define !put.string := io/!put.string ~
 
 consult "linux.fp" ~
 
-define !guess () := do!
+define.global !guess () := do!
 	let answer := !asm.rdtscp and +x7FFFFFFF % 100 ~
 	--!put.string "I am telling you, it is " ~
 	--!put.number answer ~
