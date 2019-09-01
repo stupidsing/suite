@@ -7,6 +7,7 @@ import java.util.HashSet;
 import primal.MoreVerbs.Read;
 import primal.Verbs.Equals;
 import primal.Verbs.Reverse;
+import primal.adt.Pair;
 import primal.fp.Funs.Iterate;
 import primal.persistent.PerMap;
 import primal.primitive.adt.IntMutable;
@@ -106,7 +107,7 @@ public class P10Inline {
 		return new Object() {
 			private Funp inline(Funp node_) {
 				return inspect.rewrite(node_, Funp.class, n0 -> {
-					var vns = new ArrayList<String>();
+					var vns = new ArrayList<Pair<String, Fdt>>();
 					FunpDoAssignVar assign;
 					FunpTypeCheck check;
 					FunpDefine define;
@@ -114,7 +115,7 @@ public class P10Inline {
 					while ((define = n0.cast(FunpDefine.class)) != null //
 							&& Fdt.isLocal(define.fdt) //
 							&& define.value instanceof FunpDontCare) {
-						vns.add(define.vn);
+						vns.add(Pair.of(define.vn, define.fdt));
 						n0 = define.expr;
 					}
 
@@ -125,16 +126,19 @@ public class P10Inline {
 						var vn = assign.var.vn;
 						var n1 = assign.expr;
 						var n2 = check != null ? FunpTypeCheck.of(check.left, check.right, n1) : n1;
-						var b = false;
+						Fdt fdt = null;
 
-						for (var vn_ : Reverse.of(vns))
+						for (var pair : Reverse.of(vns)) {
+							var vn_ = pair.k;
+							var fdt_ = pair.v;
 							if (!Equals.string(vn, vn_))
-								n2 = FunpDefine.of(vn_, FunpDontCare.of(), n2, Fdt.L_MONO);
+								n2 = FunpDefine.of(vn_, FunpDontCare.of(), n2, fdt_);
 							else
-								b = true;
+								fdt = fdt_;
+						}
 
-						if (b)
-							return FunpDefine.of(vn, assign.value, inline(n2), Fdt.L_MONO);
+						if (fdt != null)
+							return FunpDefine.of(vn, assign.value, inline(n2), fdt);
 					}
 
 					return null;
