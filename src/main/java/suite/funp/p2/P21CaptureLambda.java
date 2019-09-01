@@ -23,6 +23,7 @@ import suite.funp.P0.FunpField;
 import suite.funp.P0.FunpLambda;
 import suite.funp.P0.FunpReference;
 import suite.funp.P0.FunpStruct;
+import suite.funp.P0.FunpTypeCheck;
 import suite.funp.P0.FunpVariable;
 import suite.funp.P2.FunpLambdaCapture;
 import suite.inspect.Inspect;
@@ -134,7 +135,11 @@ public class P21CaptureLambda {
 				return n.sw( //
 				).applyIf(FunpDoAssignVar.class, f -> f.apply((var, value, expr) -> {
 					var accessor = accessors.get(var);
-					return accessor != null ? FunpDoAssignRef.of(FunpReference.of(accessor), c(value), c(expr)) : null;
+					if (accessor != null) {
+						var assign = FunpDoAssignRef.of(FunpReference.of(accessor), c(value), c(expr));
+						return FunpTypeCheck.of(var, value, assign);
+					} else
+						return null;
 				})).applyIf(FunpLambda.class, f -> f.apply((vn, expr, isCapture) -> {
 					var li = infoByLambda.get(f);
 					var captures = li.captures;
