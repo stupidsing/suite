@@ -413,4 +413,22 @@ public class P2 {
 		}
 	}
 
+	public static class FunpTypeAssign implements Funp, P2.End {
+		public FunpVariable left;
+		public Funp right;
+		public Funp expr;
+
+		public static FunpTypeAssign of(FunpVariable left, Funp right, Funp expr) {
+			var f = new FunpTypeAssign();
+			f.left = left;
+			f.right = right;
+			f.expr = expr;
+			return f;
+		}
+
+		public <R> R apply(FixieFun3<FunpVariable, Funp, Funp, R> fun) {
+			return fun.apply(left, right, expr);
+		}
+	}
+
 }

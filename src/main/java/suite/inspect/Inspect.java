@@ -1,4 +1,4 @@
-package suite.inspect;
+	package suite.inspect;
 
 import static primal.statics.Rethrow.ex;
 
@@ -188,11 +188,14 @@ public class Inspect {
 		var clazz = t0.getClass();
 		@SuppressWarnings("unchecked")
 		var t1 = (T) Read.from(clazz.getConstructors()).uniqueResult().newInstance();
-		for (var field : fields(clazz)) {
-			var v0 = field.get(t0);
-			var v1 = mapper.apply(v0);
-			field.set(t1, v1);
-		}
+		for (var field : fields(clazz))
+			try {
+				var v0 = field.get(t0);
+				var v1 = mapper.apply(v0);
+				field.set(t1, v1);
+			} catch (Exception ex) {
+				throw new RuntimeException("in field " + clazz.getSimpleName() + "." + field.getName(), ex);
+			}
 		return t1;
 	}
 

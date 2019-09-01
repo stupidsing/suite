@@ -97,6 +97,7 @@ import suite.funp.P2.FunpRoutine2;
 import suite.funp.P2.FunpRoutineIo;
 import suite.funp.P2.FunpSaveRegisters0;
 import suite.funp.P2.FunpSaveRegisters1;
+import suite.funp.P2.FunpTypeAssign;
 import suite.inspect.Inspect;
 import suite.lp.Trail;
 import suite.lp.doer.BinderRecursive;
@@ -424,6 +425,9 @@ public class P2InferType {
 				unify(n, infer(lhs), typeNumber);
 				unify(n, infer(rhs), typeNumber);
 				return typeNumber;
+			})).applyIf(FunpTypeAssign.class, f -> f.apply((lhs, rhs, expr) -> {
+				unify(n, getVariable(lhs, false), infer(rhs));
+				return infer(expr);
 			})).applyIf(FunpTypeCheck.class, f -> f.apply((lhs, rhs, expr) -> {
 				Node te;
 				if (rhs != null) {
@@ -485,7 +489,9 @@ public class P2InferType {
 					list.add(Pair.of(erase(element), IntRange.of(offset0, offset += elementSize)));
 				}
 				return FunpData.of(list);
-			})).applyIf(FunpTypeCheck.class, f -> f.apply((left, right, expr) -> {
+			})).applyIf(FunpTypeAssign.class, f -> f.apply((lhs, rhs, expr) -> {
+				return erase(expr);
+			})).applyIf(FunpTypeCheck.class, f -> f.apply((lhs, rhs, expr) -> {
 				return erase(expr);
 			})).applyIf(FunpDefine.class, f -> f.apply((vn, value, expr, fdt) -> {
 				if (Fdt.isGlobal(fdt)) {
@@ -802,7 +808,7 @@ public class P2InferType {
 					}).applyIf(FunpVariable.class, f -> f.apply(vn -> {
 						return env.get(vn).getAddress(scope);
 					})).applyIf(Funp.class, f -> {
-						return Funp_.fail(f, "requires pre-definition");
+						return Funp_.fail(f, "requires pre-definition of a " + f);
 					}).nonNullResult();
 				}
 			}.getAddress(expr);
