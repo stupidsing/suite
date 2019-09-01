@@ -190,7 +190,7 @@ public class P0Parse {
 					return null;
 				// return parse(Suite.subst("poly .1 | (.0 => .2)", m));
 			}).match("define .0 .1 := .2 ~ .3", (a, b, c, d) -> {
-				return define(Fdt.L_POLY, a, bind().lambdaSeparate(b, c), d);
+				return define(Fdt.L_POLY, a, bind(Fdt.L_MONO).lambdaSeparate(b, c), d);
 			}).match("define { .0 } ~ .1", (a, b) -> {
 				return defineList(a, b, Fdt.L_POLY);
 			}).match("define.global .0 := .1 ~ .2", (a, b, c) -> {
@@ -201,7 +201,7 @@ public class P0Parse {
 				} else
 					return null;
 			}).match("define.global .0 .1 := .2 ~ .3", (a, b, c, d) -> {
-				return define(Fdt.G_POLY, a, bind().lambdaSeparate(b, c), d);
+				return define(Fdt.G_POLY, a, bind(Fdt.L_MONO).lambdaSeparate(b, c), d);
 			}).match("define.global { .0 } ~ .1", (a, b) -> {
 				return defineList(a, b, Fdt.G_POLY);
 			}).match("define.virtual .0 := .1 ~ .2", (a, b, c) -> {
@@ -238,7 +238,7 @@ public class P0Parse {
 				} else
 					return null;
 			}).match("let.global .0 .1 := .2 ~ .3", (a, b, c, d) -> {
-				return define(Fdt.G_MONO, a, bind(Fdt.G_MONO).lambdaSeparate(b, c), d);
+				return define(Fdt.G_MONO, a, bind(Fdt.L_MONO).lambdaSeparate(b, c), d);
 			}).match("let.global { .0 } ~ .1", (a, b) -> {
 				return defineList(a, b, Fdt.G_MONO);
 			}).match("me", () -> {
