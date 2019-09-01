@@ -100,8 +100,8 @@ public class P10Inline {
 		return new Rename(PerMap.empty()).rename(node);
 	}
 
-	// Before - define i := memory ~ assign (i <= value)
-	// After - define i := value
+	// Before - define i := memory ~ assign i := value ~ expr
+	// After - define i := value ~ expr
 	private Funp inlineDefineAssigns(Funp node) {
 		return new Object() {
 			private Funp inline(Funp node_) {
