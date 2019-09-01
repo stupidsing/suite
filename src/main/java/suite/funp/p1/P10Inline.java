@@ -28,6 +28,7 @@ import suite.funp.P0.FunpTagId;
 import suite.funp.P0.FunpTagValue;
 import suite.funp.P0.FunpTypeCheck;
 import suite.funp.P0.FunpVariable;
+import suite.inspect.Dump;
 import suite.inspect.Inspect;
 import suite.node.util.Singleton;
 
@@ -46,7 +47,9 @@ public class P10Inline {
 			node = 0 < f4 ? inlineTags(node) : node;
 		}
 
-		// Dump.line(node);
+		if (Boolean.FALSE)
+			Dump.line(node);
+
 		return node;
 	}
 
