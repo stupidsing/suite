@@ -96,11 +96,12 @@ public class FunpTest {
 	public void testDefine() {
 		test(4, "define i := 3 ~ i + 1");
 		test(4, "define f i := i + 1 ~ 3 | f");
-		test(1, "let.global a := [0, 1, 2,] ~ a [1]");
+		test(1, "define.global a := [0, 1, 2,] ~ a [1]");
 		test(1, "define { a: 1, b: (() => me/a), c: 3, } ~ b ()");
 		test(4, "define (a, b) := (3, 4) ~ b");
 		test(4, "define [a, b,] := [3, 4,] ~ b");
 		test(4, "define { a: av, b: bv, } := { a: 3, b: 4, } ~ bv");
+
 	}
 
 	@Test
@@ -155,6 +156,17 @@ public class FunpTest {
 	@Test
 	public void testLambdaReturn() {
 		test(2, "1 | (0 | (a => b => b + 1))");
+	}
+
+	@Test
+	public void testLet() {
+		test(4, "let i := 3 ~ i + 1");
+		test(4, "let f i := i + 1 ~ 3 | f");
+		test(1, "let.global a := [0, 1, 2,] ~ a [1]");
+		test(1, "let { a: 1, b: (() => me/a), c: 3, } ~ b ()");
+		test(4, "let (a, b) := (3, 4) ~ b");
+		test(4, "let [a, b,] := [3, 4,] ~ b");
+		test(4, "let { a: av, b: bv, } := { a: 3, b: 4, } ~ bv");
 	}
 
 	@Test
