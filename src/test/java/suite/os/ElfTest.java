@@ -29,7 +29,7 @@ public class ElfTest {
 
 	@Test
 	public void testAllocate() {
-		test(0, "let alloc := consult \"allocate.fp\" ~ 0", "");
+		test(0, "let alloc := consult allocate.fp ~ 0", "");
 	}
 
 	@Test
@@ -69,7 +69,7 @@ public class ElfTest {
 
 	@Test
 	public void testGuess() {
-		var program = "do! (consult \"guess.fp\")/!guess {}";
+		var program = "do! (consult guess.fp)/!guess {}";
 		elf.write(offset -> Funp_.main(false).compile(offset, program).v, Tmp.path("guess"));
 		elf.write(offset -> Funp_.main(true).compile(offset, program).v, Tmp.path("guess"));
 	}
@@ -79,14 +79,14 @@ public class ElfTest {
 	@Test
 	public void testIo() {
 		var text = "garbage\n";
-		var program = "do! (consult \"io.fp\")/!cat {}";
+		var program = "do! (consult io.fp)/!cat {}";
 		test(0, program, text);
 	}
 
 	@Test
 	public void testNumbers() {
 		test(0, "" //
-				+ "let { !get.number: !gn, !put.number: !pn, } := consult \"io.fp\" ~ \n" //
+				+ "let { !get.number: !gn, !put.number: !pn, } := consult io.fp ~ \n" //
 				+ "do! ( \n" //
 				+ "let m := type number !gn {} ~ \n" //
 				+ "let n := type number !gn {} ~ \n" //
@@ -98,16 +98,16 @@ public class ElfTest {
 
 	@Test
 	public void testPut() {
-		test(0, "do! (!! (consult \"io.fp\")/!put.char byte 'A' ~ 0)", "A");
-		test(0, "do! (!! (consult \"io.fp\")/!put.number number 'A' ~ 0)", "65");
-		test(0, "do! (!! (consult \"io.fp\")/!put.number -999 ~ 0)", "-999");
-		test(0, "for! (i := 0 # i < 10 # !! (consult \"io.fp\")/!put.number i ~ i + 1 # 0)", "0123456789");
+		test(0, "do! (!! (consult io.fp)/!put.char byte 'A' ~ 0)", "A");
+		test(0, "do! (!! (consult io.fp)/!put.number number 'A' ~ 0)", "65");
+		test(0, "do! (!! (consult io.fp)/!put.number -999 ~ 0)", "-999");
+		test(0, "for! (i := 0 # i < 10 # !! (consult io.fp)/!put.number i ~ i + 1 # 0)", "0123456789");
 	}
 
 	@Test
 	public void testRdtsc() {
-		execute("consult \"asm.${platform}.fp\" ~ do! (!asm.rdtsc and +x7FFFFFFF % 100)", "");
-		execute("consult \"asm.${platform}.fp\" ~ do! (!asm.rdtscp and +x7FFFFFFF % 100)", "");
+		execute("consult 'asm.${platform}.fp' ~ do! (!asm.rdtsc and +x7FFFFFFF % 100)", "");
+		execute("consult 'asm.${platform}.fp' ~ do! (!asm.rdtscp and +x7FFFFFFF % 100)", "");
 	}
 
 	@Test

@@ -33,13 +33,10 @@ public class DpkgUtil {
 		var arch = pm.get("Architecture");
 		var dir = dpkgDir + "/info/";
 
-		var files = Read.each(new File(dir + packageName + ".list"));
+		var files0 = Read.each(new File(dir + packageName + ".list"));
+		var files1 = arch != null ? files0.snoc(new File(dir + packageName + ":" + arch + ".list")) : files0;
 
-		if (arch != null)
-			files = files.snoc(new File(dir + packageName + ":" + arch + ".list"));
-
-		var file = files.filter(File::exists).first();
-		return file != null ? ReadLines.from(file) : null;
+		return files1.filter(File::exists).map(ReadLines::from).first();
 	}
 
 	public Set<String> getDependeeSet(List<Map<String, String>> packages, Set<String> set0) {

@@ -16,8 +16,8 @@ import suite.funp.Funp_.Funp;
 import suite.http.HttpUtil;
 import suite.node.Atom;
 import suite.node.Node;
-import suite.node.Str;
 import suite.node.Tree;
+import suite.node.io.Formatter;
 import suite.node.io.SwitchNode;
 import suite.node.io.TermOp;
 
@@ -26,9 +26,9 @@ public class P00Consult {
 	public Node c(Node node) {
 		return new SwitchNode<Node>(node //
 		).match("consult .0 ~ .1", (a, b) -> {
-			return c(consult(Str.str(a).replace("${platform}", Funp_.isAmd64 ? "amd64" : "i686"), b));
+			return c(consult(Formatter.display(a).replace("${platform}", Funp_.isAmd64 ? "amd64" : "i686"), b));
 		}).match("consult .0", a -> {
-			return c(consult(Str.str(a)));
+			return c(consult(Formatter.display(a)));
 		}).applyIf(Node.class, n -> {
 			var tree = Tree.decompose(node);
 			return tree != null ? Tree.of(tree.getOperator(), c(tree.getLeft()), c(tree.getRight())) : node;
