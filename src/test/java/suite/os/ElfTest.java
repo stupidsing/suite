@@ -86,11 +86,11 @@ public class ElfTest {
 	@Test
 	public void testNumbers() {
 		test(0, "" //
-				+ "let { !get.number: !gn, !put.number: !pn, } := consult io.fp ~ \n" //
+				+ "let { !get.number, !put.number, } := consult io.fp ~ \n" //
 				+ "do! ( \n" //
-				+ "let m := type number !gn {} ~ \n" //
-				+ "let n := type number !gn {} ~ \n" //
-				+ "!pn (m + n) ~ 0 \n" //
+				+ "let m := type number !get.number {} ~ \n" //
+				+ "let n := type number !get.number {} ~ \n" //
+				+ "!put.number (m + n) ~ 0 \n" //
 				+ ")", //
 				"25\n57\n", //
 				"82");
