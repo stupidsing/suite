@@ -571,8 +571,9 @@ public class P2InferType {
 				return FunpSaveRegisters0.of(FunpSaveRegisters1.of(fa, saves), saves);
 			})).applyIf(FunpDoAssignIndex.class, f -> f.apply((reference, index, value, expr) -> {
 				var elementSize = getTypeSize(typeOf(value));
-				var offset = FunpTree.of(TermOp.MULT__, erase(index), FunpNumber.ofNumber(elementSize));
-				var address = FunpTree.of(TermOp.PLUS__, erase(reference), offset);
+				var  index_ = FunpCoerce.of(Coerce.NUMBER, Coerce.NUMBERP, erase(index));
+				var offset = FunpOp.of(ps, TermOp.MULT__, index_, FunpNumber.ofNumber(elementSize));
+				var address = FunpOp.of(ps, TermOp.PLUS__, erase(reference), offset);
 				return FunpAssignMem.of(FunpMemory.of(address, 0, elementSize), erase(value), erase(expr));
 			})).applyIf(FunpDoAssignRef.class, f -> f.apply((reference, value, expr) -> {
 				return FunpAssignMem.of(memory(reference, n), erase(value), erase(expr));

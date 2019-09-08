@@ -33,7 +33,8 @@ define.global !guess () := do!
 			error
 		) ~
 		(n + 1, !get.number ()) #
-		!put.string "you got it in " ~
+		!put.string name ~
+		!put.string ", you have got it in " ~
 		!put.number n ~
 		!put.string " guesses!%0A" ~
 		0
