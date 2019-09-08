@@ -46,6 +46,7 @@ import suite.funp.P0.FunpDefine;
 import suite.funp.P0.FunpDefineRec;
 import suite.funp.P0.FunpDeref;
 import suite.funp.P0.FunpDoAsm;
+import suite.funp.P0.FunpDoAssignIndex;
 import suite.funp.P0.FunpDoAssignRef;
 import suite.funp.P0.FunpDoAssignVar;
 import suite.funp.P0.FunpDoEvalIo;
@@ -261,6 +262,10 @@ public class P2InferType {
 				var tr = new Reference();
 				opType.test(opResult, tr);
 				return tr;
+			})).applyIf(FunpDoAssignIndex.class, f -> f.apply((reference, index, value, expr) -> {
+				unify(n, infer(reference), typeRefOf(typeArrayOf(null, infer(value))));
+				unify(n, typeNumber, infer(index));
+				return infer(expr);
 			})).applyIf(FunpDoAssignRef.class, f -> f.apply((reference, value, expr) -> {
 				unify(n, infer(reference), typeRefOf(infer(value)));
 				return infer(expr);
@@ -564,6 +569,11 @@ public class P2InferType {
 				var saves = Mutable.of(new ArrayList<Pair<OpReg, Integer>>());
 				var fa = FunpDoAsm.of(Read.from2(assigns).mapValue(this::erase).toList(), asm, opResult);
 				return FunpSaveRegisters0.of(FunpSaveRegisters1.of(fa, saves), saves);
+			})).applyIf(FunpDoAssignIndex.class, f -> f.apply((reference, index, value, expr) -> {
+				var elementSize = getTypeSize(typeOf(value));
+				var offset = FunpTree.of(TermOp.MULT__, erase(index), FunpNumber.ofNumber(elementSize));
+				var address = FunpTree.of(TermOp.PLUS__, erase(reference), offset);
+				return FunpAssignMem.of(FunpMemory.of(address, 0, elementSize), erase(value), erase(expr));
 			})).applyIf(FunpDoAssignRef.class, f -> f.apply((reference, value, expr) -> {
 				return FunpAssignMem.of(memory(reference, n), erase(value), erase(expr));
 			})).applyIf(FunpDoAssignVar.class, f -> f.apply((var, value, expr) -> {

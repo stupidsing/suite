@@ -68,6 +68,8 @@ define.global !get.string (pointer, length) :=
 		let p1 := !adjust.pointer pointer n ~
 		let nBytesRead := !read (p1, 1) ~
 		(n + nBytesRead, p1* != byte 10) #
+		let p1 := !adjust.pointer pointer (n - 1) ~
+		!assign p1* := 0 ~
 		()
 	)
 ~

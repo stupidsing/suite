@@ -178,6 +178,26 @@ public class P0 {
 		}
 	}
 
+	public static class FunpDoAssignIndex implements Funp, P2.End {
+		public FunpReference reference;
+		public Funp index;
+		public Funp value;
+		public Funp expr;
+
+		public static FunpDoAssignIndex of(FunpReference reference, Funp index, Funp value, Funp expr) {
+			var f = new FunpDoAssignIndex();
+			f.reference = reference;
+			f.index = index;
+			f.value = value;
+			f.expr = expr;
+			return f;
+		}
+
+		public <R> R apply(FixieFun4<FunpReference, Funp, Funp, Funp, R> fun) {
+			return fun.apply(reference, index, value, expr);
+		}
+	}
+
 	public static class FunpDoAssignVar implements Funp, P2.End {
 		public FunpVariable var;
 		public Funp value;

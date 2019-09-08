@@ -29,6 +29,7 @@ import suite.funp.P0.FunpDefine;
 import suite.funp.P0.FunpDefineRec;
 import suite.funp.P0.FunpDeref;
 import suite.funp.P0.FunpDoAsm;
+import suite.funp.P0.FunpDoAssignIndex;
 import suite.funp.P0.FunpDoAssignRef;
 import suite.funp.P0.FunpDoAssignVar;
 import suite.funp.P0.FunpDoEvalIo;
@@ -144,6 +145,8 @@ public class P0Parse {
 				}).toList(), Tree.read(b, TermOp.OR____).toList(), Amd64.me.regByName.get(c)));
 			}).match("!assign .0 := .1 ~ .2", (a, b, c) -> {
 				return checkDo(() -> FunpDoAssignRef.of(FunpReference.of(p(a)), p(b), p(c)));
+			}).match("!assign.index .0 [.1] := .2 ~ .3", (a, b, c, d) -> {
+				return checkDo(() -> FunpDoAssignIndex.of(FunpReference.of(p(a)), p(b), p(c), p(d)));
 			}).match("!delete^ .0 ~ .1", (a, b) -> {
 				return checkDo(() -> FunpDoHeapDel.of(p(a), p(b)));
 			}).match("!new^ .0", a -> {
@@ -163,7 +166,9 @@ public class P0Parse {
 			}).match("address.of.any", () -> {
 				return FunpReference.of(FunpDontCare.of());
 			}).match("array .0 * .1", (a, b) -> {
-				return FunpRepeat.of(a != dontCare ? Int.num(a) : null, p(b));
+				return FunpRepeat.of(Int.num(a), p(b));
+			}).match("array.of.many .0", a -> {
+				return FunpRepeat.of(null, p(a));
 			}).match("assert .0 ~ .1", (a, b) -> {
 				return FunpIf.of(p(a), p(b), FunpError.of());
 			}).match("boolean", () -> {
