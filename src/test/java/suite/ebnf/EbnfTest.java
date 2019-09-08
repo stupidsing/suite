@@ -81,14 +81,17 @@ public class EbnfTest {
 
 	@Test
 	public void testRefactor() throws IOException {
-		var sql0 = "" //
-				+ "SELECT 0 FROM DUAL WHERE COL1 = 1 AND COL2 IN (SELECT 1 FROM DUAL) ORDER BY COL DESC";
+		var sql0 = "SELECT 0 FROM DUAL WHERE COL1 = 1 AND COL2 IN (SELECT 1 FROM DUAL) ORDER BY COL DESC";
 
 		var ebnf = new Ebnf(new FileReader("src/main/ebnf/sql.ebnf"));
-		var fr = rewrite(ebnf, "intersect-select" //
-				, "SELECT .0 FROM DUAL" //
-				, "SELECT .0 FROM DUAL WHERE COL2 = 1" //
-				, ebnf.parseFNode(sql0, "sql"));
+
+		var fr = rewrite( //
+				ebnf, //
+				"intersect-select", //
+				"SELECT .0 FROM DUAL", //
+				"SELECT .0 FROM DUAL WHERE COL2 = 1", //
+				ebnf.parseFNode(sql0, "sql"));
+
 		var sql1 = fr.unparse();
 
 		assertEquals(sql1, "" //
