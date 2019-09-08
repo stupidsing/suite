@@ -25,6 +25,7 @@ import suite.assembler.Amd64.Insn;
 import suite.assembler.Amd64.Instruction;
 import suite.assembler.Amd64.OpImm;
 import suite.assembler.Amd64.OpMem;
+import suite.assembler.Amd64.OpNone;
 import suite.assembler.Amd64.OpReg;
 import suite.assembler.Amd64.Operand;
 import suite.funp.Funp_;
@@ -202,7 +203,10 @@ public class Amd64Interpret {
 					assign.f(source0 + 1);
 					break;
 				case IMUL:
-					assign.f(setFlags(source1 * fetch.apply(instruction.op2)));
+					if (instruction.op2 instanceof OpNone)
+						assign.f(setFlags(source0 * source1));
+					else
+						assign.f(setFlags(source1 * fetch.apply(instruction.op2)));
 					break;
 				case INT:
 					p0 = (int) (regs[eax] & 0xFF);
