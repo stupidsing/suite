@@ -41,7 +41,7 @@ define.global !get.line (pointer, length) :=
 	for! (
 		(n, ch) := (0, !get.char ()) #
 		n < length && number:byte ch != 10 #
-		!assign (!adjust.pointer pointer n)* := ch ~
+		!assign.index pointer* [n] := ch ~
 		(n + 1, !get.char ()) #
 		()
 	)
