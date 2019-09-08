@@ -10,6 +10,7 @@ import suite.assembler.Amd64.OpReg;
 import suite.assembler.Amd64.Operand;
 import suite.funp.Funp_;
 import suite.funp.Funp_.Funp;
+import suite.funp.P0.FunpCoerce;
 import suite.funp.P0.FunpDontCare;
 import suite.funp.P0.FunpNumber;
 import suite.funp.P2.FunpFramePointer;
@@ -30,16 +31,18 @@ public class P4DecomposeOperand {
 	}
 
 	public Operand decomposeNumber(int fd, Funp node, int size) {
-		return node.<Operand> switch_( //
-		).applyIf(FunpDontCare.class, f -> {
-			return amd64.regs(size)[amd64.axReg];
-		}).applyIf(FunpMemory.class, f -> {
-			return f.size() == size ? decomposeFunpMemory(fd, f) : null;
-		}).applyIf(FunpNumber.class, f -> {
-			return amd64.imm(f.i.value(), size);
-		}).applyIf(FunpOperand.class, f -> f.apply(op -> {
-			return op.value();
-		})).result();
+		var number = isNumber(node);
+		if (number != null)
+			return amd64.imm(number, size);
+		else
+			return node.<Operand> switch_( //
+			).applyIf(FunpDontCare.class, f -> {
+				return amd64.regs(size)[amd64.axReg];
+			}).applyIf(FunpMemory.class, f -> {
+				return f.size() == size ? decomposeFunpMemory(fd, f) : null;
+			}).applyIf(FunpOperand.class, f -> f.apply(op -> {
+				return op.value();
+			})).result();
 	}
 
 	public OpMem decomposeFunpMemory(int fd, FunpMemory node) {
@@ -81,19 +84,18 @@ public class P4DecomposeOperand {
 			private List<Funp> mults = new ArrayList<>();
 
 			private void decompose(Funp n0) {
-				FunpNumber number;
+				Integer number;
 				FunpOp tree;
-				Funp right;
 				for (var n1 : decompose.apply(TermOp.MULT__, n0))
 					if (n1 instanceof FunpFramePointer && isUseEbp && reg == null)
 						reg = Funp_._bp;
-					else if ((number = n1.cast(FunpNumber.class)) != null)
-						scale *= number.i.value();
+					else if ((number = isNumber(n1)) != null)
+						scale *= number;
 					else if ((tree = n1.cast(FunpOp.class)) != null //
 							&& tree.operator == TreeUtil.SHL //
-							&& (right = tree.right) instanceof FunpNumber) {
+							&& (number = isNumber(tree.right)) != null) {
 						decompose(tree.left);
-						scale <<= ((FunpNumber) right).i.value();
+						scale <<= number;
 					} else
 						mults.add(n1);
 			}
@@ -140,6 +142,17 @@ public class P4DecomposeOperand {
 		}
 
 		return new DecomposeAdd(n0).op();
+	}
+
+	private Integer isNumber(Funp node) {
+		FunpCoerce coerce;
+		FunpNumber number;
+		if ((coerce = node.cast(FunpCoerce.class)) != null)
+			return isNumber(coerce.expr);
+		else if ((number = node.cast(FunpNumber.class)) != null)
+			return number.i.value();
+		else
+			return null;
 	}
 
 	private boolean isSizeOk(long scale) {

@@ -557,8 +557,15 @@ public class P2InferType {
 					return erase(expr);
 				else
 					return fail();
-			})).applyIf(FunpDeref.class, f -> f.apply(pointer -> {
-				return FunpMemory.of(erase(pointer), 0, getTypeSize(type0));
+			})).applyIf(FunpDeref.class, f -> f.apply(pointer0 -> {
+				var pointer1 = erase(pointer0);
+				if (pointer1 instanceof FunpIndex) {
+					var g = (FunpIndex) pointer1;
+					var elementSize = getTypeSize(type0);
+					var address = adjustPointer(g.reference, g.index, elementSize);
+					return FunpMemory.of(address, 0, elementSize);
+				} else
+					return FunpMemory.of(pointer1, 0, getTypeSize(type0));
 			})).applyIf(FunpDoAsm.class, f -> f.apply((assigns, asm, opResult) -> {
 				env // disable register locals
 						.streamlet2() //
@@ -571,9 +578,7 @@ public class P2InferType {
 				return FunpSaveRegisters0.of(FunpSaveRegisters1.of(fa, saves), saves);
 			})).applyIf(FunpDoAssignIndex.class, f -> f.apply((reference, index, value, expr) -> {
 				var elementSize = getTypeSize(typeOf(value));
-				var  index_ = FunpCoerce.of(Coerce.NUMBER, Coerce.NUMBERP, erase(index));
-				var offset = FunpOp.of(ps, TermOp.MULT__, index_, FunpNumber.ofNumber(elementSize));
-				var address = FunpOp.of(ps, TermOp.PLUS__, erase(reference), offset);
+				var address = adjustPointer(reference, index, elementSize);
 				return FunpAssignMem.of(FunpMemory.of(address, 0, elementSize), erase(value), erase(expr));
 			})).applyIf(FunpDoAssignRef.class, f -> f.apply((reference, value, expr) -> {
 				return FunpAssignMem.of(memory(reference, n), erase(value), erase(expr));
@@ -601,14 +606,11 @@ public class P2InferType {
 				return getField(f);
 			}).applyIf(FunpIo.class, f -> f.apply(expr -> {
 				return erase(expr);
-			})).applyIf(FunpIndex.class, f -> f.apply((reference, index0) -> {
+			})).applyIf(FunpIndex.class, f -> f.apply((reference, index) -> {
 				var te = new Reference();
 				unify(n, typeOf(reference), typeRefOf(typeArrayOf(null, te)));
 				var size = getTypeSize(te);
-				var address0 = erase(reference);
-				var index1 = FunpCoerce.of(Coerce.NUMBER, Coerce.POINTER, erase(index0));
-				var inc = FunpOp.of(ps, TermOp.MULT__, index1, FunpNumber.ofNumber(size));
-				var address1 = FunpOp.of(ps, TermOp.PLUS__, address0, inc);
+				var address1 = adjustPointer(reference, index, size);
 				return FunpMemory.of(address1, 0, size);
 			})).applyIf(FunpLambda.class, f -> f.apply((vn, expr, isCapture) -> {
 				var b = ps + ps; // return address and EBP
@@ -745,6 +747,13 @@ public class P2InferType {
 			var as0 = allocStack(size, value, FunpSaveRegisters1.of(invoke, saves));
 			var as1 = FunpAllocStack.of(os, FunpDontCare.of(), as0, IntMutable.nil());
 			return FunpSaveRegisters0.of(as1, saves);
+		}
+
+		private FunpOp adjustPointer(Funp address, Funp index, int size) {
+			var index_ = FunpCoerce.of(Coerce.NUMBER, Coerce.NUMBERP, erase(index));
+			var size_ = FunpCoerce.of(Coerce.NUMBER, Coerce.NUMBERP, FunpNumber.ofNumber(size));
+			var inc = FunpOp.of(ps, TermOp.MULT__, size_, index_);
+			return FunpOp.of(ps, TermOp.PLUS__, erase(address), inc);
 		}
 
 		private Funp assign(Funp var, Funp value, Funp expr) {

@@ -15,7 +15,7 @@ public class FunpTest {
 	@Test
 	public void testArray() {
 		test(48, "define a := [number '0',] ~ a [0]");
-		test(1, "define a := [0, 1, 2,] ~ a [1]");
+		test(1, "let i := 1 ~ define a := [0, 1, 2,] ~ a [i]");
 	}
 
 	@Test
