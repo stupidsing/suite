@@ -141,6 +141,14 @@ public class Funp_ {
 			return fail(null, "");
 	}
 
+	public static boolean isSizeOk(long scale) {
+		return scale == 1 || scale == 2 || scale == 4 || Funp_.isAmd64 && scale == 8;
+	}
+
+	public static boolean is1248(long scale) {
+		return scale == 1 || scale == 2 || scale == 4 || scale == 8;
+	}
+
 	public static <T> T rethrow(String in, Source<T> source) {
 		try {
 			return source.g();

@@ -104,7 +104,7 @@ public class P4DecomposeOperand {
 		class DecomposeAdd {
 			private OpReg baseReg = null, indexReg = null;
 			private int scale = 1, disp = disp0;
-			private boolean ok = isSizeOk(size);
+			private boolean ok = Funp_.isSizeOk(size);
 
 			private DecomposeAdd(Funp n0) {
 				for (var n1 : decompose.apply(TermOp.PLUS__, n0))
@@ -129,7 +129,7 @@ public class P4DecomposeOperand {
 			private void addReg(OpReg reg_, long scale_) {
 				if (scale_ == 1 && baseReg == null)
 					baseReg = reg_;
-				else if (is1248(scale_) && indexReg == null) {
+				else if (Funp_.is1248(scale_) && indexReg == null) {
 					indexReg = reg_;
 					scale = (int) scale_;
 				} else
@@ -153,14 +153,6 @@ public class P4DecomposeOperand {
 			return number.i.value();
 		else
 			return null;
-	}
-
-	private boolean isSizeOk(long scale) {
-		return scale == 1 || scale == 2 || scale == 4 || Funp_.isAmd64 && scale == 8;
-	}
-
-	private boolean is1248(long scale) {
-		return scale == 1 || scale == 2 || scale == 4 || scale == 8;
 	}
 
 }

@@ -252,7 +252,9 @@ public class P4GenerateCode {
 				var size1 = r.size();
 				return size0 == size1 ? returnOp(compileCompare(r0, l.start, r1, r.start, size0, isEq)) : fail();
 			})).applyIf(FunpCoerce.class, f -> f.apply((from, to, expr) -> {
-				if (Funp_.getCoerceSize(from) != Funp_.getCoerceSize(to)) {
+				var frSize = Funp_.getCoerceSize(from);
+				var toSize = Funp_.getCoerceSize(to);
+				if (frSize != toSize) {
 					var rbyte = pop1 != null && pop1.reg < 4 ? pop1 : rs.get(bs);
 					var integerReg = integerRegs[rbyte.reg];
 					var pointerReg = pointerRegs[rbyte.reg];
@@ -265,6 +267,9 @@ public class P4GenerateCode {
 						compileSpec(expr, pointerReg);
 					else
 						fail();
+
+					if (frSize < toSize)
+						em.emit(Insn.MOVSX, amd64.regs(toSize)[rbyte.reg], amd64.regs(frSize)[rbyte.reg]);
 
 					if (to == Coerce.BYTE)
 						return returnOp(rbyte);
@@ -897,7 +902,7 @@ public class P4GenerateCode {
 		private void compileByte(Funp n, Operand op0) {
 			compileAllocStack(op0.size, FunpNumber.ofNumber(0), List.of(op0), c1 -> {
 				var fd1 = c1.fd;
-				c1.compileAssign(n, frame(fd1, fd1 + bs));
+				c1.compileAssign(n, frame(fd1, fd1 + 1));
 				return new CompileOut();
 			});
 		}

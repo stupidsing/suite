@@ -206,6 +206,15 @@ public class FunpTest {
 	}
 
 	@Test
+	public void testSignExtension() {
+		test(-1, "do! !asm (EAX = number:byte byte -1;) { SHR (EAX, 16); }/EAX");
+		if (Funp_.isAmd64) {
+			test(-1, "do! !asm (RAX = numberp:byte byte -1;) { SHR (RAX, 32); }/EAX");
+			test(-1, "do! !asm (RAX = numberp:number -1;) { SHR (RAX, 32); }/EAX");
+		}
+	}
+
+	@Test
 	public void testString() {
 		test(65, "define s := \"A world for us\" ~ number:byte s* [0]");
 		test(65, "let.global s := \"A world for us\" ~ number:byte s* [0]");
