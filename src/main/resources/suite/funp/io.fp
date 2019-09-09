@@ -16,10 +16,11 @@ define.global !new.mut.number init := do!
 ~
 
 define.global !write.all (pointer, length) :=
+	type pointer = address.of array.of.many byte ~
 	for! (
 		n := 0 #
 		n < length #
-		let p1 := !adjust.pointer pointer n ~
+		let p1 := pointer ++ n ~
 		let nBytesWritten := !write (p1, length - n) ~
 		assert (nBytesWritten != 0) ~
 		n + nBytesWritten #
@@ -62,12 +63,13 @@ define.global !get.number () := do!
 ~
 
 define.global !get.string (pointer, length) :=
+	type pointer = address.of array.of.many byte ~
 	for! (
 		(n, b) := (0, true) #
 		n < length && b #
-		let p1 := !adjust.pointer pointer n ~
+		let p1 := pointer ++ n ~
 		let nBytesRead := !read (p1, 1) ~
-		(n + nBytesRead, p1* != byte 10) #
+		(n + nBytesRead, p1* [0] != byte 10) #
 		!assign.index pointer* [n - 1] := byte 0 ~
 		()
 	)

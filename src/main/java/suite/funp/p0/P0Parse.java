@@ -20,6 +20,7 @@ import suite.assembler.Amd64;
 import suite.funp.Funp_;
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.Fdt;
+import suite.funp.P0.FunpAdjustArrayPointer;
 import suite.funp.P0.FunpApply;
 import suite.funp.P0.FunpArray;
 import suite.funp.P0.FunpBoolean;
@@ -125,6 +126,8 @@ public class P0Parse {
 				return FunpApply.of(p(a), p(b));
 			}).match(".0 [.1]", (a, b) -> {
 				return !isList(b) ? FunpIndex.of(FunpReference.of(p(a)), p(b)) : null;
+			}).match(".0 ++ .1", (a, b) -> {
+				return FunpAdjustArrayPointer.of(p(a), p(b));
 			}).match(".0, .1", (a, b) -> {
 				return FunpStruct.of(List.of(Pair.of("t0", p(a)), Pair.of("t1", p(b))));
 			}).match(".0:.1", (a, b) -> {

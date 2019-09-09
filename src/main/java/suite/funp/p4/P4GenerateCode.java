@@ -251,28 +251,28 @@ public class P4GenerateCode {
 				var size0 = l.size();
 				var size1 = r.size();
 				return size0 == size1 ? returnOp(compileCompare(r0, l.start, r1, r.start, size0, isEq)) : fail();
-			})).applyIf(FunpCoerce.class, f -> f.apply((from, to, expr) -> {
-				var frSize = Funp_.getCoerceSize(from);
+			})).applyIf(FunpCoerce.class, f -> f.apply((fr, to, expr) -> {
+				var frSize = Funp_.getCoerceSize(fr);
 				var toSize = Funp_.getCoerceSize(to);
 				if (frSize != toSize) {
-					var rbyte = pop1 != null && pop1.reg < 4 ? pop1 : rs.get(bs);
-					var integerReg = integerRegs[rbyte.reg];
-					var pointerReg = pointerRegs[rbyte.reg];
+					var byteReg = pop1 != null && pop1.reg < 4 ? pop1 : rs.get(bs);
+					var integerReg = integerRegs[byteReg.reg];
+					var pointerReg = pointerRegs[byteReg.reg];
 
-					if (from == Coerce.BYTE)
-						compileByte(expr, pushRegs[rbyte.reg]);
-					else if (from == Coerce.NUMBER)
+					if (fr == Coerce.BYTE)
+						compileByte(expr, pushRegs[byteReg.reg]);
+					else if (fr == Coerce.NUMBER)
 						compileSpec(expr, integerReg);
-					else if (from == Coerce.NUMBERP || from == Coerce.POINTER)
+					else if (fr == Coerce.NUMBERP || fr == Coerce.POINTER)
 						compileSpec(expr, pointerReg);
 					else
 						fail();
 
 					if (frSize < toSize)
-						em.emit(Insn.MOVSX, amd64.regs(toSize)[rbyte.reg], amd64.regs(frSize)[rbyte.reg]);
+						em.emit(Insn.MOVSX, amd64.regs(toSize)[byteReg.reg], amd64.regs(frSize)[byteReg.reg]);
 
 					if (to == Coerce.BYTE)
-						return returnOp(rbyte);
+						return returnOp(byteReg);
 					else if (to == Coerce.NUMBER)
 						return returnOp(integerReg);
 					else if (to == Coerce.NUMBERP || to == Coerce.POINTER)

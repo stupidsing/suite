@@ -37,6 +37,7 @@ import suite.assembler.Amd64.Operand;
 import suite.funp.Funp_;
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.Fdt;
+import suite.funp.P0.FunpAdjustArrayPointer;
 import suite.funp.P0.FunpApply;
 import suite.funp.P0.FunpArray;
 import suite.funp.P0.FunpBoolean;
@@ -197,7 +198,12 @@ public class P2InferType {
 
 		private Node infer_(Funp n) {
 			return new Switch<Node>(n //
-			).applyIf(FunpApply.class, f -> f.apply((value, lambda) -> {
+			).applyIf(FunpAdjustArrayPointer.class, f -> f.apply((pointer, adjust) -> {
+				var tp = typeRefOf(typeArrayOf(null, new Reference()));
+				unify(n, tp, infer(pointer));
+				unify(n, typeNumber, infer(adjust));
+				return tp;
+			})).applyIf(FunpApply.class, f -> f.apply((value, lambda) -> {
 				var tr = new Reference();
 				unify(n, typeLambdaOf(infer(value), tr), infer(lambda));
 				return tr;
@@ -481,7 +487,12 @@ public class P2InferType {
 			var type0 = typeOf(n);
 
 			return n.sw( //
-			).applyIf(FunpApply.class, f -> f.apply((value, lambda) -> {
+			).applyIf(FunpAdjustArrayPointer.class, f -> f.apply((pointer, adjust) -> {
+				var mr = typePatDecor.match(typeOf(pointer));
+				var ma = typeDecorRef.match(mr[0]) != null ? typePatDecor.match(mr[1]) : null;
+				var type = typeDecorArray.match(ma[0]) != null ? ma[1] : null;
+				return adjustPointer(pointer, adjust, getTypeSize(type));
+			})).applyIf(FunpApply.class, f -> f.apply((value, lambda) -> {
 				var size = getTypeSize(typeOf(value));
 				return applyOnce(erase(value), lambda, size);
 			})).applyIf(FunpArray.class, f -> f.apply(elements -> {

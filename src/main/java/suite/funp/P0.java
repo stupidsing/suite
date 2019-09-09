@@ -21,6 +21,22 @@ public class P0 {
 	public interface End {
 	}
 
+	public static class FunpAdjustArrayPointer implements Funp, P2.End {
+		public Funp pointer;
+		public Funp adjust;
+
+		public static FunpAdjustArrayPointer of(Funp pointer, Funp adjust) {
+			var f = new FunpAdjustArrayPointer();
+			f.pointer = pointer;
+			f.adjust = adjust;
+			return f;
+		}
+
+		public <R> R apply(FixieFun2<Funp, Funp, R> fun) {
+			return fun.apply(pointer, adjust);
+		}
+	}
+
 	public static class FunpApply implements Funp, P2.End {
 		public Funp value;
 		public Funp lambda;
