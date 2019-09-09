@@ -250,24 +250,10 @@ public class P2InferType {
 				unify(n, typeRefOf(t), infer(pointer));
 				return t;
 			})).applyIf(FunpDoAsm.class, f -> f.apply((assigns, asm, opResult) -> {
-				BiPredicate<Operand, Node> opType = (op, tp) -> {
-					var size = op.size;
-					if (!(tp.finalNode() instanceof Reference))
-						return getTypeSize(tp) == size || Funp_.<Boolean> fail(n, null);
-					else if (size == 1 || size == is || size == ps)
-						return unify(n, typePatInt.subst(Int.of(size)), tp);
-					else if (size == ps)
-						return unify(n, typePatDecor.subst(typeDecorRef.subst(), new Reference()), tp);
-					else
-						return fail();
-				};
-
-				for (var assign : assigns)
-					opType.test(assign.k, infer(assign.v));
-
+				BiPredicate<Operand, Node> opType = (op, t) -> unify(n, typePatInt.subst(Int.of(op.size)), t);
 				var tr = new Reference();
-				opType.test(opResult, tr);
-				return tr;
+				var b = Read.from(assigns).isAll(assign -> opType.test(assign.k, infer(assign.v)));
+				return b && opType.test(opResult, tr) ? tr : fail();
 			})).applyIf(FunpDoAssignIndex.class, f -> f.apply((reference, index, value, expr) -> {
 				unify(n, infer(reference), typeRefOf(typeArrayOf(null, infer(value))));
 				unify(n, typeNumber, infer(index));

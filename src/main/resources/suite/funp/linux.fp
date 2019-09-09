@@ -1,8 +1,7 @@
 consult "asm.${platform}.fp" ~
 
 expand !adjust.pointer .pointer .add :=
-	type .pointer = address.of.any ~
-	pointer:numberp !asm.adjust.pointer .pointer .add
+	type .pointer pointer:numberp !asm.adjust.pointer (numberp:pointer .pointer) .add
 ~
 
 define.global !mmap length := do!
@@ -10,18 +9,15 @@ define.global !mmap length := do!
 ~
 
 define.global !munmap (pointer, length) := do!
-	type pointer = address.of.any ~
-	!asm.munmap pointer length
+	!asm.munmap (numberp:pointer pointer) length
 ~
 
 define.global !read (pointer, length) := do!
-	type pointer = address.of.any ~
-	!asm.read pointer length
+	!asm.read (numberp:pointer pointer) length
 ~
 
 define.global !write (pointer, length) := do!
-	type pointer = address.of.any ~
-	!asm.write pointer length
+	!asm.write (numberp:pointer pointer) length
 ~
 
 define.global max (a, b) := if (a < b) then b else a ~
