@@ -42,7 +42,7 @@ define.global !get.line (pointer, length) :=
 	for! (
 		(n, ch) := (0, !get.char ()) #
 		n < length && number:byte ch != 10 #
-		!assign.index pointer* [n] := ch ~
+		!assign pointer* [n] := ch ~
 		(n + 1, !get.char ()) #
 		()
 	)
@@ -70,7 +70,7 @@ define.global !get.string (pointer, length) :=
 		let p1 := pointer ++ n ~
 		let nBytesRead := !read (p1, 1) ~
 		(n + nBytesRead, p1* [0] != byte 10) #
-		!assign.index pointer* [n - 1] := byte 0 ~
+		!assign pointer* [n - 1] := byte 0 ~
 		()
 	)
 ~

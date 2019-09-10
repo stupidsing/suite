@@ -33,8 +33,8 @@ define !alloc size0 := do!
 		let ap := alloc.pointer ~
 		let ps := if (ap != null) then ap else !mmap 16384 ~
 		let pointer.block := !adjust.pointer ps os.ps ~
-		!assign ps*/size := sizep ~
 		!assign alloc.pointer := !adjust.pointer pointer.block size1 ~
+		!assign ps*/size := sizep ~
 		pointer.block
 	) else p0
 ~

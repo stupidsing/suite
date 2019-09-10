@@ -47,7 +47,6 @@ import suite.funp.P0.FunpDefine;
 import suite.funp.P0.FunpDefineRec;
 import suite.funp.P0.FunpDeref;
 import suite.funp.P0.FunpDoAsm;
-import suite.funp.P0.FunpDoAssignIndex;
 import suite.funp.P0.FunpDoAssignRef;
 import suite.funp.P0.FunpDoAssignVar;
 import suite.funp.P0.FunpDoEvalIo;
@@ -254,10 +253,6 @@ public class P2InferType {
 				var tr = new Reference();
 				var b = Read.from(assigns).isAll(assign -> opType.test(assign.k, infer(assign.v)));
 				return b && opType.test(opResult, tr) ? tr : fail();
-			})).applyIf(FunpDoAssignIndex.class, f -> f.apply((reference, index, value, expr) -> {
-				unify(n, infer(reference), typeRefOf(typeArrayOf(null, infer(value))));
-				unify(n, typeNumber, infer(index));
-				return infer(expr);
 			})).applyIf(FunpDoAssignRef.class, f -> f.apply((reference, value, expr) -> {
 				unify(n, infer(reference), typeRefOf(infer(value)));
 				return infer(expr);
@@ -474,9 +469,8 @@ public class P2InferType {
 
 			return n.sw( //
 			).applyIf(FunpAdjustArrayPointer.class, f -> f.apply((pointer, adjust) -> {
-				var mr = typePatDecor.match(typeOf(pointer));
-				var ma = typeDecorRef.match(mr[0]) != null ? typePatDecor.match(mr[1]) : null;
-				var type = typeDecorArray.match(ma[0]) != null ? ma[1] : null;
+				var type = new Reference();
+				unify(n, typeRefOf(typeArrayOf(null, type)), typeOf(pointer));
 				return adjustPointer(pointer, adjust, getTypeSize(type));
 			})).applyIf(FunpApply.class, f -> f.apply((value, lambda) -> {
 				var size = getTypeSize(typeOf(value));
@@ -573,10 +567,6 @@ public class P2InferType {
 				var saves = Mutable.of(new ArrayList<Pair<OpReg, Integer>>());
 				var fa = FunpDoAsm.of(Read.from2(assigns).mapValue(this::erase).toList(), asm, opResult);
 				return FunpSaveRegisters0.of(FunpSaveRegisters1.of(fa, saves), saves);
-			})).applyIf(FunpDoAssignIndex.class, f -> f.apply((reference, index, value, expr) -> {
-				var elementSize = getTypeSize(typeOf(value));
-				var address = adjustPointer(reference, index, elementSize);
-				return FunpAssignMem.of(FunpMemory.of(address, 0, elementSize), erase(value), erase(expr));
 			})).applyIf(FunpDoAssignRef.class, f -> f.apply((reference, value, expr) -> {
 				return FunpAssignMem.of(memory(reference, n), erase(value), erase(expr));
 			})).applyIf(FunpDoAssignVar.class, f -> f.apply((var, value, expr) -> {
@@ -821,6 +811,10 @@ public class P2InferType {
 						return erase(pointer);
 					})).applyIf(FunpField.class, f -> f.apply((ref, field) -> {
 						return FunpOp.of(ps, TermOp.PLUS__, erase(ref), FunpNumber.ofNumber(getFieldOffset(f).s));
+					})).applyIf(FunpIndex.class, f -> f.apply((ref, index) -> {
+						var type = new Reference();
+						unify(f, typeRefOf(typeArrayOf(null, type)), typeOf(ref));
+						return adjustPointer(ref, index, getTypeSize(type));
 					})).applyIf(FunpMe.class, f -> {
 						return me.getAddress(scope);
 					}).applyIf(FunpVariable.class, f -> f.apply(vn -> {
