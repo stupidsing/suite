@@ -12,23 +12,20 @@ let.global alloc.free.chain := type (address.of ps.block) null ~
 define !alloc size0 := do!
 	let size1 := max (os.ps, size0) ~
 	let sizep := numberp:number size1 ~
-	let {
-		!alloc.chain p :=
-			expand ps := pointer* ~
-			for! (
-				(pointer, pr) := p, null #
-				pr = null && ps != null #
-				if (ps*/size != sizep) then (
-					address.of ps*/next, null
-				) else (
-					!assign ps := ps*/next ~
-					null, ps
-				) #
-				pr
-			)
-		~
-	} ~
-	let p0 := !alloc.chain address.of alloc.free.chain ~
+	let p0 := (
+		expand ps := pointer* ~
+		fold (
+			(pointer, pr) := address.of alloc.free.chain, null #
+			pr = null && ps != null #
+			if (ps*/size != sizep) then (
+				address.of ps*/next, null
+			) else (
+				!assign ps := ps*/next ~
+				null, ps
+			) #
+			pr
+		)
+	) ~
 	if (p0 = null) then (
 		let ap := alloc.pointer ~
 		let ps := if (ap != null) then ap else !mmap 16384 ~
