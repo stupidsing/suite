@@ -83,6 +83,7 @@ public class Amd64 {
 		MOVSQ, //
 		MOVSW, //
 		MOVSX, //
+		MOVSXD, //
 		MOVZX, //
 		MUL, //
 		MULPS, //

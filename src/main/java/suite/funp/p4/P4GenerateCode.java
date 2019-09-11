@@ -269,7 +269,9 @@ public class P4GenerateCode {
 						fail();
 
 					if (frSize < toSize)
-						em.emit(Insn.MOVSX, amd64.regs(toSize)[byteReg.reg], amd64.regs(frSize)[byteReg.reg]);
+						em.emit(frSize < 4 ? Insn.MOVSX : Insn.MOVSXD, //
+								amd64.regs(toSize)[byteReg.reg], //
+								amd64.regs(frSize)[byteReg.reg]);
 
 					if (to == Coerce.BYTE)
 						return returnOp(byteReg);

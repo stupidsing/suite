@@ -505,7 +505,18 @@ public class Amd64Assemble {
 			encode = new InsnCode(2, bs(0xA5));
 			break;
 		case MOVSX:
-			encode = assembleRegRmExtended(instruction, 0xBE).pre(0x0F);
+			if (instruction.op1.size < instruction.op0.size && (instruction.op1.size == 1 || instruction.op1.size == 2))
+				encode = assembleRegRmExtended(instruction, 0xBE).pre(0x0F);
+			else
+				encode = fail();
+			break;
+		case MOVSXD:
+			if (instruction.op1.size < instruction.op0.size && instruction.op1.size == 4) {
+				var reg = (OpReg) instruction.op0;
+				encode = assemble(instruction.op1, 0x63, reg.reg, reg.size);
+			} else {
+				encode = fail();
+			}
 			break;
 		case MOVZX:
 			encode = assembleRegRmExtended(instruction, 0xB6).pre(0x0F);

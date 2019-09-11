@@ -284,6 +284,9 @@ public class Amd64Interpret {
 				case MOVSX:
 					assign.f(source1);
 					break;
+				case MOVSXD:
+					assign.f(source1);
+					break;
 				case NEG:
 					assign.f(-source0);
 					break;
