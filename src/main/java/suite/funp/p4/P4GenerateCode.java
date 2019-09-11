@@ -675,9 +675,9 @@ public class P4GenerateCode {
 				var ops = p4deOp.decomposeFunpMemory(fd, source);
 
 				if (ops != null)
-					mov(opt != null ? opt : amd64.mem(compileIsReg(target.pointer), target.start, size), ops);
+					mov(opt != null ? opt : amd64.mem(compilePsReg(target.pointer), target.start, size), ops);
 				else if (opt != null)
-					mov(opt, ops != null ? ops : mask(opt).compileIsOp(source));
+					mov(opt, ops != null ? ops : mask(opt).compileOp(size, source));
 				else
 					moveBlock.run();
 			}
