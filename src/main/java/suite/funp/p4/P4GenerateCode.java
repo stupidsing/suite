@@ -268,7 +268,7 @@ public class P4GenerateCode {
 					else
 						fail();
 
-					if (frSize < toSize)
+					if (Funp_.isSigned(fr) && Funp_.isSigned(to) && frSize < toSize)
 						em.emit(frSize < 4 ? Insn.MOVSX : Insn.MOVSXD, //
 								amd64.regs(toSize)[byteReg.reg], //
 								amd64.regs(frSize)[byteReg.reg]);

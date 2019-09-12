@@ -141,6 +141,10 @@ public class Funp_ {
 			return fail(null, "");
 	}
 
+	public static boolean isSigned(Coerce coerce) {
+		return coerce == Coerce.BYTE || coerce == Coerce.NUMBER || coerce == Coerce.NUMBERP;
+	}
+
 	public static boolean isSizeOk(long scale) {
 		return scale == 1 || scale == 2 || scale == 4 || Funp_.isAmd64 && scale == 8;
 	}
