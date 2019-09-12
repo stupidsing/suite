@@ -988,7 +988,7 @@ public class P4GenerateCode {
 		private OpReg compileCompare(OpReg r0, int start0, OpReg r1, int start1, int size, boolean isEq) {
 			var opResult = isOutSpec ? pop0 : rs.mask(_cx, _si, _di).get(bs);
 			var endLabel = em.label();
-			var neqLabel = spawn(c1 -> c1.em.emit(Insn.SETE, opResult), endLabel);
+			var neqLabel = spawn(c1 -> c1.em.emit(isEq ? Insn.SETE : Insn.SETNE, opResult), endLabel);
 
 			saveRegs(c1 -> {
 				var r = rs.mask(r0, _di).get(_si);

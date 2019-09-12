@@ -694,13 +694,18 @@ public class P2InferType {
 				var size0 = getTypeSize(typeOf(l));
 				var size1 = getTypeSize(typeOf(r));
 				if (Set.of(TermOp.EQUAL_, TermOp.NOTEQ_).contains(op) && (is < size0 || is < size1)) {
-					var offsetStack = IntMutable.nil();
-					var m0 = localStack(scope, offsetStack, 0, size0).getMemory(scope);
-					var m1 = localStack(scope, offsetStack, size0, size0 + size1).getMemory(scope);
+					var offsetStack0 = IntMutable.nil();
+					var offsetStack1 = IntMutable.nil();
+					var ml = l.cast(FunpMemory.class);
+					var mr = r.cast(FunpMemory.class);
+					var m0 = ml != null ? ml : localStack(scope, offsetStack0, 0, size0).getMemory(scope);
+					var m1 = mr != null ? mr : localStack(scope, offsetStack1, 0, size1).getMemory(scope);
 					var f0 = FunpCmp.of(op, m0, m1);
-					var f1 = FunpAssignMem.of(m0, erase(l), f0);
-					var f2 = FunpAssignMem.of(m1, erase(r), f1);
-					return FunpAllocStack.of(size0 + size1, FunpDontCare.of(), f2, offsetStack);
+					var f1 = ml != null ? f0 : FunpAssignMem.of(m0, erase(l), f0);
+					var f2 = mr != null ? f1 : FunpAssignMem.of(m1, erase(r), f1);
+					var f3 = FunpAllocStack.of(size0, FunpDontCare.of(), f2, offsetStack0);
+					var f4 = FunpAllocStack.of(size1, FunpDontCare.of(), f3, offsetStack1);
+					return f4;
 				} else
 					return size0 == size1 ? FunpOp.of(size0, op, erase(l), erase(r)) : fail();
 			})).applyIf(FunpTree2.class, f -> f.apply((op, l, r) -> {
