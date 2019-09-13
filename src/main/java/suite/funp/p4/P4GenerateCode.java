@@ -458,7 +458,7 @@ public class P4GenerateCode {
 				var out = frame(o, o + os);
 				return return2Op(compilePsOp(frame), compileRoutine(c1 -> c1.compileAssign(expr, out)));
 			})).applyIf(FunpSaveRegisters0.class, f -> f.apply((expr, saves) -> {
-				var opRegs = rs.list(r -> !registerSet.isSet(r));
+				var opRegs = rs.list(r -> !registerSet.isMasked(r));
 				var fd1 = fd;
 				for (var opReg : opRegs)
 					saves.value().add(Pair.of(opReg, fd1 -= opReg.size));

@@ -39,7 +39,7 @@ public class RegisterSet {
 
 	public OpReg get(Operand op) {
 		var prefer = op.cast(OpReg.class);
-		return prefer != null && !isSet(prefer.reg) ? prefer : get_(op.size, false);
+		return prefer != null && !isMasked_(prefer.reg) ? prefer : get_(op.size, false);
 	}
 
 	public OpReg get(int size) {
@@ -54,9 +54,13 @@ public class RegisterSet {
 		return (flag & flag(operands)) != 0;
 	}
 
+	public boolean isMasked(int reg) {
+		return isMasked_(reg);
+	}
+
 	public OpReg[] list(IntPred pred) {
 		return forInt(nRegisters) //
-				.filter(this::isSet) //
+				.filter(this::isMasked_) //
 				.filter(pred) //
 				.map(r -> registers[r]) //
 				.toArray(OpReg.class);
@@ -99,18 +103,14 @@ public class RegisterSet {
 			return fail("cannot allocate register with size " + size);
 	}
 
-	public boolean isSet(int reg) {
-		return isSet_(reg);
-	}
-
 	private int get_() {
 		for (var i = 0; i < nRegisters; i++)
-			if (!isSet_(i))
+			if (!isMasked_(i))
 				return i;
 		return fail();
 	}
 
-	private boolean isSet_(int reg) {
+	private boolean isMasked_(int reg) {
 		return (flag & flag(reg)) != 0;
 	}
 
