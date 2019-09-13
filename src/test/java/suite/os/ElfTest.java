@@ -29,7 +29,15 @@ public class ElfTest {
 
 	@Test
 	public void testAllocate() {
-		test(0, "let alloc := consult allocate.fp ~ 0", "");
+		test(0, "" //
+				+ "let { !alloc, !dealloc, } := consult allocate.fp ~ do! ( \n" //
+				+ "let p := !alloc 12 ~ \n" //
+				+ "let q := !alloc 24 ~ \n" //
+				+ "!dealloc (12, p) ~ \n" //
+				+ "!dealloc (24, q) ~ \n" //
+				+ "0 \n" //
+				+ ") \n" //
+				, "");
 	}
 
 	@Test
