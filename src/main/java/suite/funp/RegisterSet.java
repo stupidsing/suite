@@ -37,10 +37,6 @@ public class RegisterSet {
 		this.flag = flag;
 	}
 
-	public boolean contains(Operand... operands) {
-		return (flag & flag(operands)) != 0;
-	}
-
 	public OpReg get(Operand op) {
 		var prefer = op.cast(OpReg.class);
 		return prefer != null && !isSet(prefer.reg) ? prefer : get_(op.size, false);
@@ -52,6 +48,10 @@ public class RegisterSet {
 
 	public OpReg get(int size, boolean isAllowAllByteRegisters) {
 		return get_(size, isAllowAllByteRegisters);
+	}
+
+	public boolean isAnyMasked(Operand... operands) {
+		return (flag & flag(operands)) != 0;
 	}
 
 	public OpReg[] list(IntPred pred) {

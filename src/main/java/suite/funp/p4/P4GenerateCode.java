@@ -484,9 +484,9 @@ public class P4GenerateCode {
 					var op0 = out.op0;
 					var op1 = out.op1;
 					if (op0 != null)
-						op0 = em.mov(rs.contains(op0) ? rs.mask(op1).get(op0.size) : op0, op0);
+						op0 = em.mov(rs.isAnyMasked(op0) ? rs.mask(op1).get(op0.size) : op0, op0);
 					if (op1 != null)
-						op1 = em.mov(rs.contains(op1) ? rs.mask(op0).get(op1.size) : op1, op1);
+						op1 = em.mov(rs.isAnyMasked(op1) ? rs.mask(op0).get(op1.size) : op1, op1);
 					for (var pair : saves.value())
 						em.mov(pair.k, compileFrame(pair.v, pair.k.size));
 					return new CompileOut(op0, op1);
@@ -608,9 +608,9 @@ public class P4GenerateCode {
 			if (opPops != null)
 				rs1 = rs1.mask(opPops.toArray(Operand[]::new));
 
-			if (op0 != null && new RegisterSet().mask(op0).contains(_bp, _sp))
+			if (op0 != null && new RegisterSet().mask(op0).isAnyMasked(_bp, _sp))
 				op0 = c1.em.mov(rs1.get(ps), op0);
-			if (op1 != null && new RegisterSet().mask(op1).contains(_bp, _sp))
+			if (op1 != null && new RegisterSet().mask(op1).isAnyMasked(_bp, _sp))
 				op1 = c1.em.mov(rs1.mask(op0).get(ps), op1);
 
 			if (opPops != null)
@@ -758,7 +758,7 @@ public class P4GenerateCode {
 				em.emit(Insn.IDIV, opRhs1);
 				em.mov(opResult, r0);
 			};
-			Sink<Compile0> sink1 = rs.contains(r0) ? c1 -> c1.saveRegs(sink0, r0) : sink0;
+			Sink<Compile0> sink1 = rs.isAnyMasked(r0) ? c1 -> c1.saveRegs(sink0, r0) : sink0;
 			saveRegs(sink1, r1);
 			return opResult;
 		}
@@ -777,9 +777,9 @@ public class P4GenerateCode {
 			var opLhsReg = opLhs instanceof OpReg ? (OpReg) opLhs : null;
 			var opRhsReg = opRhs instanceof OpReg ? (OpReg) opRhs : null;
 
-			if (opLhsReg != null && !rs.contains(opLhsReg))
+			if (opLhsReg != null && !rs.isAnyMasked(opLhsReg))
 				return Pair.of(lhs, compileRegInstruction(size, insn, opLhsReg, opRhs, rhs));
-			else if (opRhsReg != null && !rs.contains(opRhsReg))
+			else if (opRhsReg != null && !rs.isAnyMasked(opRhsReg))
 				return Pair.of(rhs, compileRegInstruction(size, insn, opRhsReg, opLhs, lhs));
 			else if (!(opLhs instanceof OpImm) && opRhs instanceof OpImm)
 				if (insn == Insn.CMP && opLhs != null) {
@@ -810,7 +810,7 @@ public class P4GenerateCode {
 		private OpReg compileLoadMasked(int size, Funp node, Operand opOther) {
 			var rs1 = rs.mask(opOther);
 			var op = isOutSpec ? compileSpec(node, rs1.get(amd64.regs(size)[pop0.reg])) : compileReg(size, node);
-			return em.mov(rs.contains(op) ? rs1.get(size) : op, op);
+			return em.mov(rs.isAnyMasked(op) ? rs1.get(size) : op, op);
 		}
 
 		private Operand compileRoutine(Sink<Compile0> sink) {
@@ -884,7 +884,7 @@ public class P4GenerateCode {
 		private void compileInvoke(Funp n) {
 			var out = compilePs2Op(n);
 			Operand op;
-			if (!new RegisterSet().mask(out.op1).contains(_bp))
+			if (!new RegisterSet().mask(out.op1).isAnyMasked(_bp))
 				op = out.op1;
 			else
 				op = em.mov(rs.mask(out.op0).get(ps), out.op1);
@@ -1049,7 +1049,7 @@ public class P4GenerateCode {
 
 		private void saveRegs(Sink<Compile0> sink, RegisterSet rs_, int fd_, int index, OpReg... opRegs) {
 			OpReg op;
-			if (index < opRegs.length && rs_.contains(op = opRegs[index])) {
+			if (index < opRegs.length && rs_.isAnyMasked(op = opRegs[index])) {
 				var opPush = pushRegs[op.reg];
 				em.push(opPush);
 				saveRegs(sink, rs_.unmask(op.reg), fd_ - opPush.size, index + 1, opRegs);
