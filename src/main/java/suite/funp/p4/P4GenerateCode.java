@@ -458,15 +458,26 @@ public class P4GenerateCode {
 				var out = frame(o, o + os);
 				return return2Op(compilePsOp(frame), compileRoutine(c1 -> c1.compileAssign(expr, out)));
 			})).applyIf(FunpSaveRegisters0.class, f -> f.apply((expr, saves) -> {
-				var opRegs = rs.list(r -> !registerSet.isMasked(r));
-				var fd1 = fd;
-				for (var opReg : opRegs)
-					saves.value().add(Pair.of(opReg, fd1 -= opReg.size));
-				var pushSize = getAlignedSize(fd - fd1);
-				em.addImm(_sp, -pushSize);
-				var out = nc(rs, fd - pushSize).compile(expr);
-				em.addImm(_sp, pushSize);
-				return out;
+				Fun<Compile0, CompileOut> fun = c1 -> {
+					var fd = c1.fd;
+					var opRegs = c1.rs.list(r -> !registerSet.isMasked(r));
+					var fd1 = fd;
+					for (var opReg : opRegs)
+						saves.value().add(Pair.of(opReg, fd1 -= opReg.size));
+					var pushSize = getAlignedSize(fd - fd1);
+					c1.em.addImm(_sp, -pushSize);
+					var out = c1.nc(c1.rs, fd - pushSize).compile(expr);
+					c1.em.addImm(_sp, pushSize);
+					return out;
+				};
+				if (result.t != Rt.ASSIGN)
+					return fun.apply(this);
+				else
+					return compileAllocStack(ps, target.pointer, null, c1 -> {
+						var fd1 = c1.fd;
+						var target1 = FunpMemory.of(frame(fd1, fd1 + ps), target.start, target.end);
+						return fun.apply(c1.nc(ASSIGN, target1, null, null));
+					});
 			})).applyIf(FunpSaveRegisters1.class, f -> f.apply((expr, saves) -> {
 				for (var pair : saves.value())
 					em.mov(compileFrame(pair.v, pair.k.size), pair.k);
