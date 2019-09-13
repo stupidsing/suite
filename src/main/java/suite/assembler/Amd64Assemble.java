@@ -630,6 +630,9 @@ public class Amd64Assemble {
 		case RDTSCP:
 			encode = new InsnCode(bs(0x0F, 0x01, 0xF9));
 			break;
+		case REMARK:
+			encode = new InsnCode(bs());
+			break;
 		case REP:
 			encode = assemble(0xF3);
 			break;

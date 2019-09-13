@@ -101,6 +101,7 @@ public class Amd64 {
 		RDMSR, //
 		RDTSC, //
 		RDTSCP, //
+		REMARK, //
 		REP, //
 		REPE, //
 		REPNE, //
@@ -194,6 +195,10 @@ public class Amd64 {
 
 	public class OpRegYmm extends Operand {
 		public int reg;
+	}
+
+	public class OpRemark extends Operand {
+		public String remark;
 	}
 
 	public class Instruction extends ToStringObject<Instruction> {
@@ -363,6 +368,12 @@ public class Amd64 {
 
 	public OpReg reg(String name) {
 		return regByName.get(Atom.of(name));
+	}
+
+	public OpRemark remark(String remark) {
+		var op = new OpRemark();
+		op.remark = remark;
+		return op;
 	}
 
 	private Amd64() {

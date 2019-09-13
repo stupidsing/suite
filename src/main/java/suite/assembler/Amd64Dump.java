@@ -7,6 +7,7 @@ import suite.assembler.Amd64.Instruction;
 import suite.assembler.Amd64.OpImm;
 import suite.assembler.Amd64.OpMem;
 import suite.assembler.Amd64.OpNone;
+import suite.assembler.Amd64.OpRemark;
 import suite.assembler.Amd64.Operand;
 import suite.funp.Funp_;
 
@@ -28,16 +29,16 @@ public class Amd64Dump {
 				+ (!(op2 instanceof OpNone) ? "," + dump(op2) : "");
 	}
 
-	private String dump(Operand op0) {
+	private String dump(Operand op) {
 		var pointerSize = Funp_.pointerSize;
 		var regs = amd64.regs(pointerSize);
 		String name;
 
-		if (op0 instanceof OpImm) {
-			var opImm = (OpImm) op0;
+		if (op instanceof OpImm) {
+			var opImm = (OpImm) op;
 			return dump(opImm.imm, opImm.size);
-		} else if (op0 instanceof OpMem) {
-			var opMem = (OpMem) op0;
+		} else if (op instanceof OpMem) {
+			var opMem = (OpMem) op;
 			var baseReg = opMem.baseReg;
 			var indexReg = opMem.indexReg;
 			var s = "" //
@@ -45,10 +46,12 @@ public class Amd64Dump {
 					+ (0 <= indexReg ? " + " + dump(regs[indexReg]) + " * " + (1 << opMem.scale) : "") //
 					+ (0 < opMem.disp.size ? dumpDisp(opMem.disp.imm) : "");
 			return "[" + s.substring(3) + "]";
-		} else if ((name = (amd64.registerByName.inverse().get(op0).name)) != null)
+		} else if (op instanceof OpRemark)
+			return ((OpRemark) op).remark;
+		else if ((name = (amd64.registerByName.inverse().get(op).name)) != null)
 			return name;
 		else
-			return op0.toString();
+			return op.toString();
 	}
 
 	private String dumpDisp(long disp) {

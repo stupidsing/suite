@@ -94,6 +94,7 @@ import suite.funp.P2.FunpLambdaCapture;
 import suite.funp.P2.FunpMemory;
 import suite.funp.P2.FunpOp;
 import suite.funp.P2.FunpOperand;
+import suite.funp.P2.FunpRemark;
 import suite.funp.P2.FunpRoutine;
 import suite.funp.P2.FunpRoutine2;
 import suite.funp.P2.FunpRoutineIo;
@@ -227,8 +228,8 @@ public class P2InferType {
 				return tf.apply(to);
 			})).applyIf(FunpDefine.class, f -> f.apply((vn, value, expr, fdt) -> {
 				var tvalue = infer(value, vn);
-				if(Fdt.isGlobal(fdt))
-						Log_.info(vn + " :: " + tvalue);
+				if (Fdt.isGlobal(fdt))
+					Log_.info(vn + " :: " + tvalue);
 				return new Infer(env.replace(vn, Pair.of(fdt, tvalue)), checks, me).infer(expr);
 			})).applyIf(FunpDefineRec.class, f -> f.apply((pairs, expr, fdt) -> {
 				var pairs_ = Read.from(pairs);
@@ -499,7 +500,10 @@ public class P2InferType {
 					var address = Mutable.<Operand> nil();
 					var var = global(address, 0, size);
 					var e1 = new Erase(scope, env.replace(vn, var), me);
-					return FunpAllocGlobal.of(size, erase(value, vn), e1.erase(expr), address);
+					if (value instanceof FunpLambda)
+						((FunpLambda) value).name = vn;
+					var value_ = erase(value, vn);
+					return FunpAllocGlobal.of(size, value_, e1.erase(expr), address);
 				} else if (Fdt.isLocal(fdt))
 					return defineLocal(f, vn, value, expr);
 				else if (fdt == Fdt.VIRT)
@@ -602,14 +606,15 @@ public class P2InferType {
 				var size = getTypeSize(te);
 				var address1 = adjustPointer(reference, index, size);
 				return FunpMemory.of(address1, 0, size);
-			})).applyIf(FunpLambda.class, f -> f.apply((vn, expr, isCapture) -> {
+			})).applyIf(FunpLambda.class, f -> f.apply((vn, expr0, isCapture) -> {
 				var b = ps + ps; // return address and EBP
 				var scope1 = scope + 1;
 				var lt = new LambdaType(n);
 				var frame = Funp_.framePointer;
 				var env1 = env.replace(vn, localStack(scope1, IntMutable.of(0), b, b + lt.is));
-				var expr1 = new Erase(scope1, env1, me).erase(expr);
-				return eraseRoutine(lt, frame, expr1);
+				var expr1 = new Erase(scope1, env1, me).erase(expr0);
+				var expr2 = f.name != null ? FunpRemark.of(f.name, expr1) : expr1;
+				return eraseRoutine(lt, frame, expr2);
 			})).applyIf(FunpLambdaCapture.class, f -> f.apply((fp0, frameVar, frame, vn, expr) -> {
 
 				// the capture would free itself upon first call, therefore should not be called

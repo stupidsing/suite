@@ -290,6 +290,8 @@ public class Amd64Interpret {
 				case NEG:
 					assign.f(-source0);
 					break;
+				case NOP:
+					break;
 				case NOT:
 					assign.f(~source0);
 					break;
@@ -301,6 +303,8 @@ public class Amd64Interpret {
 					break;
 				case PUSH:
 					push(source0);
+					break;
+				case REMARK:
 					break;
 				case REP:
 					r = getNextRepeatInsn(instructions);

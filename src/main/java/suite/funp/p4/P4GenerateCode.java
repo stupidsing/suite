@@ -57,6 +57,7 @@ import suite.funp.P2.FunpInvokeIo;
 import suite.funp.P2.FunpMemory;
 import suite.funp.P2.FunpOp;
 import suite.funp.P2.FunpOperand;
+import suite.funp.P2.FunpRemark;
 import suite.funp.P2.FunpRoutine;
 import suite.funp.P2.FunpRoutine2;
 import suite.funp.P2.FunpRoutineIo;
@@ -443,6 +444,9 @@ public class P4GenerateCode {
 				return returnOp(compileTree(opSize, n, op, assoc, lhs, rhs));
 			})).applyIf(FunpOperand.class, f -> f.apply(op -> {
 				return returnOp(op.value());
+			})).applyIf(FunpRemark.class, f -> f.apply((remark, expr) -> {
+				em.emit(Insn.NOP, amd64.remark(remark));
+				return compile(expr);
 			})).applyIf(FunpRoutine.class, f -> f.apply((frame, expr, is, os) -> {
 				OpReg _ax = amd64.regs(os)[axReg];
 				return return2Op(compilePsOp(frame), compileRoutine(c1 -> c1.compileSpec(expr, _ax)));
