@@ -587,17 +587,21 @@ public class P4GenerateCode {
 			return new CompileOut();
 		}
 
-		private CompileOut compileAllocStack(int size, Funp value, List<Operand> opPops, Fun<Compile0, CompileOut> f) {
+		private CompileOut compileAllocStack( //
+				int size, //
+				Funp pushValue, //
+				List<Operand> opPops, //
+				Fun<Compile0, CompileOut> f) {
 			var alignedSize = getAlignedSize(size);
 			var fd1 = fd - alignedSize;
 			var c1 = nc(rs, fd1);
 			Operand op;
 
-			if (size == pushSize && (op = p4deOp.decomposeNumber(fd, value, size)) != null)
+			if (size == pushSize && (op = p4deOp.decomposeNumber(fd, pushValue, size)) != null)
 				em.push(op);
 			else {
 				em.addImm(_sp, -alignedSize);
-				c1.compileAssign(value, FunpMemory.of(Funp_.framePointer, fd1, fd1 + size));
+				c1.compileAssign(pushValue, FunpMemory.of(Funp_.framePointer, fd1, fd1 + size));
 			}
 
 			var out = f.apply(c1);

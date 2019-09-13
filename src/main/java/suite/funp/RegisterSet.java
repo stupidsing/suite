@@ -33,7 +33,7 @@ public class RegisterSet {
 		this(0);
 	}
 
-	public RegisterSet(int flag) {
+	private RegisterSet(int flag) {
 		this.flag = flag;
 	}
 
