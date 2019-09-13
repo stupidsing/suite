@@ -23,6 +23,7 @@ import primal.adt.Mutable;
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Source;
+import primal.os.Log_;
 import primal.persistent.PerMap;
 import primal.primitive.adt.IntMutable;
 import primal.primitive.adt.IntRange;
@@ -226,6 +227,8 @@ public class P2InferType {
 				return tf.apply(to);
 			})).applyIf(FunpDefine.class, f -> f.apply((vn, value, expr, fdt) -> {
 				var tvalue = infer(value, vn);
+				if(Fdt.isGlobal(fdt))
+						Log_.info(vn + " :: " + tvalue);
 				return new Infer(env.replace(vn, Pair.of(fdt, tvalue)), checks, me).infer(expr);
 			})).applyIf(FunpDefineRec.class, f -> f.apply((pairs, expr, fdt) -> {
 				var pairs_ = Read.from(pairs);
@@ -316,7 +319,7 @@ public class P2InferType {
 						.replace(vn, Pair.of(Fdt.L_MONO, tv));
 				return typeLambdaOf(tv, new Infer(env1, checks, null).infer(expr));
 			})).applyIf(FunpLambdaFree.class, f -> f.apply((lambda, expr) -> {
-				unify(infer(lambda), typeLambdaOf(new Reference(), new Reference()));
+				unify(f, infer(lambda), typeLambdaOf(new Reference(), new Reference()));
 				return infer(expr);
 			})).applyIf(FunpMe.class, f -> {
 				return me;
@@ -352,9 +355,9 @@ public class P2InferType {
 
 				// complete the structure
 				checks.add(() -> {
-					unify(isCompleted, Atom.TRUE);
+					var b = unify(isCompleted, Atom.TRUE);
 
-					if (ref.isFree()) {
+					if (b && ref.isFree()) {
 						Streamlet<Node> list;
 
 						if (isGcStruct_)
@@ -382,10 +385,10 @@ public class P2InferType {
 							list = Streamlet.concat(fs0, fs1).distinct();
 						}
 
-						unify(ref, TreeUtil.buildUp(TermOp.AND___, list.toList()));
+						b &= unify(ref, TreeUtil.buildUp(TermOp.AND___, list.toList()));
 					}
 
-					return true;
+					return b;
 				});
 
 				return ts;
@@ -968,14 +971,6 @@ public class P2InferType {
 		}
 	}
 
-	private boolean unify(Funp n, Node type0, Node type1) {
-		return unify(type0, type1) || Funp_.<Boolean> fail(n, "" //
-				+ "cannot unify types between:" //
-				+ "\n:: " + toString(type0) //
-				+ "\n:: " + toString(type1) //
-				+ "\nin " + n.getClass().getSimpleName());
-	}
-
 	public Node cloneType(Node type) {
 		var cloned = new IdentityHashMap<Node, Reference>();
 		var cloner = new Cloner();
@@ -1001,8 +996,7 @@ public class P2InferType {
 						return cloner.clone(t);
 					}).nonNullResult();
 
-					if (!unify(tx, tc))
-						fail();
+					unify(FunpDontCare.of(), tx, tc);
 				}
 
 				return tx;
@@ -1014,6 +1008,14 @@ public class P2InferType {
 				return Dict.of(map1);
 			}
 		}.cloneType(type);
+	}
+
+	private boolean unify(Funp n, Node type0, Node type1) {
+		return unify(type0, type1) || Funp_.<Boolean> fail(n, "" //
+				+ "cannot unify types between:" //
+				+ "\n:: " + toString(type0) //
+				+ "\n:: " + toString(type1) //
+				+ "\nin " + n.getClass().getSimpleName());
 	}
 
 	private boolean unify(Node type0, Node type1) {

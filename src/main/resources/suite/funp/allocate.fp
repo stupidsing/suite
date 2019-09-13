@@ -9,7 +9,7 @@ let.global alloc.pointer := type (address.of ps.block) null ~
 let.global alloc.free.chain := type (address.of ps.block) null ~
 
 -- can replace by default !new
-define !alloc size0 := do!
+define.global !alloc size0 := do!
 	let size1 := max (os.ps, size0) ~
 	let sizep := numberp:number size1 ~
 	let p0 := (
@@ -37,7 +37,7 @@ define !alloc size0 := do!
 ~
 
 -- can replace by default !delete
-define !dealloc (size0, pointer.block) := do!
+define.global !dealloc (size0, pointer.block) := do!
 	let ps := !adjust.pointer pointer.block (0 - os.ps) ~
 	!assign ps* := type ps.block {
 		size: numberp:number max (os.ps, size0),
@@ -47,7 +47,7 @@ define !dealloc (size0, pointer.block) := do!
 	()
 ~
 
-define !alloc.mut.number init := do!
+define.global !alloc.mut.number init := do!
 	type init = number ~
 	let size := size.of init ~
 	let address := !alloc size ~
