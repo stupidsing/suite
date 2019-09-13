@@ -376,7 +376,7 @@ public class P0 {
 		public String vn;
 		public Funp expr;
 		public boolean isCapture;
-		public String name;
+		public String name; // optional
 
 		public static FunpLambda of(String vn, Funp expr, boolean isCapture) {
 			var f = new FunpLambda();
