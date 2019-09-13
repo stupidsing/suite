@@ -471,26 +471,30 @@ public class P4GenerateCode {
 				for (var pair : saves.value())
 					em.mov(compileFrame(pair.v, pair.k.size), pair.k);
 
-				var out = compile(expr);
+				var out0 = compile(expr);
+				OpReg p0reg, p1reg;
+				CompileOut out1;
 
 				if (isOutSpec) {
-					var p0reg = pop0 != null ? pushRegs[pop0.reg] : null;
-					var p1reg = pop1 != null ? pushRegs[pop1.reg] : null;
-					for (var pair : saves.value())
-						if (pair.k != p0reg && pair.k != p1reg)
-							em.mov(pair.k, compileFrame(pair.v, pair.k.size));
-					return out;
+					p0reg = pop0 != null ? pushRegs[pop0.reg] : null;
+					p1reg = pop1 != null ? pushRegs[pop1.reg] : null;
+					out1 = out0;
 				} else {
-					var op0 = out.op0;
-					var op1 = out.op1;
+					p0reg = p1reg = null;
+					var op0 = out0.op0;
+					var op1 = out0.op1;
 					if (op0 != null)
 						op0 = em.mov(rs.isAnyMasked(op0) ? rs.mask(op1).get(op0.size) : op0, op0);
 					if (op1 != null)
 						op1 = em.mov(rs.isAnyMasked(op1) ? rs.mask(op0).get(op1.size) : op1, op1);
-					for (var pair : saves.value())
-						em.mov(pair.k, compileFrame(pair.v, pair.k.size));
-					return new CompileOut(op0, op1);
+					out1 = new CompileOut(op0, op1);
 				}
+
+				for (var pair : saves.value())
+					if (pair.k != p0reg && pair.k != p1reg)
+						em.mov(pair.k, compileFrame(pair.v, pair.k.size));
+
+				return out1;
 			})).nonNullResult();
 		}
 
