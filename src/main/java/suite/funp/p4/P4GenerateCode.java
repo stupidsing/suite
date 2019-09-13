@@ -446,7 +446,7 @@ public class P4GenerateCode {
 			})).applyIf(FunpOperand.class, f -> f.apply(op -> {
 				return returnOp(op.value());
 			})).applyIf(FunpRemark.class, f -> f.apply((remark, expr) -> {
-				em.emit(Insn.NOP, amd64.remark(remark));
+				em.emit(Insn.REMARK, amd64.remark(remark));
 				return compile(expr);
 			})).applyIf(FunpRoutine.class, f -> f.apply((frame, expr, is, os) -> {
 				OpReg _ax = amd64.regs(os)[axReg];
