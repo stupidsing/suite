@@ -15,6 +15,7 @@ import primal.adt.Pair;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Sink;
 import primal.fp.Funs.Source;
+import primal.fp.Funs2.Fun2;
 import primal.fp.Funs2.Sink2;
 import primal.primitive.IntPrim;
 import primal.primitive.IntPrim.IntObj_Obj;
@@ -233,7 +234,7 @@ public class P4GenerateCode {
 				reg.update(reg_);
 				return mask(compileLoad(value, reg_)).compile(expr);
 			})).applyIf(FunpAllocStack.class, f -> f.apply((size, value, expr, offset) -> {
-				return compileAllocStack(size, value, null, c -> {
+				return compileAllocStack(size, value, null, (c, s) -> {
 					offset.update(c.fd);
 					return c.compile(expr);
 				});
@@ -405,7 +406,7 @@ public class P4GenerateCode {
 				compileInvoke(routine);
 				return returnAssign((c1, target) -> {
 					var start = c1.fd + is;
-					var source = FunpMemory.of(FunpFramePointer.of(), start, start + os);
+					var source = frame(start, start + os);
 					c1.compileAssign(source, target);
 				});
 			})).applyIf(FunpMemory.class, f -> f.apply((pointer, start, end) -> {
@@ -473,9 +474,8 @@ public class P4GenerateCode {
 				if (result.t != Rt.ASSIGN)
 					return fun.apply(this);
 				else
-					return compileAllocStack(ps, target.pointer, null, c1 -> {
-						var fd1 = c1.fd;
-						var target1 = FunpMemory.of(frame(fd1, fd1 + ps), target.start, target.end);
+					return compileAllocStack(ps, target.pointer, null, (c1, s) -> {
+						var target1 = FunpMemory.of(s, target.start, target.end);
 						return fun.apply(c1.nc(ASSIGN, target1, null, null));
 					});
 			})).applyIf(FunpSaveRegisters1.class, f -> f.apply((expr, saves) -> {
@@ -517,7 +517,7 @@ public class P4GenerateCode {
 			} else if (result.nRegs == 1) {
 				var op0 = isOutSpec ? pop0 : rs.get(result.regSize);
 				var op0_ = pushRegs[op0.reg];
-				compileAllocStack(result.regSize, FunpDontCare.of(), List.of(op0_), c1 -> {
+				compileAllocStack(result.regSize, FunpDontCare.of(), List.of(op0_), (c1, s) -> {
 					assign.sink2(c1, frame(c1.fd, fd));
 					return new CompileOut();
 				});
@@ -527,7 +527,7 @@ public class P4GenerateCode {
 				var op1 = isOutSpec ? pop1 : rs.mask(op0).get(result.regSize);
 				var op0_ = pushRegs[op0.reg];
 				var op1_ = pushRegs[op1.reg];
-				compileAllocStack(result.regSize + result.regSize, FunpDontCare.of(), List.of(op1_, op0_), c1 -> {
+				compileAllocStack(result.regSize + result.regSize, FunpDontCare.of(), List.of(op1_, op0_), (c1, s) -> {
 					assign.sink2(c1, frame(c1.fd, fd));
 					return new CompileOut();
 				});
@@ -606,7 +606,7 @@ public class P4GenerateCode {
 				int size, //
 				Funp pushValue, //
 				List<Operand> opPops, //
-				Fun<Compile0, CompileOut> f) {
+				Fun2<Compile0, FunpMemory, CompileOut> f) {
 			var alignedSize = getAlignedSize(size);
 			var fd1 = fd - alignedSize;
 			var c1 = nc(rs, fd1);
@@ -616,10 +616,10 @@ public class P4GenerateCode {
 				em.push(op);
 			else {
 				em.addImm(_sp, -alignedSize);
-				c1.compileAssign(pushValue, FunpMemory.of(Funp_.framePointer, fd1, fd1 + size));
+				c1.compileAssign(pushValue, frame(fd1, fd1 + size));
 			}
 
-			var out = f.apply(c1);
+			var out = f.apply(c1, frame(fd1, fd1 + size));
 			var op0 = out.op0;
 			var op1 = out.op1;
 			var rs1 = c1.rs.mask(pop0, pop1);
@@ -925,7 +925,7 @@ public class P4GenerateCode {
 		}
 
 		private void compileByte(Funp n, Operand op0) {
-			compileAllocStack(op0.size, FunpNumber.ofNumber(0), List.of(op0), c1 -> {
+			compileAllocStack(op0.size, FunpNumber.ofNumber(0), List.of(op0), (c1, s) -> {
 				var fd1 = c1.fd;
 				c1.compileAssign(n, frame(fd1, fd1 + 1));
 				return new CompileOut();
@@ -941,9 +941,9 @@ public class P4GenerateCode {
 			if (size == is || size == ps)
 				compileSpec(node, op);
 			else
-				compileAllocStack(size, FunpDontCare.of(), null, c1 -> {
+				compileAllocStack(size, FunpDontCare.of(), null, (c1, s) -> {
 					var fd1 = c1.fd;
-					c1.compileAssign(node, frame(fd1, fd1 + size));
+					c1.compileAssign(node, s);
 					em.mov(op, compileFrame(fd1, size));
 					return new CompileOut(op);
 				});
