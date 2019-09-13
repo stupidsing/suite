@@ -236,7 +236,7 @@ public class P4Emit {
 				if (!isForward.test(b)) {
 					for (var label_ : labelGroups.get(labelRep))
 						g |= set.add(label_) //
-								&& list.add(amd64.instruction(Insn.ALIGN, amd64.imm32(b.align))) //
+								&& (b.align == 1 || list.add(amd64.instruction(Insn.ALIGN, amd64.imm32(b.align)))) //
 								&& list.add(amd64.instruction(Insn.LABEL, label_));
 
 					if (g) {

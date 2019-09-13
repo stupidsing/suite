@@ -256,7 +256,11 @@ public class P4GenerateCode {
 			})).applyIf(FunpCoerce.class, f -> f.apply((fr, to, expr) -> {
 				var frSize = Funp_.getCoerceSize(fr);
 				var toSize = Funp_.getCoerceSize(to);
-				if (frSize != toSize) {
+				FunpNumber number;
+
+				if ((number = expr.cast(FunpNumber.class)) != null)
+					return returnOp(amd64.imm(number.i.value(), toSize));
+				else if (frSize != toSize) {
 					var byteReg = pop1 != null && pop1.reg < 4 ? pop1 : rs.get(bs);
 					var integerReg = integerRegs[byteReg.reg];
 					var pointerReg = pointerRegs[byteReg.reg];
@@ -439,15 +443,17 @@ public class P4GenerateCode {
 				else
 					return fail();
 			})).applyIf(FunpNumber.class, f -> {
-				return returnOp(imm(f));
+				return returnOp(amd64.imm(f.i.value(), is));
 			}).applyIf(FunpOp.class, f -> f.apply((opSize, op, lhs, rhs) -> {
 				var assoc = op instanceof TermOp ? ((TermOp) op).assoc() : Assoc.RIGHT;
 				return returnOp(compileTree(opSize, n, op, assoc, lhs, rhs));
 			})).applyIf(FunpOperand.class, f -> f.apply(op -> {
 				return returnOp(op.value());
 			})).applyIf(FunpRemark.class, f -> f.apply((remark, expr) -> {
-				em.emit(Insn.REMARK, amd64.remark(remark));
-				return compile(expr);
+				em.emit(Insn.REMARK, amd64.remark("START " + remark));
+				var out = compile(expr);
+				em.emit(Insn.REMARK, amd64.remark("END__ " + remark));
+				return out;
 			})).applyIf(FunpRoutine.class, f -> f.apply((frame, expr, is, os) -> {
 				OpReg _ax = amd64.regs(os)[axReg];
 				return return2Op(compilePsOp(frame), compileRoutine(c1 -> c1.compileSpec(expr, _ax)));
@@ -1052,10 +1058,6 @@ public class P4GenerateCode {
 				em.mov(op1 = rs.mask(op0, op1).get(op1.size, isAmd64), oldOp1);
 			}
 			return em.mov(op0, op1);
-		}
-
-		private OpImm imm(FunpNumber number) {
-			return amd64.imm(number.i.value(), is);
 		}
 
 		private FunpMemory frame(int start, int end) {
