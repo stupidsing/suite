@@ -37,13 +37,13 @@ import suite.assembler.Amd64.OpReg;
 import suite.assembler.Amd64.Operand;
 import suite.funp.Funp_;
 import suite.funp.Funp_.Funp;
+import suite.funp.P0.Coerce;
 import suite.funp.P0.Fdt;
 import suite.funp.P0.FunpAdjustArrayPointer;
 import suite.funp.P0.FunpApply;
 import suite.funp.P0.FunpArray;
 import suite.funp.P0.FunpBoolean;
 import suite.funp.P0.FunpCoerce;
-import suite.funp.P0.FunpCoerce.Coerce;
 import suite.funp.P0.FunpDefine;
 import suite.funp.P0.FunpDefineRec;
 import suite.funp.P0.FunpDeref;
@@ -406,14 +406,16 @@ public class P2InferType {
 				types.put(Atom.of(tag), Reference.of(tr));
 				unify(n, typeRefOf(typeTagOf(Dict.of(types))), infer(reference));
 				return tr;
-			})).applyIf(FunpTree.class, f -> f.apply((op, lhs, rhs) -> {
+			})).applyIf(FunpTree.class, f -> f.apply((op, lhs, rhs, size) -> {
 				Node ti;
 				if (Set.of(TermOp.BIGAND, TermOp.BIGOR_).contains(op))
 					ti = typeBoolean;
 				else if (Set.of(TermOp.EQUAL_, TermOp.NOTEQ_).contains(op))
 					ti = new Reference();
+				else if (size != null)
+					ti = typePatInt.subst(Int.of(Funp_.getCoerceSize(size)));
 				else
-					ti = typeNumber;
+					ti = typePatInt.subst(new Reference());
 				unify(n, infer(lhs), ti);
 				unify(n, infer(rhs), ti);
 				var cmp = Set.of(TermOp.EQUAL_, TermOp.NOTEQ_, TermOp.LE____, TermOp.LT____).contains(op);
@@ -698,7 +700,7 @@ public class P2InferType {
 				return FunpMemory.of(erase(reference), 0, is);
 			})).applyIf(FunpTagValue.class, f -> f.apply((reference, tag) -> {
 				return FunpMemory.of(erase(reference), is, is + getTypeSize(type0));
-			})).applyIf(FunpTree.class, f -> f.apply((op, l, r) -> {
+			})).applyIf(FunpTree.class, f -> f.apply((op, l, r, size) -> {
 				var size0 = getTypeSize(typeOf(l));
 				var size1 = getTypeSize(typeOf(r));
 				if (Set.of(TermOp.EQUAL_, TermOp.NOTEQ_).contains(op) && (is < size0 || is < size1)) {

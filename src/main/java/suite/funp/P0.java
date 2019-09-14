@@ -21,6 +21,13 @@ public class P0 {
 	public interface End {
 	}
 
+	public enum Coerce {
+		BYTE, // 8 bits
+		NUMBERP, // a number with same size as a machine level pointer
+		NUMBER, // a number with same size as a machine level generic register, 32-bits
+		POINTER, // a machine level pointer
+	};
+
 	public static class FunpAdjustArrayPointer implements Funp, P2.End {
 		public Funp pointer;
 		public Funp adjust;
@@ -82,13 +89,6 @@ public class P0 {
 	}
 
 	public static class FunpCoerce implements Funp, P2.End {
-		public enum Coerce {
-			BYTE, // 8 bits
-			NUMBERP, // a number with same size as a machine level pointer
-			NUMBER, // a number with same size as a machine level generic register, 32-bits
-			POINTER, // a machine level pointer
-		};
-
 		public Coerce from;
 		public Coerce to;
 		public Funp expr;
@@ -561,17 +561,23 @@ public class P0 {
 		public Operator operator;
 		public Funp left;
 		public Funp right;
+		public Coerce size;
 
 		public static FunpTree of(Operator operator, Funp left, Funp right) {
+			return of(operator, left, right, Coerce.NUMBER);
+		}
+
+		public static FunpTree of(Operator operator, Funp left, Funp right, Coerce size) {
 			var f = new FunpTree();
 			f.operator = operator;
 			f.left = left;
 			f.right = right;
+			f.size = size;
 			return f;
 		}
 
-		public <R> R apply(FixieFun3<Operator, Funp, Funp, R> fun) {
-			return fun.apply(operator, left, right);
+		public <R> R apply(FixieFun4<Operator, Funp, Funp, Coerce, R> fun) {
+			return fun.apply(operator, left, right, size);
 		}
 	}
 

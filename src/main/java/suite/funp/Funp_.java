@@ -13,7 +13,7 @@ import suite.Suite;
 import suite.assembler.Amd64;
 import suite.assembler.Amd64.Instruction;
 import suite.assembler.Amd64.OpReg;
-import suite.funp.P0.FunpCoerce.Coerce;
+import suite.funp.P0.Coerce;
 import suite.funp.P0.FunpDefine;
 import suite.funp.P0.FunpDefineRec;
 import suite.funp.P0.FunpLambda;

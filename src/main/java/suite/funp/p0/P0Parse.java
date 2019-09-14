@@ -19,13 +19,13 @@ import suite.Suite;
 import suite.assembler.Amd64;
 import suite.funp.Funp_;
 import suite.funp.Funp_.Funp;
+import suite.funp.P0.Coerce;
 import suite.funp.P0.Fdt;
 import suite.funp.P0.FunpAdjustArrayPointer;
 import suite.funp.P0.FunpApply;
 import suite.funp.P0.FunpArray;
 import suite.funp.P0.FunpBoolean;
 import suite.funp.P0.FunpCoerce;
-import suite.funp.P0.FunpCoerce.Coerce;
 import suite.funp.P0.FunpDefine;
 import suite.funp.P0.FunpDefineRec;
 import suite.funp.P0.FunpDeref;
@@ -268,6 +268,8 @@ public class P0Parse {
 				return FunpPredefine.of(Atom.name(a), p(b));
 			}).match("size.of .0", a -> {
 				return FunpSizeOf.of(p(a));
+			}).match("sum .0 .1", (a, b) -> {
+				return FunpTree.of(TermOp.PLUS__, p(a), p(b), null);
 			}).match("type .0 .1", (a, b) -> {
 				return FunpTypeCheck.of(p(a), null, p(b));
 			}).match("type .0 = .1 ~ .2", (a, b, c) -> {
