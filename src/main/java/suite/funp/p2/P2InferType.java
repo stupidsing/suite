@@ -412,10 +412,8 @@ public class P2InferType {
 					ti = typeBoolean;
 				else if (Set.of(TermOp.EQUAL_, TermOp.NOTEQ_).contains(op))
 					ti = new Reference();
-				else if (size != null)
-					ti = typePatInt.subst(Int.of(Funp_.getCoerceSize(size)));
 				else
-					ti = typePatInt.subst(new Reference());
+					ti = typePatInt.subst(size != null ? Int.of(Funp_.getCoerceSize(size)) : new Reference());
 				unify(n, infer(lhs), ti);
 				unify(n, infer(rhs), ti);
 				var cmp = Set.of(TermOp.EQUAL_, TermOp.NOTEQ_, TermOp.LE____, TermOp.LT____).contains(op);
@@ -703,7 +701,8 @@ public class P2InferType {
 			})).applyIf(FunpTree.class, f -> f.apply((op, l, r, size) -> {
 				var size0 = getTypeSize(typeOf(l));
 				var size1 = getTypeSize(typeOf(r));
-				if (Set.of(TermOp.EQUAL_, TermOp.NOTEQ_).contains(op) && (is < size0 || is < size1)) {
+				if (Set.of(TermOp.EQUAL_, TermOp.NOTEQ_).contains(op)
+						&& (!Funp_.is1248(size0) || !Funp_.is1248(size1))) {
 					var offsetStack0 = IntMutable.nil();
 					var offsetStack1 = IntMutable.nil();
 					var ml = l.cast(FunpMemory.class);
