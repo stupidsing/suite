@@ -771,9 +771,11 @@ public class P2InferType {
 				invoke = FunpInvoke2.of(lambda1, lt.is, lt.os);
 			else
 				invoke = FunpInvokeIo.of(lambda1, lt.is, os = lt.os);
-			var as0 = allocStack(size, value, FunpSaveRegisters1.of(invoke, saves));
-			var as1 = FunpAllocStack.of(os, FunpDontCare.of(), as0, IntMutable.nil());
-			return FunpSaveRegisters0.of(as1, saves);
+			var as0 = FunpSaveRegisters1.of(invoke, saves);
+			var as1 = allocStack(size, value, as0);
+			var as2 = allocStack(os, FunpDontCare.of(), as1);
+			var as3 = FunpSaveRegisters0.of(as2, saves);
+			return as3;
 		}
 
 		private FunpOp adjustPointer(Funp address, Funp index, int size) {
