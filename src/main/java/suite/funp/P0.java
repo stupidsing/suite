@@ -376,6 +376,7 @@ public class P0 {
 		public String vn;
 		public Funp expr;
 		public boolean isCapture;
+		public boolean isScoped;
 		public String name; // optional
 
 		public static FunpLambda of(String vn, Funp expr, boolean isCapture) {
@@ -383,6 +384,7 @@ public class P0 {
 			f.vn = vn;
 			f.expr = expr;
 			f.isCapture = isCapture;
+			f.isScoped = true;
 			return f;
 		}
 

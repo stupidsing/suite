@@ -307,8 +307,16 @@ public class P2InferType {
 				return te;
 			})).applyIf(FunpLambda.class, f -> f.apply((vn, expr, isCapture) -> {
 				var tv = new Reference();
-				var env1 = env.replace(vn, Pair.of(Fdt.L_MONO, tv));
-				return typeLambdaOf(tv, new Infer(env1, checks, me).infer(expr));
+				PerMap<String, Pair<Fdt, Node>> env1;
+				if (f.isScoped)
+					env1 = env;
+				else // lambda without scope can access global variables outside only
+					env1 = env //
+							.streamlet() //
+							.filter(pair -> Fdt.isGlobal(pair.v.k)) //
+							.fold(PerMap.empty(), (e, p) -> e.put(p.k, p.v));
+				var env2 = env1.replace(vn, Pair.of(Fdt.L_MONO, tv));
+				return typeLambdaOf(tv, new Infer(env2, checks, me).infer(expr));
 			})).applyIf(FunpLambdaCapture.class, f -> f.apply((fpIn, frameVar, frame, vn, expr) -> {
 				var tv = new Reference();
 				var tf = infer(frame);
@@ -495,8 +503,8 @@ public class P2InferType {
 			})).applyIf(FunpTypeCheck.class, f -> f.apply((lhs, rhs, expr) -> {
 				return erase(expr);
 			})).applyIf(FunpDefine.class, f -> f.apply((vn, value, expr, fdt) -> {
+				var size = getTypeSize(typeOf(value));
 				if (Fdt.isGlobal(fdt)) {
-					var size = getTypeSize(typeOf(value));
 					var address = Mutable.<Operand> nil();
 					var var = global(address, 0, size);
 					var e1 = new Erase(scope, env.replace(vn, var), me);
@@ -505,7 +513,7 @@ public class P2InferType {
 					var value_ = erase(value, vn);
 					return FunpAllocGlobal.of(size, value_, e1.erase(expr), address);
 				} else if (Fdt.isLocal(fdt))
-					return defineLocal(f, vn, value, expr);
+					return defineLocal(f, vn, erase(value, vn), expr, size);
 				else if (fdt == Fdt.VIRT)
 					return erase(expr);
 				else
@@ -608,11 +616,21 @@ public class P2InferType {
 				return FunpMemory.of(address1, 0, size);
 			})).applyIf(FunpLambda.class, f -> f.apply((vn, expr0, isCapture) -> {
 				var b = ps + ps; // return address and EBP
-				var scope1 = scope + 1;
+				var scope1 = f.isScoped ? scope + 1 : 0;
 				var lt = new LambdaType(n);
-				var frame = Funp_.framePointer;
-				var env1 = env.replace(vn, localStack(scope1, IntMutable.of(0), b, b + lt.is));
-				var expr1 = new Erase(scope1, env1, me).erase(expr0);
+				var frame = f.isScoped ? Funp_.framePointer : FunpDontCare.of();
+				PerMap<String, Var> env1;
+
+				if (f.isScoped)
+					env1 = env;
+				else // lambda without scope can access global variables outside only
+					env1 = env //
+							.streamlet() //
+							.filter(pair -> pair.v.scope == null) //
+							.fold(PerMap.empty(), (e, p) -> e.put(p.k, p.v));
+
+				var env2 = env1.replace(vn, localStack(scope1, IntMutable.of(0), b, b + lt.is));
+				var expr1 = new Erase(scope1, env2, me).erase(expr0);
 				var expr2 = f.name != null ? FunpRemark.of(f.name, expr1) : expr1;
 				return eraseRoutine(lt, frame, expr2);
 			})).applyIf(FunpLambdaCapture.class, f -> f.apply((fp0, frameVar, frame, vn, expr) -> {
@@ -765,10 +783,6 @@ public class P2InferType {
 					.nonNullResult();
 		}
 
-		private Funp defineLocal(Funp f, String vn, Funp value, Funp expr) {
-			return defineLocal(f, vn, erase(value, vn), expr, getTypeSize(typeOf(value)));
-		}
-
 		private Funp defineLocal(Funp f, String vn, Funp value, Funp expr, int size) {
 			isRegByNode.putIfAbsent(f, size == is);
 
@@ -884,25 +898,30 @@ public class P2InferType {
 		return new Var(FunpDontCare.of(), null, null, null, IntMutable.of(0), offsetOperand, start, end);
 	}
 
+	private Var localStack(int scope, IntMutable offset, int start, int end) {
+		return local(FunpDontCare.of(), null, scope, offset, start, end);
+	}
+
 	private Var local(Funp funp, Mutable<Operand> operand, int scope, IntMutable offset, int start, int end) {
 		return new Var(funp, null, operand, scope, offset, null, start, end);
 	}
 
-	private Var localStack(int scope, IntMutable offset, int start, int end) {
-		return new Var(FunpDontCare.of(), null, null, scope, offset, null, start, end);
-	}
-
 	private class Var {
-		private Funp funp;
-		private Funp value;
-		private Mutable<Operand> operand;
-		private Integer scope;
-		private IntMutable offset;
-		private Mutable<Operand> offsetOperand;
+
+		// FunpDefine, FunpDefineRec or FunpLambda that defines the variable
+		private Funp definition;
+
+		private Funp value; // immutable value of the variable, if any
+		private Mutable<Operand> operand; // operand storing the variable, if any
+
+		// variable addressing definition
+		private Integer scope; // level of frame scopes, or null if global
+		private IntMutable offset; // offset to a label
+		private Mutable<Operand> offsetOperand; // offset operand
 		private int start, end;
 
 		private Var( //
-				Funp funp, //
+				Funp definition, //
 				Funp value, //
 				Mutable<Operand> operand, //
 				Integer scope, //
@@ -910,7 +929,7 @@ public class P2InferType {
 				Mutable<Operand> offsetOperand, //
 				int start, //
 				int end) {
-			this.funp = funp;
+			this.definition = definition;
 			this.value = value;
 			this.operand = operand;
 			this.scope = scope;
@@ -946,22 +965,23 @@ public class P2InferType {
 		}
 
 		private FunpMemory getMemory_(int scope0) {
-			var nfp0 = scope != null //
-					? forInt(scope, scope0).<Funp> fold(Funp_.framePointer, (i, n) -> FunpMemory.of(n, 0, ps)) // locals
-					: FunpNumber.of(IntMutable.of(0)); // globals
-			var nfp1 = offsetOperand != null //
-					? FunpOp.of(ps, TermOp.PLUS__, nfp0, FunpOperand.of(offsetOperand)) //
-					: nfp0;
-			return FunpMemory.of(FunpOp.of(ps, TermOp.PLUS__, nfp1, FunpNumber.of(offset)), start, end);
+			var frame = scope != null //
+					? forInt(scope, scope0).<Funp> fold(Funp_.framePointer, (i, n) -> FunpMemory.of(n, 0, ps)) //
+					: null;
+
+			var nfp0 = FunpNumber.of(offset);
+			var nfp1 = frame != null ? FunpOp.of(ps, TermOp.PLUS__, nfp0, frame) : nfp0;
+			var nfp2 = offsetOperand != null ? FunpOp.of(ps, TermOp.PLUS__, nfp1, FunpOperand.of(offsetOperand)) : nfp1;
+			return FunpMemory.of(nfp2, start, end);
 		}
 
 		private boolean isReg() {
-			return isRegByNode.getOrDefault(funp, false);
+			return isRegByNode.getOrDefault(definition, false);
 		}
 
 		private void setReg(boolean b) {
 			if (!b)
-				isRegByNode.put(funp, b);
+				isRegByNode.put(definition, b);
 		}
 	}
 

@@ -219,6 +219,10 @@ public class P0Parse {
 				return FunpError.of();
 			}).match("fold (.0 := .1 # .2 # .3 # .4)", (a, b, c, d, e) -> {
 				return fold(a, b, c, d, e);
+			}).match("glob (.0 => .1)", (a, b) -> {
+				var lambda = bind(Fdt.L_MONO).lambdaSeparate(a, b);
+				lambda.isScoped = false;
+				return lambda;
 			}).match("for! (.0 := .1 # .2 # .3 # .4)", (a, b, c, d, e) -> {
 				return do_(parse -> parse.fold(a, b, c, d, e));
 			}).match("if (`.0` = .1) then .2 else .3", (a, b, c, d) -> {
