@@ -4,21 +4,21 @@ expand !adjust.pointer .pointer .add :=
 	type .pointer pointer:numberp sum (numberp:pointer .pointer) (numberp:number .add)
 ~
 
-define.global !mmap length := do!
+define.function !mmap length := do!
 	pointer:numberp !asm.mmap length
 ~
 
-define.global !munmap (pointer, length) := do!
+define.function !munmap (pointer, length) := do!
 	!asm.munmap (numberp:pointer pointer) length
 ~
 
-define.global !read (pointer, length) := do!
+define.function !read (pointer, length) := do!
 	!asm.read (numberp:pointer pointer) length
 ~
 
-define.global !write (pointer, length) := do!
+define.function !write (pointer, length) := do!
 	!asm.write (numberp:pointer pointer) length
 ~
 
-define.global max (a, b) := if (a < b) then b else a ~
-define.global min (a, b) := if (a < b) then a else b ~
+define.function max (a, b) := if (a < b) then b else a ~
+define.function min (a, b) := if (a < b) then a else b ~

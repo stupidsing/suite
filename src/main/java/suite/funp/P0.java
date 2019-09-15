@@ -682,7 +682,7 @@ public class P0 {
 		}
 
 		public static boolean isPoly(Fdt fdt) {
-			return fdt == Fdt.G_POLY || fdt == Fdt.L_POLY;
+			return fdt == Fdt.G_POLY || fdt == Fdt.L_POLY || fdt == Fdt.S_POLY;
 		}
 
 		public static boolean isSubs(Fdt fdt) {
