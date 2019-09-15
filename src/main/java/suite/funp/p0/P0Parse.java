@@ -199,6 +199,10 @@ public class P0Parse {
 				return define(a, bind(Fdt.L_MONO).lambdaSeparate(b, c), d, Fdt.L_POLY);
 			}).match("define { .0 } ~ .1", (a, b) -> {
 				return defineList(a, b, Fdt.L_POLY);
+			}).match("define.function .0 .1 := .2 ~ .3", (a, b, c, d) -> {
+				var lambda = bind(Fdt.L_MONO).lambdaSeparate(b, c);
+				lambda.isScoped = false;
+				return define(a, lambda, d, Fdt.S_POLY);
 			}).match("define.global .0 := .1 ~ .2", (a, b, c) -> {
 				var tree = Tree.decompose(a, TermOp.TUPLE_);
 				if (tree == null || !isId(tree.getLeft())) {
@@ -219,7 +223,7 @@ public class P0Parse {
 				return FunpError.of();
 			}).match("fold (.0 := .1 # .2 # .3 # .4)", (a, b, c, d, e) -> {
 				return fold(a, b, c, d, e);
-			}).match("glob (.0 => .1)", (a, b) -> {
+			}).match("glob (.0 => .1)", (a, b) -> { // without frame
 				var lambda = bind(Fdt.L_MONO).lambdaSeparate(a, b);
 				lambda.isScoped = false;
 				return lambda;

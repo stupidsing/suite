@@ -4,7 +4,6 @@ import static java.util.Map.entry;
 import static primal.statics.Fail.fail;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -49,6 +48,7 @@ import suite.funp.P2.FunpAllocReg;
 import suite.funp.P2.FunpAllocStack;
 import suite.funp.P2.FunpAssignMem;
 import suite.funp.P2.FunpAssignOp;
+import suite.funp.P2.FunpAssignOp2;
 import suite.funp.P2.FunpCmp;
 import suite.funp.P2.FunpData;
 import suite.funp.P2.FunpFramePointer;
@@ -60,6 +60,7 @@ import suite.funp.P2.FunpInvokeIo;
 import suite.funp.P2.FunpMemory;
 import suite.funp.P2.FunpOp;
 import suite.funp.P2.FunpOperand;
+import suite.funp.P2.FunpOperand2;
 import suite.funp.P2.FunpRemark;
 import suite.funp.P2.FunpRoutine;
 import suite.funp.P2.FunpRoutine2;
@@ -139,8 +140,6 @@ public class P4GenerateCode {
 	private P4Alloc p4alloc = new P4Alloc();
 	private P4DecomposeOperand p4deOp;
 	private P4Emit p4emit = new P4Emit();
-
-	private Map<Funp, OpImmLabel> compiledRoutines = new HashMap<>();
 
 	public P4GenerateCode(boolean isUseEbp) { // or use ESP directly
 		this.isUseEbp = isUseEbp;
@@ -247,6 +246,11 @@ public class P4GenerateCode {
 				return compile(expr);
 			})).applyIf(FunpAssignOp.class, f -> f.apply((target, value, expr) -> {
 				compileSpec(value, (OpReg) target.operand.value());
+				return compile(expr);
+			})).applyIf(FunpAssignOp2.class, f -> f.apply((target, value, expr) -> {
+				var o = compilePs2Op(value);
+				target.operand0.update(o.op0);
+				target.operand1.update(o.op1);
 				return compile(expr);
 			})).applyIf(FunpBoolean.class, f -> f.apply(b -> {
 				return returnOp(amd64.imm(b ? 1 : 0, bs));
@@ -453,6 +457,8 @@ public class P4GenerateCode {
 				return returnOp(compileTree(opSize, n, op, assoc, lhs, rhs));
 			})).applyIf(FunpOperand.class, f -> f.apply(op -> {
 				return returnOp(op.value());
+			})).applyIf(FunpOperand2.class, f -> f.apply((op0, op1) -> {
+				return return2Op(op0.value(), op1.value());
 			})).applyIf(FunpRemark.class, f -> f.apply((remark, expr) -> {
 				em.emit(Insn.REMARK, amd64.remark("START -> " + remark));
 				var out = compile(expr);
@@ -547,13 +553,12 @@ public class P4GenerateCode {
 		}
 
 		public CompileOut returnDontCare() {
-			var regs = amd64.regs(result.regSize);
 			if (result.t == Rt.ASSIGN || result.t == Rt.SPEC)
 				return new CompileOut();
 			else if (result.nRegs == 1)
-				return new CompileOut(regs[axReg]);
+				return new CompileOut(amd64.ign(result.regSize));
 			else if (result.nRegs == 2)
-				return new CompileOut(regs[axReg], regs[dxReg]);
+				return new CompileOut(amd64.ign(result.regSize), amd64.ign(result.regSize));
 			else
 				return fail();
 		}
@@ -842,29 +847,16 @@ public class P4GenerateCode {
 			return em.mov(rs.isAnyMasked(op) ? rs1.get(size) : op, op);
 		}
 
-		private CompileOut compileRoutine(Funp f, Funp frame, Sink<Compile0> sink) {
-			if (!(frame instanceof FunpDontCare))
-				return return2Op(compilePsOp(frame), spawn(compilePrologEpilog(sink)));
-			else {
-				var r = compiledRoutines.get(f);
-				if (r == null) {
-					compiledRoutines.put(f, r = em.label());
-					spawn(r, compilePrologEpilog(sink), null);
-				}
-				return return2Op(amd64.ign(ps), r);
-			}
-		}
-
-		private Sink<Compile0> compilePrologEpilog(Sink<Compile0> sink) {
-			return c1 -> {
-				var em = c1.em;
-				em.push(_bp);
+		private CompileOut compileRoutine(Funp f, Funp frame, Sink<Compile0> sink0) {
+			return return2Op(compilePsOp(frame), spawn(c -> {
+				var em1 = c.em;
+				em1.push(_bp);
 				if (isUseEbp)
-					em.mov(_bp, _sp);
-				sink.f(c1.nc(registerSet, 0));
-				em.pop(_bp);
-				em.emit(Insn.RET);
-			};
+					em1.mov(_bp, _sp);
+				sink0.f(c.nc(registerSet, 0));
+				em1.pop(_bp);
+				em1.emit(Insn.RET);
+			}));
 		}
 
 		private boolean compileGlobal(int size, Mutable<Operand> address, Funp node) {

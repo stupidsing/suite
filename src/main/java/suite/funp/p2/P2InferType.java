@@ -82,6 +82,7 @@ import suite.funp.P2.FunpAllocReg;
 import suite.funp.P2.FunpAllocStack;
 import suite.funp.P2.FunpAssignMem;
 import suite.funp.P2.FunpAssignOp;
+import suite.funp.P2.FunpAssignOp2;
 import suite.funp.P2.FunpCmp;
 import suite.funp.P2.FunpData;
 import suite.funp.P2.FunpFramePointer;
@@ -94,6 +95,7 @@ import suite.funp.P2.FunpLambdaCapture;
 import suite.funp.P2.FunpMemory;
 import suite.funp.P2.FunpOp;
 import suite.funp.P2.FunpOperand;
+import suite.funp.P2.FunpOperand2;
 import suite.funp.P2.FunpRemark;
 import suite.funp.P2.FunpRoutine;
 import suite.funp.P2.FunpRoutine2;
@@ -504,17 +506,22 @@ public class P2InferType {
 				return erase(expr);
 			})).applyIf(FunpDefine.class, f -> f.apply((vn, value, expr, fdt) -> {
 				var size = getTypeSize(typeOf(value));
+				if (value instanceof FunpLambda)
+					((FunpLambda) value).name = vn;
 				if (Fdt.isGlobal(fdt)) {
 					var address = Mutable.<Operand> nil();
 					var var = global(address, 0, size);
 					var e1 = new Erase(scope, env.replace(vn, var), me);
-					if (value instanceof FunpLambda)
-						((FunpLambda) value).name = vn;
 					var value_ = erase(value, vn);
 					return FunpAllocGlobal.of(size, value_, e1.erase(expr), address);
 				} else if (Fdt.isLocal(fdt))
 					return defineLocal(f, vn, erase(value, vn), expr, size);
-				else if (fdt == Fdt.VIRT)
+				else if (Fdt.isSubs(fdt)) {
+					var operands = FunpOperand2.of(Mutable.nil(), Mutable.nil());
+					var var = new Var(f, operands, null, null, IntMutable.of(0), null, 0, size);
+					var e1 = new Erase(scope, env.replace(vn, var), me);
+					return FunpAssignOp2.of(operands, erase(value, vn), e1.erase(expr));
+				} else if (fdt == Fdt.VIRT)
 					return erase(expr);
 				else
 					return fail();

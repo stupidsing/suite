@@ -121,6 +121,24 @@ public class P2 {
 		}
 	}
 
+	public static class FunpAssignOp2 implements Funp, P4.End {
+		public FunpOperand2 target;
+		public Funp value;
+		public Funp expr;
+
+		public static FunpAssignOp2 of(FunpOperand2 target, Funp value, Funp expr) {
+			var f = new FunpAssignOp2();
+			f.target = target;
+			f.value = value;
+			f.expr = expr;
+			return f;
+		}
+
+		public <R> R apply(FixieFun3<FunpOperand2, Funp, Funp, R> fun) {
+			return fun.apply(target, value, expr);
+		}
+	}
+
 	public static class FunpCmp implements Funp, P4.End {
 		public Operator operator;
 		public FunpMemory left;
@@ -321,6 +339,22 @@ public class P2 {
 
 		public <R> R apply(FixieFun1<Mutable<Operand>, R> fun) {
 			return fun.apply(operand);
+		}
+	}
+
+	public static class FunpOperand2 implements Funp, P4.End {
+		public Mutable<Operand> operand0;
+		public Mutable<Operand> operand1;
+
+		public static FunpOperand2 of(Mutable<Operand> operand0, Mutable<Operand> operand1) {
+			var f = new FunpOperand2();
+			f.operand0 = operand0;
+			f.operand1 = operand1;
+			return f;
+		}
+
+		public <R> R apply(FixieFun2<Mutable<Operand>, Mutable<Operand>, R> fun) {
+			return fun.apply(operand0, operand1);
 		}
 	}
 

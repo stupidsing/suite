@@ -73,18 +73,17 @@ public class Funp_ {
 	}
 
 	public class Main {
-		private P0Parse p0 = new P0Parse();
-		private P10Inline p1 = new P10Inline();
-		private P11ReduceTailCall p1r = new P11ReduceTailCall();
-		private P2InferType p2 = new P2InferType();
-		private P2GenerateLambda p2g = new P2GenerateLambda();
-		private P3Optimize p3 = new P3Optimize();
-		private P4GenerateCode p4 = new P4GenerateCode(!isOptimize);
-
 		private Main() {
 		}
 
 		public Pair<List<Instruction>, Bytes> compile(int offset, String fp) {
+			var p0 = new P0Parse();
+			var p1 = new P10Inline();
+			var p1r = new P11ReduceTailCall();
+			var p2 = new P2InferType();
+			var p3 = new P3Optimize();
+			var p4 = new P4GenerateCode(!isOptimize);
+
 			var node = Suite.parse(fp);
 			var n0 = p0.parse(node);
 			var n1 = p1r.reduce(n0);
@@ -95,6 +94,10 @@ public class Funp_ {
 		}
 
 		public int interpret(Node node) {
+			var p0 = new P0Parse();
+			var p2 = new P2InferType();
+			var p2g = new P2GenerateLambda();
+
 			var f0 = p0.parse(node);
 			p2.infer(f0);
 			return p2g.eval(f0);

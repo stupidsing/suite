@@ -668,6 +668,8 @@ public class P0 {
 		L_IOAP, // local variable, I/O access
 		L_MONO, // local variable, mono type
 		L_POLY, // local variable, polymorphic type
+		S_MONO, // substitution variable, mono type
+		S_POLY, // substitution variable, polymorphic type
 		VIRT, // virtual variable
 		;
 
@@ -681,6 +683,10 @@ public class P0 {
 
 		public static boolean isPoly(Fdt fdt) {
 			return fdt == Fdt.G_POLY || fdt == Fdt.L_POLY;
+		}
+
+		public static boolean isSubs(Fdt fdt) {
+			return fdt == Fdt.S_MONO || fdt == Fdt.S_POLY;
 		}
 	};
 
