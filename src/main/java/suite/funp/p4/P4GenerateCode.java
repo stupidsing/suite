@@ -490,7 +490,7 @@ public class P4GenerateCode {
 				if (result.t != Rt.ASSIGN)
 					return fun.apply(this);
 				else {
-					int size = target.size();
+					var size = target.size();
 					if (size == is || size == ps)
 						return returnOp(fun.apply(nc(new Result(Rt.REG, 1, size))).op0);
 					else
