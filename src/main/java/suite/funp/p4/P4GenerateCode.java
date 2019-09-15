@@ -489,11 +489,16 @@ public class P4GenerateCode {
 				};
 				if (result.t != Rt.ASSIGN)
 					return fun.apply(this);
-				else
-					return compileAllocStack(ps, target.pointer, null, (c1, s) -> {
-						var target1 = FunpMemory.of(s, target.start, target.end);
-						return fun.apply(c1.nc(ASSIGN, target1, null, null));
-					});
+				else {
+					int size = target.size();
+					if (size == is || size == ps)
+						return returnOp(fun.apply(nc(new Result(Rt.REG, 1, size))).op0);
+					else
+						return compileAllocStack(ps, target.pointer, null, (c1, s) -> {
+							var target1 = FunpMemory.of(s, target.start, target.end);
+							return fun.apply(c1.nc(ASSIGN, target1, null, null));
+						});
+				}
 			})).applyIf(FunpSaveRegisters1.class, f -> f.apply((expr, saves) -> {
 				for (var pair : saves.value())
 					em.mov(compileFrame(pair.v, pair.k.size), pair.k);
