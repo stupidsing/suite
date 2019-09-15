@@ -305,10 +305,10 @@ public class P2InferType {
 				unify(n, typeRefOf(typeArrayOf(null, te)), infer(reference));
 				unify(n, typeNumber, infer(index));
 				return te;
-			})).applyIf(FunpLambda.class, f -> f.apply((vn, expr, isCapture) -> {
+			})).applyIf(FunpLambda.class, f -> f.apply((vn, expr, isCapture, isScoped) -> {
 				var tv = new Reference();
 				PerMap<String, Pair<Fdt, Node>> env1;
-				if (f.isScoped)
+				if (isScoped)
 					env1 = env;
 				else // lambda without scope can access global variables outside only
 					env1 = env //
@@ -614,14 +614,14 @@ public class P2InferType {
 				var size = getTypeSize(te);
 				var address1 = adjustPointer(reference, index, size);
 				return FunpMemory.of(address1, 0, size);
-			})).applyIf(FunpLambda.class, f -> f.apply((vn, expr0, isCapture) -> {
+			})).applyIf(FunpLambda.class, f -> f.apply((vn, expr0, isCapture, isScoped) -> {
 				var b = ps + ps; // return address and EBP
-				var scope1 = f.isScoped ? scope + 1 : 0;
+				var scope1 = isScoped ? scope + 1 : 0;
 				var lt = new LambdaType(n);
-				var frame = f.isScoped ? Funp_.framePointer : FunpDontCare.of();
+				var frame = isScoped ? Funp_.framePointer : FunpDontCare.of();
 				PerMap<String, Var> env1;
 
-				if (f.isScoped)
+				if (isScoped)
 					env1 = env;
 				else // lambda without scope can access global variables outside only
 					env1 = env //
@@ -746,9 +746,10 @@ public class P2InferType {
 
 		private Funp applyOnce(Funp value, Funp lambda, int size) {
 			var lambda_ = lambda.cast(FunpLambda.class);
-			return lambda_ != null //
-					? lambda_.apply((vn, expr, isCapture) -> defineLocal(lambda, vn, value, expr, size)) //
-					: apply(value, lambda, size);
+			if (lambda_ != null) // expands the lambda directly
+				return lambda_.apply((vn, expr, isCapture, isScoped) -> defineLocal(lambda, vn, value, expr, size));
+			else
+				return apply(value, lambda, size);
 		}
 
 		private Funp apply(Funp value, Funp lambda, int size) {

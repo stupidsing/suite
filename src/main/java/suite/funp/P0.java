@@ -380,16 +380,20 @@ public class P0 {
 		public String name; // optional
 
 		public static FunpLambda of(String vn, Funp expr, boolean isCapture) {
+			return of(vn, expr, isCapture, true);
+		}
+
+		public static FunpLambda of(String vn, Funp expr, boolean isCapture, boolean isScoped) {
 			var f = new FunpLambda();
 			f.vn = vn;
 			f.expr = expr;
 			f.isCapture = isCapture;
-			f.isScoped = true;
+			f.isScoped = isScoped;
 			return f;
 		}
 
-		public <R> R apply(FixieFun3<String, Funp, Boolean, R> fun) {
-			return fun.apply(vn, expr, isCapture);
+		public <R> R apply(FixieFun4<String, Funp, Boolean, Boolean, R> fun) {
+			return fun.apply(vn, expr, isCapture, isScoped);
 		}
 	}
 

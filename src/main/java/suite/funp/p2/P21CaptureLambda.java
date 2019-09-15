@@ -48,7 +48,7 @@ public class P21CaptureLambda {
 			private Funp a(Funp node) {
 				return inspect.rewrite(node, Funp.class, n -> {
 					lambdaByFunp.put(n, lambda);
-					return n.cast(FunpLambda.class, f -> f.apply((var, expr, isCapture) -> {
+					return n.cast(FunpLambda.class, f -> f.apply((var, expr, isCapture, isScoped) -> {
 						new AssociateLambda(f).a(expr);
 						return f;
 					}));
@@ -142,7 +142,7 @@ public class P21CaptureLambda {
 						return FunpTypeAssign.of(var, value_, assign);
 					} else
 						return null;
-				})).applyIf(FunpLambda.class, f -> f.apply((vn, expr, isCapture) -> {
+				})).applyIf(FunpLambda.class, f -> f.apply((vn, expr, isCapture, isScoped) -> {
 					var li = infoByLambda.get(f);
 					var captures = li.captures;
 					if (!captures.isEmpty()) {

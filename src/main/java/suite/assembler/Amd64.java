@@ -147,6 +147,9 @@ public class Amd64 {
 		public int size;
 	}
 
+	public class OpIgnore extends Operand {
+	}
+
 	public class OpImm extends Operand {
 		public long imm;
 
@@ -296,7 +299,13 @@ public class Amd64 {
 		}
 	};
 
-	public Operand imm8(long imm) {
+	public Operand ign(int size) {
+		var op = new OpIgnore();
+		op.size = size;
+		return op;
+	}
+
+		public Operand imm8(long imm) {
 		return imm(imm, 1);
 	}
 

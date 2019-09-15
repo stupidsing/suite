@@ -14,6 +14,7 @@ import suite.adt.map.BiListMultimap;
 import suite.assembler.Amd64;
 import suite.assembler.Amd64.Insn;
 import suite.assembler.Amd64.Instruction;
+import suite.assembler.Amd64.OpIgnore;
 import suite.assembler.Amd64.OpImm;
 import suite.assembler.Amd64.OpImmLabel;
 import suite.assembler.Amd64.OpMem;
@@ -176,7 +177,11 @@ public class P4Emit {
 		}
 
 		public void emit(Instruction instruction) {
-			instructions.add(instruction);
+			if (true //
+					&& !(instruction.op0 instanceof OpIgnore) //
+					&& !(instruction.op1 instanceof OpIgnore) //
+					&& !(instruction.op2 instanceof OpIgnore))
+				instructions.add(instruction);
 		}
 
 		public Block spawn(Sink<Emit> sink) {
