@@ -446,8 +446,7 @@ public class P4GenerateCode {
 							&& (op1 = p4deOp.decompose(fd, pointer, start + ps, ps)) != null)
 						return return2Op(op0, op1);
 					else
-						return mf.apply(
-								(start_, r) -> return2Op(amd64.mem(r, start_, ps), amd64.mem(r, start_ + ps, ps)));
+						return mf.apply((p, r) -> return2Op(amd64.mem(r, p, ps), amd64.mem(r, p + ps, ps)));
 				else
 					return fail();
 			})).applyIf(FunpNumber.class, f -> {
@@ -487,6 +486,7 @@ public class P4GenerateCode {
 					c1.em.addImm(_sp, pushSize);
 					return out;
 				};
+
 				if (result.t != Rt.ASSIGN)
 					return fun.apply(this);
 				else {
@@ -494,9 +494,9 @@ public class P4GenerateCode {
 					if (size == is || size == ps)
 						return returnOp(fun.apply(nc(new Result(Rt.REG, 1, size))).op0);
 					else
-						return compileAllocStack(ps, target.pointer, null, (c1, s) -> {
+						return compileAllocStack(ps, target.pointer, null, (c2, s) -> {
 							var target1 = FunpMemory.of(s, target.start, target.end);
-							return fun.apply(c1.nc(ASSIGN, target1, null, null));
+							return fun.apply(c2.nc(ASSIGN, target1, null, null));
 						});
 				}
 			})).applyIf(FunpSaveRegisters1.class, f -> f.apply((expr, saves) -> {
