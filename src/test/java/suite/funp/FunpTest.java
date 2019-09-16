@@ -199,7 +199,7 @@ public class FunpTest {
 
 	@Test
 	public void testReturnArray() {
-		test(2, "define f i := [0, 1, i,] ~ (predef (f 2)) [2]");
+		test(2, "define.function f i := [0, 1, i,] ~ (predef (f 2)) [2]");
 	}
 
 	@Test
