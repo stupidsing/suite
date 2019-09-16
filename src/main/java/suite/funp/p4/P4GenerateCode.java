@@ -245,7 +245,11 @@ public class P4GenerateCode {
 				compileAssign(value, target);
 				return compile(expr);
 			})).applyIf(FunpAssignOp.class, f -> f.apply((target, value, expr) -> {
-				compileSpec(value, (OpReg) target.operand.value());
+				var operand = target.operand;
+				if (operand.isEmpty())
+					operand.update(compileIsReg(value));
+				else
+					compileSpec(value, (OpReg) operand.value());
 				return compile(expr);
 			})).applyIf(FunpAssignOp2.class, f -> f.apply((target, value, expr) -> {
 				var o = compilePs2Op(value);
