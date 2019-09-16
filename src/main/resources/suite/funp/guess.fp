@@ -10,7 +10,7 @@ define.global {
 
 consult "linux.fp" ~
 
-define.global !guess () := do!
+define.function !guess () := do!
 	let name := address.of predef (array 32 * byte) ~
 	!put.string "please enter your name: " ~
 	!get.string (name, 32) ~
