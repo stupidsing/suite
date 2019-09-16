@@ -151,8 +151,8 @@ public class FunpTest {
 		test(2, "let f := { a, b: v, c, } => v ~ f { a: 1, b: 2, c: 3, }");
 		test(2, "let f := { b: v, } => v ~ f { a: 1, b: 2, c: 3, }");
 		test(2, "let f := [a, b, c,] => b ~ f [1, 2, 3,]");
-		test(6, "let g :=  glob (a => a + 1) ~ 3 | g | g | g");
-		test(6, "define.function f a :=  a + 1 ~ 3 | f | f | f");
+		test(6, "let g := glob (a => a + 1) ~ 3 | g | g | g");
+		test(6, "define.function f a := a + 1 ~ 3 | f | f | f");
 	}
 
 	@Test
