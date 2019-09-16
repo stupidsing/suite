@@ -48,6 +48,7 @@ import suite.funp.P0.FunpMe;
 import suite.funp.P0.FunpNumber;
 import suite.funp.P0.FunpPredefine;
 import suite.funp.P0.FunpReference;
+import suite.funp.P0.FunpRemark;
 import suite.funp.P0.FunpRepeat;
 import suite.funp.P0.FunpSizeOf;
 import suite.funp.P0.FunpStruct;
@@ -299,12 +300,14 @@ public class P0Parse {
 				return FunpNumber.ofNumber(n.number);
 			}).applyIf(Str.class, str -> {
 				var vn = "s$" + Get.temp();
+				var s = str.value;
 				var fa = FunpArray.of(ReadChars //
-						.from(str.value) //
+						.from(s) //
 						.<Funp> map(ch -> FunpCoerce.of(Coerce.NUMBER, Coerce.BYTE, FunpNumber.ofNumber(ch))) //
 						.snoc(FunpCoerce.of(Coerce.NUMBER, Coerce.BYTE, FunpNumber.ofNumber(0))) //
 						.toList());
-				return FunpDefine.of(vn, fa, FunpReference.of(FunpVariable.of(vn)), Fdt.G_MONO);
+				var fr = s.length() < 80 ? FunpRemark.of(s, fa) : fa;
+				return FunpDefine.of(vn, fr, FunpReference.of(FunpVariable.of(vn)), Fdt.G_MONO);
 			}).applyTree((op, l, r) -> {
 				if (op == TermOp.TUPLE_) {
 					var apply = FunpApply.of(p(r), p(l));

@@ -43,6 +43,7 @@ import suite.funp.P0.FunpDontCare;
 import suite.funp.P0.FunpError;
 import suite.funp.P0.FunpIf;
 import suite.funp.P0.FunpNumber;
+import suite.funp.P0.FunpRemark;
 import suite.funp.P2.FunpAllocGlobal;
 import suite.funp.P2.FunpAllocReg;
 import suite.funp.P2.FunpAllocStack;
@@ -61,7 +62,6 @@ import suite.funp.P2.FunpMemory;
 import suite.funp.P2.FunpOp;
 import suite.funp.P2.FunpOperand;
 import suite.funp.P2.FunpOperand2;
-import suite.funp.P2.FunpRemark;
 import suite.funp.P2.FunpRoutine;
 import suite.funp.P2.FunpRoutine2;
 import suite.funp.P2.FunpRoutineIo;
@@ -70,6 +70,7 @@ import suite.funp.P2.FunpSaveRegisters1;
 import suite.funp.RegisterSet;
 import suite.funp.p4.P4Emit.Emit;
 import suite.node.Atom;
+import suite.node.io.Escaper;
 import suite.node.io.Operator.Assoc;
 import suite.node.io.TermOp;
 import suite.node.util.TreeUtil;
@@ -893,7 +894,11 @@ public class P4GenerateCode {
 					}).applyIf(FunpNumber.class, f -> {
 						flush();
 						return instructions.add(amd64.instruction(Insn.D, amd64.imm(f.i.value(), size)));
-					}).applyIf(Funp.class, f -> {
+					}).applyIf(FunpRemark.class, f -> f.apply((remark, expr) -> {
+						instructions.add(amd64.instruction(Insn.REMARK, amd64.remark(Escaper.escape(remark, '"'))));
+						var o = fill(size, expr);
+						return o;
+					})).applyIf(Funp.class, f -> {
 						return false;
 					}).result();
 				}

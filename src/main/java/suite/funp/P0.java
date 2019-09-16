@@ -471,6 +471,22 @@ public class P0 {
 		}
 	}
 
+	public static class FunpRemark implements Funp, P4.End {
+		public String remark;
+		public Funp expr;
+
+		public static FunpRemark of(String remark, Funp expr) {
+			var f = new FunpRemark();
+			f.remark = remark;
+			f.expr = expr;
+			return f;
+		}
+
+		public <R> R apply(FixieFun2<String, Funp, R> fun) {
+			return fun.apply(remark, expr);
+		}
+	}
+
 	public static class FunpRepeat implements Funp, P2.End {
 		public Integer count;
 		public Funp expr;

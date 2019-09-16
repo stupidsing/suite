@@ -66,6 +66,7 @@ import suite.funp.P0.FunpLambdaFree;
 import suite.funp.P0.FunpMe;
 import suite.funp.P0.FunpNumber;
 import suite.funp.P0.FunpReference;
+import suite.funp.P0.FunpRemark;
 import suite.funp.P0.FunpRepeat;
 import suite.funp.P0.FunpSizeOf;
 import suite.funp.P0.FunpStruct;
@@ -96,7 +97,6 @@ import suite.funp.P2.FunpMemory;
 import suite.funp.P2.FunpOp;
 import suite.funp.P2.FunpOperand;
 import suite.funp.P2.FunpOperand2;
-import suite.funp.P2.FunpRemark;
 import suite.funp.P2.FunpRoutine;
 import suite.funp.P2.FunpRoutine2;
 import suite.funp.P2.FunpRoutineIo;
@@ -338,6 +338,8 @@ public class P2InferType {
 				return typeNumber;
 			}).applyIf(FunpReference.class, f -> f.apply(expr -> {
 				return typeRefOf(infer(expr));
+			})).applyIf(FunpRemark.class, f -> f.apply((remark, expr) -> {
+				return infer(expr);
 			})).applyIf(FunpRepeat.class, f -> f.apply((count, expr) -> {
 				return typeArrayOf(count, infer(expr));
 			})).applyIf(FunpSizeOf.class, f -> f.apply(expr -> {
