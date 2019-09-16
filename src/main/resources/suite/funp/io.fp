@@ -4,7 +4,7 @@ consult "linux.fp" ~
 
 expand buffer.size := 256 ~
 
-define.global !new.mut.number init := do!
+define.function !new.mut.number init := do!
 	type init = number ~
 	let pointer := !new^ init ~
 	!assign pointer* := init ~
@@ -15,7 +15,7 @@ define.global !new.mut.number init := do!
 	}
 ~
 
-define.global !write.all (pointer, length) :=
+define.function !write.all (pointer, length) :=
 	type pointer = address.of array.of.many byte ~
 	for! (
 		n := 0 #
@@ -28,7 +28,7 @@ define.global !write.all (pointer, length) :=
 	)
 ~
 
-define.global !get.char () := do!
+define.function !get.char () := do!
 	let.global buffer := array buffer.size * byte ~
 	let.global start.end := (0, 0) ~
 	let (s0, e0) := start.end ~
@@ -38,7 +38,7 @@ define.global !get.char () := do!
 	buffer [s1]
 ~
 
-define.global !get.line (pointer, length) :=
+define.function !get.line (pointer, length) :=
 	for! (
 		(n, ch) := (0, !get.char ()) #
 		n < length && number:byte ch != 10 #
@@ -48,7 +48,7 @@ define.global !get.line (pointer, length) :=
 	)
 ~
 
-define.global !get.number () := do!
+define.function !get.number () := do!
 	let !gc () := do! number:byte !get.char () ~
 	let ch0 := !gc () ~
 	let positive := ch0 != number '-' ~
@@ -62,7 +62,7 @@ define.global !get.number () := do!
 	)
 ~
 
-define.global !get.string (pointer, length) :=
+define.function !get.string (pointer, length) :=
 	type pointer = address.of array.of.many byte ~
 	for! (
 		(n, b) := (0, true) #
@@ -75,16 +75,16 @@ define.global !get.string (pointer, length) :=
 	)
 ~
 
-define.global !put.char ch :=
+define.function !put.char ch :=
 	type ch = byte ~
 	!write.all (address.of predef [ch,], 1)
 ~
 
-define.global !put.line () :=
+define.function !put.line () :=
 	!put.char byte 10
 ~
 
-define.global !put.number n :=
+define.function !put.number n :=
 	let {
 		!put.number_ i := do!
 			if (0 < i) then (
@@ -103,7 +103,7 @@ define.global !put.number n :=
 	|| !put.char byte '0'
 ~
 
-define.global !put.string s :=
+define.function !put.string s :=
 	for! (
 		i := 0 #
 		s* [i] != byte 0 #
@@ -113,7 +113,7 @@ define.global !put.string s :=
 	)
 ~
 
-define.global !cat () :=
+define.function !cat () :=
 	for! (
 		n := 1 #
 		n != 0 #
