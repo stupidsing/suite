@@ -258,7 +258,7 @@ public class P2InferType {
 				BiPredicate<Operand, Node> opType = (op, t) -> unify(n, typePatInt.subst(Int.of(op.size)), t);
 				var tr = new Reference();
 				var b = Read.from(assigns).isAll(assign -> opType.test(assign.k, infer(assign.v)));
-				return b && opType.test(opResult, tr) ? tr : fail();
+				return b && opType.test(opResult, tr) ? tr : Funp_.fail(f, "wrong types");
 			})).applyIf(FunpDoAssignRef.class, f -> f.apply((reference, value, expr) -> {
 				unify(n, infer(reference), typeRefOf(infer(value)));
 				return infer(expr);
@@ -315,7 +315,7 @@ public class P2InferType {
 				else // lambda without scope can access global variables outside only
 					env1 = env //
 							.streamlet() //
-							.filter(pair -> Fdt.isGlobal(pair.v.k)) //
+							.filter(pair -> Fdt.isGlobal(pair.v.k) || Fdt.isSubs(pair.v.k) || pair.v.k == Fdt.VIRT) //
 							.fold(PerMap.empty(), (e, p) -> e.put(p.k, p.v));
 				var env2 = env1.replace(vn, Pair.of(Fdt.L_MONO, tv));
 				return typeLambdaOf(tv, new Infer(env2, checks, me).infer(expr));
@@ -455,7 +455,13 @@ public class P2InferType {
 		}
 
 		private Node getVariable(FunpVariable var, boolean isCloneType) {
-			return env.get(var.vn).map((type, tv) -> isCloneType && Fdt.isPoly(type) ? cloneType(tv) : tv);
+			var pair = env.get(var.vn);
+			if (pair != null)
+				return pair.map((type, tv) -> isCloneType && Fdt.isPoly(type) ? cloneType(tv) : tv);
+			else
+				// we reach here since the code is trying to access a outer variable from a
+				// global (scope-less) closure
+				return Funp_.fail(var, "cannot access " + var.vn + " due to limited scoping");
 		}
 	}
 
@@ -700,7 +706,7 @@ public class P2InferType {
 							if (shift < ps - 2)
 								clazz |= 1 << shift;
 							else
-								fail();
+								Funp_.fail(f, "too many struct members");
 						}
 					} else
 						value = FunpCoerce.of(Coerce.NUMBER, Coerce.NUMBERP, FunpNumber.of(clazzMut));
@@ -741,11 +747,11 @@ public class P2InferType {
 					var f4 = FunpAllocStack.of(size1, FunpDontCare.of(), f3, offsetStack1);
 					return f4;
 				} else
-					return size0 == size1 ? FunpOp.of(size0, op, erase(l), erase(r)) : fail();
+					return size0 == size1 ? FunpOp.of(size0, op, erase(l), erase(r)) : Funp_.fail(f, "wrong sizes");
 			})).applyIf(FunpTree2.class, f -> f.apply((op, l, r) -> {
 				var size0 = getTypeSize(typeOf(l));
 				var size1 = getTypeSize(typeOf(r));
-				return size0 == size1 ? FunpOp.of(size0, op, erase(l), erase(r)) : fail();
+				return size0 == size1 ? FunpOp.of(size0, op, erase(l), erase(r)) : Funp_.fail(f, "wrong sizes");
 			})).applyIf(FunpVariable.class, f -> f.apply(var -> {
 				return getVariable(var);
 			})).result();
@@ -885,7 +891,7 @@ public class P2InferType {
 					else
 						return IntRange.of(offset, offset1);
 				}
-			return fail();
+			return Funp_.fail(n, "field " + n.field + "not found");
 		}
 
 		private Funp getVariable(FunpVariable var) {
