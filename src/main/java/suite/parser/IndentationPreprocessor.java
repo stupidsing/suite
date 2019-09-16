@@ -13,7 +13,7 @@ import suite.node.io.Operator;
 import suite.node.io.Operator.Assoc;
 import suite.text.Preprocess.Run;
 import suite.text.Segment;
-import suite.util.ParseUtil;
+import suite.util.SmartSplit;
 
 /**
  * Turns indent patterns into parentheses, to provide Python-like parsing.
@@ -21,6 +21,8 @@ import suite.util.ParseUtil;
  * @author ywsing
  */
 public class IndentationPreprocessor {
+
+	private SmartSplit ss = new SmartSplit();
 
 	private Operator[] operators;
 
@@ -41,7 +43,7 @@ public class IndentationPreprocessor {
 			while (pos0 < length && (ch = in.charAt(pos0)) != '\n' && Is.whitespace(ch))
 				pos0++;
 
-			var segment = ParseUtil.searchPosition(in.toCharArray(), Segment.of(pos0, length), "\n", Assoc.RIGHT, false);
+			var segment = ss.searchSegment(in.toCharArray(), Segment.of(pos0, length), "\n", Assoc.RIGHT, false);
 			var pos1 = segment != null ? segment.start : length;
 			var pos2 = segment != null ? segment.end : length; // includes LF
 

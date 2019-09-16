@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Predicate;
 
 import primal.MoreVerbs.Read;
 import primal.MoreVerbs.Split;
@@ -17,10 +18,20 @@ import primal.adt.Pair;
 import primal.adt.map.BiHashMap;
 import primal.adt.map.BiMap;
 import primal.fp.Funs.Fun;
+import primal.persistent.PerMap;
 import primal.primitive.adt.IntRange;
 import primal.primitive.adt.pair.IntObjPair;
+import primal.streamlet.Streamlet;
+import suite.node.io.Operator.Assoc;
 
 public class HtmlUtil {
+
+	private SmartSplit ss = new SmartSplit( //
+			c -> false, //
+			c -> false, //
+			c -> c == '\'' || c == '"' || c == '`');
+
+	private Set<String> autoCloseTagNames = Set.of("br", "meta");
 
 	private BiMap<String, String> escapeTokenByChar = new BiHashMap<>();
 
@@ -32,23 +43,55 @@ public class HtmlUtil {
 		public final String name;
 		public final String tag;
 		public final List<Pair<String, String>> attrs;
+		public final PerMap<String, String> attrByName;
 		public final List<HtmlNode> children = new ArrayList<>();
+		public int p0, p1, p2, px; // start tag range, end tag range
 
-		private HtmlNode(String name, String tag) {
+		private HtmlNode(String name, String tag, int p0, int p1) {
 			this.name = name;
 			this.tag = tag;
 			if (name != null)
-				attrs = Read //
-						.from(Substring.of(tag, 1, -1).split(" ")) //
+				attrs = ss //
+						.splitn(Substring.of(tag, 1, -1), " ", Assoc.RIGHT) //
 						.skip(1) //
 						.map(kv -> Split.strl(kv, "=")) //
 						.map(Pair.mapSnd(v -> {
-							var isQuoted = v.startsWith("'") && v.endsWith("'") || v.startsWith("\"") && v.endsWith("\"");
+							var isQuoted = v.startsWith("'") && v.endsWith("'")
+									|| v.startsWith("\"") && v.endsWith("\"");
 							return !isQuoted ? v : Substring.of(v, 1, -1);
 						})) //
 						.toList();
 			else
 				attrs = Collections.emptyList();
+			attrByName = Read.from(attrs).fold(PerMap.empty(), (m, p) -> m.put(p.k, p.v));
+			this.p0 = p0;
+			this.p1 = p1;
+		}
+
+		public String attr(String name, String value_) {
+			var value = attrByName.get(name);
+			return value != null ? value : value_;
+		}
+
+		public Streamlet<HtmlNode> findBy(String name, String id) {
+			return findBy(hn -> id.equals(hn.attrByName.get(name)));
+		}
+
+		public Streamlet<HtmlNode> findBy(Predicate<HtmlNode> pred) {
+			return new Object() {
+				private Streamlet<HtmlNode> find(HtmlNode n) {
+					var children = n.children().concatMap(this::find);
+					return pred.test(n) ? children.cons(n) : children;
+				}
+			}.find(this);
+		}
+
+		public Streamlet<HtmlNode> children() {
+			return Read.from(children);
+		}
+
+		public String toString() {
+			return tag;
 		}
 	}
 
@@ -88,7 +131,7 @@ public class HtmlUtil {
 			}
 		};
 
-		var deque = new ArrayDeque<>(List.of(new HtmlNode(null, "<>")));
+		var deque = new ArrayDeque<>(List.of(new HtmlNode(null, "<>", 0, 0)));
 		var prevp = 0;
 
 		for (var pair : pairs) {
@@ -99,17 +142,22 @@ public class HtmlUtil {
 			if (prevp != p0) {
 				var s = decode(in.substring(prevp, p0)).trim();
 				if (!s.isEmpty())
-					htmlNode.children.add(new HtmlNode(null, s));
+					htmlNode.children.add(new HtmlNode(null, s, prevp, p0));
 			}
 
 			var tag = in.substring(p0, px);
 
 			prevp = getNameFun.apply(tag).map((d, name) -> {
-				if (d == -1)
-					while (!deque.isEmpty() && !Equals.string(getNameFun.apply(deque.pop().tag).v, name))
-						;
-				else {
-					var htmlNode1 = new HtmlNode(name, tag);
+				if (d == -1) { // closing tag
+					HtmlNode hn;
+					while (!deque.isEmpty())
+						if (Equals.string(getNameFun.apply((hn = deque.pop()).tag).v, name)) {
+							hn.p2 = p0;
+							hn.px = px;
+							break;
+						}
+				} else { // opening tag
+					var htmlNode1 = new HtmlNode(name, tag, p0, px);
 					htmlNode.children.add(htmlNode1);
 					if (d == 1)
 						deque.push(htmlNode1);
@@ -132,7 +180,7 @@ public class HtmlUtil {
 					sb.append(">");
 					for (var child : node_.children)
 						f(child);
-					if (!Set.of("br", "meta").contains(node_.name))
+					if (!autoCloseTagNames.contains(node_.name))
 						sb.append("</" + node_.name + ">");
 				} else
 					sb.append(node_.tag);

@@ -21,13 +21,14 @@ import suite.node.io.Operator.Assoc;
 import suite.node.util.Singleton;
 import suite.object.MapObject;
 import suite.object.MapObject_;
-import suite.util.ParseUtil;
+import suite.util.SmartSplit;
 import suite.util.Switch;
 import suite.util.Util;
 
 public class Dump {
 
 	private static Inspect inspect = Singleton.me.inspect;
+	private static SmartSplit ss = new SmartSplit();
 
 	public static <T> T t(T t) {
 		details(t);
@@ -261,7 +262,7 @@ public class Dump {
 					var last = s.charAt(s.length() - 1);
 
 					if (last == ',')
-						return ParseUtil.splitn(s, ",", Assoc.RIGHT).concatMap(s_ -> split(indent, s_, ","));
+						return ss.splitnButLast(s, ",", Assoc.RIGHT).concatMap(s_ -> split(indent, s_, ","));
 
 					for (var pair : List.of("[]", "{}", "<>")) {
 						var open = pair.charAt(0);

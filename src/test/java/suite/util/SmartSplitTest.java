@@ -8,7 +8,9 @@ import org.junit.Test;
 
 import suite.node.io.Operator.Assoc;
 
-public class ParseUtilTest {
+public class SmartSplitTest {
+
+	private SmartSplit ss = new SmartSplit();
 
 	@Test
 	public void test() {
@@ -21,7 +23,7 @@ public class ParseUtilTest {
 				"'e,f'", //
 				"g");
 
-		assertEquals(expected, ParseUtil.searchn(s, ",", Assoc.RIGHT).toList());
+		assertEquals(expected, ss.splitn(s, ",", Assoc.RIGHT).toList());
 	}
 
 }

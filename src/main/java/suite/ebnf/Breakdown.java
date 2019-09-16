@@ -8,9 +8,11 @@ import primal.streamlet.Streamlet;
 import suite.ebnf.Grammar.GrammarType;
 import suite.node.io.Escaper;
 import suite.node.io.Operator.Assoc;
-import suite.util.ParseUtil;
+import suite.util.SmartSplit;
 
 public class Breakdown {
+
+	private SmartSplit ss = new SmartSplit();
 
 	public Grammar breakdown(String name, String s) {
 		return new Grammar(GrammarType.NAMED_, name, breakdown(s));
@@ -22,11 +24,11 @@ public class Breakdown {
 		Pair<String, String> pair;
 		s = s.trim();
 
-		if (1 < (list = ParseUtil.searchn(s, " | ", Assoc.RIGHT)).size())
+		if (1 < (list = ss.splitn(s, " | ", Assoc.RIGHT)).size())
 			eg = new Grammar(GrammarType.OR____, breakdown(list));
-		else if ((pair = ParseUtil.search(s, " /except/ ", Assoc.RIGHT)) != null)
+		else if ((pair = ss.split(s, " /except/ ", Assoc.RIGHT)) != null)
 			eg = new Grammar(GrammarType.EXCEPT, List.of(breakdown(pair.k), breakdown(pair.v)));
-		else if (1 < (list = ParseUtil.searchn(s, " ", Assoc.RIGHT)).size())
+		else if (1 < (list = ss.splitn(s, " ", Assoc.RIGHT)).size())
 			eg = new Grammar(GrammarType.AND___, breakdown(list));
 		else if (s.equals(""))
 			eg = new Grammar(GrammarType.AND___);

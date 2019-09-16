@@ -9,9 +9,11 @@ import suite.node.Int;
 import suite.node.Node;
 import suite.node.Str;
 import suite.node.io.Escaper;
-import suite.util.ParseUtil;
+import suite.util.SmartSplit;
 
 public class TerminalParser {
+
+	private SmartSplit ss = new SmartSplit();
 
 	public Node parseTerminal(String s) {
 		if (!s.isEmpty()) {
@@ -32,7 +34,7 @@ public class TerminalParser {
 				s = Escaper.unescape(Substring.of(s, 1, -1), "'");
 			else {
 				s = s.trim(); // trim unquoted atoms
-				if (!ParseUtil.isParseable(s))
+				if (!ss.isParseable(s))
 					Log_.info("Suspicious input when parsing " + s);
 			}
 

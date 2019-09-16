@@ -22,8 +22,8 @@ import primal.Verbs.Take;
 import primal.os.Log_;
 import suite.Suite;
 import suite.net.ServeSocket;
-import suite.util.ParseUtil;
 import suite.util.RunUtil;
+import suite.util.SmartSplit;
 
 /**
  * Logic interpreter and functional interpreter. Likes Prolog and Haskell.
@@ -32,6 +32,8 @@ import suite.util.RunUtil;
  */
 // mvn compile exec:java -Dexec.mainClass=suite.cli.Main
 public class Main implements AutoCloseable {
+
+	private SmartSplit ss = new SmartSplit();
 
 	private CommandOptions opt;
 	private CommandDispatcher dispatcher;
@@ -136,7 +138,7 @@ public class Main implements AutoCloseable {
 					else
 						return code;
 				} while (!opt.isQuiet() //
-						&& (!ParseUtil.isParseable(sb.toString(), true) || !line.isEmpty() && !line.endsWith("#")));
+						&& (!ss.isParseable(sb.toString(), true) || !line.isEmpty() && !line.endsWith("#")));
 
 				code &= dispatcher.dispatchCommand(sb.toString(), writer);
 			} catch (Throwable ex) {

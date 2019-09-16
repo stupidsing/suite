@@ -10,7 +10,7 @@ import java.util.Set;
 
 import primal.Verbs.ReadString;
 import suite.text.Preprocess.Run;
-import suite.util.ParseUtil;
+import suite.util.SmartSplit;
 
 /**
  * Process #include tags.
@@ -19,6 +19,7 @@ import suite.util.ParseUtil;
  */
 public class IncludePreprocessor {
 
+	private static SmartSplit ss = new SmartSplit();
 	private static String open = "#include(";
 	private static String close = ")";
 
@@ -41,10 +42,10 @@ public class IncludePreprocessor {
 		var start = 0;
 
 		while (true) {
-			var pos0 = ParseUtil.search(in, start, open);
+			var pos0 = ss.searchPosition(in, start, open);
 			if (pos0 == -1)
 				break;
-			var pos1 = ParseUtil.search(in, pos0 + open.length(), close);
+			var pos1 = ss.searchPosition(in, pos0 + open.length(), close);
 			if (pos1 == -1)
 				break;
 

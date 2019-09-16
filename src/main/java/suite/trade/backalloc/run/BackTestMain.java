@@ -21,13 +21,14 @@ import suite.trade.Trade_;
 import suite.trade.backalloc.BackAllocConfigurations;
 import suite.trade.data.TradeCfg;
 import suite.trade.data.TradeCfgImpl;
-import suite.util.ParseUtil;
 import suite.util.RunUtil;
+import suite.util.SmartSplit;
 
 // mvn compile exec:java -Dexec.mainClass=suite.trade.bcakalloc.run.BackTestMain
 public class BackTestMain {
 
 	private BackTester runner = new BackTester();
+	private SmartSplit ss = new SmartSplit();
 	private TradeCfg cfg = new TradeCfgImpl();
 
 	public static void main(String[] args) {
@@ -47,7 +48,7 @@ public class BackTestMain {
 		var years = !arg1.isEmpty() ? Read //
 				.from(arg1.split(",")) //
 				.concatMap(s -> {
-					var pair = ParseUtil.search(s, "-", Assoc.RIGHT);
+					var pair = ss.split(s, "-", Assoc.RIGHT);
 					return pair != null //
 							? forInt(Integer.valueOf(pair.k), Integer.valueOf(pair.v)).map(i -> i) //
 							: Read.each(Integer.valueOf(s));

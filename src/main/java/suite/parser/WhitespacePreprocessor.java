@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Set;
 
 import suite.text.Preprocess.Run;
-import suite.util.ParseUtil;
+import suite.util.SmartSplit;
 
 /**
  * Unify all whitespaces to the space bar space (ASCII code 32).
@@ -13,6 +13,8 @@ import suite.util.ParseUtil;
  * @author ywsing
  */
 public class WhitespacePreprocessor {
+
+	private SmartSplit ss = new SmartSplit();
 
 	private Set<Character> whitespaces;
 
@@ -31,7 +33,7 @@ public class WhitespacePreprocessor {
 			var ch = in.charAt(pos++);
 
 			if (ch != '`') {
-				if ((quote = ParseUtil.getQuoteChange(quote, ch)) == 0 && whitespaces.contains(ch)) {
+				if ((quote = ss.getQuoteChange(quote, ch)) == 0 && whitespaces.contains(ch)) {
 					runs.add(new Run(pos0, pos - 1));
 					runs.add(new Run(" "));
 					pos0 = pos;

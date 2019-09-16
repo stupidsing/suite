@@ -6,7 +6,7 @@ import java.util.Set;
 
 import suite.streamlet.ReadChars;
 import suite.text.Preprocess.Run;
-import suite.util.ParseUtil;
+import suite.util.SmartSplit;
 
 /**
  * Remove comments.
@@ -19,6 +19,8 @@ public class CommentPreprocessor {
 	public static String closeGroupComment = "=-";
 	public static String openLineComment = "--";
 	public static String closeLineComment = "\n";
+
+	private SmartSplit ss = new SmartSplit();
 
 	private Set<Character> whitespaces;
 	private String openComment;
@@ -44,7 +46,7 @@ public class CommentPreprocessor {
 		var runs = new ArrayList<Run>();
 
 		while (true) {
-			var pos0 = ParseUtil.search(in, start, openComment);
+			var pos0 = ss.searchPosition(in, start, openComment);
 			if (pos0 == -1)
 				break;
 			var pos1 = in.indexOf(closeComment, pos0 + openComment.length());

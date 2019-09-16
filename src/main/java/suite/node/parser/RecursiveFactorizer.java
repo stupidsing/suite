@@ -12,10 +12,12 @@ import suite.node.parser.FactorizeResult.FTerminal;
 import suite.text.Preprocess;
 import suite.text.Preprocess.Reverser;
 import suite.text.Segment;
-import suite.util.ParseUtil;
+import suite.util.SmartSplit;
 import suite.util.To;
 
 public class RecursiveFactorizer {
+
+	private SmartSplit ss = new SmartSplit();
 
 	private Operator[] operators;
 	private Chars in;
@@ -54,7 +56,7 @@ public class RecursiveFactorizer {
 			for (var i = fromOp; i < operators.length; i++) {
 				var operator = operators[i];
 				var range = operator != TermOp.TUPLE_ ? chars : chars1;
-				var ops = ParseUtil.searchPosition(chars.cs, Segment.of(range.start, range.end), operator);
+				var ops = ss.searchSegment(chars.cs, Segment.of(range.start, range.end), operator);
 
 				if (ops == null)
 					continue;
