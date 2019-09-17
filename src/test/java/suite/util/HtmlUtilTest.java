@@ -29,6 +29,13 @@ public class HtmlUtilTest {
 	}
 
 	@Test
+	public void testText() {
+		var h = "abc&nbsp;def<span>ghi</span>";
+		var s = "abc defghi";
+		assertEquals(s, html.parse(h).text());
+	}
+
+	@Test
 	public void testVariable() {
 		var h = "<meta charset='utf-8'><html>{ vm.abc.def }</html>";
 		var hn = html.parse(h);

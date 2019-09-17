@@ -19,6 +19,7 @@ import primal.adt.map.BiHashMap;
 import primal.adt.map.BiMap;
 import primal.fp.Funs.Fun;
 import primal.persistent.PerMap;
+import primal.primitive.IntIntSink;
 import primal.primitive.adt.IntRange;
 import primal.primitive.adt.pair.IntObjPair;
 import primal.streamlet.Streamlet;
@@ -55,6 +56,7 @@ public class HtmlUtil {
 						.splitn(Substring.of(tag, 1, -1), " ", Assoc.RIGHT) //
 						.skip(1) //
 						.map(kv -> Split.strl(kv, "=")) //
+						.filter(kv -> !kv.v.isEmpty()) //
 						.map(Pair.mapSnd(v -> {
 							var isQuoted = v.startsWith("'") && v.endsWith("'")
 									|| v.startsWith("\"") && v.endsWith("\"");
@@ -66,6 +68,10 @@ public class HtmlUtil {
 			attrByName = Read.from(attrs).fold(PerMap.empty(), (m, p) -> m.put(p.k, p.v));
 			this.p0 = p0;
 			this.p1 = p1;
+		}
+
+		public String attr(String name) {
+			return attr(name, "");
 		}
 
 		public String attr(String name, String value_) {
@@ -84,6 +90,18 @@ public class HtmlUtil {
 					return pred.test(n) ? children.cons(n) : children;
 				}
 			}.find(this);
+		}
+
+		public String text() {
+			var sb = new StringBuilder();
+			new Object() {
+				private void r(HtmlNode h) {
+					if (h.name == null)
+						sb.append(decode(h.tag));
+					h.children().forEach(this::r);
+				}
+			}.r(this);
+			return sb.toString();
 		}
 
 		public Streamlet<HtmlNode> children() {
@@ -124,14 +142,24 @@ public class HtmlUtil {
 				} else
 					d = 1;
 
-				var ps0 = tag.indexOf(' ');
-				var ps1 = 0 <= ps0 ? ps0 : px;
-				var name = tag.substring(p1, ps1);
+				var ps = 0;
+				while (ps < px && !Is.whitespace(tag.charAt(ps)))
+					ps++;
+				var name = tag.substring(p1, ps);
 				return IntObjPair.of(d, name);
 			}
 		};
 
-		var deque = new ArrayDeque<>(List.of(new HtmlNode(null, "<>", 0, 0)));
+		var deque = new ArrayDeque<>(List.of(new HtmlNode(null, "", 0, 0)));
+
+		IntIntSink addTextFun = (prevp, p0) -> {
+			if (prevp != p0) {
+				var s = decode(in.substring(prevp, p0)).trim();
+				if (!s.isEmpty())
+					deque.element().children.add(new HtmlNode(null, s, prevp, p0));
+			}
+		};
+
 		var prevp = 0;
 
 		for (var pair : pairs) {
@@ -139,11 +167,7 @@ public class HtmlUtil {
 			var p0 = pair.s;
 			var px = pair.e;
 
-			if (prevp != p0) {
-				var s = decode(in.substring(prevp, p0)).trim();
-				if (!s.isEmpty())
-					htmlNode.children.add(new HtmlNode(null, s, prevp, p0));
-			}
+			addTextFun.sink2(prevp, p0);
 
 			var tag = in.substring(p0, px);
 
@@ -166,8 +190,9 @@ public class HtmlUtil {
 			});
 		}
 
-		return deque.pop();
+		addTextFun.sink2(prevp, in.length());
 
+		return deque.pop();
 	}
 
 	public String format(HtmlNode node) {
