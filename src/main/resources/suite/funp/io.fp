@@ -49,7 +49,7 @@ define.function !get.line (pointer, length) :=
 ~
 
 define.function !get.number () := do!
-	let !gc () := do! number:byte !get.char () ~
+	define.function !gc () := do! number:byte !get.char () ~
 	let ch0 := !gc () ~
 	let positive := ch0 != number '-' ~
 	fold (
