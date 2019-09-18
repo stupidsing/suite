@@ -236,8 +236,13 @@ public class P4GenerateCode {
 					compileAssign(value, FunpMemory.of(FunpOperand.of(address), 0, size));
 				return compile(expr);
 			})).applyIf(FunpAllocReg.class, f -> f.apply((size, value, expr, reg) -> {
-				var reg_ = rs.mask(pop0, pop1).get(size);
-				reg.update(reg_);
+				OpReg reg_;
+				if (!reg.isEmpty())
+					reg_ = (OpReg) reg.value();
+				else {
+					reg_ = rs.mask(pop0, pop1).get(size);
+					reg.update(reg_);
+				}
 				return mask(compileLoad(value, reg_)).compile(expr);
 			})).applyIf(FunpAllocStack.class, f -> f.apply((size, value, expr, offset) -> {
 				return compileAllocStack(size, value, null, (c, s) -> {
