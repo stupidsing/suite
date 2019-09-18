@@ -555,7 +555,7 @@ public class P4GenerateCode {
 				var op1 = isOutSpec ? pop1 : rs.mask(op0).get(result.regSize);
 				var op0_ = pushRegs[op0.reg];
 				var op1_ = pushRegs[op1.reg];
-				compileAllocStack(result.regSize + result.regSize, FunpDontCare.of(), List.of(op1_, op0_), (c1, s) -> {
+				compileAllocStack(result.regSize + result.regSize, FunpDontCare.of(), List.of(op0_, op1_), (c1, s) -> {
 					assign.sink2(c1, frame(c1.fd, fd));
 					return new CompileOut();
 				});
