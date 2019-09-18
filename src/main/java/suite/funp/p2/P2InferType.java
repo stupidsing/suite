@@ -784,14 +784,14 @@ public class P2InferType {
 			var lambda1 = erase(lambda);
 			var saves = Mutable.of(new ArrayList<Pair<OpReg, Integer>>());
 			var is_ = lt.isPassReg() ? 0 : lt.is;
-			var os_ = 0;
+			int os_;
 			Funp invoke;
 			if (lt.os == is || lt.os == ps)
-				invoke = FunpInvoke.of(lambda1, is_, lt.os);
+				invoke = FunpInvoke.of(lambda1, lt.is, lt.os, is_, os_ = 0);
 			else if (lt.os == ps + ps)
-				invoke = FunpInvoke2.of(lambda1, is_, lt.os);
+				invoke = FunpInvoke2.of(lambda1, lt.is, lt.os, is_, os_ = 0);
 			else
-				invoke = FunpInvokeIo.of(lambda1, is_, os_ = lt.os);
+				invoke = FunpInvokeIo.of(lambda1, lt.is, lt.os, is_, os_ = lt.os);
 			var reg = Mutable.<Operand> nil();
 			var op = size == is ? FunpOperand.of(reg) : null;
 			var value_ = op != null ? op : value;
@@ -858,13 +858,12 @@ public class P2InferType {
 
 		private Funp eraseRoutine(LambdaType lt, Funp frame, Funp expr) {
 			var is_ = lt.isPassReg() ? 0 : lt.is;
-			var os_ = lt.os;
-			if (os_ == is || os_ == ps)
-				return FunpRoutine.of(frame, expr, is_, os_);
-			else if (os_ == ps + ps)
-				return FunpRoutine2.of(frame, expr, is_, os_);
+			if (lt.os == is || lt.os == ps)
+				return FunpRoutine.of(frame, expr, lt.is, lt.os, is_, 0);
+			else if (lt.os == ps + ps)
+				return FunpRoutine2.of(frame, expr, lt.is, lt.os, is_, 0);
 			else
-				return FunpRoutineIo.of(frame, expr, is_, os_);
+				return FunpRoutineIo.of(frame, expr, lt.is, lt.os, is_, lt.os);
 		}
 
 		private Funp getAddress(Funp expr) {

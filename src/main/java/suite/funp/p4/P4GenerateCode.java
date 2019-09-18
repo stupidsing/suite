@@ -420,17 +420,17 @@ public class P4GenerateCode {
 				}
 
 				return out.g();
-			})).applyIf(FunpInvoke.class, f -> f.apply((routine, is, os) -> {
+			})).applyIf(FunpInvoke.class, f -> f.apply((routine, is, os, istack, ostack) -> {
 				compileInvoke(routine);
 				return returnOp(amd64.regs(os)[axReg]);
-			})).applyIf(FunpInvoke2.class, f -> f.apply((routine, is, os) -> {
+			})).applyIf(FunpInvoke2.class, f -> f.apply((routine, is, os, istack, ostack) -> {
 				compileInvoke(routine);
 				return return2Op(p2_eax, p2_edx);
-			})).applyIf(FunpInvokeIo.class, f -> f.apply((routine, is, os) -> {
+			})).applyIf(FunpInvokeIo.class, f -> f.apply((routine, is, os, istack, ostack) -> {
 				compileInvoke(routine);
 				return returnAssign((c1, target) -> {
-					var start = c1.fd + is;
-					var source = frame(start, start + os);
+					var start = c1.fd + istack;
+					var source = frame(start, start + ostack);
 					c1.compileAssign(source, target);
 				});
 			})).applyIf(FunpMemory.class, f -> f.apply((pointer, start, end) -> {
@@ -475,15 +475,15 @@ public class P4GenerateCode {
 				var out = compile(expr);
 				em.emit(Insn.REMARK, amd64.remark("END ---> " + remark));
 				return out;
-			})).applyIf(FunpRoutine.class, f -> f.apply((frame, expr, is, os) -> {
+			})).applyIf(FunpRoutine.class, f -> f.apply((frame, expr, is, os, istack, ostack) -> {
 				var _ax = amd64.regs(os)[axReg];
 				return compileRoutine(f, frame, c1 -> c1.compileSpec(expr, _ax));
-			})).applyIf(FunpRoutine2.class, f -> f.apply((frame, expr, is, os) -> {
+			})).applyIf(FunpRoutine2.class, f -> f.apply((frame, expr, is, os, istack, ostack) -> {
 				return compileRoutine(f, frame, c1 -> c1.compile2Spec(expr, p2_eax, p2_edx));
-			})).applyIf(FunpRoutineIo.class, f -> f.apply((frame, expr, is, os) -> {
+			})).applyIf(FunpRoutineIo.class, f -> f.apply((frame, expr, is, os, istack, ostack) -> {
 				// input argument, return address and EBP
-				var o = ps + ps + is;
-				var out = frame(o, o + os);
+				var o = ps + ps + istack;
+				var out = frame(o, o + ostack);
 				return compileRoutine(f, frame, c1 -> c1.compileAssign(expr, out));
 			})).applyIf(FunpSaveRegisters0.class, f -> f.apply((expr, saves) -> {
 				Fun<Compile0, CompileOut> fun = c1 -> {
