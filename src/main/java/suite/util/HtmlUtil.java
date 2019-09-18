@@ -92,6 +92,11 @@ public class HtmlUtil {
 			}.find(this);
 		}
 
+		public boolean isClass(String c) {
+			var cs = attrByName.get("class");
+			return cs != null && Read.from(cs.split(" ")).filter(c_ -> Equals.string(c, c_)).first() != null;
+		}
+
 		public String text() {
 			var sb = new StringBuilder();
 			new Object() {
@@ -226,7 +231,7 @@ public class HtmlUtil {
 					var ch = in.charAt(index++);
 
 					if (ch == '&') {
-						while (in.charAt(index++) != ';')
+						while (index - start <= 8 && index < in.length() && in.charAt(index++) != ';')
 							;
 
 						var key = in.substring(start, index);
