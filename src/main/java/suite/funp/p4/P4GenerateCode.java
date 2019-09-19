@@ -707,10 +707,9 @@ public class P4GenerateCode {
 						}, _cx, _si, _di);
 					else if (0 < size) {
 						int p = 0, p1;
-						for (; (p1 = p + pushSize) <= size; p = p1)
-							mov(amd64.mem(r0, start0 + p, pushSize), amd64.mem(r1, start1 + p, pushSize));
-						for (; (p1 = p + 1) <= size; p = p1)
-							mov(amd64.mem(r0, start0 + p, 1), amd64.mem(r1, start1 + p, 1));
+						for (var step : List.of(pushSize, is, 2, 1))
+							for (; (p1 = p + step) <= size; p = p1)
+								mov(amd64.mem(r0, start0 + p, step), amd64.mem(r1, start1 + p, step));
 					}
 			};
 
