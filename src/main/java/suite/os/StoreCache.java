@@ -25,7 +25,7 @@ import suite.serialize.SerOutput;
 public class StoreCache {
 
 	private ThreadLocal<Boolean> reget = ThreadLocal.withInitial(() -> false);
-	private int documentAge = 30;
+	private long documentAge;
 	private Path dir;
 
 	public class Piper {
@@ -53,11 +53,12 @@ public class StoreCache {
 	}
 
 	public StoreCache() {
-		this(HomeDir.dir("store-cache"));
+		this(HomeDir.dir("store-cache"), 30 * 1000 * 86400l);
 	}
 
-	public StoreCache(Path dir) {
+	public StoreCache(Path dir, long documentAge) {
 		this.dir = dir;
+		this.documentAge = documentAge;
 
 		var current = System.currentTimeMillis();
 		FileUtil.findPaths(dir).filter(path -> !isUpToDate(path, current)).forEach(DeleteFile::on);
@@ -198,7 +199,7 @@ public class StoreCache {
 	}
 
 	private boolean isUpToDate(Path path, long current) {
-		return current - ex(() -> Files.getLastModifiedTime(path)).toMillis() < 1000l * 86400 * documentAge;
+		return current - ex(() -> Files.getLastModifiedTime(path)).toMillis() < documentAge;
 	}
 
 	private Path path(Bytes key, int i, String suffix) {
