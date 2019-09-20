@@ -635,7 +635,7 @@ public class P2InferType {
 				var scope1 = isScoped ? scope + 1 : 0;
 				var lt = new LambdaType(n);
 				var isPassReg = lt.isPassReg();
-				var opArg = isPassReg ? Mutable.<Operand> of(Amd64.me.regs(lt.is)[Amd64.me.axReg]) : null;
+				var opArg = lt.p0reg();
 				var av = isPassReg ? register(opArg, lt.is) : localStack(scope1, IntMutable.of(0), b, b + lt.is);
 				var frame = isScoped ? Funp_.framePointer : FunpDontCare.of();
 				PerMap<String, Var> env1;
@@ -663,7 +663,7 @@ public class P2InferType {
 				var b = ps + ps; // return address and EBP
 				var lt = new LambdaType(n);
 				var isPassReg = lt.isPassReg();
-				var opArg = isPassReg ? Mutable.<Operand> of(Amd64.me.regs(lt.is)[Amd64.me.axReg]) : null;
+				var opArg = lt.p0reg();
 				var av = isPassReg ? register(opArg, lt.is) : localStack(1, IntMutable.of(0), b, b + lt.is);
 
 				var env1 = PerMap //
@@ -671,11 +671,11 @@ public class P2InferType {
 						.replace(frameVar.vn, localStack(0, IntMutable.of(0), 0, size)) //
 						.replace(vn, av);
 
-				var fp = erase(fp0);
+				var fp1 = erase(fp0);
 				var expr1 = new Erase(1, env1, null).erase(expr);
 				var expr2 = isPassReg ? FunpAllocReg.of(lt.is, FunpDontCare.of(), expr1, opArg) : expr1;
 				var expr3 = FunpHeapDealloc.of(size, FunpMemory.of(FunpFramePointer.of(), 0, ps), expr2);
-				return eraseRoutine(lt, fp, expr3);
+				return eraseRoutine(lt, fp1, expr3);
 			})).applyIf(FunpLambdaFree.class, f -> f.apply((lambda, expr) -> {
 				return FunpHeapDealloc.of(fail(), FunpMemory.of(getAddress(lambda), 0, ps), erase(expr));
 			})).applyIf(FunpMe.class, f -> {
@@ -796,7 +796,7 @@ public class P2InferType {
 			var op = size == is ? FunpOperand.of(reg) : null;
 			var value_ = op != null ? op : value;
 			var isPassReg = lt.isPassReg();
-			var opArg = isPassReg ? Mutable.<Operand> of(Amd64.me.regs(lt.is)[Amd64.me.axReg]) : null;
+			var opArg = lt.p0reg();
 			var as0 = isPassReg ? FunpAllocReg.of(lt.is, value_, invoke, opArg) : invoke;
 			var as1 = FunpSaveRegisters1.of(as0, saves);
 			var as2 = isPassReg ? as1 : allocStack(size, value_, as1);
@@ -1037,6 +1037,10 @@ public class P2InferType {
 			unify(lambda, typeOf(lambda), typeLambdaOf(tp, tr));
 			is = getTypeSize(tp);
 			os = getTypeSize(tr);
+		}
+
+		private Mutable<Operand> p0reg() {
+			return isPassReg() ? Mutable.of(Amd64.me.regs(is)[Amd64.me.axReg]) : null;
 		}
 
 		private boolean isPassReg() {
