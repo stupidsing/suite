@@ -36,6 +36,13 @@ import suite.util.To;
 
 public class HttpUtil {
 
+	private static long coolDownTime;
+
+	static {
+		var s = System.getenv("HTTP_COOLDOWN");
+		coolDownTime = s != null ? Long.valueOf(s) : 3000l;
+	}
+
 	public static class HttpRequest {
 		private String method;
 		private URL url;
@@ -153,7 +160,7 @@ public class HttpUtil {
 		long current, last, start, next;
 
 		do
-			next = 3000l + (start = max(last = al.get(), current = System.currentTimeMillis()));
+			next = coolDownTime + (start = max(last = al.get(), current = System.currentTimeMillis()));
 		while (!al.compareAndSet(last, next) || backoff.exponentially());
 
 		Sleep.quietly(start - current);
