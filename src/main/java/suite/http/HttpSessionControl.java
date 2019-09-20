@@ -9,14 +9,14 @@ import primal.Verbs.Build;
 import primal.Verbs.Equals;
 import primal.persistent.PerList;
 import primal.primitive.adt.LngMutable;
-import suite.util.HtmlUtil;
+import suite.util.ScrapeHtml;
 
 public class HttpSessionControl {
 
 	public static long TIMEOUTDURATION = 3600 * 1000l;
 
 	private BiPredicate<String, String> authenticate;
-	private HtmlUtil htmlUtil = new HtmlUtil();
+	private ScrapeHtml scrapeHtml = new ScrapeHtml();
 	private SessionManager sessionManager = new HttpSessionManager();
 	private Random random = new SecureRandom();
 
@@ -112,7 +112,7 @@ public class HttpSessionControl {
 					+ "<form name=\"login\" action=\"login\" method=\"post\">" //
 					+ "Username <input type=\"text\" name=\"username\" autofocus /><br/>" //
 					+ "Password <input type=\"password\" name=\"password\" /><br/>" //
-					+ "<input type=\"hidden\" name=\"path\" value=\"" + htmlUtil.encode(redirectPath1) + "\" />" //
+					+ "<input type=\"hidden\" name=\"path\" value=\"" + scrapeHtml.encode(redirectPath1) + "\" />" //
 					+ "<input type=\"submit\" value=\"Login\">" //
 					+ "</form>" //
 					+ "</font>" //

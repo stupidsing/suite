@@ -25,18 +25,32 @@ import primal.primitive.adt.pair.IntObjPair;
 import primal.streamlet.Streamlet;
 import suite.node.io.Operator.Assoc;
 
-public class HtmlUtil {
+public class ScrapeHtml {
 
 	private SmartSplit ss = new SmartSplit( //
 			c -> false, //
 			c -> false, //
 			c -> c == '\'' || c == '"' || c == '`');
 
-	private Set<String> autoCloseTagNames = Set.of("br", "meta");
+	private Set<String> voidElementTagNames = Set.of( //
+			"area", //
+			"base", //
+			"br", //
+			"col", //
+			"embed", //
+			"hr", //
+			"img", //
+			"input", //
+			"link", //
+			"meta", //
+			"param", //
+			"source", //
+			"track", //
+			"wbr");
 
 	private BiMap<String, String> escapeTokenByChar = new BiHashMap<>();
 
-	public HtmlUtil() {
+	public ScrapeHtml() {
 		initialize();
 	}
 
@@ -102,7 +116,7 @@ public class HtmlUtil {
 			new Object() {
 				private void r(HtmlNode h) {
 					if (h.name == null)
-						sb.append(decode(h.tag));
+						sb.append(h.tag);
 					h.children().forEach(this::r);
 				}
 			}.r(this);
@@ -124,9 +138,15 @@ public class HtmlUtil {
 
 		while (0 <= (pos0 = in.indexOf("<", posx)))
 			if ((posx = pos0 + 1) < in.length() && !Is.whitespace(in.charAt(posx)))
-				if (0 <= (posx = in.indexOf(">", posx)))
+				if (0 <= (posx = in.indexOf(">", posx))) {
 					pairs.add(IntRange.of(pos0, ++posx));
-				else
+
+					for (var rawTextTag : List.of("script", "style", "textarea", "title"))
+						if (in.startsWith(rawTextTag, pos0 + 1)) {
+							posx = in.indexOf("</" + rawTextTag, posx);
+							break;
+						}
+				} else
 					break;
 
 		Fun<String, IntObjPair<String>> getNameFun = tag -> {
@@ -210,7 +230,7 @@ public class HtmlUtil {
 					sb.append(">");
 					for (var child : node_.children)
 						f(child);
-					if (!autoCloseTagNames.contains(node_.name))
+					if (!voidElementTagNames.contains(node_.name))
 						sb.append("</" + node_.name + ">");
 				} else
 					sb.append(node_.tag);

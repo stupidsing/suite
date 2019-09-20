@@ -8,46 +8,54 @@ import primal.Verbs.ReadFile;
 import primal.Verbs.Substring;
 import primal.io.ReadStream;
 import suite.inspect.Dump;
-import suite.util.HtmlUtil.HtmlNode;
+import suite.util.ScrapeHtml.HtmlNode;
 
-public class HtmlUtilTest {
+public class ScrapeHtmlTest {
 
-	private HtmlUtil html = new HtmlUtil();
+	private ScrapeHtml sh = new ScrapeHtml();
 
 	@Test
 	public void testEncode() {
-		assertEquals("abc & def", html.decode("abc&nbsp;&amp;&nbsp;def"));
-		assertEquals("abc&nbsp;&amp;&nbsp;def", html.encode("abc & def"));
+		assertEquals("abc & def", sh.decode("abc&nbsp;&amp;&nbsp;def"));
+		assertEquals("abc&nbsp;&amp;&nbsp;def", sh.encode("abc & def"));
 	}
 
 	@Test
 	public void testHtml() {
 		var h = "<meta charset='utf-8'><html><!-- comment --><head></head><body>text</body></html>";
-		var hn = html.parse(h);
+		var hn = sh.parse(h);
 		System.out.println(generate(hn));
-		assertEquals(h, html.format(hn));
+		assertEquals(h, sh.format(hn));
+	}
+
+	@Test
+	public void testScript() {
+		var h = "<script>if(a<b)return a;else return b;</script>";
+		var hn = sh.parse(h);
+		System.out.println(generate(hn));
+		assertEquals("if(a<b)return a;else return b;", sh.parse(h).text());
 	}
 
 	@Test
 	public void testText() {
 		var h = "abc&nbsp;def<span>ghi</span>";
 		var s = "abc defghi";
-		assertEquals(s, html.parse(h).text());
+		assertEquals(s, sh.parse(h).text());
 	}
 
 	@Test
 	public void testVariable() {
 		var h = "<meta charset='utf-8'><html>{ vm.abc.def }</html>";
-		var hn = html.parse(h);
+		var hn = sh.parse(h);
 		Dump.details(hn);
 		System.out.println(generate(hn));
-		assertEquals(h, html.format(hn));
+		assertEquals(h, sh.format(hn));
 	}
 
 	@Test
 	public void testRender() {
 		var h = ReadFile.from("src/main/html/render.html").doRead(ReadStream::readString);
-		Dump.details(html.parse(h));
+		Dump.details(sh.parse(h));
 	}
 
 	private String generate(HtmlNode h) {
