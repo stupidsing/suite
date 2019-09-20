@@ -136,15 +136,20 @@ public class ScrapeHtml {
 		var pairs = new ArrayList<IntRange>();
 		int pos0, posx = 0;
 
-		while (0 <= (pos0 = in.indexOf("<", posx)))
+		nextTag: while (0 <= (pos0 = in.indexOf("<", posx)))
 			if ((posx = pos0 + 1) < in.length() && !Is.whitespace(in.charAt(posx)))
 				if (0 <= (posx = in.indexOf(">", posx))) {
 					pairs.add(IntRange.of(pos0, ++posx));
 
+					if (in.startsWith("<![CDATA[", pos0)) {
+						posx = in.indexOf("]]>", pos0 + 9);
+						continue nextTag;
+					}
+
 					for (var rawTextTag : List.of("script", "style", "textarea", "title"))
 						if (in.startsWith(rawTextTag, pos0 + 1)) {
 							posx = in.indexOf("</" + rawTextTag, posx);
-							break;
+							continue nextTag;
 						}
 				} else
 					break;
@@ -258,7 +263,10 @@ public class ScrapeHtml {
 						String entity;
 
 						if (Get.ch(key, 1) == '#')
-							sb.append((char) Integer.parseInt(Substring.of(key, 2, -1)));
+							if (Character.toLowerCase(Get.ch(key, 1)) == 'x')
+								sb.append((char) Integer.parseInt(Substring.of(key, 3, -1), 16));
+							else
+								sb.append((char) Integer.parseInt(Substring.of(key, 2, -1)));
 						else if ((entity = charByEscapeToken.get(key)) != null)
 							sb.append(entity);
 						else

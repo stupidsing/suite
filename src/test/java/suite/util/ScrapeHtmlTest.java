@@ -15,6 +15,14 @@ public class ScrapeHtmlTest {
 	private ScrapeHtml sh = new ScrapeHtml();
 
 	@Test
+	public void testCdata() {
+		var h = "<![CDATA[x<y]]>";
+		var hn = sh.parse(h);
+		System.out.println(generate(hn));
+		assertEquals(h, sh.parse(h).text());
+	}
+
+	@Test
 	public void testEncode() {
 		assertEquals("abc & def", sh.decode("abc&nbsp;&amp;&nbsp;def"));
 		assertEquals("abc&nbsp;&amp;&nbsp;def", sh.encode("abc & def"));
