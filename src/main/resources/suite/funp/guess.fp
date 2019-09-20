@@ -21,7 +21,7 @@ define.function !guess () := do!
 	--!put.string "I am telling you, it is " ~
 	--!put.number answer ~
 	--!put.line () ~
-	!put.string "hello, please guess%0A" ~
+	!put.string "please guess%0A" ~
 	fold (
 		(n, guess) := (1, !get.number ()) #
 		guess != answer #

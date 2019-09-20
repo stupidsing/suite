@@ -25,18 +25,32 @@ import primal.primitive.adt.pair.IntObjPair;
 import primal.streamlet.Streamlet;
 import suite.node.io.Operator.Assoc;
 
-public class HtmlUtil {
+public class ScrapeHtml {
 
 	private SmartSplit ss = new SmartSplit( //
 			c -> false, //
 			c -> false, //
 			c -> c == '\'' || c == '"' || c == '`');
 
-	private Set<String> autoCloseTagNames = Set.of("br", "meta");
+	private Set<String> voidElementTagNames = Set.of( //
+			"area", //
+			"base", //
+			"br", //
+			"col", //
+			"embed", //
+			"hr", //
+			"img", //
+			"input", //
+			"link", //
+			"meta", //
+			"param", //
+			"source", //
+			"track", //
+			"wbr");
 
 	private BiMap<String, String> escapeTokenByChar = new BiHashMap<>();
 
-	public HtmlUtil() {
+	public ScrapeHtml() {
 		initialize();
 	}
 
@@ -92,12 +106,17 @@ public class HtmlUtil {
 			}.find(this);
 		}
 
+		public boolean isClass(String c) {
+			var cs = attrByName.get("class");
+			return cs != null && Read.from(cs.split(" ")).filter(c_ -> Equals.string(c, c_)).first() != null;
+		}
+
 		public String text() {
 			var sb = new StringBuilder();
 			new Object() {
 				private void r(HtmlNode h) {
 					if (h.name == null)
-						sb.append(decode(h.tag));
+						sb.append(h.tag);
 					h.children().forEach(this::r);
 				}
 			}.r(this);
@@ -117,11 +136,22 @@ public class HtmlUtil {
 		var pairs = new ArrayList<IntRange>();
 		int pos0, posx = 0;
 
-		while (0 <= (pos0 = in.indexOf("<", posx)))
+		nextTag: while (0 <= (pos0 = in.indexOf("<", posx)))
 			if ((posx = pos0 + 1) < in.length() && !Is.whitespace(in.charAt(posx)))
-				if (0 <= (posx = in.indexOf(">", posx)))
+				if (0 <= (posx = in.indexOf(">", posx))) {
 					pairs.add(IntRange.of(pos0, ++posx));
-				else
+
+					if (in.startsWith("<![CDATA[", pos0)) {
+						posx = in.indexOf("]]>", pos0 + 9);
+						continue nextTag;
+					}
+
+					for (var rawTextTag : List.of("script", "style", "textarea", "title"))
+						if (in.startsWith(rawTextTag, pos0 + 1)) {
+							posx = in.indexOf("</" + rawTextTag, posx);
+							continue nextTag;
+						}
+				} else
 					break;
 
 		Fun<String, IntObjPair<String>> getNameFun = tag -> {
@@ -205,7 +235,7 @@ public class HtmlUtil {
 					sb.append(">");
 					for (var child : node_.children)
 						f(child);
-					if (!autoCloseTagNames.contains(node_.name))
+					if (!voidElementTagNames.contains(node_.name))
 						sb.append("</" + node_.name + ">");
 				} else
 					sb.append(node_.tag);
@@ -226,14 +256,17 @@ public class HtmlUtil {
 					var ch = in.charAt(index++);
 
 					if (ch == '&') {
-						while (in.charAt(index++) != ';')
+						while (index - start <= 8 && index < in.length() && in.charAt(index++) != ';')
 							;
 
 						var key = in.substring(start, index);
 						String entity;
 
 						if (Get.ch(key, 1) == '#')
-							sb.append((char) Integer.parseInt(Substring.of(key, 2, -1)));
+							if (Character.toLowerCase(Get.ch(key, 2)) == 'x')
+								sb.append((char) Integer.parseInt(Substring.of(key, 3, -1), 16));
+							else
+								sb.append((char) Integer.parseInt(Substring.of(key, 2, -1)));
 						else if ((entity = charByEscapeToken.get(key)) != null)
 							sb.append(entity);
 						else

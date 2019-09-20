@@ -236,8 +236,13 @@ public class P4GenerateCode {
 					compileAssign(value, FunpMemory.of(FunpOperand.of(address), 0, size));
 				return compile(expr);
 			})).applyIf(FunpAllocReg.class, f -> f.apply((size, value, expr, reg) -> {
-				var reg_ = rs.mask(pop0, pop1).get(size);
-				reg.update(reg_);
+				OpReg reg_;
+				if (!reg.isEmpty())
+					reg_ = (OpReg) reg.value();
+				else {
+					reg_ = rs.mask(pop0, pop1).get(size);
+					reg.update(reg_);
+				}
 				return mask(compileLoad(value, reg_)).compile(expr);
 			})).applyIf(FunpAllocStack.class, f -> f.apply((size, value, expr, offset) -> {
 				return compileAllocStack(size, value, null, (c, s) -> {
@@ -415,17 +420,17 @@ public class P4GenerateCode {
 				}
 
 				return out.g();
-			})).applyIf(FunpInvoke.class, f -> f.apply((routine, is, os) -> {
+			})).applyIf(FunpInvoke.class, f -> f.apply((routine, is, os, istack, ostack) -> {
 				compileInvoke(routine);
 				return returnOp(amd64.regs(os)[axReg]);
-			})).applyIf(FunpInvoke2.class, f -> f.apply((routine, is, os) -> {
+			})).applyIf(FunpInvoke2.class, f -> f.apply((routine, is, os, istack, ostack) -> {
 				compileInvoke(routine);
 				return return2Op(p2_eax, p2_edx);
-			})).applyIf(FunpInvokeIo.class, f -> f.apply((routine, is, os) -> {
+			})).applyIf(FunpInvokeIo.class, f -> f.apply((routine, is, os, istack, ostack) -> {
 				compileInvoke(routine);
 				return returnAssign((c1, target) -> {
-					var start = c1.fd + is;
-					var source = frame(start, start + os);
+					var start = c1.fd + istack;
+					var source = frame(start, start + ostack);
 					c1.compileAssign(source, target);
 				});
 			})).applyIf(FunpMemory.class, f -> f.apply((pointer, start, end) -> {
@@ -470,15 +475,15 @@ public class P4GenerateCode {
 				var out = compile(expr);
 				em.emit(Insn.REMARK, amd64.remark("END ---> " + remark));
 				return out;
-			})).applyIf(FunpRoutine.class, f -> f.apply((frame, expr, is, os) -> {
+			})).applyIf(FunpRoutine.class, f -> f.apply((frame, expr, is, os, istack, ostack) -> {
 				var _ax = amd64.regs(os)[axReg];
 				return compileRoutine(f, frame, c1 -> c1.compileSpec(expr, _ax));
-			})).applyIf(FunpRoutine2.class, f -> f.apply((frame, expr, is, os) -> {
+			})).applyIf(FunpRoutine2.class, f -> f.apply((frame, expr, is, os, istack, ostack) -> {
 				return compileRoutine(f, frame, c1 -> c1.compile2Spec(expr, p2_eax, p2_edx));
-			})).applyIf(FunpRoutineIo.class, f -> f.apply((frame, expr, is, os) -> {
+			})).applyIf(FunpRoutineIo.class, f -> f.apply((frame, expr, is, os, istack, ostack) -> {
 				// input argument, return address and EBP
-				var o = ps + ps + is;
-				var out = frame(o, o + os);
+				var o = ps + ps + istack;
+				var out = frame(o, o + ostack);
 				return compileRoutine(f, frame, c1 -> c1.compileAssign(expr, out));
 			})).applyIf(FunpSaveRegisters0.class, f -> f.apply((expr, saves) -> {
 				Fun<Compile0, CompileOut> fun = c1 -> {
@@ -555,7 +560,7 @@ public class P4GenerateCode {
 				var op1 = isOutSpec ? pop1 : rs.mask(op0).get(result.regSize);
 				var op0_ = pushRegs[op0.reg];
 				var op1_ = pushRegs[op1.reg];
-				compileAllocStack(result.regSize + result.regSize, FunpDontCare.of(), List.of(op1_, op0_), (c1, s) -> {
+				compileAllocStack(result.regSize + result.regSize, FunpDontCare.of(), List.of(op0_, op1_), (c1, s) -> {
 					assign.sink2(c1, frame(c1.fd, fd));
 					return new CompileOut();
 				});
@@ -620,10 +625,15 @@ public class P4GenerateCode {
 					op1 = em.mov(rs.mask(op0).get(size1), op1);
 				return new CompileOut(op0, op1);
 			} else if (result.t == Rt.SPEC) {
-				var r = !(op0 instanceof OpIgnore) ? rs.mask(op1, pop1).get(pop0) : amd64.ign(size0);
-				em.mov(r, op0);
-				em.mov(pop1, op1);
-				em.mov(pop0, r);
+				if (!registerSet.mask(op1, pop1).isAnyMasked(pop0)) {
+					em.mov(pop0, op0);
+					em.mov(pop1, op1);
+				} else {
+					var r = !(op1 instanceof OpIgnore) ? rs.mask(op0, pop0).get(pop1) : amd64.ign(size0);
+					em.mov(r, op1);
+					em.mov(pop0, op0);
+					em.mov(pop1, r);
+				}
 			} else
 				fail();
 			return new CompileOut();
@@ -702,10 +712,9 @@ public class P4GenerateCode {
 						}, _cx, _si, _di);
 					else if (0 < size) {
 						int p = 0, p1;
-						for (; (p1 = p + pushSize) <= size; p = p1)
-							mov(amd64.mem(r0, start0 + p, pushSize), amd64.mem(r1, start1 + p, pushSize));
-						for (; (p1 = p + 1) <= size; p = p1)
-							mov(amd64.mem(r0, start0 + p, 1), amd64.mem(r1, start1 + p, 1));
+						for (var step : List.of(pushSize, is, 2, 1))
+							for (; (p1 = p + step) <= size; p = p1)
+								mov(amd64.mem(r0, start0 + p, step), amd64.mem(r1, start1 + p, step));
 					}
 			};
 

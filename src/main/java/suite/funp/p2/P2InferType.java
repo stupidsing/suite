@@ -33,6 +33,7 @@ import primal.streamlet.Streamlet;
 import primal.streamlet.Streamlet2;
 import suite.BindArrayUtil.Pattern;
 import suite.Suite;
+import suite.assembler.Amd64;
 import suite.assembler.Amd64.OpReg;
 import suite.assembler.Amd64.Operand;
 import suite.funp.Funp_;
@@ -633,6 +634,9 @@ public class P2InferType {
 				var b = ps + ps; // return address and EBP
 				var scope1 = isScoped ? scope + 1 : 0;
 				var lt = new LambdaType(n);
+				var isPassReg = lt.isPassReg();
+				var opArg = lt.p0reg();
+				var av = isPassReg ? register(opArg, lt.is) : localStack(scope1, IntMutable.of(0), b, b + lt.is);
 				var frame = isScoped ? Funp_.framePointer : FunpDontCare.of();
 				PerMap<String, Var> env1;
 
@@ -644,26 +648,34 @@ public class P2InferType {
 							.filter(pair -> pair.v.scope == null) //
 							.fold(PerMap.empty(), (e, p) -> e.put(p.k, p.v));
 
-				var env2 = env1.replace(vn, localStack(scope1, IntMutable.of(0), b, b + lt.is));
+				var env2 = env1.replace(vn, av);
+
 				var expr1 = new Erase(scope1, env2, me).erase(expr0);
-				var expr2 = f.name != null ? FunpRemark.of(f.name, expr1) : expr1;
-				return eraseRoutine(lt, frame, expr2);
+				var expr2 = isPassReg ? FunpAllocReg.of(lt.is, FunpDontCare.of(), expr1, opArg) : expr1;
+				var expr3 = f.name != null ? FunpRemark.of(f.name, expr2) : expr2;
+				return eraseRoutine(lt, frame, expr3);
 			})).applyIf(FunpLambdaCapture.class, f -> f.apply((fp0, frameVar, frame, vn, expr) -> {
 
 				// the capture would free itself upon first call, therefore should not be called
 				// for the second time
 
+				var size = getTypeSize(typeOf(frame));
 				var b = ps + ps; // return address and EBP
 				var lt = new LambdaType(n);
-				var size = getTypeSize(typeOf(frame));
+				var isPassReg = lt.isPassReg();
+				var opArg = lt.p0reg();
+				var av = isPassReg ? register(opArg, lt.is) : localStack(1, IntMutable.of(0), b, b + lt.is);
+
 				var env1 = PerMap //
 						.<String, Var> empty() //
 						.replace(frameVar.vn, localStack(0, IntMutable.of(0), 0, size)) //
-						.replace(vn, localStack(1, IntMutable.of(0), b, b + lt.is));
-				var fp = erase(fp0);
+						.replace(vn, av);
+
+				var fp1 = erase(fp0);
 				var expr1 = new Erase(1, env1, null).erase(expr);
-				var expr2 = FunpHeapDealloc.of(size, FunpMemory.of(FunpFramePointer.of(), 0, ps), expr1);
-				return eraseRoutine(lt, fp, expr2);
+				var expr2 = isPassReg ? FunpAllocReg.of(lt.is, FunpDontCare.of(), expr1, opArg) : expr1;
+				var expr3 = FunpHeapDealloc.of(size, FunpMemory.of(FunpFramePointer.of(), 0, ps), expr2);
+				return eraseRoutine(lt, fp1, expr3);
 			})).applyIf(FunpLambdaFree.class, f -> f.apply((lambda, expr) -> {
 				return FunpHeapDealloc.of(fail(), FunpMemory.of(getAddress(lambda), 0, ps), erase(expr));
 			})).applyIf(FunpMe.class, f -> {
@@ -771,22 +783,27 @@ public class P2InferType {
 			var lt = new LambdaType(lambda);
 			var lambda1 = erase(lambda);
 			var saves = Mutable.of(new ArrayList<Pair<OpReg, Integer>>());
-			var os = 0;
+			var is_ = lt.isPassReg() ? 0 : lt.is;
+			int os_;
 			Funp invoke;
 			if (lt.os == is || lt.os == ps)
-				invoke = FunpInvoke.of(lambda1, lt.is, lt.os);
+				invoke = FunpInvoke.of(lambda1, lt.is, lt.os, is_, os_ = 0);
 			else if (lt.os == ps + ps)
-				invoke = FunpInvoke2.of(lambda1, lt.is, lt.os);
+				invoke = FunpInvoke2.of(lambda1, lt.is, lt.os, is_, os_ = 0);
 			else
-				invoke = FunpInvokeIo.of(lambda1, lt.is, os = lt.os);
+				invoke = FunpInvokeIo.of(lambda1, lt.is, lt.os, is_, os_ = lt.os);
 			var reg = Mutable.<Operand> nil();
 			var op = size == is ? FunpOperand.of(reg) : null;
-			var as0 = FunpSaveRegisters1.of(invoke, saves);
-			var as1 = allocStack(size, op != null ? op : value, as0);
-			var as2 = allocStack(os, FunpDontCare.of(), as1);
-			var as3 = op != null ? FunpAssignOp.of(op, value, as2) : as2;
-			var as4 = FunpSaveRegisters0.of(as3, saves);
-			return as4;
+			var value_ = op != null ? op : value;
+			var isPassReg = lt.isPassReg();
+			var opArg = lt.p0reg();
+			var as0 = isPassReg ? FunpAllocReg.of(lt.is, value_, invoke, opArg) : invoke;
+			var as1 = FunpSaveRegisters1.of(as0, saves);
+			var as2 = isPassReg ? as1 : allocStack(size, value_, as1);
+			var as3 = allocStack(os_, FunpDontCare.of(), as2);
+			var as4 = op != null ? FunpAssignOp.of(op, value, as3) : as3;
+			var as5 = FunpSaveRegisters0.of(as4, saves);
+			return as5;
 		}
 
 		private FunpOp adjustPointer(Funp address, Funp index, int size) {
@@ -840,12 +857,13 @@ public class P2InferType {
 		}
 
 		private Funp eraseRoutine(LambdaType lt, Funp frame, Funp expr) {
+			var is_ = lt.isPassReg() ? 0 : lt.is;
 			if (lt.os == is || lt.os == ps)
-				return FunpRoutine.of(frame, expr, lt.is, lt.os);
+				return FunpRoutine.of(frame, expr, lt.is, lt.os, is_, 0);
 			else if (lt.os == ps + ps)
-				return FunpRoutine2.of(frame, expr, lt.is, lt.os);
+				return FunpRoutine2.of(frame, expr, lt.is, lt.os, is_, 0);
 			else
-				return FunpRoutineIo.of(frame, expr, lt.is, lt.os);
+				return FunpRoutineIo.of(frame, expr, lt.is, lt.os, is_, lt.os);
 		}
 
 		private Funp getAddress(Funp expr) {
@@ -925,6 +943,10 @@ public class P2InferType {
 
 	private Var local(Funp funp, Mutable<Operand> operand, int scope, IntMutable offset, int start, int end) {
 		return new Var(funp, null, operand, scope, offset, null, start, end);
+	}
+
+	private Var register(Mutable<Operand> operand, int size) {
+		return new Var(FunpDontCare.of(), FunpOperand.of(operand), null, null, IntMutable.of(0), null, 0, size);
 	}
 
 	private class Var {
@@ -1015,6 +1037,14 @@ public class P2InferType {
 			unify(lambda, typeOf(lambda), typeLambdaOf(tp, tr));
 			is = getTypeSize(tp);
 			os = getTypeSize(tr);
+		}
+
+		private Mutable<Operand> p0reg() {
+			return isPassReg() ? Mutable.of(Amd64.me.regs(is)[Amd64.me.axReg]) : null;
+		}
+
+		private boolean isPassReg() {
+			return is == P2InferType.this.is || is == P2InferType.this.ps;
 		}
 	}
 

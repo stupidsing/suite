@@ -9,6 +9,7 @@ import primal.adt.Fixie_.FixieFun2;
 import primal.adt.Fixie_.FixieFun3;
 import primal.adt.Fixie_.FixieFun4;
 import primal.adt.Fixie_.FixieFun5;
+import primal.adt.Fixie_.FixieFun6;
 import primal.adt.Mutable;
 import primal.adt.Pair;
 import primal.primitive.adt.IntMutable;
@@ -216,51 +217,60 @@ public class P2 {
 	public static class FunpInvoke implements Funp, P4.End {
 		public Funp routine;
 		public int is, os;
+		public int istack, ostack;
 
-		public static FunpInvoke of(Funp routine, int is, int os) {
+		public static FunpInvoke of(Funp routine, int is, int os, int istack, int ostack) {
 			var f = new FunpInvoke();
 			f.routine = routine;
 			f.is = is;
 			f.os = os;
+			f.istack = istack;
+			f.ostack = ostack;
 			return f;
 		}
 
-		public <R> R apply(FixieFun3<Funp, Integer, Integer, R> fun) {
-			return fun.apply(routine, is, os);
+		public <R> R apply(FixieFun5<Funp, Integer, Integer, Integer, Integer, R> fun) {
+			return fun.apply(routine, is, os, istack, ostack);
 		}
 	}
 
 	public static class FunpInvoke2 implements Funp, P4.End {
 		public Funp routine;
 		public int is, os;
+		public int istack, ostack;
 
-		public static FunpInvoke2 of(Funp routine, int is, int os) {
+		public static FunpInvoke2 of(Funp routine, int is, int os, int istack, int ostack) {
 			var f = new FunpInvoke2();
 			f.routine = routine;
 			f.is = is;
 			f.os = os;
+			f.istack = istack;
+			f.ostack = ostack;
 			return f;
 		}
 
-		public <R> R apply(FixieFun3<Funp, Integer, Integer, R> fun) {
-			return fun.apply(routine, is, os);
+		public <R> R apply(FixieFun5<Funp, Integer, Integer, Integer, Integer, R> fun) {
+			return fun.apply(routine, is, os, istack, ostack);
 		}
 	}
 
 	public static class FunpInvokeIo implements Funp, P4.End {
 		public Funp routine;
 		public int is, os;
+		public int istack, ostack;
 
-		public static FunpInvokeIo of(Funp routine, int is, int os) {
+		public static FunpInvokeIo of(Funp routine, int is, int os, int istack, int ostack) {
 			var f = new FunpInvokeIo();
 			f.routine = routine;
 			f.is = is;
 			f.os = os;
+			f.istack = istack;
+			f.ostack = ostack;
 			return f;
 		}
 
-		public <R> R apply(FixieFun3<Funp, Integer, Integer, R> fun) {
-			return fun.apply(routine, is, os);
+		public <R> R apply(FixieFun5<Funp, Integer, Integer, Integer, Integer, R> fun) {
+			return fun.apply(routine, is, os, istack, ostack);
 		}
 	}
 
@@ -362,18 +372,21 @@ public class P2 {
 		public Funp frame;
 		public Funp expr;
 		public int is, os;
+		public int istack, ostack;
 
-		public static FunpRoutine of(Funp frame, Funp expr, int is, int os) {
+		public static FunpRoutine of(Funp frame, Funp expr, int is, int os, int istack, int ostack) {
 			var f = new FunpRoutine();
 			f.frame = frame;
 			f.expr = expr;
 			f.is = is;
 			f.os = os;
+			f.istack = istack;
+			f.ostack = ostack;
 			return f;
 		}
 
-		public <R> R apply(FixieFun4<Funp, Funp, Integer, Integer, R> fun) {
-			return fun.apply(frame, expr, is, os);
+		public <R> R apply(FixieFun6<Funp, Funp, Integer, Integer, Integer, Integer, R> fun) {
+			return fun.apply(frame, expr, is, os, istack, ostack);
 		}
 	}
 
@@ -381,18 +394,21 @@ public class P2 {
 		public Funp frame;
 		public Funp expr;
 		public int is, os;
+		public int istack, ostack;
 
-		public static FunpRoutine2 of(Funp frame, Funp expr, int is, int os) {
+		public static FunpRoutine2 of(Funp frame, Funp expr, int is, int os, int istack, int ostack) {
 			var f = new FunpRoutine2();
 			f.frame = frame;
 			f.expr = expr;
 			f.is = is;
 			f.os = os;
+			f.istack = istack;
+			f.ostack = ostack;
 			return f;
 		}
 
-		public <R> R apply(FixieFun4<Funp, Funp, Integer, Integer, R> fun) {
-			return fun.apply(frame, expr, is, os);
+		public <R> R apply(FixieFun6<Funp, Funp, Integer, Integer, Integer, Integer, R> fun) {
+			return fun.apply(frame, expr, is, os, istack, ostack);
 		}
 	}
 
@@ -400,18 +416,21 @@ public class P2 {
 		public Funp frame;
 		public Funp expr;
 		public int is, os;
+		public int istack, ostack;
 
-		public static FunpRoutineIo of(Funp frame, Funp expr, int is, int os) {
+		public static FunpRoutineIo of(Funp frame, Funp expr, int is, int os, int istack, int ostack) {
 			var f = new FunpRoutineIo();
 			f.frame = frame;
 			f.expr = expr;
 			f.is = is;
 			f.os = os;
+			f.istack = istack;
+			f.ostack = ostack;
 			return f;
 		}
 
-		public <R> R apply(FixieFun4<Funp, Funp, Integer, Integer, R> fun) {
-			return fun.apply(frame, expr, is, os);
+		public <R> R apply(FixieFun6<Funp, Funp, Integer, Integer, Integer, Integer, R> fun) {
+			return fun.apply(frame, expr, is, os, istack, ostack);
 		}
 	}
 
