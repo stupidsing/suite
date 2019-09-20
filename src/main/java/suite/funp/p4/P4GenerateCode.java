@@ -625,10 +625,15 @@ public class P4GenerateCode {
 					op1 = em.mov(rs.mask(op0).get(size1), op1);
 				return new CompileOut(op0, op1);
 			} else if (result.t == Rt.SPEC) {
-				var r = !(op0 instanceof OpIgnore) ? rs.mask(op1, pop1).get(pop0) : amd64.ign(size0);
-				em.mov(r, op0);
-				em.mov(pop1, op1);
-				em.mov(pop0, r);
+				if (!registerSet.mask(op1, pop1).isAnyMasked(pop0)) {
+					em.mov(pop0, op0);
+					em.mov(pop1, op1);
+				} else {
+					var r = !(op1 instanceof OpIgnore) ? rs.mask(op0, pop0).get(pop1) : amd64.ign(size0);
+					em.mov(r, op1);
+					em.mov(pop0, op0);
+					em.mov(pop1, r);
+				}
 			} else
 				fail();
 			return new CompileOut();
