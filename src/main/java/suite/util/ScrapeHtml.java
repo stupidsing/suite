@@ -263,7 +263,7 @@ public class ScrapeHtml {
 						String entity;
 
 						if (Get.ch(key, 1) == '#')
-							if (Character.toLowerCase(Get.ch(key, 1)) == 'x')
+							if (Character.toLowerCase(Get.ch(key, 2)) == 'x')
 								sb.append((char) Integer.parseInt(Substring.of(key, 3, -1), 16));
 							else
 								sb.append((char) Integer.parseInt(Substring.of(key, 2, -1)));
