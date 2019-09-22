@@ -755,7 +755,7 @@ public class P4GenerateCode {
 			var op = p4deOp.decompose(fd, n, 0, size);
 			Operand opResult = null;
 
-			if (opResult == null && op != null && size < ps)
+			if (opResult == null && op != null && size <= ps)
 				opResult = regs[lea(op).reg];
 
 			if (opResult == null && operator == TermOp.OR____) {
