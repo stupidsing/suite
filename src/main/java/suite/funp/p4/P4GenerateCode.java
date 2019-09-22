@@ -464,7 +464,7 @@ public class P4GenerateCode {
 				return returnOp(amd64.imm(f.i.value(), is));
 			}).applyIf(FunpOp.class, f -> f.apply((opSize, op, lhs, rhs) -> {
 				var assoc = op instanceof TermOp ? ((TermOp) op).assoc() : Assoc.RIGHT;
-				return returnOp(compileTree(opSize, n, op, assoc, lhs, rhs));
+				return returnOp(compileTree(opSize, op, assoc, lhs, rhs));
 			})).applyIf(FunpOperand.class, f -> f.apply(op -> {
 				return returnOp(op.value());
 			})).applyIf(FunpOperand2.class, f -> f.apply((op0, op1) -> {
@@ -743,7 +743,8 @@ public class P4GenerateCode {
 
 		// if operator is Insn.CMP, this would return a 1-byte operand.
 		// otherwise a integer-sized (is) operand is returned.
-		private Operand compileTree(int size, Funp n, Object operator, Assoc assoc, Funp lhs, Funp rhs) {
+		private Operand compileTree(int size, Object operator, Assoc assoc, Funp lhs, Funp rhs) {
+			var f = FunpOp.of(size, operator, lhs, rhs);
 			var regs = amd64.regs(size);
 			var _ax = regs[axReg];
 			var _dx = regs[dxReg];
@@ -753,7 +754,7 @@ public class P4GenerateCode {
 			var setInsn = setInsnByOp.get(operator);
 			var setRevInsn = setRevInsnByOp.get(operator);
 			var shInsn = shInsnByOp.get(operator);
-			var op = p4deOp.decompose(fd, n, 0, size);
+			var op = p4deOp.decompose(fd, f, 0, size);
 			Operand opResult = null;
 
 			if (opResult == null && op != null && size <= ps)
@@ -793,7 +794,7 @@ public class P4GenerateCode {
 				} else if (insn != null)
 					opResult = compileCommutativeTree(size, insn, assoc, lhs, rhs).v;
 				else
-					Funp_.fail(n, "unknown operator " + operator);
+					Funp_.fail(f, "unknown operator " + operator);
 
 			return opResult;
 		}
