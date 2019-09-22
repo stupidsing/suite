@@ -22,6 +22,7 @@ import suite.node.io.TermOp;
 public class Amd64Parse {
 
 	private static Amd64 amd64 = Amd64.me;
+
 	private Map<Node, Operand> references = new IdentityHashMap<>();
 
 	public Instruction parse(Node node) {
