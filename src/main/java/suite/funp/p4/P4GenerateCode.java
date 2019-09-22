@@ -20,6 +20,7 @@ import primal.fp.Funs2.Sink2;
 import primal.primitive.IntPrim;
 import primal.primitive.IntPrim.IntObj_Obj;
 import primal.primitive.adt.Bytes;
+import primal.primitive.adt.pair.IntObjPair;
 import suite.Suite;
 import suite.assembler.Amd64;
 import suite.assembler.Amd64.Insn;
@@ -435,13 +436,13 @@ public class P4GenerateCode {
 				var size = end - start;
 				Operand op0, op1;
 
-				Fun<IntObj_Obj<OpReg, CompileOut>, CompileOut> mf = fun -> {
+				Source<IntObjPair<OpReg>> mfp = () -> {
 					var ft = pointer.cast(FunpOp.class);
 					var fn = ft != null && ft.operator == TermOp.PLUS__ ? ft.right.cast(FunpNumber.class) : null;
 					var i = fn != null ? fn.i.value() : IntPrim.EMPTYVALUE;
 					var pointer1 = i != IntPrim.EMPTYVALUE ? ft.left : pointer;
 					var start1 = start + (i != IntPrim.EMPTYVALUE ? i : 0);
-					return fun.apply(start1, compilePsReg(pointer1));
+					return IntObjPair.of(start1, compilePsReg(pointer1));
 				};
 
 				if (result.t == Rt.ASSIGN)
@@ -450,13 +451,13 @@ public class P4GenerateCode {
 					if ((op0 = p4deOp.decompose(fd, pointer, start, size)) != null)
 						return returnOp(op0);
 					else
-						return mf.apply((start_, r) -> returnOp(amd64.mem(r, start_, size)));
+						return mfp.g().map((start_, r) -> returnOp(amd64.mem(r, start_, size)));
 				else if (result.nRegs == 2)
 					if ((op0 = p4deOp.decompose(fd, pointer, start, ps)) != null
 							&& (op1 = p4deOp.decompose(fd, pointer, start + ps, ps)) != null)
 						return return2Op(op0, op1);
 					else
-						return mf.apply((p, r) -> return2Op(amd64.mem(r, p, ps), amd64.mem(r, p + ps, ps)));
+						return mfp.g().map((p, r) -> return2Op(amd64.mem(r, p, ps), amd64.mem(r, p + ps, ps)));
 				else
 					return fail();
 			})).applyIf(FunpNumber.class, f -> {
