@@ -189,9 +189,7 @@ public class P4GenerateCode {
 			if (isUseEbp)
 				em.mov(_bp, _sp);
 			em.emit(Insn.CLD);
-			em.emit(Insn.REMARK, amd64.remark("START -> main"));
-			new Compile0(ISSPEC, em, null, ebx, null, registerSet, 0).compile(funp);
-			em.emit(Insn.REMARK, amd64.remark("END ---> main"));
+			new Compile0(ISSPEC, em, null, ebx, null, registerSet, 0).compile(FunpRemark.of("main", funp));
 
 			if (isAmd64) {
 				em.mov(edi, ebx);
