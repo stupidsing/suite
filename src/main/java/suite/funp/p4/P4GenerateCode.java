@@ -229,12 +229,10 @@ public class P4GenerateCode {
 
 		// invariant: fd = ESP - EBP
 		private CompileOut compile(Funp n) {
+			n = compileSideEffects(n);
+
 			return n.<CompileOut> switch_( //
-			).applyIf(FunpAllocGlobal.class, f -> f.apply((size, value, expr, address) -> {
-				if (!compileGlobal(size, address, value))
-					compileAssign(value, FunpMemory.of(FunpOperand.of(address), 0, size));
-				return compile(expr);
-			})).applyIf(FunpAllocReg.class, f -> f.apply((size, value, expr, reg) -> {
+			).applyIf(FunpAllocReg.class, f -> f.apply((size, value, expr, reg) -> {
 				OpReg reg_;
 				if (!reg.isEmpty())
 					reg_ = (OpReg) reg.value();
@@ -248,21 +246,6 @@ public class P4GenerateCode {
 					offset.update(c.fd);
 					return c.compile(expr);
 				});
-			})).applyIf(FunpAssignMem.class, f -> f.apply((target, value, expr) -> {
-				compileAssign(value, target);
-				return compile(expr);
-			})).applyIf(FunpAssignOp.class, f -> f.apply((target, value, expr) -> {
-				var operand = target.operand;
-				if (operand.isEmpty())
-					operand.update(compileIsReg(value));
-				else
-					compileSpec(value, (OpReg) operand.value());
-				return compile(expr);
-			})).applyIf(FunpAssignOp2.class, f -> f.apply((target, value, expr) -> {
-				var o = compilePs2Op(value);
-				target.operand0.update(o.op0);
-				target.operand1.update(o.op1);
-				return compile(expr);
 			})).applyIf(FunpBoolean.class, f -> f.apply(b -> {
 				return returnOp(amd64.imm(b ? 1 : 0, bs));
 			})).applyIf(FunpCmp.class, f -> f.apply((op, l, r) -> {
@@ -328,30 +311,7 @@ public class P4GenerateCode {
 				return returnOp(opResult);
 			})).applyIf(FunpDontCare.class, f -> {
 				return returnDontCare();
-			}).applyIf(FunpDoWhile.class, f -> f.apply((while_, do_, expr) -> {
-				var loopLabel = em.label();
-				var doLabel = em.label();
-				var exitLabel = em.label();
-				var label1 = Mutable.<OpImmLabel> nil();
-
-				var block = em.spawn(loopLabel, em1 -> {
-					var c1 = nc(em1);
-					Source<Boolean> r;
-					if ((r = new P4JumpIf(c1.compileCmpJmp(exitLabel)).new JumpIf(while_).jnxIf()) != null && r.g())
-						label1.set(doLabel);
-					else if ((r = new P4JumpIf(c1.compileCmpJmp(doLabel)).new JumpIf(while_).jxxIf()) != null && r.g())
-						label1.set(exitLabel);
-					else {
-						c1.compileJumpZero(while_, exitLabel);
-						label1.set(doLabel);
-					}
-				}, null);
-
-				block.out = label1.value();
-				spawn(doLabel, c1 -> c1.compileIsOp(do_), loopLabel);
-				em.jumpLabel(loopLabel, exitLabel);
-				return compile(expr);
-			})).applyIf(FunpError.class, f -> {
+			}).applyIf(FunpError.class, f -> {
 				em.emit(Insn.HLT);
 				return returnDontCare();
 			}).applyIf(FunpFramePointer.class, t -> {
@@ -462,9 +422,11 @@ public class P4GenerateCode {
 					return fail();
 			})).applyIf(FunpNumber.class, f -> {
 				return returnOp(amd64.imm(f.i.value(), is));
-			}).applyIf(FunpOp.class, f -> f.apply((opSize, op, lhs, rhs) -> {
+			}).applyIf(FunpOp.class, f -> f.apply((opSize, op, lhs0, rhs0) -> {
+				var lhs1 = compileSideEffects(lhs0);
+				var rhs1 = compileSideEffects(rhs0);
 				var assoc = op instanceof TermOp ? ((TermOp) op).assoc() : Assoc.RIGHT;
-				return returnOp(compileTree(opSize, op, assoc, lhs, rhs));
+				return returnOp(compileTree(opSize, op, assoc, lhs1, rhs1));
 			})).applyIf(FunpOperand.class, f -> f.apply(op -> {
 				return returnOp(op.value());
 			})).applyIf(FunpOperand2.class, f -> f.apply((op0, op1) -> {
@@ -539,6 +501,60 @@ public class P4GenerateCode {
 
 				return out1;
 			})).nonNullResult();
+		}
+
+		private Funp compileSideEffects(Funp n) {
+			Funp n1;
+			while ((n1 = compileSideEffects_(n)) != null)
+				n = n1;
+			return n;
+		}
+
+		private Funp compileSideEffects_(Funp n) {
+			return n.<Funp> switch_( //
+			).applyIf(FunpAllocGlobal.class, f -> f.apply((size, value, expr, address) -> {
+				if (!compileGlobal(size, address, value))
+					compileAssign(value, FunpMemory.of(FunpOperand.of(address), 0, size));
+				return expr;
+			})).applyIf(FunpAssignMem.class, f -> f.apply((target, value, expr) -> {
+				compileAssign(value, target);
+				return expr;
+			})).applyIf(FunpAssignOp.class, f -> f.apply((target, value, expr) -> {
+				var operand = target.operand;
+				if (operand.isEmpty())
+					operand.update(compileIsReg(value));
+				else
+					compileSpec(value, (OpReg) operand.value());
+				return expr;
+			})).applyIf(FunpAssignOp2.class, f -> f.apply((target, value, expr) -> {
+				var o = compilePs2Op(value);
+				target.operand0.update(o.op0);
+				target.operand1.update(o.op1);
+				return expr;
+			})).applyIf(FunpDoWhile.class, f -> f.apply((while_, do_, expr) -> {
+				var loopLabel = em.label();
+				var doLabel = em.label();
+				var exitLabel = em.label();
+				var label1 = Mutable.<OpImmLabel> nil();
+
+				var block = em.spawn(loopLabel, em1 -> {
+					var c1 = nc(em1);
+					Source<Boolean> r;
+					if ((r = new P4JumpIf(c1.compileCmpJmp(exitLabel)).new JumpIf(while_).jnxIf()) != null && r.g())
+						label1.set(doLabel);
+					else if ((r = new P4JumpIf(c1.compileCmpJmp(doLabel)).new JumpIf(while_).jxxIf()) != null && r.g())
+						label1.set(exitLabel);
+					else {
+						c1.compileJumpZero(while_, exitLabel);
+						label1.set(doLabel);
+					}
+				}, null);
+
+				block.out = label1.value();
+				spawn(doLabel, c1 -> c1.compileIsOp(do_), loopLabel);
+				em.jumpLabel(loopLabel, exitLabel);
+				return expr;
+			})).result();
 		}
 
 		private CompileOut returnAssign(Sink2<Compile0, FunpMemory> assign) {

@@ -1013,7 +1013,7 @@ public class P2InferType {
 					: null;
 
 			var nfp0 = FunpNumber.of(offset);
-			var nfp1 = frame != null ? FunpOp.of(ps, TermOp.PLUS__, nfp0, frame) : nfp0;
+			var nfp1 = frame != null ? FunpOp.of(ps, TermOp.PLUS__, frame, nfp0) : nfp0;
 			var nfp2 = offsetOperand != null ? FunpOp.of(ps, TermOp.PLUS__, nfp1, FunpOperand.of(offsetOperand)) : nfp1;
 			return FunpMemory.of(nfp2, start, end);
 		}
