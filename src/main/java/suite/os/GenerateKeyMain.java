@@ -29,8 +29,6 @@ public class GenerateKeyMain {
 			for (var i = 0; i < bs.length; i++)
 				System.out.write(bs[i]);
 
-			os.flush();
-
 			return true;
 		}
 	}
