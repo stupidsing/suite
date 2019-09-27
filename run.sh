@@ -17,7 +17,7 @@ getLatestTimestamp() {
 	TARGETTIME=$(getLatestTimestamp "${JAR}")
 	[ ${SOURCETIME} -le ${TARGETTIME} ] ||
 	[ "${SKIPBUILD}" ] ||
-	{ cd ${BASE} && mvn -Dmaven.test.skip=true -T4 install assembly:single; }
+	{ cd ${BASE} && mvn -Dmaven.test.skip=true install assembly:single; }
 ) &&
 
 [ "${MAIN}" ] && CMD="java ${OPTS} -cp ${JAR} ${MAIN}" || CMD="java ${OPTS} -jar ${JAR}"

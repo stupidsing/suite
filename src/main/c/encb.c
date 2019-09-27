@@ -17,8 +17,8 @@ int main(int argc, char **argv) {
 			for(int i = 0; i < size; i++) {
 				char *hex = "0123456789ABCDEF";
 				char b = input[i];
-				output[o++] = hex[b >> 4];
-				output[o++] = hex[b & 15];
+				output[o++] = hex[(b >> 4) & 15];
+				output[o++] = hex[(b >> 0) & 15];
 				output[o++] = '_';
 			}
 			if(fwrite(output, 1, o, stdout) != o) fail("output error");
