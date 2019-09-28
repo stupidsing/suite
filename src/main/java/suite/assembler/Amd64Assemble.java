@@ -72,23 +72,23 @@ public class Amd64Assemble {
 		}
 
 		public Bytes encode_(long offset) {
-			return encode(offset, code, vex(m, p, code.size, code.modrm, w, v));
+			return encode(offset, code, vex(m, p, code.opSize, code.modrm, w, v));
 		}
 	}
 
 	private class InsnCode implements Encode {
-		public int size;
+		public int opSize;
 		public byte[] bs;
 		public Modrm modrm;
 		public long imm;
 		public int immSize;
 
-		private InsnCode(int size, OpImm imm) {
-			this(size, imm.imm, imm.size);
+		private InsnCode(int opSize, OpImm imm) {
+			this(opSize, imm.imm, imm.size);
 		}
 
-		private InsnCode(int size, long imm, int immSize) {
-			this.size = size;
+		private InsnCode(int opSize, long imm, int immSize) {
+			this.opSize = opSize;
 			this.imm = imm;
 			this.immSize = immSize;
 		}
@@ -97,8 +97,8 @@ public class Amd64Assemble {
 			this(defaultSize, bs);
 		}
 
-		private InsnCode(int size, byte[] bs) {
-			this.size = size;
+		private InsnCode(int opSize, byte[] bs) {
+			this.opSize = opSize;
 			this.bs = bs;
 		}
 
@@ -107,7 +107,7 @@ public class Amd64Assemble {
 		}
 
 		private InsnCode imm(long imm1, int size1) {
-			return set(size, bs, imm1, size1);
+			return set(opSize, bs, imm1, size1);
 		}
 
 		private InsnCode pre(int pre) {
@@ -119,19 +119,19 @@ public class Amd64Assemble {
 			var length1 = bs.length;
 			var bs1 = Arrays.copyOf(pre, length0 + length1);
 			Bytes_.copy(bs, 0, bs1, length0, length1);
-			return set(size, bs1, imm, immSize);
+			return set(opSize, bs1, imm, immSize);
 		}
 
 		private InsnCode setByte(int b) {
-			return set(size, bs(b), imm, immSize);
+			return set(opSize, bs(b), imm, immSize);
 		}
 
 		private InsnCode size(int size1) {
 			return set(size1, bs, imm, immSize);
 		}
 
-		private InsnCode set(int size1, byte[] bs1, long imm, int immSize) {
-			var insnCode = new InsnCode(size1, bs1);
+		private InsnCode set(int opSize1, byte[] bs1, long imm, int immSize) {
+			var insnCode = new InsnCode(opSize1, bs1);
 			insnCode.modrm = modrm;
 			insnCode.immSize = immSize;
 			insnCode.imm = imm;
@@ -140,14 +140,14 @@ public class Amd64Assemble {
 
 		private Encode vex(Vexp vexp, Operand op, Vexm vexm) {
 			var opReg = (OpReg) op;
-			if (opReg.size == size)
-				return vex(vexp, opReg.reg, vexm, size == 8 ? 1 : 0);
+			if (opReg.size == opSize)
+				return vex(vexp, opReg.reg, vexm, opSize == 8 ? 1 : 0);
 			else
 				return invalid;
 		}
 
 		private VexCode vex(Vexp vexp, int v, Vexm vexm) {
-			return vex(vexp, v, vexm, size == 8 ? 1 : 0);
+			return vex(vexp, v, vexm, opSize == 8 ? 1 : 0);
 		}
 
 		private VexCode vex(Vexp vexp, int v, Vexm vexm, int w) {
@@ -160,11 +160,11 @@ public class Amd64Assemble {
 		}
 
 		public boolean isValid() {
-			return 0 < size;
+			return 0 < opSize;
 		}
 
 		public Bytes encode_(long offset) {
-			return encode(offset, size == 1 || size == 2 || size == 4 || size == 8 ? this : invalid, null);
+			return encode(offset, opSize == 1 || opSize == 2 || opSize == 4 || opSize == 8 ? this : invalid, null);
 		}
 
 	}
@@ -960,11 +960,11 @@ public class Amd64Assemble {
 			if (vexs != null)
 				bb.append(vexs);
 			else {
-				if (archSize == 2 && Set.of(4, 8).contains(insnCode.size))
+				if (archSize == 2 && Set.of(4, 8).contains(insnCode.opSize))
 					bb.append((byte) 0x66);
-				if (archSize != 2 && insnCode.size == 2)
+				if (archSize != 2 && insnCode.opSize == 2)
 					bb.append((byte) 0x66);
-				appendIf(bb, modrm != null ? rexModrm(insnCode.size, insnCode) : rex(insnCode.size, 0, 0, 0));
+				appendIf(bb, modrm != null ? rexModrm(insnCode.opSize, insnCode) : rex(insnCode.opSize, 0, 0, 0));
 			}
 			bb.append(insnCode.bs);
 			if (modrm != null) {
