@@ -775,27 +775,27 @@ public class Amd64Assemble {
 
 	private InsnCode assembleInOut(Operand port, Operand acc, int b) {
 		if (isAcc.test(acc)) {
-			OpImm portImm;
-			if (port instanceof OpImm)
-				portImm = (OpImm) port;
-			else if (port.size == 2 && port instanceof OpReg && ((OpReg) port).reg == 2) // DX
-				portImm = null;
-			else
-				return invalid;
-
+			var portImm = port.cast(OpImm.class);
+			var portReg = port.cast(OpReg.class);
+			var isDX = port.size == 2 && portReg != null && portReg.reg == 2;
 			var insnCode = new InsnCode(acc.size, bs(b + (acc.size == 1 ? 0 : 1) + (portImm != null ? 0 : 8)));
+
 			if (portImm != null) {
 				insnCode.immSize = 1;
 				insnCode.imm = portImm.imm;
-			}
-			return insnCode;
+				return insnCode;
+			} else if (isDX)
+				return insnCode;
+			else
+				return invalid;
 		} else
 			return invalid;
 	}
 
 	private InsnCode assembleJump(Instruction instruction, long offset, int bj1, byte[] bj24) {
-		if (instruction.op0 instanceof OpImm)
-			return assembleJumpImm((OpImm) instruction.op0, offset, bj1, bj24);
+		var opImm = instruction.op0.cast(OpImm.class);
+		if (opImm != null)
+			return assembleJumpImm(opImm, offset, bj1, bj24);
 		else
 			return invalid;
 	}
@@ -826,10 +826,10 @@ public class Amd64Assemble {
 	}
 
 	private InsnCode assembleRegRmExtended(Instruction instruction, int b) {
-		if (instruction.op0 instanceof OpReg && isRm.test(instruction.op1)) {
-			var reg = (OpReg) instruction.op0;
+		var reg = instruction.op0.cast(OpReg.class);
+		if (reg != null && isRm.test(instruction.op1))
 			return assemble(instruction.op1, b + (instruction.op1.size <= 1 ? 0 : 1), reg.reg, reg.size);
-		} else
+		else
 			return invalid;
 	}
 
@@ -843,15 +843,16 @@ public class Amd64Assemble {
 	}
 
 	private InsnCode assembleReg(Instruction instruction, int bReg) {
-		var op0 = (OpReg) instruction.op0;
+		var op0 = instruction.op0.cast(OpReg.class);
 		return new InsnCode(op0.size, bs(bReg + op0.reg));
 	}
 
 	private InsnCode assembleRmRegImm(Instruction instruction, int bModrm, int bImm, int num) {
-		int size0 = instruction.op0.size;
-		int size1 = instruction.op1.size;
-		if ((size1 == 1 || size0 == size1) && instruction.op1 instanceof OpImm)
-			return assembleRmImm(instruction.op0, (OpImm) instruction.op1, bModrm + 4, bImm, num);
+		var size0 = instruction.op0.size;
+		var size1 = instruction.op1.size;
+		var opImm = instruction.op1.cast(OpImm.class);
+		if ((size1 == 1 || size0 == size1) && opImm != null)
+			return assembleRmImm(instruction.op0, opImm, bModrm + 4, bImm, num);
 		else
 			return size0 == size1 ? assembleRmReg(instruction, bModrm) : invalid;
 	}
