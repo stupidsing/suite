@@ -188,10 +188,6 @@ public class Amd64Assemble {
 		private long disp;
 	}
 
-	public Amd64Assemble(int archSize) {
-		this(archSize == 2 ? Amd64Mode.REAL16 : archSize == 4 ? Amd64Mode.PROT32 : Amd64Mode.LONG64);
-	}
-
 	public Amd64Assemble(Amd64Mode mode) {
 		this.mode = mode;
 		this.isLongMode = mode == Amd64Mode.LONG64;
