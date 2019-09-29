@@ -90,7 +90,7 @@ public class P4GenerateCode {
 	private OpReg[] pointerRegs = Funp_.pointerRegs;
 	private OpReg[] pushRegs = Funp_.pushRegs;
 
-	private Amd64Assemble asm = new Amd64Assemble(pushSize);
+	private Amd64Assemble asm = new Amd64Assemble(Funp_.mode);
 
 	private int axReg = amd64.axReg;
 	private int cxReg = amd64.cxReg;

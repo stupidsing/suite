@@ -9,6 +9,7 @@ import org.junit.Test;
 import suite.assembler.Amd64;
 import suite.assembler.Amd64.Insn;
 import suite.assembler.Amd64Assemble;
+import suite.assembler.Amd64Mode;
 
 public class Amd64AssembleTest {
 
@@ -17,7 +18,7 @@ public class Amd64AssembleTest {
 	@Test
 	public void test() {
 		var push = amd64.instruction(Insn.PUSH, amd64.imm(0l, 1));
-		var bytes = new Amd64Assemble(8).assemble(0l, List.of(push), true);
+		var bytes = new Amd64Assemble(Amd64Mode.LONG64).assemble(0l, List.of(push), true);
 		System.out.println(bytes);
 		assertEquals(2, bytes.size());
 	}
