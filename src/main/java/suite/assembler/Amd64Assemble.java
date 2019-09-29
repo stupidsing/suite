@@ -34,6 +34,7 @@ import suite.primitive.Bytes_;
 public class Amd64Assemble {
 
 	private InsnCode invalid = new InsnCode(-1, new byte[0]);
+	private Amd64Mode mode;
 	private int archSize; // 2, 4 or 8 for 286, i686 and amd64
 	private int defaultSize;
 	private boolean isLongMode;
@@ -176,8 +177,9 @@ public class Amd64Assemble {
 
 	public Amd64Assemble(int archSize) {
 		this.archSize = archSize;
+		this.mode = archSize == 2 ? Amd64Mode.REAL16 : archSize == 4 ? Amd64Mode.PROT32 : Amd64Mode.LONG64;
 		this.defaultSize = min(archSize, 4);
-		this.isLongMode = archSize == 8;
+		this.isLongMode = mode == Amd64Mode.LONG64;
 	}
 
 	public Bytes assemble(long offset, List<Instruction> instructions, boolean dump) {
