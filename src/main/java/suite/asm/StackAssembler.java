@@ -9,6 +9,7 @@ import java.util.List;
 import primal.adt.Pair;
 import suite.BindArrayUtil.Pattern;
 import suite.Suite;
+import suite.assembler.Amd64Mode;
 import suite.lp.Trail;
 import suite.lp.doer.Binder;
 import suite.node.Atom;
@@ -41,8 +42,8 @@ public class StackAssembler {
 
 	public final Assembler assembler;
 
-	public StackAssembler(int bits) {
-		assembler = new Assembler(bits, false, this::preassemble);
+	public StackAssembler(Amd64Mode mode) {
+		assembler = new Assembler(mode, this::preassemble);
 	}
 
 	private List<Pair<Reference, Node>> preassemble(List<Pair<Reference, Node>> lnis0) {

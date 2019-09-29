@@ -7,6 +7,7 @@ import primal.Verbs.ReadString;
 import primal.primitive.adt.Bytes;
 import suite.Suite;
 import suite.asm.StackAssembler;
+import suite.assembler.Amd64Mode;
 import suite.lp.kb.RuleSet;
 import suite.lp.search.ProverBuilder.Finder;
 import suite.lp.search.SewingProverBuilder2;
@@ -32,7 +33,8 @@ public class ImperativeCompiler {
 
 	public Bytes compile(int org, String ip) {
 		var code = finder.collectSingle(Suite.parse(ip));
-		return new StackAssembler(32).assembler.assemble(Suite.substitute(".0, .1", Suite.parse(".org = " + org), code));
+		var sa = new StackAssembler(Amd64Mode.PROT32);
+		return sa.assembler.assemble(Suite.substitute(".0, .1", Suite.parse(".org = " + org), code));
 	}
 
 }

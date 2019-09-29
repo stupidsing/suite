@@ -20,6 +20,7 @@ import primal.primitive.adt.Bytes.BytesBuilder;
 import suite.Suite;
 import suite.asm.Assembler.Asm;
 import suite.assembler.Amd64Assemble;
+import suite.assembler.Amd64Mode;
 import suite.assembler.Amd64Parse;
 import suite.lp.doer.Binder;
 import suite.lp.doer.Generalizer;
@@ -46,17 +47,12 @@ public class Assembler {
 		public Bytes assemble(boolean isPass2, int address, Node instruction);
 	}
 
-	public Assembler(int bits) {
-		this(bits, false);
+	public Assembler(Amd64Mode mode) {
+		this(mode, lnis -> lnis);
 	}
 
-	public Assembler(int bits, boolean isLongMode) {
-		this(bits, isLongMode, lnis -> lnis);
-	}
-
-	public Assembler(int bits, boolean isLongMode,
-			Fun<List<Pair<Reference, Node>>, List<Pair<Reference, Node>>> preassemble) {
-		asm = Boolean.TRUE ? new AsmA(bits) : new AsmSl(bits, isLongMode);
+	public Assembler(Amd64Mode mode, Fun<List<Pair<Reference, Node>>, List<Pair<Reference, Node>>> preassemble) {
+		asm = Boolean.TRUE ? new AsmA(mode) : new AsmSl(mode.addrSize * 8, mode == Amd64Mode.LONG64);
 		this.preassemble = preassemble;
 	}
 
@@ -145,8 +141,8 @@ class AsmA implements Asm {
 	private Amd64Assemble aa;
 	private Amd64Parse ap;
 
-	public AsmA(int bits) {
-		aa = new Amd64Assemble(bits / 8);
+	public AsmA(Amd64Mode mode) {
+		aa = new Amd64Assemble(mode);
 		ap = new Amd64Parse();
 	}
 
