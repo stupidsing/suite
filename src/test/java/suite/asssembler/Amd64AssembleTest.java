@@ -23,4 +23,14 @@ public class Amd64AssembleTest {
 		assertEquals(2, bytes.size());
 	}
 
+	@Test
+	public void testFail() {
+		try {
+			var mov = amd64.instruction(Insn.MOV, amd64.reg("BPL"), amd64.reg("AH"));
+			new Amd64Assemble(Amd64Mode.LONG64).assemble(0l, List.of(mov), true);
+			throw new RuntimeException();
+		} catch (Exception e) {
+		}
+	}
+
 }

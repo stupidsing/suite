@@ -1,5 +1,7 @@
 package suite.assembler;
 
+import java.util.Set;
+
 import primal.adt.map.BiHashMap;
 import primal.adt.map.BiMap;
 import suite.node.Atom;
@@ -212,6 +214,7 @@ public class Amd64 {
 	public Operand none = new OpNone();
 
 	public OpReg[] reg8 = To.array(16, OpReg.class, r -> newReg(1, r));
+	public OpReg[] reg8_lh = To.array(16, OpReg.class, r -> newReg(1, r));
 	public OpReg[] reg16 = To.array(16, OpReg.class, r -> newReg(2, r));
 	public OpReg[] reg32 = To.array(16, OpReg.class, r -> newReg(4, r));
 	public OpReg[] reg64 = To.array(16, OpReg.class, r -> newReg(8, r));
@@ -251,6 +254,7 @@ public class Amd64 {
 	public BiMap<Atom, OpReg> regByName = new BiHashMap<>() {
 		{
 			String[] rbs = { "AL", "CL", "DL", "BL", "SPL", "BPL", "SIL", "DIL", };
+			String[] rbs_lh = { "AL", "CL", "DL", "BL", "AH", "CH", "DH", "BH", };
 			String[] rws = { "AX", "CX", "DX", "BX", "SP", "BP", "SI", "DI", };
 			String[] rds = { "EAX", "ECX", "EDX", "EBX", "ESP", "EBP", "ESI", "EDI", };
 			String[] rqs = { "RAX", "RCX", "RDX", "RBX", "RSP", "RBP", "RSI", "RDI", };
@@ -261,6 +265,9 @@ public class Amd64 {
 				put(Atom.of(rds[i]), reg32[i]);
 				put(Atom.of(rqs[i]), reg64[i]);
 			}
+
+			for (var i = 4; i < 8; i++)
+				put(Atom.of(rbs_lh[i]), reg8_lh[i]);
 
 			for (var i = 8; i < 16; i++) {
 				put(Atom.of("R" + i + "B"), reg8[i]);
@@ -298,6 +305,9 @@ public class Amd64 {
 			}
 		}
 	};
+
+	public Set<Operand> reg8highs = Set.of(reg("AH"), reg("CH"), reg("DH"), reg("BH"));
+	public Set<Operand> reg8nonHighs = Set.of(reg("SPL"), reg("BPL"), reg("SIL"), reg("DIL"));
 
 	public Operand ign(int size) {
 		var op = new OpIgnore();

@@ -59,7 +59,7 @@ public class Amd64Assemble {
 	private interface Encode {
 		public boolean isValid();
 
-		public Bytes encode_(long offset);
+		public Bytes encode_(long offset, Instruction instruction);
 	}
 
 	private class VexCode implements Encode {
@@ -70,8 +70,8 @@ public class Amd64Assemble {
 			return code.isValid();
 		}
 
-		public Bytes encode_(long offset) {
-			return encode(offset, code, vex(m, p, code.opSize, code.modrm, w, v));
+		public Bytes encode_(long offset, Instruction instruction) {
+			return encode(offset, code, false, vex(m, p, code.opSize, code.modrm, w, v));
 		}
 	}
 
@@ -162,10 +162,25 @@ public class Amd64Assemble {
 			return 0 < opSize;
 		}
 
-		public Bytes encode_(long offset) {
-			return encode(offset, opSize == 1 || opSize == 2 || opSize == 4 || opSize == 8 ? this : invalid, null);
-		}
+		public Bytes encode_(long offset, Instruction instruction) {
+			var isValid = opSize == 1 || opSize == 2 || opSize == 4 || opSize == 8 ? this : invalid;
+			var amd64 = Amd64.me;
 
+			var isEnforceRex = false //
+					|| amd64.reg8nonHighs.contains(instruction.op0) //
+					|| amd64.reg8nonHighs.contains(instruction.op1);
+
+			var isNotEnforceRex = false //
+					|| amd64.reg8highs.contains(instruction.op0) //
+					|| amd64.reg8highs.contains(instruction.op1);
+
+			if (!isLongMode)
+				return encode(offset, isValid, false, null);
+			else if (!isEnforceRex || !isNotEnforceRex)
+				return encode(offset, isValid, isEnforceRex, null);
+			else
+				return fail("bad instruction");
+		}
 	}
 
 	private class Modrm {
@@ -772,7 +787,7 @@ public class Amd64Assemble {
 			encode = invalid;
 		}
 
-		return encode.encode_(offset);
+		return encode.encode_(offset, instruction);
 	}
 
 	private InsnCode assembleInOut(Operand port, Operand acc, int b) {
@@ -956,7 +971,7 @@ public class Amd64Assemble {
 		return insnCode;
 	}
 
-	private Bytes encode(long offset, InsnCode insnCode, byte[] vexs) {
+	private Bytes encode(long offset, InsnCode insnCode,boolean isEnforceRex, byte[] vexs) {
 		if (insnCode.isValid()) {
 			var modrm = insnCode.modrm;
 			var bb = new BytesBuilder();
@@ -967,7 +982,10 @@ public class Amd64Assemble {
 					bb.append((byte) 0x66);
 				if (mode.opSize != 2 && insnCode.opSize == 2)
 					bb.append((byte) 0x66);
-				appendIf(bb, modrm != null ? rexModrm(insnCode.opSize, insnCode) : rex(insnCode.opSize, 0, 0, 0));
+				if (isLongMode) {
+					var rex04 = modrm != null ? rexModrm(insnCode.opSize, insnCode) : rex(insnCode.opSize, 0, 0, 0);
+					appendIf(bb, isEnforceRex || rex04 != 0 ? 0x40 + rex04 : -1);
+				}
 			}
 			bb.append(insnCode.bs);
 			if (modrm != null) {
@@ -1119,16 +1137,10 @@ public class Amd64Assemble {
 	}
 
 	private int rex(int opSize, int r, int x, int b) {
-		var b04 = ((opSize != 8 ? 0 : 1) << 3) //
+		return ((opSize != 8 ? 0 : 1) << 3) //
 				+ (bit4(r) << 2) //
 				+ (bit4(x) << 1) //
 				+ (bit4(b) << 0);
-		if (Boolean.TRUE) {
-			return b04 != 0 ? 0x40 + b04 : -1;
-		} else {
-			// why it was like this?
-			return isLongMode && opSize == 1 || b04 != 0 ? 0x40 + b04 : -1;
-		}
 	}
 
 	// https://en.wikipedia.org/wiki/VEX_prefix
