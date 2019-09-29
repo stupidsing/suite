@@ -4,7 +4,7 @@ import static primal.statics.Rethrow.ex;
 
 import suite.util.RunUtil;
 
-// gcc -std=c99 -g src/main/c/encb.c -o target/encb && mvn -Dmaven.test.skip=true install assembly:single && (find src/ -type f | xargs cat | java -cp target/suite-1.0-jar-with-dependencies.jar suite.os.GenerateKeyMain | target/encb)
+// gcc -std=c99 -g src/main/c/encb.c -o target/encb && mvn -Dmaven.test.skip=true install assembly:single && (find src/ -type f | xargs cat | java -cp target/suite-1.0-jar-with-dependencies.jar suite.os.GenerateKeyMain | target/encb | tr -d '_' | src/main/python/gen-eth-wallet-address.py)
 public class GenerateKeyMain {
 
 	private int size = 32;
