@@ -35,7 +35,6 @@ public class Amd64Assemble {
 
 	private InsnCode invalid = new InsnCode(-1, new byte[0]);
 	private Amd64Mode mode;
-	private int archSize; // 2, 4 or 8 for 286, i686 and amd64
 	private boolean isLongMode;
 
 	private enum Vexm {
@@ -175,8 +174,11 @@ public class Amd64Assemble {
 	}
 
 	public Amd64Assemble(int archSize) {
-		this.archSize = archSize;
-		this.mode = archSize == 2 ? Amd64Mode.REAL16 : archSize == 4 ? Amd64Mode.PROT32 : Amd64Mode.LONG64;
+		this(archSize == 2 ? Amd64Mode.REAL16 : archSize == 4 ? Amd64Mode.PROT32 : Amd64Mode.LONG64);
+	}
+
+	public Amd64Assemble(Amd64Mode mode) {
+		this.mode = mode;
 		this.isLongMode = mode == Amd64Mode.LONG64;
 	}
 
@@ -296,7 +298,7 @@ public class Amd64Assemble {
 			break;
 		case IMM:
 			if (instruction.op0 instanceof OpImm) {
-				var insnCode_ = new InsnCode(archSize, (OpImm) instruction.op0);
+				var insnCode_ = new InsnCode(mode.opSize, (OpImm) instruction.op0);
 				insnCode_.bs = new byte[] {};
 				encode = insnCode_;
 			} else
@@ -368,7 +370,7 @@ public class Amd64Assemble {
 			encode = assembleJump(instruction, offset, 0x7E, bs(0x0F, 0x8E));
 			break;
 		case JMP:
-			if (isRm.test(instruction.op0) && instruction.op0.size == archSize)
+			if (isRm.test(instruction.op0) && instruction.op0.size == mode.addrSize)
 				encode = assemble(instruction.op0, 0xFF, 4);
 			else
 				encode = assembleJump(instruction, offset, 0xEB, bs(0xE9));
@@ -544,7 +546,7 @@ public class Amd64Assemble {
 			break;
 		case POP:
 			if (isRm.test(instruction.op0))
-				if (instruction.op0.size == 2 || instruction.op0.size == archSize)
+				if (instruction.op0.size == 2 || instruction.op0.size == mode.addrSize)
 					encode = assembleRm(instruction, 0x58, 0x8E, 0);
 				else
 					encode = invalid;
@@ -584,7 +586,7 @@ public class Amd64Assemble {
 				var size = instruction.op0.size;
 				encode = new InsnCode(size, (OpImm) instruction.op0).setByte(0x68 + (1 < size ? 0 : 2));
 			} else if (isRm.test(instruction.op0))
-				if (instruction.op0.size == 2 || instruction.op0.size == archSize)
+				if (instruction.op0.size == 2 || instruction.op0.size == mode.addrSize)
 					encode = assembleRm(instruction, 0x50, 0xFE, 6);
 				else
 					encode = invalid;
@@ -941,7 +943,7 @@ public class Amd64Assemble {
 	}
 
 	private InsnCode assemble(int b) {
-		return new InsnCode(archSize, bs(b));
+		return new InsnCode(mode.opSize, bs(b));
 	}
 
 	private InsnCode assemble(Operand operand, int b, int num) {
@@ -961,9 +963,9 @@ public class Amd64Assemble {
 			if (vexs != null)
 				bb.append(vexs);
 			else {
-				if (archSize == 2 && Set.of(4, 8).contains(insnCode.opSize))
+				if (mode.opSize == 2 && Set.of(4, 8).contains(insnCode.opSize))
 					bb.append((byte) 0x66);
-				if (archSize != 2 && insnCode.opSize == 2)
+				if (mode.opSize != 2 && insnCode.opSize == 2)
 					bb.append((byte) 0x66);
 				appendIf(bb, modrm != null ? rexModrm(insnCode.opSize, insnCode) : rex(insnCode.opSize, 0, 0, 0));
 			}
