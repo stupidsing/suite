@@ -10,47 +10,54 @@ import java.util.List;
 import primal.MoreVerbs.Read;
 import primal.primitive.FltMoreVerbs.ReadFlt;
 import primal.primitive.fp.AsDbl;
-import suite.streamlet.As;
+import suite.math.linalg.GaussSeidel;
+import suite.math.linalg.Matrix;
+import suite.math.linalg.Vector;
 import suite.util.To;
 
 /**
  * https://towardsdatascience.com/how-to-code-gaussian-mixture-models-from-scratch-in-python-9e7975df5252
- * 
+ *
+ * https://www.geeksforgeeks.org/gaussian-mixture-model/
+ *
  * @author ywsing
  */
 public class GaussianMixtureModel {
 
+	private GaussSeidel gs = new GaussSeidel();
+	private Matrix mtx = new Matrix();
+	private Vector vec = new Vector();
+
 	public final List<GaussComponent> components;
 
 	private double invpi = 1d / PI;
+	private double hinvpi = .5d * invpi;
 
 	public class GaussComponent {
-		public double mean;
-		public double var;
+		public float[] mean;
+		public float[][] covar;
 		public double scale;
 
-		public GaussComponent(double mean, double var, double scale) {
+		public GaussComponent(float[] mean, float[][] var, double scale) {
 			this.mean = mean;
-			this.var = var;
+			this.covar = var;
 			this.scale = scale;
 		}
 	}
 
 	public GaussianMixtureModel(int n, float[][] obs) {
-		var comps = forInt(n).map(i -> new GaussComponent(0d, 0d, 0d / n)).toList();
+		int dim = obs[0].length;
+		var comps = forInt(n).map(i -> new GaussComponent(new float[dim], mtx.identity(dim), 0d / n)).toList();
 
 		for (var iter = 0; iter < 256; iter++) {
 			var comps_ = comps;
 
 			// expectation
-			var bks = Read.from(obs).map(xs -> {
-				var x = xs[0];
-
+			var bks = Read.from(obs).map(x -> {
 				var fs = To.vector(n, k -> {
 					var mvs = comps_.get(k);
-					var d = x - mvs.mean;
-					var ivar2 = .5d / mvs.var;
-					var f = sqrt(ivar2 * invpi) * exp(-d * d * ivar2);
+					var d = vec.sub(x, mvs.mean);
+					var f = sqrt(hinvpi / mtx.det(mvs.covar)) * exp(-.5d * vec.dot(d, gs.solve(mvs.covar, d)));
 					return f * mvs.scale;
 				});
 
@@ -64,16 +71,18 @@ public class GaussianMixtureModel {
 				var ibk = 1d / bksum;
 				var mean_ = comps_.get(k).mean;
 
-				var mean1 = forInt(obs.length).toDouble(As.sum(i -> bks[i][k] * obs[i][0])) * ibk;
+				var mean1 = vec.scaleOn(forInt(obs.length).fold(new float[dim], (i, sum) -> {
+					return vec.addOn(sum, vec.scaleOn(obs[i], bks[i][k]));
+				}), ibk);
 
-				var var1 = forInt(obs.length).toDouble(As.sum(i -> {
-					var d = obs[i][0] - mean_;
-					return bks[i][k] * d * d;
-				})) * ibk;
+				var covar1 = mtx.scaleOn(forInt(obs.length).fold(new float[dim][dim], (i, sum) -> {
+					var d = vec.sub(obs[i], mean_);
+					return mtx.addOn(sum, mtx.scaleOn(mtx.mul(d), bks[i][k]));
+				}), ibk);
 
 				var scale1 = bksum / obs.length;
 
-				return new GaussComponent(mean1, var1, scale1);
+				return new GaussComponent(mean1, covar1, scale1);
 			}).toList();
 		}
 

@@ -60,7 +60,7 @@ public class AnalyzeTimeSeriesTest {
 		var cogs = To.vector(length, i -> ops[i] - cls[max(0, i - 1)]);
 		Log_.info("open/close gap = " + stat.meanVariance(ocgs));
 		Log_.info("close/open gap = " + stat.meanVariance(cogs));
-		Log_.info("ocg/cog covariance = " + stat.correlation(ocgs, cogs));
+		Log_.info("ocg/cog correlation = " + stat.correlation(ocgs, cogs));
 		analyze(ds.prices);
 	}
 
