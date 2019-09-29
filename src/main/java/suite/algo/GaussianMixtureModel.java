@@ -38,9 +38,9 @@ public class GaussianMixtureModel {
 		public float[][] covar;
 		public double scale;
 
-		public GaussComponent(float[] mean, float[][] var, double scale) {
+		public GaussComponent(float[] mean, float[][] covar, double scale) {
 			this.mean = mean;
-			this.covar = var;
+			this.covar = covar;
 			this.scale = scale;
 		}
 	}
