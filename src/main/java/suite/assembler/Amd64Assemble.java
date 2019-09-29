@@ -801,7 +801,7 @@ public class Amd64Assemble {
 	}
 
 	private InsnCode assembleJumpImm(OpImm op0, long offset, int bj1, byte[] bj24) {
-		var size = min(mode.addrSize, 4);
+		var size = min(op0.size, min(mode.addrSize, 4));
 		byte[] bs0;
 
 		if (size == 1)
