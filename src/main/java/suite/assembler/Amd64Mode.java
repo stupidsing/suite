@@ -2,7 +2,7 @@ package suite.assembler;
 
 /**
  * https://wiki.osdev.org/X86-64_Instruction_Encoding
- * 
+ *
  * section "Operand-size and address-size override prefix"
  *
  * @author ywsing
