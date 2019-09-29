@@ -36,7 +36,6 @@ public class Amd64Assemble {
 	private InsnCode invalid = new InsnCode(-1, new byte[0]);
 	private Amd64Mode mode;
 	private int archSize; // 2, 4 or 8 for 286, i686 and amd64
-	private int defaultSize;
 	private boolean isLongMode;
 
 	private enum Vexm {
@@ -95,7 +94,7 @@ public class Amd64Assemble {
 		}
 
 		private InsnCode(byte[] bs) {
-			this(defaultSize, bs);
+			this(mode.opSize, bs);
 		}
 
 		private InsnCode(int opSize, byte[] bs) {
@@ -178,7 +177,6 @@ public class Amd64Assemble {
 	public Amd64Assemble(int archSize) {
 		this.archSize = archSize;
 		this.mode = archSize == 2 ? Amd64Mode.REAL16 : archSize == 4 ? Amd64Mode.PROT32 : Amd64Mode.LONG64;
-		this.defaultSize = min(archSize, 4);
 		this.isLongMode = mode == Amd64Mode.LONG64;
 	}
 
@@ -432,13 +430,13 @@ public class Amd64Assemble {
 			encode = assembleJump(instruction, offset, 0xE1, null);
 			break;
 		case LGDT:
-			encode = assemble(instruction.op0, 0x01, 2, defaultSize).pre(0x0F);
+			encode = assemble(instruction.op0, 0x01, 2, mode.opSize).pre(0x0F);
 			break;
 		case LIDT:
-			encode = assemble(instruction.op0, 0x01, 3, defaultSize).pre(0x0F);
+			encode = assemble(instruction.op0, 0x01, 3, mode.opSize).pre(0x0F);
 			break;
 		case LTR:
-			encode = assemble(instruction.op0, 0x00, 3, defaultSize).pre(0x0F);
+			encode = assemble(instruction.op0, 0x00, 3, mode.opSize).pre(0x0F);
 			break;
 		case MOV:
 			if ((opImm = instruction.op1.cast(OpImm.class)) != null //
@@ -803,7 +801,7 @@ public class Amd64Assemble {
 	}
 
 	private InsnCode assembleJumpImm(OpImm op0, long offset, int bj1, byte[] bj24) {
-		var size = min(op0.size, defaultSize);
+		var size = min(mode.addrSize, 4);
 		byte[] bs0;
 
 		if (size == 1)
@@ -1113,13 +1111,13 @@ public class Amd64Assemble {
 		return 0 <= l && l < 4 ? l : fail("bad scale");
 	}
 
-	private int rexModrm(int size, InsnCode insnCode) {
+	private int rexModrm(int opSize, InsnCode insnCode) {
 		var modrm = insnCode.modrm;
-		return rex(size, modrm.num, modrm.i, 0 <= modrm.b ? modrm.b : modrm.rm);
+		return rex(opSize, modrm.num, modrm.i, 0 <= modrm.b ? modrm.b : modrm.rm);
 	}
 
-	private int rex(int size, int r, int x, int b) {
-		var b04 = ((size != 8 ? 0 : 1) << 3) //
+	private int rex(int opSize, int r, int x, int b) {
+		var b04 = ((opSize != 8 ? 0 : 1) << 3) //
 				+ (bit4(r) << 2) //
 				+ (bit4(x) << 1) //
 				+ (bit4(b) << 0);
@@ -1127,7 +1125,7 @@ public class Amd64Assemble {
 			return b04 != 0 ? 0x40 + b04 : -1;
 		} else {
 			// why it was like this?
-			return isLongMode && size == 1 || b04 != 0 ? 0x40 + b04 : -1;
+			return isLongMode && opSize == 1 || b04 != 0 ? 0x40 + b04 : -1;
 		}
 	}
 
