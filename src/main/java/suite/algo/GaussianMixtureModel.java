@@ -6,6 +6,7 @@ import static java.lang.Math.sqrt;
 import static suite.util.Streamlet_.forInt;
 
 import java.util.List;
+import java.util.Random;
 
 import primal.MoreVerbs.Read;
 import primal.primitive.FltMoreVerbs.ReadFlt;
@@ -26,12 +27,12 @@ public class GaussianMixtureModel {
 
 	private GaussSeidel gs = new GaussSeidel();
 	private Matrix mtx = new Matrix();
+	private Random random = new Random();
 	private Vector vec = new Vector();
 
 	public final List<GaussComponent> components;
 
-	private double invpi = 1d / PI;
-	private double hinvpi = .5d * invpi;
+	private double hinvpi = .5d / PI;
 
 	public class GaussComponent {
 		public float[] mean;
@@ -47,7 +48,10 @@ public class GaussianMixtureModel {
 
 	public GaussianMixtureModel(int n, float[][] obs) {
 		int dim = obs[0].length;
-		var comps = forInt(n).map(i -> new GaussComponent(new float[dim], mtx.identity(dim), 1d / n)).toList();
+		var comps = forInt(n).map(i -> new GaussComponent( //
+				To.vector(dim, j -> random.nextGaussian()), //
+				mtx.identity(dim), //
+				1d / n)).toList();
 
 		for (var iter = 0; iter < 256; iter++) {
 			var comps_ = comps;
@@ -62,23 +66,23 @@ public class GaussianMixtureModel {
 				});
 
 				var bk = ReadFlt.from(fs).sum();
-				return To.vector(fs, f -> f / bk);
+				return vec.scaleOn(fs, 1d / bk);
 			}).toArray(float[].class);
 
 			// maximization
 			comps = forInt(n).map(k -> {
 				var bksum = Read.from(bks).toDouble(AsDbl.sum(bk -> bk[k]));
-				var ibk = 1d / bksum;
+				var ibksum = 1d / bksum;
 				var mean_ = comps_.get(k).mean;
 
 				var mean1 = vec.scaleOn(forInt(obs.length).fold(new float[dim], (i, sum) -> {
 					return vec.addOn(sum, vec.scaleOn(obs[i], bks[i][k]));
-				}), ibk);
+				}), ibksum);
 
 				var covar1 = mtx.scaleOn(forInt(obs.length).fold(new float[dim][dim], (i, sum) -> {
 					var d = vec.sub(obs[i], mean_);
 					return mtx.addOn(sum, mtx.scaleOn(mtx.mul(d), bks[i][k]));
-				}), ibk);
+				}), ibksum);
 
 				var scale1 = bksum / obs.length;
 
