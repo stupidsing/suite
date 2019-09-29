@@ -13,6 +13,7 @@ import suite.Suite;
 import suite.assembler.Amd64;
 import suite.assembler.Amd64.Instruction;
 import suite.assembler.Amd64.OpReg;
+import suite.assembler.Amd64Mode;
 import suite.funp.P0.Coerce;
 import suite.funp.P0.FunpDefine;
 import suite.funp.P0.FunpDefineRec;
@@ -37,16 +38,17 @@ public class Funp_ {
 	private static Inspect inspect = Singleton.me.inspect;
 
 	public static boolean isAmd64 = RunUtil.isLinux64();
+	public static Amd64Mode mode = isAmd64 ? Amd64Mode.LONG64 : Amd64Mode.PROT32;
 	public static int booleanSize = 1;
-	public static int integerSize = 4;
-	public static int pointerSize = isAmd64 ? 8 : 4;
-	public static int pushSize = isAmd64 ? 8 : 4;
+	public static int integerSize = mode.opSize;
+	public static int pointerSize = mode.addrSize;
+	public static int pushSize = mode.pushSize;
 	public static OpReg[] integerRegs = amd64.regs(integerSize);
 	public static OpReg[] pointerRegs = amd64.regs(pointerSize);
 	public static OpReg[] pushRegs = amd64.regs(pushSize);
 	public static OpReg _bp = pointerRegs[amd64.bpReg];
 	public static OpReg _sp = pointerRegs[amd64.spReg];
-	public static int nRegisters = isAmd64 ? 16 : 8;
+	public static int nRegisters = mode.nRegisters;
 	public static Funp framePointer = new FunpFramePointer();
 
 	private boolean isOptimize;
