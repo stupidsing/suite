@@ -47,7 +47,7 @@ public class GaussianMixtureModel {
 
 	public GaussianMixtureModel(int n, float[][] obs) {
 		int dim = obs[0].length;
-		var comps = forInt(n).map(i -> new GaussComponent(new float[dim], mtx.identity(dim), 0d / n)).toList();
+		var comps = forInt(n).map(i -> new GaussComponent(new float[dim], mtx.identity(dim), 1d / n)).toList();
 
 		for (var iter = 0; iter < 256; iter++) {
 			var comps_ = comps;
