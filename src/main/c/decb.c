@@ -3,7 +3,7 @@
 #include <stdlib.h>
 
 void fail(char *msg) {
-	fprintf(stderr, msg);
+	fprintf(stderr, "%s", msg);
 	exit(1);
 }
 
