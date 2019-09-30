@@ -47,7 +47,9 @@ public class GaussianMixtureModel {
 	}
 
 	public GaussianMixtureModel(int n, float[][] obs) {
-		int dim = obs[0].length;
+		var nObs = obs.length;
+		var dim = obs[0].length;
+
 		var comps = forInt(n).map(i -> new GaussComponent( //
 				To.vector(dim, j -> random.nextGaussian()), //
 				mtx.identity(dim), //
@@ -65,8 +67,7 @@ public class GaussianMixtureModel {
 					return f * mvs.scale;
 				});
 
-				var bk = ReadFlt.from(fs).sum();
-				return vec.scaleOn(fs, 1d / bk);
+				return vec.scaleOn(fs, 1d / ReadFlt.from(fs).sum());
 			}).toArray(float[].class);
 
 			// maximization
@@ -75,16 +76,16 @@ public class GaussianMixtureModel {
 				var ibksum = 1d / bksum;
 				var mean_ = comps_.get(k).mean;
 
-				var mean1 = vec.scaleOn(forInt(obs.length).fold(new float[dim], (i, sum) -> {
-					return vec.addOn(sum, vec.scaleOn(obs[i], bks[i][k]));
+				var mean1 = vec.scaleOn(forInt(nObs).fold(new float[dim], (o, sum) -> {
+					return vec.addOn(sum, vec.scaleOn(obs[o], bks[o][k]));
 				}), ibksum);
 
-				var covar1 = mtx.scaleOn(forInt(obs.length).fold(new float[dim][dim], (i, sum) -> {
-					var d = vec.sub(obs[i], mean_);
-					return mtx.addOn(sum, mtx.scaleOn(mtx.mul(d), bks[i][k]));
+				var covar1 = mtx.scaleOn(forInt(nObs).fold(new float[dim][dim], (o, sum) -> {
+					var d = vec.sub(obs[o], mean_);
+					return mtx.addOn(sum, mtx.scaleOn(mtx.mul(d), bks[o][k]));
 				}), ibksum);
 
-				var scale1 = bksum / obs.length;
+				var scale1 = bksum / nObs;
 
 				return new GaussComponent(mean1, covar1, scale1);
 			}).toList();
