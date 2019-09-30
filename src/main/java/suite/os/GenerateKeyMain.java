@@ -6,9 +6,10 @@ import suite.util.RunUtil;
 
 /*
 gcc -std=c99 -g src/main/c/encb.c -o target/encb &&
+./build.sh &&
 find src/ -type f |
 xargs cat |
-MAIN=suite.os.GenerateKeyMain ./run.sh |
+java -cp $(cat target/classpath):target/suite-1.0.jar suite.os.GenerateKeyMain |
 target/encb |
 tr -d '_' |
 src/main/python/gen-eth-wallet-address.py
