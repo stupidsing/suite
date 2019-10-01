@@ -11,7 +11,6 @@ import java.util.Random;
 import primal.MoreVerbs.Read;
 import primal.primitive.FltMoreVerbs.ReadFlt;
 import primal.primitive.fp.AsDbl;
-import suite.inspect.Dump;
 import suite.math.linalg.GaussSeidel;
 import suite.math.linalg.Matrix;
 import suite.math.linalg.Vector;
@@ -92,8 +91,6 @@ public class GaussianMixtureModel {
 
 				return new GaussComponent(mean1, covar1, scale1);
 			}).toList();
-
-			Dump.details(comps);
 		}
 
 		components = comps;
