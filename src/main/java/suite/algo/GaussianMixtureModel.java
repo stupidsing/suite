@@ -26,7 +26,6 @@ import suite.util.To;
  */
 public class GaussianMixtureModel {
 
-	private float eps = 1e-5f;
 	private GaussSeidel gs = new GaussSeidel();
 	private Matrix mtx = new Matrix();
 	private Random random = new Random();
@@ -73,9 +72,6 @@ public class GaussianMixtureModel {
 
 				return vec.scaleOn(fs, 1d / ReadFlt.from(fs).sum());
 			}).toArray(float[].class);
-
-			System.out.println(iter);
-			Dump.details(bks);
 
 			// maximization
 			comps = forInt(n).map(k -> {
