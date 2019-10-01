@@ -77,7 +77,7 @@ public class GaussianMixtureModel {
 				var mean_ = comps_.get(k).mean;
 
 				var mean1 = vec.scaleOn(forInt(nObs).fold(new float[dim], (o, sum) -> {
-					return vec.addOn(sum, vec.scaleOn(obs[o], bks[o][k]));
+					return vec.addOn(sum, vec.scale(obs[o], bks[o][k]));
 				}), ibksum);
 
 				var covar1 = mtx.scaleOn(forInt(nObs).fold(new float[dim][dim], (o, sum) -> {
