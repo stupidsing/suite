@@ -85,9 +85,7 @@ public class Inspect {
 				}) //
 				.collect();
 
-		var fields = Streamlet.concat(parentFields, childFields);
-		fields.forEach(field -> field.setAccessible(true));
-		return fields;
+		return Streamlet.concat(parentFields, childFields).filter(field -> field.trySetAccessible());
 	});
 
 	private Fun<Class<?>, Streamlet<Method>> gettersFun = Memoize.funRec(clazz -> {

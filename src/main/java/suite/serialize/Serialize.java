@@ -136,9 +136,8 @@ public class Serialize {
 				.toArray();
 
 		var ctors = Read.from(clazz.getDeclaredConstructors());
-		var defaultCtor = ctors.filter(ctor -> ctor.getParameterCount() == 0).first();
+		var defaultCtor = ctors.filter(ctor -> ctor.getParameterCount() == 0 && ctor.trySetAccessible()).first();
 		var immutableCtor = ctors.min((c0, c1) -> -Integer.compare(c0.getParameterCount(), c1.getParameterCount()));
-		immutableCtor.setAccessible(true);
 
 		return new Serializer<>() {
 			public T read(SerInput si) throws IOException {
