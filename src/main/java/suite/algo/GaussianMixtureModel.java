@@ -11,6 +11,7 @@ import java.util.Random;
 import primal.MoreVerbs.Read;
 import primal.primitive.FltMoreVerbs.ReadFlt;
 import primal.primitive.fp.AsDbl;
+import suite.inspect.Dump;
 import suite.math.linalg.GaussSeidel;
 import suite.math.linalg.Matrix;
 import suite.math.linalg.Vector;
@@ -55,20 +56,25 @@ public class GaussianMixtureModel {
 				mtx.identity(dim), //
 				1d / n)).toList();
 
-		for (var iter = 0; iter < 256; iter++) {
+		for (var iter = 0; iter < 16; iter++) {
 			var comps_ = comps;
+
+			var dets = To.vector(n, i -> mtx.det(comps_.get(i).covar));
 
 			// expectation
 			var bks = Read.from(obs).map(x -> {
 				var fs = To.vector(n, k -> {
 					var mvs = comps_.get(k);
 					var d = vec.sub(x, mvs.mean);
-					var f = sqrt(hinvpi / mtx.det(mvs.covar)) * exp(-.5d * vec.dot(d, gs.solve(mvs.covar, d)));
+					var f = sqrt(hinvpi / dets[k]) * exp(-.5d * vec.dot(d, gs.solve(mvs.covar, d)));
 					return f * mvs.scale;
 				});
 
 				return vec.scaleOn(fs, 1d / ReadFlt.from(fs).sum());
 			}).toArray(float[].class);
+
+			System.out.println(iter);
+			Dump.details(bks);
 
 			// maximization
 			comps = forInt(n).map(k -> {
@@ -89,6 +95,8 @@ public class GaussianMixtureModel {
 
 				return new GaussComponent(mean1, covar1, scale1);
 			}).toList();
+
+			Dump.details(comps);
 		}
 
 		components = comps;
