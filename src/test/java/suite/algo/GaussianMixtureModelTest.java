@@ -22,10 +22,10 @@ public class GaussianMixtureModelTest {
 		var i = 0;
 
 		while (i < size / 2)
-			obs[i++] = new float[] { (float) (-5f + random.nextGaussian()), };
+			obs[i++] = new float[] { (float) (-5d + random.nextGaussian()), };
 
 		while (i < size)
-			obs[i++] = new float[] { (float) (+5f + random.nextGaussian()), };
+			obs[i++] = new float[] { (float) (+5d + random.nextGaussian()), };
 
 		var gmm = new GaussianMixtureModel(2, obs);
 		Dump.details(gmm);
@@ -47,10 +47,10 @@ public class GaussianMixtureModelTest {
 		var i = 0;
 
 		while (i < size / 2)
-			obs[i++] = new float[] { (float) (-5f + random.nextGaussian()), (float) (-5f + random.nextGaussian()), };
+			obs[i++] = new float[] { (float) (-5d + random.nextGaussian()), (float) (-5d + random.nextGaussian()), };
 
 		while (i < size)
-			obs[i++] = new float[] { (float) (+5f + random.nextGaussian()), (float) (+5f + random.nextGaussian()), };
+			obs[i++] = new float[] { (float) (+5d + random.nextGaussian()), (float) (+5d + random.nextGaussian()), };
 
 		var gmm = new GaussianMixtureModel(2, obs);
 		Dump.details(gmm);
