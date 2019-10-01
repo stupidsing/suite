@@ -35,8 +35,8 @@ public class GenerateKeyMain {
 					bs[i] = (byte) b;
 				}
 
-			for (var i = 0; i < bs.length; i++)
-				System.out.write(bs[i]);
+			for (var b : bs)
+				System.out.write(b);
 
 			return true;
 		}

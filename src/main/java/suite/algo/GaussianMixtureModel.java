@@ -32,9 +32,9 @@ public class GaussianMixtureModel {
 	private Random random = new Random();
 	private Vector vec = new Vector();
 
-	public final List<GaussComponent> components;
-
 	private double hinvpi = .5d / PI;
+
+	public final List<GaussComponent> components;
 
 	public class GaussComponent {
 		public float[] mean;
