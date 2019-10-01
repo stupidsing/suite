@@ -19,7 +19,7 @@ public class GaussSeidel {
 				for (var j = 0; j < size; j++)
 					if (i != j)
 						o += ai[j] * phi0[j];
-				phi[i] = (float) ((b[i] - o) / a[i][i]);
+				phi[i] = (float) ((b[i] - o) / (1e-5d + a[i][i]));
 			}
 
 			var t = phi;

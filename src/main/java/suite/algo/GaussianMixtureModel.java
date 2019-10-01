@@ -2,6 +2,8 @@ package suite.algo;
 
 import static java.lang.Math.PI;
 import static java.lang.Math.exp;
+import static java.lang.Math.max;
+import static java.lang.Math.min;
 import static java.lang.Math.sqrt;
 import static suite.util.Streamlet_.forInt;
 
@@ -55,18 +57,21 @@ public class GaussianMixtureModel {
 				mtx.identity(dim), //
 				1d / n)).toList();
 
-		for (var iter = 0; iter < 16; iter++) {
+		for (var iter = 0; iter < 32; iter++) {
 			var comps_ = comps;
 
-			var hinvpidets = To.vector(n, i -> sqrt(hinvpi / mtx.det(comps_.get(i).covar)));
+			var factors = To.vector(n, i -> {
+				var mvs = comps_.get(i);
+				return sqrt(hinvpi / mtx.det(mvs.covar)) * mvs.scale;
+			});
 
 			// expectation
 			var bks = Read.from(obs).map(x -> {
 				var fs = To.vector(n, k -> {
 					var mvs = comps_.get(k);
 					var d = vec.sub(x, mvs.mean);
-					var f = hinvpidets[k] * exp(-.5d * vec.dot(d, gs.solve(mvs.covar, d)));
-					return f * mvs.scale;
+					var f = factors[k] * exp(-.5d * vec.dot(d, gs.solve(mvs.covar, d)));
+					return max(1e-32f, min(1e32f, f));
 				});
 
 				return vec.scaleOn(fs, 1d / ReadFlt.from(fs).sum());
