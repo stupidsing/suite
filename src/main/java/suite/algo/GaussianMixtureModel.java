@@ -26,6 +26,7 @@ import suite.util.To;
  */
 public class GaussianMixtureModel {
 
+	private float eps = 1e-5f;
 	private GaussSeidel gs = new GaussSeidel();
 	private Matrix mtx = new Matrix();
 	private Random random = new Random();
@@ -59,14 +60,14 @@ public class GaussianMixtureModel {
 		for (var iter = 0; iter < 16; iter++) {
 			var comps_ = comps;
 
-			var dets = To.vector(n, i -> mtx.det(comps_.get(i).covar));
+			var hinvpidets = To.vector(n, i -> sqrt(hinvpi / mtx.det(comps_.get(i).covar)));
 
 			// expectation
 			var bks = Read.from(obs).map(x -> {
 				var fs = To.vector(n, k -> {
 					var mvs = comps_.get(k);
 					var d = vec.sub(x, mvs.mean);
-					var f = sqrt(hinvpi / dets[k]) * exp(-.5d * vec.dot(d, gs.solve(mvs.covar, d)));
+					var f = hinvpidets[k] * exp(-.5d * vec.dot(d, gs.solve(mvs.covar, d)));
 					return f * mvs.scale;
 				});
 
