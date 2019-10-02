@@ -1,4 +1,4 @@
-	package suite.inspect;
+package suite.inspect;
 
 import static primal.statics.Rethrow.ex;
 
@@ -106,10 +106,9 @@ public class Inspect {
 		var parentMethods = superClass != null ? methods(superClass) : Read.<Method> empty();
 		var childMethods = Read //
 				.from(clazz.getDeclaredMethods()) //
-				.filter(method -> {
-					var modifiers = method.getModifiers();
-					return !Modifier.isStatic(modifiers) && !Modifier.isTransient(modifiers)
-							&& names.add(method.getName());
+				.filter(m -> {
+					var mods = m.getModifiers();
+					return !Modifier.isStatic(mods) && !Modifier.isTransient(mods) && names.add(m.getName());
 				}) //
 				.collect();
 
