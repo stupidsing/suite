@@ -85,7 +85,9 @@ public class Inspect {
 				}) //
 				.collect();
 
-		return Streamlet.concat(parentFields, childFields).filter(field -> field.trySetAccessible());
+		return Streamlet //
+				.concat(parentFields, childFields) //
+				.filter(field -> field.trySetAccessible());
 	});
 
 	private Fun<Class<?>, Streamlet<Method>> gettersFun = Memoize.funRec(clazz -> {
@@ -106,13 +108,14 @@ public class Inspect {
 				.from(clazz.getDeclaredMethods()) //
 				.filter(method -> {
 					var modifiers = method.getModifiers();
-					return !Modifier.isStatic(modifiers) && !Modifier.isTransient(modifiers) && names.add(method.getName());
+					return !Modifier.isStatic(modifiers) && !Modifier.isTransient(modifiers)
+							&& names.add(method.getName());
 				}) //
 				.collect();
 
-		var methods = Streamlet.concat(parentMethods, childMethods);
-		methods.filter(method -> method.getDeclaringClass() != Object.class).sink(method -> method.setAccessible(true));
-		return methods;
+		return Streamlet //
+				.concat(parentMethods, childMethods) //
+				.filter(method -> method.getDeclaringClass() != Object.class && method.trySetAccessible());
 	});
 
 	private Fun<Class<?>, Streamlet<Property>> propertiesFun = Memoize.funRec(clazz -> {
