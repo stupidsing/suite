@@ -217,6 +217,9 @@ public class Amd64Assemble {
 	public Bytes assemble(boolean isPass2, long offset, Instruction instruction) {
 		Encode encode;
 		OpImm opImm;
+		OpReg opReg;
+		OpRegControl opRegCtrl;
+		OpRegSegment opRegSegment;
 		byte[] bs;
 
 		switch (instruction.insn) {
@@ -236,7 +239,7 @@ public class Amd64Assemble {
 			encode = new InsnCode(new byte[(int) (((OpImm) instruction.op0).imm - offset)]);
 			break;
 		case ALIGN:
-			var align = ((OpImm) instruction.op0).imm;
+			var align = instruction.op0.cast(OpImm.class).imm;
 			var alignm1 = align - 1;
 			bs = new byte[(int) (align - (offset & alignm1) & alignm1)];
 			Arrays.fill(bs, (byte) 0x90);
@@ -249,8 +252,8 @@ public class Amd64Assemble {
 			encode = assemble(0x67);
 			break;
 		case CALL:
-			if (instruction.op0 instanceof OpImm && 4 <= instruction.op0.size)
-				encode = assembleJumpImm((OpImm) instruction.op0, offset, -1, bs(0xE8));
+			if ((opImm = instruction.op0.cast(OpImm.class)) != null && 4 <= instruction.op0.size)
+				encode = assembleJumpImm(opImm, offset, -1, bs(0xE8));
 			else if (isRm.test(instruction.op0))
 				encode = assemble(instruction.op0, 0xFF, 2);
 			else
@@ -296,8 +299,8 @@ public class Amd64Assemble {
 			encode = assembleByteFlag(instruction.op0, 0xF6, 6);
 			break;
 		case DS:
-			bs = new byte[(int) ((OpImm) instruction.op0).imm];
-			var b = instruction.op1 instanceof OpImm ? ((OpImm) instruction.op1).imm : 0x90;
+			bs = new byte[(int) instruction.op0.cast(OpImm.class).imm];
+			var b = (opImm = instruction.op1.cast(OpImm.class)) != null ? opImm.imm : 0x90;
 			Arrays.fill(bs, (byte) b);
 			encode = new InsnCode(Bytes.of(bs).toArray());
 			break;
@@ -308,8 +311,8 @@ public class Amd64Assemble {
 			encode = assembleByteFlag(instruction.op0, 0xF6, 7);
 			break;
 		case IMM:
-			if (instruction.op0 instanceof OpImm) {
-				var insnCode_ = new InsnCode(mode.opSize, (OpImm) instruction.op0);
+			if ((opImm = instruction.op0.cast(OpImm.class)) != null) {
+				var insnCode_ = new InsnCode(mode.opSize, opImm);
 				insnCode_.bs = new byte[] {};
 				encode = insnCode_;
 			} else
@@ -320,12 +323,11 @@ public class Amd64Assemble {
 				encode = assembleByteFlag(instruction.op0, 0xF6, 5);
 			else if (instruction.op2 instanceof OpNone)
 				encode = assembleRegRm(instruction.op0, instruction.op1, 0xAF).pre(0x0F);
-			else if (instruction.op2 instanceof OpImm) {
-				var imm = (OpImm) instruction.op2;
-				if (imm.size <= 1)
-					encode = assembleRegRm(instruction.op0, instruction.op1, 0x6B).imm(imm);
-				else if (imm.size == instruction.op0.size)
-					encode = assembleRegRm(instruction.op0, instruction.op1, 0x69).imm(imm);
+			else if ((opImm = instruction.op2.cast(OpImm.class)) != null) {
+				if (opImm.size <= 1)
+					encode = assembleRegRm(instruction.op0, instruction.op1, 0x6B).imm(opImm);
+				else if (opImm.size == instruction.op0.size)
+					encode = assembleRegRm(instruction.op0, instruction.op1, 0x69).imm(opImm);
 				else
 					encode = invalid;
 			} else
@@ -338,9 +340,8 @@ public class Amd64Assemble {
 			encode = assembleRm(instruction, isLongMode ? -1 : 0x40, 0xFE, 0);
 			break;
 		case INT:
-			if (instruction.op0 instanceof OpImm) {
-				var iv = ((OpImm) instruction.op0).imm;
-				encode = iv != 3 ? assemble(0xCD).imm(iv, 1) : assemble(0xCC);
+			if ((opImm = instruction.op0.cast(OpImm.class)) != null) {
+				encode = opImm.imm != 3 ? assemble(0xCD).imm(opImm.imm, 1) : assemble(0xCC);
 			} else
 				encode = invalid;
 			break;
@@ -467,31 +468,24 @@ public class Amd64Assemble {
 			else if ((encode = assembleRmReg(instruction, 0x88)).isValid())
 				;
 			else if (instruction.op0.size == instruction.op1.size)
-				if (instruction.op1 instanceof OpImm) {
-					var op1 = (OpImm) instruction.op1;
+				if ((opImm = instruction.op1.cast(OpImm.class)) != null)
 					if (instruction.op0 instanceof OpReg && isNonRexReg.test(instruction.op0))
-						encode = assembleReg(instruction, 0xB0 + (op1.size <= 1 ? 0 : 8)).imm(op1);
+						encode = assembleReg(instruction, 0xB0 + (opImm.size <= 1 ? 0 : 8)).imm(opImm);
 					else
 						encode = invalid;
-				} else if (instruction.op0 instanceof OpRegSegment) {
-					var opRegSegment = (OpRegSegment) instruction.op0;
+				else if ((opRegSegment = instruction.op0.cast(OpRegSegment.class)) != null)
 					encode = assemble(instruction.op1, 0x8E, opRegSegment.sreg);
-				} else if (instruction.op1 instanceof OpRegSegment) {
-					var opRegSegment = (OpRegSegment) instruction.op1;
+				else if ((opRegSegment = instruction.op1.cast(OpRegSegment.class)) != null)
 					encode = assemble(instruction.op0, 0x8C, opRegSegment.sreg);
-				} else if (instruction.op0.size == 4 //
-						&& instruction.op0 instanceof OpReg //
-						&& instruction.op1 instanceof OpRegControl) {
-					var opReg = (OpReg) instruction.op0;
-					var opRegCt = (OpRegControl) instruction.op1;
-					encode = new InsnCode(4, new byte[] { (byte) 0x0F, (byte) 0x20, b(opReg.reg, opRegCt.creg, 3), });
-				} else if (instruction.op0.size == 4 //
-						&& instruction.op0 instanceof OpRegControl //
-						&& instruction.op1 instanceof OpReg) {
-					var opRegCt = (OpRegControl) instruction.op0;
-					var opReg = (OpReg) instruction.op1;
-					encode = new InsnCode(4, new byte[] { (byte) 0x0F, (byte) 0x22, b(opReg.reg, opRegCt.creg, 3), });
-				} else
+				else if (instruction.op0.size == 4 //
+						&& (opReg = instruction.op0.cast(OpReg.class)) != null //
+						&& (opRegCtrl = instruction.op1.cast(OpRegControl.class)) != null)
+					encode = new InsnCode(4, new byte[] { (byte) 0x0F, (byte) 0x20, b(opReg.reg, opRegCtrl.creg, 3), });
+				else if (instruction.op0.size == 4 //
+						&& (opRegCtrl = instruction.op0.cast(OpRegControl.class)) != null //
+						&& (opReg = instruction.op1.cast(OpReg.class)) != null)
+					encode = new InsnCode(4, new byte[] { (byte) 0x0F, (byte) 0x22, b(opReg.reg, opRegCtrl.creg, 3), });
+				else
 					encode = invalid;
 			else
 				encode = invalid;
@@ -593,9 +587,9 @@ public class Amd64Assemble {
 			encode = assemble(0x9D);
 			break;
 		case PUSH:
-			if (instruction.op0 instanceof OpImm) {
+			if ((opImm = instruction.op0.cast(OpImm.class)) != null) {
 				var size = instruction.op0.size;
-				encode = new InsnCode(size, (OpImm) instruction.op0).setByte(0x68 + (1 < size ? 0 : 2));
+				encode = new InsnCode(size, opImm).setByte(0x68 + (1 < size ? 0 : 2));
 			} else if (isRm.test(instruction.op0))
 				if (instruction.op0.size == 2 || instruction.op0.size == mode.addrSize)
 					encode = assembleRm(instruction, 0x50, 0xFE, 6);
@@ -658,8 +652,8 @@ public class Amd64Assemble {
 		case RET:
 			if (instruction.op0 instanceof OpNone)
 				encode = assemble(0xC3);
-			else if (instruction.op0 instanceof OpImm && instruction.op0.size == 2)
-				encode = new InsnCode(instruction.op0.size, (OpImm) instruction.op0).setByte(0xC2);
+			else if ((opImm = instruction.op0.cast(OpImm.class)) != null && instruction.op0.size == 2)
+				encode = new InsnCode(instruction.op0.size, opImm).setByte(0xC2);
 			else
 				encode = invalid;
 			break;
@@ -739,9 +733,9 @@ public class Amd64Assemble {
 			encode = new InsnCode(bs(0x0F, 0x35));
 			break;
 		case TEST:
-			if (instruction.op1 instanceof OpImm)
+			if ((opImm = instruction.op1.cast(OpImm.class)) != null)
 				encode = instruction.op0.size == instruction.op1.size
-						? assembleRmImm(instruction.op0, (OpImm) instruction.op1, 0xA8, 0xF6, 0)
+						? assembleRmImm(instruction.op0, opImm, 0xA8, 0xF6, 0)
 						: invalid;
 			else
 				encode = assembleByteFlag(instruction.op0, 0x84, instruction.op1);
@@ -765,9 +759,9 @@ public class Amd64Assemble {
 			encode = assembleRegRm(instruction.op0, instruction.op2, 0x5C).vex(Vexp.VP__, instruction.op1, Vexm.VM0F__);
 			break;
 		case XCHG:
-			if (instruction.op1 instanceof OpReg)
+			if ((opReg = instruction.op1.cast(OpReg.class)) != null)
 				if (isAcc.test(instruction.op0) && instruction.op0.size == instruction.op1.size)
-					encode = assemble(0x90 + ((OpReg) instruction.op1).reg);
+					encode = assemble(0x90 + opReg.reg);
 				else
 					encode = assembleByteFlag(instruction.op0, 0x86, instruction.op1);
 			else
