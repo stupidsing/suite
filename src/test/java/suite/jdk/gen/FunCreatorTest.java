@@ -42,7 +42,7 @@ public class FunCreatorTest {
 		var fc0 = intFun(fieldName0, Type.INT);
 		var fc1 = intFun(fieldName1, Type.getType(Int_Int.class));
 		var f0 = fc0 //
-				.create((i -> f.add(fc0.field(fieldName0), i))) //
+				.create(i -> f.add(fc0.field(fieldName0), i)) //
 				.apply(Map.of(fieldName0, 1));
 		var f1 = fc1 //
 				.create(i -> fc1.field(fieldName1).apply(f.int_(3))) //

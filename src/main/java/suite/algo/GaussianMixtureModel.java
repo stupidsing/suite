@@ -37,14 +37,14 @@ public class GaussianMixtureModel {
 	public final List<GaussComponent> components;
 
 	public class GaussComponent {
+		public double scale;
 		public float[] mean;
 		public float[][] covar;
-		public double scale;
 
-		public GaussComponent(float[] mean, float[][] covar, double scale) {
+		public GaussComponent(double scale, float[] mean, float[][] covar) {
+			this.scale = scale;
 			this.mean = mean;
 			this.covar = covar;
-			this.scale = scale;
 		}
 	}
 
@@ -53,16 +53,16 @@ public class GaussianMixtureModel {
 		var dim = obs[0].length;
 
 		var comps = forInt(n).map(i -> new GaussComponent( //
+				1d / n, //
 				To.vector(dim, j -> random.nextGaussian()), //
-				mtx.identity(dim), //
-				1d / n)).toList();
+				mtx.identity(dim))).toList();
 
 		for (var iter = 0; iter < 32; iter++) {
 			var comps_ = comps;
 
 			var factors = To.vector(n, i -> {
 				var mvs = comps_.get(i);
-				return sqrt(hinvpi / mtx.det(mvs.covar)) * mvs.scale;
+				return mvs.scale * sqrt(hinvpi / mtx.det(mvs.covar));
 			});
 
 			// expectation
@@ -94,7 +94,7 @@ public class GaussianMixtureModel {
 
 				var scale1 = bksum / nObs;
 
-				return new GaussComponent(mean1, covar1, scale1);
+				return new GaussComponent(scale1, mean1, covar1);
 			}).toList();
 		}
 

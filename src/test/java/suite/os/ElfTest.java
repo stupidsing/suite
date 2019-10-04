@@ -51,7 +51,7 @@ public class ElfTest {
 					amd64.instruction(Insn.SYSCALL));
 		else
 			instructions = List.of( //
-					amd64.instruction(Insn.MOV, amd64.eax, amd64.imm(0x01, 4)), //
+					amd64.instruction(Insn.MOV, amd64.eax, amd64.imm32(0x01)), //
 					amd64.instruction(Insn.INT, amd64.imm8(0x80)));
 
 		var aa = new Amd64Assemble(Funp_.mode);
