@@ -15,6 +15,7 @@ import suite.nn.NeuralNetwork.Layer;
 public class NeuralNetworkTest {
 
 	private boolean[] booleans = new boolean[] { false, true, };
+	private NeuralNetwork nn = new NeuralNetwork();
 	private Random random = new Random();
 	private Vector vec = new Vector();
 
@@ -28,8 +29,8 @@ public class NeuralNetworkTest {
 			var layerSizes = new int[] { 2, 4, 1, };
 
 			return b //
-					&& test(new NeuralNetwork().ml(layerSizes), "ff-" + name, oper) //
-					&& test(new NeuralNetwork().mlRmsprop(layerSizes), "ff-rmsprop-" + name, oper);
+					&& test(nn.ml(layerSizes), "ff-" + name, oper) //
+					&& test(nn.mlRmsprop(layerSizes), "ff-rmsprop-" + name, oper);
 		}));
 	}
 
