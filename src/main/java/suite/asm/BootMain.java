@@ -34,7 +34,7 @@ public class BootMain {
 
 			System.out.println("cat " + image + " | dd bs=512 count=1 | ~/udis86/udcli/udcli -16 | less");
 			System.out.println("cat " + image + " | dd bs=512 skip=1 | ~/udis86/udcli/udcli -32 | less");
-			System.out.println("qemu-system-x86_64 target/boot.bin");
+			System.out.println("qemu-system-x86_64 " + image);
 			return true;
 		} else
 			return fail("size not match");
