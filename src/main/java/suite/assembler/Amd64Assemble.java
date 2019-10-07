@@ -456,8 +456,8 @@ public class Amd64Assemble {
 		case MOV:
 			if ((opImm = instruction.op1.cast(OpImm.class)) != null //
 					&& isRm.test(instruction.op0) //
-					// && opImm.isBound() //
 					&& Integer.MIN_VALUE <= opImm.imm && opImm.imm <= Integer.MAX_VALUE //
+					&& min(instruction.op0.size, 4) == opImm.size //
 					&& (!isNonRexReg.test(instruction.op0) //
 							|| instruction.op0 instanceof OpMem //
 							|| instruction.op0.size == 8))

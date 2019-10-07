@@ -25,16 +25,8 @@ public class Amd64AssembleTest {
 	}
 
 	@Test
-	public void test16a() {
+	public void test16() {
 		var mov = amd64.instruction(Insn.MOV, amd64.mem(amd64.imm(0, 2), 2), amd64.imm(0x7042, 2));
-		var bytes = new Amd64Assemble(Amd64Mode.REAL16).assemble(0l, List.of(mov), true);
-		System.out.println(bytes);
-		assertEquals(Bytes.of((byte) 0xC7, (byte) 0x06, (byte) 0x00, (byte) 0x00, (byte) 0x42, (byte) 0x70), bytes);
-	}
-
-	@Test
-	public void test16b() {
-		var mov = amd64.instruction(Insn.MOV, amd64.mem(amd64.new OpImmLabel(2), 1), amd64.reg("DL"));
 		var bytes = new Amd64Assemble(Amd64Mode.REAL16).assemble(0l, List.of(mov), true);
 		System.out.println(bytes);
 		assertEquals(Bytes.of((byte) 0xC7, (byte) 0x06, (byte) 0x00, (byte) 0x00, (byte) 0x42, (byte) 0x70), bytes);
