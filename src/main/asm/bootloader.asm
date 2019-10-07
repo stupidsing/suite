@@ -24,21 +24,17 @@
 	PUSHA ()
 	MOV  (AX, WORD +x4200)
 	MOV  (SI, WORD .dap)
-	AOP  ()
 	MOV  (DL, BYTE `.bootDrive`)
 	INT  (+x13)
 --	JC   (BYTE .diskError)
 	POPA ()
-	AOP  ()
 	ADD  (DWORD `.dapLba`, BYTE 16)
-	AOP  ()
 	ADD  (WORD `.dapMemAddress`, WORD 8192)
 	JNZ  (BYTE .readNextSector)
 
 	-- kernel loaded to ES:[0]
 
 	-- enters protected mode
-	AOP  ()
 	LGDT (`.gdtr`)
 
 	MOV  (EAX, CR0)
