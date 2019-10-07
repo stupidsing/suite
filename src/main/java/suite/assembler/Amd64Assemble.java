@@ -13,6 +13,7 @@ import java.util.function.Predicate;
 import primal.os.Log_;
 import primal.primitive.adt.Bytes;
 import primal.primitive.adt.Bytes.BytesBuilder;
+import primal.statics.Fail;
 import suite.assembler.Amd64.Instruction;
 import suite.assembler.Amd64.OpImm;
 import suite.assembler.Amd64.OpImmLabel;
@@ -34,6 +35,7 @@ import suite.primitive.Bytes_;
 public class Amd64Assemble {
 
 	private InsnCode invalid = new InsnCode(-1, new byte[0]);
+	private Amd64 amd64 = Amd64.me;
 	private Amd64Mode mode;
 	private boolean isLongMode;
 
@@ -164,7 +166,6 @@ public class Amd64Assemble {
 
 		public Bytes encode_(long offset, Instruction instruction) {
 			var isValid = opSize == 1 || opSize == 2 || opSize == 4 || opSize == 8 ? this : invalid;
-			var amd64 = Amd64.me;
 
 			var isEnforceRex = false //
 					|| amd64.reg8nonHighs.contains(instruction.op0) //
@@ -1029,69 +1030,89 @@ public class Amd64Assemble {
 			disp = 0;
 		} else if (operand instanceof OpMem) {
 			var op = (OpMem) operand;
-			var baseReg = op.baseReg;
-			int indexReg;
-			int ds0;
+			var br = op.baseReg;
+			var ir = op.indexReg;
 
-			if (op.disp.isBound())
-				if (op.disp.imm == 0)
-					ds0 = 0;
-				else if (Byte.MIN_VALUE <= op.disp.imm && op.disp.imm <= Byte.MAX_VALUE)
-					ds0 = 1;
+			if (mode.addrSize == 2) {
+				if (op.disp.size == 2 && br < 0 && ir < 0) {
+					mod = 0;
+					rm = 6;
+				} else if (op.disp.size == 0 && ir < 0 && 0 < br) {
+					mod = op.disp.size;
+					rm = br == amd64.bxReg ? 7 : fail();
+				} else if (op.disp.size == 0 || op.disp.size == 1 || op.disp.size == 2) {
+					mod = op.disp.size;
+					var rm0 = br < 0 ? 4 : br == amd64.bxReg ? 0 : br == amd64.bpReg ? 2 : Fail.<Integer> fail();
+					var rm1 = ir == amd64.siReg ? 0 : ir == amd64.diReg ? 1 : Fail.<Integer> fail();
+					rm = rm0 + rm1;
+				} else
+					return fail("bad operand");
+				s = i = b = -1;
+				dispSize = op.disp.size;
+			} else {
+				int indexReg;
+				int ds0;
+
+				if (op.disp.isBound())
+					if (op.disp.imm == 0)
+						ds0 = 0;
+					else if (Byte.MIN_VALUE <= op.disp.imm && op.disp.imm <= Byte.MAX_VALUE)
+						ds0 = 1;
+					else
+						ds0 = op.disp.size;
 				else
 					ds0 = op.disp.size;
-			else
-				ds0 = op.disp.size;
 
-			if ((op.indexReg & 7) != 4)
-				indexReg = op.indexReg;
-			else
-				indexReg = fail("bad operand");
+				if ((ir & 7) != 4)
+					indexReg = ir;
+				else
+					indexReg = fail("bad operand");
 
-			if (baseReg < 0 && indexReg < 0) { // [0x1234]
-				mod = 0;
-				rm = 5;
-				s = i = b = -1;
-				dispSize = 4;
-			} else if (0 <= baseReg && indexReg < 0)
-				if ((baseReg & 7) != 4) {
-					// [EAX], [EAX + 0x1234]
-					var ds1 = (baseReg & 7) == 5 && ds0 == 0 ? 1 : ds0;
-					mod = dispMod(ds1);
-					rm = baseReg;
+				if (br < 0 && indexReg < 0) { // [0x1234]
+					mod = 0;
+					rm = 5;
 					s = i = b = -1;
-					dispSize = ds1;
-				} else {
-					// [ESP + 0], [ESP + 0x1234]
-					var ds1 = baseReg == 4 && ds0 == 0 ? 1 : ds0;
-					mod = dispMod(ds1);
-					rm = 4;
-					s = 0;
-					i = 4;
-					b = baseReg & 7;
-					dispSize = ds1;
-				}
-			else if (baseReg < 0 && 0 <= indexReg) { // [4 * EBX + 0x1234]
-				mod = 0;
-				rm = 4;
-				s = scale(op);
-				i = indexReg;
-				b = 5;
-				dispSize = 4;
-			} else if (0 <= baseReg && 0 <= indexReg)
-				if ((baseReg & 7) != 5) {
-					// [4 * EBX + EAX + 0x1234]
-					mod = dispMod(ds0);
+					dispSize = 4;
+				} else if (0 <= br && indexReg < 0)
+					if ((br & 7) != amd64.spReg) {
+						// [EAX], [EAX + 0x1234]
+						var ds1 = (br & 7) == amd64.bpReg && ds0 == 0 ? 1 : ds0;
+						mod = dispMod(ds1);
+						rm = br;
+						s = i = b = -1;
+						dispSize = ds1;
+					} else {
+						// [ESP + 0], [ESP + 0x1234]
+						var ds1 = br == amd64.spReg && ds0 == 0 ? 1 : ds0;
+						mod = dispMod(ds1);
+						rm = 4;
+						s = 0;
+						i = 4;
+						b = br & 7;
+						dispSize = ds1;
+					}
+				else if (br < 0 && 0 <= indexReg) { // [4 * EBX + 0x1234]
+					mod = 0;
 					rm = 4;
 					s = scale(op);
 					i = indexReg;
-					b = baseReg;
-					dispSize = ds0;
-				} else
-					throw new RuntimeException("bad operand");
-			else
-				throw new RuntimeException("bad operand");
-
+					b = 5;
+					dispSize = 4;
+				} else if (0 <= br && 0 <= indexReg)
+					if ((br & 7) != amd64.bpReg) {
+						// [4 * EBX + EAX + 0x1234]
+						mod = dispMod(ds0);
+						rm = 4;
+						s = scale(op);
+						i = indexReg;
+						b = br;
+						dispSize = ds0;
+					} else
+						return fail("bad operand");
+				else
+					return fail("bad operand");
+			}
+			
 			disp = op.disp.imm;
 		} else
 			throw new RuntimeException("bad operand");

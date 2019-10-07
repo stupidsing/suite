@@ -10,7 +10,6 @@
 	INT  (+x15)
 
 	-- loads kernel
-	AOP  ()
 	MOV  (BYTE `.bootDrive`, DL)
 
 	-- resets disk drive

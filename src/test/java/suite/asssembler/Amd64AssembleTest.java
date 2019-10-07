@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.junit.Test;
 
+import primal.primitive.adt.Bytes;
 import suite.assembler.Amd64;
 import suite.assembler.Amd64.Insn;
 import suite.assembler.Amd64Assemble;
@@ -24,11 +25,19 @@ public class Amd64AssembleTest {
 	}
 
 	@Test
-	public void test16() {
+	public void test16a() {
 		var mov = amd64.instruction(Insn.MOV, amd64.mem(amd64.imm(0, 2), 2), amd64.imm(0x7042, 2));
 		var bytes = new Amd64Assemble(Amd64Mode.REAL16).assemble(0l, List.of(mov), true);
 		System.out.println(bytes);
-		assertEquals(2, bytes.size());
+		assertEquals(Bytes.of((byte) 0xC7, (byte) 0x06, (byte) 0x00, (byte) 0x00, (byte) 0x42, (byte) 0x70), bytes);
+	}
+
+	@Test
+	public void test16b() {
+		var mov = amd64.instruction(Insn.MOV, amd64.mem(amd64.new OpImmLabel(2), 1), amd64.reg("DL"));
+		var bytes = new Amd64Assemble(Amd64Mode.REAL16).assemble(0l, List.of(mov), true);
+		System.out.println(bytes);
+		assertEquals(Bytes.of((byte) 0xC7, (byte) 0x06, (byte) 0x00, (byte) 0x00, (byte) 0x42, (byte) 0x70), bytes);
 	}
 
 	@Test

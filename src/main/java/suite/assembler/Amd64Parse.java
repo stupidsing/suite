@@ -98,14 +98,14 @@ public class Amd64Parse {
 					fail("bad operand");
 			else if (component instanceof Int) {
 				opDisp.imm = Int.num(component);
-				opDisp.size = opDisp.size == 0 ? 4 : fail("bad operand");
+				opDisp.size = opDisp.size == 0 ? mode.dispSize : fail("bad operand");
 			} else if (component instanceof Reference)
-				opDisp.size = opDisp.size == 0 ? 4 : fail("bad operand");
+				opDisp.size = opDisp.size == 0 ? mode.dispSize : fail("bad operand");
 			else if ((reg = amd64.regByName.get(component)).size == mode.addrSize)
 				if (mode.addrSize == 2)
-					if (reg.reg == 3 || reg.reg == 5) // BX or BP
+					if (reg.reg == amd64.bxReg || reg.reg == amd64.bpReg)
 						opMem.baseReg = opMem.baseReg < 0 ? reg.reg : fail();
-					else if (reg.reg == 6 || reg.reg == 7) // SI or DI
+					else if (reg.reg == amd64.siReg || reg.reg == amd64.diReg)
 						opMem.indexReg = opMem.indexReg < 0 ? reg.reg : fail();
 					else
 						fail("bad operand");
