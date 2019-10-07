@@ -17,6 +17,7 @@ import suite.node.Int;
 import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Tree;
+import suite.node.io.SwitchNode;
 import suite.node.io.TermOp;
 
 public class Amd64Parse {
@@ -39,30 +40,25 @@ public class Amd64Parse {
 
 	public Operand parseOperand(Node node_) {
 		Operand operand;
-		Node[] m;
 		var node = node_.finalNode();
 
 		if ((operand = parseOperand(node_, 4)) != null)
 			return operand;
 		else if (node instanceof Atom && (operand = amd64.registerByName.get(node)) != null)
 			return operand;
-		else if ((m = Suite.pattern("BYTE .0").match(node)) != null)
-			return parseOperandCast(m, 1);
-		else if ((m = Suite.pattern("WORD .0").match(node)) != null)
-			return parseOperandCast(m, 2);
-		else if ((m = Suite.pattern("DWORD .0").match(node)) != null)
-			return parseOperandCast(m, 4);
-		else if ((m = Suite.pattern("QWORD .0").match(node)) != null)
-			return parseOperandCast(m, 8);
-		else if ((m = Suite.pattern("`.0`").match(node)) != null)
-			return parseOpMem(m, 4);
 		else
-			return fail("bad operand");
+			return new SwitchNode<Operand>(node) //
+					.match("BYTE .0", n -> parseOperandCast(n, 1)) //
+					.match("WORD .0", n -> parseOperandCast(n, 2)) //
+					.match("DWORD .0", n -> parseOperandCast(n, 4)) //
+					.match("QWORD .0", n -> parseOperandCast(n, 8)) //
+					.match("`.0`", n -> parseOpMem(n, 4)) //
+					.nonNullResult();
 	}
 
-	private Operand parseOperandCast(Node[] m0, int size) {
-		var m1 = Suite.pattern("`.0`").match(m0[0]);
-		return m1 != null ? parseOpMem(m1, size) : parseOperand(m0[0], size);
+	private Operand parseOperandCast(Node node, int size) {
+		var m1 = Suite.pattern("`.0`").match(node);
+		return m1 != null ? parseOpMem(m1[0], size) : parseOperand(node, size);
 	}
 
 	private Operand parseOperand(Node node, int size) {
@@ -74,7 +70,7 @@ public class Amd64Parse {
 			return null;
 	}
 
-	private Operand parseOpMem(Node[] m, int size) {
+	private Operand parseOpMem(Node node, int size) {
 		var opDisp = amd64.new OpImm();
 		opDisp.size = 0;
 
@@ -84,7 +80,9 @@ public class Amd64Parse {
 		opMem.baseReg = -1;
 		opMem.disp = opDisp;
 
-		for (var component : scan(m[0], ".0 + .1"))
+		Node[] m;
+
+		for (var component : scan(node, ".0 + .1"))
 			if ((m = Suite.pattern(".0 * .1").match(component)) != null)
 				if (opMem.indexReg < 0) {
 					opMem.indexReg = amd64.regByName.get(m[0]).reg;
