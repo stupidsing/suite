@@ -143,7 +143,7 @@ class AsmA implements Asm {
 
 	public AsmA(Amd64Mode mode) {
 		aa = new Amd64Assemble(mode);
-		ap = new Amd64Parse();
+		ap = new Amd64Parse(mode);
 	}
 
 	public Bytes assemble(boolean isPass2, int address, Node instruction) {

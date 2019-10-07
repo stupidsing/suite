@@ -11,6 +11,7 @@ import primal.streamlet.Streamlet;
 import suite.Suite;
 import suite.assembler.Amd64.Insn;
 import suite.assembler.Amd64.Instruction;
+import suite.assembler.Amd64.OpReg;
 import suite.assembler.Amd64.Operand;
 import suite.node.Atom;
 import suite.node.Int;
@@ -24,7 +25,12 @@ public class Amd64Parse {
 
 	private static Amd64 amd64 = Amd64.me;
 
+	private Amd64Mode mode;
 	private Map<Node, Operand> references = new IdentityHashMap<>();
+
+	public Amd64Parse(Amd64Mode mode) {
+		this.mode = mode;
+	}
 
 	public Instruction parse(Node node) {
 		var tree = Tree.decompose(node, TermOp.TUPLE_);
@@ -81,6 +87,7 @@ public class Amd64Parse {
 		opMem.disp = opDisp;
 
 		Node[] m;
+		OpReg reg;
 
 		for (var component : scan(node, ".0 + .1"))
 			if ((m = Suite.pattern(".0 * .1").match(component)) != null)
@@ -90,14 +97,28 @@ public class Amd64Parse {
 				} else
 					fail("bad operand");
 			else if (component instanceof Int) {
-				opMem.disp.imm = Int.num(component);
-				opMem.disp.size = opMem.disp.size == 0 ? 4 : fail("bad operand");
+				opDisp.imm = Int.num(component);
+				opDisp.size = opDisp.size == 0 ? 4 : fail("bad operand");
 			} else if (component instanceof Reference)
-				opMem.disp.size = opMem.disp.size == 0 ? 4 : fail("bad operand");
-			else if (opMem.baseReg < 0)
-				opMem.baseReg = amd64.regByName.get(component).reg;
+				opDisp.size = opDisp.size == 0 ? 4 : fail("bad operand");
+			else if ((reg = amd64.regByName.get(component)).size == mode.addrSize)
+				if (mode.addrSize == 2)
+					if (reg.reg == 3 || reg.reg == 5) // BX or BP
+						opMem.baseReg = opMem.baseReg < 0 ? reg.reg : fail();
+					else if (reg.reg == 6 || reg.reg == 7) // SI or DI
+						opMem.indexReg = opMem.indexReg < 0 ? reg.reg : fail();
+					else
+						fail("bad operand");
+				else if (opMem.baseReg < 0)
+					opMem.baseReg = reg.reg;
+				else if (opMem.indexReg < 0) {
+					opMem.indexReg = reg.reg;
+					opMem.scale = 1;
+				} else
+					fail("bad operand");
 			else
 				fail("bad operand");
+
 		return opMem;
 	}
 

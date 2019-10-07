@@ -155,7 +155,7 @@ public class P4GenerateCode {
 	}
 
 	private List<Instruction> compile0(Funp funp) {
-		var p = new Amd64Parse();
+		var p = new Amd64Parse(Funp_.mode);
 
 		return p4emit.generate(p4emit.label(), em -> {
 			var prolog_amd64 = List.of( //
@@ -297,7 +297,7 @@ public class P4GenerateCode {
 						.sink((n_, ofs) -> c1.compileAssign(n_,
 								FunpMemory.of(t.pointer, t.start + ofs.s, t.start + ofs.e))));
 			})).applyIf(FunpDoAsm.class, f -> f.apply((assigns, asm, opResult) -> {
-				var p = new Amd64Parse();
+				var p = new Amd64Parse(Funp_.mode);
 				new Object() {
 					private Object assign(Compile0 c1, int i) {
 						return i < assigns.size() ? assigns.get(i).map((op, f) -> {
