@@ -17,12 +17,13 @@ import suite.node.util.Singleton;
 public class HkexFactBook {
 
 	public Streamlet<String> queryDelisted() {
-		var url = "http://www.hkexnews.hk/reports/prolongedsusp/Documents/psuspenrep_mb.doc";
+		// "https://www.hkexnews.hk/reports/prolongedsusp/Documents/psuspenrep_mb.doc";
+		var url = "https://www2.hkexnews.hk/-/media/HKEXnews/Homepage/Exchange-Reports/Prolonged-Suspension-Status-Report/psuspenrep_mb.pdf";
 
 		return Singleton.me.storeCache //
 				.pipe(url) //
 				.pipe("xargs -I {} curl '{}'") //
-				.pipe("catdoc") //
+				.pipe("pdftotext -nopgbrk -raw - -") //
 				.pipe("sed -n 's/.*(\\(.*\\)).*/\\1/p'") //
 				.pipe("egrep -v '^[A-Za-z]'") //
 				.pipe("sort -rn") //
