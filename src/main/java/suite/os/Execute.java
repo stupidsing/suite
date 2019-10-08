@@ -7,7 +7,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.List;
 
 import primal.MoreVerbs.Read;
 import primal.Nouns.Utf8;
@@ -24,19 +23,15 @@ public class Execute {
 	public final String err;
 
 	public static String shell(String sh) {
-		String[] command = null;
+		var command = Read //
+				.each("/bin/sh", "C:\\cygwin\\bin\\sh.exe", "C:\\cygwin64\\bin\\sh.exe") //
+				.filter(s -> Files.exists(Paths.get(s))) //
+				.uniqueResult();
 
-		for (var s : List.of("/bin/sh", "C:\\cygwin\\bin\\sh.exe", "C:\\cygwin64\\bin\\sh.exe"))
-			if (Files.exists(Paths.get(s)))
-				command = new String[] { s, };
-
-		if (command != null) {
-			Log_.info("START " + sh);
-			var execute = new Execute(command, sh);
-			Log_.info("END__ " + sh);
-			return execute.code == 0 ? execute.out : fail(execute.toString());
-		} else
-			return fail("cannot find shell executable");
+		Log_.info("START " + sh);
+		var execute = new Execute(new String[] { command, }, sh);
+		Log_.info("END__ " + sh);
+		return execute.code == 0 ? execute.out : fail(execute.toString());
 	}
 
 	public Execute(String[] command) {
