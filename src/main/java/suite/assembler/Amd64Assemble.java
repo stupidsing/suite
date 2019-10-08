@@ -457,7 +457,6 @@ public class Amd64Assemble {
 			if ((opImm = instruction.op1.cast(OpImm.class)) != null //
 					&& isRm.test(instruction.op0) //
 					&& Integer.MIN_VALUE <= opImm.imm && opImm.imm <= Integer.MAX_VALUE //
-					&& min(instruction.op0.size, 4) == opImm.size //
 					&& (!isNonRexReg.test(instruction.op0) //
 							|| instruction.op0 instanceof OpMem //
 							|| instruction.op0.size == 8))
@@ -962,7 +961,7 @@ public class Amd64Assemble {
 		return insnCode;
 	}
 
-	private Bytes encode(long offset, InsnCode insnCode,boolean isEnforceRex, byte[] vexs) {
+	private Bytes encode(long offset, InsnCode insnCode, boolean isEnforceRex, byte[] vexs) {
 		if (insnCode.isValid()) {
 			var modrm = insnCode.modrm;
 			var bb = new BytesBuilder();
@@ -1112,7 +1111,7 @@ public class Amd64Assemble {
 				else
 					return fail("bad operand");
 			}
-			
+
 			disp = op.disp.imm;
 		} else
 			throw new RuntimeException("bad operand");
