@@ -22,6 +22,8 @@ public class Pipe {
 				.filter(s -> Files.exists(Paths.get(s))) //
 				.uniqueResult();
 
+		Log_.info("START " + sh);
+
 		return ex(() -> {
 			var bis = new ByteArrayInputStream(sh.getBytes(Utf8.charset));
 
