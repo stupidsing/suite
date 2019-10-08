@@ -6,8 +6,8 @@ import static primal.statics.Rethrow.ex;
 import java.io.ByteArrayInputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.List;
 
+import primal.MoreVerbs.Read;
 import primal.MoreVerbs.ReadLines;
 import primal.Nouns.Utf8;
 import primal.os.Log_;
@@ -17,23 +17,15 @@ import suite.util.Copy;
 public class Pipe {
 
 	public static Streamlet<String> shell(String sh) {
-		String[] command0 = null;
-
-		for (var s : List.of("/bin/sh", "C:\\cygwin\\bin\\sh.exe", "C:\\cygwin64\\bin\\sh.exe"))
-			if (Files.exists(Paths.get(s)))
-				command0 = new String[] { s, };
-
-		if (command0 != null)
-			Log_.info("START " + sh);
-		else
-			fail("cannot find shell executable");
-
-		var command1 = command0;
+		var command = Read //
+				.each("/bin/sh", "C:\\cygwin\\bin\\sh.exe", "C:\\cygwin64\\bin\\sh.exe") //
+				.filter(s -> Files.exists(Paths.get(s))) //
+				.uniqueResult();
 
 		return ex(() -> {
 			var bis = new ByteArrayInputStream(sh.getBytes(Utf8.charset));
 
-			var process = ex(() -> Runtime.getRuntime().exec(command1));
+			var process = ex(() -> Runtime.getRuntime().exec(command));
 
 			var pis = process.getInputStream();
 			var pes = process.getErrorStream();
