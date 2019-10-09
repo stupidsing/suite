@@ -34,7 +34,7 @@ public class Pipe {
 			var pos = process.getOutputStream();
 
 			var threads = new Thread[] { //
-					Copy.streamByThread(pes, System.err), //
+					Copy.streamByThread(pes, System.err, false), //
 					Copy.streamByThread(bis, pos), };
 
 			for (var thread : threads)

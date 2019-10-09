@@ -48,24 +48,31 @@ public class Copy {
 	}
 
 	public static Th streamByThread(InputStream is, OutputStream os) {
+		return streamByThread(is, os, true);
+	}
+
+	public static Th streamByThread(InputStream is, OutputStream os, boolean isClose) {
 		return New.thread(() -> {
-			try (var is_ = is; var os_ = os) {
-				stream(is_, os_);
+			try {
+				stream(is, os);
 			} catch (InterruptedIOException ex) {
 			} catch (SocketException ex) {
 				if (!Equals.string(ex.getMessage(), "Socket closed"))
 					throw ex;
+			} finally {
+				if (isClose)
+					os.close();
 			}
 		});
 	}
 
-	public static void stream(InputStream in, OutputStream out) throws IOException {
-		try (var in_ = in) {
+	public static void stream(InputStream is, OutputStream os) throws IOException {
+		try (var is_ = is) {
 			var buffer = new byte[Buffer.size];
 			int len;
-			while (0 <= (len = in_.read(buffer))) {
-				out.write(buffer, 0, len);
-				out.flush();
+			while (0 <= (len = is_.read(buffer))) {
+				os.write(buffer, 0, len);
+				os.flush();
 			}
 		}
 	}

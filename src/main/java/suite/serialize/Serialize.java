@@ -135,8 +135,8 @@ public class Serialize {
 				.map2(field -> auto_(field.getGenericType())) //
 				.toArray();
 
-		var ctors = Read.from(clazz.getDeclaredConstructors());
-		var defaultCtor = ctors.filter(ctor -> ctor.getParameterCount() == 0 && ctor.trySetAccessible()).first();
+		var ctors = Read.from(clazz.getDeclaredConstructors()).filter(ctor -> ctor.trySetAccessible());
+		var defaultCtor = ctors.filter(ctor -> ctor.getParameterCount() == 0).first();
 		var immutableCtor = ctors.min((c0, c1) -> -Integer.compare(c0.getParameterCount(), c1.getParameterCount()));
 
 		return new Serializer<>() {
