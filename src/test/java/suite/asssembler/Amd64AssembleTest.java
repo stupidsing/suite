@@ -20,7 +20,7 @@ public class Amd64AssembleTest {
 
 	@Test
 	public void test() {
-		var i = amd64.instruction(Insn.PUSH, amd64.imm(0l, 1));
+		var i = amd64.instruction(Insn.PUSH, amd64.imm8(0l));
 		var bytes = new Amd64Assemble(Amd64Mode.LONG64).assemble(0l, List.of(i), true);
 		System.out.println(bytes);
 		assertEquals(2, bytes.size());
@@ -28,7 +28,7 @@ public class Amd64AssembleTest {
 
 	@Test
 	public void test16() {
-		var i = amd64.instruction(Insn.MOV, amd64.mem(amd64.imm(0, 2), 2), amd64.imm(0x7042, 2));
+		var i = amd64.instruction(Insn.MOV, amd64.mem(amd64.imm16(0), 2), amd64.imm16(0x7042));
 		var bytes = new Amd64Assemble(Amd64Mode.REAL16).assemble(0l, List.of(i), true);
 		System.out.println(bytes);
 		assertEquals(bytes(0xC7, 0x06, 0x00, 0x00, 0x42, 0x70), bytes);

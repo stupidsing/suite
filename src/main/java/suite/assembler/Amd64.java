@@ -315,19 +315,19 @@ public class Amd64 {
 		return op;
 	}
 
-		public Operand imm8(long imm) {
+	public OpImm imm8(long imm) {
 		return imm(imm, 1);
 	}
 
-	public Operand imm16(long imm) {
+	public OpImm imm16(long imm) {
 		return imm(imm, 2);
 	}
 
-	public Operand imm32(long imm) {
+	public OpImm imm32(long imm) {
 		return imm(imm, 4);
 	}
 
-	public Operand imm64(long imm) {
+	public OpImm imm64(long imm) {
 		return imm(imm, 8);
 	}
 
