@@ -20,6 +20,7 @@ import suite.assembler.Amd64;
 import suite.funp.Funp_;
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.Coerce;
+import suite.funp.P0.Fct;
 import suite.funp.P0.Fdt;
 import suite.funp.P0.FunpAdjustArrayPointer;
 import suite.funp.P0.FunpApply;
@@ -318,7 +319,7 @@ public class P0Parse {
 		}
 
 		private FunpLambda capture(FunpLambda lambda) {
-			lambda.isCapture = true;
+			lambda.fct = Fct.ONCE__;
 			return lambda;
 		}
 
@@ -427,7 +428,7 @@ public class P0Parse {
 				var nv = isPassDo ? nv(vn) : new Parse(vns.replace(vn).remove(doToken));
 				return b -> {
 					var f = isVar ? nv.p(b) : nv.bind(fdt).bind(a, Atom.of(vn), b);
-					return FunpLambda.of(vn, f, false);
+					return FunpLambda.of(vn, f);
 				};
 			}
 

@@ -34,7 +34,7 @@ public class P21CaptureLambda {
 	private Inspect inspect = Singleton.me.inspect;
 
 	public Funp captureLambdas(Funp node0) {
-		var grandLambda = FunpLambda.of("grand$", node0, false);
+		var grandLambda = FunpLambda.of("grand$", node0);
 		var defByVars = Funp_.associateDefinitions(node0);
 		var lambdaByFunp = new IdentityHashMap<Funp, FunpLambda>();
 
@@ -109,7 +109,7 @@ public class P21CaptureLambda {
 				private Funp access(FunpLambda lambda_) {
 					if (lambda_ == lambdaVar)
 						return isRef ? FunpReference.of(var) : var;
-					else if (!lambda.isCapture)
+					else if (lambda.fct == null)
 						return access(lambdaByFunp.get(lambda_));
 					else {
 						var li = infoByLambda.get(lambda_);
@@ -142,14 +142,14 @@ public class P21CaptureLambda {
 						return FunpTypeAssign.of(var, value_, assign);
 					} else
 						return null;
-				})).applyIf(FunpLambda.class, f -> f.apply((vn, expr, isCapture, isScoped) -> {
+				})).applyIf(FunpLambda.class, f -> f.apply((vn, expr, fct, isScoped) -> {
 					var li = infoByLambda.get(f);
 					var captures = li.captures;
 					if (!captures.isEmpty()) {
 						var pcapn = "pcap$" + Get.temp();
 						var pcap = FunpVariable.of(pcapn);
 						var struct = FunpStruct.of(captures);
-						var lc = FunpLambdaCapture.of(pcap, li.cap, struct, vn, c(expr));
+						var lc = FunpLambdaCapture.of(pcap, li.cap, struct, vn, c(expr), fct);
 						var assign = FunpDoAssignRef.of(FunpReference.of(FunpDeref.of(pcap)), struct, lc);
 						return FunpDefine.of(pcapn, FunpDoHeapNew.of(), assign, Fdt.L_MONO);
 

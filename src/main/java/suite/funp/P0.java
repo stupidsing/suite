@@ -375,25 +375,25 @@ public class P0 {
 	public static class FunpLambda implements Funp, P2.End {
 		public String vn;
 		public Funp expr;
-		public boolean isCapture;
+		public Fct fct;
 		public boolean isScoped;
 		public String name; // optional
 
-		public static FunpLambda of(String vn, Funp expr, boolean isCapture) {
-			return of(vn, expr, isCapture, true);
+		public static FunpLambda of(String vn, Funp expr) {
+			return of(vn, expr, null, true);
 		}
 
-		public static FunpLambda of(String vn, Funp expr, boolean isCapture, boolean isScoped) {
+		public static FunpLambda of(String vn, Funp expr, Fct fct, boolean isScoped) {
 			var f = new FunpLambda();
 			f.vn = vn;
 			f.expr = expr;
-			f.isCapture = isCapture;
+			f.fct = fct;
 			f.isScoped = isScoped;
 			return f;
 		}
 
-		public <R> R apply(FixieFun4<String, Funp, Boolean, Boolean, R> fun) {
-			return fun.apply(vn, expr, isCapture, isScoped);
+		public <R> R apply(FixieFun4<String, Funp, Fct, Boolean, R> fun) {
+			return fun.apply(vn, expr, fct, isScoped);
 		}
 	}
 
@@ -676,6 +676,11 @@ public class P0 {
 		public <R> R apply(FixieFun1<String, R> fun) {
 			return fun.apply(vn);
 		}
+	}
+
+	public enum Fct { // capture type
+		ONCE__, // to be freed after first call
+		MANUAL, // to be uncaptured (freed) manually
 	}
 
 	public enum Fdt {

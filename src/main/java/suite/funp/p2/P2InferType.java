@@ -39,6 +39,7 @@ import suite.assembler.Amd64.Operand;
 import suite.funp.Funp_;
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.Coerce;
+import suite.funp.P0.Fct;
 import suite.funp.P0.Fdt;
 import suite.funp.P0.FunpAdjustArrayPointer;
 import suite.funp.P0.FunpApply;
@@ -320,7 +321,7 @@ public class P2InferType {
 							.fold(PerMap.empty(), (e, p) -> e.put(p.k, p.v));
 				var env2 = env1.replace(vn, Pair.of(Fdt.L_MONO, tv));
 				return typeLambdaOf(tv, new Infer(env2, checks, me).infer(expr));
-			})).applyIf(FunpLambdaCapture.class, f -> f.apply((fpIn, frameVar, frame, vn, expr) -> {
+			})).applyIf(FunpLambdaCapture.class, f -> f.apply((fpIn, frameVar, frame, vn, expr, fct) -> {
 				var tv = new Reference();
 				var tf = infer(frame);
 				var tr = typeRefOf(tf);
@@ -654,7 +655,7 @@ public class P2InferType {
 				var expr2 = isPassReg ? FunpAllocReg.of(lt.is, FunpDontCare.of(), expr1, opArg) : expr1;
 				var expr3 = f.name != null ? FunpRemark.of(f.name, expr2) : expr2;
 				return eraseRoutine(lt, frame, expr3);
-			})).applyIf(FunpLambdaCapture.class, f -> f.apply((fp0, frameVar, frame, vn, expr) -> {
+			})).applyIf(FunpLambdaCapture.class, f -> f.apply((fp0, frameVar, frame, vn, expr, fct) -> {
 
 				// the capture would free itself upon first call, therefore should not be called
 				// for the second time
@@ -674,7 +675,15 @@ public class P2InferType {
 				var fp1 = erase(fp0);
 				var expr1 = new Erase(1, env1, null).erase(expr);
 				var expr2 = isPassReg ? FunpAllocReg.of(lt.is, FunpDontCare.of(), expr1, opArg) : expr1;
-				var expr3 = FunpHeapDealloc.of(size, FunpMemory.of(FunpFramePointer.of(), 0, ps), expr2);
+				Funp expr3;
+
+				if (fct == Fct.MANUAL)
+					expr3 = expr2;
+				else if (fct == Fct.ONCE__)
+					expr3 = FunpHeapDealloc.of(size, FunpMemory.of(FunpFramePointer.of(), 0, ps), expr2);
+				else
+					return fail();
+
 				return eraseRoutine(lt, fp1, expr3);
 			})).applyIf(FunpLambdaFree.class, f -> f.apply((lambda, expr) -> {
 				return FunpHeapDealloc.of(fail(), FunpMemory.of(getAddress(lambda), 0, ps), erase(expr));

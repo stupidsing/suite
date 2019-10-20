@@ -17,6 +17,7 @@ import primal.primitive.adt.IntRange;
 import suite.assembler.Amd64.OpReg;
 import suite.assembler.Amd64.Operand;
 import suite.funp.Funp_.Funp;
+import suite.funp.P0.Fct;
 import suite.funp.P0.FunpStruct;
 import suite.funp.P0.FunpVariable;
 import suite.node.io.Operator;
@@ -280,19 +281,27 @@ public class P2 {
 		public FunpStruct struct;
 		public String vn;
 		public Funp expr;
+		public Fct fct;
 
-		public static FunpLambdaCapture of(FunpVariable fpIn, FunpVariable frameVar, FunpStruct struct, String vn, Funp expr) {
+		public static FunpLambdaCapture of( //
+				FunpVariable fpIn, //
+				FunpVariable frameVar, //
+				FunpStruct struct, //
+				String vn, //
+				Funp expr, //
+				Fct fct) {
 			var f = new FunpLambdaCapture();
 			f.fpIn = fpIn;
 			f.frameVar = frameVar;
 			f.struct = struct;
 			f.vn = vn;
 			f.expr = expr;
+			f.fct = fct;
 			return f;
 		}
 
-		public <R> R apply(FixieFun5<FunpVariable, FunpVariable, FunpStruct, String, Funp, R> fun) {
-			return fun.apply(fpIn, frameVar, struct, vn, expr);
+		public <R> R apply(FixieFun6<FunpVariable, FunpVariable, FunpStruct, String, Funp, Fct, R> fun) {
+			return fun.apply(fpIn, frameVar, struct, vn, expr, fct);
 		}
 	}
 
