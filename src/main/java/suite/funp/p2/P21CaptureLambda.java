@@ -12,6 +12,7 @@ import primal.adt.Pair;
 import primal.fp.Funs2.Fun2;
 import suite.funp.Funp_;
 import suite.funp.Funp_.Funp;
+import suite.funp.P0.Fct;
 import suite.funp.P0.Fdt;
 import suite.funp.P0.FunpDefine;
 import suite.funp.P0.FunpDefineRec;
@@ -151,7 +152,8 @@ public class P21CaptureLambda {
 						var struct = FunpStruct.of(captures);
 						var lc = FunpLambdaCapture.of(pcap, li.cap, struct, vn, c(expr), fct);
 						var assign = FunpDoAssignRef.of(FunpReference.of(FunpDeref.of(pcap)), struct, lc);
-						return FunpDefine.of(pcapn, FunpDoHeapNew.of(), assign, Fdt.L_MONO);
+						var isDynamicSize = fct == Fct.MANUAL;
+						return FunpDefine.of(pcapn, FunpDoHeapNew.of(isDynamicSize), assign, Fdt.L_MONO);
 
 						// FIXME now we free the capture immediately after first invocation; cannot
 						// invoke again

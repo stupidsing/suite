@@ -40,6 +40,11 @@ public class FunpTest {
 
 	@Test
 	public void testCapture() {
+		test(46, "define m := 31 ~ let l := capture1 (n => n + m) ~ let r := 15 | l ~ uncapture l ~ r");
+	}
+
+	@Test
+	public void testCapture1() {
 		test(46, "define m := 31 ~ let l := capture1 (n => n + m) ~ 15 | l");
 
 		// unreliable when optimized. the optimizer would substitute the variable

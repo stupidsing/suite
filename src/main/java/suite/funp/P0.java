@@ -245,28 +245,36 @@ public class P0 {
 	}
 
 	public static class FunpDoHeapDel implements Funp, P4.End {
+		public boolean isDynamicSize;
 		public Funp reference;
 		public Funp expr;
 
-		public static FunpDoHeapDel of(Funp reference, Funp expr) {
+		public static FunpDoHeapDel of(boolean isDynamicSize, Funp reference, Funp expr) {
 			var f = new FunpDoHeapDel();
+			f.isDynamicSize = isDynamicSize;
 			f.reference = reference;
 			f.expr = expr;
 			return f;
 		}
 
-		public <R> R apply(FixieFun2<Funp, Funp, R> fun) {
-			return fun.apply(reference, expr);
+		public <R> R apply(FixieFun3<Boolean, Funp, Funp, R> fun) {
+			return fun.apply(isDynamicSize, reference, expr);
 		}
 	}
 
 	public static class FunpDoHeapNew implements Funp, P4.End {
-		public static FunpDoHeapNew of() {
-			return new FunpDoHeapNew();
+
+		// if true, may deallocate with any sizes by using -1 in FunpHeapDealloc.size
+		public boolean isDynamicSize;
+
+		public static FunpDoHeapNew of(boolean isDynamicSize) {
+			var f = new FunpDoHeapNew();
+			f.isDynamicSize = isDynamicSize;
+			return f;
 		}
 
-		public <R> R apply(FixieFun0<R> fun) {
-			return fun.apply();
+		public <R> R apply(FixieFun1<Boolean, R> fun) {
+			return fun.apply(isDynamicSize);
 		}
 	}
 

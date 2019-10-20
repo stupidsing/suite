@@ -278,10 +278,10 @@ public class P2InferType {
 				unify(n, typeLambdaOf(tv, typeBoolean), infer(cont));
 				unify(n, typeLambdaOf(tv, tvio), infer(next));
 				return tvio;
-			})).applyIf(FunpDoHeapDel.class, f -> f.apply((reference, expr) -> {
+			})).applyIf(FunpDoHeapDel.class, f -> f.apply((isDynamicSize, reference, expr) -> {
 				unify(n, typeRefOf(new Reference()), infer(reference));
 				return infer(expr);
-			})).applyIf(FunpDoHeapNew.class, f -> f.apply(() -> {
+			})).applyIf(FunpDoHeapNew.class, f -> f.apply(isDynamicSize -> {
 				return typeRefOf(new Reference());
 			})).applyIf(FunpDontCare.class, f -> {
 				return new Reference();
@@ -615,12 +615,12 @@ public class P2InferType {
 				var next_ = e1.applyOnce(m, next, size);
 				var while_ = FunpDoWhile.of(cont_, assign(m, next_, FunpDontCare.of()), m);
 				return FunpAllocStack.of(size, e1.erase(init), while_, offset);
-			})).applyIf(FunpDoHeapDel.class, f -> f.apply((reference, expr) -> {
+			})).applyIf(FunpDoHeapDel.class, f -> f.apply((isDynamicSize, reference, expr) -> {
 				var t = new Reference();
 				unify(n, typeRefOf(t), typeOf(reference));
-				return FunpHeapDealloc.of(getTypeSize(t), erase(reference), erase(expr));
-			})).applyIf(FunpDoHeapNew.class, f -> f.apply(() -> {
-				return FunpHeapAlloc.of(getTypeSize(typeOf(f)));
+				return FunpHeapDealloc.of(isDynamicSize, getTypeSize(t), erase(reference), erase(expr));
+			})).applyIf(FunpDoHeapNew.class, f -> f.apply(isDynamicSize -> {
+				return FunpHeapAlloc.of(isDynamicSize, getTypeSize(typeOf(f)));
 			})).applyIf(FunpField.class, f -> {
 				return getField(f);
 			}).applyIf(FunpIo.class, f -> f.apply(expr -> {
@@ -680,13 +680,13 @@ public class P2InferType {
 				if (fct == Fct.MANUAL)
 					expr3 = expr2;
 				else if (fct == Fct.ONCE__)
-					expr3 = FunpHeapDealloc.of(size, FunpMemory.of(FunpFramePointer.of(), 0, ps), expr2);
+					expr3 = FunpHeapDealloc.of(false, size, FunpMemory.of(FunpFramePointer.of(), 0, ps), expr2);
 				else
 					return fail();
 
 				return eraseRoutine(lt, fp1, expr3);
 			})).applyIf(FunpLambdaFree.class, f -> f.apply((lambda, expr) -> {
-				return FunpHeapDealloc.of(fail(), FunpMemory.of(getAddress(lambda), 0, ps), erase(expr));
+				return FunpHeapDealloc.of(false, 0, FunpMemory.of(getAddress(lambda), 0, ps), erase(expr));
 			})).applyIf(FunpMe.class, f -> {
 				return me.get(scope);
 			}).applyIf(FunpReference.class, f -> f.apply(expr -> {

@@ -184,34 +184,38 @@ public class P2 {
 	}
 
 	public static class FunpHeapAlloc implements Funp, P4.End {
+		public boolean isDynamicSize;
 		public int size;
 
-		public static FunpHeapAlloc of(int size) {
+		public static FunpHeapAlloc of(boolean isDynamicSize, int size) {
 			var f = new FunpHeapAlloc();
+			f.isDynamicSize = isDynamicSize;
 			f.size = size;
 			return f;
 		}
 
-		public <R> R apply(FixieFun1<Integer, R> fun) {
-			return fun.apply(size);
+		public <R> R apply(FixieFun2<Boolean, Integer, R> fun) {
+			return fun.apply(isDynamicSize, size);
 		}
 	}
 
 	public static class FunpHeapDealloc implements Funp, P4.End {
+		public boolean isDynamicSize;
 		public int size;
 		public Funp reference;
 		public Funp expr;
 
-		public static FunpHeapDealloc of(int size, Funp reference, Funp expr) {
+		public static FunpHeapDealloc of(boolean isDynamicSize, int size, Funp reference, Funp expr) {
 			var f = new FunpHeapDealloc();
+			f.isDynamicSize = isDynamicSize;
 			f.size = size;
 			f.reference = reference;
 			f.expr = expr;
 			return f;
 		}
 
-		public <R> R apply(FixieFun3<Integer, Funp, Funp, R> fun) {
-			return fun.apply(size, reference, expr);
+		public <R> R apply(FixieFun4<Boolean, Integer, Funp, Funp, R> fun) {
+			return fun.apply(isDynamicSize, size, reference, expr);
 		}
 	}
 

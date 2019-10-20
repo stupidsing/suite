@@ -316,15 +316,15 @@ public class P4GenerateCode {
 				return returnDontCare();
 			}).applyIf(FunpFramePointer.class, t -> {
 				return returnOp(compileFramePointer());
-			}).applyIf(FunpHeapAlloc.class, f -> f.apply(size -> {
-				if (0 <= size)
+			}).applyIf(FunpHeapAlloc.class, f -> f.apply((isDynamicSize, size) -> {
+				if (!isDynamicSize)
 					return p4alloc.alloc(this, size);
 				else
 					return p4alloc.allocVs(this, size);
-			})).applyIf(FunpHeapDealloc.class, f -> f.apply((size, reference, expr) -> {
+			})).applyIf(FunpHeapDealloc.class, f -> f.apply((isDynamicSize, size, reference, expr) -> {
 				var out = compile(expr);
 				var c1 = mask(pop0, pop1, out.op0, out.op1);
-				if (0 <= size)
+				if (!isDynamicSize)
 					p4alloc.dealloc(c1, size, reference);
 				else
 					p4alloc.deallocVs(c1, reference);

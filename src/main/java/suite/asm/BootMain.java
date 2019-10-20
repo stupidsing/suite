@@ -28,8 +28,8 @@ public class BootMain {
 			// combine the images and align to 512 bytes
 			var disk0 = Bytes.concat(bootLoader, kernel);
 			var disk1 = disk0.pad(disk0.size() + 511 & 0xFFFFFE00);
-
 			var image = "target/boot.bin";
+
 			Read.each(disk1).collect(To.file(image));
 
 			System.out.println("cat " + image + " | dd bs=512 count=1 | ~/udis86/udcli/udcli -16 | less");

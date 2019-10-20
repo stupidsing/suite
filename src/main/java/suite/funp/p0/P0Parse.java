@@ -150,9 +150,9 @@ public class P0Parse {
 			}).match("!assign .0 := .1 ~ .2", (a, b, c) -> {
 				return checkDo(() -> FunpDoAssignRef.of(FunpReference.of(p(a)), p(b), p(c)));
 			}).match("!delete^ .0 ~ .1", (a, b) -> {
-				return checkDo(() -> FunpDoHeapDel.of(p(a), p(b)));
+				return checkDo(() -> FunpDoHeapDel.of(false, p(a), p(b)));
 			}).match("!new^ .0", a -> {
-				var n = FunpDoHeapNew.of();
+				var n = FunpDoHeapNew.of(false);
 				return checkDo(() -> {
 					if (a == dontCare)
 						return n;
