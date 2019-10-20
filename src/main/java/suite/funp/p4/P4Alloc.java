@@ -19,8 +19,10 @@ import suite.funp.p4.P4GenerateCode.CompileOut;
 public class P4Alloc {
 
 	private Amd64 amd64 = Amd64.me;
+	private int is = Funp_.integerSize;
 	private int ps = Funp_.pointerSize;
 
+	private OpImm countPointer;
 	private OpImm labelPointer;
 	private OpImm freeChainTablePointer;
 
@@ -37,7 +39,8 @@ public class P4Alloc {
 			16777216, };
 
 	public void init(Emit em, OpReg bufferStart) {
-		labelPointer = em.spawn(em1 -> em1.emit(Insn.D, amd64.imm32(0l))).in;
+		countPointer = em.spawn(em1 -> em1.emit(Insn.D, amd64.imm(0l, is))).in;
+		labelPointer = em.spawn(em1 -> em1.emit(Insn.D, amd64.imm(0l, is))).in;
 
 		freeChainTablePointer = em.spawn(em1 -> em1.emit( //
 				Insn.DS, //
@@ -45,6 +48,11 @@ public class P4Alloc {
 				amd64.imm8(0l))).in;
 
 		em.mov(amd64.mem(labelPointer, ps), bufferStart);
+	}
+
+	public void deinit(Emit em) {
+		em.emit(Insn.CMP, amd64.mem(countPointer, is), amd64.imm(0l, is));
+		em.emit(Insn.JNZ, em.spawn(em1 -> em1.emit(Insn.HLT, amd64.remark("ALLOC MISMATCH"))).in);
 	}
 
 	// allocate with a fixed size, but allow de-allocation without specifying size
@@ -93,11 +101,14 @@ public class P4Alloc {
 
 		c1.mask(ra).mov(fcp, amd64.mem(ra, 0, ps));
 		c1.em.label(labelEnd);
+		c1.em.emit(Insn.INC, amd64.mem(countPointer, is));
 
 		return Fixie.of(c1, pair, ra);
 	}
 
 	private void dealloc_(Compile0 c0, OpReg ref, Operand opOffset) {
+		c0.em.emit(Insn.DEC, amd64.mem(countPointer, is));
+
 		var c1 = c0.mask(ref);
 		var rf = c1.em.mov(c1.rs.get(ps), freeChainTablePointer);
 		c1.em.emit(Insn.ADD, rf, opOffset);

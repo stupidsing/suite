@@ -160,10 +160,10 @@ public class P4Emit {
 
 		public <T extends Operand> T mov(T op0, Operand op1) {
 			var opImm = op1.cast(OpImm.class);
-			var isRegImm = op0 instanceof OpReg && opImm != null;
+			var isRmImm = op0 instanceof OpReg && opImm != null;
 			if (op0 != op1)
-				if (op0.size == op1.size || op0.size == 8 && op1.size == 4 && isRegImm)
-					if (isRegImm && opImm.imm == 0 && opImm.isBound())
+				if (op0.size == op1.size || op0.size == 8 && op1.size == 4 && opImm != null)
+					if (isRmImm && opImm.imm == 0 && opImm.isBound())
 						emit(amd64.instruction(Insn.XOR, op0, op0));
 					else
 						emit(amd64.instruction(Insn.MOV, op0, op1));

@@ -189,8 +189,11 @@ public class P4GenerateCode {
 
 			if (isUseEbp)
 				em.mov(_bp, _sp);
+
 			em.emit(Insn.CLD);
 			new Compile0(ISSPEC, em, null, ebx, null, registerSet, 0).compile(FunpRemark.of("main", funp));
+
+			p4alloc.deinit(em);
 
 			if (isAmd64) {
 				em.mov(edi, ebx);

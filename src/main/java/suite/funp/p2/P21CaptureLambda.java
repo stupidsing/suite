@@ -146,7 +146,7 @@ public class P21CaptureLambda {
 				})).applyIf(FunpLambda.class, f -> f.apply((vn, expr, fct, isScoped) -> {
 					var li = infoByLambda.get(f);
 					var captures = li.captures;
-					if (!captures.isEmpty()) {
+					if (fct == Fct.MANUAL || !captures.isEmpty()) {
 						var pcapn = "pcap$" + Get.temp();
 						var pcap = FunpVariable.of(pcapn);
 						var struct = FunpStruct.of(captures);

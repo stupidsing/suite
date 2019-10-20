@@ -686,7 +686,7 @@ public class P2InferType {
 
 				return eraseRoutine(lt, fp1, expr3);
 			})).applyIf(FunpLambdaFree.class, f -> f.apply((lambda, expr) -> {
-				return FunpHeapDealloc.of(false, 0, FunpMemory.of(getAddress(lambda), 0, ps), erase(expr));
+				return FunpHeapDealloc.of(true, 0, FunpMemory.of(getAddress(lambda), 0, ps), erase(expr));
 			})).applyIf(FunpMe.class, f -> {
 				return me.get(scope);
 			}).applyIf(FunpReference.class, f -> f.apply(expr -> {
