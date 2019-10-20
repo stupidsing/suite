@@ -449,6 +449,22 @@ public class P0 {
 		}
 	}
 
+	public static class FunpPrecapture implements Funp, P2.End {
+		public String vn;
+		public FunpLambda lambda;
+
+		public static FunpPrecapture of(String vn, FunpLambda lambda) {
+			var f = new FunpPrecapture();
+			f.vn = vn;
+			f.lambda = lambda;
+			return f;
+		}
+
+		public <R> R apply(FixieFun2<String, FunpLambda, R> fun) {
+			return fun.apply(vn, lambda);
+		}
+	}
+
 	public static class FunpPredefine implements Funp, P2.End {
 		public String vn;
 		public Funp expr;
