@@ -180,7 +180,9 @@ public class P0Parse {
 			}).match("byte .0", a -> {
 				return FunpCoerce.of(Coerce.NUMBER, Coerce.BYTE, FunpNumber.ofNumber(num(a)));
 			}).match("capture (.0 => .1)", (a, b) -> {
-				return capture(bind(Fdt.L_MONO).lambdaSeparate(a, b));
+				return capture(bind(Fdt.L_MONO).lambdaSeparate(a, b), Fct.MANUAL);
+			}).match("capture1 (.0 => .1)", (a, b) -> {
+				return capture(bind(Fdt.L_MONO).lambdaSeparate(a, b), Fct.ONCE__);
 			}).match("case || .0", a -> {
 				return new Object() {
 					private Funp d(Node n) {
@@ -318,8 +320,8 @@ public class P0Parse {
 			}).nonNullResult();
 		}
 
-		private FunpLambda capture(FunpLambda lambda) {
-			lambda.fct = Fct.ONCE__;
+		private FunpLambda capture(FunpLambda lambda, Fct fct) {
+			lambda.fct = fct;
 			return lambda;
 		}
 
