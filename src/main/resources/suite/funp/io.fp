@@ -24,7 +24,6 @@ define.function !write.all (pointer, length) :=
 		let nBytesWritten := !write (p1, length - n) ~
 		assert (nBytesWritten != 0) ~
 		n + nBytesWritten #
-		()
 	)
 ~
 
@@ -44,7 +43,6 @@ define.function !get.line (pointer, length) :=
 		n < length && number:byte ch != 10 #
 		!assign pointer* [n] := ch ~
 		(n + 1, !get.char ()) #
-		()
 	)
 ~
 
@@ -71,7 +69,6 @@ define.function !get.string (pointer, length) :=
 		let nBytesRead := !read (p1, 1) ~
 		(n + nBytesRead, p1* [0] != byte 10) #
 		!assign pointer* [n - 1] := byte 0 ~
-		()
 	)
 ~
 
@@ -109,7 +106,6 @@ define.function !put.string s :=
 		s* [i] != byte 0 #
 		!put.char s* [i] ~
 		i + 1 #
-		()
 	)
 ~
 
