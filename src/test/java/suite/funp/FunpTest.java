@@ -40,7 +40,7 @@ public class FunpTest {
 
 	@Test
 	public void testCapture() {
-		test(46, "define m := 31 ~ let l := capture1 (n => n + m) ~ let r := 15 | l ~ uncapture l ~ r");
+		test(46, "define m := 31 ~ let l := capture (n => n + m) ~ let r := 15 | l ~ uncapture l ~ r");
 	}
 
 	@Test

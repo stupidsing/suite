@@ -27,6 +27,7 @@ import suite.assembler.Amd64.OpImm;
 import suite.assembler.Amd64.OpMem;
 import suite.assembler.Amd64.OpNone;
 import suite.assembler.Amd64.OpReg;
+import suite.assembler.Amd64.OpRemark;
 import suite.assembler.Amd64.Operand;
 import suite.funp.Funp_;
 
@@ -192,6 +193,8 @@ public class Amd64Interpret {
 				case DEC:
 					assign.f(source0 - 1);
 					break;
+				case HLT:
+					fail(op0 instanceof OpRemark ? ((OpRemark) op0).remark : null);
 				case IDIV:
 					var n = (regs[edx] << 32) + regs[eax];
 					var div = n / source0;

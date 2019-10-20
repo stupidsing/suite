@@ -61,7 +61,7 @@ public class P4Alloc {
 	public void deallocVs(Compile0 c0, Funp reference) {
 		var ref = c0.compilePsReg(reference);
 		c0.em.addImm(ref, -ps);
-		dealloc(c0, ref, amd64.mem(ref, 0, ps));
+		dealloc_(c0, ref, amd64.mem(ref, 0, ps));
 	}
 
 	public CompileOut alloc(Compile0 c0, int size) {
@@ -70,18 +70,7 @@ public class P4Alloc {
 
 	public void dealloc(Compile0 c0, int size, Funp reference) {
 		var ref = c0.compilePsReg(reference);
-		dealloc(c0, ref, amd64.imm(size * ps, ps));
-	}
-
-	private void dealloc(Compile0 c0, OpReg ref, Operand opOffset) {
-		var c1 = c0.mask(ref);
-		var rf = c1.em.mov(c1.rs.get(ps), freeChainTablePointer);
-		c1.em.emit(Insn.ADD, rf, opOffset);
-		var fcp = amd64.mem(rf, 0, ps);
-
-		var c2 = c1.mask(fcp);
-		c2.mov(amd64.mem(ref, 0, ps), fcp);
-		c2.mov(fcp, ref);
+		dealloc_(c0, ref, amd64.imm(size * ps, ps));
 	}
 
 	private Fixie3<Compile0, IntIntPair, OpReg> alloc_(Compile0 c0, int size) {
@@ -106,6 +95,17 @@ public class P4Alloc {
 		c1.em.label(labelEnd);
 
 		return Fixie.of(c1, pair, ra);
+	}
+
+	private void dealloc_(Compile0 c0, OpReg ref, Operand opOffset) {
+		var c1 = c0.mask(ref);
+		var rf = c1.em.mov(c1.rs.get(ps), freeChainTablePointer);
+		c1.em.emit(Insn.ADD, rf, opOffset);
+		var fcp = amd64.mem(rf, 0, ps);
+
+		var c2 = c1.mask(fcp);
+		c2.mov(amd64.mem(ref, 0, ps), fcp);
+		c2.mov(fcp, ref);
 	}
 
 	private IntIntPair getAllocSize(int size) {
