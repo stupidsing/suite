@@ -47,7 +47,6 @@ import suite.funp.P0.FunpLambda;
 import suite.funp.P0.FunpLambdaFree;
 import suite.funp.P0.FunpMe;
 import suite.funp.P0.FunpNumber;
-import suite.funp.P0.FunpPrecapture;
 import suite.funp.P0.FunpPredefine;
 import suite.funp.P0.FunpReference;
 import suite.funp.P0.FunpRemark;
@@ -275,9 +274,6 @@ public class P0Parse {
 				return FunpCoerce.of(Coerce.NUMBER, Coerce.NUMBERP, FunpDontCare.of());
 			}).match("numberp .0", a -> {
 				return FunpCoerce.of(Coerce.NUMBER, Coerce.NUMBERP, FunpNumber.ofNumber(num(a)));
-			}).match("precapture (.0 => .1)", (a, b) -> {
-				var vn = "precapture$" + Get.temp();
-				return FunpPrecapture.of(vn, capture(bind(Fdt.L_MONO).lambdaSeparate(a, b), Fct.MANUAL));
 			}).match("predef .0", a -> {
 				return FunpPredefine.of("predefine$" + Get.temp(), p(a));
 			}).match("predef/.0 .1", (a, b) -> {
