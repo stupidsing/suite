@@ -99,7 +99,7 @@ public class Account {
 		}
 
 		public String out1() {
-			return "FEE = " + To.string(transactionFee);
+			return "FEE = " + To.string(-transactionFee);
 		}
 	}
 
