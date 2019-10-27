@@ -15,32 +15,36 @@ public class Ioc {
 	private PerMap<String, Object> instances;
 
 	public static <T> T of(Class<T> clazz) {
-		return of(clazz, true);
+		var ioc = new Ioc(singletonInstances);
+		return ioc.instantiate(clazz);
 	}
 
 	public static <T> T of(Class<T> clazz, boolean isSingleton) {
-		var ioc = new Ioc();
-		ioc.instances = singletonInstances;
+		var ioc = new Ioc(singletonInstances);
 		var t = ioc.instantiateIfRequired(clazz);
-		if (!isSingleton)
-			singletonInstances = ioc.instances;
+		singletonInstances = ioc.instances;
 		return t;
+	}
+
+	public Ioc(PerMap<String, Object> instances) {
+		this.instances = instances;
 	}
 
 	private <T> T instantiateIfRequired(Class<T> clazz) {
 		var className = clazz.getCanonicalName();
-		var instance0 = instances.get(className);
-		Object instance1;
-		if (instance0 != null)
-			instance1 = instance0;
-		else
-			instances = instances.put(className, instance1 = instantiate(clazz));
-		@SuppressWarnings("unchecked")
-		var t = (T) instance1;
-		return t;
+		var instance = instances.get(className);
+		if (instance != null) {
+			@SuppressWarnings("unchecked")
+			var t = (T) instance;
+			return t;
+		} else {
+			var t = instantiate(clazz);
+			instances = instances.put(className, t);
+			return t;
+		}
 	}
 
-	private <T> Object instantiate(Class<T> clazz) {
+	private <T> T instantiate(Class<T> clazz) {
 		Object instance = null;
 		Exception exception = null;
 
@@ -56,9 +60,11 @@ public class Ioc {
 				exception = ex;
 			}
 
-		if (instance != null)
-			return instance;
-		else
+		if (instance != null) {
+			@SuppressWarnings("unchecked")
+			var t = (T) instance;
+			return t;
+		} else
 			throw new RuntimeException("when instantiating " + clazz, exception);
 	}
 
