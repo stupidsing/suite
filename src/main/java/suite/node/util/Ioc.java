@@ -19,11 +19,11 @@ public class Ioc {
 	}
 
 	public static <T> T of(Class<T> clazz, boolean isSingleton) {
-		var instantiate = new Ioc();
-		instantiate.instances = singletonInstances;
-		var t = instantiate.instantiate(clazz);
+		var ioc = new Ioc();
+		ioc.instances = singletonInstances;
+		var t = ioc.instantiate(clazz);
 		if (!isSingleton)
-			singletonInstances = instantiate.instances;
+			singletonInstances = ioc.instances;
 		return t;
 	}
 
