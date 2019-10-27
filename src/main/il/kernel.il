@@ -119,9 +119,9 @@ constant log-dword .s .i = ( cs-puts [.s,]; cs-put-hex4 [.i,]; cs-nl []; );
 
 #include(time.il);
 
-#include(ne2k.il);
-
 #include(tests.il);
+
+asm _ MOV (DWORD `+xB8000`, +x70467046);
 
 -- reprograms the PIC to relocate IRQs to interrupt 20h-2Fh
 (
@@ -138,6 +138,10 @@ constant log-dword .s .i = ( cs-puts [.s,]; cs-put-hex4 [.i,]; cs-nl []; );
 	outb [+x21, d0,];
 	outb [+xA1, d1,];
 );
+
+asm _ MOV (DWORD `+xB8000`, +x70477047);
+asm _ CLI ();
+asm .l JMP .l;
 
 -- sets the 8253 to 100 timer ticks per second, and enables keyboard
 outb [+x43, +x36,];
@@ -190,9 +194,9 @@ asm _ MOV (ESP, kernel-second-esp);
 
 	asm _ STI ();
 
-	log (if (ne2k-probe []) then "ne2k detected" else "ne2k not found");
+	--log (if (ne2k-probe []) then "ne2k detected" else "ne2k not found");
 
-	ne2k-setup [];
+	--ne2k-setup [];
 
 	if (sch-fork []) then (
 		log "From another thread";
@@ -228,7 +232,7 @@ asm _ MOV (ESP, kernel-second-esp);
 	asm _ IRET ();
 
 	pg-deallocate [user-stack-address, 1,];
-	ne2k-teardown [];
+	--ne2k-teardown [];
 	kb-teardown [];
 	svc-teardown [];
 	gc-teardown [];
