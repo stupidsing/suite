@@ -19,42 +19,47 @@ public class Ioc {
 	}
 
 	public static <T> T of(Class<T> clazz, boolean isSingleton) {
-		var instantiate = new Ioc();
-		instantiate.instances = singletonInstances;
-		var t = instantiate.instantiate(clazz);
+		var ioc = new Ioc();
+		ioc.instances = singletonInstances;
+		var t = ioc.instantiateIfRequired(clazz);
 		if (!isSingleton)
-			singletonInstances = instantiate.instances;
+			singletonInstances = ioc.instances;
 		return t;
 	}
 
-	private <T> T instantiate(Class<T> clazz) {
+	private <T> T instantiateIfRequired(Class<T> clazz) {
 		var className = clazz.getCanonicalName();
-		var instance = instances.get(className);
-
-		if (instance == null) {
-			Exception exception = null;
-
-			for (var ctor : clazz.getConstructors())
-				try {
-					instance = ctor.newInstance(Read //
-							.from(ctor.getParameters()) //
-							.map(parameter -> (Object) instantiate(parameter.getType())) //
-							.toArray(Object.class));
-
-					break;
-				} catch (Exception ex) {
-					exception = ex;
-				}
-
-			if (instance != null)
-				instances = instances.put(className, instance);
-			else
-				throw new RuntimeException("when instantiating " + clazz, exception);
-		}
-
+		var instance0 = instances.get(className);
+		Object instance1;
+		if (instance0 != null)
+			instance1 = instance0;
+		else
+			instances = instances.put(className, instance1 = instantiate(clazz));
 		@SuppressWarnings("unchecked")
-		var t = (T) instance;
+		var t = (T) instance1;
 		return t;
+	}
+
+	private <T> Object instantiate(Class<T> clazz) {
+		Object instance = null;
+		Exception exception = null;
+
+		for (var ctor : clazz.getConstructors())
+			try {
+				instance = ctor.newInstance(Read //
+						.from(ctor.getParameters()) //
+						.map(parameter -> (Object) instantiateIfRequired(parameter.getType())) //
+						.toArray(Object.class));
+
+				break;
+			} catch (Exception ex) {
+				exception = ex;
+			}
+
+		if (instance != null)
+			return instance;
+		else
+			throw new RuntimeException("when instantiating " + clazz, exception);
 	}
 
 }

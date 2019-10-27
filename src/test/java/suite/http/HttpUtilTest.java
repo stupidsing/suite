@@ -10,7 +10,7 @@ public class HttpUtilTest {
 	@Test
 	public void test() {
 		var result = HttpUtil //
-				.get("https://ywsing.onedse.com/") //
+				.get("https://pointless.online/") //
 				.in(Pull.from("{\"key\": \"value\"}")) //
 				.send();
 
