@@ -168,7 +168,7 @@ public class P2GenerateLambda {
 				return rt -> ((Vec) array.apply(rt)).values[i(rt, index1)];
 			})).applyIf(FunpIo.class, f -> f.apply(expr -> {
 				return compile_(expr);
-			})).applyIf(FunpLambda.class, f -> f.apply((vn, expr, isCapture, isScoped) -> {
+			})).applyIf(FunpLambda.class, f -> f.apply((vn, expr, fct) -> {
 				var fs1 = fs + 1;
 				var thunk = compile(fs1, env.replace(vn, fs1), expr);
 				return rt -> (Fun_) p -> thunk.apply(new Rt(rt, p));

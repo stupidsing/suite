@@ -309,10 +309,10 @@ public class P2InferType {
 				unify(n, typeRefOf(typeArrayOf(null, te)), infer(reference));
 				unify(n, typeNumber, infer(index));
 				return te;
-			})).applyIf(FunpLambda.class, f -> f.apply((vn, expr, isCapture, isScoped) -> {
+			})).applyIf(FunpLambda.class, f -> f.apply((vn, expr, fct) -> {
 				var tv = new Reference();
 				PerMap<String, Pair<Fdt, Node>> env1;
-				if (isScoped)
+				if (fct != Fct.NOSCOP)
 					env1 = env;
 				else // lambda without scope can access global variables outside only
 					env1 = env //
@@ -631,7 +631,8 @@ public class P2InferType {
 				var size = getTypeSize(te);
 				var address1 = adjustPointer(reference, index, size);
 				return FunpMemory.of(address1, 0, size);
-			})).applyIf(FunpLambda.class, f -> f.apply((vn, expr0, isCapture, isScoped) -> {
+			})).applyIf(FunpLambda.class, f -> f.apply((vn, expr0, fct) -> {
+				var isScoped = fct != Fct.NOSCOP;
 				var b = ps + ps; // return address and EBP
 				var scope1 = isScoped ? scope + 1 : 0;
 				var lt = new LambdaType(n);
@@ -783,7 +784,7 @@ public class P2InferType {
 		private Funp applyOnce(Funp value, Funp lambda, int size) {
 			var lambda_ = lambda.cast(FunpLambda.class);
 			if (lambda_ != null) // expands the lambda directly
-				return lambda_.apply((vn, expr, isCapture, isScoped) -> defineLocal(lambda, vn, value, expr, size));
+				return lambda_.apply((vn, expr, fct) -> defineLocal(lambda, vn, value, expr, size));
 			else
 				return apply(value, lambda, size);
 		}
