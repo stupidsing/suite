@@ -10,12 +10,12 @@ public class Singleton {
 
 	public static final Singleton me = new Singleton();
 
-	public final AtomContext atomContext = new AtomContext();
-	public final Inspect inspect = new Inspect();
-	public final Mapify mapify = new Mapify(inspect);
-	public final Nodify nodify = new Nodify(inspect);
-	public final Serialize serialize = new Serialize(inspect);
-	public final StoreCache storeCache = new StoreCache();
+	public final AtomContext atomContext = Ioc.of(AtomContext.class);
+	public final Inspect inspect = Ioc.of(Inspect.class);
+	public final Mapify mapify = Ioc.of(Mapify.class);
+	public final Nodify nodify = Ioc.of(Nodify.class);
+	public final Serialize serialize = Ioc.of(Serialize.class);
+	public final StoreCache storeCache = Ioc.of(StoreCache.class);
 
 	private Singleton() {
 	}
