@@ -15,11 +15,10 @@ public class Ioc {
 	private PerMap<String, Object> instances;
 
 	public static <T> T of(Class<T> clazz) {
-		var ioc = new Ioc(singletonInstances);
-		return ioc.instantiate(clazz);
+		return new Ioc(singletonInstances).instantiate(clazz);
 	}
 
-	public static <T> T of(Class<T> clazz, boolean isSingleton) {
+	public static <T> T ofNew(Class<T> clazz) {
 		var ioc = new Ioc(singletonInstances);
 		var t = ioc.instantiateIfRequired(clazz);
 		singletonInstances = ioc.instances;
