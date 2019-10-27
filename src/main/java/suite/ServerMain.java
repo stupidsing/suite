@@ -50,7 +50,7 @@ public class ServerMain {
 				.secrets() //
 				.prove(Suite.substitute("auth .0 .1", new Str(username), new Str(password)));
 
-		HttpHeader sseHeaders = new HttpHeader(PerMap //
+		var sseHeaders = new HttpHeader(PerMap //
 				.<String, PerList<String>>empty() //
 				.put("Cache-Control", PerList.of("no-cache")) //
 				.put("Content-Type", PerList.of("text/event-stream")));
