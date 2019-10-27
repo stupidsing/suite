@@ -1,9 +1,6 @@
 package suite.node.util;
 
-import static primal.statics.Fail.fail;
-
 import primal.MoreVerbs.Read;
-import primal.os.Log_;
 import primal.persistent.PerMap;
 
 /**
@@ -35,20 +32,24 @@ public class Ioc {
 		var instance = instances.get(className);
 
 		if (instance == null) {
+			Exception exception = null;
+
 			for (var ctor : clazz.getConstructors())
 				try {
 					instance = ctor.newInstance(Read //
 							.from(ctor.getParameters()) //
 							.map(parameter -> (Object) instantiate(parameter.getType())) //
 							.toArray(Object.class));
+
+					break;
 				} catch (Exception ex) {
-					Log_.error("when instantiating " + clazz, ex);
+					exception = ex;
 				}
 
 			if (instance != null)
 				instances = instances.put(className, instance);
 			else
-				return fail();
+				throw new RuntimeException("when instantiating " + clazz, exception);
 		}
 
 		@SuppressWarnings("unchecked")
