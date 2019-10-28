@@ -18,7 +18,7 @@ import suite.streamlet.As;
 import suite.trade.Time;
 
 /*
-To import the Hong Kong post root CA:
+To import the Hong Kong Post root CA:
 
 curl -sL http://www1.ecert.gov.hk/root/root_ca_1_pem.crt > /tmp/root_ca_1_pem.crt
 keytool -import -trustcacerts -keystore ${JAVA_HOME}/lib/security/cacerts -storepass changeit -alias hong_kong_post_root -file /tmp/root_ca_1_pem.crt
