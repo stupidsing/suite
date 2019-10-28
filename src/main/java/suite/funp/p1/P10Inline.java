@@ -88,10 +88,10 @@ public class P10Inline {
 							pairs.map2((vn, value) -> vns1.get(vn), (vn, value) -> r1.rename(value)).toList(), //
 							r1.rename(expr), //
 							fdt);
-				})).applyIf(FunpLambda.class, f -> f.apply((vn0, expr, isCapture, isScoped) -> {
+				})).applyIf(FunpLambda.class, f -> f.apply((vn0, expr, fct) -> {
 					var vn1 = newVarName.apply(vn0);
 					var r1 = new Rename(vns.replace(vn0, vn1));
-					return FunpLambda.of(vn1, r1.rename(expr), isCapture, isScoped);
+					return FunpLambda.of(vn1, r1.rename(expr), fct);
 				})).applyIf(FunpVariable.class, f -> f.apply(var -> {
 					return FunpVariable.of(vns.get(var));
 				})).result());

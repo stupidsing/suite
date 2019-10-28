@@ -6,8 +6,8 @@
   <version>1.0</version>
   <repositories>
     <repository>
-      <id>ywsing.onedse.com</id>
-      <url>https://ywsing.onedse.com/m2_repo/</url>
+      <id>pointless.online</id>
+      <url>https://pointless.online/m2_repo/</url>
     </repository>
   </repositories>
   <dependencies>

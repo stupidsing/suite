@@ -384,24 +384,22 @@ public class P0 {
 		public String vn;
 		public Funp expr;
 		public Fct fct;
-		public boolean isScoped;
 		public String name; // optional
 
 		public static FunpLambda of(String vn, Funp expr) {
-			return of(vn, expr, null, true);
+			return of(vn, expr, null);
 		}
 
-		public static FunpLambda of(String vn, Funp expr, Fct fct, boolean isScoped) {
+		public static FunpLambda of(String vn, Funp expr, Fct fct) {
 			var f = new FunpLambda();
 			f.vn = vn;
 			f.expr = expr;
 			f.fct = fct;
-			f.isScoped = isScoped;
 			return f;
 		}
 
-		public <R> R apply(FixieFun4<String, Funp, Fct, Boolean, R> fun) {
-			return fun.apply(vn, expr, fct, isScoped);
+		public <R> R apply(FixieFun3<String, Funp, Fct, R> fun) {
+			return fun.apply(vn, expr, fct);
 		}
 	}
 
@@ -689,6 +687,7 @@ public class P0 {
 	public enum Fct { // capture type
 		ONCE__, // to be freed after first call
 		MANUAL, // to be uncaptured (freed) manually
+		NOSCOP, // do not access variables of outer scope
 	}
 
 	public enum Fdt {

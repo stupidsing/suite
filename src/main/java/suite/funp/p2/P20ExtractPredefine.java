@@ -25,8 +25,8 @@ public class P20ExtractPredefine {
 			private Funp extract(Funp n) {
 				return inspect.rewrite(n, Funp.class, n_ -> {
 					return n_.sw( //
-					).applyIf(FunpLambda.class, f -> f.apply((vn, expr, isCapture, isScoped) -> {
-						return FunpLambda.of(vn, extractPredefine(expr), isCapture, isScoped);
+					).applyIf(FunpLambda.class, f -> f.apply((vn, expr, fct) -> {
+						return FunpLambda.of(vn, extractPredefine(expr), fct);
 					})).applyIf(FunpPredefine.class, f -> f.apply((vn, expr) -> {
 						var var = FunpVariable.of(vn);
 						if (vns.contains(vn))
