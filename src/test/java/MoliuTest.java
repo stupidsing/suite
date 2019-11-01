@@ -1,3 +1,4 @@
+import static org.junit.Assert.assertEquals;
 import static primal.statics.Rethrow.ex;
 
 import java.nio.charset.StandardCharsets;
@@ -90,11 +91,16 @@ public class MoliuTest {
 		var in = "Secret Message";
 		var inbs = in.getBytes(StandardCharsets.UTF_8);
 
-		var rsaOut = rsa.e(inbs);
-		var aesOut = aes.decrypt(aesKey, aes.encrypt(aesKey, inbs));
+		var rsaOutBs = rsa.e(inbs);
+		var aesOutBs = aes.decrypt(aesKey, aes.encrypt(aesKey, inbs));
+		var rsaOut = new String(rsaOutBs, StandardCharsets.UTF_8);
+		var aesOut = new String(aesOutBs, StandardCharsets.UTF_8);
 
-		System.out.println("rsa = " + new String(rsaOut, StandardCharsets.UTF_8));
-		System.out.println("aes = " + new String(aesOut, StandardCharsets.UTF_8));
+		System.out.println("rsa = " + rsaOut);
+		System.out.println("aes = " + aesOut);
+
+		assertEquals(in, rsaOut);
+		assertEquals(in, aesOut);
 	}
 
 }
