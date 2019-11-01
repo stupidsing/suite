@@ -17,15 +17,15 @@ import primal.primitive.ChrChr_Int;
 import primal.primitive.fp.AsChr;
 import suite.cfg.Defaults;
 
-public class SmtpSslGmail {
+public class SmtpSsl {
 
 	public void send(String to, String subject, String body) {
-		Defaults.bindSecrets("gmail .0 .1").map((username, enc) -> {
+		Defaults.bindSecrets("mail .0 .1 .2").map((username, enc, sender) -> {
 			var password = decode(System.getenv("USER").toCharArray(), enc);
 
 			var props = new Properties();
 			props.put("mail.smtp.auth", "true");
-			props.put("mail.smtp.host", "smtp.gmail.com");
+			props.put("mail.smtp.host", "smtp.sendgrid.net");
 			props.put("mail.smtp.port", "465");
 			props.put("mail.smtp.socketFactory.port", "465");
 			props.put("mail.smtp.socketFactory.class", SSLSocketFactory.class.getName());
@@ -35,8 +35,6 @@ public class SmtpSslGmail {
 					return new PasswordAuthentication(username, password);
 				}
 			});
-
-			var sender = username + "@gmail.com";
 
 			return ex(() -> {
 				var message = new MimeMessage(session);
@@ -75,9 +73,9 @@ public class SmtpSslGmail {
 			for (var i = 0; i < in1.length; i++) {
 				var a = f.apply(in1[i], salt[i % salt.length]);
 				while (a < 32)
-					a += 128 - 32;
-				while (128 < a)
-					a -= 128 - 32;
+					a += 127 - 32;
+				while (127 <= a)
+					a -= 127 - 32;
 				cb.append((char) a);
 			}
 		}).toString();

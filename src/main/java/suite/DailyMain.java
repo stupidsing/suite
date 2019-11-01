@@ -19,6 +19,7 @@ import suite.math.Math_;
 import suite.node.util.Singleton;
 import suite.os.SerializedStoreCache;
 import suite.serialize.Serialize;
+import suite.smtp.SmtpSsl;
 import suite.trade.Account;
 import suite.trade.Instrument;
 import suite.trade.Time;
@@ -136,7 +137,7 @@ public class DailyMain {
 		var result = sb.toString().replace(".0\t", "\t");
 		Log_.info(result);
 
-		// new SmtpSslGmail().send(null, getClass().getName(), result);
+		new SmtpSsl().send(null, getClass().getName(), result);
 
 		return true;
 	}
