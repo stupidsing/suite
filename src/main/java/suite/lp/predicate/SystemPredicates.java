@@ -109,7 +109,7 @@ public class SystemPredicates {
 		addPredicate("read.line", ioPredicates.readLine);
 		addPredicate("sink", ioPredicates.sink);
 		addPredicate("source", ioPredicates.source);
-		addPredicate("suite.dir", ioPredicates.homeDir);
+		addPredicate("suite.dir", ioPredicates.suiteDir);
 		addPredicate("throw", ioPredicates.throwPredicate);
 		addPredicate("try", ioPredicates.tryPredicate);
 		addPredicate("write", ioPredicates.write(System.out));

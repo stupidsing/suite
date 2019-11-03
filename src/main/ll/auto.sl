@@ -4,8 +4,8 @@ append (.head, .tail) .list (.head, .tail1) :- append .tail .list .tail1 #
 clear :- retract.all (_ :- _), ! #
 
 import.path .path
-	:- suite.dir .homeDir
-	, concat "file:" .homeDir "/src/main/ll/" .path .url
+	:- suite.dir .suiteDir
+	, concat "file:" .suiteDir "/src/main/ll/" .path .url
 	, import.url .url
 #
 

@@ -27,6 +27,7 @@ import suite.http.HttpHeaderUtil;
 import suite.http.HttpServe;
 import suite.node.Str;
 import suite.os.Execute;
+import suite.os.FileUtil;
 import suite.os.Schedule;
 import suite.os.Scheduler;
 import suite.telegram.TelegramBot;
@@ -87,7 +88,7 @@ public class ServerMain {
 				.<String, Handler> empty() //
 				.put("api", authToken.handleFilter("user", HttpHandle.data("Hello world"))) //
 				.put("hello", HttpHandle.data("Hello world")) //
-				.put("html", HttpHandle.dir(Paths.get("src/main/html"))) //
+				.put("html", HttpHandle.dir(Paths.get(FileUtil.suiteDir() + "/src/main/html"))) //
 				.put("path", HttpHandle.dir(Tmp.root)) //
 				.put("site", HttpHandle.session(authenticate, handlerSite)) //
 				.put("sse", handlerSse) //
