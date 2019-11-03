@@ -43,37 +43,37 @@ public class HttpUtil {
 		coolDownTime = s != null ? Long.valueOf(s) : 3000l;
 	}
 
-	public static class HttpRequest {
+	public static class Request_ {
 		private String method;
 		private URL url;
 		private Puller<Bytes> in;
 		private Map<String, String> headers;
 
-		private HttpRequest() {
+		private Request_() {
 			this("GET", null, Puller.empty(), Map.ofEntries());
 		}
 
-		private HttpRequest(String method, URL url, Puller<Bytes> in, Map<String, String> headers) {
+		private Request_(String method, URL url, Puller<Bytes> in, Map<String, String> headers) {
 			this.method = method;
 			this.url = url;
 			this.in = in;
 			this.headers = headers;
 		}
 
-		public HttpRequest method(String method) {
-			return new HttpRequest(method, url, in, headers);
+		public Request_ method(String method) {
+			return new Request_(method, url, in, headers);
 		}
 
-		public HttpRequest url(URL url) {
-			return new HttpRequest(method, url, in, headers);
+		public Request_ url(URL url) {
+			return new Request_(method, url, in, headers);
 		}
 
-		public HttpRequest in(Puller<Bytes> in) {
-			return new HttpRequest(method, url, in, headers);
+		public Request_ in(Puller<Bytes> in) {
+			return new Request_(method, url, in, headers);
 		}
 
-		public HttpRequest headers(Map<String, String> headers) {
-			return new HttpRequest(method, url, in, headers);
+		public Request_ headers(Map<String, String> headers) {
+			return new Request_(method, url, in, headers);
 		}
 
 		public ReadStream inputStream() {
@@ -92,52 +92,52 @@ public class HttpUtil {
 			return send().out;
 		}
 
-		public HttpResult send() {
+		public Response_ send() {
 			return http_(method, url, in, headers);
 		}
 	}
 
-	public static class HttpResult {
+	public static class Response_ {
 		public final int responseCode;
 		public final ListMultimap<String, String> headers;
 		public final Puller<Bytes> out;
 
-		private HttpResult(int responseCode, ListMultimap<String, String> headers, Puller<Bytes> out) {
+		private Response_(int responseCode, ListMultimap<String, String> headers, Puller<Bytes> out) {
 			this.responseCode = responseCode;
 			this.headers = headers;
 			this.out = out;
 		}
 	}
 
-	public static HttpRequest get(String url) {
+	public static Request_ get(String url) {
 		return get(To.url(url));
 	}
 
-	public static HttpRequest get(URL url) {
+	public static Request_ get(URL url) {
 		return request().url(url);
 	}
 
-	public static HttpRequest request() {
-		return new HttpRequest();
+	public static Request_ request() {
+		return new Request_();
 	}
 
-	public static HttpResult http(String method, URL url) {
+	public static Response_ http(String method, URL url) {
 		return http(method, url, Puller.empty());
 	}
 
-	public static HttpResult http(String method, String url, Puller<Bytes> in) {
+	public static Response_ http(String method, String url, Puller<Bytes> in) {
 		return http(method, To.url(url), in);
 	}
 
-	public static HttpResult http(String method, URL url, Puller<Bytes> in) {
+	public static Response_ http(String method, URL url, Puller<Bytes> in) {
 		return http(method, url, in, Map.ofEntries());
 	}
 
-	public static HttpResult http(String method, URL url, Map<String, String> headers) {
+	public static Response_ http(String method, URL url, Map<String, String> headers) {
 		return http(method, url, Puller.empty(), headers);
 	}
 
-	public static HttpResult http(String method, URL url, Puller<Bytes> in, Map<String, String> headers) {
+	public static Response_ http(String method, URL url, Puller<Bytes> in, Map<String, String> headers) {
 		return http_(method, url, in, headers);
 	}
 
@@ -154,7 +154,7 @@ public class HttpUtil {
 		return links;
 	}
 
-	private static HttpResult http_(String method, URL url, Puller<Bytes> in, Map<String, String> headers) {
+	private static Response_ http_(String method, URL url, Puller<Bytes> in, Map<String, String> headers) {
 		var al = timestampFun.apply(url.getHost());
 		var backoff = new Backoff();
 		long current, last, start, next;
@@ -171,7 +171,7 @@ public class HttpUtil {
 	// keep timestamps to avoid overloading servers
 	private static Fun<String, AtomicLong> timestampFun = Memoize.fun(server -> new AtomicLong());
 
-	private static HttpResult httpApache(String method, URL url, Puller<Bytes> in, Map<String, String> headers0)
+	private static Response_ httpApache(String method, URL url, Puller<Bytes> in, Map<String, String> headers0)
 			throws IOException {
 		Log_.info("START " + method + " " + url);
 		var client = HttpClients.createDefault();
@@ -201,7 +201,7 @@ public class HttpUtil {
 				.closeAtEnd(() -> Log_.info("END__ " + method + " " + url));
 
 		if (statusCode == HttpURLConnection.HTTP_OK)
-			return new HttpResult(statusCode, headers1, out);
+			return new Response_(statusCode, headers1, out);
 		else
 			throw new IOException("HTTP returned " + statusCode //
 					+ ": " + url //
@@ -209,7 +209,7 @@ public class HttpUtil {
 					+ ": " + out.collect(As::string));
 	}
 
-	private static HttpResult httpJre(String method, URL url, Puller<Bytes> in, Map<String, String> headers) throws IOException {
+	private static Response_ httpJre(String method, URL url, Puller<Bytes> in, Map<String, String> headers) throws IOException {
 		var conn = (HttpURLConnection) url.openConnection();
 		conn.setDoOutput(true);
 		conn.setRequestMethod(method);
@@ -235,7 +235,7 @@ public class HttpUtil {
 
 			return http(method, url1, in, headers1);
 		} else if (responseCode == HttpURLConnection.HTTP_OK)
-			return new HttpResult(responseCode, new ListMultimap<>(), out);
+			return new Response_(responseCode, new ListMultimap<>(), out);
 		else
 			throw new IOException("HTTP returned " + responseCode //
 					+ ": " + url //
