@@ -21,7 +21,7 @@ public class HttpSessionControl {
 	public static long TIMEOUTDURATION = 3600 * 1000l;
 
 	private HtmlUtil htmlUtil = new HtmlUtil();
-	private SessionManager sessionManager = new HttpSessionManager();
+	private SessionManager sm = new HttpSessionManager();
 	private Random random = new SecureRandom();
 
 	public interface SessionManager {
@@ -42,13 +42,13 @@ public class HttpSessionControl {
 		}
 	}
 
-	public HttpHandler getSessionHandler(BiPredicate<String, String> authenticate, HttpHandler protectedHandler) {
+	public HttpHandler getHandler(BiPredicate<String, String> authenticate, HttpHandler protectedHandler) {
 		return new HttpHandler() {
 			public HttpResponse handle(HttpRequest request) {
 				var current = System.currentTimeMillis();
 				var cookie = request.headers.get("Cookie");
 				var sessionId = cookie != null ? HttpHeaderUtil.getCookieAttrs(cookie).get("session") : null;
-				var session = sessionId != null ? sessionManager.get(sessionId) : null;
+				var session = sessionId != null ? sm.get(sessionId) : null;
 				HttpResponse response;
 
 				if (Equals.ab(request.paths, PerList.of("login"))) {
@@ -58,8 +58,7 @@ public class HttpSessionControl {
 					var paths = HttpHeaderUtil.getPaths(attrs.get("path"));
 
 					if (authenticate.test(username, password)) {
-						sessionManager.put(sessionId = generateRandomSessionId(),
-								session = new Session(username, current));
+						sm.put(sessionId = getRandomSessionId(), session = new Session(username, current));
 
 						var request1 = new HttpRequest( //
 								request.method, //
@@ -74,7 +73,7 @@ public class HttpSessionControl {
 						response = showLoginPage(paths, true);
 				} else if (Equals.ab(request.paths, PerList.of("logout"))) {
 					if (sessionId != null)
-						sessionManager.remove(sessionId);
+						sm.remove(sessionId);
 
 					response = showLoginPage(PerList.end(), false);
 				} else if (session != null && current < session.lastRequestDt.value() + TIMEOUTDURATION) {
@@ -111,7 +110,7 @@ public class HttpSessionControl {
 						+ "</html>"));
 			}
 
-			private String generateRandomSessionId() {
+			private String getRandomSessionId() {
 				var bytes = new byte[16];
 				random.nextBytes(bytes);
 

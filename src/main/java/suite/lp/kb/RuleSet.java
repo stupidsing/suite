@@ -61,7 +61,7 @@ class RuleSetImport {
 		Handler.register();
 	}
 
-	String root = "file:" + FileUtil.homeDir() + "/src/main/ll/";
+	String root = "file:" + FileUtil.suiteDir() + "/src/main/ll/";
 	ThreadLocal<PerList<Node>> importing = ThreadLocal.withInitial(() -> PerList.end());
 
 	synchronized boolean importFrom(RuleSet ruleSet, Node node) {

@@ -2,7 +2,7 @@
 
 BASE="`dirname ${0}`"
 DEBUGOPTS="-Xdebug -Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n"
-OPTS="${DEBUGOPTS} -Dhome.dir=${BASE}"
+OPTS="${DEBUGOPTS} -Dsuite.dir=${BASE}"
 
 ${BASE}/build.sh &&
 

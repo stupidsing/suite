@@ -19,7 +19,7 @@ import suite.search.StronglyConnectedComponents;
 
 public class DependencyTest {
 
-	private String dir = FileUtil.homeDir();
+	private String dir = FileUtil.suiteDir();
 	private List<String> sourceDirs = List.of(dir + "/src/main/java", dir + "/src/test/java");
 
 	@Test

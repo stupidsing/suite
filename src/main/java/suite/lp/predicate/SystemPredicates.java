@@ -104,12 +104,12 @@ public class SystemPredicates {
 		addPredicate("file.time", ioPredicates.fileTime);
 		addPredicate("file.write", ioPredicates.fileWrite);
 		addPredicate("jar", ioPredicates.jar);
-		addPredicate("home.dir", ioPredicates.homeDir);
 		addPredicate("log", ioPredicates.log);
 		addPredicate("nl", ioPredicates.nl);
 		addPredicate("read.line", ioPredicates.readLine);
 		addPredicate("sink", ioPredicates.sink);
 		addPredicate("source", ioPredicates.source);
+		addPredicate("suite.dir", ioPredicates.homeDir);
 		addPredicate("throw", ioPredicates.throwPredicate);
 		addPredicate("try", ioPredicates.tryPredicate);
 		addPredicate("write", ioPredicates.write(System.out));

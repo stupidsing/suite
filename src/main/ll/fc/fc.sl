@@ -69,13 +69,13 @@ fc-load-library0 .lib .do
 #
 
 fc-precompiled-library-filename .lib .filename
-	:- home.dir .homeDir
-	, concat .homeDir "/target/precompiled/" .lib ".node.gz" .filename
+	:- suite.dir .suiteDir
+	, concat .suiteDir "/target/precompiled/" .lib ".node.gz" .filename
 #
 
 fc-library-filename .lib .filename
-	:- home.dir .homeDir
-	, concat .homeDir "/src/main/fl/" .lib ".slf" .filename
+	:- suite.dir .suiteDir
+	, concat .suiteDir "/src/main/fl/" .lib ".slf" .filename
 #
 
 fc-frame-difference .frame0 .frame1 0
