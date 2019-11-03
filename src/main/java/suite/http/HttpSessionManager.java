@@ -4,8 +4,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import suite.http.HttpAuthSession.Session;
-import suite.http.HttpAuthSession.SessionManager;
+import suite.http.Http.Session;
+import suite.http.Http.SessionManager;
 
 public class HttpSessionManager implements SessionManager {
 

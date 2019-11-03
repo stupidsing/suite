@@ -11,6 +11,9 @@ import primal.adt.Fixie_.FixieFun3;
 import primal.fp.Funs2.Fun2;
 import suite.cfg.Defaults;
 import suite.http.Crypts.Crypt;
+import suite.http.Http.Handler;
+import suite.http.Http.Request;
+import suite.http.Http.Response;
 import suite.math.Sha2;
 import suite.trade.Time;
 
@@ -25,11 +28,11 @@ public class HttpAuthToken {
 
 	private Crypts crypts = new Crypts();
 	private Crypt<String> aes = crypts.aes(Defaults.salt);
-	private Crypt<byte[]> rsa = crypts.rsaBs("");
+	private Crypt<byte[]> rsa = crypts.rsaBs(Defaults.salt);
 	private Sha2 sha2 = new Sha2();
 
-	public HttpHandler handleLogin(String authenticatePath) {
-		return request -> HttpResponse.of(Pull.from("<html>" //
+	public Handler handleLogin(String authenticatePath) {
+		return request -> Response.of(Pull.from("<html>" //
 				+ "<head><title>Login</title></head>" //
 				+ "<body>" //
 				+ "<font face=\"Monospac821 BT,Monaco,Consolas\">" //
@@ -43,27 +46,27 @@ public class HttpAuthToken {
 				+ "</html>"));
 	}
 
-	public HttpHandler handleAuthenticate(Fun2<String, String, List<String>> getRolesFun) {
+	public Handler handleAuthenticate(Fun2<String, String, List<String>> getRolesFun) {
 		return request -> {
 			var attrs = HttpHeaderUtil.getPostedAttrs(request.inputStream);
 			var username = attrs.get("username");
 			var password = attrs.get("password");
 			var roles = getRolesFun.apply(username, password);
-			return roles != null ? returnToken(username, roles) : HttpResponse.of(HttpResponse.HTTP403);
+			return roles != null ? returnToken(username, roles) : Response.of(Http.S403);
 		};
 	}
 
-	public HttpHandler handleExtendAuth(Fun2<String, String, List<String>> getRolesFun) {
+	public Handler handleExtendAuth(Fun2<String, String, List<String>> getRolesFun) {
 		return verifyToken(List.of(), (username, roles, request) -> returnToken(username, roles));
 	}
 
-	public HttpHandler handleFilter(String requiredRole, HttpHandler handler) {
+	public Handler handleFilter(String requiredRole, Handler handler) {
 		return verifyToken(List.of(requiredRole), (username, roles, request) -> handler.handle(request));
 	}
 
-	private HttpHandler verifyToken( //
+	private Handler verifyToken( //
 			List<String> requiredRoles, //
-			FixieFun3<String, List<String>, HttpRequest, HttpResponse> handler1) {
+			FixieFun3<String, List<String>, Request, Response> handler1) {
 		return request -> {
 			var a = request.headers.get("Authentication");
 			var sc = new String(aes.decrypt(a), Utf8.charset).split("|");
@@ -76,17 +79,17 @@ public class HttpAuthToken {
 				for (var requiredRole : requiredRoles)
 					b &= roles.contains(requiredRole);
 
-				return b ? handler1.apply(username, roles, request) : HttpResponse.of(HttpResponse.HTTP403);
+				return b ? handler1.apply(username, roles, request) : Response.of(Http.S403);
 			}));
 		};
 	}
 
-	private HttpResponse returnToken(String username, List<String> roles) {
+	private Response returnToken(String username, List<String> roles) {
 		var exp = Time.now().addSeconds(timeoutDuration).ymdHms();
 		var uer = username + ":" + exp + ":" + Read.from(roles).toJoinedString(",");
 		var sig = sign(uer);
 		var token = aes.encrypt((sig + "|" + uer).getBytes(Utf8.charset));
-		return HttpResponse.of(HttpResponse.HTTP200, token);
+		return Response.of(Http.S200, token);
 	}
 
 	private String sign(String contents) {

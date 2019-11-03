@@ -8,7 +8,11 @@ import primal.MoreVerbs.Pull;
 import primal.Verbs.Build;
 import primal.Verbs.Equals;
 import primal.persistent.PerList;
-import primal.primitive.adt.LngMutable;
+import suite.http.Http.Handler;
+import suite.http.Http.Request;
+import suite.http.Http.Response;
+import suite.http.Http.Session;
+import suite.http.Http.SessionManager;
 import suite.util.HtmlUtil;
 
 /**
@@ -24,32 +28,14 @@ public class HttpAuthSession {
 	private SessionManager sm = new HttpSessionManager();
 	private Random random = new SecureRandom();
 
-	public interface SessionManager {
-		public Session get(String id);
-
-		public void put(String id, Session session);
-
-		public void remove(String id);
-	}
-
-	public class Session {
-		public final String username;
-		public final LngMutable lastRequestDt;
-
-		private Session(String username, long current) {
-			this.username = username;
-			lastRequestDt = LngMutable.of(current);
-		}
-	}
-
-	public HttpHandler getHandler(BiPredicate<String, String> authenticate, HttpHandler protectedHandler) {
-		return new HttpHandler() {
-			public HttpResponse handle(HttpRequest request) {
+	public Handler getHandler(BiPredicate<String, String> authenticate, Handler protectedHandler) {
+		return new Handler() {
+			public Response handle(Request request) {
 				var current = System.currentTimeMillis();
 				var cookie = request.headers.get("Cookie");
 				var sessionId = cookie != null ? HttpHeaderUtil.getCookieAttrs(cookie).get("session") : null;
 				var session = sessionId != null ? sm.get(sessionId) : null;
-				HttpResponse response;
+				Response response;
 
 				if (Equals.ab(request.paths, PerList.of("login"))) {
 					var attrs = HttpHeaderUtil.getPostedAttrs(request.inputStream);
@@ -60,7 +46,7 @@ public class HttpAuthSession {
 					if (authenticate.test(username, password)) {
 						sm.put(sessionId = getRandomSessionId(), session = new Session(username, current));
 
-						var request1 = new HttpRequest( //
+						var request1 = new Request( //
 								request.method, //
 								request.server, //
 								paths, //
@@ -85,16 +71,16 @@ public class HttpAuthSession {
 				return response;
 			}
 
-			private HttpResponse showProtectedPage(HttpRequest request, String sessionId) {
+			private Response showProtectedPage(Request request, String sessionId) {
 				var r = protectedHandler.handle(request);
 				var headers1 = r.headers.put("Set-Cookie", "session=" + sessionId + "; Path=/site");
-				return new HttpResponse(r.status, headers1, r.out);
+				return new Response(r.status, headers1, r.out);
 			}
 
-			private HttpResponse showLoginPage(PerList<String> redirectPath, boolean isLoginFailed) {
+			private Response showLoginPage(PerList<String> redirectPath, boolean isLoginFailed) {
 				var redirectPath1 = redirectPath.streamlet().map(p -> "/" + p).toJoinedString();
 
-				return HttpResponse.of(Pull.from("<html>" //
+				return Response.of(Pull.from("<html>" //
 						+ "<head><title>Login</title></head>" //
 						+ "<body>" //
 						+ "<font face=\"Monospac821 BT,Monaco,Consolas\">" //

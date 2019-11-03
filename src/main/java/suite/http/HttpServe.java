@@ -1,6 +1,9 @@
 package suite.http;
 
 import primal.os.Log_;
+import suite.http.Http.Handler;
+import suite.http.Http.HandlerAsync;
+import suite.http.Http.Response;
 import suite.os.Listen;
 import suite.primitive.IoSink;
 
@@ -25,16 +28,16 @@ public class HttpServe {
 		this.port = port;
 	}
 
-	public void serve(HttpHandler handler) {
+	public void serve(Handler handler) {
 		listen.io(port, (is, os) -> {
 			var request = httpIo.readRequest(is);
-			HttpResponse response = null;
+			Response response = null;
 
 			try {
 				response = handler.handle(request);
 			} catch (Exception ex) {
 				Log_.error(ex);
-				response = HttpResponse.of(HttpResponse.HTTP500);
+				response = Response.of(Http.S500);
 			} finally {
 				Log_.info(request.getLogString() + " " + response.getLogString());
 			}
@@ -43,11 +46,11 @@ public class HttpServe {
 		});
 	}
 
-	public void serveAsync(HttpHandlerAsync handler) {
+	public void serveAsync(HandlerAsync handler) {
 		listen.ioAsync(port, (is, os, close) -> {
 			var request = httpIo.readRequest(is);
 
-			IoSink<HttpResponse> sink = response -> {
+			IoSink<Response> sink = response -> {
 				Log_.info(request.getLogString() + " " + response.getLogString());
 				httpIo.writeResponse(os, response);
 				close.close();
@@ -57,7 +60,7 @@ public class HttpServe {
 				handler.handle(request, sink);
 			} catch (Exception ex) {
 				Log_.error(ex);
-				sink.f(HttpResponse.of(HttpResponse.HTTP500));
+				sink.f(Response.of(Http.S500));
 			}
 		});
 	}

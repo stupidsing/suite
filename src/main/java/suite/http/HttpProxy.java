@@ -12,6 +12,7 @@ import primal.Verbs.Start;
 import primal.fp.Funs.Fun;
 import primal.os.Log_;
 import primal.primitive.adt.pair.IntObjPair;
+import suite.http.Http.Request;
 import suite.os.Listen;
 import suite.util.Copy;
 
@@ -60,7 +61,7 @@ public class HttpProxy {
 
 			var headers1 = request0.headers.remove("Connection").put("Connection", "close");
 
-			var request1 = new HttpRequest( //
+			var request1 = new Request( //
 					request0.method, //
 					request0.server, //
 					request0.paths, //

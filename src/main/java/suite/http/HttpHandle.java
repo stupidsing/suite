@@ -19,21 +19,24 @@ import primal.persistent.PerList;
 import primal.persistent.PerMap;
 import primal.primitive.adt.Bytes;
 import primal.primitive.adt.LngMutable;
+import suite.http.Http.Handler;
+import suite.http.Http.Header;
+import suite.http.Http.Response;
 
 public class HttpHandle {
 
-	public static HttpHandler ofData(String data) {
-		return request -> HttpResponse.of(Pull.from(data));
+	public static Handler ofData(String data) {
+		return request -> Response.of(Pull.from(data));
 	}
 
-	public static HttpHandler ofDispatch(PerMap<String, HttpHandler> map) {
+	public static Handler ofDispatch(PerMap<String, Handler> map) {
 		return request0 -> request0.split().map((path, request1) -> {
 			var handler = map.get(path);
 			return handler != null ? handler.handle(request1) : fail("no handler for " + path);
 		});
 	}
 
-	public static HttpHandler ofPath(Path root) {
+	public static Handler ofPath(Path root) {
 		return request -> ex(() -> {
 			var path = root;
 			long size;
@@ -59,11 +62,11 @@ public class HttpHandle {
 						var px = min(!a1.isEmpty() ? Long.valueOf(a1) : Long.MAX_VALUE, size);
 						var p = LngMutable.of(p0);
 
-						var empty = new HttpHeader() //
+						var empty = new Header() //
 								.put("Content-Range", "bytes " + p0 + "-" + px + "/" + size) //
 								.put("Content-Type", "text/html; charset=UTF-8");
 
-						return HttpResponse.of(HttpResponse.HTTP206, empty, Pull.from(new InputStream() {
+						return Response.of(Http.S206, empty, Pull.from(new InputStream() {
 							public int read() throws IOException {
 								var pos = p.value();
 								if (pos != px) {
@@ -88,24 +91,24 @@ public class HttpHandle {
 						}));
 					}
 
-					return HttpResponse.of(HttpResponse.HTTP200, Pull.from(Files.newInputStream(path)), size);
+					return Response.of(Http.S200, Pull.from(Files.newInputStream(path)), size);
 				}
 			else
-				return HttpResponse.of(HttpResponse.HTTP404);
+				return Response.of(Http.S404);
 		});
 	}
 
-	public static HttpHandler ofSession(BiPredicate<String, String> authenticate, HttpHandler handler) {
+	public static Handler ofSession(BiPredicate<String, String> authenticate, Handler handler) {
 		return new HttpAuthSession().getHandler(authenticate, handler);
 	}
 
-	public static HttpHandler ofSse(Sink<Sink<Bytes>> write) {
-		HttpHeader sseHeaders = new HttpHeader(PerMap //
+	public static Handler ofSse(Sink<Sink<Bytes>> write) {
+		Header sseHeaders = new Header(PerMap //
 				.<String, PerList<String>> empty() //
 				.put("Cache-Control", PerList.of("no-cache")) //
 				.put("Content-Type", PerList.of("text/event-stream")));
 
-		return request -> HttpResponse.ofWriter(HttpResponse.HTTP200, sseHeaders, write);
+		return request -> Response.ofWriter(Http.S200, sseHeaders, write);
 	}
 
 }

@@ -19,24 +19,27 @@ import primal.adt.FixieArray;
 import primal.adt.Opt;
 import primal.fp.Funs2.Fun2;
 import primal.io.ReadStream;
+import suite.http.Http.Header;
+import suite.http.Http.Request;
+import suite.http.Http.Response;
 import suite.util.Copy;
 import suite.util.To;
 
 public class HttpIo {
 
-	public HttpRequest readRequest(InputStream is0) {
+	public Request readRequest(InputStream is0) {
 		var ls = ReadLine.from(is0).split(" ");
 		var headers = readHeaders(is0);
 
 		return FixieArray.of(ls).map((method, url, protocol) -> {
-			Fun2<String, String, HttpRequest> requestFun = (host, pqs) -> Split.strl(pqs, "?")
+			Fun2<String, String, Request> requestFun = (host, pqs) -> Split.strl(pqs, "?")
 					.map((path0, query) -> {
 						var is1 = getContentStream(is0, headers);
 						var path1 = path0.startsWith("/") ? path0 : "/" + path0;
 						var path2 = ex(() -> URLDecoder.decode(path1, Utf8.charset));
 
 						return Equals.string(protocol, "HTTP/1.1") //
-								? new HttpRequest(method, host, path2, query, headers, is1) //
+								? new Request(method, host, path2, query, headers, is1) //
 								: fail("only HTTP/1.1 is supported");
 					});
 
@@ -45,7 +48,7 @@ public class HttpIo {
 		});
 	}
 
-	public HttpResponse readResponse(InputStream is0) {
+	public Response readResponse(InputStream is0) {
 		var ls = ReadLine.from(is0).split(" ");
 		var headers = readHeaders(is0);
 
@@ -54,12 +57,12 @@ public class HttpIo {
 			var is1 = !cl.isEmpty() ? sizeLimitedInputStream(is0, cl.get()) : is0;
 
 			return Equals.string(protocol, "HTTP/1.1") //
-					? new HttpResponse(status, headers, Pull.from(is1)) //
+					? new Response(status, headers, Pull.from(is1)) //
 					: fail("only HTTP/1.1 is supported");
 		});
 	}
 
-	public void writeRequest(OutputStream os, HttpRequest request) throws IOException {
+	public void writeRequest(OutputStream os, Request request) throws IOException {
 		var server = request.server;
 		var path = request.path();
 		var query = request.query;
@@ -73,7 +76,7 @@ public class HttpIo {
 		Copy.stream(request.inputStream, os);
 	}
 
-	public void writeResponse(OutputStream os, HttpResponse response) throws IOException {
+	public void writeResponse(OutputStream os, Response response) throws IOException {
 		var s = "HTTP/1.1 " + response.status + "\r\n" //
 				+ response.headers.streamlet().map((k, v) -> k + ": " + v + "\r\n").toJoinedString() //
 				+ "\r\n";
@@ -98,8 +101,8 @@ public class HttpIo {
 		}
 	}
 
-	private HttpHeader readHeaders(InputStream is) {
-		var headers = new HttpHeader();
+	private Header readHeaders(InputStream is) {
+		var headers = new Header();
 		String line;
 		while (!(line = ReadLine.from(is)).isEmpty()) {
 			var headers0 = headers;
@@ -108,7 +111,7 @@ public class HttpIo {
 		return headers;
 	}
 
-	private InputStream getContentStream(InputStream is, HttpHeader headers) {
+	private InputStream getContentStream(InputStream is, Header headers) {
 		var cl = Opt.of(headers.get("Content-Length")).map(Integer::parseInt);
 		return !cl.isEmpty() ? sizeLimitedInputStream(is, cl.get()) : is;
 	}

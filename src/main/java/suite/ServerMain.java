@@ -16,11 +16,12 @@ import primal.persistent.PerList;
 import primal.persistent.PerMap;
 import primal.primitive.adt.Bytes;
 import suite.cfg.Defaults;
+import suite.http.Http;
+import suite.http.Http.Handler;
+import suite.http.Http.Header;
+import suite.http.Http.Response;
 import suite.http.HttpHandle;
-import suite.http.HttpHandler;
-import suite.http.HttpHeader;
 import suite.http.HttpHeaderUtil;
-import suite.http.HttpResponse;
 import suite.http.HttpServe;
 import suite.node.Str;
 import suite.os.Execute;
@@ -51,12 +52,12 @@ public class ServerMain {
 				.secrets() //
 				.prove(Suite.substitute("auth .0 .1", new Str(username), new Str(password)));
 
-		var sseHeaders = new HttpHeader(PerMap //
+		var sseHeaders = new Header(PerMap //
 				.<String, PerList<String>>empty() //
 				.put("Cache-Control", PerList.of("no-cache")) //
 				.put("Content-Type", PerList.of("text/event-stream")));
 
-		HttpHandler handlerSite = request -> HttpResponse.of(Pull.from("" //
+		Handler handlerSite = request -> Response.of(Pull.from("" //
 				+ "<html>" //
 				+ "<br/>method = " + request.method //
 				+ "<br/>server = " + request.server //
@@ -65,7 +66,7 @@ public class ServerMain {
 				+ "<br/>headers = " + request.headers //
 				+ "</html>"));
 
-		HttpHandler handlerSse = request -> HttpResponse.ofWriter(HttpResponse.HTTP200, sseHeaders, writer -> {
+		Handler handlerSse = request -> Response.ofWriter(Http.S200, sseHeaders, writer -> {
 			for (var i = 0; i < 8; i++) {
 				Sleep.quietly(1000l);
 				var event = "event: number\ndata: { \"i\": " + i + " }\n\n";
@@ -75,7 +76,7 @@ public class ServerMain {
 		});
 
 		var handler1 = HttpHandle.ofDispatch(PerMap //
-				.<String, HttpHandler>empty() //
+				.<String, Handler>empty() //
 				.put("hello", HttpHandle.ofData("Hello world")) //
 				.put("html", HttpHandle.ofPath(Paths.get("src/main/html"))) //
 				.put("path", HttpHandle.ofPath(Tmp.root)) //
