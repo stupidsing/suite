@@ -25,11 +25,11 @@ import suite.http.Http.Response;
 
 public class HttpHandle {
 
-	public static Handler ofData(String data) {
+	public static Handler data(String data) {
 		return request -> Response.of(Pull.from(data));
 	}
 
-	public static Handler ofDir(Path root) {
+	public static Handler dir(Path root) {
 		return request -> ex(() -> {
 			var path = root;
 			long size;
@@ -91,25 +91,25 @@ public class HttpHandle {
 		});
 	}
 
-	public static Handler ofDispatch(PerMap<String, Handler> map) {
-		return request0 -> request0.split().map((path, request1) -> {
-			var handler = map.get(path);
-			return handler != null ? handler.handle(request1) : fail("no handler for " + path);
-		});
-	}
-
-	public static Handler ofMethod(PerMap<String, Handler> map) {
+	public static Handler dispatchMethod(PerMap<String, Handler> map) {
 		return request -> {
 			var handler = map.get(request.method);
 			return handler != null ? handler.handle(request) : fail("no handler for " + request.method);
 		};
 	}
 
-	public static Handler ofSession(BiPredicate<String, String> authenticate, Handler handler) {
+	public static Handler dispatchPath(PerMap<String, Handler> map) {
+		return request0 -> request0.split().map((path, request1) -> {
+			var handler = map.get(path);
+			return handler != null ? handler.handle(request1) : fail("no handler for " + path);
+		});
+	}
+
+	public static Handler session(BiPredicate<String, String> authenticate, Handler handler) {
 		return new HttpAuthSession().getHandler(authenticate, handler);
 	}
 
-	public static Handler ofSse(Sink<Sink<Bytes>> write) {
+	public static Handler sse(Sink<Sink<Bytes>> write) {
 		Header sseHeaders = new Header(PerMap //
 				.<String, PerList<String>> empty() //
 				.put("Cache-Control", PerList.of("no-cache")) //

@@ -83,17 +83,17 @@ public class ServerMain {
 			writer.f(null);
 		});
 
-		var handler1 = HttpHandle.ofDispatch(PerMap //
+		var handler1 = HttpHandle.dispatchPath(PerMap //
 				.<String, Handler> empty() //
-				.put("api", authToken.handleFilter("user", HttpHandle.ofData("Hello world"))) //
-				.put("hello", HttpHandle.ofData("Hello world")) //
-				.put("html", HttpHandle.ofDir(Paths.get("src/main/html"))) //
-				.put("path", HttpHandle.ofDir(Tmp.root)) //
-				.put("token", HttpHandle.ofMethod(PerMap //
+				.put("api", authToken.handleFilter("user", HttpHandle.data("Hello world"))) //
+				.put("hello", HttpHandle.data("Hello world")) //
+				.put("html", HttpHandle.dir(Paths.get("src/main/html"))) //
+				.put("path", HttpHandle.dir(Tmp.root)) //
+				.put("token", HttpHandle.dispatchMethod(PerMap //
 						.<String, Handler> empty() //
 						.put("PATCH", authToken.handleRefreshToken(authenticateRoles)) //
 						.put("POST", authToken.handleGetToken(authenticateRoles)))) //
-				.put("site", HttpHandle.ofSession(authenticate, handlerSite)) //
+				.put("site", HttpHandle.session(authenticate, handlerSite)) //
 				.put("sse", handlerSse));
 
 		new HttpServe(8051).serve(handler1);
