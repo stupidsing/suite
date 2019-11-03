@@ -58,6 +58,8 @@ public class ServerMain {
 			return authenticate.test(username, password) ? List.of("user") : null;
 		};
 
+		var authToken = new HttpAuthToken();
+
 		var sseHeaders = new Header(PerMap //
 				.<String, PerList<String>> empty() //
 				.put("Cache-Control", PerList.of("no-cache")) //
@@ -82,8 +84,9 @@ public class ServerMain {
 		});
 
 		var handler1 = HttpHandle.ofDispatch(PerMap //
-				.<String, Handler>empty() //
-				.put("getToken", new  HttpAuthToken().handleGetToken(authenticateRoles)) //
+				.<String, Handler> empty() //
+				.put("api", authToken.handleFilter("user", HttpHandle.ofData("Hello world"))) //
+				.put("getToken", authToken.handleGetToken(authenticateRoles)) //
 				.put("hello", HttpHandle.ofData("Hello world")) //
 				.put("html", HttpHandle.ofPath(Paths.get("src/main/html"))) //
 				.put("path", HttpHandle.ofPath(Tmp.root)) //

@@ -36,7 +36,13 @@ let login = () => {
 		referrer: 'no-referrer',
 	})
 	.then(response => response.json())
-	.then(json => console.log('token', json.token))
+	.then(json => json.token)
+	.then(token => fetch('/api', {
+		headers: { 'Authorization': token, },
+		method: 'GET',
+	}))
+	.then(response => response.text())
+	.then(text => console.log(text))
 	.catch(error => {
 		console.error("login", error);
 		alert("authenticate failed");

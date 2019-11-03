@@ -6,10 +6,13 @@ import java.nio.file.Files;
 import java.security.KeyFactory;
 import java.security.KeyPairGenerator;
 import java.security.MessageDigest;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.concurrent.Callable;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
@@ -35,53 +38,63 @@ public class Crypts {
 		return cryptStr(rsaBs(ownerSuffix));
 	}
 
-	public Crypt<byte[]> aesBs(String aesKey) {
+	public Crypt<byte[]> aesBs(String key0) {
 		return ex(() -> {
 			var sha = MessageDigest.getInstance("SHA-1");
-			var key1 = aesKey.getBytes(Utf8.charset);
+			var key1 = key0.getBytes(Utf8.charset);
 			var key2 = sha.digest(key1);
 			var key3 = Arrays.copyOf(key2, 16);
 			var sks = new SecretKeySpec(key3, "AES");
 
-			var enc = Cipher.getInstance("AES/ECB/PKCS5Padding");
-			enc.init(Cipher.ENCRYPT_MODE, sks);
-
-			var dec = Cipher.getInstance("AES/ECB/PKCS5Padding");
-			dec.init(Cipher.DECRYPT_MODE, sks);
-
-			return cryptBs(enc, dec);
+			return cryptBs(() -> {
+				var enc = Cipher.getInstance("AES/ECB/PKCS5Padding");
+				enc.init(Cipher.ENCRYPT_MODE, sks);
+				return enc;
+			}, () -> {
+				var dec = Cipher.getInstance("AES/ECB/PKCS5Padding");
+				dec.init(Cipher.DECRYPT_MODE, sks);
+				return dec;
+			});
 		});
 	}
 
 	public Crypt<byte[]> rsaBs(String ownerSuffix) {
 		return ex(() -> {
-			var privKeyPath = HomeDir.resolve("private/private.key" + ownerSuffix);
 			var pubKeyPath = HomeDir.resolve("private/public.key" + ownerSuffix);
+			var privKeyPath = HomeDir.resolve("private/private.key" + ownerSuffix);
 
 			if (!Files.exists(pubKeyPath)) {
 				var kpg = KeyPairGenerator.getInstance("RSA");
 				var keyPair = kpg.generateKeyPair();
-				Files.writeString(privKeyPath, encode(keyPair.getPrivate().getEncoded()));
 				Files.writeString(pubKeyPath, encode(keyPair.getPublic().getEncoded()));
+				Files.writeString(privKeyPath, encode(keyPair.getPrivate().getEncoded()));
 			}
 
 			var kf = KeyFactory.getInstance("RSA");
-			var dec = Cipher.getInstance("RSA");
-			var enc = Cipher.getInstance("RSA");
-
-			if (Files.exists(privKeyPath)) {
-				var privKeyStr = Files.readAllLines(privKeyPath).iterator().next();
-				var privKey = new PKCS8EncodedKeySpec(decode(privKeyStr));
-				dec.init(Cipher.DECRYPT_MODE, kf.generatePrivate(privKey));
-			}
+			PublicKey pubKey;
+			PrivateKey privKey;
 
 			if (Files.exists(pubKeyPath)) {
 				var pubKeyStr = Files.readAllLines(pubKeyPath).iterator().next();
-				var pubKey = new X509EncodedKeySpec(decode(pubKeyStr));
-				enc.init(Cipher.ENCRYPT_MODE, kf.generatePublic(pubKey));
-			}
+				pubKey = kf.generatePublic(new X509EncodedKeySpec(decode(pubKeyStr)));
+			} else
+				pubKey = null;
 
-			return cryptBs(enc, dec);
+			if (Files.exists(privKeyPath)) {
+				var privKeyStr = Files.readAllLines(privKeyPath).iterator().next();
+				privKey = kf.generatePrivate(new PKCS8EncodedKeySpec(decode(privKeyStr)));
+			} else
+				privKey = null;
+
+			return cryptBs(() -> {
+				var enc = Cipher.getInstance("RSA");
+				enc.init(Cipher.ENCRYPT_MODE, pubKey);
+				return enc;
+			}, () -> {
+				var dec = Cipher.getInstance("RSA");
+				dec.init(Cipher.DECRYPT_MODE, privKey);
+				return dec;
+			});
 		});
 	}
 
@@ -97,14 +110,14 @@ public class Crypts {
 		};
 	}
 
-	private Crypt<byte[]> cryptBs(Cipher enc, Cipher dec) {
+	private Crypt<byte[]> cryptBs(Callable<Cipher> enc, Callable<Cipher> dec) {
 		return new Crypt<byte[]>() {
 			public byte[] encrypt(byte[] in) {
-				return ex(() -> enc.doFinal(in));
+				return ex(() -> enc.call().doFinal(in));
 			}
 
 			public byte[] decrypt(byte[] in) {
-				return ex(() -> dec.doFinal(in));
+				return ex(() -> dec.call().doFinal(in));
 			}
 		};
 	}

@@ -73,14 +73,24 @@ public class HttpAuthToken {
 		return verifyToken(List.of(requiredRole), (username, roles, request) -> handler.handle(request));
 	}
 
+	private Response returnToken(String username, List<String> roles) {
+		var exp = Time.now().addSeconds(timeoutDuration).ymdHms();
+		var uer = username + "/" + exp + "/" + Read.from(roles).toJoinedString(",");
+		var sig = sign(uer);
+		var token = aes.encrypt((sig + "|" + uer).getBytes(Utf8.charset));
+		var node = om.createObjectNode().put("token", token);
+		var bs = ex(() -> om.writeValueAsBytes(node));
+		return Response.of(Puller.<Bytes> of(Bytes.of(bs)));
+	}
+
 	private Handler verifyToken( //
 			List<String> requiredRoles, //
 			FixieFun3<String, List<String>, Request, Response> handler1) {
 		return request -> {
-			var a = request.headers.get("Authentication");
-			var sc = new String(aes.decrypt(a), Utf8.charset).split("|");
+			var a = request.headers.get("Authorization");
+			var sc = new String(aes.decrypt(a), Utf8.charset).split("\\|");
 
-			return FixieArray.of(sc).map((sig, uer) -> FixieArray.of(uer.split(":")).map((username, exp, rs) -> {
+			return FixieArray.of(sc).map((sig, uer) -> FixieArray.of(uer.split("/")).map((username, exp, rs) -> {
 				var expiry = Time.ofYmdHms(exp).epochSec();
 				var roles = List.of(rs.split(","));
 				var b = Equals.string(sig, sign(uer)) && System.currentTimeMillis() < expiry * 1000l;
@@ -91,16 +101,6 @@ public class HttpAuthToken {
 				return b ? handler1.apply(username, roles, request) : Response.of(Http.S403);
 			}));
 		};
-	}
-
-	private Response returnToken(String username, List<String> roles) {
-		var exp = Time.now().addSeconds(timeoutDuration).ymdHms();
-		var uer = username + ":" + exp + ":" + Read.from(roles).toJoinedString(",");
-		var sig = sign(uer);
-		var token = aes.encrypt((sig + "|" + uer).getBytes(Utf8.charset));
-		var node = om.createObjectNode().put("token", token);
-		var bs = ex(() -> om.writeValueAsBytes(node));
-		return Response.of(Puller.<Bytes> of(Bytes.of(bs)));
 	}
 
 	private String sign(String contents) {
