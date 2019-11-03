@@ -64,7 +64,7 @@ public class HttpAuthToken {
 		});
 	}
 
-	public Handler handleExtendToken(Fun2<String, String, List<String>> getRolesFun) {
+	public Handler handleRefreshToken(Fun2<String, String, List<String>> getRolesFun) {
 		return verifyToken(List.of(), (username, roles, request) -> returnToken(username, roles));
 	}
 

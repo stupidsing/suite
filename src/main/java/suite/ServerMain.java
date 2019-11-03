@@ -90,6 +90,7 @@ public class ServerMain {
 				.put("hello", HttpHandle.ofData("Hello world")) //
 				.put("html", HttpHandle.ofPath(Paths.get("src/main/html"))) //
 				.put("path", HttpHandle.ofPath(Tmp.root)) //
+				.put("refreshToken", authToken.handleRefreshToken(authenticateRoles)) //
 				.put("site", HttpHandle.ofSession(authenticate, handlerSite)) //
 				.put("sse", handlerSse));
 

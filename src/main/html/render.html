@@ -37,6 +37,13 @@ let login = () => {
 	})
 	.then(response => response.json())
 	.then(json => json.token)
+	.then(token => fetch('/refreshToken', {
+		headers: { 'Authorization': token, },
+		method: 'GET',
+	}))
+	.then(response => response.json())
+	.then(json => json.token)
+	.then(token => { renderAgain(view, vm => ({ ...vm, token, })); return token; })
 	.then(token => fetch('/api', {
 		headers: { 'Authorization': token, },
 		method: 'GET',
@@ -57,9 +64,10 @@ let view0 = rd.parse(`
 	<span style='font-family: sans-serif;'>
 		<font face='Monospac821 BT, Monaco, Consolas'>
 			<form name='login'>
-				Username <input id='username' type='text' autofocus='' /><br />
+				Username <input id='username' type='text' autofocus='autofocus' /><br />
 				Password <input id='password' type='password' /><br />
-				<input type='button' value='Login' rd_on_click='login()' />
+				<input type='button' value='Login' rd_on_click='login()' /><br />
+				token: { vm.token }
 			</form>
 		</font>
 
@@ -76,7 +84,7 @@ let view0 = rd.parse(`
 			<rd_for v='vm.fruits'><li>{ vm }</li></rd_for>
 		</ul>
 		<div>
-			<rd_map v='vm.sse'>server sent events: <rd_for>{ vm }</rd_for></rd_map>
+			<!--rd_map v='vm.sse'>server sent events: <rd_for>{ vm }</rd_for></rd_map-->
 		</div>
 		<button rd_on_click='close()'>Close</button>
 	</span>
