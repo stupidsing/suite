@@ -34,7 +34,7 @@ import suite.streamlet.As;
 import suite.util.Memoize;
 import suite.util.To;
 
-public class HttpUtil {
+public class HttpClient {
 
 	private static long coolDownTime;
 

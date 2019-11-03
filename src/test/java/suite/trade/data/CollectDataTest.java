@@ -4,7 +4,7 @@ import org.junit.Test;
 
 import primal.Verbs.Sleep;
 import primal.streamlet.Streamlet;
-import suite.http.HttpUtil;
+import suite.http.HttpClient;
 import suite.trade.Forex;
 import suite.trade.TimeRange;
 import suite.util.To;
@@ -23,7 +23,7 @@ public class CollectDataTest {
 
 		for (var code : equities) {
 			var url = yahoo.tableUrl(code, TimeRange.ages());
-			HttpUtil.get(url).out().collect(To.file("/data/storey/markets/" + code + ".csv"));
+			HttpClient.get(url).out().collect(To.file("/data/storey/markets/" + code + ".csv"));
 			Sleep.quietly(2000);
 		}
 	}

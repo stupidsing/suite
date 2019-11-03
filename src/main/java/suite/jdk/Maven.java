@@ -2,7 +2,7 @@ package suite.jdk;
 
 import static primal.statics.Rethrow.ex;
 
-import suite.http.HttpUtil;
+import suite.http.HttpClient;
 import suite.util.XmlUtil;
 
 public class Maven {
@@ -14,7 +14,7 @@ public class Maven {
 	public String getLatestUrl(String m2repo, String groupId, String artifactId) {
 		var url = m2repo + groupId.replace('.', '/') + "/" + artifactId + "/maven-metadata.xml";
 
-		var version = HttpUtil.get(url).inputStream().doRead(is -> ex(() -> new XmlUtil() //
+		var version = HttpClient.get(url).inputStream().doRead(is -> ex(() -> new XmlUtil() //
 				.read(is) //
 				.children("metadata") //
 				.uniqueResult() //

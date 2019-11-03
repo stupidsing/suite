@@ -19,7 +19,7 @@ import primal.primitive.adt.Bytes;
 import primal.puller.Puller;
 import primal.streamlet.Streamlet;
 import suite.cfg.HomeDir;
-import suite.http.HttpUtil;
+import suite.http.HttpClient;
 import suite.serialize.SerOutput;
 
 public class StoreCache {
@@ -79,7 +79,7 @@ public class StoreCache {
 	}
 
 	public Puller<Bytes> http(String url) {
-		return getPuller(url, HttpUtil.get(url)::out);
+		return getPuller(url, HttpClient.get(url)::out);
 	}
 
 	public Bytes get(Bytes key, Source<Bytes> source) {

@@ -9,7 +9,7 @@ public class HttpUtilTest {
 
 	@Test
 	public void test() {
-		var result = HttpUtil //
+		var result = HttpClient //
 				.get("https://pointless.online/") //
 				.in(Pull.from("{\"key\": \"value\"}")) //
 				.send();

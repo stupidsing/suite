@@ -10,7 +10,7 @@ import java.util.List;
 import primal.MoreVerbs.Read;
 import primal.Verbs.Compare;
 import primal.streamlet.Streamlet;
-import suite.http.HttpUtil;
+import suite.http.HttpClient;
 import suite.node.util.Singleton;
 
 // https://www.hkex.com.hk/eng/stat/statrpt/factbook/factbook2012/fb2012.htm
@@ -131,9 +131,9 @@ public class HkexFactBook {
 	@SuppressWarnings("unused")
 	private String getUrl0(int year, String section) {
 		var uri0 = ex(() -> new URI("https://www.hkex.com.hk/eng/stat/statrpt/factbook/factbook.htm"));
-		var links0 = HttpUtil.resolveLinks(uri0);
+		var links0 = HttpClient.resolveLinks(uri0);
 		var uri1 = links0.get(Integer.toString(year));
-		var links1 = HttpUtil.resolveLinks(uri1);
+		var links1 = HttpClient.resolveLinks(uri1);
 
 		for (var e : links1.entrySet()) {
 			var link = e.getKey();

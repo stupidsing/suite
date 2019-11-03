@@ -12,7 +12,7 @@ import primal.Verbs.Build;
 import primal.primitive.adt.Bytes;
 import primal.puller.Puller;
 import primal.streamlet.Streamlet;
-import suite.http.HttpUtil;
+import suite.http.HttpClient;
 import suite.node.util.Singleton;
 
 public class Sina {
@@ -69,7 +69,7 @@ public class Sina {
 			if (isCache)
 				in = Singleton.me.storeCache.http(url);
 			else
-				in = HttpUtil.get(url).out();
+				in = HttpClient.get(url).out();
 
 			return in //
 					.map(bytes -> Build.string(sb -> {

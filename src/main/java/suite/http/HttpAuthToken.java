@@ -1,14 +1,21 @@
 package suite.http;
 
+import static primal.statics.Rethrow.ex;
+
 import java.util.List;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import primal.MoreVerbs.Pull;
 import primal.MoreVerbs.Read;
 import primal.Nouns.Utf8;
 import primal.Verbs.Equals;
+import primal.Verbs.ReadString;
 import primal.adt.FixieArray;
 import primal.adt.Fixie_.FixieFun3;
 import primal.fp.Funs2.Fun2;
+import primal.primitive.adt.Bytes;
+import primal.puller.Puller;
 import suite.cfg.Defaults;
 import suite.http.Crypts.Crypt;
 import suite.http.Http.Handler;
@@ -31,6 +38,8 @@ public class HttpAuthToken {
 	private Crypt<byte[]> rsa = crypts.rsaBs(Defaults.salt);
 	private Sha2 sha2 = new Sha2();
 
+	private ObjectMapper om = new ObjectMapper();
+
 	public Handler handleLogin(String authenticatePath) {
 		return request -> Response.of(Pull.from("<html>" //
 				+ "<head><title>Login</title></head>" //
@@ -46,17 +55,18 @@ public class HttpAuthToken {
 				+ "</html>"));
 	}
 
-	public Handler handleAuthenticate(Fun2<String, String, List<String>> getRolesFun) {
+	public Handler handleGetToken(Fun2<String, String, List<String>> getRolesFun) {
 		return request -> {
-			var attrs = HttpHeaderUtil.getPostedAttrs(request.inputStream);
-			var username = attrs.get("username");
-			var password = attrs.get("password");
+			var jsonStr = ReadString.from(request.inputStream);
+			var json = ex(() -> om.readTree(jsonStr));
+			var username = json.path("username").asText();
+			var password = json.path("password").asText();
 			var roles = getRolesFun.apply(username, password);
 			return roles != null ? returnToken(username, roles) : Response.of(Http.S403);
 		};
 	}
 
-	public Handler handleExtendAuth(Fun2<String, String, List<String>> getRolesFun) {
+	public Handler handleExtendToken(Fun2<String, String, List<String>> getRolesFun) {
 		return verifyToken(List.of(), (username, roles, request) -> returnToken(username, roles));
 	}
 
@@ -89,7 +99,9 @@ public class HttpAuthToken {
 		var uer = username + ":" + exp + ":" + Read.from(roles).toJoinedString(",");
 		var sig = sign(uer);
 		var token = aes.encrypt((sig + "|" + uer).getBytes(Utf8.charset));
-		return Response.of(Http.S200, token);
+		var node = om.createObjectNode().put("token", token);
+		var bs = ex(() -> om.writeValueAsBytes(node));
+		return Response.of(Puller.<Bytes> of(Bytes.of(bs)));
 	}
 
 	private String sign(String contents) {

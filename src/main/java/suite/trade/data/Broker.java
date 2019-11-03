@@ -9,7 +9,7 @@ import primal.fp.Funs.Source;
 import primal.streamlet.Streamlet;
 import suite.cfg.Defaults;
 import suite.cfg.HomeDir;
-import suite.http.HttpUtil;
+import suite.http.HttpClient;
 import suite.streamlet.As;
 import suite.streamlet.ReadBytes;
 import suite.trade.Trade;
@@ -34,7 +34,7 @@ public interface Broker {
 
 			var bytes = Files.exists(path) //
 					? ReadBytes.from(path) //
-					: Defaults.bindSecrets("stockUrl .0").map(url -> new Streamlet<>(HttpUtil.get(url)::out));
+					: Defaults.bindSecrets("stockUrl .0").map(url -> new Streamlet<>(HttpClient.get(url)::out));
 
 			return bytes.collect(As::table).map(Trade::of).collect();
 		}

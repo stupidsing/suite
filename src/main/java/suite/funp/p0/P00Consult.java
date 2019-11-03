@@ -13,7 +13,7 @@ import primal.statics.Rethrow.SourceEx;
 import suite.Suite;
 import suite.funp.Funp_;
 import suite.funp.Funp_.Funp;
-import suite.http.HttpUtil;
+import suite.http.HttpClient;
 import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Tree;
@@ -62,7 +62,7 @@ public class P00Consult {
 		if (url.startsWith("file://"))
 			return r1.apply(() -> ReadFile.from(url.substring(7)));
 		else if (url.startsWith("http://") || url.startsWith("https://"))
-			return r0.apply(HttpUtil.get(url).inputStream());
+			return r0.apply(HttpClient.get(url).inputStream());
 		else
 			return r1.apply(() -> ReadStream.of(Funp.class.getResourceAsStream(url)));
 	}

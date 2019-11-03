@@ -26,7 +26,7 @@ import primal.primitive.adt.pair.LngFltPair;
 import primal.streamlet.Streamlet;
 import primal.streamlet.Streamlet2;
 import suite.cfg.HomeDir;
-import suite.http.HttpUtil;
+import suite.http.HttpClient;
 import suite.node.util.Singleton;
 import suite.os.LogUtil;
 import suite.streamlet.As;
@@ -210,7 +210,7 @@ public class Yahoo {
 				+ "&events=div%7Csplit%7Cearn" //
 				+ "&corsDomain=finance.yahoo.com";
 
-		return HttpUtil.get(url).inputStream().doRead(om::readTree);
+		return HttpClient.get(url).inputStream().doRead(om::readTree);
 	}
 
 	/**
@@ -233,7 +233,7 @@ public class Yahoo {
 					+ "?s=" + symbols.sort(Compare::objects).map(this::encode).toJoinedString("+") //
 					+ "&f=s" + field;
 
-			return HttpUtil.get(url).out().collect(As::csv).toMap(array -> array[0], array -> Float.parseFloat(array[1]));
+			return HttpClient.get(url).out().collect(As::csv).toMap(array -> array[0], array -> Float.parseFloat(array[1]));
 		} else
 			return new HashMap<>();
 	}

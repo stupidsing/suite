@@ -15,7 +15,7 @@ import primal.MoreVerbs.Read;
 import primal.Verbs.Equals;
 import primal.fp.Funs.Source;
 import primal.streamlet.Streamlet;
-import suite.http.HttpUtil;
+import suite.http.HttpClient;
 import suite.node.util.Singleton;
 import suite.os.Execute;
 import suite.os.SerializedStoreCache;
@@ -288,7 +288,7 @@ public class Hkex {
 	public float queryHangSengIndex() {
 		var url = "https://www.hkex.com.hk/eng/csm/ws/IndexMove.asmx/GetData?LangCode=en";
 
-		return HttpUtil.get(url).inputStream().doRead(is -> Read //
+		return HttpClient.get(url).inputStream().doRead(is -> Read //
 				.each(om.readTree(is)) //
 				.flatMap(json_ -> json_.path("data")) //
 				.filter(json_ -> Equals.string(json_.path("title").textValue(), "Hong Kong")) //
@@ -318,7 +318,7 @@ public class Hkex {
 				+ "&TMM=" //
 				+ "&TYYYY=";
 
-		return HttpUtil.get(url).inputStream().doRead(is -> Read //
+		return HttpClient.get(url).inputStream().doRead(is -> Read //
 				.each(om.readTree(is)) //
 				.flatMap(json_ -> json_.path("data")) //
 				.filter(json_ -> Equals.string(json_.path("title").textValue(), "Stock price HKD")) //

@@ -12,6 +12,7 @@ import primal.Nouns.Tmp;
 import primal.Nouns.Utf8;
 import primal.Verbs.Sleep;
 import primal.Verbs.Start;
+import primal.fp.Funs2.Fun2;
 import primal.persistent.PerList;
 import primal.persistent.PerMap;
 import primal.primitive.adt.Bytes;
@@ -20,6 +21,7 @@ import suite.http.Http;
 import suite.http.Http.Handler;
 import suite.http.Http.Header;
 import suite.http.Http.Response;
+import suite.http.HttpAuthToken;
 import suite.http.HttpHandle;
 import suite.http.HttpHeaderUtil;
 import suite.http.HttpServe;
@@ -52,8 +54,12 @@ public class ServerMain {
 				.secrets() //
 				.prove(Suite.substitute("auth .0 .1", new Str(username), new Str(password)));
 
+		Fun2<String, String, List<String>> authenticateRoles = (username, password) -> {
+			return authenticate.test(username, password) ? List.of("user") : null;
+		};
+
 		var sseHeaders = new Header(PerMap //
-				.<String, PerList<String>>empty() //
+				.<String, PerList<String>> empty() //
 				.put("Cache-Control", PerList.of("no-cache")) //
 				.put("Content-Type", PerList.of("text/event-stream")));
 
@@ -77,6 +83,7 @@ public class ServerMain {
 
 		var handler1 = HttpHandle.ofDispatch(PerMap //
 				.<String, Handler>empty() //
+				.put("getToken", new  HttpAuthToken().handleGetToken(authenticateRoles)) //
 				.put("hello", HttpHandle.ofData("Hello world")) //
 				.put("html", HttpHandle.ofPath(Paths.get("src/main/html"))) //
 				.put("path", HttpHandle.ofPath(Tmp.root)) //
