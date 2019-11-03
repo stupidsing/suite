@@ -9,7 +9,6 @@ import org.junit.Test;
 import suite.Suite;
 import suite.fp.FunRbTreeTest;
 import suite.funp.Funp_;
-import suite.http.Crypts;
 import suite.ip.ImperativeCompiler;
 
 public class FailedTests {
@@ -29,12 +28,6 @@ public class FailedTests {
 				+ "data (C1 :t) over :t as (C0 :t) ~ \n" //
 				+ "data (C2 :t) over :t as (C1 :t) ~ \n" //
 				+ "(C2 boolean) of (A true)"));
-	}
-
-	@Test
-	public void testCrypts() {
-		var rsa = new Crypts().rsa("");
-		assertEquals(rsa.encrypt(new byte[0]), rsa.encrypt(new byte[0]));
 	}
 
 	// cannot capture reference to a structure

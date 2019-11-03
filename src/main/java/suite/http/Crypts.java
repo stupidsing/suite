@@ -18,6 +18,7 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 
 import primal.Nouns.Utf8;
+import primal.os.Log_;
 import suite.cfg.HomeDir;
 
 public class Crypts {
@@ -64,6 +65,7 @@ public class Crypts {
 			var privKeyPath = HomeDir.resolve("private/private.key" + ownerSuffix);
 
 			if (!Files.exists(pubKeyPath)) {
+				Log_.info("generating key for owner " + ownerSuffix);
 				var kpg = KeyPairGenerator.getInstance("RSA");
 				var keyPair = kpg.generateKeyPair();
 				Files.writeString(pubKeyPath, encode(keyPair.getPublic().getEncoded()));

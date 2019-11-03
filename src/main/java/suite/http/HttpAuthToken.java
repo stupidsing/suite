@@ -33,11 +33,10 @@ public class HttpAuthToken {
 	public static long timeoutDuration = 3600l;
 
 	private Crypts crypts = new Crypts();
-	private Crypt<String> aes = crypts.aes(Defaults.salt);
-	private Crypt<byte[]> rsa = crypts.rsaBs(Defaults.salt);
+	private ObjectMapper om = new ObjectMapper();
 	private Sha2 sha2 = new Sha2();
 
-	private ObjectMapper om = new ObjectMapper();
+	private Crypt<String> aes = crypts.aes(Defaults.salt);
 
 	public Handler handleLogin(String authenticatePath) {
 		return request -> Response.of(Pull.from("<html>" //
