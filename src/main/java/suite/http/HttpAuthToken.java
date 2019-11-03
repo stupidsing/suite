@@ -104,7 +104,7 @@ public class HttpAuthToken {
 	}
 
 	private String sign(String contents) {
-		return sha2.sha256Str(rsa.encrypt(contents.getBytes(Utf8.charset)));
+		return Defaults.bindSecrets("key .0").map(key -> sha2.sha256Str((contents + key).getBytes(Utf8.charset)));
 	}
 
 }
