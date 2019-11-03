@@ -16,6 +16,7 @@ import primal.persistent.PerList;
 import primal.persistent.PerMap;
 import primal.primitive.adt.Bytes;
 import suite.cfg.Defaults;
+import suite.http.HttpHandle;
 import suite.http.HttpHandler;
 import suite.http.HttpHeader;
 import suite.http.HttpHeaderUtil;
@@ -73,12 +74,12 @@ public class ServerMain {
 			writer.f(null);
 		});
 
-		var handler1 = HttpHandler.ofDispatch(PerMap //
+		var handler1 = HttpHandle.ofDispatch(PerMap //
 				.<String, HttpHandler>empty() //
-				.put("hello", HttpHandler.ofData("Hello world")) //
-				.put("html", HttpHandler.ofPath(Paths.get("src/main/html"))) //
-				.put("path", HttpHandler.ofPath(Tmp.root)) //
-				.put("site", HttpHandler.ofSession(authenticate, handlerSite)) //
+				.put("hello", HttpHandle.ofData("Hello world")) //
+				.put("html", HttpHandle.ofPath(Paths.get("src/main/html"))) //
+				.put("path", HttpHandle.ofPath(Tmp.root)) //
+				.put("site", HttpHandle.ofSession(authenticate, handlerSite)) //
 				.put("sse", handlerSse));
 
 		new HttpServe(8051).serve(handler1);
