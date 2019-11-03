@@ -21,7 +21,7 @@ public class SmtpSsl {
 
 	public void send(String to, String subject, String body) {
 		Defaults.bindSecrets("mail .0 .1 .2").map((username, enc, sender) -> {
-			var password = decode(System.getenv("USER").toCharArray(), enc);
+			var password = decode(Defaults.salt.toCharArray(), enc);
 
 			var props = new Properties();
 			props.put("mail.smtp.auth", "true");

@@ -20,6 +20,7 @@ public class Defaults {
 
 	public static int bufferLimit = 65536;
 	public static int nThreads = Runtime.getRuntime().availableProcessors();
+	public static String salt = System.getenv("USER");
 	public static boolean testFlag = false; // for controlled experiments
 
 	public static FixieArray<String> bindSecrets(String pattern) {

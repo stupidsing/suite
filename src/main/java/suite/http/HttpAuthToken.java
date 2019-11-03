@@ -9,6 +9,7 @@ import primal.Verbs.Equals;
 import primal.adt.FixieArray;
 import primal.adt.Fixie_.FixieFun3;
 import primal.fp.Funs2.Fun2;
+import suite.cfg.Defaults;
 import suite.http.Crypts.Crypt;
 import suite.math.Sha2;
 import suite.trade.Time;
@@ -23,7 +24,7 @@ public class HttpAuthToken {
 	public static long timeoutDuration = 3600l;
 
 	private Crypts crypts = new Crypts();
-	private Crypt<String> aes = crypts.aes(System.getenv("USER"));
+	private Crypt<String> aes = crypts.aes(Defaults.salt);
 	private Crypt<byte[]> rsa = crypts.rsaBs("");
 	private Sha2 sha2 = new Sha2();
 
