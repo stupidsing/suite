@@ -17,7 +17,7 @@ import primal.Verbs.Close;
 import primal.Verbs.New;
 import primal.os.Log_;
 
-public class SocketUtil {
+public class Listen {
 
 	public interface Io {
 		public void serve(InputStream is, OutputStream os) throws IOException;
@@ -31,15 +31,15 @@ public class SocketUtil {
 		public void serve(Reader reader, PrintWriter writer) throws IOException;
 	}
 
-	public void listenRw(int port, Rw rw) {
-		listenIo(port, (is, os) -> {
+	public void rw(int port, Rw rw) {
+		io(port, (is, os) -> {
 			try (var reader = new BufferedReader(new InputStreamReader(is, Utf8.charset)); var writer = new PrintWriter(os)) {
 				rw.serve(reader, writer);
 			}
 		});
 	}
 
-	public void listenIo(int port, Io io) {
+	public void io(int port, Io io) {
 		var executor = New.executor();
 
 		try (var server = new ServerSocket(port)) {
@@ -63,7 +63,7 @@ public class SocketUtil {
 		}
 	}
 
-	public void listenIoAsync(int port, IoAsync io) {
+	public void ioAsync(int port, IoAsync io) {
 		var executor = New.executor();
 
 		try (var server = new ServerSocket(port)) {

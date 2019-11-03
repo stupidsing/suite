@@ -11,7 +11,7 @@ import primal.fp.Funs.Fun;
 import primal.primitive.adt.Bytes;
 import primal.primitive.adt.Bytes.BytesBuilder;
 import suite.cfg.Defaults;
-import suite.os.SocketUtil;
+import suite.os.Listen;
 
 public class ServeSocket {
 
@@ -21,7 +21,7 @@ public class ServeSocket {
 	}
 
 	private void listen(Fun<Bytes, Bytes> handle) {
-		new SocketUtil().listenIo(5151, (is, os) -> {
+		new Listen().io(5151, (is, os) -> {
 			var in = read(is, Defaults.bufferLimit);
 			var out = handle.apply(in);
 			os.write(out.bs);

@@ -1,7 +1,7 @@
 package suite.http;
 
 import primal.os.Log_;
-import suite.os.SocketUtil;
+import suite.os.Listen;
 import suite.primitive.IoSink;
 
 /**
@@ -18,6 +18,7 @@ import suite.primitive.IoSink;
 public class HttpServe {
 
 	private HttpIo httpIo = new HttpIo();
+	private Listen listen = new Listen();
 	private int port;
 
 	public HttpServe(int port) {
@@ -25,7 +26,7 @@ public class HttpServe {
 	}
 
 	public void serve(HttpHandler handler) {
-		new SocketUtil().listenIo(port, (is, os) -> {
+		listen.io(port, (is, os) -> {
 			var request = httpIo.readRequest(is);
 			HttpResponse response = null;
 
@@ -43,7 +44,7 @@ public class HttpServe {
 	}
 
 	public void serveAsync(HttpHandlerAsync handler) {
-		new SocketUtil().listenIoAsync(port, (is, os, close) -> {
+		listen.ioAsync(port, (is, os, close) -> {
 			var request = httpIo.readRequest(is);
 
 			IoSink<HttpResponse> sink = response -> {

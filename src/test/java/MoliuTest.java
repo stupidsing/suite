@@ -1,7 +1,6 @@
 import static org.junit.Assert.assertEquals;
 import static primal.statics.Rethrow.ex;
 
-import java.nio.charset.StandardCharsets;
 import java.security.KeyFactory;
 import java.security.KeyPairGenerator;
 import java.security.MessageDigest;
@@ -14,6 +13,8 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.junit.Test;
+
+import primal.Nouns.Utf8;
 
 public class MoliuTest {
 
@@ -40,13 +41,18 @@ public class MoliuTest {
 				var privateKeyStr = b64.encode(keyPair.getPrivate().getEncoded());
 				var publicKeyStr = b64.encode(keyPair.getPublic().getEncoded());
 
+				System.out.println("rsa private key = " + privateKeyStr);
+				System.out.println("rsa public key = " + publicKeyStr);
+
 				var enc = Cipher.getInstance("RSA");
 				enc.init(Cipher.ENCRYPT_MODE, kf.generatePublic(new X509EncodedKeySpec(b64.decode(publicKeyStr))));
 				var encrypted = enc.doFinal(bs);
 
 				var dec = Cipher.getInstance("RSA");
 				dec.init(Cipher.DECRYPT_MODE, kf.generatePrivate(new PKCS8EncodedKeySpec(b64.decode(privateKeyStr))));
-				return dec.doFinal(encrypted);
+				var decrypted = dec.doFinal(encrypted);
+
+				return decrypted;
 			}
 		};
 
@@ -79,7 +85,7 @@ public class MoliuTest {
 
 			private SecretKeySpec key(String key0) {
 				var sha = ex(() -> MessageDigest.getInstance("SHA-1"));
-				var key1 = key0.getBytes(StandardCharsets.UTF_8);
+				var key1 = key0.getBytes(Utf8.charset);
 				var key2 = sha.digest(key1);
 				var key3 = Arrays.copyOf(key2, 16);
 				return new SecretKeySpec(key3, "AES");
@@ -89,12 +95,12 @@ public class MoliuTest {
 		var aesKey = "ssshhhhhhhhhhh!!!!";
 
 		var in = "Secret Message";
-		var inbs = in.getBytes(StandardCharsets.UTF_8);
+		var inbs = in.getBytes(Utf8.charset);
 
 		var rsaOutBs = rsa.e(inbs);
 		var aesOutBs = aes.decrypt(aesKey, aes.encrypt(aesKey, inbs));
-		var rsaOut = new String(rsaOutBs, StandardCharsets.UTF_8);
-		var aesOut = new String(aesOutBs, StandardCharsets.UTF_8);
+		var rsaOut = new String(rsaOutBs, Utf8.charset);
+		var aesOut = new String(aesOutBs, Utf8.charset);
 
 		System.out.println("rsa = " + rsaOut);
 		System.out.println("aes = " + aesOut);

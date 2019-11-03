@@ -10,8 +10,8 @@ import primal.MoreVerbs.Read;
 import primal.Verbs.Start;
 import primal.adt.BooMutable;
 import primal.os.Log_;
-import suite.os.SocketUtil;
-import suite.os.SocketUtil.Io;
+import suite.os.Listen;
+import suite.os.Listen.Io;
 import suite.util.Copy;
 
 public class LoadBalancer {
@@ -61,7 +61,7 @@ public class LoadBalancer {
 
 		try {
 			probe.start();
-			new SocketUtil().listenIo(port, io);
+			new Listen().io(port, io);
 		} finally {
 			running.setFalse();
 		}

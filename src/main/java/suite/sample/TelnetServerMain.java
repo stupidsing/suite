@@ -11,7 +11,7 @@ import java.util.Set;
 
 import primal.MoreVerbs.Read;
 import primal.os.Log_;
-import suite.os.SocketUtil;
+import suite.os.Listen;
 import suite.util.Copy;
 import suite.util.RunUtil;
 
@@ -22,7 +22,7 @@ public class TelnetServerMain {
 	}
 
 	private boolean run() {
-		new SocketUtil().listenIo(2323, (sis, sos) -> new Server().serve(sis, sos));
+		new Listen().io(2323, (sis, sos) -> new Server().serve(sis, sos));
 		return true;
 	}
 

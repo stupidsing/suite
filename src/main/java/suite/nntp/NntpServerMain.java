@@ -14,7 +14,7 @@ import primal.MoreVerbs.Split;
 import primal.Verbs.Equals;
 import primal.Verbs.ReadLine;
 import primal.io.WriteStream;
-import suite.os.SocketUtil;
+import suite.os.Listen;
 import suite.util.CommandUtil;
 import suite.util.RunUtil;
 
@@ -31,7 +31,7 @@ public class NntpServerMain {
 	}
 
 	private boolean run() {
-		new SocketUtil().listenIo(119, (sis, sos) -> new Server().serve(sis, sos));
+		new Listen().io(119, (sis, sos) -> new Server().serve(sis, sos));
 		return true;
 	}
 

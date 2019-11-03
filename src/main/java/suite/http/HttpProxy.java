@@ -12,7 +12,7 @@ import primal.Verbs.Start;
 import primal.fp.Funs.Fun;
 import primal.os.Log_;
 import primal.primitive.adt.pair.IntObjPair;
-import suite.os.SocketUtil;
+import suite.os.Listen;
 import suite.util.Copy;
 
 /**
@@ -31,7 +31,7 @@ public class HttpProxy {
 	}
 
 	public void serve0() {
-		new SocketUtil().listenIo(port, (is, os) -> {
+		new Listen().io(port, (is, os) -> {
 			var line = ReadLine.from(is);
 			Log_.info("PROXY " + line);
 
@@ -53,7 +53,7 @@ public class HttpProxy {
 	public void serve() {
 		var httpIo = new HttpIo();
 
-		new SocketUtil().listenIo(port, (is, os) -> {
+		new Listen().io(port, (is, os) -> {
 			var request0 = httpIo.readRequest(is);
 			var pq = request0.path() + "?" + request0.query;
 			Log_.info("PROXY " + pq);

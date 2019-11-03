@@ -7,7 +7,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 
 import primal.Nouns.Utf8;
-import suite.os.SocketUtil;
+import suite.os.Listen;
 
 public class Connector {
 
@@ -26,7 +26,7 @@ public class Connector {
 	}
 
 	public void listen() {
-		new SocketUtil().listenRw(5151, (reader, writer) -> writer.println("Hello World"));
+		new Listen().rw(5151, (reader, writer) -> writer.println("Hello World"));
 	}
 
 }

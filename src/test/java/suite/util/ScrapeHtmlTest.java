@@ -23,12 +23,6 @@ public class ScrapeHtmlTest {
 	}
 
 	@Test
-	public void testEncode() {
-		assertEquals("abc & def", sh.decode("abc&nbsp;&amp;&nbsp;def"));
-		assertEquals("abc&nbsp;&amp;&nbsp;def", sh.encode("abc & def"));
-	}
-
-	@Test
 	public void testHtml() {
 		var h = "<meta charset='utf-8'><html><!-- comment --><head></head><body>text</body></html>";
 		var hn = sh.parse(h);

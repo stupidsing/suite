@@ -12,7 +12,7 @@ import java.util.Map;
 
 import primal.Nouns.Utf8;
 import suite.cfg.Defaults;
-import suite.os.SocketUtil;
+import suite.os.Listen;
 import suite.util.RunUtil;
 import suite.util.To;
 
@@ -35,7 +35,7 @@ public class SimpleCgiServerMain {
 	}
 
 	private void run(Handler handler) {
-		new SocketUtil().listenIo(4000, (is, os) -> {
+		new Listen().io(4000, (is, os) -> {
 			var headers = readHeaders(is);
 
 			os.write(("Status: 200 OK\r\n" //
