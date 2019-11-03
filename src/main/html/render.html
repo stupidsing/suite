@@ -23,7 +23,7 @@ let login = () => {
 	formData.append('password', password);
 	// formData.append('photo', document.querySelector('input[type="file"][multiple]').files[0]);
 
-	fetch('/getToken', {
+	fetch('/token', {
 		// body: formData,
 		body: JSON.stringify({ username, password, }),
 		cache: 'no-cache',
@@ -37,9 +37,9 @@ let login = () => {
 	})
 	.then(response => response.json())
 	.then(json => json.token)
-	.then(token => fetch('/refreshToken', {
+	.then(token => fetch('/token', {
 		headers: { 'Authorization': token, },
-		method: 'GET',
+		method: 'PATCH',
 	}))
 	.then(response => response.json())
 	.then(json => json.token)

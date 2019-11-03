@@ -86,11 +86,13 @@ public class ServerMain {
 		var handler1 = HttpHandle.ofDispatch(PerMap //
 				.<String, Handler> empty() //
 				.put("api", authToken.handleFilter("user", HttpHandle.ofData("Hello world"))) //
-				.put("getToken", authToken.handleGetToken(authenticateRoles)) //
 				.put("hello", HttpHandle.ofData("Hello world")) //
-				.put("html", HttpHandle.ofPath(Paths.get("src/main/html"))) //
-				.put("path", HttpHandle.ofPath(Tmp.root)) //
-				.put("refreshToken", authToken.handleRefreshToken(authenticateRoles)) //
+				.put("html", HttpHandle.ofDir(Paths.get("src/main/html"))) //
+				.put("path", HttpHandle.ofDir(Tmp.root)) //
+				.put("token", HttpHandle.ofMethod(PerMap //
+						.<String, Handler> empty() //
+						.put("PATCH", authToken.handleRefreshToken(authenticateRoles)) //
+						.put("POST", authToken.handleGetToken(authenticateRoles)))) //
 				.put("site", HttpHandle.ofSession(authenticate, handlerSite)) //
 				.put("sse", handlerSse));
 

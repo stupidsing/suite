@@ -29,14 +29,7 @@ public class HttpHandle {
 		return request -> Response.of(Pull.from(data));
 	}
 
-	public static Handler ofDispatch(PerMap<String, Handler> map) {
-		return request0 -> request0.split().map((path, request1) -> {
-			var handler = map.get(path);
-			return handler != null ? handler.handle(request1) : fail("no handler for " + path);
-		});
-	}
-
-	public static Handler ofPath(Path root) {
+	public static Handler ofDir(Path root) {
 		return request -> ex(() -> {
 			var path = root;
 			long size;
@@ -96,6 +89,20 @@ public class HttpHandle {
 			else
 				return Response.of(Http.S404);
 		});
+	}
+
+	public static Handler ofDispatch(PerMap<String, Handler> map) {
+		return request0 -> request0.split().map((path, request1) -> {
+			var handler = map.get(path);
+			return handler != null ? handler.handle(request1) : fail("no handler for " + path);
+		});
+	}
+
+	public static Handler ofMethod(PerMap<String, Handler> map) {
+		return request -> {
+			var handler = map.get(request.method);
+			return handler != null ? handler.handle(request) : fail("no handler for " + request.method);
+		};
 	}
 
 	public static Handler ofSession(BiPredicate<String, String> authenticate, Handler handler) {
