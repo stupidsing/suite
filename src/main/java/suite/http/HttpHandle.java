@@ -96,7 +96,7 @@ public class HttpHandle {
 	}
 
 	public static HttpHandler ofSession(BiPredicate<String, String> authenticate, HttpHandler handler) {
-		return new HttpSessionControl().getHandler(authenticate, handler);
+		return new HttpAuthSession().getHandler(authenticate, handler);
 	}
 
 	public static HttpHandler ofSse(Sink<Sink<Bytes>> write) {

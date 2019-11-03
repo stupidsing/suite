@@ -16,9 +16,9 @@ import suite.util.HtmlUtil;
  *
  * @author ywsing
  */
-public class HttpSessionControl {
+public class HttpAuthSession {
 
-	public static long TIMEOUTDURATION = 3600 * 1000l;
+	public static long timeoutDuration = 3600 * 1000l;
 
 	private HtmlUtil htmlUtil = new HtmlUtil();
 	private SessionManager sm = new HttpSessionManager();
@@ -76,7 +76,7 @@ public class HttpSessionControl {
 						sm.remove(sessionId);
 
 					response = showLoginPage(PerList.end(), false);
-				} else if (session != null && current < session.lastRequestDt.value() + TIMEOUTDURATION) {
+				} else if (session != null && current < session.lastRequestDt.value() + timeoutDuration) {
 					session.lastRequestDt.update(current);
 					response = showProtectedPage(request, sessionId);
 				} else

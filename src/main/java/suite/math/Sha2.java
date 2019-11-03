@@ -2,6 +2,7 @@ package suite.math;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
+import java.util.Base64;
 
 import primal.primitive.IntLngSink;
 import primal.primitive.IntVerbs.CopyInt;
@@ -40,6 +41,10 @@ public class Sha2 {
 
 		var h0 = sha256(Bytes.concat(Bytes.of(ikp), Bytes.of(bs0)).toArray());
 		return sha256(Bytes.concat(Bytes.of(okp), Bytes.of(h0)).toArray());
+	}
+
+	public String sha256Str(byte[] bs) {
+		return Base64.getEncoder().encodeToString(sha256(bs));
 	}
 
 	public byte[] sha256(byte[] bs0) {
