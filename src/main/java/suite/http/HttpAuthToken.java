@@ -48,11 +48,7 @@ public class HttpAuthToken {
 			var username = attrs.get("username");
 			var password = attrs.get("password");
 			var roles = getRolesFun.apply(username, password);
-
-			if (roles != null)
-				return returnToken(username, roles);
-			else
-				return HttpResponse.of(HttpResponse.HTTP403);
+			return roles != null ? returnToken(username, roles) : HttpResponse.of(HttpResponse.HTTP403);
 		};
 	}
 
