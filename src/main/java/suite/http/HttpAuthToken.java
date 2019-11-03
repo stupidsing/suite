@@ -10,7 +10,6 @@ import primal.MoreVerbs.Pull;
 import primal.MoreVerbs.Read;
 import primal.Nouns.Utf8;
 import primal.Verbs.Equals;
-import primal.Verbs.ReadString;
 import primal.adt.FixieArray;
 import primal.adt.Fixie_.FixieFun3;
 import primal.fp.Funs2.Fun2;
@@ -56,14 +55,14 @@ public class HttpAuthToken {
 	}
 
 	public Handler handleGetToken(Fun2<String, String, List<String>> getRolesFun) {
-		return request -> {
-			var jsonStr = ReadString.from(request.inputStream);
-			var json = ex(() -> om.readTree(jsonStr));
+		return request -> ex(() -> {
+			var bs = request.inputStream.readAllBytes();
+			var json = om.readTree(bs);
 			var username = json.path("username").asText();
 			var password = json.path("password").asText();
 			var roles = getRolesFun.apply(username, password);
 			return roles != null ? returnToken(username, roles) : Response.of(Http.S403);
-		};
+		});
 	}
 
 	public Handler handleExtendToken(Fun2<String, String, List<String>> getRolesFun) {
