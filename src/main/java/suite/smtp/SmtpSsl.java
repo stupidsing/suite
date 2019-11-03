@@ -50,7 +50,7 @@ public class SmtpSsl {
 	}
 
 	public static void main(String[] args) {
-		var salt = "abc123".toCharArray();
+		var salt = Defaults.salt.toCharArray();
 		var in = "def456";
 		var encoded = encode(salt, in);
 		var decoded = decode(salt, encoded);
