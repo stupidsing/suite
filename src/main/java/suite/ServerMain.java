@@ -56,7 +56,7 @@ public class ServerMain {
 				.prove(Suite.substitute("auth .0 .1", new Str(username), new Str(password)));
 
 		Fun2<String, String, List<String>> authenticateRoles = (username, password) -> {
-			return authenticate.test(username, password) ? List.of("user") : null;
+			return authenticate.test(username, password) ? List.of("role") : null;
 		};
 
 		var authToken = new HttpAuthToken();
@@ -86,7 +86,7 @@ public class ServerMain {
 
 		var handler = HttpHandle.dispatchPath(PerMap //
 				.<String, Handler> empty() //
-				.put("api", authToken.handleFilter("user", HttpHandle.data("Hello world"))) //
+				.put("api", authToken.handleFilter("role", HttpHandle.data("Hello world"))) //
 				.put("hello", HttpHandle.data("Hello world")) //
 				.put("html", HttpHandle.dir(Paths.get(FileUtil.suiteDir() + "/src/main/html"))) //
 				.put("path", HttpHandle.dir(Tmp.root)) //

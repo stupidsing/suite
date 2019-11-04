@@ -52,7 +52,7 @@ let login = () => {
 	.then(text => console.log(text))
 	.catch(error => {
 		console.error("login", error);
-		alert("authenticate failed");
+		renderAgain(view, vm => ({ ...vm, token: 'login failed', }));
 	});
 };
 
