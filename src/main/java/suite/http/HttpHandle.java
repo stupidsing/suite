@@ -2,7 +2,6 @@ package suite.http;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
-import static primal.statics.Fail.fail;
 import static primal.statics.Rethrow.ex;
 
 import java.io.IOException;
@@ -94,14 +93,14 @@ public class HttpHandle {
 	public static Handler dispatchMethod(PerMap<String, Handler> map) {
 		return request -> {
 			var handler = map.get(request.method);
-			return handler != null ? handler.handle(request) : fail("no handler for " + request.method);
+			return handler != null ? handler.handle(request) : Response.of(Http.S405);
 		};
 	}
 
 	public static Handler dispatchPath(PerMap<String, Handler> map) {
 		return request0 -> request0.split().map((path, request1) -> {
 			var handler = map.get(path);
-			return handler != null ? handler.handle(request1) : fail("no handler for " + path);
+			return handler != null ? handler.handle(request1) : Response.of(Http.S404);
 		});
 	}
 

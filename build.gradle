@@ -38,3 +38,7 @@ run {
 		args project.args.split('\\s+')
 	standardInput System.in
 }
+
+task classpath << {
+    new File(buildDir, "classpath").text = configurations.runtime.asPath + "\n"
+}

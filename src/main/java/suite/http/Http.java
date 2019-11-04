@@ -23,6 +23,7 @@ public class Http {
 	public static final Status S206 = new Status("206 Partial Content");
 	public static final Status S403 = new Status("403 forbidden");
 	public static final Status S404 = new Status("404 file not found");
+	public static final Status S405 = new Status("404 method not allowed");
 	public static final Status S500 = new Status("500 internal server error");
 
 	public interface Handler {
