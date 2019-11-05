@@ -91,7 +91,7 @@ import suite.funp.P2.FunpData;
 import suite.funp.P2.FunpFramePointer;
 import suite.funp.P2.FunpHeapAlloc;
 import suite.funp.P2.FunpHeapDealloc;
-import suite.funp.P2.FunpInvoke;
+import suite.funp.P2.FunpInvoke1;
 import suite.funp.P2.FunpInvoke2;
 import suite.funp.P2.FunpInvokeIo;
 import suite.funp.P2.FunpLambdaCapture;
@@ -99,7 +99,7 @@ import suite.funp.P2.FunpMemory;
 import suite.funp.P2.FunpOp;
 import suite.funp.P2.FunpOperand;
 import suite.funp.P2.FunpOperand2;
-import suite.funp.P2.FunpRoutine;
+import suite.funp.P2.FunpRoutine1;
 import suite.funp.P2.FunpRoutine2;
 import suite.funp.P2.FunpRoutineIo;
 import suite.funp.P2.FunpSaveRegisters0;
@@ -797,7 +797,7 @@ public class P2InferType {
 			int os_;
 			Funp invoke;
 			if (lt.os == is || lt.os == ps)
-				invoke = FunpInvoke.of(lambda1, lt.is, lt.os, is_, os_ = 0);
+				invoke = FunpInvoke1.of(lambda1, lt.is, lt.os, is_, os_ = 0);
 			else if (lt.os == ps + ps)
 				invoke = FunpInvoke2.of(lambda1, lt.is, lt.os, is_, os_ = 0);
 			else
@@ -869,7 +869,7 @@ public class P2InferType {
 		private Funp eraseRoutine(LambdaType lt, Funp frame, Funp expr) {
 			var is_ = lt.isPassReg() ? 0 : lt.is;
 			if (lt.os == is || lt.os == ps)
-				return FunpRoutine.of(frame, expr, lt.is, lt.os, is_, 0);
+				return FunpRoutine1.of(frame, expr, lt.is, lt.os, is_, 0);
 			else if (lt.os == ps + ps)
 				return FunpRoutine2.of(frame, expr, lt.is, lt.os, is_, 0);
 			else

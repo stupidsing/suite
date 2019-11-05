@@ -56,14 +56,14 @@ import suite.funp.P2.FunpData;
 import suite.funp.P2.FunpFramePointer;
 import suite.funp.P2.FunpHeapAlloc;
 import suite.funp.P2.FunpHeapDealloc;
-import suite.funp.P2.FunpInvoke;
+import suite.funp.P2.FunpInvoke1;
 import suite.funp.P2.FunpInvoke2;
 import suite.funp.P2.FunpInvokeIo;
 import suite.funp.P2.FunpMemory;
 import suite.funp.P2.FunpOp;
 import suite.funp.P2.FunpOperand;
 import suite.funp.P2.FunpOperand2;
-import suite.funp.P2.FunpRoutine;
+import suite.funp.P2.FunpRoutine1;
 import suite.funp.P2.FunpRoutine2;
 import suite.funp.P2.FunpRoutineIo;
 import suite.funp.P2.FunpSaveRegisters0;
@@ -382,7 +382,7 @@ public class P4GenerateCode {
 				}
 
 				return out.g();
-			})).applyIf(FunpInvoke.class, f -> f.apply((routine, is, os, istack, ostack) -> {
+			})).applyIf(FunpInvoke1.class, f -> f.apply((routine, is, os, istack, ostack) -> {
 				compileInvoke(routine);
 				return returnOp(amd64.regs(os)[axReg]);
 			})).applyIf(FunpInvoke2.class, f -> f.apply((routine, is, os, istack, ostack) -> {
@@ -439,7 +439,7 @@ public class P4GenerateCode {
 				var out = compile(expr);
 				em.emit(Insn.REMARK, amd64.remark("END ---> " + remark));
 				return out;
-			})).applyIf(FunpRoutine.class, f -> f.apply((frame, expr, is, os, istack, ostack) -> {
+			})).applyIf(FunpRoutine1.class, f -> f.apply((frame, expr, is, os, istack, ostack) -> {
 				var _ax = amd64.regs(os)[axReg];
 				return compileRoutine(f, frame, c1 -> c1.compileSpec(expr, _ax));
 			})).applyIf(FunpRoutine2.class, f -> f.apply((frame, expr, is, os, istack, ostack) -> {

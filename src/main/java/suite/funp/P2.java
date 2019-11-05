@@ -219,13 +219,13 @@ public class P2 {
 		}
 	}
 
-	public static class FunpInvoke implements Funp, P4.End {
+	public static class FunpInvoke1 implements Funp, P4.End {
 		public Funp routine;
 		public int is, os;
 		public int istack, ostack;
 
-		public static FunpInvoke of(Funp routine, int is, int os, int istack, int ostack) {
-			var f = new FunpInvoke();
+		public static FunpInvoke1 of(Funp routine, int is, int os, int istack, int ostack) {
+			var f = new FunpInvoke1();
 			f.routine = routine;
 			f.is = is;
 			f.os = os;
@@ -381,14 +381,14 @@ public class P2 {
 		}
 	}
 
-	public static class FunpRoutine implements Funp, P4.End {
+	public static class FunpRoutine1 implements Funp, P4.End {
 		public Funp frame;
 		public Funp expr;
 		public int is, os;
 		public int istack, ostack;
 
-		public static FunpRoutine of(Funp frame, Funp expr, int is, int os, int istack, int ostack) {
-			var f = new FunpRoutine();
+		public static FunpRoutine1 of(Funp frame, Funp expr, int is, int os, int istack, int ostack) {
+			var f = new FunpRoutine1();
 			f.frame = frame;
 			f.expr = expr;
 			f.is = is;
