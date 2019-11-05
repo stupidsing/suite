@@ -4,7 +4,6 @@ import static primal.statics.Rethrow.ex;
 
 import java.nio.file.Files;
 
-import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -15,11 +14,6 @@ import primal.Verbs.Sleep;
 import primal.fp.Funs2.FoldOp;
 
 public class TelegramBot {
-
-	public static void main(String[] args) {
-		ApiContextInitializer.init();
-		new TelegramBot().bot((userId, message) -> message);
-	}
 
 	public void bot(FoldOp<Integer, String> fun) {
 		ex(() -> {

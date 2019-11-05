@@ -30,7 +30,7 @@ import suite.os.Execute;
 import suite.os.FileUtil;
 import suite.os.Schedule;
 import suite.os.Scheduler;
-import suite.telegram.TelegramBot;
+import suite.sample.TelegramBotMain;
 import suite.util.RunUtil;
 
 // mvn compile exec:java -Dexec.mainClass=suite.ServerMain
@@ -109,7 +109,7 @@ public class ServerMain {
 	}
 
 	private void runTelegramBot() {
-		new TelegramBot().bot((userId, message) -> message);
+		new TelegramBotMain().run();
 	}
 
 }

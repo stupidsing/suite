@@ -9,11 +9,13 @@ import suite.util.RunUtil;
 public class TelegramBotMain {
 
 	public static void main(String[] args) {
-		RunUtil.run(() -> {
-			ApiContextInitializer.init();
-			new TelegramBot().bot((userId, message) -> message);
-			return true;
-		});
+		RunUtil.run(new TelegramBotMain()::run);
+	}
+
+	public boolean run() {
+		ApiContextInitializer.init();
+		new TelegramBot().bot((userId, message) -> message);
+		return true;
 	}
 
 }
