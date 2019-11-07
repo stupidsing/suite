@@ -81,9 +81,8 @@ public class HttpHandle {
 									return -1;
 							}
 						}));
-					}
-
-					return Response.of(Http.S200, Pull.from(Files.newInputStream(path)), size);
+					} else
+						return Response.of(Http.S200, Pull.from(Files.newInputStream(path)), size);
 				}
 			else
 				return Response.of(Http.S404);
@@ -109,7 +108,7 @@ public class HttpHandle {
 	}
 
 	public static Handler sse(Sink<Sink<Bytes>> write) {
-		Header sseHeaders = new Header(PerMap //
+		var sseHeaders = new Header(PerMap //
 				.<String, PerList<String>> empty() //
 				.put("Cache-Control", PerList.of("no-cache")) //
 				.put("Content-Type", PerList.of("text/event-stream")));
