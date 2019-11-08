@@ -1,5 +1,6 @@
 package suite;
 
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -108,8 +109,12 @@ public class ServerMain {
 		).run();
 	}
 
-	private void runTelegramBot() {
-		new TelegramBotMain().run();
+	private boolean runTelegramBot() {
+		var tokenPath = Tmp.path("kowloonbot.token");
+		var b = Files.exists(tokenPath);
+		if (b)
+			new TelegramBotMain("Kowloonbot", tokenPath).run();
+		return b;
 	}
 
 }

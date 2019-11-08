@@ -3,28 +3,35 @@ package suite.telegram;
 import static primal.statics.Rethrow.ex;
 
 import java.nio.file.Files;
+import java.nio.file.Path;
 
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
-import primal.Nouns.Tmp;
 import primal.Verbs.Sleep;
 import primal.fp.Funs2.FoldOp;
 
 public class TelegramBot {
 
+	private String botUsername;
+	private Path tokenPath;
+
+	public TelegramBot(String botUsername, Path tokenPath) {
+		this.botUsername = botUsername;
+		this.tokenPath = tokenPath;
+	}
+
 	public void bot(FoldOp<Integer, String> fun) {
 		ex(() -> {
 			return new TelegramBotsApi().registerBot(new TelegramLongPollingBot() {
 				public String getBotUsername() {
-					return "Kowloonbot";
+					return botUsername;
 				}
 
 				public String getBotToken() {
-					var path = Tmp.path("kowloonbot.token");
-					return ex(() -> Files.readAllLines(path)).iterator().next();
+					return ex(() -> Files.readAllLines(tokenPath)).iterator().next();
 				}
 
 				public void onUpdateReceived(Update update) {

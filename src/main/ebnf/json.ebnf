@@ -1,0 +1,27 @@
+# http://www.json.org/
+
+json ::= element
+
+value ::= object | array | string | number | "true" | "false" | "null"
+object ::= "{" (ws | members) "}"
+members ::= member ("," member)*
+member ::= ws string ws ":" element
+array ::= "[" (ws | elements) "]"
+element ::= ws value ws
+elements ::= element ("," element)*
+
+string ::= """" characters """"
+characters ::= character*
+character ::= [0020-FFFF] /except/ ("""" | "\") | "\" escape
+escape ::= """" | "\" | "/" | "b" | "f" | "n" | "r" | "t" | "u" hex hex hex hex
+number ::= integer fraction? exponent?
+integer ::= "-"? (digit | one-nine digits)
+fraction ::= "." digits
+exponent ::= ("E" | "e") sign digits
+digits ::= digit*
+digit ::= "0" | one-nine
+hex ::= digit | [A-F] | [a-f]
+one-nine ::= [1-9]
+sign ::= "" | "+" | "-"
+ws ::= wsc*
+wsc ::= "%09" | "%0A" | "%0D" | "%20"

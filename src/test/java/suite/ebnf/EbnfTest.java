@@ -46,7 +46,7 @@ public class EbnfTest {
 	@Test
 	public void testJson() throws IOException {
 		var ebnf = new Ebnf(new FileReader("src/main/ebnf/json.ebnf"));
-		System.out.println(ebnf.parse("json", "[32]"));
+		System.out.println(ebnf.parse("json", "{ \"key\": [32, \"text\"] }"));
 	}
 
 	@Test
