@@ -44,6 +44,12 @@ public class EbnfTest {
 	}
 
 	@Test
+	public void testJson() throws IOException {
+		var ebnf = new Ebnf(new FileReader("src/main/ebnf/json.ebnf"));
+		System.out.println(ebnf.parse("json", "[32]"));
+	}
+
+	@Test
 	public void testHeadRecursion() throws IOException {
 		var ebnf = new Ebnf(new StringReader("" //
 				+ "number ::= number \"x\" digit | digit \n" //

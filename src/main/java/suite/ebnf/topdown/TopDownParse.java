@@ -329,6 +329,10 @@ public class TopDownParse {
 			e = expect.unicodeClass(entity.substring(4, entity.length() - 1));
 		else if (entity.length() == 5 && entity.charAt(0) == '[' && entity.charAt(2) == '-' && entity.charAt(4) == ']')
 			e = expect.charRange(entity.charAt(1), entity.charAt(3));
+		else if (entity.length() == 11 //
+				&& entity.charAt(0) == '[' && entity.charAt(5) == '-' && entity.charAt(10) == ']')
+			e = expect.charRange((char) Integer.parseInt(entity.substring(1, 5), 16),
+					(char) Integer.parseInt(entity.substring(6, 10), 16));
 		else
 			e = null;
 
