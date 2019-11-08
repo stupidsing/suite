@@ -1,6 +1,5 @@
 package suite.os;
 
-import java.util.List;
 import java.util.Random;
 
 import org.junit.Test;
@@ -32,12 +31,7 @@ public class GenerateNameTest {
 	}
 
 	private String getRandom(String url) {
-		var firstNames = storeCache.http(url).collect(As::lines).toList();
-		var firstName = getRandom(firstNames);
-		return firstName;
-	}
-
-	private String getRandom(List<String> list) {
+		var list = storeCache.http(url).collect(As::lines).toList();
 		return list.get(random.nextInt(list.size()));
 	}
 
