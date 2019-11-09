@@ -1,11 +1,9 @@
 package suite.jdk;
 
-import static primal.statics.Rethrow.ex;
-
-import java.nio.file.Files;
 import java.nio.file.Path;
 
 import primal.Verbs.New;
+import primal.Verbs.ReadFile;
 import primal.jdk.UnsafeUtil;
 import primal.os.Log_;
 
@@ -21,7 +19,7 @@ public class JdkUnsafeLoadClassUtil extends JdkUtil {
 
 	private <T> Class<? extends T> load(Class<T> interfaceClazz, String canonicalName, Path path) {
 		Log_.info("Loading class " + canonicalName);
-		var bytes = ex(() -> Files.readAllBytes(path));
+		var bytes = ReadFile.from(path).readBytes();
 		return new UnsafeUtil().defineClass(interfaceClazz, canonicalName, bytes);
 	}
 

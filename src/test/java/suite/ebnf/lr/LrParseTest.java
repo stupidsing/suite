@@ -18,6 +18,7 @@ public class LrParseTest {
 	public void testComplexity() {
 		var e = "e0";
 		var sb = new StringBuilder(e + " ::= \"0\" | \"1\"\n");
+
 		for (var i = 0; i < 6; i++) {
 			var enext = "e" + (i + 1);
 			var op = "op" + i;
@@ -25,8 +26,9 @@ public class LrParseTest {
 			e = enext;
 		}
 
-		System.out.println(sb.toString());
-		var lrParse = LrParse.of(sb.toString(), e);
+		var text = sb.toString();
+		System.out.println(text);
+		var lrParse = LrParse.of(text, e);
 		assertNotNull(lrParse.parse("0 op1 1"));
 	}
 

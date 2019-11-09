@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.Comparator;
 import java.util.Random;
 
@@ -13,6 +12,7 @@ import org.junit.Test;
 
 import primal.Nouns.Tmp;
 import primal.Verbs.Compare;
+import primal.Verbs.DeleteFile;
 import primal.primitive.fp.AsInt;
 import suite.btree.impl.B_TreeBuilder;
 import suite.file.impl.JournalledFileFactory;
@@ -40,7 +40,7 @@ public class B_TreeTest {
 		var pageSize = 4096;
 		var path = Tmp.path("b_tree-dump");
 
-		Files.deleteIfExists(path);
+		DeleteFile.ifExists(path);
 		var builder = new B_TreeBuilder<>(ser.int_, ser.string(16));
 
 		try (var jpf = JournalledFileFactory.open(path, pageSize);
@@ -62,7 +62,7 @@ public class B_TreeTest {
 		var pageSize = 4096;
 		var path = Tmp.path("b_tree-file");
 
-		Files.deleteIfExists(path);
+		DeleteFile.ifExists(path);
 		var builder = new B_TreeBuilder<>(ser.int_, ser.string(16));
 
 		shuffleNumbers();
@@ -108,7 +108,7 @@ public class B_TreeTest {
 			keys[j] = temp;
 		}
 
-		Files.deleteIfExists(path);
+		DeleteFile.ifExists(path);
 		var builder = new B_TreeBuilder<>(ser.int_, ser.bytes(64));
 
 		try (var jpf = JournalledFileFactory.open(path, pageSize); var b_tree = builder.build(jpf, 9999, cmp)) {

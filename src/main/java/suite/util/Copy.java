@@ -1,5 +1,7 @@
 package suite.util;
 
+import static primal.statics.Fail.fail;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -53,8 +55,8 @@ public class Copy {
 
 	public static Th streamByThread(InputStream is, OutputStream os, boolean isClose) {
 		return New.thread(() -> {
-			try {
-				stream(is, os);
+			try (var is_ = is) {
+				stream_(is_, os);
 			} catch (InterruptedIOException ex) {
 			} catch (SocketException ex) {
 				if (!Equals.string(ex.getMessage(), "Socket closed"))
@@ -66,14 +68,20 @@ public class Copy {
 		});
 	}
 
-	public static void stream(InputStream is, OutputStream os) throws IOException {
+	public static void stream(InputStream is, OutputStream os) {
 		try (var is_ = is) {
-			var buffer = new byte[Buffer.size];
-			int len;
-			while (0 <= (len = is_.read(buffer))) {
-				os.write(buffer, 0, len);
-				os.flush();
-			}
+			stream_(is_, os);
+		} catch (IOException ex) {
+			fail(ex);
+		}
+	}
+
+	private static void stream_(InputStream is, OutputStream os) throws IOException {
+		var buffer = new byte[Buffer.size];
+		int len;
+		while (0 <= (len = is.read(buffer))) {
+			os.write(buffer, 0, len);
+			os.flush();
 		}
 	}
 

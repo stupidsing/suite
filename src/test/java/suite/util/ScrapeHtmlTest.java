@@ -6,7 +6,6 @@ import org.junit.Test;
 
 import primal.Verbs.ReadFile;
 import primal.Verbs.Substring;
-import primal.io.ReadStream;
 import suite.inspect.Dump;
 import suite.util.ScrapeHtml.HtmlNode;
 
@@ -56,7 +55,7 @@ public class ScrapeHtmlTest {
 
 	@Test
 	public void testRender() {
-		var h = ReadFile.from("src/main/html/render.html").doRead(ReadStream::readString);
+		var h = ReadFile.from("src/main/html/render.html").readString();
 		Dump.details(sh.parse(h));
 	}
 

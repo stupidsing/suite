@@ -15,6 +15,7 @@ import primal.Verbs.DeleteFile;
 import primal.Verbs.Format;
 import primal.Verbs.Get;
 import primal.Verbs.Mk;
+import primal.Verbs.ReadFile;
 import primal.Verbs.WriteFile;
 import primal.adt.Pair;
 import primal.streamlet.Streamlet;
@@ -65,7 +66,7 @@ public class LibraryMain {
 							.collect();
 
 					var fileInfo = new FileInfo();
-					fileInfo.md5 = Md5Crypt.md5Crypt(ex(() -> Files.readAllBytes(path)));
+					fileInfo.md5 = Md5Crypt.md5Crypt(ReadFile.from(path).readBytes());
 					fileInfo.tags = tags;
 					return fileInfo;
 				});
