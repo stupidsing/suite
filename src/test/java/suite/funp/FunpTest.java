@@ -1,6 +1,7 @@
 package suite.funp;
 
 import static org.junit.Assert.assertEquals;
+import static primal.statics.Fail.fail;
 
 import org.junit.Test;
 
@@ -41,6 +42,12 @@ public class FunpTest {
 	@Test
 	public void testCapture() {
 		test(46, "define m := 31 ~ let l := capture (n => n + m) ~ uncapture l ~ 15 | l");
+		try {
+			test(46, "define m := 31 ~ let l := capture (n => n + m) ~ 15 | l");
+			fail();
+		} catch (RuntimeException ex) {
+			assertEquals("ALLOC MISMATCH", ex.getMessage());
+		}
 	}
 
 	@Test
