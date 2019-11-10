@@ -145,7 +145,7 @@ public class InterpretFunLazy {
 					var defs = Tree.read(list).map(tuple::match).map2(a -> Atom.name(a[0]), a -> a[1]).collect();
 					var env1 = defs.keys().fold(env, (e, v) -> e.replace(v, new Reference()));
 					var i1 = new InferType(env1);
-					defs.sink((v, def) -> bind(i1.infer(def), env1.get(v)));
+					defs.sink((v, def) -> bind(i1.infer(def), env1.getOrFail(v)));
 					return i1.infer(do_);
 				}).match(Matcher.error, m -> {
 					return new Reference();
@@ -191,7 +191,7 @@ public class InterpretFunLazy {
 			}
 
 			private Node get(Node var) {
-				return env.get(Atom.name(var));
+				return env.getOrFail(Atom.name(var));
 			}
 		}
 
@@ -314,7 +314,7 @@ public class InterpretFunLazy {
 			}).match(Matcher.unwrap, do_ -> {
 				return lazy(do_);
 			}).match(Matcher.var, name -> {
-				return vm.get(name);
+				return vm.getOrFail(name);
 			}).match(Matcher.wrap, do_ -> {
 				return lazy(do_);
 			}).nonNullResult();

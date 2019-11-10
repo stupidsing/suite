@@ -240,7 +240,7 @@ public class P2InferType {
 				var vns = pairs_.map(Pair::fst);
 				var env1 = vns.fold(env, (e, vn) -> e.put(vn, Pair.of(fdt, new Reference())));
 				var map = vns //
-						.<Node, Reference> map2(Atom::of, vn -> Reference.of(env1.get(vn).v)) //
+						.<Node, Reference> map2(Atom::of, vn -> Reference.of(env1.getOrFail(vn).v)) //
 						.toMap();
 				var ts = typeStructOf( //
 						Reference.of(Atom.TRUE), //
@@ -249,7 +249,7 @@ public class P2InferType {
 				var infer1 = new Infer(env1, checks, ts);
 
 				for (var pair : pairs_)
-					pair.map((vn, v) -> unify(n, env1.get(vn).v, infer1.infer(v, vn)));
+					pair.map((vn, v) -> unify(n, env1.getOrFail(vn).v, infer1.infer(v, vn)));
 
 				return infer1.infer(expr);
 			})).applyIf(FunpDeref.class, f -> f.apply(pointer -> {
@@ -459,13 +459,13 @@ public class P2InferType {
 		}
 
 		private Node getVariable(FunpVariable var, boolean isCloneType) {
-			var pair = env.get(var.vn);
-			if (pair != null)
-				return pair.map((type, tv) -> isCloneType && Fdt.isPoly(type) ? cloneType(tv) : tv);
-			else
-				// we reach here since the code is trying to access a outer variable from a
-				// global (scope-less) closure
-				return Funp_.fail(var, "cannot access " + var.vn + " due to limited scoping");
+
+			// if not found, it is because the code is trying to access a outer variable
+			// from a global (scope-less) closure
+			return env //
+					.getOpt(var.vn) //
+					.map(pair -> pair.map((type, tv) -> isCloneType && Fdt.isPoly(type) ? cloneType(tv) : tv)) //
+					.get(() -> Funp_.fail(var, "cannot access " + var.vn + " due to limited scoping"));
 		}
 	}
 
@@ -895,7 +895,7 @@ public class P2InferType {
 					})).applyIf(FunpMe.class, f -> {
 						return me.getAddress(scope);
 					}).applyIf(FunpVariable.class, f -> f.apply(vn -> {
-						return env.get(vn).getAddress(scope);
+						return env.getOrFail(vn).getAddress(scope);
 					})).applyIf(Funp.class, f -> {
 						return Funp_.fail(f, "requires pre-definition of a " + f);
 					}).nonNullResult();
@@ -929,7 +929,7 @@ public class P2InferType {
 		}
 
 		private Funp getVariable(String vn) {
-			return env.get(vn).get(scope);
+			return env.getOrFail(vn).get(scope);
 		}
 
 		private FunpMemory memory(FunpReference reference, Funp n) {

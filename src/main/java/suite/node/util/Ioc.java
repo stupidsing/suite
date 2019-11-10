@@ -31,16 +31,19 @@ public class Ioc {
 
 	private <T> T instantiateIfRequired(Class<T> clazz) {
 		var className = clazz.getCanonicalName();
-		var instance = instances.get(className);
-		if (instance != null) {
-			@SuppressWarnings("unchecked")
-			var t = (T) instance;
-			return t;
-		} else {
-			var t = instantiate(clazz);
-			instances = instances.put(className, t);
-			return t;
-		}
+
+		return instances //
+				.getOpt(className) //
+				.map(instance -> {
+					@SuppressWarnings("unchecked")
+					var t = (T) instance;
+					return t;
+				}) //
+				.get(() -> {
+					var t = instantiate(clazz);
+					instances = instances.put(className, t);
+					return t;
+				});
 	}
 
 	private <T> T instantiate(Class<T> clazz) {

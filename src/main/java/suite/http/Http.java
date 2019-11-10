@@ -5,6 +5,7 @@ import java.io.InputStream;
 import primal.MoreVerbs.Pull;
 import primal.MoreVerbs.Read;
 import primal.Nouns.Utf8;
+import primal.adt.Opt;
 import primal.adt.Pair;
 import primal.fp.Funs.Sink;
 import primal.persistent.PerList;
@@ -43,15 +44,17 @@ public class Http {
 			this.map = map;
 		}
 
-		public String get(String key) {
-			var list = map.get(key);
-			return list != null ? list.streamlet().uniqueResult() : null;
+		public Opt<String> getOpt(String key) {
+			return map.getOpt(key).map(opt -> opt.streamlet().uniqueResult());
+		}
+
+		public String getOrFail(String key) {
+			return getOpt(key).get();
 		}
 
 		public Header put(String key, String value) {
-			var list0 = map.get(key);
-			var list1 = list0 != null ? list0 : PerList.<String> end();
-			return new Header(map.replace(key, PerList.cons(value, list1)));
+			var list = map.getOpt(key).get(PerList::end);
+			return new Header(map.replace(key, PerList.cons(value, list)));
 		}
 
 		public Header remove(String key) {

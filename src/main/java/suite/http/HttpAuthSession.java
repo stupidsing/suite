@@ -32,9 +32,13 @@ public class HttpAuthSession {
 		return new Handler() {
 			public Response handle(Request request) {
 				var current = System.currentTimeMillis();
-				var cookie = request.headers.get("Cookie");
-				var sessionId = cookie != null ? HttpHeaderUtil.getCookieAttrs(cookie).get("session") : null;
-				var session = sessionId != null ? sm.get(sessionId) : null;
+
+				var sessionIdOpt = request //
+						.headers //
+								.getOpt("Cookie") //
+								.map(cookie -> HttpHeaderUtil.getCookieAttrs(cookie).get("session"));
+
+				var session = sessionIdOpt.map(sm::get).get(() -> null);
 				Response response;
 
 				if (Equals.ab(request.paths, PerList.of("login"))) {
@@ -44,7 +48,8 @@ public class HttpAuthSession {
 					var paths = HttpHeaderUtil.getPaths(attrs.get("path"));
 
 					if (authenticate.test(username, password)) {
-						sm.put(sessionId = getRandomSessionId(), session = new Session(username, current));
+						var sessionId = getRandomSessionId();
+						sm.put(sessionId, session = new Session(username, current));
 
 						var request1 = new Request( //
 								request.method, //
@@ -58,13 +63,11 @@ public class HttpAuthSession {
 					} else
 						response = showLoginPage(paths, true);
 				} else if (Equals.ab(request.paths, PerList.of("logout"))) {
-					if (sessionId != null)
-						sm.remove(sessionId);
-
+					sessionIdOpt.sink(sm::remove);
 					response = showLoginPage(PerList.end(), false);
 				} else if (session != null && current < session.lastRequestDt.value() + timeoutDuration) {
 					session.lastRequestDt.update(current);
-					response = showProtectedPage(request, sessionId);
+					response = showProtectedPage(request, sessionIdOpt.get());
 				} else
 					response = showLoginPage(request.paths, false);
 

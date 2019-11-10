@@ -95,7 +95,7 @@ public class DivisiblePolynomial<N> {
 				if (power < 0)
 					return inv1(pow(a, -power));
 				else
-					return poly(a).map(pair -> { // TODO assummed a != 0 or b != 0
+					return poly(a).map(pair -> { // TODO assumed a != 0 or b != 0
 						Poly<N> r = p1;
 						for (var ch : Integer.toBinaryString(power).toCharArray()) {
 							r = mul(r, r);

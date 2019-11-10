@@ -165,7 +165,7 @@ public class InterpretFunEager {
 			}).match(Matcher.unwrap, do_ -> {
 				return unwrap(eager_(do_));
 			}).match(Matcher.var, name -> {
-				return vm.get(name);
+				return vm.getOrFail(name);
 			}).match(Matcher.wrap, do_ -> {
 				return wrap(eager_(do_));
 			}).nonNullResult();

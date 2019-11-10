@@ -126,7 +126,7 @@ public class Funp_ {
 					associate(vars.replace(vn, f), expr);
 					return n_;
 				})).applyIf(FunpVariable.class, f -> f.apply(vn -> {
-					defByVariables.put(f, vars.get(vn));
+					defByVariables.put(f, vars.getOrFail(vn));
 					return n_;
 				})).result());
 			}

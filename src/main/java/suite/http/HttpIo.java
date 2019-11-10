@@ -16,7 +16,6 @@ import primal.Nouns.Utf8;
 import primal.Verbs.Equals;
 import primal.Verbs.ReadLine;
 import primal.adt.FixieArray;
-import primal.adt.Opt;
 import primal.fp.Funs2.Fun2;
 import primal.io.ReadStream;
 import suite.http.Http.Header;
@@ -53,8 +52,11 @@ public class HttpIo {
 		var headers = readHeaders(is0);
 
 		return FixieArray.of(ls).map((protocol, status) -> {
-			var cl = Opt.of(headers.get("Content-Length")).map(Integer::parseInt);
-			var is1 = !cl.isEmpty() ? sizeLimitedInputStream(is0, cl.get()) : is0;
+			var is1 = headers //
+					.getOpt("Content-Length") //
+					.map(Integer::parseInt) //
+					.map(cl -> sizeLimitedInputStream(is0, cl)) //
+					.or(is0);
 
 			return Equals.string(protocol, "HTTP/1.1") //
 					? new Response(status, headers, Pull.from(is1)) //
@@ -112,8 +114,7 @@ public class HttpIo {
 	}
 
 	private InputStream getContentStream(InputStream is, Header headers) {
-		var cl = Opt.of(headers.get("Content-Length")).map(Integer::parseInt);
-		return !cl.isEmpty() ? sizeLimitedInputStream(is, cl.get()) : is;
+		return headers.getOpt("Content-Length").map(Integer::parseInt).map(cl -> sizeLimitedInputStream(is, cl)).or(is);
 	}
 
 	private InputStream sizeLimitedInputStream(InputStream is, int size) {

@@ -7,6 +7,7 @@ import java.util.Comparator;
 import java.util.Deque;
 
 import primal.MoreVerbs.Read;
+import primal.adt.Opt;
 import primal.fp.Funs.Source;
 import primal.persistent.PerTree;
 import primal.streamlet.Streamlet;
@@ -75,7 +76,7 @@ public class PerRbTree<T> implements PerTree<T> {
 		});
 	}
 
-	public T find(T t) {
+	public Opt<T> findOpt(T t) {
 		var node = root;
 
 		while (node != null) {
@@ -85,10 +86,10 @@ public class PerRbTree<T> implements PerTree<T> {
 			else if (0 < c)
 				node = node.right;
 			else
-				return node.pivot;
+				return Opt.of(node.pivot);
 		}
 
-		return null;
+		return Opt.none();
 	}
 
 	public PerRbTree<T> add(T t) {

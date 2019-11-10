@@ -22,7 +22,7 @@ public class P01Expand {
 		if ((m = Suite.pattern("expand .0 := .1 ~ .2").match(node)) != null) {
 			var head = m[0];
 			return new P01Expand(macros.put(Prototype.of(head), new Node[] { head, m[1], })).e(m[2]);
-		} else if ((m = macros.get(Prototype.of(node))) != null) {
+		} else if ((m = macros.getOrNull(Prototype.of(node))) != null) {
 			var g = new Generalizer();
 			var t0 = g.generalize(m[0]);
 			var t1 = g.generalize(m[1]);

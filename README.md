@@ -41,10 +41,15 @@ An enthusiastic programmer, with some computer science, maths background. I writ
 Get following reasonable things ready:
 - Linux, unix, or cygwin
 - git
-- JDK 10
-- Apache Maven 3
+- openJDK
+- Apache Maven
 - eclipse
 - rlwrap if you want more command-line convenience
+
+Import the Hong Kong Post root CA:
+
+curl -sL http://www1.ecert.gov.hk/root/root_ca_1_pem.crt > /tmp/root_ca_1_pem.crt
+keytool -import -trustcacerts -keystore ${JAVA_HOME}/lib/security/cacerts -storepass changeit -alias hong_kong_post_root -file /tmp/root_ca_1_pem.crt
 
 Check-out and execute run.sh. It builds Java code, and performs some pre-compilation.
 

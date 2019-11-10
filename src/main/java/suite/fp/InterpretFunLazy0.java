@@ -68,10 +68,10 @@ public class InterpretFunLazy0 {
 				}).applyTree((op, l, r) -> {
 					var tr = new Reference();
 					var tl = Suite.substitute("FUN .0 FUN .1 .2", infer(l), infer(r), tr);
-					bind(tl, env.get(op.name_()));
+					bind(tl, env.getOrFail(op.name_()));
 					return tr;
 				}).applyIf(Atom.class, a -> {
-					return env.get(a.name);
+					return env.getOrFail(a.name);
 				}).applyIf(Int.class, a -> {
 					return Suite.parse("NUMBER");
 				}).applyIf(Node.class, a -> {
@@ -158,14 +158,14 @@ public class InterpretFunLazy0 {
 			var p0 = lazy0(l);
 			var p1 = lazy0(r);
 			return env -> {
-				var r0 = env.get(op.name_());
+				var r0 = env.getOrFail(op.name_());
 				var r1 = fun(r0).apply(p0.apply(env));
 				var r2 = fun(r1).apply(p1.apply(env));
 				return r2;
 			};
 		}).applyIf(Atom.class, a -> {
 			var vk = a.name;
-			return env -> env.get(vk);
+			return env -> env.getOrFail(vk);
 		}).applyIf(Node.class, a -> {
 			return env -> () -> node;
 		}).result();

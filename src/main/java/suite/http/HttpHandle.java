@@ -43,9 +43,12 @@ public class HttpHandle {
 				try (var raf = new RandomAccessFile(file, "r")) {
 					size = raf.getChannel().size();
 
-					var range = request.headers.get("Range");
-					var ranges = range != null ? range.split(",") : new String[0];
-					var array = ranges.length == 1 ? ranges[0].split("-") : new String[0];
+					var array = request.headers //
+							.getOpt("Range") //
+							.map(range -> range.split(",")) //
+							.filter(ranges -> ranges.length == 1) //
+							.map(ranges -> ranges[0].split("-")) //
+							.get(() -> new String[0]);
 
 					if (array.length == 2) {
 						var a0 = array[0];
@@ -90,17 +93,19 @@ public class HttpHandle {
 	}
 
 	public static Handler dispatchMethod(PerMap<String, Handler> map) {
-		return request -> {
-			var handler = map.get(request.method);
-			return handler != null ? handler.handle(request) : Response.of(Http.S405);
-		};
+		return request -> map //
+				.getOpt(request.method) //
+				.map(handler -> handler.handle(request)) //
+				.get(() -> Response.of(Http.S405));
 	}
 
 	public static Handler dispatchPath(PerMap<String, Handler> map) {
-		return request0 -> request0.split().map((path, request1) -> {
-			var handler = map.get(path);
-			return handler != null ? handler.handle(request1) : Response.of(Http.S404);
-		});
+		return request0 -> request0 //
+				.split() //
+				.map((path, request1) -> map //
+						.getOpt(path) //
+						.map(handler -> handler.handle(request1)) //
+						.get(() -> Response.of(Http.S404)));
 	}
 
 	public static Handler session(BiPredicate<String, String> authenticate, Handler handler) {

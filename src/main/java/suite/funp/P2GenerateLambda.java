@@ -203,7 +203,7 @@ public class P2GenerateLambda {
 				var fun = TreeUtil.evaluateOp(op);
 				return rt -> new Int(fun.apply(i(rt, v0), i(rt, v1)));
 			})).applyIf(FunpVariable.class, f -> f.apply(var -> {
-				var fd = fs - env.get(var);
+				var fd = fs - env.getOrFail(var);
 				return rt -> {
 					for (var i = 0; i < fd; i++)
 						rt = rt.parent;

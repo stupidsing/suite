@@ -155,7 +155,7 @@ public class VerifyTest {
 				var x = Binder.bind(new Verify(defs, rules.put(Atom.name(a), b)).verify(c), Atom.FALSE);
 				return x ? Suite.substitute("not .0", b) : fail("cannot verify " + proof);
 			}).match(".0 | expand .1", (a, b) -> {
-				var def = defs.get(Atom.name(b)).clone_();
+				var def = defs.getOrFail(Atom.name(b)).clone_();
 				return replace(verify(a), def.t0, def.t1);
 			}).match(".0 | fulfill .1", (a, b) -> {
 				var m1 = Suite.pattern(".0 => .1").match(new Generalizer().generalize(verify(b)));
@@ -177,14 +177,14 @@ public class VerifyTest {
 				Binder.bind(verify(a), Tree.ofAnd(init, succ));
 				return Suite.substitute("is.nat .N => .0", fun.apply(Suite.parse(".N")));
 			}).match(".0 | rexpand .1", (a, b) -> {
-				var def = defs.get(Atom.name(b)).clone_();
+				var def = defs.getOrFail(Atom.name(b)).clone_();
 				return replace(verify(a), def.t1, def.t0);
 			}).match("suppose .0 := .1 ~ .2", (a, b, c) -> {
 				return Suite.substitute(".0 => .1", b, new Verify(defs, rules.put(Atom.name(a), b)).verify(c));
 			}).match("true", () -> {
 				return Atom.TRUE;
 			}).applyIf(Atom.class, a -> {
-				return new Cloner().clone(rules.get(a.name));
+				return new Cloner().clone(rules.getOrFail(a.name));
 			}).nonNullResult();
 		}
 

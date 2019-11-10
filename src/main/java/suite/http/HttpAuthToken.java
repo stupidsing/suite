@@ -86,7 +86,7 @@ public class HttpAuthToken {
 			List<String> requiredRoles, //
 			FixieFun3<String, List<String>, Request, Response> handler1) {
 		return request -> {
-			var a = request.headers.get("Authorization");
+			var a = request.headers.getOrFail("Authorization");
 			var sc = new String(aes.decrypt(a), Utf8.charset).split("\\|");
 
 			return FixieArray.of(sc).map((sig, uer) -> FixieArray.of(uer.split("/")).map((username, exp, rs) -> {

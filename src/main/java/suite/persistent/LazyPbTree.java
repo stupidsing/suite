@@ -14,6 +14,7 @@ import primal.Verbs.First;
 import primal.Verbs.Last;
 import primal.Verbs.Left;
 import primal.Verbs.Right;
+import primal.adt.Opt;
 import primal.fp.Funs.Iterate;
 import primal.fp.Funs.Source;
 import primal.persistent.PerTree;
@@ -138,14 +139,14 @@ public class LazyPbTree<T> implements PerTree<T> {
 			return Read.empty();
 	}
 
-	public T find(T t) {
+	public Opt<T> findOpt(T t) {
 		var node = root;
 		FindSlot fs = null;
 		while (!node.isEmpty()) {
 			fs = new FindSlot(node, t);
 			node = fs.slot.readSlots();
 		}
-		return fs != null && fs.c == 0 ? fs.slot.pivot : null;
+		return fs != null && fs.c == 0 ? Opt.of(fs.slot.pivot) : Opt.none();
 	}
 
 	public LazyPbTree<T> add(T t) {

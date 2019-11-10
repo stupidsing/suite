@@ -196,7 +196,7 @@ public class Symbolic {
 			opt = new Rewrite(xs[i]).polyize(node, coeff -> simplify(coeff, xs, i + 1));
 		else
 			opt = rational(node);
-		return opt.or(() -> node).get();
+		return opt.get(() -> node);
 	}
 
 	private class Rewrite {

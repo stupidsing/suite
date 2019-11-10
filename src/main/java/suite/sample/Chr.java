@@ -193,8 +193,7 @@ public class Chr {
 	}
 
 	private PerSet<Node> getFacts(State state, Prototype prototype) {
-		var results = state.factsByPrototype.get(prototype);
-		return results != null ? results : PerSet.empty();
+		return state.factsByPrototype.getOpt(prototype).or(PerSet.empty());
 	}
 
 	private State setFacts(State state, Prototype prototype, PerSet<Node> nodes) {
