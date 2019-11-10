@@ -44,12 +44,6 @@ public class EbnfTest {
 	}
 
 	@Test
-	public void testJson() throws IOException {
-		var ebnf = new Ebnf(new FileReader("src/main/ebnf/json.ebnf"));
-		System.out.println(ebnf.parse("json", "{ \"key\": [32, \"text\"] }"));
-	}
-
-	@Test
 	public void testHeadRecursion() throws IOException {
 		var ebnf = new Ebnf(new StringReader("" //
 				+ "number ::= number \"x\" digit | digit \n" //
@@ -83,6 +77,12 @@ public class EbnfTest {
 	public void testJavaSimple() throws IOException {
 		var ebnf = new Ebnf(new FileReader("src/main/ebnf/java.ebnf"));
 		System.out.println(ebnf.parse("CompilationUnit", "public class C { public void f() { int a; } }"));
+	}
+
+	@Test
+	public void testJson() throws IOException {
+		var ebnf = new Ebnf(new FileReader("src/main/ebnf/json.ebnf"));
+		System.out.println(ebnf.parse("json", "{ \"key\": [32, \"text\"] }"));
 	}
 
 	@Test
