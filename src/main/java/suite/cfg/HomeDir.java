@@ -25,7 +25,7 @@ public class HomeDir {
 				.orOpt(Opt.of(System.getenv("HOME"))) //
 				.orOpt(Opt.of(System.getenv("USERPROFILE"))) //
 				.map(Paths::get) //
-				.get(() -> Tmp.root);
+				.or(Tmp.root);
 	}
 
 }

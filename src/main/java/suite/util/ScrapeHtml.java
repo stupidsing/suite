@@ -82,11 +82,11 @@ public class ScrapeHtml {
 		}
 
 		public String attr(String name, String value_) {
-			return attrByName.getOpt(name).get(() -> value_);
+			return attrByName.getOpt(name).or(value_);
 		}
 
 		public Streamlet<HtmlNode> findBy(String name, String id) {
-			return findBy(hn -> hn.attrByName.getOpt(name).map(id::equals).get(() -> false));
+			return findBy(hn -> hn.attrByName.getOpt(name).map(id::equals).or(false));
 		}
 
 		public Streamlet<HtmlNode> findBy(Predicate<HtmlNode> pred) {
@@ -102,7 +102,7 @@ public class ScrapeHtml {
 			return attrByName //
 					.getOpt("class") //
 					.map(cs -> Read.from(cs.split(" ")).filter(c_ -> Equals.string(c, c_)).first() != null) //
-					.get(() -> false);
+					.or(false);
 		}
 
 		public String text() {

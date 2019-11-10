@@ -48,7 +48,7 @@ public class HttpHandle {
 							.map(range -> range.split(",")) //
 							.filter(ranges -> ranges.length == 1) //
 							.map(ranges -> ranges[0].split("-")) //
-							.get(() -> new String[0]);
+							.or(new String[0]);
 
 					if (array.length == 2) {
 						var a0 = array[0];
@@ -88,7 +88,7 @@ public class HttpHandle {
 						return Response.of(Http.S200, Pull.from(Files.newInputStream(path)), size);
 				}
 			else
-				return Response.of(Http.S404);
+				return Http.R404;
 		});
 	}
 
@@ -96,7 +96,7 @@ public class HttpHandle {
 		return request -> map //
 				.getOpt(request.method) //
 				.map(handler -> handler.handle(request)) //
-				.get(() -> Response.of(Http.S405));
+				.or(Http.R405);
 	}
 
 	public static Handler dispatchPath(PerMap<String, Handler> map) {
@@ -105,7 +105,7 @@ public class HttpHandle {
 				.map((path, request1) -> map //
 						.getOpt(path) //
 						.map(handler -> handler.handle(request1)) //
-						.get(() -> Response.of(Http.S404)));
+						.or(Http.R404));
 	}
 
 	public static Handler session(BiPredicate<String, String> authenticate, Handler handler) {

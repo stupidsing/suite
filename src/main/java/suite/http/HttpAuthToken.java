@@ -60,7 +60,7 @@ public class HttpAuthToken {
 			var username = json.path("username").asText();
 			var password = json.path("password").asText();
 			var roles = getRolesFun.apply(username, password);
-			return roles != null ? returnToken(username, roles) : Response.of(Http.S403);
+			return roles != null ? returnToken(username, roles) : Http.R403;
 		});
 	}
 
@@ -97,7 +97,7 @@ public class HttpAuthToken {
 				for (var requiredRole : requiredRoles)
 					b &= roles.contains(requiredRole);
 
-				return b ? handler1.apply(username, roles, request) : Response.of(Http.S403);
+				return b ? handler1.apply(username, roles, request) : Http.R403;
 			}));
 		};
 	}

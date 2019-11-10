@@ -25,6 +25,11 @@ public class Http {
 	public static final Status S405 = new Status("404 method not allowed");
 	public static final Status S500 = new Status("500 internal server error");
 
+	public static final Response R403 = Response.of(S403);
+	public static final Response R404 = Response.of(S404);
+	public static final Response R405 = Response.of(S405);
+	public static final Response R500 = Response.of(S500);
+
 	public interface Handler {
 		public Response handle(Request request);
 	}
@@ -121,7 +126,7 @@ public class Http {
 		public final Puller<Bytes> out;
 		public final Sink<Sink<Bytes>> write;
 
-		public static Response of(Status status) {
+		private static Response of(Status status) {
 			return of(status, new Header(), Puller.empty());
 		}
 

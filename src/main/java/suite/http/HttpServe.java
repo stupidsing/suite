@@ -37,7 +37,7 @@ public class HttpServe {
 				response = handler.handle(request);
 			} catch (Exception ex) {
 				Log_.error(ex);
-				response = Response.of(Http.S500);
+				response = Http.R500;
 			} finally {
 				Log_.info(request.getLogString() + " " + response.getLogString());
 			}
@@ -60,7 +60,7 @@ public class HttpServe {
 				handler.handle(request, sink);
 			} catch (Exception ex) {
 				Log_.error(ex);
-				sink.f(Response.of(Http.S500));
+				sink.f(Http.R500);
 			}
 		});
 	}

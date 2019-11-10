@@ -38,7 +38,7 @@ public class HttpAuthSession {
 								.getOpt("Cookie") //
 								.map(cookie -> HttpHeaderUtil.getCookieAttrs(cookie).get("session"));
 
-				var session = sessionIdOpt.map(sm::get).get(() -> null);
+				var session = sessionIdOpt.map(sm::get).or(null);
 				Response response;
 
 				if (Equals.ab(request.paths, PerList.of("login"))) {
