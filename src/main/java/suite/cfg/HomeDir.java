@@ -9,14 +9,18 @@ import primal.adt.Opt;
 
 public class HomeDir {
 
-	public static Path dir(String path_) {
-		var path = resolve(path_);
-		Mk.dir(path);
-		return path;
+	public static Path dir(String path0) {
+		var path1 = resolve(path0);
+		Mk.dir(path1);
+		return path1;
 	}
 
-	public static Path resolve(String path_) {
-		return getHomePath().resolve(path_);
+	public static Path priv(String path) {
+		return resolve("private").resolve(path);
+	}
+
+	public static Path resolve(String path0) {
+		return getHomePath().resolve(path0);
 	}
 
 	private static Path getHomePath() {

@@ -48,7 +48,7 @@ public class Defaults {
 
 	private static Source<Prover> memoizeSecrets = Memoize.source(() -> {
 		var rs = Suite.newRuleSet();
-		var text = ReadString.from(HomeDir.resolve("private/secrets.sl"));
+		var text = ReadString.from(HomeDir.priv("secrets.sl"));
 		rs.importFrom(Suite.parse(text));
 		return new Prover(rs);
 	});

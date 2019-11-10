@@ -61,8 +61,8 @@ public class Crypts {
 
 	public Crypt<byte[]> rsaBs(String ownerSuffix) {
 		return ex(() -> {
-			var pubKeyPath = HomeDir.resolve("private/public.key" + ownerSuffix);
-			var privKeyPath = HomeDir.resolve("private/private.key" + ownerSuffix);
+			var pubKeyPath = HomeDir.priv("public.key" + ownerSuffix);
+			var privKeyPath = HomeDir.priv("private.key" + ownerSuffix);
 
 			if (!Files.exists(pubKeyPath)) {
 				Log_.info("generating key for owner " + ownerSuffix);
