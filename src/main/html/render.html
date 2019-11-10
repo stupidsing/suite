@@ -13,49 +13,6 @@ file:///home/ywsing/suite/src/main/html/render.html
 	<script src='render.js'></script>
 
 	<script type='text/javascript'>
-let login = () => {
-	console.log('logging in');
-	let username = document.getElementById('username').value;
-	let password = document.getElementById('password').value;
-
-	let formData = new FormData();
-	formData.append('username', username);
-	formData.append('password', password);
-	// formData.append('photo', document.querySelector('input[type="file"][multiple]').files[0]);
-
-	fetch('/token', {
-		// body: formData,
-		body: JSON.stringify({ username, password, }),
-		cache: 'no-cache',
-		credentials: 'omit',
-		headers: { 'Content-Type': 'application/json', },
-		// headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-		method: 'POST',
-		mode: 'no-cors',
-		redirect: 'follow',
-		referrer: 'no-referrer',
-	})
-	.then(response => response.json())
-	.then(json => json.token)
-	.then(token => fetch('/token', {
-		headers: { 'Authorization': token, },
-		method: 'PATCH',
-	}))
-	.then(response => response.json())
-	.then(json => json.token)
-	.then(token => { renderAgain(view, vm => ({ ...vm, token, })); return token; })
-	.then(token => fetch('/api', {
-		headers: { 'Authorization': token, },
-		method: 'GET',
-	}))
-	.then(response => response.text())
-	.then(text => console.log(text))
-	.catch(error => {
-		console.error("login", error);
-		renderAgain(view, vm => ({ ...vm, token: 'login failed', }));
-	});
-};
-
 let { lens, range, read, } = fun();
 let { rd, renderAgain, } = render();
 let close;
@@ -122,6 +79,51 @@ let view = rd
 		]),
 	)
 	.rd();
+
+let login = () => {
+	console.log('login()');
+	let username = document.getElementById('username').value;
+	let password = document.getElementById('password').value;
+
+	fetch('/token', {
+		body: JSON.stringify({ username, password, }),
+		cache: 'no-cache',
+		credentials: 'omit',
+		headers: { 'Content-Type': 'application/json', },
+		method: 'POST',
+		mode: 'no-cors',
+		redirect: 'follow',
+		referrer: 'no-referrer',
+	})
+	.then(response => {
+		if (response.ok) return response.json(); else throw response.statusText;
+	})
+	.then(json => json.token)
+	.then(token => fetch('/token', {
+		headers: { 'Authorization': token, },
+		method: 'PATCH',
+	}))
+	.then(response => {
+		if (response.ok) return response.json(); else throw response.statusText;
+	})
+	.then(json => json.token)
+	.then(token => { renderAgain(view, vm => ({ ...vm, token, })); return token; })
+	.then(token => fetch('/api', {
+		headers: { 'Authorization': token, },
+		method: 'GET',
+	}))
+	.then(response => {
+		if (response.ok) return response.text(); else throw response.statusText;
+	})
+	.then(message => {
+		renderAgain(view, vm => ({ ...vm, message, }));
+		console.log('login() = ', message);
+	})
+	.catch(error => {
+		console.error('login()', error);
+		renderAgain(view, vm => ({ ...vm, token: error, }));
+	});
+};
 
 let sse = [];
 let t = 0;

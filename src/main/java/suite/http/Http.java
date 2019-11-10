@@ -1,7 +1,5 @@
 package suite.http;
 
-import static primal.statics.Fail.fail;
-
 import java.io.InputStream;
 
 import primal.MoreVerbs.Pull;
@@ -47,10 +45,7 @@ public class Http {
 
 		public String get(String key) {
 			var list = map.get(key);
-			if (list != null)
-				return list.tail.isEmpty() ? list.head : fail();
-			else
-				return null;
+			return list != null ? list.streamlet().uniqueResult() : null;
 		}
 
 		public Header put(String key, String value) {
