@@ -1,7 +1,4 @@
-test() {
-	echo "$*"
-	echo "$@"
-}
+# cchs "ls -al" "sort" "tail -3"
 
 cchs() {
 	F=/dev/null
