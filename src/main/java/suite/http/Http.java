@@ -54,11 +54,11 @@ public class Http {
 		}
 
 		public String getOrFail(String key) {
-			return getOpt(key).get();
+			return getOpt(key).g();
 		}
 
 		public Header put(String key, String value) {
-			var list = map.getOpt(key).ifNone(PerList::end).get();
+			var list = map.getOpt(key).ifNone(PerList::end).g();
 			return new Header(map.replace(key, PerList.cons(value, list)));
 		}
 

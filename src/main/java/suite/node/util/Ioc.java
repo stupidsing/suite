@@ -44,7 +44,7 @@ public class Ioc {
 					instances = instances.put(className, t);
 					return t;
 				}) //
-				.get();
+				.g();
 	}
 
 	private <T> T instantiate(Class<T> clazz) {

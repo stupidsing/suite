@@ -67,7 +67,7 @@ public class HttpAuthSession {
 					response = showLoginPage(PerList.end(), false);
 				} else if (session != null && current < session.lastRequestDt.value() + timeoutDuration) {
 					session.lastRequestDt.update(current);
-					response = showProtectedPage(request, sessionIdOpt.get());
+					response = showProtectedPage(request, sessionIdOpt.g());
 				} else
 					response = showLoginPage(request.paths, false);
 

@@ -90,12 +90,12 @@ public class Symbolic {
 
 	public Node d(Node node0, Node x) {
 		var rewrite = new Rewrite(x);
-		return Opt.of(node0).map(rewrite::rewrite).map(rewrite::d).map(rewrite::simplify).get();
+		return Opt.of(node0).map(rewrite::rewrite).map(rewrite::d).map(rewrite::simplify).g();
 	}
 
 	public Node i(Node node0, Node x) {
 		var rewrite = new Rewrite(x);
-		return Opt.of(node0).map(rewrite::rewrite).concatMap(rewrite::i).map(rewrite::simplify).get();
+		return Opt.of(node0).map(rewrite::rewrite).concatMap(rewrite::i).map(rewrite::simplify).g();
 	}
 
 	public static class Fieldo<N> {
@@ -365,7 +365,7 @@ public class Symbolic {
 		}
 
 		private Node simplify(Node node) {
-			return polyize(node, coeff -> rational(coeff).or(coeff)).ifNone(() -> sumOfProducts(node)).get();
+			return polyize(node, coeff -> rational(coeff).or(coeff)).ifNone(() -> sumOfProducts(node)).g();
 		}
 
 		private Opt<Node> polyize(Node node, Fun<Node, Node> coefficientFun) { // polynomialize
