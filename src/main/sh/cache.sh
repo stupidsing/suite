@@ -23,14 +23,11 @@ cchs() {
 			SHORT=$(printf "${URL}" | tr /: _ | tr -dc '[\-.0-9A-Z_a-z]')
 			DF="/data/tmp/${MD5}.${SHORT}"
 			F=$(cchf "git clone --depth 1 '${URL}' ${DF} && printf ${DF}")
-		elif [ "${CMD}" == "#tar-xf" ]; then
+		elif [ "${CMD:0:5}" == "#tar-" ]; then
+			OPT=${CMD:5}
 			TARF=$(cat ${F})
 			TARDIR=${TARF}.d
-			F=$(cchf "mkdir -p ${TARDIR} && tar xf ${TARF} -C ${TARDIR} && printf ${TARDIR}")
-		elif [ "${CMD}" == "#tar-zxf" ]; then
-			TARF=$(cat ${F})
-			TARDIR=${TARF}.d
-			F=$(cchf "mkdir -p ${TARDIR} && tar zxf ${TARF} -C ${TARDIR} && printf ${TARDIR}")
+			F=$(cchf "mkdir -p ${TARDIR} && tar ${OPT} ${TARF} -C ${TARDIR} && printf ${TARDIR}")
 		else
 			F=$(cchf "cat ${F} | ${CMD}")
 		fi
