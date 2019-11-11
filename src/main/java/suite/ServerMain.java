@@ -44,7 +44,7 @@ public class ServerMain {
 		// Execute.shell("x-www-browser http://127.0.0.1:8051/site");
 	}
 
-	private boolean run() {
+	public boolean run() {
 		Start.thread(this::runHttpServer);
 		Start.thread(this::runScheduler);
 		Start.thread(this::runTelegramBot);

@@ -42,18 +42,16 @@ public class DependencyTest {
 		}
 
 		var vertices = dependenciesByClassName.keySet();
-
-		var edges = Read //
-				.from2(dependenciesByClassName) //
-				.concatMapValue(dependencies -> Read.from(dependencies)) //
-				.toSet();
-
+		var edges = Read.from2(dependenciesByClassName).concatMapValue(Read::from).toSet();
 		var scc = new StronglyConnectedComponents<>(DirectedGraph.of(vertices, edges));
 
-		for (var layer : scc.group().layers()) {
-			Read.from(layer).flatMap(iterable -> iterable).sort(Compare::objects).forEach(System.out::println);
-			System.out.println();
-		}
+		for (var layer : scc.group().layers())
+			System.out.println(Read //
+					.from(layer) //
+					.flatMap(iterable -> iterable) //
+					.sort(Compare::objects) //
+					.map(line -> line + "\n") //
+					.toJoinedString());
 	}
 
 	private void dumpDependencies(PerSet<String> set, String indent, String className) {
@@ -72,9 +70,9 @@ public class DependencyTest {
 				.from(sourceDirs) //
 				.map(sourceDir -> Paths.get(sourceDir + "/" + p)) //
 				.filter(path -> Files.exists(path)) //
-				.concatMap(path -> ex(() -> Read.from(Files.readAllLines(path)))) //
+				.concatMap(path -> Read.from(ex(() -> Files.readAllLines(path)))) //
 				.filter(line -> line.startsWith("import ")) //
-				.map(line -> line.split(" ")[1].replace(";", "")) //
+				.map(line -> Read.from(line.split(" ")).last().replace(";", "")) //
 				.toList();
 	}
 

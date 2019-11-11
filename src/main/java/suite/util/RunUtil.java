@@ -4,11 +4,21 @@ import java.util.concurrent.Callable;
 
 import org.apache.log4j.Level;
 
+import primal.MoreVerbs.Read;
 import primal.os.Log_;
 import suite.os.Execute;
 import suite.os.LogUtil;
 
 public class RunUtil {
+
+	public static void main(String[] args0) {
+		var args = new String[] { "suite.ServerMain", };
+		RunUtil.run(() -> {
+			var streamlet = Read.from(args);
+			var clazz = Class.forName(streamlet.first());
+			return (Boolean) clazz.getMethod("run").invoke(clazz.getConstructor().newInstance());
+		});
+	}
 
 	public static String get(String key, String defaultValue) {
 		return get_(key, defaultValue);

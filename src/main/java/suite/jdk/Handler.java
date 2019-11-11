@@ -25,11 +25,8 @@ public class Handler extends URLStreamHandler {
 
 	@Override
 	protected URLConnection openConnection(URL url) throws IOException {
-		var resource = getClass().getClassLoader().getResource(url.getPath());
-		if (resource != null)
-			return resource.openConnection();
-		else
-			return fail("resource not found: " + url);
+		var r = getClass().getClassLoader().getResource(url.getPath());
+		return r != null ? r.openConnection() : fail("resource not found: " + url);
 	}
 
 }
