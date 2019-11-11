@@ -5,7 +5,19 @@ cchs() {
 	while [ "${1}" ]; do
 		CMD="${1}"
 		shift
-		F=$(cchf "cat ${F} | ${CMD}")
+		if [ "${CMD}" == "#curl" ]; then
+			URL=$(cat ${F})
+			MD5=$(printf "${CMD}" | md5sum - | cut -d' ' -f1)
+			SHORT=$(printf "${URL}" | tr /: _ | tr -dc '[\-.0-9A-Z_a-z]')
+			DF="/data/tmp/${MD5}.${SHORT}"
+			F=$(cchf "curl -sL '${URL}' > ${DF} && printf ${DF}")
+		elif [ "${CMD}" == "#tar-zxf" ]; then
+			TARF=$(cat ${F})
+			TARDIR=${TARF}.d
+			F=$(cchf "mkdir -p ${TARDIR} && tar zxf ${TARF} -C ${TARDIR} && printf ${TARDIR}")
+		else
+			F=$(cchf "cat ${F} | ${CMD}")
+		fi
 	done
 	cat ${F}
 }
