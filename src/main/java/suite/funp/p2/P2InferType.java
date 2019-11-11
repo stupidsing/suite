@@ -465,7 +465,8 @@ public class P2InferType {
 			return env //
 					.getOpt(var.vn) //
 					.map(pair -> pair.map((type, tv) -> isCloneType && Fdt.isPoly(type) ? cloneType(tv) : tv)) //
-					.get(() -> Funp_.fail(var, "cannot access " + var.vn + " due to limited scoping"));
+					.ifNone(() -> Funp_.fail(var, "cannot access " + var.vn + " due to limited scoping")) //
+					.get();
 		}
 	}
 

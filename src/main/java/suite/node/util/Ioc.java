@@ -39,11 +39,12 @@ public class Ioc {
 					var t = (T) instance;
 					return t;
 				}) //
-				.get(() -> {
+				.ifNone(() -> {
 					var t = instantiate(clazz);
 					instances = instances.put(className, t);
 					return t;
-				});
+				}) //
+				.get();
 	}
 
 	private <T> T instantiate(Class<T> clazz) {

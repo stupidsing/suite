@@ -365,7 +365,7 @@ public class Symbolic {
 		}
 
 		private Node simplify(Node node) {
-			return polyize(node, coeff -> rational(coeff).or(coeff)).get(() -> sumOfProducts(node));
+			return polyize(node, coeff -> rational(coeff).or(coeff)).ifNone(() -> sumOfProducts(node)).get();
 		}
 
 		private Opt<Node> polyize(Node node, Fun<Node, Node> coefficientFun) { // polynomialize

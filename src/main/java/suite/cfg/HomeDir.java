@@ -26,8 +26,8 @@ public class HomeDir {
 	private static Path getHomePath() {
 		return Opt //
 				.<String> none() //
-				.orOpt(Opt.of(System.getenv("HOME"))) //
-				.orOpt(Opt.of(System.getenv("USERPROFILE"))) //
+				.ifNone(Opt.of(System.getenv("HOME"))) //
+				.ifNone(Opt.of(System.getenv("USERPROFILE"))) //
 				.map(Paths::get) //
 				.or(Tmp.root);
 	}

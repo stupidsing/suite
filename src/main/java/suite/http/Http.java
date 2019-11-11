@@ -58,7 +58,7 @@ public class Http {
 		}
 
 		public Header put(String key, String value) {
-			var list = map.getOpt(key).get(PerList::end);
+			var list = map.getOpt(key).ifNone(PerList::end).get();
 			return new Header(map.replace(key, PerList.cons(value, list)));
 		}
 
