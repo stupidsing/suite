@@ -5,12 +5,28 @@ cchs() {
 	while [ "${1}" ]; do
 		CMD="${1}"
 		shift
-		if [ "${CMD}" == "#curl" ]; then
+		if [ "${CMD:0:2}" == "{}" ]; then
+			D=$(cat ${F})
+			F=$(cchf "${D}${CMD:2}")
+		elif [ "${CMD}" == "#curl" ]; then
 			URL=$(cat ${F})
 			MD5=$(printf "${CMD}" | md5sum - | cut -d' ' -f1)
 			SHORT=$(printf "${URL}" | tr /: _ | tr -dc '[\-.0-9A-Z_a-z]')
 			DF="/data/tmp/${MD5}.${SHORT}"
 			F=$(cchf "curl -sL '${URL}' > ${DF} && printf ${DF}")
+		elif [ "${CMD}" == "#dir" ]; then
+			DIR=$(cat ${F})
+			F=$(cchf "sh -c 'readlink -f ${DIR}/*'")
+		elif [ "${CMD}" == "#git-clone" ]; then
+			URL=$(cat ${F})
+			MD5=$(printf "${CMD}" | md5sum - | cut -d' ' -f1)
+			SHORT=$(printf "${URL}" | tr /: _ | tr -dc '[\-.0-9A-Z_a-z]')
+			DF="/data/tmp/${MD5}.${SHORT}"
+			F=$(cchf "git clone --depth 1 '${URL}' ${DF} && printf ${DF}")
+		elif [ "${CMD}" == "#tar-xf" ]; then
+			TARF=$(cat ${F})
+			TARDIR=${TARF}.d
+			F=$(cchf "mkdir -p ${TARDIR} && tar xf ${TARF} -C ${TARDIR} && printf ${TARDIR}")
 		elif [ "${CMD}" == "#tar-zxf" ]; then
 			TARF=$(cat ${F})
 			TARDIR=${TARF}.d
