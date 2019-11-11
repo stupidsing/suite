@@ -60,8 +60,6 @@ public class ServerMain {
 			return authenticate.test(username, password) ? List.of("role") : null;
 		};
 
-		var authToken = new HttpAuthToken();
-
 		var sseHeaders = new Header(PerMap //
 				.<String, PerList<String>> empty() //
 				.put("Cache-Control", PerList.of("no-cache")) //
@@ -85,18 +83,21 @@ public class ServerMain {
 			writer.f(null);
 		});
 
-		var handler = HttpHandle.dispatchPath(PerMap //
+		var hat = new HttpAuthToken();
+		var hh = new HttpHandle();
+
+		var handler = hh.dispatchPath(PerMap //
 				.<String, Handler> empty() //
-				.put("api", authToken.handleFilter("role", HttpHandle.data("Hello world"))) //
-				.put("hello", HttpHandle.data("Hello world")) //
-				.put("html", HttpHandle.dir(Paths.get(FileUtil.suiteDir() + "/src/main/html"))) //
-				.put("path", HttpHandle.dir(Tmp.root)) //
-				.put("site", HttpHandle.session(authenticate, handlerSite)) //
+				.put("api", hat.handleFilter("role", hh.data("Hello world"))) //
+				.put("hello", hh.data("Hello world")) //
+				.put("html", hh.dir(Paths.get(FileUtil.suiteDir() + "/src/main/html"))) //
+				.put("path", hh.dir(Tmp.root)) //
+				.put("site", hh.session(authenticate, handlerSite)) //
 				.put("sse", handlerSse) //
-				.put("token", HttpHandle.dispatchMethod(PerMap //
+				.put("token", hh.dispatchMethod(PerMap //
 						.<String, Handler> empty() //
-						.put("PATCH", authToken.handleRefreshToken(authenticateRoles)) //
-						.put("POST", authToken.handleGetToken(authenticateRoles)))));
+						.put("PATCH", hat.handleRefreshToken(authenticateRoles)) //
+						.put("POST", hat.handleGetToken(authenticateRoles)))));
 
 		new HttpServe(8051).serve(handler);
 	}

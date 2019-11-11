@@ -24,11 +24,11 @@ import suite.http.Http.Response;
 
 public class HttpHandle {
 
-	public static Handler data(String data) {
+	public Handler data(String data) {
 		return request -> Response.of(Pull.from(data));
 	}
 
-	public static Handler dir(Path root) {
+	public Handler dir(Path root) {
 		return request -> ex(() -> {
 			var path = root;
 			long size;
@@ -92,14 +92,14 @@ public class HttpHandle {
 		});
 	}
 
-	public static Handler dispatchMethod(PerMap<String, Handler> map) {
+	public Handler dispatchMethod(PerMap<String, Handler> map) {
 		return request -> map //
 				.getOpt(request.method) //
 				.map(handler -> handler.handle(request)) //
 				.or(Http.R405);
 	}
 
-	public static Handler dispatchPath(PerMap<String, Handler> map) {
+	public Handler dispatchPath(PerMap<String, Handler> map) {
 		return request0 -> request0 //
 				.split() //
 				.map((path, request1) -> map //
@@ -108,11 +108,11 @@ public class HttpHandle {
 						.or(Http.R404));
 	}
 
-	public static Handler session(BiPredicate<String, String> authenticate, Handler handler) {
+	public Handler session(BiPredicate<String, String> authenticate, Handler handler) {
 		return new HttpAuthSession().getHandler(authenticate, handler);
 	}
 
-	public static Handler sse(Sink<Sink<Bytes>> write) {
+	public Handler sse(Sink<Sink<Bytes>> write) {
 		var sseHeaders = new Header(PerMap //
 				.<String, PerList<String>> empty() //
 				.put("Cache-Control", PerList.of("no-cache")) //
