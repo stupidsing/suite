@@ -19,7 +19,7 @@ cchs() {
 			URL=$(cat ${F})
 			MD5=$(printf "${CMD}" | md5sum - | cut -d' ' -f1)
 			SHORT=$(printf "${URL}" | tr /:@ _ | tr -dc '[\-.0-9A-Z_a-z]')
-			DF="${DCACHE}/${MD5}.${SHORT}"
+			DF="${DCACHE}/${MD5:0:8}.${SHORT}"
 			[ -f ${DF} ] || curl -sL "${URL}" > ${DF}
 			F=$(cchf "printf ${DF}")
 		elif [ "${CMD}" == "#dir" ]; then
@@ -30,7 +30,7 @@ cchs() {
 			URL=$(cat ${F})
 			MD5=$(printf "${CMD}" | md5sum - | cut -d' ' -f1)
 			SHORT=$(printf "${URL}" | tr /: _ | tr -dc '[\-.0-9A-Z_a-z]')
-			DF="${DCACHE}/${MD5}.${SHORT}"
+			DF="${DCACHE}/${MD5:0:8}.${SHORT}"
 			[ -d ${DF} ] || git clone --depth 1 "${URL}" ${DF}
 			F=$(cchf "printf ${DF}")
 		elif [ "${CMD:0:5}" == "#tar-" ]; then
