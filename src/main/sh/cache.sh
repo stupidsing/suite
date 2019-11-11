@@ -13,7 +13,8 @@ cchs() {
 			MD5=$(printf "${CMD}" | md5sum - | cut -d' ' -f1)
 			SHORT=$(printf "${URL}" | tr /: _ | tr -dc '[\-.0-9A-Z_a-z]')
 			DF="/data/tmp/${MD5}.${SHORT}"
-			F=$(cchf "curl -sL '${URL}' > ${DF} && printf ${DF}")
+			[ -f ${DF} ] || curl -sL '${URL}'
+			F=$(cchf "printf ${DF}")
 		elif [ "${CMD}" == "#dir" ]; then
 			DIR=$(cat ${F})
 			F=$(cchf "sh -c 'readlink -f ${DIR}/*'")
@@ -22,12 +23,14 @@ cchs() {
 			MD5=$(printf "${CMD}" | md5sum - | cut -d' ' -f1)
 			SHORT=$(printf "${URL}" | tr /: _ | tr -dc '[\-.0-9A-Z_a-z]')
 			DF="/data/tmp/${MD5}.${SHORT}"
-			F=$(cchf "git clone --depth 1 '${URL}' ${DF} && printf ${DF}")
+			[ -d ${DF} ] || git clone --depth 1 '${URL}' ${DF}
+			F=$(printf ${DF}")
 		elif [ "${CMD:0:5}" == "#tar-" ]; then
 			OPT=${CMD:5}
 			TARF=$(cat ${F})
 			TARDIR=${TARF}.d
-			F=$(cchf "mkdir -p ${TARDIR} && tar ${OPT} ${TARF} -C ${TARDIR} && printf ${TARDIR}")
+			[ -f ${DF} ] || mkdir -p ${TARDIR} && tar ${OPT} ${TARF} -C ${TARDIR}
+			F=$(cchf "printf ${TARDIR}")
 		else
 			F=$(cchf "cat ${F} | ${CMD}")
 		fi
