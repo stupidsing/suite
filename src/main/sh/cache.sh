@@ -18,7 +18,7 @@ cchs() {
 		elif [ "${CMD}" == "#curl" ]; then
 			URL=$(cat ${F})
 			MD5=$(printf "${CMD}" | md5sum - | cut -d' ' -f1)
-			SHORT=$(printf "${URL}" | tr /: _ | tr -dc '[\-.0-9A-Z_a-z]')
+			SHORT=$(printf "${URL}" | tr /:@ _ | tr -dc '[\-.0-9A-Z_a-z]')
 			DF="${DCACHE}/${MD5}.${SHORT}"
 			[ -f ${DF} ] || curl -sL "${URL}" > ${DF}
 			F=$(cchf "printf ${DF}")
