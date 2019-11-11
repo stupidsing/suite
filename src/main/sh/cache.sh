@@ -37,7 +37,7 @@ cchs() {
 			OPT=${CMD:5}
 			TARF=$(cat ${F})
 			TARDIR=${TARF}.d
-			[ -d ${DF} ] || mkdir -p ${TARDIR} && tar ${OPT} ${TARF} -C ${TARDIR}
+			[ -d ${TARDIR} ] || (mkdir -p ${TARDIR} && tar ${OPT} ${TARF} -C ${TARDIR})
 			F=$(cchf "printf ${TARDIR}")
 		else
 			F=$(cchf "cat ${F} | ${CMD}")
