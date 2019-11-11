@@ -1,5 +1,12 @@
 # cchs "ls -al" "sort" "tail -3"
 
+find /data/tmp/cache/ -maxdepth 1 -mtime 28 -type d -print0 | xargs -0 rm -rf
+find ~/.cmd-cache/ -mtime 28 -print0 | xargs -0 rm -f
+
+CCACHE=~/.cmd-cache
+DCACHE=/data/tmp/cache
+mkdir -p ${CCACHE}/ ${DCACHE}/
+
 cchs() {
 	F=/dev/null
 	while [ "${1}" ]; do
@@ -12,7 +19,7 @@ cchs() {
 			URL=$(cat ${F})
 			MD5=$(printf "${CMD}" | md5sum - | cut -d' ' -f1)
 			SHORT=$(printf "${URL}" | tr /: _ | tr -dc '[\-.0-9A-Z_a-z]')
-			DF="/data/tmp/${MD5}.${SHORT}"
+			DF="${DCACHE}/${MD5}.${SHORT}"
 			[ -f ${DF} ] || curl -sL '${URL}'
 			F=$(cchf "printf ${DF}")
 		elif [ "${CMD}" == "#dir" ]; then
@@ -22,7 +29,7 @@ cchs() {
 			URL=$(cat ${F})
 			MD5=$(printf "${CMD}" | md5sum - | cut -d' ' -f1)
 			SHORT=$(printf "${URL}" | tr /: _ | tr -dc '[\-.0-9A-Z_a-z]')
-			DF="/data/tmp/${MD5}.${SHORT}"
+			DF="${DCACHE}/${MD5}.${SHORT}"
 			[ -d ${DF} ] || git clone --depth 1 '${URL}' ${DF}
 			F=$(printf ${DF}")
 		elif [ "${CMD:0:5}" == "#tar-" ]; then
@@ -42,13 +49,12 @@ cchf() {
 	CMD="${@}"
 	MD5=$(printf "${CMD}" | md5sum - | cut -d' ' -f1)
 	P=${MD5:0:2}
-	DIR=~/.cmd-cache/${P}
+	DIR=${CCACHE}/${P}
 	FP=${DIR}/${MD5}
 	KF=${FP}.k
 	VF=${FP}.v
 
 	mkdir -p ${DIR}
-	find ~/.cmd-cache/${P} -mtime 28 -print0 | xargs -0 rm -f
 
 	if [ -f "${KF}" ] && diff <(printf "${CMD}") <(cat "${KF}"); then
 		true
