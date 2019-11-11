@@ -24,7 +24,8 @@ cchs() {
 			F=$(cchf "printf ${DF}")
 		elif [ "${CMD}" == "#dir" ]; then
 			DIR=$(cat ${F})
-			F=$(cchf "sh -c 'readlink -f ${DIR}/*'")
+			LINK=$(sh -c "readlink -f ${DIR}/*")
+			F=$(cchf "printf ${LINK}")
 		elif [ "${CMD}" == "#git-clone" ]; then
 			URL=$(cat ${F})
 			MD5=$(printf "${CMD}" | md5sum - | cut -d' ' -f1)
