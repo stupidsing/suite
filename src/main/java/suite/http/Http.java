@@ -35,7 +35,7 @@ public class Http {
 	}
 
 	public interface HandlerAsync {
-		public Response handle(Request request, IoSink<Response> sink);
+		public void handle(Request request, IoSink<Response> sink);
 	}
 
 	public static class Header {
