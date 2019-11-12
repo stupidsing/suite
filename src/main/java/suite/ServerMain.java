@@ -88,7 +88,7 @@ public class ServerMain {
 
 		var handler = hh.dispatchPath(PerMap //
 				.<String, Handler> empty() //
-				.put("api", hat.handleFilter("role", hh.data("Hello world"))) //
+				.put("api", hat.handleFilter("role", hh.data("in good shape"))) //
 				.put("hello", hh.data("Hello world")) //
 				.put("html", hh.dir(Paths.get(FileUtil.suiteDir() + "/src/main/html"))) //
 				.put("path", hh.dir(Tmp.root)) //
