@@ -11,6 +11,11 @@ import primal.fp.Funs.Source;
 import primal.os.Log_;
 import primal.persistent.PerList;
 
+/**
+ * Future that can be listened to many times, but can only be completed once.
+ * 
+ * @author ywsing
+ */
 public class Fut<T> {
 
 	private CasReference<Holder> ref = new CasReference<>(new H0Running(PerList.end()));
@@ -57,7 +62,7 @@ public class Fut<T> {
 	}
 
 	public static <T> Fut<T> of() {
-		return new Fut<T>();
+		return new Fut<>();
 	}
 
 	private Fut() {

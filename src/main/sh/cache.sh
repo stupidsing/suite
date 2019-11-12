@@ -1,7 +1,7 @@
 # cchs "ls -al" "sort" "tail -3"
 
 CCACHE=~/.cmd-cache
-DCACHE=/data/tmp/cache
+DCACHE=~/.dl-cache
 mkdir -p ${CCACHE}/ ${DCACHE}/
 
 find ${CCACHE}/ -mtime 28 -print0 | xargs -0 echo rm -f
