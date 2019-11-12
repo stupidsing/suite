@@ -1,6 +1,7 @@
 BASE="`dirname ${0}`"
 . ${BASE}/cache.sh
 GIT_HD=$(cchs "echo git@github.com:stupidsing/home-data.git" "#git-clone")
+GIT_PRIMAL=$(cchs "echo git@github.com:stupidsing/primal.git" "#git-clone")
 GIT_SUITE=$(cchs "echo git@github.com:stupidsing/suite.git" "#git-clone")
 GOROOT=$(cchs "echo https://dl.google.com/go/go1.13.4.linux-amd64.tar.gz" "#curl" "#tar-zxf" "#dir")
 GRADLE_HOME=$(find ~/ -maxdepth 1 -name gradle-\* | sort | tail -1)
@@ -13,6 +14,7 @@ TOOLS_PATH="${GIT_HD}/bin:${GOROOT}/bin:${GRADLE_HOME}/bin:${JAVA_HOME}/bin:${M2
 echo "tools path = ${TOOLS_PATH}"
 export PATH=${TOOLS_PATH}:${PATH}
 
+cd ${GIT_PRIMAL} && ${M2_HOME}/bin/mvn install
 cchs "echo ${GIT_SUITE}" "{}/build.sh"
 cchs "echo '/ dump yes #'" "${GIT_SUITE}/run.sh"
 cchs "echo ${GOROOT}" "{}/bin/go help"
