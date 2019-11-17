@@ -42,7 +42,7 @@ public class HttpAuthSession {
 				Response response;
 
 				if (Equals.ab(request.paths, PerList.of("login"))) {
-					var attrs = HttpHeaderUtil.getPostedAttrs(request.inputStream);
+					var attrs = HttpHeaderUtil.getPostedAttrs(request.in);
 					var username = attrs.get("username");
 					var password = attrs.get("password");
 					var paths = HttpHeaderUtil.getPaths(attrs.get("path"));
@@ -57,7 +57,7 @@ public class HttpAuthSession {
 								paths, //
 								request.query, //
 								request.headers, //
-								request.inputStream);
+								request.in);
 
 						response = showProtectedPage(request1, sessionId);
 					} else

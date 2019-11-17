@@ -1,7 +1,5 @@
 package suite.http;
 
-import java.io.InputStream;
-
 import primal.MoreVerbs.Pull;
 import primal.MoreVerbs.Read;
 import primal.Nouns.Utf8;
@@ -77,7 +75,7 @@ public class Http {
 		public final PerList<String> paths;
 		public final String query;
 		public final Header headers;
-		public final InputStream inputStream;
+		public final Puller<Bytes> in;
 
 		public Request( //
 				String method, //
@@ -85,8 +83,8 @@ public class Http {
 				String path, //
 				String query, //
 				Header headers, //
-				InputStream inputStream) {
-			this(method, server, HttpHeaderUtil.getPaths(path), query, headers, inputStream);
+				Puller<Bytes> in) {
+			this(method, server, HttpHeaderUtil.getPaths(path), query, headers, in);
 		}
 
 		public Request( //
@@ -95,13 +93,13 @@ public class Http {
 				PerList<String> paths, //
 				String query, //
 				Header headers, //
-				InputStream inputStream) {
+				Puller<Bytes> in) {
 			this.method = method;
 			this.server = server;
 			this.paths = paths;
 			this.query = query;
 			this.headers = headers;
-			this.inputStream = inputStream;
+			this.in = in;
 		}
 
 		public String path() {
@@ -110,9 +108,9 @@ public class Http {
 
 		public Pair<String, Request> split() {
 			if (!paths.isEmpty())
-				return Pair.of(paths.head, new Request(method, server, paths.tail, query, headers, inputStream));
+				return Pair.of(paths.head, new Request(method, server, paths.tail, query, headers, in));
 			else
-				return Pair.of("", new Request(method, server, PerList.end(), query, headers, inputStream));
+				return Pair.of("", new Request(method, server, PerList.end(), query, headers, in));
 		}
 
 		public String getLogString() {

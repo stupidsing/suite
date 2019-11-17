@@ -67,7 +67,7 @@ public class HttpProxy {
 					request0.paths, //
 					request0.query, //
 					headers1, //
-					request0.inputStream);
+					request0.in);
 
 			try (var socket1 = connect(pq); //
 					var is0 = is; //

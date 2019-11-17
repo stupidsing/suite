@@ -55,7 +55,7 @@ public class HttpAuthToken {
 
 	public Handler handleGetToken(Fun2<String, String, List<String>> getRolesFun) {
 		return request -> ex(() -> {
-			var bs = request.inputStream.readAllBytes();
+			var bs = Bytes.of(request.in).toArray();
 			var json = om.readTree(bs);
 			var username = json.path("username").asText();
 			var password = json.path("password").asText();

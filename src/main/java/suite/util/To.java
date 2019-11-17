@@ -77,6 +77,14 @@ public class To {
 			private InputStream is;
 			private boolean isOpen = true;
 
+			public void close() throws IOException {
+				if (isOpen) {
+					var bs = new byte[Buffer.size];
+					while (0 <= read(bs, 0, bs.length))
+						;
+				}
+			}
+
 			public int read() throws IOException {
 				var b = new byte[1];
 				var nBytesRead = read(b, 0, 1);
@@ -88,19 +96,11 @@ public class To {
 				while (is == null || (nBytesRead = is.read(bs, offset, length)) < 0) {
 					var bytes = puller.pull();
 					if (isOpen = (bytes != null))
-						is = bytes.collect(As::inputStream);
+						is = As.inputStream(bytes);
 					else
 						break;
 				}
 				return nBytesRead;
-			}
-
-			public void close() throws IOException {
-				if (isOpen) {
-					var bs = new byte[Buffer.size];
-					while (0 <= read(bs, 0, bs.length))
-						;
-				}
 			}
 		});
 	}

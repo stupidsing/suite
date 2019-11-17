@@ -12,12 +12,16 @@ import java.net.URLDecoder;
 
 import primal.MoreVerbs.Pull;
 import primal.MoreVerbs.Split;
+import primal.Nouns.Buffer;
 import primal.Nouns.Utf8;
 import primal.Verbs.Equals;
 import primal.Verbs.ReadLine;
 import primal.adt.FixieArray;
+import primal.fp.Funs.Source;
 import primal.fp.Funs2.Fun2;
 import primal.io.ReadStream;
+import primal.primitive.adt.Bytes;
+import primal.puller.Puller;
 import suite.http.Http.Header;
 import suite.http.Http.Request;
 import suite.http.Http.Response;
@@ -26,21 +30,30 @@ import suite.util.To;
 
 public class HttpIo {
 
+	public Request readRequest(Puller<Bytes> in0) {
+		return readRequest(To.inputStream(in0));
+	}
+
 	public Request readRequest(InputStream is0) {
 		var ls = ReadLine.from(is0).split(" ");
 		var headers = readHeaders(is0);
 
 		return FixieArray.of(ls).map((method, url, protocol) -> {
-			Fun2<String, String, Request> requestFun = (host, pqs) -> Split.strl(pqs, "?")
-					.map((path0, query) -> {
-						var is1 = getContentStream(is0, headers);
-						var path1 = path0.startsWith("/") ? path0 : "/" + path0;
-						var path2 = ex(() -> URLDecoder.decode(path1, Utf8.charset));
+			Fun2<String, String, Request> requestFun = (host, pqs) -> Split.strl(pqs, "?").map((path0, query) -> {
+				var is1 = getContentStream(is0, headers);
+				var path1 = path0.startsWith("/") ? path0 : "/" + path0;
+				var path2 = ex(() -> URLDecoder.decode(path1, Utf8.charset));
 
-						return Equals.string(protocol, "HTTP/1.1") //
-								? new Request(method, host, path2, query, headers, is1) //
-								: fail("only HTTP/1.1 is supported");
-					});
+				Source<Bytes> source = () -> {
+					var buffer = new byte[Buffer.size];
+					var n = ex(() -> is1.read(buffer, 0, buffer.length));
+					return Bytes.of(buffer, 0, n);
+				};
+
+				return Equals.string(protocol, "HTTP/1.1") //
+						? new Request(method, host, path2, query, headers, Puller.of(source)) //
+						: fail("only HTTP/1.1 is supported");
+			});
 
 			var pp = Split.string(url, "://");
 			return pp != null ? Split.strl(pp.v, "/").map(requestFun) : requestFun.apply("", url);
@@ -75,7 +88,7 @@ public class HttpIo {
 				+ "\r\n";
 
 		os.write(s.getBytes(Utf8.charset));
-		Copy.stream(request.inputStream, os);
+		Copy.stream(To.inputStream(request.in), os);
 	}
 
 	public void writeResponse(OutputStream os, Response response) throws IOException {

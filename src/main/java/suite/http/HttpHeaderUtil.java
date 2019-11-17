@@ -2,18 +2,16 @@ package suite.http;
 
 import static primal.statics.Rethrow.ex;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.URLDecoder;
 import java.util.Map;
 
 import primal.MoreVerbs.Read;
 import primal.MoreVerbs.Split;
-import primal.Nouns.Buffer;
 import primal.Nouns.Utf8;
-import primal.Verbs.Build;
 import primal.Verbs.Equals;
 import primal.persistent.PerList;
+import primal.primitive.adt.Bytes;
+import primal.puller.Puller;
 
 public class HttpHeaderUtil {
 
@@ -32,18 +30,8 @@ public class HttpHeaderUtil {
 		return decodeMap(query, ";");
 	}
 
-	public static Map<String, String> getPostedAttrs(InputStream is) {
-		var reader = new InputStreamReader(is, Utf8.charset);
-
-		var query = Build.string(sb -> {
-			var buffer = new char[Buffer.size];
-			int nCharsRead;
-
-			while (0 <= (nCharsRead = ex(() -> reader.read(buffer))))
-				sb.append(buffer, 0, nCharsRead);
-		});
-
-		return getAttrs(query);
+	public static Map<String, String> getPostedAttrs(Puller<Bytes> in) {
+		return getAttrs(new String(Bytes.of(in).toArray(), Utf8.charset));
 	}
 
 	public static Map<String, String> getAttrs(String query) {
