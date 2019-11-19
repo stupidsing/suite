@@ -39,59 +39,77 @@ public class ListenNio {
 
 		listen.handle = () -> new IoAsync() {
 			private Bytes bytes = Bytes.empty;
-			private String[] methodUrlProtocol;
-			private List<String> lines = new ArrayList<>();
-			private Source<Boolean> handleRb = () -> parseLine(line -> handleRequest1stLine(line.trim(), o -> out = o));
+			private Source<Boolean> eater = () -> parseLine(line -> handleRequest1stLine(line.trim(), o -> out = o));
 			private Puller<Bytes> out;
 
 			public Puller<Bytes> read(Bytes in) {
 				bytes = bytes.append(in);
-				while (handleRb.g())
+				while (eater.g())
 					;
 				return out;
 			}
 
 			private void handleRequest1stLine(String line, Sink<Puller<Bytes>> callback) {
-				methodUrlProtocol = line.split(" ");
-				handleRb = () -> parseLine(line_ -> handleRequestHeadLine(line_.trim(), callback));
+				var hrhl = handleRequestHeaderLine(lines -> handleRequestBody(line, lines, callback));
+				eater = () -> parseLine(hrhl);
 			}
 
-			private void handleRequestHeadLine(String line, Sink<Puller<Bytes>> callback) {
-				if (line.isEmpty()) {
-					var headers = Read //
-							.from(lines) //
-							.fold(new Header(), (headers_, line_) -> Split //
-									.strl(line_, ":") //
-									.map((k, v) -> headers_.put(k, v)));
+			private Sink<String> handleRequestHeaderLine(Sink<List<String>> callback) {
+				var lines = new ArrayList<String>();
 
-					var request = FixieArray.of(methodUrlProtocol).map((method, url, protocol) -> {
-						Fun2<String, String, Request> requestFun = (host, pqs) -> Split.strl(pqs, "?")
-								.map((path0, query) -> {
-									var path1 = path0.startsWith("/") ? path0 : "/" + path0;
-									var path2 = ex(() -> URLDecoder.decode(path1, Utf8.charset));
+				return line0 -> {
+					var line1 = line0.trim();
 
-									return Equals.string(protocol, "HTTP/1.1") //
-											? new Request(method, host, path2, query, headers, null) //
-											: fail("only HTTP/1.1 is supported");
-								});
-
-						var pp = Split.string(url, "://");
-						return pp != null ? Split.strl(pp.v, "/").map(requestFun) : requestFun.apply("", url);
-					});
-
-					var cl = request.headers.getOpt("Content-Length").map(Long::parseLong);
-					var te = Equals.ab(request.headers.getOpt("Transfer-Encoding"), Opt.of("chunked"));
-
-					if (te)
-						handleRb = handleChunkedRequestBody(chunks -> response(Response.of(Http.S200, "Contents")));
-					else if (cl.hasValue())
-						handleRb = handleRequestBody(cl.g(), callback);
-					else if (Set.of("DELETE", "GET", "HEAD").contains(request.method))
-						handleRb = handleRequestBody(0, callback);
+					if (!line1.isEmpty())
+						lines.add(line1);
 					else
-						handleRb = handleRequestBody(Long.MAX_VALUE, callback);
-				} else
-					lines.add(line);
+						callback.f(lines);
+				};
+			}
+
+			private void handleRequestBody(String line0, List<String> headerLines, Sink<Puller<Bytes>> callback) {
+				eater = () -> FixieArray //
+						.of(line0.split(" ")) //
+						.map((method, url, proto) -> handleRequestBody(proto, method, url, headerLines, callback));
+			}
+
+			private boolean handleRequestBody( //
+					String protocol, //
+					String method, //
+					String url, //
+					List<String> lines, //
+					Sink<Puller<Bytes>> callback) {
+				var headers = Read //
+						.from(lines) //
+						.fold(new Header(), (headers_, line_) -> Split //
+								.strl(line_, ":") //
+								.map((k, v) -> headers_.put(k, v)));
+
+				Fun2<String, String, Request> requestFun = (host, pqs) -> Split.strl(pqs, "?").map((path0, query) -> {
+					var path1 = path0.startsWith("/") ? path0 : "/" + path0;
+					var path2 = ex(() -> URLDecoder.decode(path1, Utf8.charset));
+
+					return Equals.string(protocol, "HTTP/1.1") //
+							? new Request(method, host, path2, query, headers, null) //
+							: fail("only HTTP/1.1 is supported");
+				});
+
+				var pp = Split.string(url, "://");
+				var request = pp != null ? Split.strl(pp.v, "/").map(requestFun) : requestFun.apply("", url);
+
+				var cl = request.headers.getOpt("Content-Length").map(Long::parseLong);
+				var te = Equals.ab(request.headers.getOpt("Transfer-Encoding"), Opt.of("chunked"));
+
+				if (te)
+					eater = handleChunkedRequestBody(chunks -> response(Response.of(Http.S200, "Contents")));
+				else if (cl.hasValue())
+					eater = handleRequestBody(cl.g(), callback);
+				else if (Set.of("DELETE", "GET", "HEAD").contains(request.method))
+					eater = handleRequestBody(0, callback);
+				else
+					eater = handleRequestBody(Long.MAX_VALUE, callback);
+
+				return true;
 			}
 
 			private Source<Boolean> handleRequestBody(long contentLength, Sink<Puller<Bytes>> callback) {
