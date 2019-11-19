@@ -101,18 +101,21 @@ public class ListenNio {
 				var te = Equals.ab(request.headers.getOpt("Transfer-Encoding"), Opt.of("chunked"));
 
 				if (te)
-					eater = handleChunkedRequestBody(chunks -> response(Response.of(Http.S200, "Contents")));
+					eater = handleChunkedRequestBody(chunks -> response(getResponse(request)));
 				else if (cl.hasValue())
-					eater = handleRequestBody(cl.g(), callback);
+					eater = handleRequestBody(request, cl.g(), callback);
 				else if (Set.of("DELETE", "GET", "HEAD").contains(request.method))
-					eater = handleRequestBody(0, callback);
+					eater = handleRequestBody(request, 0, callback);
 				else
-					eater = handleRequestBody(Long.MAX_VALUE, callback);
+					eater = handleRequestBody(request, Long.MAX_VALUE, callback);
 
 				return true;
 			}
 
-			private Source<Boolean> handleRequestBody(long contentLength, Sink<Puller<Bytes>> callback) {
+			private Source<Boolean> handleRequestBody( //
+					Request request, //
+					long contentLength, //
+					Sink<Puller<Bytes>> callback) {
 				return new Source<>() {
 					private int n;
 
@@ -121,7 +124,7 @@ public class ListenNio {
 							n += bytes.size();
 						var isCompleteRequest = bytes == null || contentLength <= n;
 						if (isCompleteRequest)
-							callback.f(response(getResponse()));
+							callback.f(response(getResponse(request)));
 						return !isCompleteRequest;
 					}
 				};
@@ -178,7 +181,7 @@ public class ListenNio {
 						response.out);
 			}
 
-			private Response getResponse() {
+			private Response getResponse(Request request) {
 				return Response.of(Http.S200, "Contents");
 			}
 		};
