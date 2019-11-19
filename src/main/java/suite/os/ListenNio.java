@@ -25,6 +25,7 @@ import primal.adt.Opt;
 import primal.fp.Funs.Sink;
 import primal.fp.Funs.Source;
 import primal.fp.Funs2.Fun2;
+import primal.fp.Funs2.Sink2;
 import primal.primitive.adt.Bytes;
 import primal.puller.Puller;
 import suite.http.Http;
@@ -40,39 +41,23 @@ public class ListenNio {
 		listen.handle = () -> new IoAsync() {
 			private Bytes bytes = Bytes.empty;
 			private String[] methodUrlProtocol;
-			private List<String> lines;
-			private Sink<Bytes> handleRequestBody;
+			private List<String> lines = new ArrayList<>();
+			private Source<Boolean> handleRb = () -> parseLine(line -> handleRequest1stLine(line.trim(), o -> out = o));
 			private Puller<Bytes> out;
 
 			public Puller<Bytes> read(Bytes in) {
-				if (in == null)
-					handleRequestBody.f(in);
-				else {
-					bytes = bytes.append(in);
-
-					re: while (handleRequestBody == null) {
-						var i = 0;
-
-						while (i < bytes.size())
-							if (bytes.get(i) != 10)
-								i++;
-							else {
-								var line = new String(bytes.range(0, i).toArray(), Utf8.charset);
-								bytes = bytes.range(i + 1);
-								handleRequestBody = handleRequestLine(line.trim());
-								continue re;
-							}
-
-						return out;
-					}
-
-					handleRequestBody.f(bytes);
-				}
-
+				bytes = bytes.append(in);
+				while (handleRb.g())
+					;
 				return out;
 			}
 
-			private Sink<Bytes> handleRequestLine(String line) {
+			private void handleRequest1stLine(String line, Sink<Puller<Bytes>> callback) {
+				methodUrlProtocol = line.split(" ");
+				handleRb = () -> parseLine(line_ -> handleRequestHeadLine(line_.trim(), o -> out = o));
+			}
+
+			private void handleRequestHeadLine(String line, Sink<Puller<Bytes>> callback) {
 				if (line.isEmpty()) {
 					var headers = Read //
 							.from(lines) //
@@ -95,79 +80,80 @@ public class ListenNio {
 						return pp != null ? Split.strl(pp.v, "/").map(requestFun) : requestFun.apply("", url);
 					});
 
-					return handleRequestBody(request);
-				} else if (methodUrlProtocol != null)
+					var cl = request.headers.getOpt("Content-Length").map(Long::parseLong);
+					var te = Equals.ab(request.headers.getOpt("Transfer-Encoding"), Opt.of("chunked"));
+
+					if (te)
+						handleRb = handleChunkedRequestBody(chunks -> response(Response.of(Http.S200, "Contents")));
+					else if (cl.hasValue())
+						handleRb = handleRequestBody(cl.g(), callback);
+					else if (Set.of("DELETE", "GET", "HEAD").contains(request.method))
+						handleRb = handleRequestBody(0, callback);
+					else
+						handleRb = handleRequestBody(Long.MAX_VALUE, callback);
+				} else
 					lines.add(line);
-				else {
-					methodUrlProtocol = line.split(" ");
-					lines = new ArrayList<>();
-				}
-
-				return null;
 			}
 
-			private Sink<Bytes> handleRequestBody(Request request) {
-				var cl = request.headers.getOpt("Content-Length").map(Long::parseLong);
-				var te = Equals.ab(request.headers.getOpt("Transfer-Encoding"), Opt.of("chunked"));
-				long requestBodyLength;
-
-				if (te)
-					return handleChunkedRequestBody();
-				else if (cl.hasValue())
-					requestBodyLength = cl.g();
-				else if (Set.of("DELETE", "GET", "HEAD").contains(request.method))
-					requestBodyLength = 0;
-				else
-					requestBodyLength = Long.MAX_VALUE;
-
-				return handleRequestBody(requestBodyLength);
-			}
-
-			private Sink<Bytes> handleChunkedRequestBody() {
-				return new Sink<>() {
-					private Bytes bytes = Bytes.empty;
-					private List<Bytes> chunks = new ArrayList<>();
-
-					public void f(Bytes in) {
-						bytes = bytes.append(in);
-
-						re: while (true) {
-							for (var i0 = 0; i0 < bytes.size(); i0++)
-								if (bytes.get(i0) == 10) {
-									var line = new String(bytes.range(0, i0).toArray(), Utf8.charset).trim();
-									var size = Integer.parseInt(line, 16);
-									var i1 = i0 + 1 + size;
-
-									for (; i1 < bytes.size(); i1++)
-										if (bytes.get(i1) == 10) {
-											chunks.add(bytes.range(i0 + 1, i1));
-											bytes = bytes.range(i1);
-											continue re;
-										}
-								}
-
-							break;
-						}
-					}
-				};
-			}
-
-			private Sink<Bytes> handleRequestBody(long requestBodyLength) {
-				var status = Http.S200;
-				var body = "Contents";
-				var response = Response.of(status, body);
-
-				return new Sink<>() {
+			private Source<Boolean> handleRequestBody(long contentLength, Sink<Puller<Bytes>> callback) {
+				return new Source<>() {
 					private int n;
 
-					public void f(Bytes bytes) {
+					public Boolean g() {
 						if (bytes != null)
 							n += bytes.size();
-
-						if (bytes == null || requestBodyLength <= n)
-							out = response(response);
+						var isCompleteRequest = bytes == null || contentLength <= n;
+						if (isCompleteRequest)
+							callback.f(response(getResponse()));
+						return !isCompleteRequest;
 					}
 				};
+			}
+
+			private Source<Boolean> handleChunkedRequestBody(Sink<List<Bytes>> callback) {
+				var chunks = new ArrayList<Bytes>();
+
+				return () -> {
+					for (var i0 = 0; i0 < bytes.size(); i0++)
+						if (bytes.get(i0) == 10) {
+							var line = new String(bytes.range(0, i0).toArray(), Utf8.charset);
+							var size = Integer.parseInt(line.trim(), 16);
+
+							for (var i1 = i0 + 1 + size; i1 < bytes.size(); i1++)
+								if (bytes.get(i1) == 10) {
+									chunks.add(bytes.range(i0 + 1, i1));
+									bytes = bytes.range(i1);
+									return true;
+								}
+
+							if (size == 0)
+								callback.f(chunks);
+						}
+
+					return false;
+				};
+			}
+
+			private boolean parseLine(Sink<String> handleLine) {
+				return parseLine2((bytes_, line) -> {
+					bytes = bytes_;
+					handleLine.f(line);
+				});
+			}
+
+			private boolean parseLine2(Sink2<Bytes, String> callback) {
+				var i = 0;
+
+				while (i < bytes.size())
+					if (bytes.get(i) != 10)
+						i++;
+					else {
+						var line = new String(bytes.range(0, i).toArray(), Utf8.charset);
+						callback.sink2(bytes.range(i + 1), line);
+						return true;
+					}
+
+				return false;
 			}
 
 			private Puller<Bytes> response(Response response) {
@@ -179,6 +165,10 @@ public class ListenNio {
 								.toJoinedString()), //
 						Pull.from("\r\n"), //
 						response.out);
+			}
+
+			private Response getResponse() {
+				return Response.of(Http.S200, "Contents");
 			}
 		};
 
