@@ -156,12 +156,8 @@ public class ListenNio {
 			}
 
 			private boolean parseLine(Sink<String> handleLine) {
-				var i = 0;
-
-				while (i < bytes.size())
-					if (bytes.get(i) != 10)
-						i++;
-					else {
+				for (var i = 0; i < bytes.size(); i++)
+					if (bytes.get(i) == 10) {
 						var line = new String(bytes.range(0, i).toArray(), Utf8.charset);
 						bytes = bytes.range(i + 1);
 						handleLine.f(line);
