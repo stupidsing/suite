@@ -1,8 +1,7 @@
 #!/bin/sh
 
 BASE="`dirname ${0}`"
-DEBUGOPTS="-Xdebug -Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n"
-OPTS="${DEBUGOPTS} -Dsuite.dir=${BASE}"
+OPTS="-Xdebug -Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n -Dsuite.dir=${BASE}"
 
 ${BASE}/build.sh &&
 

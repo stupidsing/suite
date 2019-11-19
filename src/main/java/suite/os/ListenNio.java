@@ -32,6 +32,7 @@ import suite.http.Http.Header;
 import suite.http.Http.Request;
 import suite.http.Http.Response;
 
+// mvn compile exec:java -Dexec.mainClass=suite.os.ListenNio
 public class ListenNio {
 
 	public static void main(String[] args) {
@@ -74,7 +75,7 @@ public class ListenNio {
 			}
 
 			private boolean handleRequestBody( //
-					String protocol, //
+					String proto, //
 					String method, //
 					String url, //
 					List<String> lines, //
@@ -89,7 +90,7 @@ public class ListenNio {
 					var path1 = path0.startsWith("/") ? path0 : "/" + path0;
 					var path2 = ex(() -> URLDecoder.decode(path1, Utf8.charset));
 
-					return Equals.string(protocol, "HTTP/1.1") //
+					return Equals.string(proto, "HTTP/1.1") //
 							? new Request(method, host, path2, query, headers, null) //
 							: fail("only HTTP/1.1 is supported");
 				});

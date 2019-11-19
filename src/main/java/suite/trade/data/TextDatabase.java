@@ -78,10 +78,7 @@ public class TextDatabase {
 	}
 
 	private synchronized void save() {
-		var puller = Read //
-				.from(data) //
-				.map(this::toBytes) //
-				.collect(Bytes_::buffer);
+		var puller = Read.from(data).map(this::toBytes).collect(Bytes_::buffer);
 
 		WriteFile.to(path).doWrite(os -> Bytes_.copy(puller, os::write));
 	}
