@@ -50,12 +50,12 @@ public class ListenNio {
 				return out;
 			}
 
-			private void handleRequest1stLine(String line, Sink<Puller<Bytes>> callback) {
-				var hrhl = handleRequestHeaderLine(lines -> handleRequestBody(line, lines, callback));
+			private void handleRequest1stLine(String line, Sink<Puller<Bytes>> cb) {
+				var hrhl = handleRequestHeaderLine(lines -> handleRequestBody(line, lines, cb));
 				eater = () -> parseLine(hrhl);
 			}
 
-			private Sink<String> handleRequestHeaderLine(Sink<List<String>> callback) {
+			private Sink<String> handleRequestHeaderLine(Sink<List<String>> cb) {
 				var lines = new ArrayList<String>();
 
 				return line0 -> {
@@ -64,14 +64,14 @@ public class ListenNio {
 					if (!line1.isEmpty())
 						lines.add(line1);
 					else
-						callback.f(lines);
+						cb.f(lines);
 				};
 			}
 
-			private void handleRequestBody(String line0, List<String> headerLines, Sink<Puller<Bytes>> callback) {
+			private void handleRequestBody(String line0, List<String> headerLines, Sink<Puller<Bytes>> cb) {
 				eater = () -> FixieArray //
 						.of(line0.split(" ")) //
-						.map((method, url, proto) -> handleRequestBody(proto, method, url, headerLines, callback));
+						.map((method, url, proto) -> handleRequestBody(proto, method, url, headerLines, cb));
 			}
 
 			private boolean handleRequestBody( //
@@ -79,7 +79,7 @@ public class ListenNio {
 					String method, //
 					String url, //
 					List<String> lines, //
-					Sink<Puller<Bytes>> callback) {
+					Sink<Puller<Bytes>> cb) {
 				var headers = Read //
 						.from(lines) //
 						.fold(new Header(), (headers_, line_) -> Split //
@@ -104,11 +104,11 @@ public class ListenNio {
 				if (te)
 					eater = handleChunkedRequestBody(chunks -> response(getResponse(request)));
 				else if (cl.hasValue())
-					eater = handleRequestBody(request, cl.g(), callback);
+					eater = handleRequestBody(request, cl.g(), cb);
 				else if (Set.of("DELETE", "GET", "HEAD").contains(request.method))
-					eater = handleRequestBody(request, 0, callback);
+					eater = handleRequestBody(request, 0, cb);
 				else
-					eater = handleRequestBody(request, Long.MAX_VALUE, callback);
+					eater = handleRequestBody(request, Long.MAX_VALUE, cb);
 
 				return true;
 			}
@@ -116,7 +116,7 @@ public class ListenNio {
 			private Source<Boolean> handleRequestBody( //
 					Request request, //
 					long contentLength, //
-					Sink<Puller<Bytes>> callback) {
+					Sink<Puller<Bytes>> cb) {
 				return new Source<>() {
 					private int n;
 
@@ -125,13 +125,13 @@ public class ListenNio {
 							n += bytes.size();
 						var isCompleteRequest = bytes == null || contentLength <= n;
 						if (isCompleteRequest)
-							callback.f(response(getResponse(request)));
+							cb.f(response(getResponse(request)));
 						return !isCompleteRequest;
 					}
 				};
 			}
 
-			private Source<Boolean> handleChunkedRequestBody(Sink<List<Bytes>> callback) {
+			private Source<Boolean> handleChunkedRequestBody(Sink<List<Bytes>> cb) {
 				var chunks = new ArrayList<Bytes>();
 
 				return () -> {
@@ -148,7 +148,7 @@ public class ListenNio {
 								}
 
 							if (size == 0)
-								callback.f(chunks);
+								cb.f(chunks);
 						}
 
 					return false;
