@@ -25,7 +25,6 @@ import primal.adt.Opt;
 import primal.fp.Funs.Sink;
 import primal.fp.Funs.Source;
 import primal.fp.Funs2.Fun2;
-import primal.fp.Funs2.Sink2;
 import primal.primitive.adt.Bytes;
 import primal.puller.Puller;
 import suite.http.Http;
@@ -54,7 +53,7 @@ public class ListenNio {
 
 			private void handleRequest1stLine(String line, Sink<Puller<Bytes>> callback) {
 				methodUrlProtocol = line.split(" ");
-				handleRb = () -> parseLine(line_ -> handleRequestHeadLine(line_.trim(), o -> out = o));
+				handleRb = () -> parseLine(line_ -> handleRequestHeadLine(line_.trim(), callback));
 			}
 
 			private void handleRequestHeadLine(String line, Sink<Puller<Bytes>> callback) {
@@ -135,13 +134,6 @@ public class ListenNio {
 			}
 
 			private boolean parseLine(Sink<String> handleLine) {
-				return parseLine2((bytes_, line) -> {
-					bytes = bytes_;
-					handleLine.f(line);
-				});
-			}
-
-			private boolean parseLine2(Sink2<Bytes, String> callback) {
 				var i = 0;
 
 				while (i < bytes.size())
@@ -149,7 +141,8 @@ public class ListenNio {
 						i++;
 					else {
 						var line = new String(bytes.range(0, i).toArray(), Utf8.charset);
-						callback.sink2(bytes.range(i + 1), line);
+						bytes = bytes.range(i + 1);
+						handleLine.f(line);
 						return true;
 					}
 
