@@ -45,10 +45,13 @@ public class ListenNio {
 			private Puller<Bytes> out;
 
 			public Puller<Bytes> read(Bytes in) {
-				bytes = bytes.append(in);
-				while (eater.g())
-					;
-				return out;
+				if (in != null) {
+					bytes = bytes.append(in);
+					while (eater.g())
+						;
+					return out;
+				} else
+					return null;
 			}
 
 			private void handleRequest1stLine(String line, Sink<Puller<Bytes>> cb) {
