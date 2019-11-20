@@ -25,6 +25,7 @@ import primal.adt.Opt;
 import primal.fp.Funs.Sink;
 import primal.fp.Funs.Source;
 import primal.fp.Funs2.Fun2;
+import primal.os.Log_;
 import primal.primitive.adt.Bytes;
 import primal.puller.Puller;
 import suite.http.Http;
@@ -213,14 +214,18 @@ public class ListenNio {
 					var key = iter.next();
 					iter.remove();
 
-					if (key.isAcceptable())
-						handleAccept(ssc, key);
-					if (key.isConnectable())
-						;
-					if (key.isReadable())
-						handleRead((SocketChannel) key.channel(), (IoAsync) key.attachment());
-					if (key.isWritable())
-						handleWrite((SocketChannel) key.channel(), (Puller<?>) key.attachment());
+					try {
+						if (key.isAcceptable())
+							handleAccept(ssc, key);
+						if (key.isConnectable())
+							;
+						if (key.isReadable())
+							handleRead((SocketChannel) key.channel(), (IoAsync) key.attachment());
+						if (key.isWritable())
+							handleWrite((SocketChannel) key.channel(), (Puller<?>) key.attachment());
+					} catch (Exception ex) {
+						Log_.error(ex);
+					}
 				}
 			}
 		} catch (IOException ex) {
