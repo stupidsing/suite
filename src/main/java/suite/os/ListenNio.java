@@ -29,6 +29,7 @@ import primal.os.Log_;
 import primal.primitive.adt.Bytes;
 import primal.puller.Puller;
 import suite.http.Http;
+import suite.http.Http.Handler;
 import suite.http.Http.Header;
 import suite.http.Http.Request;
 import suite.http.Http.Response;
@@ -42,6 +43,7 @@ public class ListenNio {
 		listen.handle = () -> new IoAsync() {
 			private Bytes bytes = Bytes.empty;
 			private Source<Boolean> eater = () -> parseLine(line -> handleRequest1stLine(line.trim(), o -> out = o));
+			Handler handle = this::getResponse;
 			private Puller<Bytes> out;
 
 			public Puller<Bytes> read(Bytes in) {
@@ -106,7 +108,7 @@ public class ListenNio {
 				var te = Equals.ab(request.headers.getOpt("Transfer-Encoding"), Opt.of("chunked"));
 
 				if (te)
-					eater = handleChunkedRequestBody(chunks -> response(getResponse(request)));
+					eater = handleChunkedRequestBody(chunks -> response(handle.handle(request)));
 				else if (cl.hasValue())
 					eater = handleRequestBody(request, cl.g(), cb);
 				else if (Set.of("DELETE", "GET", "HEAD").contains(request.method))
@@ -129,7 +131,7 @@ public class ListenNio {
 							n += bytes.size();
 						var isCompleteRequest = bytes == null || contentLength <= n;
 						if (isCompleteRequest)
-							cb.f(response(getResponse(request)));
+							cb.f(response(handle.handle(request)));
 						return !isCompleteRequest;
 					}
 				};
