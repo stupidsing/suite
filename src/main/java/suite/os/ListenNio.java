@@ -8,6 +8,7 @@ import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 
+import primal.Nouns.Buffer;
 import primal.fp.Funs.Source;
 import primal.os.Log_;
 import primal.primitive.adt.Bytes;
@@ -71,7 +72,7 @@ public class ListenNio {
 	}
 
 	private void handleRead(SocketChannel sc, IoAsync io) throws IOException {
-		var bs = new byte[1024];
+		var bs = new byte[Buffer.size];
 		var n = sc.read(ByteBuffer.wrap(bs));
 		var puller = io.read(0 < n ? Bytes.of(bs, 0, n) : null);
 
@@ -80,10 +81,10 @@ public class ListenNio {
 	}
 
 	private void handleWrite(SocketChannel sc, Puller<?> puller) throws IOException {
-		var bs = (Bytes) puller.pull();
+		var bytes = (Bytes) puller.pull();
 
-		if (bs != null) {
-			sc.write(ByteBuffer.wrap(bs.bs, bs.start, bs.end));
+		if (bytes != null) {
+			sc.write(ByteBuffer.wrap(bytes.bs, bytes.start, bytes.end));
 			sc.register(selector, SelectionKey.OP_WRITE, puller);
 		} else
 			sc.close();
