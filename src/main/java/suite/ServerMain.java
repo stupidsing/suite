@@ -25,6 +25,7 @@ import suite.http.Http.Response;
 import suite.http.HttpAuthToken;
 import suite.http.HttpHandle;
 import suite.http.HttpHeaderUtil;
+import suite.http.HttpNio;
 import suite.http.HttpServe;
 import suite.node.Str;
 import suite.os.Execute;
@@ -45,13 +46,21 @@ public class ServerMain {
 	}
 
 	public boolean run() {
-		Start.thread(this::runHttpServer);
+		Start.thread(Boolean.FALSE ? this::runNioHttpServer : this::runHttpServer);
 		Start.thread(this::runScheduler);
 		Start.thread(this::runTelegramBot);
 		return true;
 	}
 
 	private void runHttpServer() {
+		new HttpServe(8051).serve(handler());
+	}
+
+	private void runNioHttpServer() {
+		new HttpNio().run(8051, handler());
+	}
+
+	private Handler handler() {
 		BiPredicate<String, String> authenticate = (username, password) -> Defaults //
 				.secrets() //
 				.prove(Suite.substitute("auth .0 .1", new Str(username), new Str(password)));
@@ -98,8 +107,7 @@ public class ServerMain {
 						.<String, Handler> empty() //
 						.put("PATCH", hat.handleRefreshToken(authenticateRoles)) //
 						.put("POST", hat.handleGetToken(authenticateRoles)))));
-
-		new HttpServe(8051).serve(handler);
+		return handler;
 	}
 
 	private void runScheduler() {
