@@ -39,14 +39,8 @@ public class ListenNio {
 			var ss = ssc.socket();
 			ss.bind(new InetSocketAddress("localhost", port));
 
-			while (true) {
-				selector.select();
-				var iter = selector.selectedKeys().iterator();
-
-				while (iter.hasNext()) {
-					var key = iter.next();
-					iter.remove();
-
+			while (true)
+				selector.select(key -> {
 					try {
 						if (key.isAcceptable())
 							handleAccept(ssc.accept(), key);
@@ -59,8 +53,7 @@ public class ListenNio {
 					} catch (Exception ex) {
 						Log_.error(ex);
 					}
-				}
-			}
+				});
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}
