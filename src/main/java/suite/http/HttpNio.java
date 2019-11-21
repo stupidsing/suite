@@ -3,6 +3,7 @@ package suite.http;
 import static primal.statics.Fail.fail;
 import static primal.statics.Rethrow.ex;
 
+import java.io.IOException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +23,7 @@ import primal.fp.Funs.Source;
 import primal.fp.Funs2.Fun2;
 import primal.primitive.adt.Bytes;
 import primal.puller.Puller;
+import primal.statics.Rethrow.SinkIo;
 import suite.http.Http.Handler;
 import suite.http.Http.Header;
 import suite.http.Http.Request;
@@ -39,17 +41,26 @@ public class HttpNio {
 	public void run(int port, Handler handleRequest) {
 		Source<IoAsync> handleIo = () -> new IoAsync() {
 			private Bytes bytes = Bytes.empty;
-			private Source<Boolean> eater = () -> parseLine(line -> handleRequest1stLine(line.trim(), o -> out = o));
-			private Puller<Bytes> out;
+			private SinkIo<Puller<Bytes>> registerWrite;
 
-			public Puller<Bytes> read(Bytes in) {
+			private Source<Boolean> eater = () -> parseLine(line -> handleRequest1stLine(line.trim(), o -> {
+				try {
+					registerWrite.f(o);
+				} catch (IOException ex) {
+					fail(ex);
+				}
+			}));
+
+			public void read(Bytes in) {
 				if (in != null) {
 					bytes = bytes.append(in);
 					while (eater.g())
 						;
-					return out;
-				} else
-					return null;
+				}
+			}
+
+			public void registerWrite(SinkIo<Puller<Bytes>> sink) {
+				registerWrite = sink;
 			}
 
 			private void handleRequest1stLine(String line, Sink<Puller<Bytes>> cb) {
@@ -167,14 +178,14 @@ public class HttpNio {
 			}
 
 			private Puller<Bytes> response(Response response) {
-				Puller<Bytes> out;
+				Puller<Bytes> body;
 
-				if (response.out != null)
-					out = response.out;
+				if (response.body != null)
+					body = response.body;
 				else {
 					var queue = new NullableSyncQueue<Bytes>();
 					new Th(() -> response.write.f(queue::offerQuietly)).start();
-					out = Puller.of(queue::takeQuietly);
+					body = Puller.of(queue::takeQuietly);
 				}
 
 				return Puller.concat( //
@@ -184,7 +195,7 @@ public class HttpNio {
 								.map((k, v) -> k + ": " + v + "\r\n") //
 								.toJoinedString()), //
 						Pull.from("\r\n"), //
-						out);
+						body);
 			}
 		};
 

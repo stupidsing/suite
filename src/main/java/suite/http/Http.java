@@ -121,51 +121,51 @@ public class Http {
 	public static class Response {
 		public final String status;
 		public final Header headers;
-		public final Puller<Bytes> out;
+		public final Puller<Bytes> body;
 		public final Sink<Sink<Bytes>> write;
 
 		private static Response of(Status status) {
 			return of(status, new Header(), Puller.empty());
 		}
 
-		public static Response of(Puller<Bytes> out) {
-			return of(S200, new Header(), out);
+		public static Response of(Puller<Bytes> body) {
+			return of(S200, new Header(), body);
 		}
 
-		public static Response of(Status status, String out) {
-			var bs = out.getBytes(Utf8.charset);
+		public static Response of(Status status, String body) {
+			var bs = body.getBytes(Utf8.charset);
 			return of(status, Pull.from(bs), bs.length);
 		}
 
-		public static Response of(Status status, Puller<Bytes> out, long length) {
+		public static Response of(Status status, Puller<Bytes> body, long length) {
 			var empty = new Header();
-			return of(status, empty.put("Content-Length", Long.toString(length)), out);
+			return of(status, empty.put("Content-Length", Long.toString(length)), body);
 		}
 
-		public static Response of(Status status, Header headers, Puller<Bytes> out) {
-			return new Response(status, headers.put("Content-Type", "text/html; charset=UTF-8"), out);
+		public static Response of(Status status, Header headers, Puller<Bytes> body) {
+			return new Response(status, headers.put("Content-Type", "text/html; charset=UTF-8"), body);
 		}
 
 		public static Response ofWriter(Status status, Header headers, Sink<Sink<Bytes>> write) {
 			return new Response(status, headers, null, write);
 		}
 
-		public Response(Status status, Header headers, Puller<Bytes> out) {
-			this(status, headers, out, null);
+		public Response(Status status, Header headers, Puller<Bytes> body) {
+			this(status, headers, body, null);
 		}
 
-		public Response(String status, Header headers, Puller<Bytes> out) {
-			this(status, headers, out, null);
+		public Response(String status, Header headers, Puller<Bytes> body) {
+			this(status, headers, body, null);
 		}
 
-		private Response(Status status, Header headers, Puller<Bytes> out, Sink<Sink<Bytes>> write) {
-			this(status.line, headers, out, write);
+		private Response(Status status, Header headers, Puller<Bytes> body, Sink<Sink<Bytes>> write) {
+			this(status.line, headers, body, write);
 		}
 
-		private Response(String status, Header headers, Puller<Bytes> out, Sink<Sink<Bytes>> write) {
+		private Response(String status, Header headers, Puller<Bytes> body, Sink<Sink<Bytes>> write) {
 			this.status = status;
 			this.headers = headers;
-			this.out = out;
+			this.body = body;
 			this.write = write;
 		}
 

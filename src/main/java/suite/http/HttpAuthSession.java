@@ -77,7 +77,7 @@ public class HttpAuthSession {
 			private Response showProtectedPage(Request request, String sessionId) {
 				var r = protectedHandler.handle(request);
 				var headers1 = r.headers.put("Set-Cookie", "session=" + sessionId + "; Path=/site");
-				return new Response(r.status, headers1, r.out);
+				return new Response(r.status, headers1, r.body);
 			}
 
 			private Response showLoginPage(PerList<String> redirectPath, boolean isLoginFailed) {

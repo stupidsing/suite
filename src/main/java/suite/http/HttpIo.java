@@ -97,10 +97,10 @@ public class HttpIo {
 				+ "\r\n";
 
 		os.write(s.getBytes(Utf8.charset));
-		var out = response.out;
+		var body = response.body;
 
-		if (out != null)
-			Copy.stream(out.collect(To::inputStream), os);
+		if (body != null)
+			Copy.stream(body.collect(To::inputStream), os);
 		else {
 			response.write.f(bytes -> {
 				try {
