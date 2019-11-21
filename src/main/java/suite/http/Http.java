@@ -102,10 +102,6 @@ public class Http {
 			this.in = in;
 		}
 
-		public String path() {
-			return paths.streamlet().fold("", (s0, s1) -> s0 + "/" + s1);
-		}
-
 		public Pair<String, Request> split() {
 			if (!paths.isEmpty())
 				return Pair.of(paths.head, new Request(method, server, paths.tail, query, headers, in));
@@ -114,7 +110,11 @@ public class Http {
 		}
 
 		public String getLogString() {
-			return method + " " + paths.streamlet().toJoinedString("/");
+			return method + " " + path();
+		}
+
+		public String path() {
+			return paths.streamlet().map(path -> "/" + path).toJoinedString();
 		}
 	}
 
