@@ -38,7 +38,7 @@ public class HttpNio {
 		new HttpNio().run(8051, request -> Response.of(Http.S200, "Contents"));
 	}
 
-	public void run(int port, Handler handleRequest) {
+	public void run(int port, Handler handler) {
 		Source<IoAsync> handleIo = () -> new IoAsync() {
 			private Bytes bytes = Bytes.empty;
 			private SinkIo<Puller<Bytes>> registerWrite;
@@ -115,7 +115,7 @@ public class HttpNio {
 				var te = Equals.ab(request.headers.getOpt("Transfer-Encoding"), Opt.of("chunked"));
 
 				if (te)
-					eater = handleChunkedRequestBody(chunks -> response(handleRequest.handle(request)));
+					eater = handleChunkedRequestBody(chunks -> response(handler.handle(request)));
 				else if (cl.hasValue())
 					eater = handleRequestBody(request, cl.g(), cb);
 				else if (Set.of("DELETE", "GET", "HEAD").contains(request.method))
@@ -135,7 +135,7 @@ public class HttpNio {
 							n += bytes.size();
 						var isCompleteRequest = bytes == null || contentLength <= n;
 						if (isCompleteRequest)
-							cb.f(response(handleRequest.handle(request)));
+							cb.f(response(handler.handle(request)));
 						return !isCompleteRequest;
 					}
 				};
