@@ -72,7 +72,7 @@ public class HttpHandle {
 									return -1;
 							}
 
-							public int read(byte b[], int off, int len0) throws IOException {
+							public int read(byte[] b, int off, int len0) throws IOException {
 								var pos = p.value();
 								if (pos != px) {
 									var len1 = min(len0, (int) (px - pos));
