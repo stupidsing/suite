@@ -47,7 +47,7 @@ public class HttpIo {
 				Source<Bytes> source = () -> {
 					var buffer = new byte[Buffer.size];
 					var n = ex(() -> is1.read(buffer, 0, buffer.length));
-					return Bytes.of(buffer, 0, n);
+					return 0 <= n ? Bytes.of(buffer, 0, n) : null;
 				};
 
 				return Equals.string(protocol, "HTTP/1.1") //
