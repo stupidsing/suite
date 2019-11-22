@@ -20,7 +20,7 @@ cchs() {
 			F=$(cchf "echo version ${D:0:8}; ${D:9}${CMD:3}")
 		elif [ "${CMD}" == "#curl" ]; then
 			URL=$(cat ${F})
-			MD5=$(printf "${CMD}" | md5sum - | cut -d' ' -f1)
+			MD5=$(printf "${URL}" | md5sum - | cut -d' ' -f1)
 			SHORT=$(printf "${URL}" | tr /:@ _ | tr -dc '[\-.0-9A-Z_a-z]')
 			DF="${DCACHE}/${MD5:0:8}.${SHORT}"
 			[ -f ${DF} ] || curl -sL "${URL}" > ${DF}
@@ -31,7 +31,7 @@ cchs() {
 			F=$(cchf "printf ${LINK}")
 		elif [ "${CMD}" == "#git-clone" ]; then
 			URL=$(cat ${F})
-			MD5=$(printf "${CMD}" | md5sum - | cut -d' ' -f1)
+			MD5=$(printf "${URL}" | md5sum - | cut -d' ' -f1)
 			SHORT=$(printf "${URL}" | tr /: _ | tr -dc '[\-.0-9A-Z_a-z]')
 			DF="${DCACHE}/${MD5:0:8}.${SHORT}"
 			if [ -d ${DF} ]; then
