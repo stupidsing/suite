@@ -102,13 +102,15 @@ public class HttpNio {
 								.map((k, v) -> headers_.put(k, v)));
 
 				var queue = new ArrayBlockingQueue<Bytes>(Buffer.size);
+				Sink<Bytes> offer = queue::add;
+				Source<Bytes> take = queue::poll;
 
 				Fun2<String, String, Request> requestFun = (host, pqs) -> Split.strl(pqs, "?").map((path0, query) -> {
 					var path1 = path0.startsWith("/") ? path0 : "/" + path0;
 					var path2 = ex(() -> URLDecoder.decode(path1, Utf8.charset));
 
 					return Equals.string(proto, "HTTP/1.1") //
-							? new Request(method, host, path2, query, headers, Puller.of(() -> queue.poll())) //
+							? new Request(method, host, path2, query, headers, Puller.of(take)) //
 							: fail("only HTTP/1.1 is supported");
 				});
 
@@ -119,13 +121,13 @@ public class HttpNio {
 				var te = Equals.ab(request.headers.getOpt("Transfer-Encoding"), Opt.of("chunked"));
 
 				if (te)
-					eater = handleChunkedRequestBody(request, queue::add, cb);
+					eater = handleChunkedRequestBody(request, offer, cb);
 				else if (cl.hasValue())
-					eater = handleRequestBody(request, queue::add, cl.g(), cb);
+					eater = handleRequestBody(request, offer, cl.g(), cb);
 				else if (Set.of("DELETE", "GET", "HEAD").contains(request.method))
-					eater = handleRequestBody(request, queue::add, 0, cb);
+					eater = handleRequestBody(request, offer, 0, cb);
 				else
-					eater = handleRequestBody(request, queue::add, Long.MAX_VALUE, cb);
+					eater = handleRequestBody(request, offer, Long.MAX_VALUE, cb);
 
 				return true;
 			}
@@ -196,8 +198,10 @@ public class HttpNio {
 					body = response.body;
 				else {
 					var queue = new NullableSyncQueue<Bytes>();
-					new Th(() -> response.write.f(queue::offerQuietly)).start();
-					body = Puller.of(queue::takeQuietly);
+					Sink<Bytes> offer = queue::offerQuietly;
+					Source<Bytes> take = queue::takeQuietly;
+					new Th(() -> response.write.f(offer)).start();
+					body = Puller.of(take);
 				}
 
 				return Puller.concat( //
