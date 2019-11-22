@@ -9,14 +9,14 @@ JAVA_HOME=$(cchs "curl -sL https://jdk.java.net/13/" "grep 'https://download.jav
 M2_HOME=$(cchs "echo http://ftp.cuhk.edu.hk/pub/packages/apache.org/maven/maven-3/3.6.2/binaries/apache-maven-3.6.2-bin.tar.gz" "#curl" "#tar-zxf" "#dir")
 NODE_HOME=$(cchs "echo https://nodejs.org/dist/v12.13.0/node-v12.13.0-linux-x64.tar.xz" "#curl" "#tar-xf" "#dir")
 
-TOOLS_PATH="${GIT_HD}/bin:${GOROOT}/bin:${GRADLE_HOME}/bin:${JAVA_HOME}/bin:${M2_HOME}/bin:${NODE_HOME}/bin:${GIT_HD}/bin"
+TOOLS_PATH="${GIT_HD:9}/bin:${GOROOT}/bin:${GRADLE_HOME}/bin:${JAVA_HOME}/bin:${M2_HOME}/bin:${NODE_HOME}/bin"
 
 echo "tools path = ${TOOLS_PATH}"
 export PATH=${TOOLS_PATH}:${PATH}
 
-cd ${GIT_PRIMAL} && ${M2_HOME}/bin/mvn install
-cchs "echo ${GIT_SUITE}" "{}/build.sh"
-cchs "echo '/ dump yes #'" "${GIT_SUITE}/run.sh"
+cd ${GIT_PRIMAL:9} && ${M2_HOME}/bin/mvn install
+cchs "echo ${GIT_SUITE}" "{9}/build.sh"
+cchs "echo '/ dump yes #'" "${GIT_SUITE:9}/run.sh"
 cchs "echo ${GOROOT}" "{}/bin/go help"
 cchs "echo ${JAVA_HOME}" "{}/bin/javac -version"
 cchs "echo ${M2_HOME}" "{}/bin/mvn --help"

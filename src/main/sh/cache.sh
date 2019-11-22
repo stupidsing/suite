@@ -15,6 +15,9 @@ cchs() {
 		if [ "${CMD:0:2}" == "{}" ]; then
 			D=$(cat ${F})
 			F=$(cchf "${D}${CMD:2}")
+		elif [ "${CMD:0:3}" == "{9}" ]; then
+			D=$(cat ${F})
+			F=$(cchf "echo version ${D:0:8}; ${D:9}${CMD:3}")
 		elif [ "${CMD}" == "#curl" ]; then
 			URL=$(cat ${F})
 			MD5=$(printf "${CMD}" | md5sum - | cut -d' ' -f1)
@@ -40,8 +43,9 @@ cchs() {
 			else
 				git clone --depth 1 "${URL}" ${DF} --quiet
 			fi &&
-			touch ${DF}.pulltime
-			F=$(cchf "printf ${DF}")
+			touch ${DF}.pulltime &&
+			COMMIT=$(cd ${DF}/ && git rev-parse HEAD | cut -c1-8)
+			F=$(cchf "printf ${COMMIT}.${DF}")
 		elif [ "${CMD:0:5}" == "#tar-" ]; then
 			OPT=${CMD:5}
 			TARF=$(cat ${F})
