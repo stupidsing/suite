@@ -15,7 +15,7 @@ cchs() {
 		if [ "${CMD:0:2}" == "{}" ]; then
 			D=$(cat ${F})
 			F=$(cchf "${D}${CMD:2}")
-		elif [ "${CMD:0:3}" == "{9}" ]; then
+		elif [ "${CMD:0:3}" == "{V}" ]; then
 			D=$(cat ${F})
 			F=$(cchf "echo version ${D:0:8}; ${D:9}${CMD:3}")
 		elif [ "${CMD}" == "#curl" ]; then

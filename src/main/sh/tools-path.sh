@@ -15,7 +15,7 @@ echo "tools path = ${TOOLS_PATH}"
 export PATH=${TOOLS_PATH}:${PATH}
 
 cd ${GIT_PRIMAL:9} && ${M2_HOME}/bin/mvn install
-cchs "echo ${GIT_SUITE}" "{9}/build.sh"
+cchs "echo ${GIT_SUITE}" "{V}/build.sh"
 cchs "echo '/ dump yes #'" "${GIT_SUITE:9}/run.sh"
 cchs "echo ${GOROOT}" "{}/bin/go help"
 cchs "echo ${JAVA_HOME}" "{}/bin/javac -version"
