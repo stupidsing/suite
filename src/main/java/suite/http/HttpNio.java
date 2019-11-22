@@ -3,7 +3,6 @@ package suite.http;
 import static primal.statics.Fail.fail;
 import static primal.statics.Rethrow.ex;
 
-import java.io.IOException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +16,7 @@ import primal.Nouns.Buffer;
 import primal.Nouns.Utf8;
 import primal.NullableSyncQueue;
 import primal.Verbs.Equals;
+import primal.Verbs.RunnableEx;
 import primal.Verbs.Th;
 import primal.adt.FixieArray;
 import primal.adt.Opt;
@@ -25,7 +25,6 @@ import primal.fp.Funs.Source;
 import primal.fp.Funs2.Fun2;
 import primal.primitive.adt.Bytes;
 import primal.puller.Puller;
-import primal.statics.Rethrow.SinkIo;
 import suite.http.Http.Handler;
 import suite.http.Http.Header;
 import suite.http.Http.Request;
@@ -43,12 +42,14 @@ public class HttpNio {
 	public void run(int port, Handler handler) {
 		Source<IoAsync> handleIo = () -> new IoAsync() {
 			private Bytes bytes = Bytes.empty;
-			private SinkIo<Puller<Bytes>> registerWrite;
+			private Puller<Bytes> write;
+			private RunnableEx registerWrite;
 
 			private Source<Boolean> eater = () -> parseLine(line -> handleRequest1stLine(line.trim(), o -> {
+				write = response(o);
 				try {
-					registerWrite.f(response(o));
-				} catch (IOException ex) {
+					registerWrite.run();
+				} catch (Exception ex) {
 					fail(ex);
 				}
 			}));
@@ -61,7 +62,11 @@ public class HttpNio {
 				}
 			}
 
-			public void registerWrite(SinkIo<Puller<Bytes>> sink) {
+			public Bytes write() {
+				return write.pull();
+			}
+
+			public void registerWrite(RunnableEx sink) {
 				registerWrite = sink;
 			}
 
@@ -192,16 +197,16 @@ public class HttpNio {
 			}
 
 			private Puller<Bytes> response(Response response) {
-				Puller<Bytes> body;
+				Puller<Bytes> responseBody;
 
 				if (response.body != null)
-					body = response.body;
+					responseBody = response.body;
 				else {
 					var queue = new NullableSyncQueue<Bytes>();
 					Sink<Bytes> offer = queue::offerQuietly;
 					Source<Bytes> take = queue::takeQuietly;
 					new Th(() -> response.write.f(offer)).start();
-					body = Puller.of(take);
+					responseBody = Puller.of(take);
 				}
 
 				return Puller.concat( //
@@ -211,7 +216,7 @@ public class HttpNio {
 								.map((k, v) -> k + ": " + v + "\r\n") //
 								.toJoinedString()), //
 						Pull.from("\r\n"), //
-						body);
+						responseBody);
 			}
 		};
 

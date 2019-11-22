@@ -9,18 +9,19 @@ import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 
 import primal.Nouns.Buffer;
+import primal.Verbs.RunnableEx;
 import primal.fp.Funs.Source;
 import primal.os.Log_;
 import primal.primitive.adt.Bytes;
-import primal.puller.Puller;
-import primal.statics.Rethrow.SinkIo;
 
 public class ListenNio {
 
 	public interface IoAsync {
 		public void read(Bytes in);
 
-		public void registerWrite(SinkIo<Puller<Bytes>> sink);
+		public Bytes write();
+
+		public void registerWrite(RunnableEx sink);
 	}
 
 	private Source<IoAsync> handleIo;
@@ -52,7 +53,7 @@ public class ListenNio {
 						if (key.isReadable())
 							handleRead((SocketChannel) key.channel(), (IoAsync) key.attachment());
 						if (key.isWritable())
-							handleWrite((SocketChannel) key.channel(), (Puller<?>) key.attachment());
+							handleWrite((SocketChannel) key.channel(), (IoAsync) key.attachment());
 					} catch (Exception ex) {
 						Log_.error(ex);
 					}
@@ -65,7 +66,7 @@ public class ListenNio {
 	private void handleAccept(SocketChannel sc, SelectionKey key) throws IOException {
 		sc.configureBlocking(false);
 		var io = handleIo.g();
-		io.registerWrite(puller -> sc.register(selector, SelectionKey.OP_WRITE, puller));
+		io.registerWrite(() -> sc.register(selector, SelectionKey.OP_WRITE, io));
 		sc.register(selector, SelectionKey.OP_READ, io);
 	}
 
@@ -75,12 +76,12 @@ public class ListenNio {
 		io.read(0 <= n ? Bytes.of(bs, 0, n) : null);
 	}
 
-	private void handleWrite(SocketChannel sc, Puller<?> puller) throws IOException {
-		var bytes = (Bytes) puller.pull();
+	private void handleWrite(SocketChannel sc, IoAsync io) throws IOException {
+		var bytes = io.write();
 
 		if (bytes != null) {
 			sc.write(ByteBuffer.wrap(bytes.bs, bytes.start, bytes.end));
-			sc.register(selector, SelectionKey.OP_WRITE, puller);
+			sc.register(selector, SelectionKey.OP_WRITE, io);
 		} else
 			sc.close();
 	}
