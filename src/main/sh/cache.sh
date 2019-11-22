@@ -17,7 +17,7 @@ cchs() {
 			F=$(cchf "${D}${CMD:2}")
 		elif [ "${CMD:0:3}" == "{V}" ]; then
 			D=$(cat ${F})
-			F=$(cchf "echo version ${D:0:8}; ${D:9}${CMD:3}")
+			F=$(cchf "echo version ${D:0:8}; cd ${D:9}/; ${CMD:4}")
 		elif [ "${CMD}" == "#curl" ]; then
 			URL=$(cat ${F})
 			MD5=$(printf "${URL}" | md5sum - | cut -d' ' -f1)
