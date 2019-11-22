@@ -14,7 +14,7 @@ TOOLS_PATH="${GIT_HD:9}/bin:${GOROOT}/bin:${GRADLE_HOME}/bin:${JAVA_HOME}/bin:${
 echo "tools path = ${TOOLS_PATH}"
 export PATH=${TOOLS_PATH}:${PATH}
 
-cd ${GIT_PRIMAL:9} && ${M2_HOME}/bin/mvn install
+cchs "echo ${GIT_PRIMAL}" "{V} ${M2_HOME}/bin/mvn install"
 cchs "echo ${GIT_SUITE}" "{V} ./build.sh"
 cchs "echo '/ dump yes #'" "${GIT_SUITE:9}/run.sh"
 cchs "echo ${GOROOT}" "{}/bin/go help"
