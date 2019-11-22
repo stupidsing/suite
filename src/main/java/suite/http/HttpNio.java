@@ -8,10 +8,12 @@ import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ArrayBlockingQueue;
 
 import primal.MoreVerbs.Pull;
 import primal.MoreVerbs.Read;
 import primal.MoreVerbs.Split;
+import primal.Nouns.Buffer;
 import primal.Nouns.Utf8;
 import primal.NullableSyncQueue;
 import primal.Verbs.Equals;
@@ -45,7 +47,7 @@ public class HttpNio {
 
 			private Source<Boolean> eater = () -> parseLine(line -> handleRequest1stLine(line.trim(), o -> {
 				try {
-					registerWrite.f(o);
+					registerWrite.f(response(o));
 				} catch (IOException ex) {
 					fail(ex);
 				}
@@ -63,7 +65,7 @@ public class HttpNio {
 				registerWrite = sink;
 			}
 
-			private void handleRequest1stLine(String line, Sink<Puller<Bytes>> cb) {
+			private void handleRequest1stLine(String line, Sink<Response> cb) {
 				var hrhl = handleRequestHeaderLine(lines -> handleRequestBody(line, lines, cb));
 				eater = () -> parseLine(hrhl);
 			}
@@ -81,7 +83,7 @@ public class HttpNio {
 				};
 			}
 
-			private void handleRequestBody(String line0, List<String> headerLines, Sink<Puller<Bytes>> cb) {
+			private void handleRequestBody(String line0, List<String> headerLines, Sink<Response> cb) {
 				eater = () -> FixieArray //
 						.of(line0.split(" ")) //
 						.map((method, url, proto) -> handleRequestBody(proto, method, url, headerLines, cb));
@@ -92,19 +94,21 @@ public class HttpNio {
 					String method, //
 					String url, //
 					List<String> lines, //
-					Sink<Puller<Bytes>> cb) {
+					Sink<Response> cb) {
 				var headers = Read //
 						.from(lines) //
 						.fold(new Header(), (headers_, line_) -> Split //
 								.strl(line_, ":") //
 								.map((k, v) -> headers_.put(k, v)));
 
+				var queue = new ArrayBlockingQueue<Bytes>(Buffer.size);
+
 				Fun2<String, String, Request> requestFun = (host, pqs) -> Split.strl(pqs, "?").map((path0, query) -> {
 					var path1 = path0.startsWith("/") ? path0 : "/" + path0;
 					var path2 = ex(() -> URLDecoder.decode(path1, Utf8.charset));
 
 					return Equals.string(proto, "HTTP/1.1") //
-							? new Request(method, host, path2, query, headers, null) //
+							? new Request(method, host, path2, query, headers, Puller.of(() -> queue.poll())) //
 							: fail("only HTTP/1.1 is supported");
 				});
 
@@ -115,33 +119,39 @@ public class HttpNio {
 				var te = Equals.ab(request.headers.getOpt("Transfer-Encoding"), Opt.of("chunked"));
 
 				if (te)
-					eater = handleChunkedRequestBody(chunks -> response(handler.handle(request)));
+					eater = handleChunkedRequestBody(request, queue::add, cb);
 				else if (cl.hasValue())
-					eater = handleRequestBody(request, cl.g(), cb);
+					eater = handleRequestBody(request, queue::add, cl.g(), cb);
 				else if (Set.of("DELETE", "GET", "HEAD").contains(request.method))
-					eater = handleRequestBody(request, 0, cb);
+					eater = handleRequestBody(request, queue::add, 0, cb);
 				else
-					eater = handleRequestBody(request, Long.MAX_VALUE, cb);
+					eater = handleRequestBody(request, queue::add, Long.MAX_VALUE, cb);
 
 				return true;
 			}
 
-			private Source<Boolean> handleRequestBody(Request request, long contentLength, Sink<Puller<Bytes>> cb) {
+			private Source<Boolean> handleRequestBody( //
+					Request request, //
+					Sink<Bytes> body, //
+					long contentLength, //
+					Sink<Response> cb) {
 				return new Source<>() {
 					private int n;
 
 					public Boolean g() {
-						if (bytes != null)
+						if (bytes != null) {
+							body.f(bytes);
 							n += bytes.size();
+						}
 						var isCompleteRequest = bytes == null || contentLength <= n;
 						if (isCompleteRequest)
-							cb.f(response(handler.handle(request)));
+							cb.f(handler.handle(request));
 						return !isCompleteRequest;
 					}
 				};
 			}
 
-			private Source<Boolean> handleChunkedRequestBody(Sink<List<Bytes>> cb) {
+			private Source<Boolean> handleChunkedRequestBody(Request request, Sink<Bytes> body, Sink<Response> cb) {
 				var chunks = new ArrayList<Bytes>();
 
 				return () -> {
@@ -152,13 +162,15 @@ public class HttpNio {
 
 							for (var i1 = i0 + 1 + size; i1 < bytes.size(); i1++)
 								if (bytes.get(i1) == 10) {
-									chunks.add(bytes.range(i0 + 1, i1));
+									var chunk = bytes.range(i0 + 1, i1);
+									body.f(chunk);
+									chunks.add(chunk);
 									bytes = bytes.range(i1);
 									return true;
 								}
 
 							if (size == 0)
-								cb.f(chunks);
+								cb.f(handler.handle(request));
 						}
 
 					return false;
