@@ -72,7 +72,7 @@ public class ListenNio {
 	private void handleRead(SocketChannel sc, IoAsync io) throws IOException {
 		var bs = new byte[Buffer.size];
 		var n = sc.read(ByteBuffer.wrap(bs));
-		io.read(0 < n ? Bytes.of(bs, 0, n) : null);
+		io.read(0 <= n ? Bytes.of(bs, 0, n) : null);
 	}
 
 	private void handleWrite(SocketChannel sc, Puller<?> puller) throws IOException {
