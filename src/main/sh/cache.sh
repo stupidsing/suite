@@ -31,7 +31,16 @@ cchs() {
 			MD5=$(printf "${CMD}" | md5sum - | cut -d' ' -f1)
 			SHORT=$(printf "${URL}" | tr /: _ | tr -dc '[\-.0-9A-Z_a-z]')
 			DF="${DCACHE}/${MD5:0:8}.${SHORT}"
-			[ -d ${DF} ] || git clone --depth 1 "${URL}" ${DF}
+			if [ -d ${DF} ]; then
+				D0=$(date +%s)
+				D1=$(stat -c %Y ${DF}.pulltime)
+				if (( 3600 < ${D0} - ${D1} )); then
+					(cd ${DF}/ && git pull --quiet)
+				fi
+			else
+				git clone --depth 1 "${URL}" ${DF} --quiet
+			fi &&
+			touch ${DF}.pulltime
 			F=$(cchf "printf ${DF}")
 		elif [ "${CMD:0:5}" == "#tar-" ]; then
 			OPT=${CMD:5}
