@@ -12,12 +12,10 @@ import java.net.URLDecoder;
 
 import primal.MoreVerbs.Pull;
 import primal.MoreVerbs.Split;
-import primal.Nouns.Buffer;
 import primal.Nouns.Utf8;
 import primal.Verbs.Equals;
 import primal.Verbs.ReadLine;
 import primal.adt.FixieArray;
-import primal.fp.Funs.Source;
 import primal.fp.Funs2.Fun2;
 import primal.io.ReadStream;
 import primal.primitive.adt.Bytes;
@@ -44,14 +42,8 @@ public class HttpIo {
 				var path1 = path0.startsWith("/") ? path0 : "/" + path0;
 				var path2 = ex(() -> URLDecoder.decode(path1, Utf8.charset));
 
-				Source<Bytes> source = () -> {
-					var buffer = new byte[Buffer.size];
-					var n = ex(() -> is1.read(buffer, 0, buffer.length));
-					return 0 <= n ? Bytes.of(buffer, 0, n) : null;
-				};
-
 				return Equals.string(protocol, "HTTP/1.1") //
-						? new Request(method, host, path2, query, headers, Puller.of(source)) //
+						? new Request(method, host, path2, query, headers, Pull.from_(is1)) //
 						: fail("only HTTP/1.1 is supported");
 			});
 
@@ -138,9 +130,13 @@ public class HttpIo {
 				return 0 < remaining-- ? is.read() : -1;
 			}
 
-			public int read(byte[] bytes, int offset, int length) throws IOException {
+			public int read(byte[] bs) throws IOException {
+				return read(bs, 0, bs.length);
+			}
+
+			public int read(byte[] bs, int offset, int length) throws IOException {
 				if (0 < remaining) {
-					var result = is.read(bytes, offset, min(length, remaining));
+					var result = is.read(bs, offset, min(length, remaining));
 					remaining -= max(0, result);
 					return result;
 				} else
