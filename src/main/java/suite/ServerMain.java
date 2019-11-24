@@ -46,7 +46,7 @@ public class ServerMain {
 	}
 
 	public boolean run() {
-		Start.thread(Boolean.FALSE ? this::runNioHttpServer : this::runHttpServer);
+		Start.thread(Boolean.TRUE ? this::runNioHttpServer : this::runHttpServer);
 		Start.thread(this::runScheduler);
 		Start.thread(this::runTelegramBot);
 		return true;

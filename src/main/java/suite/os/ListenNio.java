@@ -7,25 +7,38 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
+import java.util.Comparator;
+import java.util.List;
 
 import primal.Nouns.Buffer;
-import primal.Verbs.RunnableEx;
 import primal.fp.Funs.Source;
 import primal.os.Log_;
 import primal.primitive.adt.Bytes;
+import suite.adt.PriorityQueue;
 
 public class ListenNio {
 
 	public interface IoAsync {
+		public int getSelectionKey();
+
 		public void read(Bytes in);
 
 		public Bytes write();
-
-		public void registerWrite(RunnableEx sink);
 	}
 
 	private Source<IoAsync> ioAsyncFactory;
 	private Selector selector;
+	private PriorityQueue<Wait> waits = new PriorityQueue<>(Wait.class, 256, Comparator.comparingLong(w -> w.k));
+
+	public static class Wait {
+		private long k;
+		private Source<List<Wait>> v;
+
+		public Wait(long k, Source<List<Wait>> v) {
+			this.k = k;
+			this.v = v;
+		}
+	}
 
 	public ListenNio(Source<IoAsync> ioAsyncFactory) {
 		this.ioAsyncFactory = ioAsyncFactory;
@@ -43,9 +56,21 @@ public class ListenNio {
 			var ss = ssc.socket();
 			ss.bind(new InetSocketAddress("localhost", port));
 
-			while (true)
+			while (true) {
+				var wait = waits.min();
+				long nextWakeUp, timeout;
+				if (wait != null) {
+					nextWakeUp = wait.k;
+					timeout = Math.max(1, nextWakeUp - System.currentTimeMillis());
+				} else {
+					nextWakeUp = Long.MAX_VALUE;
+					timeout = 0l;
+				}
+
 				selector.select(key -> {
 					try {
+						if (nextWakeUp < System.currentTimeMillis())
+							wait.v.g().forEach(waits::insert);
 						if (key.isAcceptable())
 							handleAccept(ssc.accept(), key);
 						if (key.isConnectable())
@@ -57,7 +82,8 @@ public class ListenNio {
 					} catch (Exception ex) {
 						Log_.error(ex);
 					}
-				});
+				}, timeout);
+			}
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}
@@ -66,14 +92,14 @@ public class ListenNio {
 	private void handleAccept(SocketChannel sc, SelectionKey key) throws IOException {
 		sc.configureBlocking(false);
 		var io = ioAsyncFactory.g();
-		io.registerWrite(() -> sc.register(selector, SelectionKey.OP_WRITE, io));
-		sc.register(selector, SelectionKey.OP_READ, io);
+		sc.register(selector, io.getSelectionKey(), io);
 	}
 
 	private void handleRead(SocketChannel sc, IoAsync io) throws IOException {
 		var bs = new byte[Buffer.size];
 		var n = sc.read(ByteBuffer.wrap(bs));
 		io.read(0 <= n ? Bytes.of(bs, 0, n) : null);
+		sc.register(selector, io.getSelectionKey(), io);
 	}
 
 	private void handleWrite(SocketChannel sc, IoAsync io) throws IOException {
@@ -81,7 +107,7 @@ public class ListenNio {
 
 		if (bytes != null) {
 			sc.write(ByteBuffer.wrap(bytes.bs, bytes.start, bytes.end));
-			sc.register(selector, SelectionKey.OP_WRITE, io);
+			sc.register(selector, io.getSelectionKey(), io);
 		} else
 			sc.close();
 	}

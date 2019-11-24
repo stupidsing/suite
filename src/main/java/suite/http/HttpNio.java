@@ -4,9 +4,9 @@ import static primal.statics.Fail.fail;
 import static primal.statics.Rethrow.ex;
 
 import java.net.URLDecoder;
+import java.nio.channels.SelectionKey;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 
 import primal.MoreVerbs.Pull;
@@ -16,13 +16,13 @@ import primal.Nouns.Buffer;
 import primal.Nouns.Utf8;
 import primal.NullableSyncQueue;
 import primal.Verbs.Equals;
-import primal.Verbs.RunnableEx;
 import primal.Verbs.Th;
 import primal.adt.FixieArray;
 import primal.adt.Opt;
 import primal.fp.Funs.Sink;
 import primal.fp.Funs.Source;
 import primal.fp.Funs2.Fun2;
+import primal.os.Log_;
 import primal.primitive.adt.Bytes;
 import primal.puller.Puller;
 import suite.http.Http.Handler;
@@ -43,31 +43,25 @@ public class HttpNio {
 		Source<IoAsync> handleIo = () -> new IoAsync() {
 			private Bytes bytes = Bytes.empty;
 			private Puller<Bytes> write;
-			private RunnableEx registerWrite;
 
-			private Source<Boolean> eater = () -> parseLine(line -> handleRequest1stLine(line.trim(), o -> {
-				write = response(o);
-				try {
-					registerWrite.run();
-				} catch (Exception ex) {
-					fail(ex);
-				}
-			}));
+			private Source<Boolean> eater = () -> parseLine(
+					line -> handleRequest1stLine(line.trim(), o -> write = response(o)));
+
+			public int getSelectionKey() {
+				return write != null ? SelectionKey.OP_WRITE : SelectionKey.OP_READ;
+			}
 
 			public void read(Bytes in) {
 				if (in != null) {
 					bytes = bytes.append(in);
 					while (eater.g())
 						;
-				}
+				} else
+					write = Puller.empty(); // closes connection
 			}
 
 			public Bytes write() {
 				return write.pull();
-			}
-
-			public void registerWrite(RunnableEx sink) {
-				registerWrite = sink;
 			}
 
 			private void handleRequest1stLine(String line, Sink<Response> cb) {
@@ -124,15 +118,14 @@ public class HttpNio {
 
 				var cl = request.headers.getOpt("Content-Length").map(Long::parseLong);
 				var te = Equals.ab(request.headers.getOpt("Transfer-Encoding"), Opt.of("chunked"));
+				Log_.info(request.getLogString());
 
 				if (te)
 					eater = handleChunkedRequestBody(request, offer, cb);
 				else if (cl.hasValue())
 					eater = handleRequestBody(request, offer, cl.g(), cb);
-				else if (Set.of("DELETE", "GET", "HEAD").contains(request.method))
-					eater = handleRequestBody(request, offer, 0, cb);
 				else
-					eater = handleRequestBody(request, offer, Long.MAX_VALUE, cb);
+					eater = handleRequestBody(request, offer, 0, cb);
 
 				return true;
 			}
@@ -146,21 +139,20 @@ public class HttpNio {
 					private int n;
 
 					public Boolean g() {
-						if (bytes != null) {
-							body.f(bytes);
+						body.f(bytes);
+						var isOpen = bytes != null;
+						if (isOpen) {
 							n += bytes.size();
+							bytes = Bytes.empty;
 						}
-						var isCompleteRequest = bytes == null || contentLength <= n;
-						if (isCompleteRequest)
+						if (!isOpen || contentLength <= n)
 							cb.f(handler.handle(request));
-						return !isCompleteRequest;
+						return false;
 					}
 				};
 			}
 
 			private Source<Boolean> handleChunkedRequestBody(Request request, Sink<Bytes> body, Sink<Response> cb) {
-				var chunks = new ArrayList<Bytes>();
-
 				return () -> {
 					for (var i0 = 0; i0 < bytes.size(); i0++)
 						if (bytes.get(i0) == 10) {
@@ -170,9 +162,8 @@ public class HttpNio {
 							for (var i1 = i0 + 1 + size; i1 < bytes.size(); i1++)
 								if (bytes.get(i1) == 10) {
 									var chunk = bytes.range(i0 + 1, i1);
-									body.f(chunk);
-									chunks.add(chunk);
 									bytes = bytes.range(i1);
+									body.f(chunk);
 									return true;
 								}
 
@@ -207,6 +198,7 @@ public class HttpNio {
 					Source<Bytes> take = queue::takeQuietly;
 					new Th(() -> response.write.f(offer)).start();
 					responseBody = Puller.of(take);
+					responseBody = Puller.of();
 				}
 
 				return Puller.concat( //
