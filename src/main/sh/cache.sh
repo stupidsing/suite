@@ -23,7 +23,7 @@ cchs() {
 			MD5=$(printf "${URL}" | md5sum - | cut -d' ' -f1)
 			SHORT=$(printf "${URL}" | tr /:@ _ | tr -dc '[\-.0-9A-Z_a-z]')
 			DF="${DCACHE}/${MD5:0:8}.${SHORT}"
-			[ -f ${DF} ] || curl -sL "${URL}" > ${DF}
+			[ -f ${DF} ] || do-cmd curl -sL "${URL}" > ${DF}
 			F=$(cchf "printf ${DF}")
 		elif [ "${CMD}" == "#dir" ]; then
 			DIR=$(cat ${F})
@@ -38,19 +38,19 @@ cchs() {
 				D0=$(date +%s)
 				D1=$(stat -c %Y ${DF}.pulltime)
 				if (( 3600 < ${D0} - ${D1} )); then
-					(cd ${DF}/ && git pull --quiet)
+					do-cmd "cd ${DF}/ && git pull --quiet"
 				fi
 			else
-				git clone --depth 1 "${URL}" ${DF} --quiet
+				do-cmd "git clone --depth 1 ${URL} ${DF} --quiet"
 			fi &&
 			touch ${DF}.pulltime &&
 			COMMIT=$(cd ${DF}/ && git rev-parse HEAD | cut -c1-8)
-			F=$(cchf "printf ${COMMIT}.${DF}")
+			F=$(cchf "printf ${COMMIT}:${DF}")
 		elif [ "${CMD:0:5}" == "#tar-" ]; then
 			OPT=${CMD:5}
 			TARF=$(cat ${F})
 			TARDIR=${TARF}.d
-			[ -d ${TARDIR} ] || (mkdir -p ${TARDIR} && tar ${OPT} ${TARF} -C ${TARDIR})
+			[ -d ${TARDIR} ] || do-cmd "mkdir -p ${TARDIR} && tar ${OPT} ${TARF} -C ${TARDIR}"
 			F=$(cchf "printf ${TARDIR}")
 		else
 			F=$(cchf "cat ${F} | ${CMD}")
@@ -73,10 +73,15 @@ cchf() {
 	if [ -f "${KF}" ] && diff <(printf "${CMD}") <(cat "${KF}"); then
 		true
 	else
-		echo "START ${CMD}" >&2
-		(sh -c "${CMD}" > "${VF}") && (printf "${CMD}" > "${KF}")
-		echo "END~${?} ${CMD}" >&2
+		(do-cmd "${CMD}" > "${VF}") && (printf "${CMD}" > "${KF}")
 	fi
 
 	printf "${VF}"
+}
+
+do-cmd() {
+	CMD="${@}"
+	echo "START ${CMD}" >&2
+	sh -c "${CMD}"
+	echo "END~${?} ${CMD}" >&2
 }
