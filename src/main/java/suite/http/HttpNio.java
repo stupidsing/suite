@@ -198,7 +198,6 @@ public class HttpNio {
 					Source<Bytes> take = queue::takeQuietly;
 					new Th(() -> response.write.f(offer)).start();
 					responseBody = Puller.of(take);
-					responseBody = Puller.of();
 				}
 
 				return Puller.concat( //
