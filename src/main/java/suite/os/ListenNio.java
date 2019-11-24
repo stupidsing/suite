@@ -24,11 +24,11 @@ public class ListenNio {
 		public void registerWrite(RunnableEx sink);
 	}
 
-	private Source<IoAsync> handleIo;
+	private Source<IoAsync> ioAsyncFactory;
 	private Selector selector;
 
-	public ListenNio(Source<IoAsync> handleIo) {
-		this.handleIo = handleIo;
+	public ListenNio(Source<IoAsync> ioAsyncFactory) {
+		this.ioAsyncFactory = ioAsyncFactory;
 	}
 
 	public void run(int port) {
@@ -65,7 +65,7 @@ public class ListenNio {
 
 	private void handleAccept(SocketChannel sc, SelectionKey key) throws IOException {
 		sc.configureBlocking(false);
-		var io = handleIo.g();
+		var io = ioAsyncFactory.g();
 		io.registerWrite(() -> sc.register(selector, SelectionKey.OP_WRITE, io));
 		sc.register(selector, SelectionKey.OP_READ, io);
 	}
