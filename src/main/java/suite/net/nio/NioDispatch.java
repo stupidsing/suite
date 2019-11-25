@@ -367,23 +367,22 @@ public class NioDispatch implements Closeable {
 		var buffer = threadBuffer.get();
 		@SuppressWarnings("unchecked")
 		var callback = (Sink<Object>) key.attachment();
-		var ops = key.readyOps();
 		var sc0 = key.channel();
 		var sc1 = sc0 instanceof SocketChannel ? (SocketChannel) sc0 : null;
 
 		reg(sc0, 0);
 
-		if ((ops & SelectionKey.OP_ACCEPT) != 0) {
+		if (key.isAcceptable()) {
 			var sc = ((ServerSocketChannel) sc0).accept().socket().getChannel();
 			sc.configureBlocking(false);
 			callback.f(new AsyncRw(sc));
 			reg(sc0, SelectionKey.OP_ACCEPT);
 		}
 
-		if ((ops & SelectionKey.OP_CONNECT) != 0)
+		if (key.isConnectable())
 			callback.f(sc1.finishConnect() ? new AsyncRw(sc1) : null);
 
-		if ((ops & SelectionKey.OP_READ) != 0) {
+		if (key.isReadable()) {
 			try {
 				var n = sc1.read(ByteBuffer.wrap(buffer));
 				if (0 <= n)
@@ -398,7 +397,7 @@ public class NioDispatch implements Closeable {
 			}
 		}
 
-		if ((ops & SelectionKey.OP_WRITE) != 0)
+		if (key.isWritable())
 			callback.f(null);
 	}
 
