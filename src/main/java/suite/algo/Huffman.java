@@ -82,12 +82,12 @@ public class Huffman<Unit> {
 		var pq = new PriorityQueue<>(clazz, nodes.size(), comparator);
 
 		for (var node : nodes)
-			pq.insert(node);
+			pq.add(node);
 
 		while (1 < pq.size()) {
 			var node0 = pq.extractMin();
 			var node1 = pq.extractMin();
-			pq.insert(new Node(node0, node1));
+			pq.add(new Node(node0, node1));
 		}
 
 		// root and root.unit must not be empty

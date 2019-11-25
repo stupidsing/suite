@@ -42,7 +42,7 @@ public class Scheduler {
 				}
 
 				for (var schedule_ : schedules_)
-					schedules.insert(schedule_);
+					schedules.add(schedule_);
 			}
 		}
 	}

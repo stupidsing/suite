@@ -95,7 +95,7 @@ public class ServerMain {
 		var hat = new HttpAuthToken();
 		var hh = new HttpHandle();
 
-		var handler = hh.dispatchPath(PerMap //
+		return hh.dispatchPath(PerMap //
 				.<String, Handler> empty() //
 				.put("api", hat.handleFilter("role", hh.data("in good shape"))) //
 				.put("hello", hh.data("Hello world")) //
@@ -107,7 +107,6 @@ public class ServerMain {
 						.<String, Handler> empty() //
 						.put("PATCH", hat.handleRefreshToken(authenticateRoles)) //
 						.put("POST", hat.handleGetToken(authenticateRoles)))));
-		return handler;
 	}
 
 	private void runScheduler() {

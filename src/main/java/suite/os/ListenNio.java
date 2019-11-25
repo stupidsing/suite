@@ -70,7 +70,7 @@ public class ListenNio {
 				selector.select(key -> {
 					try {
 						if (nextWakeUp < System.currentTimeMillis())
-							wait.v.g().forEach(waits::insert);
+							wait.v.g().forEach(waits::add);
 						if (key.isAcceptable())
 							handleAccept(ssc.accept(), key);
 						if (key.isConnectable())

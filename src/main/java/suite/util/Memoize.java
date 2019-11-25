@@ -155,7 +155,7 @@ public class Memoize {
 					queue.remove(r.index);
 
 				r.age = time++;
-				r.index = queue.insert(r);
+				r.index = queue.add(r);
 
 				return r.output;
 			}

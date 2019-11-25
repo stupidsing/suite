@@ -21,15 +21,7 @@ public class PriorityQueue<T> {
 		size = 0;
 	}
 
-	public boolean isEmpty() {
-		return size == 0;
-	}
-
-	public int size() {
-		return size;
-	}
-
-	public int insert(T t) {
+	public int add(T t) {
 		int i, p;
 		ts[++size] = t;
 		for (i = size; 1 < i && 0 < compare(ts[p = i / 2], ts[i]); i = p)
@@ -37,17 +29,20 @@ public class PriorityQueue<T> {
 		return i;
 	}
 
+	public T extractMin() {
+		return remove(1);
+	}
+
 	public T get(int i) {
 		return ts[i];
+	}
 
+	public boolean isEmpty() {
+		return size == 0;
 	}
 
 	public T min() {
 		return get(1);
-	}
-
-	public T extractMin() {
-		return remove(1);
 	}
 
 	public T remove(int i) {
@@ -62,6 +57,10 @@ public class PriorityQueue<T> {
 			swap(c, i);
 		}
 		return t;
+	}
+
+	public int size() {
+		return size;
 	}
 
 	private int compare(T t0, T t1) {

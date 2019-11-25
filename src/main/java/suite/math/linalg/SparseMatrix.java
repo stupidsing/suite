@@ -65,7 +65,7 @@ public class SparseMatrix {
 		IntSink enqRow = r -> {
 			var j = js[r];
 			if (j < matrix.get(r).size)
-				pq.insert(IntIntPair.of(r, j));
+				pq.add(IntIntPair.of(r, j));
 		};
 
 		for (var r = 0; r < height; r++)

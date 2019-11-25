@@ -55,7 +55,7 @@ public class NioDispatch implements Closeable {
 	}
 
 	public NioDispatch() throws IOException {
-		timeDispatches.insert(new TimeDispatch(Long.MAX_VALUE, null));
+		timeDispatches.add(new TimeDispatch(Long.MAX_VALUE, null));
 	}
 
 	@Override
@@ -155,7 +155,7 @@ public class NioDispatch implements Closeable {
 				}, ex -> {
 					var now = System.currentTimeMillis();
 					reset(ex);
-					timeDispatches.insert(new TimeDispatch(now + backoff.duration(), () -> connect(okay)));
+					timeDispatches.add(new TimeDispatch(now + backoff.duration(), () -> connect(okay)));
 				});
 			else
 				okay.f(rec);

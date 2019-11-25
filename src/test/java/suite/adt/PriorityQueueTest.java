@@ -21,7 +21,7 @@ public class PriorityQueueTest {
 		var pq = new PriorityQueue<>(Float.class, 1024, Float::compare);
 
 		for (var f : floats)
-			pq.insert(f);
+			pq.add(f);
 
 		var actual = new HashSet<Float>();
 		var expect = new HashSet<Float>();
