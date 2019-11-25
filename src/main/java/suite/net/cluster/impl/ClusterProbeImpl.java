@@ -1,5 +1,7 @@
 package suite.net.cluster.impl;
 
+import static primal.statics.Rethrow.ex;
+
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -37,9 +39,9 @@ public class ClusterProbeImpl implements ClusterProbe {
 	private static int checkAliveDuration = 1500;
 	private static int timeoutDuration = 5000;
 
-	private Selector selector;
-	private DatagramChannel channel = DatagramChannel.open();
-	private ThreadService threadService = new ThreadService(this::serve);
+	private Recv recv = new Recv();
+	private Send send = new Send();
+	private ThreadService threadService = new ThreadService(recv::serve);
 	private Object lock = new Object(); // lock data structures
 
 	private String me;
@@ -91,7 +93,6 @@ public class ClusterProbeImpl implements ClusterProbe {
 
 	public ClusterProbeImpl(String me, Map<String, InetSocketAddress> peers) throws IOException {
 		this.me = me;
-		channel.configureBlocking(false);
 		setPeers(peers);
 	}
 
@@ -99,7 +100,7 @@ public class ClusterProbeImpl implements ClusterProbe {
 	public synchronized void start() {
 		synchronized (lock) {
 			lastActiveTimeByPeer.put(me, System.currentTimeMillis());
-			broadcast(Command.HELO);
+			send.broadcast(Command.HELO);
 		}
 		threadService.start();
 	}
@@ -108,85 +109,141 @@ public class ClusterProbeImpl implements ClusterProbe {
 	public synchronized void stop() {
 		threadService.stop();
 		synchronized (lock) {
-			broadcast(Command.BYEE);
+			send.broadcast(Command.BYEE);
 			lastActiveTimeByPeer.clear();
 		}
 	}
 
-	private void serve() throws IOException {
-		var address = peers.get(me).get();
+	private class Recv {
+		private void serve() throws IOException {
+			var address = peers.get(me).get();
 
-		selector = Selector.open();
+			try (var selector = Selector.open();
+					var dc = DatagramChannel.open();
+					var started = threadService.started()) {
+				dc.configureBlocking(false);
+				dc.socket().bind(address);
+				dc.register(selector, SelectionKey.OP_READ);
 
-		var dc = DatagramChannel.open();
-		dc.configureBlocking(false);
-		dc.socket().bind(address);
-		dc.register(selector, SelectionKey.OP_READ);
+				while (threadService.isRunning()) {
+					selector.select(500); // handle network events
 
-		try (var started = threadService.started()) {
-			while (threadService.isRunning()) {
-				selector.select(500); // handle network events
-
-				synchronized (lock) {
-					var current = System.currentTimeMillis();
-					nodeJoined(me, current);
-					processSelectedKeys();
-					keepAlive(current);
-					eliminateOutdatedPeers(current);
+					synchronized (lock) {
+						var current = System.currentTimeMillis();
+						processSelectedKeys(selector);
+						heartbeat(current);
+					}
 				}
-			}
 
-			for (var peer : lastActiveTimeByPeer.keySet())
-				onLeft.push(peer);
+				for (var peer : lastActiveTimeByPeer.keySet())
+					onLeft.push(peer);
+			}
 		}
 
-		dc.close();
-		selector.close();
+		private void heartbeat(long current) {
+			nodeJoined(me, current);
+			send.keepAlive(current);
+			eliminateOutdatedPeers(current);
+		}
+
+		private void processSelectedKeys(Selector selector) {
+			var iter = selector.selectedKeys().iterator();
+
+			while (iter.hasNext()) {
+				var key = iter.next();
+				iter.remove();
+
+				try {
+					processSelectedKey(key);
+				} catch (Exception ex) {
+					Log_.error(ex);
+				}
+			}
+		}
+
+		private void processSelectedKey(SelectionKey key) throws IOException {
+			var dc = (DatagramChannel) key.channel();
+
+			if (key.isReadable()) {
+				var buffer = ByteBuffer.allocate(bufferSize);
+				dc.receive(buffer);
+				buffer.flip();
+
+				var bytes = new byte[buffer.remaining()];
+				buffer.get(bytes);
+				buffer.rewind();
+
+				processDatagram(bytes);
+			}
+		}
 	}
 
-	private void processSelectedKeys() {
-		var keyIter = selector.selectedKeys().iterator();
-		while (keyIter.hasNext()) {
-			var key = keyIter.next();
-			keyIter.remove();
+	private class Send {
+		private DatagramChannel channel;
 
+		private Send() {
+			ex(() -> {
+				channel = DatagramChannel.open();
+				return channel.configureBlocking(false);
+			});
+		}
+
+		private void keepAlive(long current) {
+			var bytes = formMessage(Command.HELO);
+
+			for (var remote : peers.keySet()) {
+				var lastActive = lastActiveTimeByPeer.get(remote);
+				var lastSent = lastSentTimeByPeer.get(remote);
+
+				// sends to those who are nearly forgotten, i.e.:
+				// - The node is not active, or node's active time is expired
+				// - The last sent time was long ago (avoid message bombing)
+				if (lastActive == null || lastActive + checkAliveDuration < current)
+					if (lastSent == null || lastSent + checkAliveDuration < current)
+						sendMessage(remote, bytes);
+			}
+		}
+
+		/**
+		 * Sends message to all nodes.
+		 *
+		 * TODO this is costly and un-scalable.
+		 */
+		private void broadcast(Command data) {
+			var bytes = formMessage(data);
+
+			for (var remote : peers.keySet())
+				if (!Equals.string(remote, me))
+					sendMessage(remote, bytes);
+		}
+
+		private void sendMessage(String remote, byte[] bytes) {
 			try {
-				processSelectedKey(key);
-			} catch (Exception ex) {
+				channel.send(ByteBuffer.wrap(bytes), peers.get(remote).get());
+				lastSentTimeByPeer.put(remote, System.currentTimeMillis());
+			} catch (IOException ex) {
 				Log_.error(ex);
 			}
 		}
 	}
 
-	private void processSelectedKey(SelectionKey key) throws IOException {
-		var dc = (DatagramChannel) key.channel();
+	private void processDatagram(byte[] bytes) {
+		var splitted = To.string(bytes).split(",");
+		var data = Command.valueOf(splitted[0]);
+		var remote = splitted[1];
 
-		if (key.isReadable()) {
-			var buffer = ByteBuffer.allocate(bufferSize);
-			dc.receive(buffer);
-			buffer.flip();
-
-			var bytes = new byte[buffer.remaining()];
-			buffer.get(bytes);
-			buffer.rewind();
-
-			var splitted = To.string(bytes).split(",");
-			var data = Command.valueOf(splitted[0]);
-			var remote = splitted[1];
-
-			// refreshes member time accordingly
-			for (var i = 2; i < splitted.length; i += 2) {
-				var node = splitted[i];
-				var newTime = Long.parseLong(splitted[i + 1]);
-				nodeJoined(node, newTime);
-			}
-
-			if (peers.get(remote) != null)
-				if (data == Command.HELO) // reply HELO messages
-					sendMessage(remote, formMessage(Command.FINE));
-				else if (data == Command.BYEE && lastActiveTimeByPeer.remove(remote) != null)
-					onLeft.push(remote);
+		// refreshes member time accordingly
+		for (var i = 2; i < splitted.length; i += 2) {
+			var node = splitted[i];
+			var newTime = Long.parseLong(splitted[i + 1]);
+			nodeJoined(node, newTime);
 		}
+
+		if (peers.get(remote) != null)
+			if (data == Command.HELO) // reply HELO messages
+				send.sendMessage(remote, formMessage(Command.FINE));
+			else if (data == Command.BYEE && lastActiveTimeByPeer.remove(remote) != null)
+				onLeft.push(remote);
 	}
 
 	private void nodeJoined(String node, long time) {
@@ -195,22 +252,6 @@ public class ClusterProbeImpl implements ClusterProbe {
 		if (oldTime == null || oldTime < time)
 			if (lastActiveTimeByPeer.put(node, time) == null)
 				onJoined.push(node);
-	}
-
-	private void keepAlive(long current) {
-		var bytes = formMessage(Command.HELO);
-
-		for (var remote : peers.keySet()) {
-			var lastActive = lastActiveTimeByPeer.get(remote);
-			var lastSent = lastSentTimeByPeer.get(remote);
-
-			// sends to those who are nearly forgotten, i.e.:
-			// - The node is not active, or node's active time is expired
-			// - The last sent time was long ago (avoid message bombing)
-			if (lastActive == null || lastActive + checkAliveDuration < current)
-				if (lastSent == null || lastSent + checkAliveDuration < current)
-					sendMessage(remote, bytes);
-		}
 	}
 
 	private void eliminateOutdatedPeers(long current) {
@@ -225,28 +266,6 @@ public class ClusterProbeImpl implements ClusterProbe {
 				peerIter.remove();
 				onLeft.push(node);
 			}
-		}
-	}
-
-	/**
-	 * Sends message to all nodes.
-	 *
-	 * TODO this is costly and un-scalable.
-	 */
-	private void broadcast(Command data) {
-		var bytes = formMessage(data);
-
-		for (var remote : peers.keySet())
-			if (!Equals.string(remote, me))
-				sendMessage(remote, bytes);
-	}
-
-	private void sendMessage(String remote, byte[] bytes) {
-		try {
-			channel.send(ByteBuffer.wrap(bytes), peers.get(remote).get());
-			lastSentTimeByPeer.put(remote, System.currentTimeMillis());
-		} catch (IOException ex) {
-			Log_.error(ex);
 		}
 	}
 
