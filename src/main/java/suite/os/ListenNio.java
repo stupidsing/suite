@@ -52,7 +52,7 @@ public class ListenNio<T extends IoAsync> {
 			// we have to set connection host, port and non-blocking mode
 			var ssc = ServerSocketChannel.open();
 			ssc.configureBlocking(false);
-			ssc.register(selector, ssc.validOps(), null);
+			ssc.register(selector, SelectionKey.OP_ACCEPT, null);
 
 			var ss = ssc.socket();
 			ss.bind(new InetSocketAddress("localhost", port));
