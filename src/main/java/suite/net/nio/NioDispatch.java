@@ -368,7 +368,6 @@ public class NioDispatch implements Closeable {
 		@SuppressWarnings("unchecked")
 		var callback = (Sink<Object>) key.attachment();
 		var sc0 = key.channel();
-		var sc1 = sc0 instanceof SocketChannel ? (SocketChannel) sc0 : null;
 
 		reg(sc0, 0);
 
@@ -379,21 +378,24 @@ public class NioDispatch implements Closeable {
 			reg(sc0, SelectionKey.OP_ACCEPT);
 		}
 
-		if (key.isConnectable())
-			callback.f(sc1.finishConnect() ? new AsyncRw(sc1) : null);
+		if (key.isConnectable()) {
+			var sc = (SocketChannel) sc0;
+			callback.f(sc.finishConnect() ? new AsyncRw(sc) : null);
+		}
 
 		if (key.isReadable()) {
+			var sc = (SocketChannel) sc0;
 			try {
-				var n = sc1.read(ByteBuffer.wrap(buffer));
+				var n = sc.read(ByteBuffer.wrap(buffer));
 				if (0 <= n)
 					callback.f(Bytes.of(buffer, 0, n));
 				else {
 					callback.f(null);
-					sc1.close();
+					sc.close();
 				}
 			} catch (ClosedChannelException | NotYetConnectedException ex) {
 				callback.f(ex);
-				sc1.close();
+				sc.close();
 			}
 		}
 
