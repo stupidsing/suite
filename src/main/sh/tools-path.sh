@@ -23,4 +23,4 @@ cchs "echo ${JAVA_HOME}" "{}/bin/javac -version"
 cchs "echo ${M2_HOME}" "{}/bin/mvn --version"
 cchs "echo ${NODE_HOME}" "{}/bin/npm version"
 
-${ECLIPSE_HOME}/eclipse -data ~/workspace/
+# ${ECLIPSE_HOME}/eclipse -data ~/workspace/
