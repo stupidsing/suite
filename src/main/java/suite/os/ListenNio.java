@@ -15,8 +15,9 @@ import primal.fp.Funs.Source;
 import primal.os.Log_;
 import primal.primitive.adt.Bytes;
 import suite.adt.PriorityQueue;
+import suite.os.ListenNio.IoAsync;
 
-public class ListenNio {
+public class ListenNio<T extends IoAsync> {
 
 	public interface IoAsync {
 		public int getSelectionKey();
@@ -26,7 +27,7 @@ public class ListenNio {
 		public Bytes write();
 	}
 
-	private Source<IoAsync> ioAsyncFactory;
+	private Source<T> ioAsyncFactory;
 	private Selector selector;
 	private PriorityQueue<Wait> waits = new PriorityQueue<>(Wait.class, 256, Comparator.comparingLong(w -> w.k));
 
@@ -40,7 +41,7 @@ public class ListenNio {
 		}
 	}
 
-	public ListenNio(Source<IoAsync> ioAsyncFactory) {
+	public ListenNio(Source<T> ioAsyncFactory) {
 		this.ioAsyncFactory = ioAsyncFactory;
 	}
 
@@ -59,6 +60,7 @@ public class ListenNio {
 			while (true) {
 				var wait = waits.min();
 				long nextWakeUp, timeout;
+
 				if (wait != null) {
 					nextWakeUp = wait.k;
 					timeout = Math.max(1, nextWakeUp - System.currentTimeMillis());
@@ -87,6 +89,10 @@ public class ListenNio {
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}
+	}
+
+	public void wait(Wait wait) {
+		waits.add(wait);
 	}
 
 	private void handleAccept(SocketChannel sc, SelectionKey key) throws IOException {

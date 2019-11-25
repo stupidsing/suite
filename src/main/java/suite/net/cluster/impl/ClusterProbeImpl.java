@@ -140,12 +140,6 @@ public class ClusterProbeImpl implements ClusterProbe {
 			}
 		}
 
-		private void heartbeat(long current) {
-			nodeJoined(me, current);
-			send.keepAlive(current);
-			eliminateOutdatedPeers(current);
-		}
-
 		private void processSelectedKeys(Selector selector) {
 			var iter = selector.selectedKeys().iterator();
 
@@ -225,6 +219,12 @@ public class ClusterProbeImpl implements ClusterProbe {
 				Log_.error(ex);
 			}
 		}
+	}
+
+	private void heartbeat(long current) {
+		nodeJoined(me, current);
+		send.keepAlive(current);
+		eliminateOutdatedPeers(current);
 	}
 
 	private void processDatagram(byte[] bytes) {

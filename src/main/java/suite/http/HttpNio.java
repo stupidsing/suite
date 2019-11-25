@@ -211,7 +211,7 @@ public class HttpNio {
 			}
 		};
 
-		new ListenNio(handleIo).run(port);
+		new ListenNio<>(handleIo).run(port);
 	}
 
 }
