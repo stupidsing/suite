@@ -57,7 +57,7 @@ public class ServerMain {
 	}
 
 	private void runNioHttpServer() {
-		new HttpNio().run(8051, handler());
+		new HttpNio(handler()).run(8051);
 	}
 
 	private Handler handler() {

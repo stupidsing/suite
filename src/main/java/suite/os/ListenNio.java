@@ -13,8 +13,6 @@ import java.util.Comparator;
 import java.util.List;
 
 import primal.Nouns.Buffer;
-import primal.adt.Fixie_.FixieFun3;
-import primal.fp.Funs.Fun;
 import primal.fp.Funs.Sink;
 import primal.fp.Funs.Source;
 import primal.os.Log_;
@@ -23,19 +21,19 @@ import suite.adt.PriorityQueue;
 
 public class ListenNio {
 
-	private Fun<FixieFun3<Integer, Sink<Bytes>, Source<Bytes>, Object>, Object> ioFactory;
+	private Sink<Reg> ioFactory;
 	private Selector selector;
 	private PriorityQueue<Wait> waits = new PriorityQueue<>(Wait.class, 256, Comparator.comparingLong(w -> w.k));
 
-	private class Attach {
-		private SocketChannel sc;
-		private Sink<Bytes> rd;
-		private Source<Bytes> wr;
+	public interface Reg {
+		public Object listen(int key, Sink<Bytes> rd, Source<Bytes> wr);
 
-		private Attach(SocketChannel sc, Sink<Bytes> rd, Source<Bytes> wr) {
-			this.sc = sc;
-			this.rd = rd;
-			this.wr = wr;
+		public default void listenRead(Sink<Bytes> rd) {
+			listen(SelectionKey.OP_READ, rd, null);
+		}
+
+		public default void listenWrite(Source<Bytes> wr) {
+			listen(SelectionKey.OP_WRITE, null, wr);
 		}
 	}
 
@@ -49,7 +47,19 @@ public class ListenNio {
 		}
 	}
 
-	public ListenNio(Fun<FixieFun3<Integer, Sink<Bytes>, Source<Bytes>, Object>, Object> ioFactory) {
+	private class Attach {
+		private SocketChannel sc;
+		private Sink<Bytes> rd;
+		private Source<Bytes> wr;
+
+		private Attach(SocketChannel sc, Sink<Bytes> rd, Source<Bytes> wr) {
+			this.sc = sc;
+			this.rd = rd;
+			this.wr = wr;
+		}
+	}
+
+	public ListenNio(Sink<Reg> ioFactory) {
 		this.ioFactory = ioFactory;
 	}
 
@@ -106,7 +116,7 @@ public class ListenNio {
 	private void handleAccept(SocketChannel sc, SelectionKey key) throws IOException {
 		sc.configureBlocking(false);
 
-		ioFactory.apply((k, rd, wr) -> {
+		ioFactory.f((k, rd, wr) -> {
 			var attach = new Attach(sc, rd, wr);
 			return ex(() -> sc.register(selector, k, attach));
 		});

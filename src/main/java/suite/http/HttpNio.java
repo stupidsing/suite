@@ -4,7 +4,6 @@ import static primal.statics.Fail.fail;
 import static primal.statics.Rethrow.ex;
 
 import java.net.URLDecoder;
-import java.nio.channels.SelectionKey;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -30,178 +29,180 @@ import suite.http.Http.Header;
 import suite.http.Http.Request;
 import suite.http.Http.Response;
 import suite.os.ListenNio;
+import suite.os.ListenNio.Reg;
 
 // mvn compile exec:java -Dexec.mainClass=suite.http.HttpNio
 public class HttpNio {
 
-	public void run(int port, Handler handler) {
-		new ListenNio(listen -> {
-			var rw = new Object() {
-				private Bytes bytes = Bytes.empty;
-				private Puller<Bytes> write;
+	private Handler handler;
 
-				private Source<Boolean> eater = () -> parseLine(
-						line -> handleRequest1stLine(line.trim(), o -> write = response(o)));
+	public HttpNio(Handler handler) {
+		this.handler = handler;
+	}
 
-				private void read(Bytes in) {
-					if (in != null) {
-						bytes = bytes.append(in);
-						while (eater.g())
-							;
-					} else
-						write = Puller.empty(); // closes connection
-				}
+	public void run(int port) {
+		new ListenNio(this::listen).run(port);
+	}
 
-				private Bytes write() {
-					return write.pull();
-				}
+	private void listen(Reg listen) {
+		var rw = new Object() {
+			private Bytes bytes = Bytes.empty;
 
-				private void handleRequest1stLine(String line, Sink<Response> cb) {
-					var hrhl = handleRequestHeaderLine(lines -> handleRequestBody(line, lines, cb));
-					eater = () -> parseLine(hrhl);
-				}
+			private Source<Boolean> eater = () -> parseLine(
+					line -> handleRequest1stLine(line.trim(), o -> write = response(o)));
 
-				private Sink<String> handleRequestHeaderLine(Sink<List<String>> cb) {
-					var lines = new ArrayList<String>();
+			private Puller<Bytes> write;
 
-					return line0 -> {
-						var line1 = line0.trim();
+			private void read(Bytes in) {
+				if (in != null) {
+					bytes = bytes.append(in);
+					while (eater.g())
+						;
+				} else
+					write = Puller.empty(); // closes connection
+			}
 
-						if (!line1.isEmpty())
-							lines.add(line1);
-						else
-							cb.f(lines);
-					};
-				}
+			private void handleRequest1stLine(String line, Sink<Response> cb) {
+				var hrhl = handleRequestHeaderLine(lines -> handleRequestBody(line, lines, cb));
+				eater = () -> parseLine(hrhl);
+			}
 
-				private void handleRequestBody(String line0, List<String> headerLines, Sink<Response> cb) {
-					eater = () -> FixieArray //
-							.of(line0.split(" ")) //
-							.map((method, url, proto) -> handleRequestBody(proto, method, url, headerLines, cb));
-				}
+			private Sink<String> handleRequestHeaderLine(Sink<List<String>> cb) {
+				var lines = new ArrayList<String>();
 
-				private boolean handleRequestBody( //
-						String proto, //
-						String method, //
-						String url, //
-						List<String> lines, //
-						Sink<Response> cb) {
-					var headers = Read //
-							.from(lines) //
-							.fold(new Header(), (headers_, line_) -> Split //
-									.strl(line_, ":") //
-									.map((k, v) -> headers_.put(k, v)));
+				return line0 -> {
+					var line1 = line0.trim();
 
-					var queue = new ArrayBlockingQueue<Bytes>(Buffer.size);
-					Sink<Bytes> offer = queue::add;
-					Source<Bytes> take = queue::poll;
-
-					Fun2<String, String, Request> requestFun = (host, pqs) -> Split.strl(pqs, "?")
-							.map((path0, query) -> {
-								var path1 = path0.startsWith("/") ? path0 : "/" + path0;
-								var path2 = ex(() -> URLDecoder.decode(path1, Utf8.charset));
-
-								return Equals.string(proto, "HTTP/1.1") //
-										? new Request(method, host, path2, query, headers, Puller.of(take)) //
-										: fail("only HTTP/1.1 is supported");
-							});
-
-					var pp = Split.string(url, "://");
-					var request = pp != null ? Split.strl(pp.v, "/").map(requestFun) : requestFun.apply("", url);
-
-					var cl = request.headers.getOpt("Content-Length").map(Long::parseLong);
-					var te = Equals.ab(request.headers.getOpt("Transfer-Encoding"), Opt.of("chunked"));
-					Log_.info(request.getLogString());
-
-					if (te)
-						eater = handleChunkedRequestBody(request, offer, cb);
-					else if (cl.hasValue())
-						eater = handleRequestBody(request, offer, cl.g(), cb);
+					if (!line1.isEmpty())
+						lines.add(line1);
 					else
-						eater = handleRequestBody(request, offer, 0, cb);
+						cb.f(lines);
+				};
+			}
 
-					return true;
-				}
+			private void handleRequestBody(String line0, List<String> headerLines, Sink<Response> cb) {
+				eater = () -> FixieArray //
+						.of(line0.split(" ")) //
+						.map((method, url, proto) -> handleRequestBody(proto, method, url, headerLines, cb));
+			}
 
-				private Source<Boolean> handleRequestBody( //
-						Request request, //
-						Sink<Bytes> body, //
-						long contentLength, //
-						Sink<Response> cb) {
-					return new Source<>() {
-						private int n;
+			private boolean handleRequestBody( //
+					String proto, //
+					String method, //
+					String url, //
+					List<String> lines, //
+					Sink<Response> cb) {
+				var headers = Read //
+						.from(lines) //
+						.fold(new Header(), (headers_, line_) -> Split //
+								.strl(line_, ":") //
+								.map((k, v) -> headers_.put(k, v)));
 
-						public Boolean g() {
-							body.f(bytes);
-							var isOpen = bytes != null;
-							if (isOpen) {
-								n += bytes.size();
-								bytes = Bytes.empty;
-							}
-							if (!isOpen || contentLength <= n)
-								cb.f(handler.handle(request));
-							return false;
+				var queue = new ArrayBlockingQueue<Bytes>(Buffer.size);
+				Sink<Bytes> offer = queue::add;
+				Source<Bytes> take = queue::poll;
+
+				Fun2<String, String, Request> requestFun = (host, pqs) -> Split.strl(pqs, "?").map((path0, query) -> {
+					var path1 = path0.startsWith("/") ? path0 : "/" + path0;
+					var path2 = ex(() -> URLDecoder.decode(path1, Utf8.charset));
+
+					return Equals.string(proto, "HTTP/1.1") //
+							? new Request(method, host, path2, query, headers, Puller.of(take)) //
+							: fail("only HTTP/1.1 is supported");
+				});
+
+				var pp = Split.string(url, "://");
+				var request = pp != null ? Split.strl(pp.v, "/").map(requestFun) : requestFun.apply("", url);
+
+				var cl = request.headers.getOpt("Content-Length").map(Long::parseLong);
+				var te = Equals.ab(request.headers.getOpt("Transfer-Encoding"), Opt.of("chunked"));
+				Log_.info(request.getLogString());
+
+				if (te)
+					eater = handleChunkedRequestBody(request, offer, cb);
+				else if (cl.hasValue())
+					eater = handleRequestBody(request, offer, cl.g(), cb);
+				else
+					eater = handleRequestBody(request, offer, 0, cb);
+
+				return true;
+			}
+
+			private Source<Boolean> handleRequestBody( //
+					Request request, //
+					Sink<Bytes> body, //
+					long contentLength, //
+					Sink<Response> cb) {
+				return new Source<>() {
+					private int n;
+
+					public Boolean g() {
+						body.f(bytes);
+						var isOpen = bytes != null;
+						if (isOpen) {
+							n += bytes.size();
+							bytes = Bytes.empty;
 						}
-					};
-				}
-
-				private Source<Boolean> handleChunkedRequestBody(Request request, Sink<Bytes> body, Sink<Response> cb) {
-					return () -> {
-						for (var i0 = 0; i0 < bytes.size(); i0++)
-							if (bytes.get(i0) == 10) {
-								var line = new String(bytes.range(0, i0).toArray(), Utf8.charset);
-								var size = Integer.parseInt(line.trim(), 16);
-
-								for (var i1 = i0 + 1 + size; i1 < bytes.size(); i1++)
-									if (bytes.get(i1) == 10) {
-										var chunk = bytes.range(i0 + 1, i1);
-										bytes = bytes.range(i1);
-										body.f(chunk);
-										return true;
-									}
-
-								if (size == 0)
-									cb.f(handler.handle(request));
-							}
-
+						if (!isOpen || contentLength <= n)
+							cb.f(handler.handle(request));
 						return false;
-					};
-				}
+					}
+				};
+			}
 
-				private boolean parseLine(Sink<String> handleLine) {
-					for (var i = 0; i < bytes.size(); i++)
-						if (bytes.get(i) == 10) {
-							var line = new String(bytes.range(0, i).toArray(), Utf8.charset);
-							bytes = bytes.range(i + 1);
-							handleLine.f(line);
-							return true;
+			private Source<Boolean> handleChunkedRequestBody(Request request, Sink<Bytes> body, Sink<Response> cb) {
+				return () -> {
+					for (var i0 = 0; i0 < bytes.size(); i0++)
+						if (bytes.get(i0) == 10) {
+							var line = new String(bytes.range(0, i0).toArray(), Utf8.charset);
+							var size = Integer.parseInt(line.trim(), 16);
+
+							for (var i1 = i0 + 1 + size; i1 < bytes.size(); i1++)
+								if (bytes.get(i1) == 10) {
+									var chunk = bytes.range(i0 + 1, i1);
+									bytes = bytes.range(i1);
+									body.f(chunk);
+									return true;
+								}
+
+							if (size == 0)
+								cb.f(handler.handle(request));
 						}
 
 					return false;
-				}
-			};
+				};
+			}
 
-			var io = new Object() {
-				private void listen() {
-					var key = rw.write == null ? SelectionKey.OP_READ : SelectionKey.OP_WRITE;
+			private boolean parseLine(Sink<String> handleLine) {
+				for (var i = 0; i < bytes.size(); i++)
+					if (bytes.get(i) == 10) {
+						var line = new String(bytes.range(0, i).toArray(), Utf8.charset);
+						bytes = bytes.range(i + 1);
+						handleLine.f(line);
+						return true;
+					}
 
-					listen.apply(key, //
-							in -> {
-								rw.read(in);
-								listen();
-							}, //
-							() -> {
-								var bytes = rw.write();
-								listen();
-								return bytes;
-							});
-				}
-			};
+				return false;
+			}
+		};
 
-			io.listen();
+		var io = new Object() {
+			private void listen() {
+				if (rw.write == null)
+					listen.listenRead(in -> {
+						rw.read(in);
+						listen();
+					});
+				else
+					listen.listenWrite(() -> {
+						var bytes = rw.write.pull();
+						listen();
+						return bytes;
+					});
+			}
+		};
 
-			return io;
-		}).run(port);
+		io.listen();
 	}
 
 	private Puller<Bytes> response(Response response) {
