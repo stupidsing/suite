@@ -10,7 +10,6 @@ import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.Comparator;
-import java.util.List;
 
 import primal.Nouns.Buffer;
 import primal.fp.Funs.Sink;
@@ -23,10 +22,12 @@ public class ListenNio {
 
 	private Sink<Reg> ioFactory;
 	private Selector selector;
-	private PriorityQueue<Wait> waits = new PriorityQueue<>(Wait.class, 256, Comparator.comparingLong(w -> w.k));
+	private PriorityQueue<Sleep> sleeps = new PriorityQueue<>(Sleep.class, 256, Comparator.comparingLong(w -> w.k));
 
 	public interface Reg {
 		public Object listen(int key, Sink<Bytes> rd, Source<Bytes> wr);
+
+		public void sleep(long ms, Runnable runnable);
 
 		public default void listenRead(Sink<Bytes> rd) {
 			listen(SelectionKey.OP_READ, rd, null);
@@ -37,11 +38,11 @@ public class ListenNio {
 		}
 	}
 
-	public static class Wait {
+	public static class Sleep {
 		private long k;
-		private Source<List<Wait>> v;
+		private Runnable v;
 
-		public Wait(long k, Source<List<Wait>> v) {
+		public Sleep(long k, Runnable v) {
 			this.k = k;
 			this.v = v;
 		}
@@ -76,7 +77,7 @@ public class ListenNio {
 			ss.bind(new InetSocketAddress("localhost", port));
 
 			while (true) {
-				var wait = waits.min();
+				var wait = sleeps.min();
 				long nextWakeUp, timeout;
 
 				if (wait != null) {
@@ -90,7 +91,7 @@ public class ListenNio {
 				selector.select(key -> {
 					try {
 						if (nextWakeUp < System.currentTimeMillis())
-							wait.v.g().forEach(waits::add);
+							wait.v.run();
 						if (key.isAcceptable())
 							handleAccept(ssc.accept(), key);
 						if (key.isConnectable())
@@ -109,16 +110,18 @@ public class ListenNio {
 		}
 	}
 
-	public void wait(Wait wait) {
-		waits.add(wait);
-	}
-
 	private void handleAccept(SocketChannel sc, SelectionKey key) throws IOException {
 		sc.configureBlocking(false);
 
-		ioFactory.f((k, rd, wr) -> {
-			var attach = new Attach(sc, rd, wr);
-			return ex(() -> sc.register(selector, k, attach));
+		ioFactory.f(new Reg() {
+			public Object listen(int key, Sink<Bytes> rd, Source<Bytes> wr) {
+				var attach = new Attach(sc, rd, wr);
+				return ex(() -> sc.register(selector, key, attach));
+			}
+
+			public void sleep(long ms, Runnable runnable) {
+				sleeps.add(new Sleep(ms, runnable));
+			}
 		});
 	}
 
