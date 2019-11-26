@@ -23,7 +23,7 @@ import suite.adt.PriorityQueue;
 
 public class ListenNio {
 
-	private Fun<FixieFun3<Integer, Sink<Bytes>, Source<Bytes>, Object>, Boolean> ioFactory;
+	private Fun<FixieFun3<Integer, Sink<Bytes>, Source<Bytes>, Object>, Object> ioFactory;
 	private Selector selector;
 	private PriorityQueue<Wait> waits = new PriorityQueue<>(Wait.class, 256, Comparator.comparingLong(w -> w.k));
 
@@ -49,7 +49,7 @@ public class ListenNio {
 		}
 	}
 
-	public ListenNio(Fun<FixieFun3<Integer, Sink<Bytes>, Source<Bytes>, Object>, Boolean> ioFactory) {
+	public ListenNio(Fun<FixieFun3<Integer, Sink<Bytes>, Source<Bytes>, Object>, Object> ioFactory) {
 		this.ioFactory = ioFactory;
 	}
 
