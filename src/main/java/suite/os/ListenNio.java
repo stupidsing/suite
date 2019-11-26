@@ -1,5 +1,7 @@
 package suite.os;
 
+import static primal.statics.Rethrow.ex;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
@@ -11,25 +13,31 @@ import java.util.Comparator;
 import java.util.List;
 
 import primal.Nouns.Buffer;
+import primal.adt.Fixie_.FixieFun3;
+import primal.fp.Funs.Fun;
+import primal.fp.Funs.Sink;
 import primal.fp.Funs.Source;
 import primal.os.Log_;
 import primal.primitive.adt.Bytes;
 import suite.adt.PriorityQueue;
-import suite.os.ListenNio.IoAsync;
 
-public class ListenNio<T extends IoAsync> {
+public class ListenNio {
 
-	public interface IoAsync {
-		public int getSelectionKey();
-
-		public void read(Bytes in);
-
-		public Bytes write();
-	}
-
-	private Source<T> ioAsyncFactory;
+	private Fun<FixieFun3<Integer, Sink<Bytes>, Source<Bytes>, Object>, Boolean> ioFactory;
 	private Selector selector;
 	private PriorityQueue<Wait> waits = new PriorityQueue<>(Wait.class, 256, Comparator.comparingLong(w -> w.k));
+
+	private class Attach {
+		private SocketChannel sc;
+		private Sink<Bytes> rd;
+		private Source<Bytes> wr;
+
+		private Attach(SocketChannel sc, Sink<Bytes> rd, Source<Bytes> wr) {
+			this.sc = sc;
+			this.rd = rd;
+			this.wr = wr;
+		}
+	}
 
 	public static class Wait {
 		private long k;
@@ -41,8 +49,8 @@ public class ListenNio<T extends IoAsync> {
 		}
 	}
 
-	public ListenNio(Source<T> ioAsyncFactory) {
-		this.ioAsyncFactory = ioAsyncFactory;
+	public ListenNio(Fun<FixieFun3<Integer, Sink<Bytes>, Source<Bytes>, Object>, Boolean> ioFactory) {
+		this.ioFactory = ioFactory;
 	}
 
 	public void run(int port) {
@@ -78,9 +86,9 @@ public class ListenNio<T extends IoAsync> {
 						if (key.isConnectable())
 							;
 						if (key.isReadable())
-							handleRead((SocketChannel) key.channel(), (IoAsync) key.attachment());
+							handleRead((Attach) key.attachment());
 						if (key.isWritable())
-							handleWrite((SocketChannel) key.channel(), (IoAsync) key.attachment());
+							handleWrite((Attach) key.attachment());
 					} catch (Exception ex) {
 						Log_.error(ex);
 					}
@@ -97,25 +105,33 @@ public class ListenNio<T extends IoAsync> {
 
 	private void handleAccept(SocketChannel sc, SelectionKey key) throws IOException {
 		sc.configureBlocking(false);
-		var io = ioAsyncFactory.g();
-		sc.register(selector, io.getSelectionKey(), io);
+
+		ioFactory.apply((k, rd, wr) -> {
+			var attach = new Attach(sc, rd, wr);
+			return ex(() -> sc.register(selector, k, attach));
+		});
 	}
 
-	private void handleRead(SocketChannel sc, IoAsync io) throws IOException {
+	private void handleRead(Attach attach) throws IOException {
 		var bs = new byte[Buffer.size];
-		var n = sc.read(ByteBuffer.wrap(bs));
-		io.read(0 <= n ? Bytes.of(bs, 0, n) : null);
-		sc.register(selector, io.getSelectionKey(), io);
+		var n = attach.sc.read(ByteBuffer.wrap(bs));
+		var rd = attach.rd;
+
+		if (rd != null)
+			rd.f(0 <= n ? Bytes.of(bs, 0, n) : null);
 	}
 
-	private void handleWrite(SocketChannel sc, IoAsync io) throws IOException {
-		var bytes = io.write();
+	private void handleWrite(Attach attach) throws IOException {
+		var wr = attach.wr;
 
-		if (bytes != null) {
-			sc.write(ByteBuffer.wrap(bytes.bs, bytes.start, bytes.end));
-			sc.register(selector, io.getSelectionKey(), io);
-		} else
-			sc.close();
+		if (wr != null) {
+			var bytes = wr.g();
+
+			if (bytes != null)
+				attach.sc.write(ByteBuffer.wrap(bytes.bs, bytes.start, bytes.end));
+			else
+				attach.sc.close();
+		}
 	}
 
 }
