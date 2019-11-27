@@ -77,7 +77,7 @@ cchf() {
 	if [ -f "${KF}" ] && diff <(printf "${CMD}") <(cat "${KF}"); then
 		true
 	else
-		(do-cmd "${CMD}" | tee "${VF}" 1>&2) && (printf "${CMD}" > "${KF}")
+		do-cmd "${CMD}" | tee "${VF}" 1>&2 && printf "${CMD}" > "${KF}"
 	fi
 
 	printf "${VF}"
