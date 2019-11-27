@@ -20,7 +20,7 @@ import suite.adt.PriorityQueue;
 
 public class ListenNio {
 
-	private Sink<Reg> ioFactory;
+	private Sink<Reg> accept;
 	private Selector selector;
 	private PriorityQueue<Sleep> sleeps = new PriorityQueue<>(Sleep.class, 256, Comparator.comparingLong(w -> w.k));
 
@@ -60,8 +60,8 @@ public class ListenNio {
 		}
 	}
 
-	public ListenNio(Sink<Reg> ioFactory) {
-		this.ioFactory = ioFactory;
+	public ListenNio(Sink<Reg> accept) {
+		this.accept = accept;
 	}
 
 	public void run(int port) {
@@ -113,7 +113,7 @@ public class ListenNio {
 	private void handleAccept(SocketChannel sc, SelectionKey key) throws IOException {
 		sc.configureBlocking(false);
 
-		ioFactory.f(new Reg() {
+		accept.f(new Reg() {
 			public Object listen(int key, Sink<Bytes> rd, Source<Bytes> wr) {
 				var attach = new Attach(sc, rd, wr);
 				return ex(() -> sc.register(selector, key, attach));
