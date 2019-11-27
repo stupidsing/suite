@@ -14,6 +14,7 @@ import primal.Nouns.Utf8;
 import primal.Verbs.Sleep;
 import primal.Verbs.Start;
 import primal.fp.Funs2.Fun2;
+import primal.fp.Funs2.Sink2;
 import primal.persistent.PerList;
 import primal.persistent.PerMap;
 import primal.primitive.adt.Bytes;
@@ -45,6 +46,8 @@ public class ServerMain {
 		// Execute.shell("x-www-browser http://127.0.0.1:8051/site");
 	}
 
+	private Sink2<Long, Runnable> sleep;
+
 	public boolean run() {
 		Start.thread(Boolean.TRUE ? this::runNioHttpServer : this::runHttpServer);
 		Start.thread(this::runScheduler);
@@ -53,11 +56,17 @@ public class ServerMain {
 	}
 
 	private void runHttpServer() {
+		sleep = (ms, r) -> {
+			Sleep.quietly(ms);
+			r.run();
+		};
 		new HttpServe(8051).serve(handler());
 	}
 
 	private void runNioHttpServer() {
-		new HttpNio(handler()).run(8051);
+		HttpNio httpNio = new HttpNio(handler());
+		sleep = httpNio.listen::sleep;
+		httpNio.run(8051);
 	}
 
 	private Handler handler() {
@@ -84,12 +93,20 @@ public class ServerMain {
 				+ "</html>"));
 
 		Handler handlerSse = request -> Response.ofWriter(Http.S200, sseHeaders, writer -> {
-			for (var i = 0; i < 8; i++) {
-				Sleep.quietly(1000l);
-				var event = "event: number\ndata: { \"i\": " + i + " }\n\n";
-				writer.f(Bytes.of(event.getBytes(Utf8.charset)));
-			}
-			writer.f(null);
+			new Object() {
+				private int i = 8;
+
+				private void dispatch() {
+					sleep.sink2(1000l, () -> {
+						if (0 < i--) {
+							var event = "event: number\ndata: { \"i\": " + i + " }\n\n";
+							writer.f(Bytes.of(event.getBytes(Utf8.charset)));
+							dispatch();
+						} else
+							writer.f(null);
+					});
+				}
+			}.dispatch();
 		});
 
 		var hat = new HttpAuthToken();
