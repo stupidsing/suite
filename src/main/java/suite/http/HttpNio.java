@@ -186,7 +186,7 @@ public class HttpNio {
 			}
 		};
 
-		var io = new Object() {
+		new Object() {
 			private void listen() {
 				if (rw.write == null)
 					reg.listenRead(in -> {
@@ -200,9 +200,7 @@ public class HttpNio {
 						return bytes;
 					});
 			}
-		};
-
-		io.listen();
+		}.listen();
 	}
 
 	private Puller<Bytes> response(Response response) {
