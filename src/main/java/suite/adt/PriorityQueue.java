@@ -42,7 +42,7 @@ public class PriorityQueue<T> {
 	}
 
 	public T min() {
-		return get(1);
+		return 0 < size ? get(1) : null;
 	}
 
 	public T remove(int i) {
