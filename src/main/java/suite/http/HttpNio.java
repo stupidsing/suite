@@ -44,7 +44,7 @@ public class HttpNio {
 		new ListenNio(this::listen).run(port);
 	}
 
-	private void listen(Reg listen) {
+	private void listen(Reg reg) {
 		var rw = new Object() {
 			private Bytes bytes = Bytes.empty;
 
@@ -189,12 +189,12 @@ public class HttpNio {
 		var io = new Object() {
 			private void listen() {
 				if (rw.write == null)
-					listen.listenRead(in -> {
+					reg.listenRead(in -> {
 						rw.read(in);
 						listen();
 					});
 				else
-					listen.listenWrite(() -> {
+					reg.listenWrite(() -> {
 						var bytes = rw.write.pull();
 						listen();
 						return bytes;
