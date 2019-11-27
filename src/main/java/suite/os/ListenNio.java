@@ -90,8 +90,6 @@ public class ListenNio {
 
 				selector.select(key -> {
 					try {
-						if (wakeUp < System.currentTimeMillis())
-							sleep.v.run();
 						if (key.isAcceptable())
 							handleAccept(ssc.accept(), key);
 						if (key.isConnectable())
@@ -104,6 +102,9 @@ public class ListenNio {
 						Log_.error(ex);
 					}
 				}, timeout);
+
+				if (wakeUp < System.currentTimeMillis())
+					sleeps.extractMin().v.run();
 			}
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
@@ -120,9 +121,13 @@ public class ListenNio {
 			}
 
 			public void sleep(long ms, Runnable runnable) {
-				sleeps.add(new Sleep(ms, runnable));
+				ListenNio.this.sleep(ms, runnable);
 			}
 		});
+	}
+
+	public void sleep(long ms, Runnable runnable) {
+		sleeps.add(new Sleep(System.currentTimeMillis() + ms, runnable));
 	}
 
 	private void handleRead(Attach attach) throws IOException {
