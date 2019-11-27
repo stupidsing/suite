@@ -34,14 +34,16 @@ import suite.os.ListenNio.Reg;
 // mvn compile exec:java -Dexec.mainClass=suite.http.HttpNio
 public class HttpNio {
 
+	public final ListenNio listen;
 	private Handler handler;
 
 	public HttpNio(Handler handler) {
+		listen = new ListenNio(this::listen);
 		this.handler = handler;
 	}
 
 	public void run(int port) {
-		new ListenNio(this::listen).run(port);
+		listen.run(port);
 	}
 
 	private void listen(Reg reg) {
