@@ -78,19 +78,19 @@ public class ListenNio {
 
 			while (true) {
 				var wait = sleeps.min();
-				long nextWakeUp, timeout;
+				long wakeUp, timeout;
 
 				if (wait != null) {
-					nextWakeUp = wait.k;
-					timeout = Math.max(1, nextWakeUp - System.currentTimeMillis());
+					wakeUp = wait.k;
+					timeout = Math.max(1, wakeUp - System.currentTimeMillis());
 				} else {
-					nextWakeUp = Long.MAX_VALUE;
+					wakeUp = Long.MAX_VALUE;
 					timeout = 0l;
 				}
 
 				selector.select(key -> {
 					try {
-						if (nextWakeUp < System.currentTimeMillis())
+						if (wakeUp < System.currentTimeMillis())
 							wait.v.run();
 						if (key.isAcceptable())
 							handleAccept(ssc.accept(), key);
