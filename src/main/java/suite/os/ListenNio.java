@@ -77,11 +77,11 @@ public class ListenNio {
 			ss.bind(new InetSocketAddress("localhost", port));
 
 			while (true) {
-				var wait = sleeps.min();
+				var sleep = sleeps.min();
 				long wakeUp, timeout;
 
-				if (wait != null) {
-					wakeUp = wait.k;
+				if (sleep != null) {
+					wakeUp = sleep.k;
 					timeout = Math.max(1, wakeUp - System.currentTimeMillis());
 				} else {
 					wakeUp = Long.MAX_VALUE;
@@ -91,7 +91,7 @@ public class ListenNio {
 				selector.select(key -> {
 					try {
 						if (wakeUp < System.currentTimeMillis())
-							wait.v.run();
+							sleep.v.run();
 						if (key.isAcceptable())
 							handleAccept(ssc.accept(), key);
 						if (key.isConnectable())
