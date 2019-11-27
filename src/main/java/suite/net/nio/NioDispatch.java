@@ -405,15 +405,11 @@ public class NioDispatch implements Closeable {
 
 	private void reg(SelectableChannel sc, int key, Sink<?> attachment, Sink<IOException> fail) {
 		try {
-			reg(sc, key, attachment);
+			sc.register(selector, key, attachment);
+			reg(sc, key);
 		} catch (ClosedChannelException ex) {
 			fail.f(ex);
 		}
-	}
-
-	private void reg(SelectableChannel sc, int key, Sink<?> attachment) throws ClosedChannelException {
-		sc.register(selector, key, attachment);
-		reg(sc, key);
 	}
 
 	private void reg(SelectableChannel sc, int key) {
