@@ -146,7 +146,7 @@ public class ListenNio {
 			var bytes = wr.g();
 
 			if (bytes != null)
-				attach.sc.write(ByteBuffer.wrap(bytes.bs, bytes.start, bytes.end));
+				attach.sc.write(ByteBuffer.wrap(bytes.bs, bytes.start, bytes.end - bytes.start));
 			else
 				attach.sc.close();
 		}
