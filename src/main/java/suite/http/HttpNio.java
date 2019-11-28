@@ -48,7 +48,7 @@ public class HttpNio {
 
 	private void listen(Reg reg) {
 		var rw = new Object() {
-			private Bytes bytes = Bytes.empty;
+			private Bytes br = Bytes.empty;
 
 			private Source<Boolean> eater = () -> parseLine(
 					line -> handleRequest1stLine(line.trim(), o -> write = response(o)));
@@ -57,7 +57,7 @@ public class HttpNio {
 
 			private void read(Bytes in) {
 				if (in != null) {
-					bytes = bytes.append(in);
+					br = br.append(in);
 					while (eater.g())
 						;
 				} else
@@ -139,11 +139,11 @@ public class HttpNio {
 					private int n;
 
 					public Boolean g() {
-						body.f(bytes);
-						var isOpen = bytes != null;
+						body.f(br);
+						var isOpen = br != null;
 						if (isOpen) {
-							n += bytes.size();
-							bytes = Bytes.empty;
+							n += br.size();
+							br = Bytes.empty;
 						}
 						if (!isOpen || contentLength <= n)
 							cb.f(handler.handle(request));
@@ -154,15 +154,15 @@ public class HttpNio {
 
 			private Source<Boolean> handleChunkedRequestBody(Request request, Sink<Bytes> body, Sink<Response> cb) {
 				return () -> {
-					for (var i0 = 0; i0 < bytes.size(); i0++)
-						if (bytes.get(i0) == 10) {
-							var line = new String(bytes.range(0, i0).toArray(), Utf8.charset);
+					for (var i0 = 0; i0 < br.size(); i0++)
+						if (br.get(i0) == 10) {
+							var line = new String(br.range(0, i0).toArray(), Utf8.charset);
 							var size = Integer.parseInt(line.trim(), 16);
 
-							for (var i1 = i0 + 1 + size; i1 < bytes.size(); i1++)
-								if (bytes.get(i1) == 10) {
-									var chunk = bytes.range(i0 + 1, i1);
-									bytes = bytes.range(i1);
+							for (var i1 = i0 + 1 + size; i1 < br.size(); i1++)
+								if (br.get(i1) == 10) {
+									var chunk = br.range(i0 + 1, i1);
+									br = br.range(i1);
 									body.f(chunk);
 									return true;
 								}
@@ -176,10 +176,10 @@ public class HttpNio {
 			}
 
 			private boolean parseLine(Sink<String> handleLine) {
-				for (var i = 0; i < bytes.size(); i++)
-					if (bytes.get(i) == 10) {
-						var line = new String(bytes.range(0, i).toArray(), Utf8.charset);
-						bytes = bytes.range(i + 1);
+				for (var i = 0; i < br.size(); i++)
+					if (br.get(i) == 10) {
+						var line = new String(br.range(0, i).toArray(), Utf8.charset);
+						br = br.range(i + 1);
 						handleLine.f(line);
 						return true;
 					}
