@@ -111,6 +111,10 @@ public class ListenNio {
 		}
 	}
 
+	public void sleep(long ms, Runnable runnable) {
+		sleep_(ms, runnable);
+	}
+
 	private void handleAccept(SocketChannel sc, SelectionKey key) throws IOException {
 		sc.configureBlocking(false);
 
@@ -121,13 +125,9 @@ public class ListenNio {
 			}
 
 			public void sleep(long ms, Runnable runnable) {
-				ListenNio.this.sleep(ms, runnable);
+				ListenNio.this.sleep_(ms, runnable);
 			}
 		});
-	}
-
-	public void sleep(long ms, Runnable runnable) {
-		sleeps.add(new Sleep(System.currentTimeMillis() + ms, runnable));
 	}
 
 	private void handleRead(Attach attach) throws IOException {
@@ -150,6 +150,10 @@ public class ListenNio {
 			else
 				attach.sc.close();
 		}
+	}
+
+	private void sleep_(long ms, Runnable runnable) {
+		sleeps.add(new Sleep(System.currentTimeMillis() + ms, runnable));
 	}
 
 }
