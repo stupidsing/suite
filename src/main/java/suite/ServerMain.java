@@ -119,7 +119,7 @@ public class ServerMain {
 				.put("html", hh.dir(Paths.get(FileUtil.suiteDir() + "/src/main/html"))) //
 				.put("path", hh.dir(Tmp.root)) //
 				.put("site", hh.session(authenticate, handlerSite)) //
-				// .put("sse", handlerSse) //
+				.put("sse", handlerSse) //
 				.put("token", hh.dispatchMethod(PerMap //
 						.<String, Handler> empty() //
 						.put("PATCH", hat.handleRefreshToken(authenticateRoles)) //

@@ -46,13 +46,44 @@ public class HttpNio {
 
 	private void listen(Reg reg) {
 		var rw = new Object() {
+			private int stage = 0;
 			private Bytes br = Bytes.empty;
 			private Bytes bw = Bytes.empty;
-
-			private Source<Boolean> eater = () -> parseLine(
-					line -> handleRequest1stLine(line.trim(), o -> write = response(o)));
-
 			private Puller<Bytes> write;
+
+			private Source<Boolean> eater = () -> parseLine(line -> handleRequest1stLine(line.trim(), response -> {
+				var data = "HTTP/1.1 " + response.status + "\r\n" //
+						+ response.headers.streamlet().map((k, v) -> k + ": " + v + "\r\n").toJoinedString() + "\r\n";
+
+				stage = 1;
+
+				if (response.body != null) {
+					write = Puller.concat(Pull.from(data), response.body);
+				} else {
+					bw = Bytes.of(data.getBytes(Utf8.charset));
+					response.write.f(bytes -> {
+						if (bytes != null)
+							bw = bw.append(bytes);
+						else
+							stage = 2;
+						listen();
+					});
+				}
+			}));
+
+			private void listen() {
+				if (stage == 0)
+					reg.listenRead(in -> {
+						read(in);
+						listen();
+					});
+				else if (!bw.isEmpty())
+					reg.listenWrite(() -> bw, this::written);
+				else if (stage == 1 && write != null)
+					reg.listenWrite(() -> bw = write.pull(), this::written);
+				else if (stage == 2)
+					reg.listenWrite(() -> null, null);
+			}
 
 			private void read(Bytes in) {
 				if (in != null) {
@@ -63,14 +94,9 @@ public class HttpNio {
 					write = Puller.empty(); // closes connection
 			}
 
-			private Bytes write() {
-				if (bw != null && bw.isEmpty())
-					bw = write.pull();
-				return bw;
-			}
-
 			private void written(int n) {
 				bw = bw.range(n);
+				listen();
 			}
 
 			private void handleRequest1stLine(String line, Sink<Response> cb) {
@@ -197,39 +223,7 @@ public class HttpNio {
 			}
 		};
 
-		new Object() {
-			private void listen() {
-				if (rw.write == null)
-					reg.listenRead(in -> {
-						rw.read(in);
-						listen();
-					});
-				else
-					reg.listenWrite(rw::write, n -> {
-						rw.written(n);
-						listen();
-					});
-			}
-		}.listen();
-	}
-
-	private Puller<Bytes> response(Response response) {
-		Puller<Bytes> responseBody;
-
-		if (response.body != null)
-			responseBody = response.body;
-		else
-			responseBody = response.body;
-			// response.write.f(offer);
-
-		return Puller.concat( //
-				Pull.from("HTTP/1.1 " + response.status + "\r\n" //
-						+ response.headers //
-								.streamlet() //
-								.map((k, v) -> k + ": " + v + "\r\n") //
-								.toJoinedString() //
-						+ "\r\n"), //
-				responseBody);
+		rw.listen();
 	}
 
 }
