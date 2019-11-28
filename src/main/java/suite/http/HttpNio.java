@@ -57,9 +57,9 @@ public class HttpNio {
 
 				stage = 1;
 
-				if (response.body != null) {
+				if (response.body != null)
 					write = Puller.concat(Pull.from(data), response.body);
-				} else {
+				else {
 					bw = Bytes.of(data.getBytes(Utf8.charset));
 					response.write.f(bytes -> {
 						if (bytes != null)
