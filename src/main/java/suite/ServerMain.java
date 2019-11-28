@@ -46,10 +46,7 @@ public class ServerMain {
 		// Execute.shell("x-www-browser http://127.0.0.1:8051/site");
 	}
 
-	private Sink2<Long, Runnable> sleep = (ms, r) -> {
-		Sleep.quietly(ms);
-		r.run();
-	};
+	private Sink2<Long, Runnable> sleep;
 
 	public boolean run() {
 		Start.thread(Boolean.TRUE ? this::runNioHttpServer : this::runHttpServer);
@@ -59,11 +56,17 @@ public class ServerMain {
 	}
 
 	private void runHttpServer() {
+		sleep = (ms, r) -> {
+			Sleep.quietly(ms);
+			r.run();
+		};
 		new HttpServe(8051).serve(handler());
 	}
 
 	private void runNioHttpServer() {
-		new HttpNio(handler()).run(8051);
+		var httpNio = new HttpNio(handler());
+		sleep = httpNio.listen::sleep;
+		httpNio.run(8051);
 	}
 
 	private Handler handler() {
@@ -89,7 +92,7 @@ public class ServerMain {
 				+ "<br/>headers = " + request.headers //
 				+ "</html>"));
 
-		Handler handlerSse = request -> Response.ofWriter(Http.S200, sseHeaders, writer -> {
+		Handler handlerSse = request -> Response.ofWriter(Http.S200, sseHeaders, write -> {
 			new Object() {
 				private int i = 8;
 
@@ -97,10 +100,10 @@ public class ServerMain {
 					sleep.sink2(1000l, () -> {
 						if (0 < i--) {
 							var event = "event: number\ndata: { \"i\": " + i + " }\n\n";
-							writer.f(Bytes.of(event.getBytes(Utf8.charset)));
+							write.f(Bytes.of(event.getBytes(Utf8.charset)));
 							dispatch();
 						} else
-							writer.f(null);
+							write.f(null);
 					});
 				}
 			}.dispatch();

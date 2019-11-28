@@ -13,7 +13,6 @@ import primal.MoreVerbs.Read;
 import primal.MoreVerbs.Split;
 import primal.Nouns.Buffer;
 import primal.Nouns.Utf8;
-import primal.NullableSyncQueue;
 import primal.Verbs.Equals;
 import primal.adt.FixieArray;
 import primal.adt.Opt;
@@ -219,21 +218,17 @@ public class HttpNio {
 
 		if (response.body != null)
 			responseBody = response.body;
-		else {
-			var queue = new NullableSyncQueue<Bytes>();
-			Sink<Bytes> offer = queue::offerQuietly;
-			Source<Bytes> take = queue::takeQuietly;
-			response.write.f(offer);
-			responseBody = Puller.of(take);
-		}
+		else
+			responseBody = response.body;
+			// response.write.f(offer);
 
 		return Puller.concat( //
-				Pull.from("HTTP/1.1 " + response.status + "\r\n"), //
-				Pull.from(response.headers //
-						.streamlet() //
-						.map((k, v) -> k + ": " + v + "\r\n") //
-						.toJoinedString()), //
-				Pull.from("\r\n"), //
+				Pull.from("HTTP/1.1 " + response.status + "\r\n" //
+						+ response.headers //
+								.streamlet() //
+								.map((k, v) -> k + ": " + v + "\r\n") //
+								.toJoinedString() //
+						+ "\r\n"), //
 				responseBody);
 	}
 
