@@ -46,7 +46,10 @@ public class ServerMain {
 		// Execute.shell("x-www-browser http://127.0.0.1:8051/site");
 	}
 
-	private Sink2<Long, Runnable> sleep;
+	private Sink2<Long, Runnable> sleep = (ms, r) -> {
+		Sleep.quietly(ms);
+		r.run();
+	};
 
 	public boolean run() {
 		Start.thread(Boolean.TRUE ? this::runNioHttpServer : this::runHttpServer);
@@ -56,17 +59,11 @@ public class ServerMain {
 	}
 
 	private void runHttpServer() {
-		sleep = (ms, r) -> {
-			Sleep.quietly(ms);
-			r.run();
-		};
 		new HttpServe(8051).serve(handler());
 	}
 
 	private void runNioHttpServer() {
-		HttpNio httpNio = new HttpNio(handler());
-		sleep = httpNio.listen::sleep;
-		httpNio.run(8051);
+		new HttpNio(handler()).run(8051);
 	}
 
 	private Handler handler() {
