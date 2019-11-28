@@ -46,7 +46,7 @@ public class HttpNio {
 
 	private void listen(Reg reg) {
 		var rw = new Object() {
-			private int stage = 0;
+			private int stage = 0; // 0 - read, 1 - write, 2 - close after all written
 			private Bytes br = Bytes.empty;
 			private Bytes bw = Bytes.empty;
 			private Puller<Bytes> write;
