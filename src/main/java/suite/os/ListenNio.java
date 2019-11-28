@@ -15,6 +15,7 @@ import primal.Nouns.Buffer;
 import primal.fp.Funs.Sink;
 import primal.fp.Funs.Source;
 import primal.os.Log_;
+import primal.primitive.IntPrim.IntSink;
 import primal.primitive.adt.Bytes;
 import suite.adt.PriorityQueue;
 
@@ -25,16 +26,16 @@ public class ListenNio {
 	private PriorityQueue<Sleep> sleeps = new PriorityQueue<>(Sleep.class, 256, Comparator.comparingLong(w -> w.k));
 
 	public interface Reg {
-		public Object listen(int key, Sink<Bytes> rd, Source<Bytes> wr);
+		public Object listen(int key, Sink<Bytes> rd, Source<Bytes> wr, IntSink wrt);
 
 		public void sleep(long ms, Runnable runnable);
 
 		public default void listenRead(Sink<Bytes> rd) {
-			listen(SelectionKey.OP_READ, rd, null);
+			listen(SelectionKey.OP_READ, rd, null, null);
 		}
 
-		public default void listenWrite(Source<Bytes> wr) {
-			listen(SelectionKey.OP_WRITE, null, wr);
+		public default void listenWrite(Source<Bytes> wr, IntSink wrt) {
+			listen(SelectionKey.OP_WRITE, null, wr, wrt);
 		}
 	}
 
@@ -52,11 +53,13 @@ public class ListenNio {
 		private SocketChannel sc;
 		private Sink<Bytes> rd;
 		private Source<Bytes> wr;
+		private IntSink wrt;
 
-		private Attach(SocketChannel sc, Sink<Bytes> rd, Source<Bytes> wr) {
+		private Attach(SocketChannel sc, Sink<Bytes> rd, Source<Bytes> wr, IntSink wrt) {
 			this.sc = sc;
 			this.rd = rd;
 			this.wr = wr;
+			this.wrt = wrt;
 		}
 	}
 
@@ -119,8 +122,8 @@ public class ListenNio {
 		sc.configureBlocking(false);
 
 		accept.f(new Reg() {
-			public Object listen(int key, Sink<Bytes> rd, Source<Bytes> wr) {
-				var attach = new Attach(sc, rd, wr);
+			public Object listen(int key, Sink<Bytes> rd, Source<Bytes> wr, IntSink wrt) {
+				var attach = new Attach(sc, rd, wr, wrt);
 				return ex(() -> sc.register(selector, key, attach));
 			}
 
@@ -144,9 +147,8 @@ public class ListenNio {
 
 		if (wr != null) {
 			var bytes = wr.g();
-
 			if (bytes != null)
-				attach.sc.write(ByteBuffer.wrap(bytes.bs, bytes.start, bytes.end - bytes.start));
+				attach.wrt.f(attach.sc.write(ByteBuffer.wrap(bytes.bs, bytes.start, bytes.size())));
 			else
 				attach.sc.close();
 		}

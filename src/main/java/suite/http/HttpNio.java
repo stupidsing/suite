@@ -15,7 +15,6 @@ import primal.Nouns.Buffer;
 import primal.Nouns.Utf8;
 import primal.NullableSyncQueue;
 import primal.Verbs.Equals;
-import primal.Verbs.Th;
 import primal.adt.FixieArray;
 import primal.adt.Opt;
 import primal.fp.Funs.Sink;
@@ -49,6 +48,7 @@ public class HttpNio {
 	private void listen(Reg reg) {
 		var rw = new Object() {
 			private Bytes br = Bytes.empty;
+			private Bytes bw = Bytes.empty;
 
 			private Source<Boolean> eater = () -> parseLine(
 					line -> handleRequest1stLine(line.trim(), o -> write = response(o)));
@@ -62,6 +62,16 @@ public class HttpNio {
 						;
 				} else
 					write = Puller.empty(); // closes connection
+			}
+
+			private Bytes write() {
+				if (bw != null && bw.isEmpty())
+					bw = write.pull();
+				return bw;
+			}
+
+			private void written(int n) {
+				bw = bw.range(n);
 			}
 
 			private void handleRequest1stLine(String line, Sink<Response> cb) {
@@ -196,10 +206,9 @@ public class HttpNio {
 						listen();
 					});
 				else
-					reg.listenWrite(() -> {
-						var bytes = rw.write.pull();
+					reg.listenWrite(rw::write, n -> {
+						rw.written(n);
 						listen();
-						return bytes;
 					});
 			}
 		}.listen();
@@ -214,7 +223,7 @@ public class HttpNio {
 			var queue = new NullableSyncQueue<Bytes>();
 			Sink<Bytes> offer = queue::offerQuietly;
 			Source<Bytes> take = queue::takeQuietly;
-			new Th(() -> response.write.f(offer)).start();
+			response.write.f(offer);
 			responseBody = Puller.of(take);
 		}
 
