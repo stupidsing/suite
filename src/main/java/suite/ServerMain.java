@@ -29,7 +29,6 @@ import suite.http.HttpHeaderUtil;
 import suite.http.HttpNio;
 import suite.http.HttpServe;
 import suite.node.Str;
-import suite.os.Execute;
 import suite.os.FileUtil;
 import suite.os.Schedule;
 import suite.os.Scheduler;
@@ -42,7 +41,7 @@ public class ServerMain {
 	public static void main(String[] args) {
 		RunUtil.run(new ServerMain()::run);
 
-		Execute.shell("x-www-browser http://127.0.0.1:8051/html/render.html");
+		// Execute.shell("x-www-browser http://127.0.0.1:8051/html/render.html");
 		// Execute.shell("x-www-browser http://127.0.0.1:8051/site");
 	}
 
