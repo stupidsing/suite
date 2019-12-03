@@ -24,7 +24,7 @@ cchs() {
 			F=$(cchf "printf ${FILE}")
 		elif [ "${CMD}" == "#curl" ]; then
 			URL=$(cat ${F})
-			MD5=$(printf "${URL}" | md5sum - | cut -d' ' -f1)
+			MD5=$(printf "${URL}" | md5sum - | cut -d" " -f1)
 			SHORT=$(printf "${URL}" | tr /:@ _ | tr -dc '[\-.0-9A-Z_a-z]')
 			DF="${DCACHE}/${MD5:0:8}.${SHORT}"
 			[ -f ${DF} ] || do-cmd curl -sL "${URL}" > ${DF}
@@ -35,7 +35,7 @@ cchs() {
 			F=$(cchf "printf ${LINK}")
 		elif [ "${CMD}" == "#git-clone" ]; then
 			URL=$(cat ${F})
-			MD5=$(printf "${URL}" | md5sum - | cut -d' ' -f1)
+			MD5=$(printf "${URL}" | md5sum - | cut -d" " -f1)
 			SHORT=$(printf "${URL}" | tr /: _ | tr -dc '[\-.0-9A-Z_a-z]')
 			DF="${DCACHE}/${MD5:0:8}.${SHORT}"
 			if [ -d ${DF} ]; then
@@ -56,6 +56,11 @@ cchs() {
 			TARDIR=${TARF}.d
 			[ -d ${TARDIR} ] || do-cmd "mkdir -p ${TARDIR} && tar ${OPT} ${TARF} -C ${TARDIR}"
 			F=$(cchf "printf ${TARDIR}")
+		elif [ "${CMD}" == "#unzip" ]; then
+			ZIPF=$(cat ${F})
+			ZIPDIR=${ZIPF}.d
+			[ -d ${ZIPDIR} ] || do-cmd "mkdir -p ${ZIPDIR} && unzip -d ${ZIPDIR} -q ${ZIPF}"
+			F=$(cchf "printf ${ZIPDIR}")
 		else
 			F=$(cchf "cat ${F} | ${CMD}")
 		fi
@@ -65,7 +70,7 @@ cchs() {
 
 cchf() {
 	CMD="${@}"
-	MD5=$(printf "${CMD}" | md5sum - | cut -d' ' -f1)
+	MD5=$(printf "${CMD}" | md5sum - | cut -d" " -f1)
 	P=${MD5:0:2}
 	DIR=${CCACHE}/${P}
 	FP=${DIR}/${MD5}
