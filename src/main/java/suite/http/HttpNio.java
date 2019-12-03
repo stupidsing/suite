@@ -72,13 +72,13 @@ public class HttpNio {
 			}));
 
 			private void listen() {
-				if (stage == 0)
+				if (!bw.isEmpty())
+					reg.listenWrite(() -> bw, this::written);
+				else if (stage == 0)
 					reg.listenRead(in -> {
 						read(in);
 						listen();
 					});
-				else if (!bw.isEmpty())
-					reg.listenWrite(() -> bw, this::written);
 				else if (stage == 1 && write != null)
 					reg.listenWrite(() -> bw = write.pull(), this::written);
 				else if (stage == 2)
