@@ -147,9 +147,16 @@ public class ListenNio {
 
 		if (wr != null) {
 			var bytes = wr.g();
-			if (bytes != null)
-				attach.wrt.f(attach.sc.write(ByteBuffer.wrap(bytes.bs, bytes.start, bytes.size())));
-			else
+			if (bytes != null) {
+				var bb = ByteBuffer.wrap(bytes.bs, bytes.start, bytes.size());
+				int n;
+				try {
+					n = attach.sc.write(bb);
+				} catch (IOException ex) {
+					n = -1;
+				}
+				attach.wrt.f(n);
+			} else
 				attach.sc.close();
 		}
 	}
