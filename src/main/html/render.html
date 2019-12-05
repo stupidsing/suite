@@ -86,7 +86,7 @@ let login = vm => {
 	console.log('login()');
 	let { username, password, } = vm;
 
-	fetch('/token', {
+	fetch('../token', {
 		...fetchBase,
 		mode: 'no-cors',
 		body: JSON.stringify({ username, password, }),
@@ -97,7 +97,7 @@ let login = vm => {
 		if (response.ok) return response.json(); else throw response.statusText;
 	})
 	.then(json => json.token)
-	.then(token => fetch('/token', {
+	.then(token => fetch('../token', {
 		...fetchBase,
 		headers: { 'Authorization': token, },
 		method: 'PATCH',
@@ -107,7 +107,7 @@ let login = vm => {
 	})
 	.then(json => json.token)
 	.then(token => { renderAgain(view, vm => ({ ...vm, token, })); return token; })
-	.then(token => fetch('/api', {
+	.then(token => fetch('../api', {
 		...fetchBase,
 		headers: { 'Authorization': token, },
 		method: 'GET',
