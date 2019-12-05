@@ -16,9 +16,9 @@ WantedBy=multi-user.target
 
 echo -e "#\x21/bin/sh
 ${JAVA_HOME}/bin/java -Dsuite.dir=${BASE} -cp \$(cat ${BASE}/target/classpath):${BASE}/target/suite-1.0.jar suite.ServerMain
-" > ~/suite/service.sh
+" > ${BASE}/service.sh
 
-chmod 755 ~/suite/service.sh
+chmod 755 ${BASE}/service.sh
 
 sudo systemctl daemon-reload
 sudo systemctl enable suite.service
