@@ -83,6 +83,8 @@ public class HttpNio {
 					reg.listenWrite(() -> bw = write.pull(), this::written);
 				else if (stage == 2)
 					reg.listenWrite(() -> null, null);
+				else if (stage == 3)
+					reg.listen(0, null, null, null);
 			}
 
 			private void read(Bytes in) {
@@ -95,7 +97,10 @@ public class HttpNio {
 			}
 
 			private void written(int n) {
-				bw = bw.range(n);
+				if (0 <= n)
+					bw = bw.range(n);
+				else
+					stage = 3;
 				listen();
 			}
 
