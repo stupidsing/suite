@@ -2,6 +2,10 @@ package suite.concurrent;
 
 import static primal.statics.Fail.fail;
 
+import java.util.Collection;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import primal.Verbs.Wait;
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
@@ -49,6 +53,32 @@ public class Fut<T> {
 
 	public static <T> Fut<T> begin(T t) {
 		return of(fut -> fut.complete(t));
+	}
+
+	public static <T> Fut<Boolean> join(Collection<Fut<T>> fs) {
+		var size = fs.size();
+		var count = new AtomicInteger();
+		var ok = new AtomicBoolean(true);
+
+		return Fut.of(fut -> {
+			var o = new Object() {
+				private void inc() {
+					if (count.incrementAndGet() == size)
+						fut.complete(ok.get());
+				}
+			};
+
+			var iter = fs.iterator();
+
+			while (iter.hasNext()) {
+				var f = iter.next();
+				f.handle(t -> o.inc(), ex -> {
+					Log_.error(ex);
+					ok.set(false);
+					o.inc();
+				});
+			}
+		});
 	}
 
 	public static <T> Fut<T> of(Source<T> source) {
