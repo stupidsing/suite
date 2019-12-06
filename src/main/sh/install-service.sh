@@ -1,4 +1,9 @@
-BASE=~/suite
+source <(curl -sL https://raw.githubusercontent.com/stupidsing/suite/master/src/main/sh/cache.sh)
+
+GIT_SUITE=$(cchs "echo git@github.com:stupidsing/suite.git" "#git-clone")
+BASE=${GIT_SUITE:9}
+
+${BASE}/build.sh
 
 printf "[Service]
 ExecStart=${BASE}/service.sh
@@ -16,9 +21,9 @@ WantedBy=multi-user.target
 
 echo -e "#\x21/bin/sh
 ${JAVA_HOME}/bin/java -Dsuite.dir=${BASE} -cp \$(cat ${BASE}/target/classpath):${BASE}/target/suite-1.0.jar suite.ServerMain
-" > ~/suite/service.sh
+" > ${BASE}/service.sh
 
-chmod 755 ~/suite/service.sh
+chmod 755 ${BASE}/service.sh
 
 sudo systemctl daemon-reload
 sudo systemctl enable suite.service
