@@ -12,7 +12,7 @@ echo JAVA_HOME=$(cchs "curl -sL https://jdk.java.net/13/" "grep 'https://downloa
 echo M2_HOME=$(cchs "echo http://ftp.cuhk.edu.hk/pub/packages/apache.org/maven/maven-3/3.6.2/binaries/apache-maven-3.6.2-bin.tar.gz" "#curl" "#tar-zxf" "#dir")
 echo NODE_HOME=$(cchs "echo https://nodejs.org/dist/v12.13.1/node-v12.13.1-linux-x64.tar.xz" "#curl" "#tar-xf" "#dir")
 
-echo "PATH=\${GIT_HD:9}/bin:\${GOROOT}/bin:\${GRADLE_HOME}/bin:\${JAVA_HOME}/bin:\${M2_HOME}/bin:\${NODE_HOME}/bin:${PATH}"
+echo "PATH=\${ECLIPSE_HOME}:\${GIT_HD:9}/bin:\${GOROOT}/bin:\${GRADLE_HOME}/bin:\${JAVA_HOME}/bin:\${M2_HOME}/bin:\${NODE_HOME}/bin:${PATH}"
 
 #cchs "echo ${GIT_PRIMAL}" "{V} ${M2_HOME}/bin/mvn install"
 #cchs "echo ${GIT_SUITE}" "{V} ./build.sh"
