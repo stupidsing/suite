@@ -7,6 +7,10 @@ mkdir -p ${CCACHE}/ ${DCACHE}/
 find ${CCACHE}/ -mtime 28 -print0 | xargs -0 echo rm -f 1>&2
 find ${DCACHE}/ -maxdepth 1 -mtime 360 -type d -print0 | xargs -0 echo rm -rf 1>&2
 
+cch-fn() {
+	tr /:@ _ | tr -dc '[\-.0-9A-Z_a-z]'
+}
+
 cchs() {
 	F=/dev/null
 	while [ "${1}" ]; do
@@ -22,7 +26,7 @@ cchs() {
 		elif [ "${CMD}" == "#curl" ]; then
 			URL=$(cat ${F})
 			MD5=$(printf "${URL}" | md5sum - | cut -d" " -f1)
-			SHORT=$(printf "${URL}" | tr /:@ _ | tr -dc '[\-.0-9A-Z_a-z]')
+			SHORT=$(printf "${URL}" | cch-fn)
 			DF="${DCACHE}/${MD5:0:8}.${SHORT}"
 			[ -f ${DF} ] || do-cmd curl -sL "${URL}" > ${DF}
 			F=$(cchf "printf ${DF}")
@@ -36,7 +40,7 @@ cchs() {
 		elif [ "${CMD}" == "#git-clone" ]; then
 			URL=$(cat ${F})
 			MD5=$(printf "${URL}" | md5sum - | cut -d" " -f1)
-			SHORT=$(printf "${URL}" | tr /: _ | tr -dc '[\-.0-9A-Z_a-z]')
+			SHORT=$(printf "${URL}" | cch-fn)
 			DF="${DCACHE}/${MD5:0:8}.${SHORT}"
 			if ! [ -d ${DF} ]; then
 				do-cmd "git clone --depth 1 ${URL} ${DF} --quiet"
@@ -50,6 +54,20 @@ cchs() {
 			fi
 			COMMIT=$(cd ${DF}/ && git rev-parse HEAD | cut -c1-8)
 			F=$(cchf "printf ${COMMIT}:${DF}")
+		elif [ "${CMD:0:10}" == "#maven-get" ]; then
+			#REPO=https://repo.maven.apache.org/maven2
+			RGAV=$(cat ${F})
+			REPO=$(echo ${RGAV} | cut -d# -f1)
+			GROUPID=$(echo ${RGAV} | cut -d# -f2)
+			ARTIFACTID=$(echo ${RGAV} | cut -d# -f3)
+			VERSION=$(echo ${RGAV} | cut -d# -f4)
+			P=$(echo ${GROUPID} | sed s#\\.#/#g)
+			URL="${REPO}/${P}/${ARTIFACTID}/${VERSION}/${ARTIFACTID}-${VERSION}.pom"
+			MD5=$(printf "${URL}" | md5sum - | cut -d" " -f1)
+			SHORT=$(printf "${URL}" | cch-fn)
+			DF="${DCACHE}/${MD5:0:8}.${SHORT}"
+			[ -f ${DF} ] || do-cmd curl -sL "${URL}" > ${DF}
+			F=$(cchf "printf ${DF}")
 		elif [ "${CMD:0:5}" == "#tar-" ]; then
 			OPT=${CMD:5}
 			TARF=$(cat ${F})
