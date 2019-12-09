@@ -12,7 +12,7 @@ GRADLE_HOME=$(cchs "echo https://services.gradle.org/distributions/gradle-6.0.1-
 JAVA_HOME=$(cchs "curl -sL https://jdk.java.net/13/" "grep https://download.java.net/ | grep -v sha256 | grep linux | grep \\.tar\\.gz" "cut -d\\\" -f2" "#curl" "#tar-zxf" "#dir")
 M2_HOME=$(cchs "echo http://ftp.cuhk.edu.hk/pub/packages/apache.org/maven/maven-3/3.6.2/binaries/apache-maven-3.6.2-bin.tar.gz" "#curl" "#tar-zxf" "#dir")
 NODE_HOME=$(cchs "echo https://nodejs.org/dist/v12.13.1/node-v12.13.1-linux-x64.tar.xz" "#curl" "#tar-xf" "#dir")
-PATH=\${ECLIPSE_HOME}:\${GIT_HD:9}/bin:\${GOROOT}/bin:\${GRADLE_HOME}/bin:\${JAVA_HOME}/bin:\${M2_HOME}/bin:\${NODE_HOME}/bin:\${PATH}'
+PATH=${ECLIPSE_HOME}:${GIT_HD:9}/bin:${GOROOT}/bin:${GRADLE_HOME}/bin:${JAVA_HOME}/bin:${M2_HOME}/bin:${NODE_HOME}/bin:${PATH}'
 
 #cchs "echo ${GIT_PRIMAL}" "#git-cd-cmd ${M2_HOME}/bin/mvn install"
 #cchs "echo ${GIT_SUITE}" "#git-cd-cmd ./build.sh"
