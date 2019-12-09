@@ -1,5 +1,6 @@
 package suite.trade.data;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
@@ -16,6 +17,12 @@ public class SinaTest {
 		var factor = sina.queryFactor("0005.HK");
 		assertNotNull(factor);
 		Dump.details(factor);
+	}
+
+	@Test
+	public void testQueryLotSize() {
+		assertEquals(400, sina.queryLotSize("0005.HK"));
+		assertEquals(100, sina.queryLotSize("0700.HK"));
 	}
 
 	@Test
