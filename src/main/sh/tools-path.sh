@@ -1,7 +1,10 @@
 # source <(curl -sL https://raw.githubusercontent.com/stupidsing/suite/master/src/main/sh/tools-path.sh | bash -)
 
-source <(curl -sL https://raw.githubusercontent.com/stupidsing/suite/master/src/main/sh/cache.sh)
+C=$(curl -sL https://raw.githubusercontent.com/stupidsing/suite/master/src/main/sh/cache.sh)
 
+source <(${C})
+
+echo ${C}
 echo ECLIPSE_HOME=$(cchs "echo http://ftp.jaist.ac.jp/pub/eclipse/technology/epp/downloads/release/2019-09/R/eclipse-java-2019-09-R-linux-gtk-x86_64.tar.gz" "#curl" "#tar-zxf" "#dir")
 echo GIT_HD=$(cchs "echo git@github.com:stupidsing/home-data.git" "#git-clone")
 echo GIT_PIECES=$(cchs "echo git@github.com:stupidsing/pieces.git" "#git-clone")
