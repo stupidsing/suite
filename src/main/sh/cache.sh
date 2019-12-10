@@ -36,7 +36,7 @@ cchs() {
 			F=$(cchf "printf ${LINK}")
 		elif [ "${CMD:0:11}" == "#git-cd-cmd" ]; then
 			D=$(cat ${F})
-			F=$(cchf "echo version ${D:0:8}; cd ${D:9}/; ${CMD:12}")
+			F=$(cchf "V=${D:0:8}; cd ${D:9}/; ${CMD:12}")
 		elif [ "${CMD}" == "#git-clone" ]; then
 			URL=$(cat ${F})
 			MD5=$(printf "${URL}" | md5sum - | cut -d" " -f1)
