@@ -13,24 +13,25 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import primal.MoreVerbs.Read;
 import primal.Verbs.Equals;
-import primal.fp.Funs.Source;
+import primal.fp.Funs.Fun;
+import primal.primitive.IntPrim.Obj_Int;
 import primal.streamlet.Streamlet;
 import suite.http.HttpClient;
 import suite.node.util.Singleton;
 import suite.os.Execute;
 import suite.os.SerializedStoreCache;
 import suite.serialize.Serialize;
-import suite.streamlet.As;
 import suite.trade.Instrument;
 import suite.util.To;
 
 public class Hkex {
 
-	// .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 	private static ObjectMapper om = new ObjectMapper();
+	// .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 	private Serialize ser = Singleton.me.serialize;
+	private Sina sina = new Sina();
 
-	private Set<String> delisted = new HashSet<>(List.of("0013.HK"));
+	private Fun<Streamlet<String>, Map<String, Integer>> queryLotSizes = symbols -> sina.queryLotSizes(symbols, true);
 
 	// https://www.hkex.com.hk/eng/csm/result.htm?location=companySearch&SearchMethod=2&mkt=hk&LangCode=en&StockType=MB&Ranking=ByMC&x=42&y=9
 	// stock code, stock name, market capitalisation (million)
@@ -166,6 +167,9 @@ public class Hkex {
 
 	private Map<String, Instrument> companyBySymbol = Read.from(companies).toMap(company -> company.symbol);
 
+	private Set<String> delisted = new HashSet<>(List.of("0013.HK"));
+	private Obj_Int<String> queryLotSize = sina::queryLotSize;
+
 	public static final Set<String> commonFirstNames = new HashSet<>(
 			List.of("", "China", "Guangdong", "Hang", "HK", "Hongkong", "New", "Standard"));
 
@@ -263,7 +267,7 @@ public class Hkex {
 			instrument = Instrument.of( //
 					HkexUtil.toSymbol(companyInfo.stockCode), //
 					companyInfo.stockName.split("\\[")[0].trim(), //
-					queryBoardLot(symbol));
+					queryLotSize.apply(symbol));
 		}
 
 		return instrument;
@@ -279,10 +283,6 @@ public class Hkex {
 		return SerializedStoreCache //
 				.of(ser.list(Instrument.serializer)) //
 				.get(getClass().getSimpleName() + ".queryCompanies(" + pageNo + ")", () -> queryCompanies_(pageNo));
-	}
-
-	public int queryBoardLot(String symbol) {
-		return queryBoardLot_(symbol);
 	}
 
 	public float queryHangSengIndex() {
@@ -397,49 +397,8 @@ public class Hkex {
 					.map(json_ -> Read.from(json_).map(JsonNode::textValue).toList());
 
 		var data1 = data0.collect();
-		var lotSizeBySymbol = queryLotSizeBySymbol_(data1.map(this::toSymbol));
+		var lotSizeBySymbol = queryLotSizes.apply(data1.map(this::toSymbol));
 		return data1.map(datum -> toinstrument(datum, lotSizeBySymbol)).toList();
-	}
-
-	private Map<String, Integer> queryLotSizeBySymbol_(Streamlet<String> symbols) {
-		Source<Map<String, Integer>> fun = () -> symbols //
-				.map2(symbol -> !delisted.contains(symbol) ? queryBoardLot_(symbol) : null) //
-				.filterValue(boardLot -> boardLot != null) //
-				.toMap();
-
-		return SerializedStoreCache //
-				.of(ser.mapOfString(ser.int_)) //
-				.get(getClass().getSimpleName() + ".queryLotSizeBySymbol(" + symbols.collect(As.conc(",")) + ")", fun);
-	}
-
-	private int queryBoardLot_(String symbol) {
-		if (Equals.string(symbol, "0700.HK"))
-			return 100;
-		else {
-			var json = query("" //
-					+ "https://www.hkex.com.hk/eng/csm/ws/Company.asmx/GetData" //
-					+ "?location=companySearch" //
-					+ "&SearchMethod=1" //
-					+ "&LangCode=en" //
-					+ "&StockCode=" + HkexUtil.toStockCode(symbol) //
-					+ "&StockName=" //
-					+ "&mkt=hk" //
-					+ "&x=" //
-					+ "&y=");
-
-			CompanyInfo companyInfo = om.convertValue(json, CompanyInfo.class);
-
-			var boardLotStr = Read //
-					.each(companyInfo) //
-					.flatMap(ci -> ci.data) //
-					.concatMap(Data::tableEntries) //
-					.filter(td -> Equals.string(td.get(0), "Board lot")) //
-					.uniqueResult() //
-					.get(1) //
-					.replace(",", "");
-
-			return Integer.parseInt(boardLotStr);
-		}
 	}
 
 	private JsonNode query(String url) {

@@ -23,6 +23,7 @@ public class SinaTest {
 	public void testQueryLotSize() {
 		assertEquals(400, sina.queryLotSize("0005.HK"));
 		assertEquals(100, sina.queryLotSize("0700.HK"));
+		assertEquals(2000, sina.queryLotSize("0857.HK"));
 	}
 
 	@Test

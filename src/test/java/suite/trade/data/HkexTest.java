@@ -33,13 +33,6 @@ public class HkexTest {
 	}
 
 	@Test
-	public void testQueryBoardLot() {
-		assertEquals(400, hkex.queryBoardLot("0005.HK"));
-		assertEquals(100, hkex.queryBoardLot("0700.HK"));
-		assertEquals(2000, hkex.queryBoardLot("0857.HK"));
-	}
-
-	@Test
 	public void testQueryCompany() {
 		assertEquals("HSBC Holdings plc", hkex.queryCompany("0005.HK").name);
 	}
