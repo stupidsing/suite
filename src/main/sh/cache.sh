@@ -19,6 +19,12 @@ cchs() {
 		if [ "${CMD:0:2}" == "{}" ]; then
 			D=$(cat ${F})
 			F=$(cchf "${D}${CMD:2}")
+		elif [ "${CMD:0:7}" == "#cd" ]; then
+			D=$(cat ${F})
+			F=$(cchf "cd ${D}/; ${CMD:8}")
+		elif [ "${CMD:0:7}" == "#cd-cmd" ]; then
+			D=$(cat ${F})
+			F=$(cchf "cd ${D}/; ${CMD:8} 1>&2; echo ${D}")
 		elif [ "${CMD:0:6}" == "#chmod" ]; then
 			FILE=$(cat ${F})
 			chmod ${CMD:6} ${FILE}
@@ -34,9 +40,12 @@ cchs() {
 			DIR=$(cat ${F})
 			LINK=$(sh -c "readlink -f ${DIR}/*")
 			F=$(cchf "printf ${LINK}")
-		elif [ "${CMD:0:11}" == "#git-cd-cmd" ]; then
+		elif [ "${CMD:0:11}" == "#git-cd" ]; then
 			D=$(cat ${F})
 			F=$(cchf "V=${D:0:8}; cd ${D:9}/; ${CMD:12}")
+		elif [ "${CMD:0:11}" == "#git-cd-cmd" ]; then
+			D=$(cat ${F})
+			F=$(cchf "V=${D:0:8}; cd ${D:9}/; ${CMD:12} 1>&2; echo ${D}")
 		elif [ "${CMD}" == "#git-clone" ]; then
 			URL=$(cat ${F})
 			MD5=$(printf "${URL}" | md5sum - | cut -d" " -f1)

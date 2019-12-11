@@ -16,7 +16,7 @@ PATH=${ECLIPSE_HOME}:${GIT_HD:9}/bin:${GOROOT}/bin:${GRADLE_HOME}/bin:${JAVA_HOM
 
 #cchs "echo ${GIT_PRIMAL}" "#git-cd-cmd ${M2_HOME}/bin/mvn install"
 #cchs "echo ${GIT_SUITE}" "#git-cd-cmd ./build.sh"
-#cchs "echo / dump yes \#" "#git-cd-cmd ./run.sh"
+#cchs "echo / dump yes \#" "#git-cd ./run.sh"
 #cchs "echo ${GOROOT}" "{}/bin/go help"
 #cchs "echo ${GRADLE_HOME}" "{}/bin/gradle --version"
 #cchs "echo ${JAVA_HOME}" "{}/bin/javac -version"
