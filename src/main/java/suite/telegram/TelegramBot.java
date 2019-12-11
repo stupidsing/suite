@@ -4,6 +4,7 @@ import static primal.statics.Rethrow.ex;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashSet;
 
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
@@ -24,8 +25,10 @@ public class TelegramBot {
 	}
 
 	public void bot(FoldOp<Integer, String> fun) {
+		var subscribedChatIds = new HashSet<Long>();
+
 		ex(() -> {
-			return new TelegramBotsApi().registerBot(new TelegramLongPollingBot() {
+			var bot = new TelegramLongPollingBot() {
 				public String getBotUsername() {
 					return botUsername;
 				}
@@ -37,19 +40,38 @@ public class TelegramBot {
 				public void onUpdateReceived(Update update) {
 					if (update.hasMessage()) {
 						var message = update.getMessage();
+						var chatId = message.getChat().getId();
+						var messageText = message.getText();
 
-						var sendMessage = new SendMessage();
-						sendMessage.setChatId(message.getChat().getId().toString());
-						sendMessage.setText(fun.apply(message.getFrom().getId(), message.getText()));
-
-						ex(() -> sendApiMethod(sendMessage));
+						if (messageText.startsWith("/"))
+							if ("/subscribe".equalsIgnoreCase(messageText))
+								subscribedChatIds.add(chatId);
+							else if ("/unsubscribe".equalsIgnoreCase(messageText))
+								subscribedChatIds.remove(chatId);
+							else
+								send(chatId, "unknown command");
+						else
+							send(chatId, fun.apply(message.getFrom().getId(), messageText));
 					}
 				}
-			});
-		});
 
-		while (true)
-			Sleep.quietly(10000);
+				private void send(long chatId, String text) {
+					var sendMessage = new SendMessage();
+					sendMessage.setChatId(Long.toString(chatId));
+					sendMessage.setText(text);
+					ex(() -> sendApiMethod(sendMessage));
+				}
+			};
+
+			new TelegramBotsApi().registerBot(bot);
+
+			while (true) {
+				Sleep.quietly(10000l);
+
+				for (var chatId : subscribedChatIds)
+					bot.send(chatId, "time is " + System.currentTimeMillis());
+			}
+		});
 	}
 
 }
