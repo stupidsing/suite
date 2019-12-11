@@ -14,8 +14,8 @@ M2_HOME=$(cchs "echo http://ftp.cuhk.edu.hk/pub/packages/apache.org/maven/maven-
 NODE_HOME=$(cchs "echo https://nodejs.org/dist/v12.13.1/node-v12.13.1-linux-x64.tar.xz" "#curl" "#tar-xf" "#dir")
 PATH=${ECLIPSE_HOME}:${GIT_HD:9}/bin:${GOROOT}/bin:${GRADLE_HOME}/bin:${JAVA_HOME}/bin:${M2_HOME}/bin:${NODE_HOME}/bin:${PATH}'
 
-#cchs "echo ${GIT_PRIMAL}" "#git-cd-cmd ${M2_HOME}/bin/mvn install"
-#cchs "echo ${GIT_SUITE}" "#git-cd-cmd ./build.sh"
+#cchs "echo ${GIT_PRIMAL}" "#do-git-cd ${M2_HOME}/bin/mvn install"
+#cchs "echo ${GIT_SUITE}" "#do-git-cd ./build.sh"
 #cchs "echo / dump yes \#" "#git-cd ./run.sh"
 #cchs "echo ${GOROOT}" "{}/bin/go help"
 #cchs "echo ${GRADLE_HOME}" "{}/bin/gradle --version"
