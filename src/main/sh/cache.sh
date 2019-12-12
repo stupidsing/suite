@@ -24,9 +24,7 @@ cchs() {
 			F=$(cchf "printf ${FILE}")
 		elif [ "${CMD}" == "#curl" ]; then
 			URL=$(cat ${F})
-			MD5=$(printf "${URL}" | md5sum - | cut -d" " -f1)
-			SHORT=$(printf "${URL}" | cch-fn)
-			DF="${DCACHE}/${MD5:0:8}.${SHORT}"
+			DF=${DCACHE}/$(urlDir "${URL}")
 			[ -f ${DF} ] || do-cmd curl -sL "${URL}" > ${DF}
 			F=$(cchf "printf ${DF}")
 		elif [ "${CMD}" == "#dir" ]; then
@@ -44,9 +42,7 @@ cchs() {
 			F=$(cchf "V=${D:0:8}; cd ${D:9}/; ${CMD:8}")
 		elif [ "${CMD}" == "#git-clone" ]; then
 			URL=$(cat ${F})
-			MD5=$(printf "${URL}" | md5sum - | cut -d" " -f1)
-			SHORT=$(printf "${URL}" | cch-fn)
-			DF="${DCACHE}/${MD5:0:8}.${SHORT}"
+			DF=${DCACHE}/$(urlDir "${URL}")
 			if ! [ -d ${DF} ]; then
 				do-cmd "git clone --depth 1 ${URL} ${DF} --quiet"
 				touch ${DF}.pulltime
@@ -68,9 +64,7 @@ cchs() {
 			VERSION=$(echo ${RGAV} | cut -d# -f4)
 			P=$(echo ${GROUPID} | sed s#\\.#/#g)
 			URL="${REPO}/${P}/${ARTIFACTID}/${VERSION}/${ARTIFACTID}-${VERSION}.pom"
-			MD5=$(printf "${URL}" | md5sum - | cut -d" " -f1)
-			SHORT=$(printf "${URL}" | cch-fn)
-			DF="${DCACHE}/${MD5:0:8}.${SHORT}"
+			DF=${DCACHE}/$(urlDir "${URL}")
 			[ -f ${DF} ] || do-cmd curl -sL "${URL}" > ${DF}
 			F=$(cchf "printf ${DF}")
 		elif [ "${CMD:0:5}" == "#tar-" ]; then
@@ -109,6 +103,12 @@ cchf() {
 	fi
 
 	printf "${VF}"
+}
+
+urlDir() {
+	MD5=$(printf "${1}" | md5sum - | cut -d" " -f1)
+	SHORT=$(printf "${1}" | cch-fn)
+	echo ${MD5:0:8}.${SHORT}
 }
 
 do-cmd() {
