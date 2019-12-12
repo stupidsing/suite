@@ -7,10 +7,6 @@ mkdir -p ${CCACHE}/ ${DCACHE}/
 find ${CCACHE}/ -type f -mtime 28 -print0 | xargs -0 echo rm -f 1>&2
 find ${DCACHE}/ -maxdepth 1 -type f -mtime 360 -type d -print0 | xargs -0 echo rm -rf 1>&2
 
-cch-fn() {
-	tr /:@ _ | tr -dc '[\-.0-9A-Z_a-z]'
-}
-
 cchs() {
 	F=/dev/null
 	while [ "${1}" ]; do
@@ -120,4 +116,8 @@ do-cmd() {
 	echo "START ${CMD}" >&2
 	sh -c "${CMD}"
 	echo "END~${?} ${CMD}" >&2
+}
+
+cch-fn() {
+	tr /:@ _ | tr -dc '[\-.0-9A-Z_a-z]'
 }
