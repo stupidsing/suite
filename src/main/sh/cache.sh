@@ -44,7 +44,23 @@ cchs() {
 			URL=$(cat ${F})
 			DF=${DCACHE}/$(urlDir "${URL}")
 			if ! [ -d ${DF} ]; then
-				do-cmd "git clone --depth 1 ${URL} ${DF} --quiet"
+				do-cmd "git clone --depth 1 --single-branch ${URL} ${DF} --quiet"
+				touch ${DF}.pulltime
+			fi
+			D0=$(date +%s)
+			D1=$(stat -c %Y ${DF}.pulltime)
+			if (( 3600 < ${D0} - ${D1} )); then
+				do-cmd "cd ${DF}/ && git pull --quiet"
+				touch ${DF}.pulltime
+			fi
+			COMMIT=$(cd ${DF}/ && git rev-parse HEAD | cut -c1-8)
+			F=$(cchf "printf ${COMMIT}:${DF}")
+		elif [ "${CMD}" == "#git-clone-branch" ]; then
+			URL=$(cat ${F} | cut -d' ' -f1)
+			B=$(cat ${F} | cut -d' ' -f2)
+			DF=${DCACHE}/$(urlDir "${URL}_${B}")
+			if ! [ -d ${DF} ]; then
+				do-cmd "git clone --depth 1 -b ${B} --single-branch ${URL} ${DF} --quiet"
 				touch ${DF}.pulltime
 			fi
 			D0=$(date +%s)
