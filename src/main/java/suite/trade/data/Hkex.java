@@ -298,36 +298,6 @@ public class Hkex {
 				.uniqueResult());
 	}
 
-	public float queryPreviousClose(String symbol) {
-		var url = "https://www.hkex.com.hk/eng/csm/ws/Result.asmx/GetData" //
-				+ "?LangCode=en" //
-				+ "&StockCode=" + HkexUtil.toStockCode(symbol) //
-				+ "&mkt=hk" //
-				+ "&location=priceMoveSearch" //
-				+ "&ATypeSHEx=" //
-				+ "&AType=" //
-				+ "&PageNo=" //
-				+ "&SearchMethod=1" //
-				+ "&StockName=" //
-				+ "&StockType=" //
-				+ "&Ranking=" //
-				+ "&FDD=" //
-				+ "&FMM=" //
-				+ "&FYYYY=" //
-				+ "&TDD=" //
-				+ "&TMM=" //
-				+ "&TYYYY=";
-
-		return HttpClient.get(url).inputStream().doRead(is -> Read //
-				.each(om.readTree(is)) //
-				.flatMap(json_ -> json_.path("data")) //
-				.filter(json_ -> Equals.string(json_.path("title").textValue(), "Stock price HKD")) //
-				.flatMap(json_ -> json_.path("content")) //
-				.filter(json_ -> Equals.string(json_.path(0).textValue(), "Previous<br>day close")) //
-				.map(json_ -> Float.parseFloat(json_.path(1).textValue().split(" ")[0])) //
-				.uniqueResult());
-	}
-
 	// https://www.daytradetheworld.com/wiki/hkex/
 	public float getTickSize(float price) {
 		if (price <= .25f)

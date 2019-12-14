@@ -42,9 +42,4 @@ public class HkexTest {
 		assertTrue(20000f < hkex.queryHangSengIndex());
 	}
 
-	@Test
-	public void testQueryPreviousClose() {
-		assertTrue(60f < hkex.queryPreviousClose("0005.HK"));
-	}
-
 }
