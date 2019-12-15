@@ -40,27 +40,13 @@ cchs() {
 		elif [ "${CMD:0:7}" == "@git-cd" ]; then
 			D=$(cat ${F})
 			F=$(cchf "V=${D:0:8}; cd ${D:9}/; ${CMD:8}")
-		elif [ "${CMD}" == "@git-clone" ]; then
+		elif [ "${CMD:0:10}" == "@git-clone" ]; then
 			URL=$(cat ${F})
-			DF=${DCACHE}/$(url-dir "${URL}")
+			B=${CMD:11}
+			[ "${B}" ] && OPTS="-b ${B}"
+			DF=${DCACHE}/$(url-dir "${URL}@${B}")
 			if ! [ -d ${DF} ]; then
-				do-cmd "git clone --depth 1 --single-branch ${URL} ${DF} --quiet"
-				touch ${DF}.pulltime
-			fi
-			D0=$(date +%s)
-			D1=$(stat -c %Y ${DF}.pulltime)
-			if (( 3600 < ${D0} - ${D1} )); then
-				do-cmd "cd ${DF}/ && git pull --quiet"
-				touch ${DF}.pulltime
-			fi
-			COMMIT=$(cd ${DF}/ && git rev-parse HEAD | cut -c1-8)
-			F=$(cchf "printf ${COMMIT}:${DF}")
-		elif [ "${CMD}" == "@git-clone-branch" ]; then
-			URL=$(cat ${F} | cut -d' ' -f1)
-			B=$(cat ${F} | cut -d' ' -f2)
-			DF=${DCACHE}/$(url-dir "${URL}_${B}")
-			if ! [ -d ${DF} ]; then
-				do-cmd "git clone --depth 1 -b ${B} --single-branch ${URL} ${DF} --quiet"
+				do-cmd "git clone --depth 1 ${OPTS} --single-branch ${URL} ${DF} --quiet"
 				touch ${DF}.pulltime
 			fi
 			D0=$(date +%s)
