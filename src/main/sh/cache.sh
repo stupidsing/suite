@@ -18,10 +18,6 @@ cchs() {
 		elif [ "${CMD:0:3}" == "@cd" ]; then
 			D=$(cat ${F})
 			F=$(cchf "cd ${D}/; ${CMD:4}")
-		elif [ "${CMD:0:6}" == "@chmod" ]; then
-			FILE=$(cat ${F})
-			chmod ${CMD:6} ${FILE}
-			F=$(cchf "printf ${FILE}")
 		elif [ "${CMD}" == "@curl" ]; then
 			URL=$(cat ${F})
 			DF=${DCACHE}/$(url-dir "${URL}")
@@ -34,6 +30,10 @@ cchs() {
 		elif [ "${CMD:0:6}" == "@do-cd" ]; then
 			D=$(cat ${F})
 			F=$(cchf "cd ${D}/; ${CMD:7} 1>&2; echo ${D}")
+		elif [ "${CMD:0:6}" == "@do-chmod" ]; then
+			FILE=$(cat ${F})
+			chmod ${CMD:6} ${FILE}
+			F=$(cchf "printf ${FILE}")
 		elif [ "${CMD:0:10}" == "@do-git-cd" ]; then
 			D=$(cat ${F})
 			F=$(cchf "V=${D:0:8}; cd ${D:9}/; ${CMD:11} 1>&2; echo ${D}")
