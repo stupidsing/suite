@@ -13,7 +13,7 @@ PATH=${ECLIPSE_HOME}:${GIT_HD:9}/bin:${GOROOT}/bin:${GRADLE_HOME}/bin:${JAVA_HOM
 
 #GIT_PIECES=$(cchs "echo git@github.com:stupidsing/pieces.git" @git-clone "@git-cd pwd")
 #GIT_PRIMAL=$(cchs "echo git@github.com:stupidsing/primal.git" @git-clone "@do-git-cd ${M2_HOME}/bin/mvn install" "@git-cd pwd")
-#GIT_SUITE=$(cchs "echo git@github.com:stupidsing/suite.git" @git-clone"@do-git-cd ./build.sh" "@git-cd pwd")
+#GIT_SUITE=$(cchs "echo git@github.com:stupidsing/suite.git" @git-clone "@do-git-cd ./build.sh" "@git-cd pwd")
 #cchs "echo / dump yes \#" "@git-cd ./run.sh"
 #cchs "echo ${GOROOT}" "{}/bin/go help"
 #cchs "echo ${GRADLE_HOME}" "{}/bin/gradle --version"
