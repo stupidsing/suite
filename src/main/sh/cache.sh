@@ -28,8 +28,8 @@ cchs() {
 			[ -f ${DF} ] || do-cmd curl -sL "${URL}" > ${DF}
 			F=$(cchf "printf ${DF}")
 		elif [ "${CMD}" == "@dir" ]; then
-			DIR=$(cat ${F})
-			LINK=$(sh -c "readlink -f ${DIR}/*")
+			D=$(cat ${F})
+			LINK=$(sh -c "readlink -f ${D}/*")
 			F=$(cchf "printf ${LINK}")
 		elif [ "${CMD:0:6}" == "@do-cd" ]; then
 			D=$(cat ${F})
