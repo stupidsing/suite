@@ -22,15 +22,22 @@ public class TelegramBot {
 	private Path tokenPath;
 	private Predicate<String> verifyToken;
 	private Source<String> alert;
+	private FoldOp<Long, String> do_;
 
-	public TelegramBot(String botUsername, Path tokenPath, Predicate<String> verifyToken, Source<String> alert) {
+	public TelegramBot( //
+			String botUsername, //
+			Path tokenPath, //
+			Predicate<String> verifyToken, //
+			Source<String> alert, //
+			FoldOp<Long, String> do_) {
 		this.botUsername = botUsername;
 		this.tokenPath = tokenPath;
 		this.verifyToken = verifyToken;
 		this.alert = alert;
+		this.do_ = do_;
 	}
 
-	public void bot(FoldOp<Long, String> fun) {
+	public void bot() {
 		var loggedInChatIds = new HashSet<Long>();
 		var subscribedChatIds = new HashSet<Long>();
 
@@ -52,20 +59,19 @@ public class TelegramBot {
 						var messageTextLower = messageText.toLowerCase();
 
 						if (messageTextLower.startsWith("/"))
-							if (messageTextLower.startsWith("/login")) {
-								var token = messageText.substring(7);
-								if (verifyToken.test(token)) {
+							if (messageTextLower.startsWith("/login"))
+								if (verifyToken.test(messageText.substring(7))) {
 									loggedInChatIds.add(chatId);
 									send(chatId, "FINE");
 								} else
 									send(chatId, "FUCK OFF");
-							} else if (messageTextLower.startsWith("/logout")) {
+							else if (messageTextLower.startsWith("/logout")) {
 								subscribedChatIds.remove(chatId);
 								loggedInChatIds.remove(chatId);
 								send(chatId, "CHILL OUT");
 							} else if (loggedInChatIds.contains(chatId))
 								if (messageTextLower.startsWith("/do"))
-									send(chatId, fun.apply(chatId, messageText.substring(4)));
+									send(chatId, do_.apply(chatId, messageText.substring(4)));
 								else if (messageTextLower.startsWith("/status"))
 									sendYouAreSubscribed(chatId);
 								else if (messageTextLower.startsWith("/subscribe")) {
@@ -101,7 +107,7 @@ public class TelegramBot {
 				Sleep.quietly(10000l);
 
 				for (var chatId : subscribedChatIds)
-					bot.send(chatId, alert.g());
+					bot.send(chatId, "LATEST:\n" + alert.g());
 			}
 		});
 	}
