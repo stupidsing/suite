@@ -19,12 +19,14 @@ public class TelegramBotMain {
 	}
 
 	public TelegramBotMain(String botUsername, Path tokenPath) {
-		tb = new TelegramBot(botUsername, tokenPath);
+		tb = new TelegramBot(botUsername, tokenPath, //
+				token -> true, //
+				() -> "time is " + System.currentTimeMillis());
 	}
 
 	public boolean run() {
 		ApiContextInitializer.init();
-		tb.bot((userId, message) -> message);
+		tb.bot((chatId, message) -> message);
 		return true;
 	}
 
