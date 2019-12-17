@@ -35,7 +35,7 @@ class MarketData {
 				var limit = ds.ts.length;
 				var l = data.length++;
 
-				if (limit <= l) {
+				while (limit <= l) {
 					var expand = limit * 2;
 
 					ds = data.ds = DataSource.ofOhlcv( //
