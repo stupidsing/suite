@@ -21,14 +21,9 @@ public class LimitOrderBook<Id> {
 		public Id id;
 		public boolean isMarket;
 		public float price;
-		public int buySell; // signed quantity, negative for sell
-		public int xBuySell; // executed quantity, negative for sell
-		public Order prev, next;
-
-		public Order() {
-			prev = this;
-			next = this;
-		}
+		public int buySell; // total quantity, signed, negative for sell
+		public int xBuySell; // executed quantity, signed, negative for sell
+		public Order prev = this, next = this;
 
 		private boolean isEmpty() {
 			return prev == next;
