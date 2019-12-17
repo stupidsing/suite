@@ -3,26 +3,26 @@ package suite.exchange;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
-public class LimitOrderBook {
+public class LimitOrderBook<Id> {
 
 	private TreeMap<Float, Order> buyOrders = new TreeMap<>();
 	private TreeMap<Float, Order> sellOrders = new TreeMap<>();
-	private LobListener listener;
+	private LobListener<Id> listener;
 
-	public interface LobListener {
-		public void handleOrderFulfilled(Order order, float price, int quantity);
+	public interface LobListener<Id> {
+		public void handleOrderFulfilled(LimitOrderBook<Id>.Order order, float price, int quantity);
 
-		public void handleOrderDisposed(Order order);
+		public void handleOrderDisposed(LimitOrderBook<Id>.Order order);
 
-		public void handleQuoteChange(float bid, float ask);
+		public void handleQuoteChange(float bid, float ask, int volume);
 	}
 
 	public class Order {
-		public String id;
+		public Id id;
 		public boolean isMarket;
 		public float price;
 		public int buySell; // signed quantity, negative for sell
-		public int executedBuySell;
+		public int xBuySell; // executed quantity, negative for sell
 		public Order prev, next;
 
 		public Order() {
@@ -47,7 +47,7 @@ public class LimitOrderBook {
 		}
 	}
 
-	public LimitOrderBook(LobListener listener) {
+	public LimitOrderBook(LobListener<Id> listener) {
 		this.listener = listener;
 	}
 
@@ -77,6 +77,7 @@ public class LimitOrderBook {
 		Entry<Float, Order> be, se;
 		var bp = Float.NaN;
 		var sp = Float.NaN;
+		var total = 0;
 
 		while ((be = buyOrders.lastEntry()) != null && (se = sellOrders.firstEntry()) != null) {
 			bp = be.getKey();
@@ -87,23 +88,24 @@ public class LimitOrderBook {
 			if (!bq.isEmpty() && !sq.isEmpty() && sp <= bp) {
 				var bo = bq.prev;
 				var so = sq.prev;
-				var price = bo.isMarket ? so.price : so.isMarket ? bo.price : (bo.price + so.price) / 2f;
-				var quantity = Math.min(bo.buySell - bo.executedBuySell, so.executedBuySell - so.buySell);
+				var price = bo.isMarket ? so.price : so.isMarket ? bo.price : (bo.price + so.price) * .5f;
+				var quantity = Math.min(bo.buySell - bo.xBuySell, so.xBuySell - so.buySell);
 
-				bo.executedBuySell += quantity;
-				so.executedBuySell -= quantity;
+				bo.xBuySell += quantity;
+				so.xBuySell -= quantity;
 
 				listener.handleOrderFulfilled(bo, price, +quantity);
 				listener.handleOrderFulfilled(so, price, -quantity);
+				total += quantity;
 
-				if (bo.buySell == bo.executedBuySell) {
+				if (bo.buySell == bo.xBuySell) {
 					listener.handleOrderDisposed(bo);
 					bo.delete();
 					if (bq.isEmpty())
 						buyOrders.remove(bp);
 				}
 
-				if (so.buySell == so.executedBuySell) {
+				if (so.buySell == so.xBuySell) {
 					listener.handleOrderDisposed(so);
 					so.delete();
 					if (sq.isEmpty())
@@ -113,7 +115,7 @@ public class LimitOrderBook {
 				break;
 		}
 
-		listener.handleQuoteChange(bp, sp);
+		listener.handleQuoteChange(bp, sp, total);
 	}
 
 }
