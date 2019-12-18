@@ -76,6 +76,10 @@ public class LimitOrderBook<Id> {
 		match();
 	}
 
+	public float getLastPrice() {
+		return lastPrice;
+	}
+
 	private void match() {
 		Entry<Float, Order> be, se;
 		var bp = Float.NaN;

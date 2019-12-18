@@ -11,6 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import primal.MoreVerbs.Read;
 import primal.Verbs.Get;
 import primal.adt.FixieArray;
+import primal.primitive.FltPrim.Obj_Flt;
 import primal.primitive.fp.AsDbl;
 import suite.exchange.LimitOrderBook.LobListener;
 import suite.trade.Trade;
@@ -65,23 +66,18 @@ public class Exchange {
 			return positionByPositionId.get(symbolPositionId);
 		}
 
-		private synchronized Summary summary(Map<String, Float> currentPriceBySymbol, double invLeverage) {
+		private synchronized Summary summary(Obj_Flt<String> getCurrentPrice, double invLeverage) {
 			var summaries = Read //
 					.from2(positionByPositionId) //
 					.map((symbolPositionId, position) -> sp(symbolPositionId).map((symbol, positionId) -> position //
-							.summary(currentPriceBySymbol.get(symbol), invLeverage)));
+							.summary(getCurrentPrice.apply(symbol), invLeverage)));
 
 			var summary = new Summary();
+			summary.vwapEntryPrice = Double.NaN;
 			summary.unrealizedPnl = Read.from(summaries).toDouble(AsDbl.sum(s -> s.unrealizedPnl));
 			summary.investedAmount = Read.from(summaries).toDouble(AsDbl.sum(s -> s.investedAmount));
 			summary.marginUsed = Read.from(summaries).toDouble(AsDbl.sum(s -> s.marginUsed));
 			return summary;
-		}
-
-		private class Summary {
-			private double unrealizedPnl;
-			private double investedAmount;
-			private double marginUsed;
 		}
 	}
 
@@ -139,13 +135,24 @@ public class Exchange {
 			summary.marginUsed = summary.investedAmount * invLeverage;
 			return summary;
 		}
+	}
 
-		private class Summary {
-			private double vwapEntryPrice;
-			private double unrealizedPnl;
-			private double investedAmount;
-			private double marginUsed;
+	public class Summary {
+		public double vwapEntryPrice;
+		public double unrealizedPnl;
+		public double investedAmount;
+		public double marginUsed;
+
+		public String toString() {
+			return "VWAP entry price = " + vwapEntryPrice //
+					+ ", unrealized PNL = " + unrealizedPnl //
+					+ ", invested amount = " + investedAmount //
+					+ ", margin used = " + marginUsed;
 		}
+	}
+
+	public Summary getParticipantSummary(String participantId) {
+		return participantById.get(participantId).summary(symbol -> lob(symbol).getLastPrice(), invLeverage);
 	}
 
 	public String orderNew(String participantId, int buySell, String symbol, float price) {
@@ -159,9 +166,8 @@ public class Exchange {
 	}
 
 	public String positionClosePartially(String participantId, String symbolPositionId, int buySell, float price) {
-		return sp(symbolPositionId).map((symbol, positionId) -> {
-			return submitOrder(participantId, positionId, buySell, symbol, price);
-		});
+		return sp(symbolPositionId)
+				.map((symbol, positionId) -> submitOrder(participantId, positionId, buySell, symbol, price));
 	}
 
 	private String submitOrder(String participantId, String positionId, int buySell, String symbol, float price) {
