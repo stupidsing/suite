@@ -18,7 +18,7 @@ import suite.trade.Trade;
 public class Exchange {
 
 	private boolean isLeveraged = true;
-	private int leverage = 100;
+	private int leverage = !isLeveraged ? 1 : 100;
 	private double invLeverage = 1d / leverage;
 
 	private Map<String, ExParticipant> participantById = new ConcurrentHashMap<>();
@@ -95,7 +95,7 @@ public class Exchange {
 		}
 
 		private synchronized double enqueueFifo(Trade trade) {
-			Fifo last = new Fifo(); // outstanding
+			var last = new Fifo(); // outstanding
 			last.buySell = trade.buySell;
 			last.entryPrice = trade.price;
 

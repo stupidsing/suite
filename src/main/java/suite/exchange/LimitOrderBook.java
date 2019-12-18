@@ -10,7 +10,7 @@ public class LimitOrderBook<Id> {
 	private LobListener<Id> listener;
 
 	public interface LobListener<Id> {
-		public void handleOrderFulfilled(LimitOrderBook<Id>.Order order, float price, int quantity);
+		public void handleOrderFulfilled(LimitOrderBook<Id>.Order order, float price, int buySell);
 
 		public void handleOrderDisposed(LimitOrderBook<Id>.Order order);
 
@@ -26,7 +26,7 @@ public class LimitOrderBook<Id> {
 		public Order prev = this, next = this;
 
 		private boolean isEmpty() {
-			return prev == next;
+			return prev == this;
 		}
 
 		private void insertNext(Order order) {
@@ -37,8 +37,8 @@ public class LimitOrderBook<Id> {
 		}
 
 		private void delete() {
-			prev.next = next.prev;
-			next.prev = prev.next;
+			prev.next = next;
+			next.prev = prev;
 		}
 	}
 
@@ -95,13 +95,6 @@ public class LimitOrderBook<Id> {
 
 				disposeIfCompleted(buyOrders, be, bo);
 				disposeIfCompleted(sellOrders, se, so);
-
-				if (so.buySell == so.xBuySell) {
-					listener.handleOrderDisposed(so);
-					so.delete();
-					if (sq.isEmpty())
-						sellOrders.remove(sp);
-				}
 			} else
 				break;
 		}
