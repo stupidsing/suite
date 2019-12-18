@@ -151,6 +151,10 @@ public class Exchange {
 		}
 	}
 
+	public void participantDeposit(String participantId, float amount) {
+		participantById.computeIfAbsent(participantId, p -> new ExParticipant()).balance += amount;
+	}
+
 	public Summary getParticipantSummary(String participantId) {
 		return participantById.get(participantId).summary(symbol -> lob(symbol).getLastPrice(), invLeverage);
 	}
