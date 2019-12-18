@@ -2,6 +2,8 @@ package suite.exchange;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.List;
+
 import org.junit.Test;
 
 import primal.Verbs.Get;
@@ -28,26 +30,36 @@ public class LimitOrderBookTest {
 		var lob = new LimitOrderBook<String>(listener);
 
 		var o = new Object() {
-			private LimitOrderBook<String>.Order newOrder(float price, int buySell) {
+			private LimitOrderBook<String>.Order newOrder(int buySell) {
 				var order = lob.new Order();
 				order.id = "O" + Get.temp();
 				order.isMarket = true;
+				order.price = 0 < buySell ? Float.MAX_VALUE : Float.MIN_VALUE;
+				order.buySell = buySell;
+				return order;
+			}
+
+			private LimitOrderBook<String>.Order newOrder(float price, int buySell) {
+				var order = lob.new Order();
+				order.id = "O" + Get.temp();
+				order.isMarket = false;
 				order.price = price;
 				order.buySell = buySell;
 				return order;
 			}
 		};
 
-		var o0 = o.newOrder(1f, +100);
+		var o0 = o.newOrder(1.01f, +100);
 		var o1 = o.newOrder(1f, +100);
-		var o2 = o.newOrder(1f, -200);
-		lob.update(null, o0);
-		lob.update(null, o1);
-		lob.update(null, o2);
+		var o2 = o.newOrder(-50);
+		var o3 = o.newOrder(1f, -150);
+		var orders = List.of(o0, o1, o2, o3);
 
-		assertEquals(o0.buySell, o0.xBuySell);
-		assertEquals(o1.buySell, o1.xBuySell);
-		assertEquals(o2.buySell, o2.xBuySell);
+		for (var order : orders)
+			lob.update(null, order);
+
+		for (var order : orders)
+			assertEquals(order.buySell, order.xBuySell);
 	}
 
 }
