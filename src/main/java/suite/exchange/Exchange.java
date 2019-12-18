@@ -65,22 +65,23 @@ public class Exchange {
 			return positionByPositionId.get(symbolPositionId);
 		}
 
+		private synchronized Summary summary(Map<String, Float> currentPriceBySymbol, double invLeverage) {
+			var summaries = Read //
+					.from2(positionByPositionId) //
+					.map((symbolPositionId, position) -> sp(symbolPositionId).map((symbol, positionId) -> position //
+							.summary(currentPriceBySymbol.get(symbol), invLeverage)));
+
+			var summary = new Summary();
+			summary.unrealizedPnl = Read.from(summaries).toDouble(AsDbl.sum(s -> s.unrealizedPnl));
+			summary.investedAmount = Read.from(summaries).toDouble(AsDbl.sum(s -> s.investedAmount));
+			summary.marginUsed = Read.from(summaries).toDouble(AsDbl.sum(s -> s.marginUsed));
+			return summary;
+		}
+
 		private class Summary {
 			private double unrealizedPnl;
 			private double investedAmount;
 			private double marginUsed;
-
-			private Summary(Map<String, Float> currentPriceBySymbol, double invLeverage) {
-				var summaries = Read //
-						.from2(positionByPositionId) //
-						.map((symbolPositionId, position) -> sp(symbolPositionId) //
-								.map((symbol, positionId) -> position.new Summary(currentPriceBySymbol.get(symbol),
-										invLeverage)));
-
-				unrealizedPnl = Read.from(summaries).toDouble(AsDbl.sum(s -> s.unrealizedPnl));
-				investedAmount = Read.from(summaries).toDouble(AsDbl.sum(s -> s.investedAmount));
-				marginUsed = Read.from(summaries).toDouble(AsDbl.sum(s -> s.marginUsed));
-			}
 		}
 	}
 
@@ -122,8 +123,21 @@ public class Exchange {
 			return realizedPnl;
 		}
 
-		public int getBuySell() {
+		private int getBuySell() {
 			return buySell;
+		}
+
+		private synchronized Summary summary(float currentPrice, double invLeverage) {
+			var n = Read.from(fifos).toDouble(AsDbl.sum(fifo -> fifo.buySell * fifo.entryPrice));
+			var d = Read.from(fifos).toDouble(AsDbl.sum(fifo -> fifo.buySell));
+
+			var summary = new Summary();
+			summary.vwapEntryPrice = n / d;
+			summary.unrealizedPnl = Read.from(fifos)
+					.toDouble(AsDbl.sum(fifo -> fifo.buySell * (currentPrice - fifo.entryPrice)));
+			summary.investedAmount = Read.from(fifos).toDouble(AsDbl.sum(fifo -> fifo.buySell * currentPrice));
+			summary.marginUsed = summary.investedAmount * invLeverage;
+			return summary;
 		}
 
 		private class Summary {
@@ -131,17 +145,6 @@ public class Exchange {
 			private double unrealizedPnl;
 			private double investedAmount;
 			private double marginUsed;
-
-			private Summary(float currentPrice, double invLeverage) {
-				var n = Read.from(fifos).toDouble(AsDbl.sum(fifo -> fifo.buySell * fifo.entryPrice));
-				var d = Read.from(fifos).toDouble(AsDbl.sum(fifo -> fifo.buySell));
-
-				vwapEntryPrice = n / d;
-				unrealizedPnl = Read.from(fifos)
-						.toDouble(AsDbl.sum(fifo -> fifo.buySell * (currentPrice - fifo.entryPrice)));
-				investedAmount = Read.from(fifos).toDouble(AsDbl.sum(fifo -> fifo.buySell * currentPrice));
-				marginUsed = investedAmount * invLeverage;
-			}
 		}
 	}
 
