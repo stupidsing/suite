@@ -91,24 +91,23 @@ public class LimitOrderBook<Id> {
 			if (!bq.isEmpty() && !sq.isEmpty() && sp <= bp) {
 				var bo = bq.prev;
 				var so = sq.prev;
-				float price;
 
 				if (bo.isMarket() && so.isMarket())
-					price = lastPrice;
+					; // follows previous price
 				else if (bo.isMarket())
-					price = sp;
+					lastPrice = sp;
 				else if (so.isMarket())
-					price = bp;
+					lastPrice = bp;
 				else
-					price = (bp + sp) * .5f;
+					lastPrice = (bp + sp) * .5f;
 
 				var quantity = Math.min(bo.buySell - bo.xBuySell, so.xBuySell - so.buySell);
 
 				bo.xBuySell += quantity;
 				so.xBuySell -= quantity;
 
-				listener.handleOrderFulfilled(bo, price, +quantity);
-				listener.handleOrderFulfilled(so, price, -quantity);
+				listener.handleOrderFulfilled(bo, lastPrice, +quantity);
+				listener.handleOrderFulfilled(so, lastPrice, -quantity);
 				total += quantity;
 
 				disposeIfCompleted(buyOrders, be, bo);
