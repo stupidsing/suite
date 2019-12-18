@@ -93,12 +93,8 @@ public class LimitOrderBook<Id> {
 				listener.handleOrderFulfilled(so, price, -quantity);
 				total += quantity;
 
-				if (bo.buySell == bo.xBuySell) {
-					listener.handleOrderDisposed(bo);
-					bo.delete();
-					if (bq.isEmpty())
-						buyOrders.remove(bp);
-				}
+				disposeIfCompleted(buyOrders, be, bo);
+				disposeIfCompleted(sellOrders, se, so);
 
 				if (so.buySell == so.xBuySell) {
 					listener.handleOrderDisposed(so);
@@ -111,6 +107,15 @@ public class LimitOrderBook<Id> {
 		}
 
 		listener.handleQuoteChanged(bp, sp, total);
+	}
+
+	private void disposeIfCompleted(TreeMap<Float, Order> orders, Entry<Float, Order> entry, Order order) {
+		if (order.buySell == order.xBuySell) {
+			listener.handleOrderDisposed(order);
+			order.delete();
+			if (entry.getValue().isEmpty())
+				orders.remove(entry.getKey());
+		}
 	}
 
 }

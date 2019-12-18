@@ -1,13 +1,17 @@
 package suite.exchange;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import primal.MoreVerbs.Read;
 import primal.Verbs.Get;
 import primal.adt.FixieArray;
+import primal.primitive.fp.AsDbl;
 import suite.exchange.LimitOrderBook.LobListener;
 import suite.trade.Trade;
 
@@ -17,49 +21,128 @@ public class Exchange {
 	private int leverage = 100;
 	private double invLeverage = 1d / leverage;
 
-	private Map<String, Participant> participantById = new ConcurrentHashMap<>();
+	private Map<String, ExParticipant> participantById = new ConcurrentHashMap<>();
 	private Map<String, LimitOrderBook<String>> lobBySymbol = new ConcurrentHashMap<>();
 	private Map<String, MarketData> marketDataBySymbol = new ConcurrentHashMap<>();
 
-	private class Participant {
+	private class ExParticipant {
 		private Map<String, LimitOrderBook<String>.Order> orderByOrderId = new HashMap<>();
-		private Map<String, Position> positionByPositionId = new HashMap<>();
+		private Map<String, ExPosition> positionByPositionId = new HashMap<>();
 		private List<Trade> trades = new ArrayList<>();
 		private float balance;
-		private float marginUsed;
 
 		private synchronized boolean record(int buySell, String symbolPositionId, float price) {
 			return sp(symbolPositionId).map((symbol, positionId) -> {
-				var position = positionByPositionId.get(positionId);
+				var trade = Trade.of(buySell, symbol, price);
+
+				var position = positionByPositionId.computeIfAbsent(symbolPositionId, p -> new ExPosition());
+				var buySell0 = position.buySell;
+				var buySell1 = buySell0 + buySell;
+
+				position.buySell = buySell1;
 
 				if (!isLeveraged)
 					balance -= buySell * price;
 				else
-					marginUsed += Math.abs(buySell) * price * invLeverage;
-
-				position.buySell += buySell;
+					balance += position.enqueueFifo(trade);
 
 				if (position.buySell == 0)
 					positionByPositionId.remove(symbolPositionId);
 
-				return trades.add(Trade.of(buySell, symbol, price));
+				return trades.add(trade);
 			});
 		}
 
-		private synchronized void put( //
-				String orderId, LimitOrderBook<String>.Order order, //
-				String positionId, Position position) {
+		private synchronized void putOrder(String orderId, LimitOrderBook<String>.Order order) {
 			orderByOrderId.put(orderId, order);
-			positionByPositionId.put(positionId, position);
 		}
 
-		private synchronized LimitOrderBook<String>.Order remove(String orderId) {
+		private synchronized LimitOrderBook<String>.Order removeOrder(String orderId) {
 			return orderByOrderId.remove(orderId);
+		}
+
+		private synchronized ExPosition getPosition(String symbolPositionId) {
+			return positionByPositionId.get(symbolPositionId);
+		}
+
+		private class Summary {
+			private double unrealizedPnl;
+			private double investedAmount;
+			private double marginUsed;
+
+			private Summary(Map<String, Float> currentPriceBySymbol, double invLeverage) {
+				var summaries = Read //
+						.from2(positionByPositionId) //
+						.map((symbolPositionId, position) -> sp(symbolPositionId) //
+								.map((symbol, positionId) -> position.new Summary(currentPriceBySymbol.get(symbol),
+										invLeverage)));
+
+				unrealizedPnl = Read.from(summaries).toDouble(AsDbl.sum(s -> s.unrealizedPnl));
+				investedAmount = Read.from(summaries).toDouble(AsDbl.sum(s -> s.investedAmount));
+				marginUsed = Read.from(summaries).toDouble(AsDbl.sum(s -> s.marginUsed));
+			}
 		}
 	}
 
-	private class Position {
+	private class ExPosition {
 		private int buySell;
+		private Deque<Fifo> fifos = new ArrayDeque<>();
+
+		private class Fifo {
+			private int buySell;
+			private float entryPrice;
+		}
+
+		private synchronized double enqueueFifo(Trade trade) {
+			Fifo last = new Fifo(); // outstanding
+			last.buySell = trade.buySell;
+			last.entryPrice = trade.price;
+
+			var realizedPnl = 0f;
+			Fifo first;
+
+			while ((first = fifos.peekFirst()) != null && Math.signum(last.buySell) != Math.signum(first.buySell)) {
+				int bsd;
+				if (last.buySell < 0)
+					bsd = Math.min(-last.buySell, first.buySell);
+				else
+					bsd = Math.max(-last.buySell, first.buySell);
+
+				last.buySell += bsd;
+				first.buySell -= bsd;
+				realizedPnl += bsd * (last.entryPrice - first.entryPrice);
+
+				if (first.buySell == 0)
+					fifos.removeFirst();
+			}
+
+			if (last.buySell != 0)
+				fifos.addLast(last);
+
+			return realizedPnl;
+		}
+
+		public int getBuySell() {
+			return buySell;
+		}
+
+		private class Summary {
+			private double vwapEntryPrice;
+			private double unrealizedPnl;
+			private double investedAmount;
+			private double marginUsed;
+
+			private Summary(float currentPrice, double invLeverage) {
+				var n = Read.from(fifos).toDouble(AsDbl.sum(fifo -> fifo.buySell * fifo.entryPrice));
+				var d = Read.from(fifos).toDouble(AsDbl.sum(fifo -> fifo.buySell));
+
+				vwapEntryPrice = n / d;
+				unrealizedPnl = Read.from(fifos)
+						.toDouble(AsDbl.sum(fifo -> fifo.buySell * (currentPrice - fifo.entryPrice)));
+				investedAmount = Read.from(fifos).toDouble(AsDbl.sum(fifo -> fifo.buySell * currentPrice));
+				marginUsed = investedAmount * invLeverage;
+			}
+		}
 	}
 
 	public String orderNew(String participantId, int buySell, String symbol, float price) {
@@ -68,9 +151,7 @@ public class Exchange {
 	}
 
 	public String positionClose(String participantId, String symbolPositionId, float price) {
-		var buySell = sp(symbolPositionId).map((symbol, positionId) -> {
-			return participantById.get(participantId).positionByPositionId.get(positionId).buySell;
-		});
+		var buySell = participantById.get(participantId).getPosition(symbolPositionId).getBuySell();
 		return positionClosePartially(participantId, symbolPositionId, -buySell, price);
 	}
 
@@ -92,7 +173,7 @@ public class Exchange {
 		order.buySell = buySell;
 
 		lob.update(null, order);
-		participantById.get(participantId).put(orderId, order, positionId, new Position());
+		participantById.get(participantId).putOrder(orderId, order);
 		return symbolPositionId;
 	}
 
@@ -109,7 +190,7 @@ public class Exchange {
 			public void handleOrderDisposed(LimitOrderBook<String>.Order order) {
 				ppo(order).map((participantId, symbolPositionId, orderId) -> participantById //
 						.get(participantId) //
-						.remove(orderId));
+						.removeOrder(orderId));
 			}
 
 			public void handleQuoteChanged(float bid, float ask, int volume) {
