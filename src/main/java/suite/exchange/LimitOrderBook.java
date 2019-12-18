@@ -14,7 +14,7 @@ public class LimitOrderBook<Id> {
 
 		public void handleOrderDisposed(LimitOrderBook<Id>.Order order);
 
-		public void handleQuoteChange(float bid, float ask, int volume);
+		public void handleQuoteChanged(float bid, float ask, int volume);
 	}
 
 	public class Order {
@@ -110,7 +110,7 @@ public class LimitOrderBook<Id> {
 				break;
 		}
 
-		listener.handleQuoteChange(bp, sp, total);
+		listener.handleQuoteChanged(bp, sp, total);
 	}
 
 }

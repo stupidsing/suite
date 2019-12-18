@@ -112,7 +112,7 @@ public class Exchange {
 						.remove(orderId));
 			}
 
-			public void handleQuoteChange(float bid, float ask, int volume) {
+			public void handleQuoteChanged(float bid, float ask, int volume) {
 				marketData.update(System.currentTimeMillis(), (bid + ask) * .5f, volume);
 			}
 		}));
