@@ -7,6 +7,7 @@ public class LimitOrderBook<Id> {
 
 	private TreeMap<Float, Order> buyOrders = new TreeMap<>();
 	private TreeMap<Float, Order> sellOrders = new TreeMap<>();
+	private float lastPrice = Float.NaN;
 	private LobListener<Id> listener;
 
 	public interface LobListener<Id> {
@@ -19,14 +20,21 @@ public class LimitOrderBook<Id> {
 
 	public class Order {
 		public Id id;
-		public boolean isMarket;
-		public float price;
+		public float price; // NaN for market order
 		public int buySell; // total quantity, signed, negative for sell
 		public int xBuySell; // executed quantity, signed, negative for sell
 		public Order prev = this, next = this;
 
 		private boolean isEmpty() {
 			return prev == this;
+		}
+
+		private boolean isMarket() {
+			return Float.isNaN(price);
+		}
+
+		private float price() {
+			return !isMarket() ? price : 0 < buySell ? Float.MAX_VALUE : Float.MIN_VALUE;
 		}
 
 		private void insertNext(Order order) {
@@ -49,8 +57,8 @@ public class LimitOrderBook<Id> {
 	public synchronized void update(Order order0, Order orderx) {
 		var qm0 = order0 != null ? (0 < order0.buySell ? buyOrders : sellOrders) : null;
 		var qmx = orderx != null ? (0 < orderx.buySell ? buyOrders : sellOrders) : null;
-		var q0 = qm0 != null ? qm0.computeIfAbsent(order0.price, p -> new Order()) : null;
-		var qx = qmx != null ? qmx.computeIfAbsent(orderx.price, p -> new Order()) : null;
+		var q0 = qm0 != null ? qm0.computeIfAbsent(order0.price(), p -> new Order()) : null;
+		var qx = qmx != null ? qmx.computeIfAbsent(orderx.price(), p -> new Order()) : null;
 
 		if (q0 == qx) {
 			orderx.price = order0.price;
@@ -83,7 +91,17 @@ public class LimitOrderBook<Id> {
 			if (!bq.isEmpty() && !sq.isEmpty() && sp <= bp) {
 				var bo = bq.prev;
 				var so = sq.prev;
-				var price = bo.isMarket ? so.price : so.isMarket ? bo.price : (bo.price + so.price) * .5f;
+				float price;
+
+				if (bo.isMarket() && so.isMarket())
+					price = lastPrice;
+				else if (bo.isMarket())
+					price = sp;
+				else if (so.isMarket())
+					price = bp;
+				else
+					price = (bp + sp) * .5f;
+
 				var quantity = Math.min(bo.buySell - bo.xBuySell, so.xBuySell - so.buySell);
 
 				bo.xBuySell += quantity;

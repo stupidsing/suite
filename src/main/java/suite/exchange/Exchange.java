@@ -171,8 +171,7 @@ public class Exchange {
 
 		var order = lob.new Order();
 		order.id = participantId + ":" + symbolPositionId + ":" + orderId;
-		order.isMarket = Float.isNaN(price);
-		order.price = !order.isMarket ? price : 0 < buySell ? Float.MAX_VALUE : Float.MIN_VALUE;
+		order.price = price;
 		order.buySell = buySell;
 
 		lob.update(null, order);
