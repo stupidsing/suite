@@ -49,11 +49,25 @@ public class ExParticipant {
 		return orderByOrderId.remove(orderId);
 	}
 
+	public synchronized LimitOrderBook<String>.Order getOrder(String orderId) {
+		return orderByOrderId.get(orderId);
+	}
+
 	public synchronized ExPosition getPosition(String symbolPositionId) {
 		return positionByPositionId.get(symbolPositionId);
 	}
 
+	public synchronized double margin(Obj_Flt<String> getCurrentPrice, double invLeverage) {
+		var summary = summary_(getCurrentPrice, invLeverage);
+		var nav = balance + summary.unrealizedPnl;
+		return summary.marginUsed / nav;
+	}
+
 	public synchronized ExSummary summary(Obj_Flt<String> getCurrentPrice, double invLeverage) {
+		return summary_(getCurrentPrice, invLeverage);
+	}
+
+	private ExSummary summary_(Obj_Flt<String> getCurrentPrice, double invLeverage) {
 		var summaries = Read //
 				.from2(positionByPositionId) //
 				.map((symbolPositionId, position) -> Exchange.sp(symbolPositionId).map((symbol, positionId) -> position //

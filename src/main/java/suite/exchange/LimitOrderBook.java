@@ -25,6 +25,15 @@ public class LimitOrderBook<Key> {
 		public int xBuySell; // executed quantity, signed, negative for sell
 		public Order prev = this, next = this;
 
+		public Order() {
+		}
+
+		public Order(Key key, float price, int buySell) {
+			this.key = key;
+			this.price = price;
+			this.buySell = buySell;
+		}
+
 		private boolean isEmpty() {
 			return prev == this;
 		}

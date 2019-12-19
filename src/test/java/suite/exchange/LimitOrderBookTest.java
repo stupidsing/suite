@@ -31,11 +31,7 @@ public class LimitOrderBookTest {
 
 		var o = new Object() {
 			private LimitOrderBook<String>.Order newOrder(float price, int buySell) {
-				var order = lob.new Order();
-				order.key = "O" + Get.temp();
-				order.price = price;
-				order.buySell = buySell;
-				return order;
+				return lob.new Order("O" + Get.temp(), price, buySell);
 			}
 		};
 
