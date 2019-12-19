@@ -10,10 +10,10 @@ public class LimitOrderBook<Key> {
 	private float lastPrice = Float.NaN;
 	private LobListener<Key> listener;
 
-	public interface LobListener<Id> {
-		public void handleOrderFulfilled(LimitOrderBook<Id>.Order order, float price, int buySell);
+	public interface LobListener<Key> {
+		public void handleOrderFulfilled(LimitOrderBook<Key>.Order order, float price, int buySell);
 
-		public void handleOrderDisposed(LimitOrderBook<Id>.Order order);
+		public void handleOrderDisposed(LimitOrderBook<Key>.Order order);
 
 		public void handleQuoteChanged(float bid, float ask, int volume);
 	}
