@@ -4,6 +4,7 @@ import java.nio.file.Path;
 
 import org.telegram.telegrambots.ApiContextInitializer;
 
+import suite.os.Execute;
 import suite.telegram.TelegramBot;
 import suite.util.RunUtil;
 
@@ -22,7 +23,7 @@ public class TelegramBotMain {
 		tb = new TelegramBot(botUsername, tokenPath, //
 				token -> true, //
 				() -> "time is " + System.currentTimeMillis(), //
-				(chatId, message) -> message);
+				(chatId, do_) -> Execute.shell(System.getenv("DO_" + do_.toUpperCase())));
 	}
 
 	public boolean run() {
