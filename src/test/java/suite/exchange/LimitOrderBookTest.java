@@ -16,11 +16,11 @@ public class LimitOrderBookTest {
 	public void test() {
 		var listener = new LobListener<String>() {
 			public void handleOrderFulfilled(LimitOrderBook<String>.Order order, float price, int buySell) {
-				Log_.info("ORDER " + order.id + " P " + price + " Q " + buySell);
+				Log_.info("ORDER " + order.key + " P " + price + " Q " + buySell);
 			}
 
 			public void handleOrderDisposed(LimitOrderBook<String>.Order order) {
-				Log_.info("ORDER " + order.id + " ENDED");
+				Log_.info("ORDER " + order.key + " ENDED");
 			}
 
 			public void handleQuoteChanged(float bid, float ask, int volume) {
@@ -32,18 +32,18 @@ public class LimitOrderBookTest {
 		var o = new Object() {
 			private LimitOrderBook<String>.Order newOrder(float price, int buySell) {
 				var order = lob.new Order();
-				order.id = "O" + Get.temp();
+				order.key = "O" + Get.temp();
 				order.price = price;
 				order.buySell = buySell;
 				return order;
 			}
 		};
 
-		var o0 = o.newOrder(1.01f, +100);
-		var o1 = o.newOrder(1f, +100);
-		var o2 = o.newOrder(Float.NaN, -50);
-		var o3 = o.newOrder(1f, -150);
-		var orders = List.of(o0, o1, o2, o3);
+		var orders = List.of( //
+				o.newOrder(1.01f, +100), //
+				o.newOrder(1f, +100), //
+				o.newOrder(Float.NaN, -50), //
+				o.newOrder(1f, -150));
 
 		for (var order : orders)
 			lob.update(null, order);

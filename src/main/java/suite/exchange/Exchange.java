@@ -37,17 +37,15 @@ public class Exchange {
 				var trade = Trade.of(buySell, symbol, price);
 
 				var position = positionByPositionId.computeIfAbsent(symbolPositionId, p -> new ExPosition());
-				var buySell0 = position.buySell;
-				var buySell1 = buySell0 + buySell;
 
-				position.buySell = buySell1;
+				position.adjust(buySell);
 
 				if (!isLeveraged)
 					balance -= buySell * price;
 				else
 					balance += position.enqueueFifo(trade);
 
-				if (position.buySell == 0)
+				if (position.getBuySell() == 0)
 					positionByPositionId.remove(symbolPositionId);
 
 				return trades.add(trade);
@@ -66,13 +64,13 @@ public class Exchange {
 			return positionByPositionId.get(symbolPositionId);
 		}
 
-		private synchronized Summary summary(Obj_Flt<String> getCurrentPrice, double invLeverage) {
+		private synchronized ExSummary summary(Obj_Flt<String> getCurrentPrice, double invLeverage) {
 			var summaries = Read //
 					.from2(positionByPositionId) //
 					.map((symbolPositionId, position) -> sp(symbolPositionId).map((symbol, positionId) -> position //
 							.summary(getCurrentPrice.apply(symbol), invLeverage)));
 
-			var summary = new Summary();
+			var summary = new ExSummary();
 			summary.vwapEntryPrice = Double.NaN;
 			summary.unrealizedPnl = Read.from(summaries).toDouble(AsDbl.sum(s -> s.unrealizedPnl));
 			summary.investedAmount = Read.from(summaries).toDouble(AsDbl.sum(s -> s.investedAmount));
@@ -119,15 +117,19 @@ public class Exchange {
 			return realizedPnl;
 		}
 
+		private void adjust(int bsd) {
+			buySell += bsd;
+		}
+
 		private int getBuySell() {
 			return buySell;
 		}
 
-		private synchronized Summary summary(float currentPrice, double invLeverage) {
+		private synchronized ExSummary summary(float currentPrice, double invLeverage) {
 			var n = Read.from(fifos).toDouble(AsDbl.sum(fifo -> fifo.buySell * fifo.entryPrice));
 			var d = Read.from(fifos).toDouble(AsDbl.sum(fifo -> fifo.buySell));
 
-			var summary = new Summary();
+			var summary = new ExSummary();
 			summary.vwapEntryPrice = n / d;
 			summary.unrealizedPnl = Read.from(fifos)
 					.toDouble(AsDbl.sum(fifo -> fifo.buySell * (currentPrice - fifo.entryPrice)));
@@ -137,25 +139,11 @@ public class Exchange {
 		}
 	}
 
-	public class Summary {
-		public double vwapEntryPrice;
-		public double unrealizedPnl;
-		public double investedAmount;
-		public double marginUsed;
-
-		public String toString() {
-			return "VWAP entry price = " + vwapEntryPrice //
-					+ ", unrealized PNL = " + unrealizedPnl //
-					+ ", invested amount = " + investedAmount //
-					+ ", margin used = " + marginUsed;
-		}
-	}
-
 	public void participantDeposit(String participantId, float amount) {
 		participantById.computeIfAbsent(participantId, p -> new ExParticipant()).balance += amount;
 	}
 
-	public Summary getParticipantSummary(String participantId) {
+	public ExSummary getParticipantSummary(String participantId) {
 		return participantById.get(participantId).summary(symbol -> lob(symbol).getLastPrice(), invLeverage);
 	}
 
@@ -180,7 +168,7 @@ public class Exchange {
 		var lob = lob(symbol);
 
 		var order = lob.new Order();
-		order.id = participantId + ":" + symbolPositionId + ":" + orderId;
+		order.key = participantId + ":" + symbolPositionId + ":" + orderId;
 		order.price = price;
 		order.buySell = buySell;
 
@@ -212,7 +200,7 @@ public class Exchange {
 	}
 
 	private FixieArray<String> ppo(LimitOrderBook<String>.Order order) {
-		return FixieArray.of(order.id.split(":"));
+		return FixieArray.of(order.key.split(":"));
 	}
 
 	private FixieArray<String> sp(String symbolPositionId) {

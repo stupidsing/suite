@@ -3,12 +3,12 @@ package suite.exchange;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
-public class LimitOrderBook<Id> {
+public class LimitOrderBook<Key> {
 
 	private TreeMap<Float, Order> buyOrders = new TreeMap<>();
 	private TreeMap<Float, Order> sellOrders = new TreeMap<>();
 	private float lastPrice = Float.NaN;
-	private LobListener<Id> listener;
+	private LobListener<Key> listener;
 
 	public interface LobListener<Id> {
 		public void handleOrderFulfilled(LimitOrderBook<Id>.Order order, float price, int buySell);
@@ -19,7 +19,7 @@ public class LimitOrderBook<Id> {
 	}
 
 	public class Order {
-		public Id id;
+		public Key key;
 		public float price; // NaN for market order
 		public int buySell; // total quantity, signed, negative for sell
 		public int xBuySell; // executed quantity, signed, negative for sell
@@ -50,7 +50,7 @@ public class LimitOrderBook<Id> {
 		}
 	}
 
-	public LimitOrderBook(LobListener<Id> listener) {
+	public LimitOrderBook(LobListener<Key> listener) {
 		this.listener = listener;
 	}
 
