@@ -41,7 +41,7 @@ public class Exchange {
 		return new Participant() {
 			public String orderNew(int buySell, String symbol, float price) {
 				var positionId = isHedged ? "" : "P" + Get.temp();
-				return submitOrder(participantId, positionId, buySell, symbol, price);
+				return submitOrder(positionId, buySell, symbol, price);
 			}
 
 			public String orderAmend(String key, int buySell, float price) {
@@ -71,24 +71,24 @@ public class Exchange {
 			public ExSummary getSummary() {
 				return participant.summary(symbol -> lob(symbol).getLastPrice(), invLeverage);
 			}
+
+			private String submitOrder(String key, int buySell, float price) {
+				return pspo(key).map((participantId, symbolPositionId, orderId) -> sp(symbolPositionId)
+						.map((symbol, positionId) -> submitOrder(positionId, buySell, symbol, price)));
+			}
+
+			private String submitOrder(String positionId, int buySell, String symbol, float price) {
+				var orderId = "O" + Get.temp();
+				var symbolPositionId = symbol + "#" + positionId;
+				var key = participantId + ":" + symbolPositionId + ":" + orderId;
+				var lob = lob(symbol);
+				var order = lob.new Order(key, price, buySell);
+
+				lob.update(null, order);
+				participant.putOrder(orderId, order);
+				return key;
+			}
 		};
-	}
-
-	private String submitOrder(String key, int buySell, float price) {
-		return pspo(key).map((participantId, symbolPositionId, orderId) -> sp(symbolPositionId)
-				.map((symbol, positionId) -> submitOrder(participantId, positionId, buySell, symbol, price)));
-	}
-
-	private String submitOrder(String participantId, String positionId, int buySell, String symbol, float price) {
-		var orderId = "O" + Get.temp();
-		var symbolPositionId = symbol + "#" + positionId;
-		var key = participantId + ":" + symbolPositionId + ":" + orderId;
-		var lob = lob(symbol);
-		var order = lob.new Order(key, price, buySell);
-
-		lob.update(null, order);
-		participantById.get(participantId).putOrder(orderId, order);
-		return key;
 	}
 
 	private LimitOrderBook<String> lob(String symbol) {
