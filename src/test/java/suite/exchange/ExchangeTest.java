@@ -1,8 +1,8 @@
 package suite.exchange;
 
-import static org.junit.Assert.assertEquals;
-
 import org.junit.Test;
+
+import suite.math.Math_;
 
 public class ExchangeTest {
 
@@ -13,8 +13,8 @@ public class ExchangeTest {
 		var b = exchange.newParticipant();
 		a.order("S").new_(+100, 1f);
 		b.order("S").new_(-100, 1f);
-		assertEquals(100d, a.summary().investedAmount, 0d);
-		assertEquals(100d, b.summary().investedAmount, 0d);
+		Math_.verifyEquals(100d, a.summary().investedAmount);
+		Math_.verifyEquals(100d, b.summary().investedAmount);
 	}
 
 }
