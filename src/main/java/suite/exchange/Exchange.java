@@ -38,9 +38,9 @@ public class Exchange {
 	}
 
 	public interface Position {
-		public Order positionClose(float price);
+		public Order close(float price);
 
-		public Order positionClosePartially(int buySell, float price);
+		public Order closePartially(int buySell, float price);
 	}
 
 	public static FixieArray<String> sp(String symbolPositionId) {
@@ -53,12 +53,11 @@ public class Exchange {
 
 		return new Participant() {
 			public Order order(String symbol) {
-				var positionId = isHedged ? "" : "P" + Get.temp();
-				var symbolPositionId = symbol + "#" + positionId;
-				return order(symbol, symbolPositionId);
+				return order(symbol, isHedged ? "" : "P" + Get.temp());
 			}
 
-			private Order order(String symbol, String symbolPositionId) {
+			private Order order(String symbol, String positionId) {
+				var symbolPositionId = symbol + "#" + positionId;
 				var orderId = "O" + Get.temp();
 				var key = participantId + ":" + symbolPositionId + ":" + orderId;
 				var lob = lob(symbol);
@@ -96,13 +95,13 @@ public class Exchange {
 
 					public Position position() {
 						return new Position() {
-							public Order positionClose(float price) {
+							public Order close(float price) {
 								var buySell = participant.getPosition(symbolPositionId).getBuySell();
-								return positionClosePartially(buySell, price);
+								return closePartially(buySell, price);
 							}
 
-							public Order positionClosePartially(int buySell, float price) {
-								var order = order(symbol, symbolPositionId);
+							public Order closePartially(int buySell, float price) {
+								var order = order(symbol, positionId);
 								order.new_(-buySell, price);
 								return order;
 							}
