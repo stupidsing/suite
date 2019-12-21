@@ -28,15 +28,14 @@ class MarketData {
 			var data = dataByResolution.computeIfAbsent(resolution, r -> new Data());
 			var ds = data.ds;
 			var lm1 = data.length - 1;
-			var bar0 = 0 < data.length ? ds.ts[lm1] : 0l;
 			var bar_ = now - now % resolution;
+			var bar0 = 0 < data.length ? ds.ts[lm1] : bar_ - resolution;
 
 			while (bar0 != bar_) {
-				var limit = ds.ts.length;
 				var l = data.length++;
 
-				while (limit <= l) {
-					var expand = limit * 2;
+				while (ds.ts.length <= l) {
+					var expand = ds.ts.length * 2;
 
 					ds = data.ds = DataSource.ofOhlcv( //
 							Arrays.copyOf(ds.ts, expand), //

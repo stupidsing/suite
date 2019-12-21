@@ -62,7 +62,7 @@ public class ExPosition {
 		summary.vwapEntryPrice = n / d;
 		summary.unrealizedPnl = Read.from(fifos)
 				.toDouble(AsDbl.sum(fifo -> fifo.buySell * (currentPrice - fifo.entryPrice)));
-		summary.investedAmount = Read.from(fifos).toDouble(AsDbl.sum(fifo -> fifo.buySell * currentPrice));
+		summary.investedAmount = Read.from(fifos).toDouble(AsDbl.sum(fifo -> Math.abs(fifo.buySell) * currentPrice));
 		summary.marginUsed = summary.investedAmount * invLeverage;
 		return summary;
 	}
