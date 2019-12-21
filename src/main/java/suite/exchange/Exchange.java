@@ -5,6 +5,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import primal.Verbs.Get;
 import primal.adt.FixieArray;
+import primal.adt.Mutable;
 import suite.exchange.LimitOrderBook.LobListener;
 
 public class Exchange {
@@ -19,15 +20,27 @@ public class Exchange {
 	private Map<String, MarketData> marketDataBySymbol = new ConcurrentHashMap<>();
 
 	public interface Participant {
-		public ExSummary getSummary();
+		public ExSummary summary();
 
-		public String orderNew(int buySell, String symbol, float price);
+		public Order order(String symbol);
+	}
 
-		public String orderAmend(String key, int buySell, float price);
+	public interface Order {
+		public void new_(int buySell, float price);
 
-		public String positionClose(String key, float price);
+		public String amend(int buySell, float price);
 
-		public String positionClosePartially(String key, int buySell, float price);
+		public void cancel();
+
+		public int fulfilled();
+
+		public Position position();
+	}
+
+	public interface Position {
+		public Order positionClose(float price);
+
+		public Order positionClosePartially(int buySell, float price);
 	}
 
 	public static FixieArray<String> sp(String symbolPositionId) {
@@ -39,54 +52,72 @@ public class Exchange {
 		var participant = participantById.computeIfAbsent(participantId, p -> new ExParticipant());
 
 		return new Participant() {
-			public String orderNew(int buySell, String symbol, float price) {
+			public Order order(String symbol) {
 				var positionId = isHedged ? "" : "P" + Get.temp();
-				return submitOrder(positionId, buySell, symbol, price);
-			}
-
-			public String orderAmend(String key, int buySell, float price) {
-				return pspo(key).map(
-						(participantId, symbolPositionId, orderId) -> sp(symbolPositionId).map((symbol, positionId) -> {
-							var lob = lob(symbol);
-							var order0 = participant.getOrder(orderId);
-							var orderx = lob.new Order(key, price, buySell);
-
-							lob.update(order0, orderx);
-							participant.putOrder(orderId, orderx);
-							return key;
-						}));
-			}
-
-			public String positionClose(String key, float price) {
-				return pspo(key).map((participantId, symbolPositionId, orderId) -> {
-					var buySell = participant.getPosition(symbolPositionId).getBuySell();
-					return positionClosePartially(key, buySell, price);
-				});
-			}
-
-			public String positionClosePartially(String key, int buySell, float price) {
-				return submitOrder(key, -buySell, price);
-			}
-
-			public ExSummary getSummary() {
-				return participant.summary(symbol -> lob(symbol).getLastPrice(), invLeverage);
-			}
-
-			private String submitOrder(String key, int buySell, float price) {
-				return pspo(key).map((participantId, symbolPositionId, orderId) -> sp(symbolPositionId)
-						.map((symbol, positionId) -> submitOrder(positionId, buySell, symbol, price)));
-			}
-
-			private String submitOrder(String positionId, int buySell, String symbol, float price) {
-				var orderId = "O" + Get.temp();
 				var symbolPositionId = symbol + "#" + positionId;
+				return order(symbol, symbolPositionId);
+			}
+
+			private Order order(String symbol, String symbolPositionId) {
+				var orderId = "O" + Get.temp();
 				var key = participantId + ":" + symbolPositionId + ":" + orderId;
 				var lob = lob(symbol);
-				var order = lob.new Order(key, price, buySell);
+				var orderMutable = Mutable.<LimitOrderBook<String>.Order> nil();
 
-				lob.update(null, order);
-				participant.putOrder(orderId, order);
-				return key;
+				return new Order() {
+					public void new_(int buySell, float price) {
+						var order = lob.new Order(key, price, buySell);
+						update(null, order);
+						participant.putOrder(orderId, order);
+					}
+
+					public String amend(int buySell, float price) {
+						var order0 = orderMutable.value();
+						var orderx = lob.new Order(key, price, buySell);
+						orderx.xBuySell = order0.xBuySell;
+
+						if (Math.abs(orderx.xBuySell) < Math.abs(orderx.buySell)) {
+							update(order0, orderx);
+							participant.putOrder(orderId, orderx);
+							return key;
+						} else
+							throw new RuntimeException();
+					}
+
+					public void cancel() {
+						var order0 = orderMutable.value();
+						update(order0, null);
+						participant.removeOrder(orderId);
+					}
+
+					public int fulfilled() {
+						return orderMutable.value().xBuySell;
+					}
+
+					public Position position() {
+						return new Position() {
+							public Order positionClose(float price) {
+								var buySell = participant.getPosition(symbolPositionId).getBuySell();
+								return positionClosePartially(buySell, price);
+							}
+
+							public Order positionClosePartially(int buySell, float price) {
+								var order = order(symbol, symbolPositionId);
+								order.new_(-buySell, price);
+								return order;
+							}
+						};
+					}
+
+					private void update(LimitOrderBook<String>.Order order0, LimitOrderBook<String>.Order orderx) {
+						lob.update(order0, orderx);
+						orderMutable.update(orderx);
+					}
+				};
+			}
+
+			public ExSummary summary() {
+				return participant.summary(symbol -> lob(symbol).getLastPrice(), invLeverage);
 			}
 		};
 	}
