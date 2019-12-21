@@ -1,5 +1,7 @@
 package suite.exchange;
 
+import static java.lang.Math.min;
+
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
@@ -114,7 +116,7 @@ public class LimitOrderBook<Key> {
 				else
 					lastPrice = (bp + sp) * .5f;
 
-				var quantity = Math.min(bo.buySell - bo.xBuySell, so.xBuySell - so.buySell);
+				var quantity = min(bo.buySell - bo.xBuySell, so.xBuySell - so.buySell);
 
 				bo.xBuySell += quantity;
 				so.xBuySell -= quantity;

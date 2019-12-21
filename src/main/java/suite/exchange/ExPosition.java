@@ -1,5 +1,8 @@
 package suite.exchange;
 
+import static java.lang.Math.max;
+import static java.lang.Math.min;
+
 import java.util.ArrayDeque;
 import java.util.Deque;
 
@@ -28,9 +31,9 @@ public class ExPosition {
 		while ((first = fifos.peekFirst()) != null && Math.signum(last.buySell) != Math.signum(first.buySell)) {
 			int bsd;
 			if (last.buySell < 0)
-				bsd = Math.min(-last.buySell, first.buySell);
+				bsd = min(-last.buySell, first.buySell);
 			else
-				bsd = Math.max(-last.buySell, first.buySell);
+				bsd = max(-last.buySell, first.buySell);
 
 			last.buySell += bsd;
 			first.buySell -= bsd;

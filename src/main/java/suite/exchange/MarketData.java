@@ -1,5 +1,8 @@
 package suite.exchange;
 
+import static java.lang.Math.max;
+import static java.lang.Math.min;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -61,8 +64,8 @@ class MarketData {
 			ds.prices[lm1] = mid;
 			ds.opens[lm1] = !Float.isNaN(open0) ? open0 : mid;
 			ds.closes[lm1] = mid;
-			ds.lows[lm1] = Math.min(mid, ds.lows[lm1]);
-			ds.highs[lm1] = Math.max(mid, ds.highs[lm1]);
+			ds.lows[lm1] = min(mid, ds.lows[lm1]);
+			ds.highs[lm1] = max(mid, ds.highs[lm1]);
 			ds.volumes[lm1] += volume;
 		}
 	}

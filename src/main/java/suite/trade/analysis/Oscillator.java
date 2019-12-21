@@ -34,12 +34,12 @@ public class Oscillator {
 				maxi = i;
 
 			if (mini <= i - n)
-				for (var j = Math.max(0, i - n); ++j <= i;)
+				for (var j = max(0, i - n); ++j <= i;)
 					if (prices[j] <= prices[mini])
 						mini = j;
 
 			if (maxi <= i - n)
-				for (var j = Math.max(0, i - n); ++j <= i;)
+				for (var j = max(0, i - n); ++j <= i;)
 					if (prices[maxi] <= prices[j])
 						maxi = j;
 

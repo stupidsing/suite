@@ -1,5 +1,6 @@
 package suite.os;
 
+import static java.lang.Math.max;
 import static primal.statics.Rethrow.ex;
 
 import java.io.IOException;
@@ -85,7 +86,7 @@ public class ListenNio {
 
 				if (sleep != null) {
 					wakeUp = sleep.k;
-					timeout = Math.max(1, wakeUp - System.currentTimeMillis());
+					timeout = max(1, wakeUp - System.currentTimeMillis());
 				} else {
 					wakeUp = Long.MAX_VALUE;
 					timeout = 0l;
