@@ -38,9 +38,9 @@ public class Exchange {
 	}
 
 	public interface Position {
-		public Order close(float price);
+		public Order close();
 
-		public Order closePartially(int buySell, float price);
+		public Order closePartially(int buySell);
 	}
 
 	public static FixieArray<String> sp(String symbolPositionId) {
@@ -63,14 +63,34 @@ public class Exchange {
 				var lob = lob(symbol);
 				var orderMutable = Mutable.<LimitOrderBook<String>.Order> nil();
 
+				var position = new Position() {
+					public Order close() {
+						var buySell = participant.getPosition(symbolPositionId).getBuySell();
+						return closePartially(buySell);
+					}
+
+					public synchronized Order closePartially(int buySell) {
+						var order = closeOrder();
+						order.new_(-buySell, Float.NaN);
+						if (order.fulfilled() == -buySell)
+							return order;
+						else
+							throw new RuntimeException();
+					}
+
+					private Order closeOrder() {
+						return order(symbol, positionId);
+					}
+				};
+
 				return new Order() {
-					public void new_(int buySell, float price) {
+					public synchronized void new_(int buySell, float price) {
 						var order = lob.new Order(key, price, buySell);
 						update(null, order);
 						participant.putOrder(orderId, order);
 					}
 
-					public String amend(int buySell, float price) {
+					public synchronized String amend(int buySell, float price) {
 						var order0 = orderMutable.value();
 						var orderx = lob.new Order(key, price, buySell);
 						orderx.xBuySell = order0.xBuySell;
@@ -83,7 +103,7 @@ public class Exchange {
 							throw new RuntimeException();
 					}
 
-					public void cancel() {
+					public synchronized void cancel() {
 						var order0 = orderMutable.value();
 						update(order0, null);
 						participant.removeOrder(orderId);
@@ -94,18 +114,7 @@ public class Exchange {
 					}
 
 					public Position position() {
-						return new Position() {
-							public Order close(float price) {
-								var buySell = participant.getPosition(symbolPositionId).getBuySell();
-								return closePartially(buySell, price);
-							}
-
-							public Order closePartially(int buySell, float price) {
-								var order = order(symbol, positionId);
-								order.new_(-buySell, price);
-								return order;
-							}
-						};
+						return position;
 					}
 
 					private void update(LimitOrderBook<String>.Order order0, LimitOrderBook<String>.Order orderx) {

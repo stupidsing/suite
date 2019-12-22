@@ -49,10 +49,6 @@ public class ExParticipant {
 		return orderByOrderId.remove(orderId);
 	}
 
-	public synchronized LimitOrderBook<String>.Order getOrder(String orderId) {
-		return orderByOrderId.get(orderId);
-	}
-
 	public synchronized ExPosition getPosition(String symbolPositionId) {
 		return positionByPositionId.get(symbolPositionId);
 	}
