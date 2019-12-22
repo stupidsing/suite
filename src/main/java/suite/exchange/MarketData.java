@@ -23,7 +23,7 @@ class MarketData {
 				new float[128], //
 				new float[128], //
 				new float[128], //
-				new float[128]);;
+				new float[128]);
 	}
 
 	public void update(long now, float mid, float volume) {
