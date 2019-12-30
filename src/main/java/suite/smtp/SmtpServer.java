@@ -55,7 +55,7 @@ public class SmtpServer {
 				write.f("220 ready");
 				String line;
 
-				while ((line = read.g()) != null) {
+				while ((line = read.g()) != null)
 					if (line.startsWith("DATA")) {
 						var sb = new StringBuilder();
 						while (!Equals.string(line = read.g(), "."))
@@ -78,7 +78,6 @@ public class SmtpServer {
 						write.f("250 " + line.substring(5));
 					else
 						throw new RuntimeException();
-				}
 			}
 		});
 	}
