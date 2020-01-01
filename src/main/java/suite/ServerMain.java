@@ -33,6 +33,7 @@ import suite.os.FileUtil;
 import suite.os.Schedule;
 import suite.os.Scheduler;
 import suite.sample.TelegramBotMain;
+import suite.smtp.SmtpServer;
 import suite.util.RunUtil;
 
 // mvn compile exec:java -Dexec.mainClass=suite.ServerMain
@@ -50,6 +51,7 @@ public class ServerMain {
 	public boolean run() {
 		Start.thread(Boolean.TRUE ? this::runNioHttpServer : this::runHttpServer);
 		Start.thread(this::runScheduler);
+		Start.thread(this::runSmtp);
 		Start.thread(this::runTelegramBot);
 		return true;
 	}
@@ -131,6 +133,10 @@ public class ServerMain {
 				Schedule.ofRepeat(5, () -> System.out.println("." + LocalDateTime.now())), //
 				Schedule.of(LocalDateTime.of(2099, 1, 1, 0, 0), ArrayList::new)) //
 		).run();
+	}
+
+	private void runSmtp() {
+		new SmtpServer().serve();
 	}
 
 	private boolean runTelegramBot() {
