@@ -1,13 +1,12 @@
 source <(curl -sL https://raw.githubusercontent.com/stupidsing/suite/master/src/main/sh/cache.sh)
 
-GIT_SUITE=$(cchs "echo git@github.com:stupidsing/suite.git" @git-clone)
-BASE=${GIT_SUITE:9}
+BASE=$(cchs "echo git@github.com:stupidsing/suite.git" @git-clone "@git-cd pwd")
 
 ${BASE}/build.sh
 
 printf "[Service]
 ExecStart=${BASE}/service.sh
-User=${USER}
+User=root
 WorkingDirectory=${BASE}
 
 SuccessExitStatus=143

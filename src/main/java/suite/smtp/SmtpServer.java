@@ -45,7 +45,7 @@ public class SmtpServer {
 				Sink<String> write = line -> {
 					try {
 						Log_.info("> " + line);
-						bw.write(line + "\n");
+						bw.write(line + "\r\n");
 					} catch (IOException ex) {
 						throw new RuntimeException(ex);
 					}
