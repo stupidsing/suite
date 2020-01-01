@@ -57,6 +57,8 @@ public class SmtpServer {
 
 				while ((line = read.g()) != null)
 					if (line.startsWith("DATA")) {
+						write.f("354 come on");
+
 						mail.data = Build.string(sb -> {
 							String line_;
 							while (!Equals.string(line_ = read.g(), "."))
@@ -71,18 +73,22 @@ public class SmtpServer {
 						});
 
 						Log_.info(contents);
+
+						write.f("250 ok");
 					} else if (line.startsWith("HELO"))
 						write.f("250 hello " + line.substring(5));
-					else if (line.startsWith("MAIL FROM"))
+					else if (line.startsWith("MAIL FROM")) {
 						mail.from = unquote(line.substring(10));
-					else if (line.startsWith("NOOP"))
+						write.f("250 ok");
+					} else if (line.startsWith("NOOP"))
 						write.f("250 ok");
 					else if (line.startsWith("QUIT")) {
 						write.f("221 done");
 						break;
-					} else if (line.startsWith("RCPT TO"))
+					} else if (line.startsWith("RCPT TO")) {
 						mail.tos.add(unquote(line.substring(8)));
-					else if (line.startsWith("RSET"))
+						write.f("250 ok");
+					} else if (line.startsWith("RSET"))
 						mail.tos.clear();
 					else if (line.startsWith("VRFY"))
 						write.f("250 " + line.substring(5));

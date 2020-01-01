@@ -30,8 +30,7 @@ sudo systemctl enable suite.service
 sudo systemctl start suite
 
 sudo systemctl status suite
-sudo journalctl -u suite
-#sudo journalctl -f -u suite
+sudo journalctl -f -u suite
 #curl http://localhost:8051/sse
 
 #sudo systemctl stop suite
