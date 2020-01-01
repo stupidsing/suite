@@ -29,7 +29,7 @@ sudo systemctl daemon-reload
 sudo systemctl enable suite.service
 sudo systemctl start suite
 
-sudo systemctl status suite
+sudo systemctl status suite --no-pager
 sudo journalctl -f -u suite
 #curl http://localhost:8051/sse
 

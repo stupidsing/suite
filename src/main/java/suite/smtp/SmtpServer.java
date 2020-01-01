@@ -8,6 +8,7 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
 
+import primal.MoreVerbs.Read;
 import primal.Nouns.Utf8;
 import primal.Verbs.Build;
 import primal.Verbs.Equals;
@@ -66,9 +67,7 @@ public class SmtpServer {
 						});
 
 						var contents = Build.string(sb -> {
-							sb.append(mail.from + " -> \n");
-							for (var to : mail.tos)
-								sb.append(to + "\n");
+							sb.append(mail.from + " -> " + Read.from(mail.tos).toJoinedString(",") + "\n");
 							sb.append("\n" + mail.data + "\n");
 						});
 
