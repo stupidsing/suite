@@ -1,6 +1,6 @@
 source <(curl -sL https://raw.githubusercontent.com/stupidsing/suite/master/src/main/sh/cache.sh)
 
-GIT_SUITE=$(cchs "echo git@github.com:stupidsing/suite.git" "#git-clone")
+GIT_SUITE=$(cchs "echo git@github.com:stupidsing/suite.git" @git-clone)
 BASE=${GIT_SUITE:9}
 
 ${BASE}/build.sh
@@ -27,8 +27,7 @@ chmod 755 ${BASE}/service.sh
 
 sudo systemctl daemon-reload
 sudo systemctl enable suite.service
-
-#sudo systemctl start suite
+sudo systemctl start suite
 
 #sudo systemctl status suite
 #sudo journalctl -u suite
@@ -36,3 +35,4 @@ sudo systemctl enable suite.service
 #curl http://localhost:8051/sse
 
 #sudo systemctl stop suite
+sudo systemctl disable suite.service
