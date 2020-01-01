@@ -35,4 +35,4 @@ sudo systemctl start suite
 #curl http://localhost:8051/sse
 
 #sudo systemctl stop suite
-sudo systemctl disable suite.service
+#sudo systemctl disable suite.service
