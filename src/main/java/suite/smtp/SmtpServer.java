@@ -46,6 +46,7 @@ public class SmtpServer {
 					try {
 						Log_.info("> " + line);
 						bw.write(line + "\r\n");
+						bw.flush();
 					} catch (IOException ex) {
 						throw new RuntimeException(ex);
 					}

@@ -25,11 +25,12 @@ ${JAVA_HOME}/bin/java -Dsuite.dir=${BASE} -cp \$(cat ${BASE}/target/classpath):$
 chmod 755 ${BASE}/service.sh
 
 sudo systemctl daemon-reload
+
 sudo systemctl enable suite.service
 sudo systemctl start suite
 
-#sudo systemctl status suite
-#sudo journalctl -u suite
+sudo systemctl status suite
+sudo journalctl -u suite
 #sudo journalctl -f -u suite
 #curl http://localhost:8051/sse
 
