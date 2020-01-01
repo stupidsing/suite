@@ -5,17 +5,15 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
 import primal.Nouns.Utf8;
+import primal.Verbs.Build;
 import primal.Verbs.Equals;
-import primal.Verbs.Get;
 import primal.fp.Funs.Sink;
 import primal.fp.Funs.Source;
 import primal.os.Log_;
-import suite.cfg.HomeDir;
 import suite.os.Listen;
 
 public class SmtpServer {
@@ -58,17 +56,20 @@ public class SmtpServer {
 
 				while ((line = read.g()) != null)
 					if (line.startsWith("DATA")) {
-						var sb0 = new StringBuilder();
-						while (!Equals.string(line = read.g(), "."))
-							sb0.append(line + "\n");
-						mail.data = sb0.toString();
+						mail.data = Build.string(sb -> {
+							String line_;
+							while (!Equals.string(line_ = read.g(), "."))
+								sb.append(line_ + "\n");
+						});
 
-						var sb1 = new StringBuilder();
-						sb1.append(mail.from + " -> \n");
-						for (var to : mail.tos)
-							sb1.append(to + "\n");
-						sb1.append("\n" + mail.data + "\n");
-						Files.writeString(HomeDir.resolve("mail." + Get.temp()), sb1.toString(), Utf8.charset);
+						var contents = Build.string(sb -> {
+							sb.append(mail.from + " -> \n");
+							for (var to : mail.tos)
+								sb.append(to + "\n");
+							sb.append("\n" + mail.data + "\n");
+						});
+
+						Log_.info(contents);
 					} else if (line.startsWith("HELO"))
 						write.f("250 hello " + line.substring(5));
 					else if (line.startsWith("MAIL FROM"))
