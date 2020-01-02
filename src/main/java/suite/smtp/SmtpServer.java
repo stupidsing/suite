@@ -47,13 +47,13 @@ public class SmtpServer {
 			};
 
 			try (var osw = new OutputStreamWriter(os, Utf8.charset); var bw = new BufferedWriter(osw);) {
-				Source<String> read = () -> {
+				Source<String> rd = () -> {
 					var line = ReadLine.from(is);
 					Log_.info("< " + line);
 					return line;
 				};
 
-				Sink<String> write = line -> {
+				Sink<String> wr = line -> {
 					try {
 						Log_.info("> " + line);
 						bw.write(line + "\r\n");
@@ -63,16 +63,16 @@ public class SmtpServer {
 					}
 				};
 
-				write.f("220 ready");
+				wr.f("220 ready");
 				String line;
 
-				while ((line = read.g()) != null)
+				while ((line = rd.g()) != null)
 					if (line.startsWith("DATA")) {
-						write.f("354 come on");
+						wr.f("354 come on");
 
 						mail.data = Build.string(sb -> {
 							String line_;
-							while (!Equals.string(line_ = read.g(), "."))
+							while (!Equals.string(line_ = rd.g(), "."))
 								sb.append(line_ + "\n");
 						});
 
@@ -91,30 +91,30 @@ public class SmtpServer {
 								Files.writeString(path, contents);
 							}
 
-						write.f("250 ok");
+						wr.f("250 ok");
 					} else if (line.startsWith("EHLO")) {
-						write.f("250-" + me + " hello " + line.substring(5));
-						write.f("250 SIZE " + size);
+						wr.f("250-" + me + " hello " + line.substring(5));
+						wr.f("250 SIZE " + size);
 					} else if (line.startsWith("HELO"))
-						write.f("250 hello " + line.substring(5));
+						wr.f("250 hello " + line.substring(5));
 					else if (line.startsWith("MAIL FROM")) {
 						mail.from = unquote(line.split(" ")[0].substring(10));
-						write.f("250 ok");
+						wr.f("250 ok");
 					} else if (line.startsWith("NOOP"))
-						write.f("250 ok");
+						wr.f("250 ok");
 					else if (line.startsWith("QUIT")) {
-						write.f("221 done");
+						wr.f("221 done");
 						close.close();
 						break;
 					} else if (line.startsWith("RCPT TO")) {
 						mail.tos.add(unquote(line.substring(8)));
-						write.f("250 ok");
+						wr.f("250 ok");
 					} else if (line.startsWith("RSET"))
 						mail.tos.clear();
 					else if (line.startsWith("SIZE"))
-						write.f("250 SIZE " + size);
+						wr.f("250 SIZE " + size);
 					else if (line.startsWith("VRFY"))
-						write.f("250 " + line.substring(5));
+						wr.f("250 " + line.substring(5));
 					else
 						throw new RuntimeException();
 			}
