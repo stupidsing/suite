@@ -21,6 +21,9 @@ public class SmtpServer {
 
 	private Listen listen = new Listen();
 
+	private String me = "pointless.online";
+	private int size = 262144;
+
 	public void serve() {
 		listen.ioAsync(25, (is, os, close) -> {
 			var mail = new Object() {
@@ -74,6 +77,10 @@ public class SmtpServer {
 						Log_.info(contents);
 
 						write.f("250 ok");
+					} else if (line.startsWith("EHLO")) {
+						write.f("");
+						write.f("250-" + me + " hello " + line.substring(5));
+						write.f("250 SIZE " + size);
 					} else if (line.startsWith("HELO"))
 						write.f("250 hello " + line.substring(5));
 					else if (line.startsWith("MAIL FROM")) {
@@ -89,6 +96,8 @@ public class SmtpServer {
 						write.f("250 ok");
 					} else if (line.startsWith("RSET"))
 						mail.tos.clear();
+					else if (line.startsWith("SIZE"))
+						write.f("250 SIZE " + size);
 					else if (line.startsWith("VRFY"))
 						write.f("250 " + line.substring(5));
 					else
