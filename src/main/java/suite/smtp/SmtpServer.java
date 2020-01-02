@@ -1,9 +1,7 @@
 package suite.smtp;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.nio.file.Files;
 import java.time.LocalDateTime;
@@ -17,6 +15,7 @@ import primal.Nouns.Utf8;
 import primal.Verbs.Build;
 import primal.Verbs.Equals;
 import primal.Verbs.Mk;
+import primal.Verbs.ReadLine;
 import primal.fp.Funs.Sink;
 import primal.fp.Funs.Source;
 import primal.os.Log_;
@@ -31,26 +30,27 @@ public class SmtpServer {
 	private String me = "pointless.online";
 	private int size = 262144;
 
+	public static void main(String[] args) {
+		new SmtpServer().serve(2525);
+	}
+
 	public void serve() {
-		listen.ioAsync(25, (is, os, close) -> {
+		serve(25);
+	}
+
+	private void serve(int port) {
+		listen.ioAsync(port, (is, os, close) -> {
 			var mail = new Object() {
 				private String from;
 				private List<String> tos = new ArrayList<>();
 				private String data;
 			};
 
-			try (var isr = new InputStreamReader(is, Utf8.charset);
-					var osw = new OutputStreamWriter(os, Utf8.charset);
-					var br = new BufferedReader(isr);
-					var bw = new BufferedWriter(osw);) {
+			try (var osw = new OutputStreamWriter(os, Utf8.charset); var bw = new BufferedWriter(osw);) {
 				Source<String> read = () -> {
-					try {
-						var line = br.readLine();
-						Log_.info("< " + line);
-						return line;
-					} catch (IOException ex) {
-						throw new RuntimeException(ex);
-					}
+					var line = ReadLine.from(is);
+					Log_.info("< " + line);
+					return line;
 				};
 
 				Sink<String> write = line -> {
@@ -76,15 +76,14 @@ public class SmtpServer {
 								sb.append(line_ + "\n");
 						});
 
-						var contents = Build.string(sb -> {
-							sb.append(mail.from + " -> " + Read.from(mail.tos).toJoinedString(",") + "\n");
-							sb.append("\n" + mail.data + "\n");
-						});
+						var tos = Read.from(mail.tos).toJoinedString(",");
+						var dt = dtf.format(LocalDateTime.now());
+						var contents = "SMTP: " + mail.from + " -> " + tos + "\n" + "Ts: " + dt + "\n" + mail.data;
 
 						for (var to : mail.tos)
 							if (to.endsWith("@" + me)) {
 								var dir = HomeDir.resolve(to);
-								var path = dir.resolve(dtf.format(LocalDateTime.now()));
+								var path = dir.resolve(dt);
 								Mk.dir(dir);
 								Files.writeString(path, contents);
 							}
@@ -102,6 +101,7 @@ public class SmtpServer {
 						write.f("250 ok");
 					else if (line.startsWith("QUIT")) {
 						write.f("221 done");
+						close.close();
 						break;
 					} else if (line.startsWith("RCPT TO")) {
 						mail.tos.add(unquote(line.substring(8)));
