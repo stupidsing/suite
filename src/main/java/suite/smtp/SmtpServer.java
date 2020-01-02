@@ -5,8 +5,12 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.nio.file.Files;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import primal.MoreVerbs.Read;
 import primal.Nouns.Utf8;
@@ -15,10 +19,12 @@ import primal.Verbs.Equals;
 import primal.fp.Funs.Sink;
 import primal.fp.Funs.Source;
 import primal.os.Log_;
+import suite.cfg.HomeDir;
 import suite.os.Listen;
 
 public class SmtpServer {
 
+	private DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss", Locale.ENGLISH);
 	private Listen listen = new Listen();
 
 	private String me = "pointless.online";
@@ -74,7 +80,11 @@ public class SmtpServer {
 							sb.append("\n" + mail.data + "\n");
 						});
 
-						Log_.info(contents);
+						for (var to : mail.tos)
+							if (to.endsWith("@" + me)) {
+								var path = HomeDir.resolve(to).resolve(dtf.format(LocalDateTime.now()));
+								Files.writeString(path, contents);
+							}
 
 						write.f("250 ok");
 					} else if (line.startsWith("EHLO")) {
