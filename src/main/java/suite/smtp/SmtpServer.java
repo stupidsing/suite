@@ -78,7 +78,10 @@ public class SmtpServer {
 
 						var tos = Read.from(mail.tos).toJoinedString(",");
 						var dt = dtf.format(LocalDateTime.now());
-						var contents = "SMTP: " + mail.from + " -> " + tos + "\n" + "Ts: " + dt + "\n" + mail.data;
+
+						var contents = "SMTP: " + mail.from + " -> " + tos + "\n" //
+								+ "Ts: " + dt + "\n" //
+								+ mail.data;
 
 						for (var to : mail.tos)
 							if (to.endsWith("@" + me)) {
@@ -95,7 +98,7 @@ public class SmtpServer {
 					} else if (line.startsWith("HELO"))
 						write.f("250 hello " + line.substring(5));
 					else if (line.startsWith("MAIL FROM")) {
-						mail.from = unquote(line.substring(10));
+						mail.from = unquote(line.split(" ")[0].substring(10));
 						write.f("250 ok");
 					} else if (line.startsWith("NOOP"))
 						write.f("250 ok");
