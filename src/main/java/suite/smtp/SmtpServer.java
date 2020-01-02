@@ -78,7 +78,6 @@ public class SmtpServer {
 
 						write.f("250 ok");
 					} else if (line.startsWith("EHLO")) {
-						write.f("");
 						write.f("250-" + me + " hello " + line.substring(5));
 						write.f("250 SIZE " + size);
 					} else if (line.startsWith("HELO"))
