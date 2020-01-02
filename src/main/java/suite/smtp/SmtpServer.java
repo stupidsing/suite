@@ -16,6 +16,7 @@ import primal.MoreVerbs.Read;
 import primal.Nouns.Utf8;
 import primal.Verbs.Build;
 import primal.Verbs.Equals;
+import primal.Verbs.Mk;
 import primal.fp.Funs.Sink;
 import primal.fp.Funs.Source;
 import primal.os.Log_;
@@ -82,7 +83,9 @@ public class SmtpServer {
 
 						for (var to : mail.tos)
 							if (to.endsWith("@" + me)) {
-								var path = HomeDir.resolve(to).resolve(dtf.format(LocalDateTime.now()));
+								var dir = HomeDir.resolve(to);
+								var path = dir.resolve(dtf.format(LocalDateTime.now()));
+								Mk.dir(dir);
 								Files.writeString(path, contents);
 							}
 
