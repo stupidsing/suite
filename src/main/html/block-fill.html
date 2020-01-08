@@ -1,6 +1,6 @@
 <meta charset='utf-8'>
 <!--
-file:///home/ywsing/suite/src/main/html/render.html
+file:///home/ywsing/suite/src/main/html/block-fill.html
 -->
 <!DOCTYPE html>
 <html>
@@ -48,6 +48,7 @@ let viewCell = rd.parse(`
 		style='
 			background: { vm.d ? "#888888" : "#DDDDDD" };
 			display: table-cell;
+			font-size: 32px;
 			height: 50px;
 			text-align: center;
 			vertical-align: middle;
@@ -62,6 +63,7 @@ let viewCell = rd.parse(`
 		rd_on_dragstart='handledragstart(vm, ev)'
 		rd_on_drop='{}'>
 		<rd_if v='vm.d'>😂</rd_if>
+		<rd_if v='!vm.d'>💖</rd_if>
 	</div>
 `);
 

@@ -67,7 +67,16 @@ public class SmtpServer {
 				String line;
 
 				while ((line = rd.g()) != null)
-					if (line.startsWith("DATA")) {
+					if (line.startsWith("AUTH LOGIN")) {
+						wr.f("334 VXNlcm5hbWU6");
+						var usernameBase64 = rd.g();
+						wr.f("334 UGFzc3dvcmQ6");
+						var passwordBase64 = rd.g();
+						if (!usernameBase64.isEmpty() && !passwordBase64.isEmpty())
+							wr.f("235 sounds good");
+						else
+							wr.f("530 fuck off");
+					} else if (line.startsWith("DATA")) {
 						wr.f("354 come on");
 
 						mail.data = Build.string(sb -> {
