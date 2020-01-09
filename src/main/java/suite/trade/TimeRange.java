@@ -11,7 +11,7 @@ import primal.streamlet.Streamlet;
 public class TimeRange extends Range<Time> {
 
 	public static Time min = Time.of(1980, 1, 1);
-	public static Time max = Time.of(2020, 1, 1);
+	public static Time max = Time.of(2050, 1, 1);
 
 	public static TimeRange ages() {
 		return of_(min, max);
