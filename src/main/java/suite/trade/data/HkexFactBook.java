@@ -33,9 +33,12 @@ public class HkexFactBook {
 	}
 
 	public Streamlet<String> queryCompaniesByMarketCap(int year) {
+
+		// we do not use the 4th quarter data since data might not be yet available from
+		// HKEX website
 		return year <= 2017 //
 				? queryYearlyLeadingCompaniesByMarketCap(year) //
-				: queryQuarterlyLeadingCompaniesByMarketCap(year, "4th-Quarter");
+				: queryQuarterlyLeadingCompaniesByMarketCap(year, "3rd-Quarter");
 	}
 
 	public Streamlet<String> queryYearlyLeadingCompaniesByMarketCap(int year) {
