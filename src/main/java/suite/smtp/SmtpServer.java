@@ -107,7 +107,7 @@ public class SmtpServer {
 					} else if (line.startsWith("HELO"))
 						wr.f("250 hello " + line.substring(5));
 					else if (line.startsWith("MAIL FROM")) {
-						mail.from = unquote(line.split(" ")[0].substring(10));
+						mail.from = unquote(line.substring(10).split(" ")[0]);
 						wr.f("250 ok");
 					} else if (line.startsWith("NOOP"))
 						wr.f("250 ok");
