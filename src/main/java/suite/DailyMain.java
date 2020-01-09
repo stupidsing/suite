@@ -44,7 +44,7 @@ import suite.util.To;
 // mvn compile exec:java -Dexec.mainClass=suite.DailyMain
 public class DailyMain {
 
-	private Set<String> blackList = Set.of("0566.HK");
+	private Set<String> blackList = Set.of("0566.HK", "1048.HK");
 
 	private TradeCfg cfg = new TradeCfgImpl();
 	private Serialize ser = Singleton.me.serialize;
