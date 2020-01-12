@@ -1,0 +1,180 @@
+<meta charset='utf-8'>
+<!--
+file:///home/ywsing/suite/src/main/html/five-in-a-row.html
+-->
+<!DOCTYPE html>
+<html>
+	<body>
+		<div id='target'></div>
+	</body>
+
+	<script src='frp.js'></script>
+	<script src='fun.js'></script>
+	<script src='render.js'></script>
+
+	<script type='text/javascript'>
+'use strict';
+
+let { lens, range, read, } = fun();
+let { rd, renderAgain, } = render();
+let close;
+
+let viewCell = rd.parse(`
+	<div draggable='true'
+		style='
+			background: { vm.selected ? "#888888" : "#DDDDDD" };
+			display: table-cell;
+			font-size: 32px;
+			height: 50px;
+			text-align: center;
+			vertical-align: middle;
+			width: 50px;
+		'
+		rd_on_click='handleclick(vm, ev)'>
+		<rd_if v='vm.d == 0'></rd_if>
+		<rd_if v='vm.d == 1'>😂</rd_if>
+		<rd_if v='vm.d == 2'>💖</rd_if>
+	</div>
+`);
+
+let view = rd.parse(`
+	<span>
+		<table style='font-family: monospace; font-size: 20; user-select: none;'>
+			<rd_for>
+				<tr>
+					<rd_for>
+						<td>
+							<rd_component v='viewCell' />
+						</td>
+					</rd_for>
+				</tr>
+			</rd_for>
+		</table>
+		<button rd_on_click='close()'>Close</button>
+	</span>
+`);
+
+let pqnew = () => {
+	let h = new Array(1024);
+	let size = 0;
+	let swap = (a, b) => {
+		let temp = h[a];
+		h[a] = h[b];
+		h[b] = temp;
+	};
+	add: e => {
+		let i;
+		h[++size] = e;
+		for (i = size; 1 < i && ts[i] < ts[p = i / 2]; i = p) swap(p, i);
+	},
+	extractMin: () => {
+		let i = 1;
+		let e = h[i];
+		h[i] = h[size--];
+		for (; (c = 2 * i) <= size; i = c) {
+			if (c + 1 <= size && h[c + 1] < h[c]) c++;
+			if (h[c] < h[i])
+				swap(c, i);
+			else
+				break;
+		}
+		return e;
+	},
+	min: () => 0 < size ? h[1] : null,
+	size: () => size,
+};
+
+let size = 8;
+
+let search = (xy0, xyx) => {
+	let key = xy => `${xy.x},${xy.y}`;
+	let todos = [{ xy0.x, xy0.y, prev: null, }];
+	let dones = {};
+	let kx = key(xyx);
+	while (0 < todos.length) { // breadth-first search
+		let todo = todos.unshift();
+		let k = key(todo);
+		let { x, y, } = todo;
+		if (0 <= x && x < size && 0 <= y && y < size && dones[key(todo)] == null) {
+			let neighbours = [-1, 1].flatMap(dx => [-1, 1].map(dy => ({ x: x + dx, y: y + dy, prev: todo, })));
+			todos.push(...neighbours);
+			dones[k] = todo;
+			if (k == kx) return todo;
+		}
+	}
+	return null;
+};
+
+let vmsetcell = (vmt0, vmc1) =>  {
+	let vmr0 = vmt0[vmc1.x];
+	let vmc0 = vmr0[vmc1.y];
+	let vmr1 = vmr0.map(vmc => vmc != vmc0 ? vmc : vmc1);
+	let vmt1 = vmt0.map(vmr => vmr != vmr0 ? vmr : vmr1);
+	return vmt1;
+};
+
+let select_xy = null;
+
+let unselect = vm => {
+	vmc = vm[select_xy.x][select_xy.y];
+	renderAgain(view, vm => vmsetcell(vm, { ...vmc, selected: false, }));
+	select_xy = null;
+};
+
+let select = (vm, vmc) => {
+	renderAgain(view, vm => vmsetcell(vm, { ...vmc, selected: true, }));
+	select_xy = vmc;
+};
+
+let move = (vmc0, vmcx) => {
+	let node = search(vmc0, vmcx);
+	let r = () => {};
+	let rec = n => {
+		if (n.prev != null) {
+			let r0 = rec(n.prev);
+			return () => {
+				r0();
+				setInterval(() => {
+					unselect(vm);
+					select(vm, vm[n.x][n.y]);
+				}, 200);
+			};
+		}
+	};
+	rec(node)();
+	let d = vm[vmc0].d;
+	renderAgain(view, vm => vmsetcell(vm, { ...vmc0, d: null, }));
+	renderAgain(view, vm => vmsetcell(vm, { ...vmcx, d, }));
+};
+
+let handleclick = (vmc, ev) => {
+	let select_xy0 = select_xy;
+
+	if (select_xy != null) {
+		vmc_ = vm[select_xy.x][select_xy.y];
+		renderAgain(view, vm => vmsetcell(vm, { ...vmc_, selected: false, }));
+		select_xy = null;
+	}
+
+	if (vm.d != null) {
+		select_xy = vmc;
+		renderAgain(view, vm => vmsetcell(vm, { ...vmc, selected: true, }));
+	} else
+		if (select_xy0 != null) move(select_xy0, vmc);
+};
+
+// let interval = setInterval(() => renderAgain(view, vm => { vm[1][1].d = !vm[1][1].d; return JSON.parse(JSON.stringify(vm)); }), 500);
+
+renderAgain(view, vm => {
+	var vm0 = range(0, size).map(x => range(0, size).map(y => ({ d: false, x, y, })).list()).list();
+	vm0[1][1].d = 1;
+	return vm0;
+});
+
+close = () => {
+	// clearInterval(interval);
+	renderAgain(view, vm => null);
+};
+
+	</script>
+</html>
