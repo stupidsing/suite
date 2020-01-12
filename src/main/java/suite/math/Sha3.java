@@ -51,12 +51,12 @@ public class Sha3 {
 		padded = sha3.padded;
 	}
 
-	private void reset(int rateSize, int digestSize) {
-		if (rateSize + digestSize * 2 == maxStates && 0 < rateSize && (rateSize & 0x3F) <= 0) {
+	private void reset(int nRateBits, int nDigestBits) {
+		if (nRateBits + nDigestBits * 2 == maxStates && 0 < nRateBits && (nRateBits & 0x3F) == 0) {
 			Arrays.fill(state, 0);
 
-			this.nDigestBits = digestSize;
-			this.nRateBits = rateSize;
+			this.nDigestBits = nDigestBits;
+			this.nRateBits = nRateBits;
 			nRateBitsFilled = 0;
 			padded = false;
 		} else
@@ -64,34 +64,38 @@ public class Sha3 {
 	}
 
 	public void update(byte in) {
-		updateBits(in & 0xFF, 8);
+		updateBits(in, 8);
 	}
 
 	public void update(byte[] in) {
-		if (Boolean.TRUE)
+		if (Boolean.FALSE)
 			update(ByteBuffer.wrap(in));
-		else
+		else if (Boolean.FALSE)
 			for (var b : in)
 				updateBits(b, 8);
+		else
+			for (var b : in)
+				for (var i = 0; i < 8; i++)
+					updateBits(b >> i, 1);
 	}
 
 	private void update(ByteBuffer in) {
 		var nInputBytes = in.remaining();
 		var nRateBitsFilled_ = nRateBitsFilled;
 		var nRateBytesFilled = nRateBitsFilled_ >>> 3;
-		var mod = nRateBytesFilled & 0x7;
+		var mod = nRateBytesFilled & 0x07;
 
 		if (nInputBytes <= 0)
 			return;
 		else if (padded)
 			throw new RuntimeException();
-		else if (0 < (nRateBitsFilled_ & 0x7))
+		else if (0 < (nRateBitsFilled_ & 0x07))
 			// this could be implemented but would introduce considerable performance
 			// degradation
 			throw new RuntimeException();
 
 		// logically must have space at this point
-		var c0 = Math.min(nInputBytes, (-mod) & 0x7);
+		var c0 = Math.min(nInputBytes, (-mod) & 0x07);
 		var shift = mod * 8;
 		var shiftx = shift + c0 * 8;
 		var stateIndex = nRateBytesFilled / 8;
@@ -129,7 +133,7 @@ public class Sha3 {
 				in.order(order);
 			}
 
-			nInputBytes &= 0x7;
+			nInputBytes &= 0x07;
 
 			if (nInputBytes <= 0) {
 				nRateBitsFilled = stateIndex / 64;
@@ -171,9 +175,9 @@ public class Sha3 {
 		if (!padded) {
 			padSha3();
 			padded = true;
-		} else if ((nRateBitsFilled_ & 0x7) == 0) {
-			var nRateBytesFilledMod8 = nRateBytesFilled & 0x7;
-			var c = Math.min(-nRateBytesFilledMod8 & 0x7, nOutputBytesLeft);
+		} else if ((nRateBitsFilled_ & 0x07) == 0) {
+			var nRateBytesFilledMod8 = nRateBytesFilled & 0x07;
+			var c = Math.min(-nRateBytesFilledMod8 & 0x07, nOutputBytesLeft);
 			var shift = nRateBytesFilledMod8 * 8;
 			var shiftx = shift + c * 8;
 			var w = state[nRateBytesFilled / 8];
@@ -219,7 +223,7 @@ public class Sha3 {
 			out.order(order0);
 		}
 
-		var nOutputBytesMod8 = nOutputBytesLeft & 0x7;
+		var nOutputBytesMod8 = nOutputBytesLeft & 0x07;
 
 		if (0 < nOutputBytesMod8 && nRateLongs <= stateIndex) {
 			squeezeSha3();
@@ -232,25 +236,28 @@ public class Sha3 {
 			out.put((byte) (state[stateIndex] >>> shift));
 
 		nRateBitsFilled = shiftx + stateIndex * 64;
+
 	}
 
 	private void squeezeSha3() {
 		throw new RuntimeException();
 	}
 
-	// private void squeezeKeccak() { keccak(state); }
+	private void squeezeKeccak() {
+		keccak();
+	}
 
 	private void padSha3() {
-		updateBits(0x02, 2);
-		padKeccak();
+		updateBits(0x06, 3);
+		keccakIfRequired();
+		nRateBitsFilled = nRateBits - 1;
+		updateBits(0x1, 1);
+		keccak();
 	}
 
 	private void padKeccak() {
 		updateBits(0x01, 1);
-		if (nRateBits <= nRateBitsFilled) {
-			keccak();
-			nRateBitsFilled = 0;
-		}
+		keccakIfRequired();
 		nRateBitsFilled = nRateBits - 1;
 		updateBits(0x1, 1);
 		keccak();
@@ -264,32 +271,30 @@ public class Sha3 {
 		else if (nInputBits < 0 || 64 < nInputBits)
 			throw new RuntimeException();
 
+		// logically must have space at this point
 		var nRateBitsFilledMod64 = nRateBitsFilled & 0x3F;
-		long in1;
+		var c = Math.min(nInputBits, -nRateBitsFilled & 0x3F);
+		state[nRateBitsFilled / 64] ^= (in0 & mask(c)) << nRateBitsFilledMod64;
 
-		if (0 < nRateBitsFilledMod64) {
+		nRateBitsFilled += c;
+		nInputBits -= c;
 
-			// logically must have space at this point
-			var c = Math.min(nInputBits, 64 - nRateBitsFilledMod64);
-			state[nRateBitsFilled / 64] ^= (in0 & -1l >>> 64 - c) << nRateBitsFilledMod64;
+		if (0 < nInputBits)
+			keccakIfRequired();
 
-			nRateBitsFilled += c;
-			nInputBits -= c;
+		state[nRateBitsFilled / 64] ^= in0 >>> c & mask(nInputBits);
+		nRateBitsFilled += nInputBits;
+	}
 
-			if (nInputBits != 0)
-				in1 = in0 >>> c;
-			else
-				return;
-		} else
-			in1 = in0;
+	private long mask(int bits) {
+		return 0 < bits ? -1l >>> 64 - bits : 0l;
+	}
 
+	private void keccakIfRequired() {
 		if (nRateBits <= nRateBitsFilled) {
 			keccak();
 			nRateBitsFilled = 0;
 		}
-
-		state[nRateBitsFilled / 64] ^= in1 & -1l >>> 64 - nInputBits;
-		nRateBitsFilled = nRateBitsFilled + nInputBits;
 	}
 
 	private void keccak() {

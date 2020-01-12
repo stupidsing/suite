@@ -10,8 +10,11 @@ public class Sha3Test {
 
 	@Test
 	public void test() {
+		var longString = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
+
 		var empty = new byte[0];
 		var bs = "The quick brown fox jumps over the lazy dog".getBytes(StandardCharsets.US_ASCII);
+		var lbs = longString.getBytes(StandardCharsets.US_ASCII);
 
 		assertEquals(0x6B, Byte.toUnsignedInt(sha3(224, empty)[0]));
 		assertEquals(0xA7, Byte.toUnsignedInt(sha3(256, empty)[0]));
@@ -25,24 +28,25 @@ public class Sha3Test {
 		assertEquals(0x69, Byte.toUnsignedInt(sha3(256, bs)[0]));
 		assertEquals(0x70, Byte.toUnsignedInt(sha3(384, bs)[0]));
 		assertEquals(0x01, Byte.toUnsignedInt(sha3(512, bs)[0]));
+		assertEquals(0x04, Byte.toUnsignedInt(sha3(512, lbs)[0]));
+	}
+
+	private byte[] sha3(int size, byte b) {
+		var sha = new Sha3(size);
+		sha.updateBits(b >> 0, 1);
+		sha.updateBits(b >> 1, 1);
+		sha.updateBits(b >> 2, 1);
+		sha.updateBits(b >> 3, 1);
+		sha.updateBits(b >> 4, 1);
+		sha.updateBits(b >> 5, 1);
+		sha.updateBits(b >> 6, 1);
+		sha.updateBits(b >> 7, 1);
+		return sha.digest();
 	}
 
 	private byte[] sha30(int size, byte b) {
 		var sha = new Sha3(size);
 		sha.update(b);
-		return sha.digest();
-	}
-
-	private byte[] sha3(int size, byte b) {
-		var sha = new Sha3(size);
-		sha.updateBits((b >> 0), 1);
-		sha.updateBits((b >> 1), 1);
-		sha.updateBits((b >> 2), 1);
-		sha.updateBits((b >> 3), 1);
-		sha.updateBits((b >> 4), 1);
-		sha.updateBits((b >> 5), 1);
-		sha.updateBits((b >> 6), 1);
-		sha.updateBits((b >> 7), 1);
 		return sha.digest();
 	}
 
