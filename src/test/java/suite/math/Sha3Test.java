@@ -13,6 +13,7 @@ public class Sha3Test {
 		var longString = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
 
 		var empty = new byte[0];
+		var qbfbs = "The quick brown fox jumps over the lazy dog".getBytes(StandardCharsets.US_ASCII);
 		var lbs = longString.getBytes(StandardCharsets.US_ASCII);
 
 		assertEquals(0x2D, Byte.toUnsignedInt(sha3(512, new byte[] { (byte) 0x30 })[0]));
@@ -26,14 +27,10 @@ public class Sha3Test {
 		assertEquals(0xF9, Byte.toUnsignedInt(sha3(256, (byte) 0x30)[0]));
 		assertEquals(0x17, Byte.toUnsignedInt(sha3(384, (byte) 0x30)[0]));
 		assertEquals(0x2D, Byte.toUnsignedInt(sha3(512, (byte) 0x30)[0]));
-		assertEquals(0xD1, Byte.toUnsignedInt(
-				sha3(224, "The quick brown fox jumps over the lazy dog".getBytes(StandardCharsets.US_ASCII))[0]));
-		assertEquals(0x69, Byte.toUnsignedInt(
-				sha3(256, "The quick brown fox jumps over the lazy dog".getBytes(StandardCharsets.US_ASCII))[0]));
-		assertEquals(0x70, Byte.toUnsignedInt(
-				sha3(384, "The quick brown fox jumps over the lazy dog".getBytes(StandardCharsets.US_ASCII))[0]));
-		assertEquals(0x01, Byte.toUnsignedInt(
-				sha3(512, "The quick brown fox jumps over the lazy dog".getBytes(StandardCharsets.US_ASCII))[0]));
+		assertEquals(0xD1, Byte.toUnsignedInt(sha3(224, qbfbs)[0]));
+		assertEquals(0x69, Byte.toUnsignedInt(sha3(256, qbfbs)[0]));
+		assertEquals(0x70, Byte.toUnsignedInt(sha3(384, qbfbs)[0]));
+		assertEquals(0x01, Byte.toUnsignedInt(sha3(512, qbfbs)[0]));
 		assertEquals(0x04, Byte.toUnsignedInt(sha3(512, lbs)[0]));
 	}
 
