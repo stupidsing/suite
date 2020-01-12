@@ -145,14 +145,15 @@ public class Sha3 {
 	}
 
 	private void digest(ByteBuffer out) {
-		var nOutputBytesLeft = out.remaining();
-		var nRateBitsFilled_ = padded ? nRateBitsFilled : 0;
-		var nRateBytesFilled = nRateBitsFilled_ / 8;
-
 		if (!padded) {
 			padSha3();
 			padded = true;
-		} else if ((nRateBitsFilled_ & 0x07) == 0) {
+		}
+
+		var nOutputBytesLeft = out.remaining();
+		var nRateBytesFilled = nRateBitsFilled / 8;
+
+		if ((nRateBitsFilled & 0x07) == 0) {
 			var nRateBytesFilledMod8 = nRateBytesFilled & 0x07;
 			var c = Math.min(-nRateBytesFilledMod8 & 0x07, nOutputBytesLeft);
 			var shift = nRateBytesFilledMod8 * 8;
@@ -246,8 +247,8 @@ public class Sha3 {
 		// logically must have space at this point
 		var nRateBitsFilledMod64 = nRateBitsFilled & 0x3F;
 		var c = Math.min(nInputBits, -nRateBitsFilled & 0x3F);
-		state[nRateBitsFilled / 64] ^= (in0 & mask(c)) << nRateBitsFilledMod64;
 
+		state[nRateBitsFilled / 64] ^= (in0 & mask(c)) << nRateBitsFilledMod64;
 		nRateBitsFilled += c;
 		nInputBits -= c;
 
