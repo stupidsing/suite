@@ -16,8 +16,8 @@ public class Sha3 {
 
 	private int maxStates = 1600;
 
-	private int nRateBits; // in bits
 	private int nDigestBits; // in bits, 224, 256, 384, 512 etc.
+	private int nRateBits; // in bits
 	private int nRateBitsFilled; // in bits, nRateBitsFilled < nRateBits
 	private boolean padded;
 	private long[] state = new long[maxStates / 64];
@@ -45,8 +45,8 @@ public class Sha3 {
 
 	public Sha3(Sha3 sha3) {
 		System.arraycopy(sha3.state, 0, state, 0, sha3.state.length);
-		nRateBits = sha3.nRateBits;
 		nDigestBits = sha3.nDigestBits;
+		nRateBits = sha3.nRateBits;
 		nRateBitsFilled = sha3.nRateBitsFilled;
 		padded = sha3.padded;
 	}
@@ -55,8 +55,8 @@ public class Sha3 {
 		if (rateSize + digestSize * 2 == maxStates && 0 < rateSize && (rateSize & 0x3F) <= 0) {
 			Arrays.fill(state, 0);
 
-			this.nRateBits = rateSize;
 			this.nDigestBits = digestSize;
+			this.nRateBits = rateSize;
 			nRateBitsFilled = 0;
 			padded = false;
 		} else
@@ -116,7 +116,7 @@ public class Sha3 {
 				in.order(ByteOrder.LITTLE_ENDIAN);
 				while (0 < nInputLongs) {
 					if (nRateLongs <= stateIndex) {
-						keccak(state);
+						keccak();
 						stateIndex = 0;
 					}
 					var c1 = Math.min(nInputLongs, nRateLongs - stateIndex);
@@ -138,7 +138,7 @@ public class Sha3 {
 		}
 
 		if (nRateLongs <= stateIndex) {
-			keccak(state);
+			keccak();
 			stateIndex = 0;
 		}
 
@@ -164,7 +164,7 @@ public class Sha3 {
 	}
 
 	private void digest(ByteBuffer out) {
-		var nOutputBytes = out.remaining();
+		var nOutputBytesLeft = out.remaining();
 		var nRateBitsFilled_ = padded ? nRateBitsFilled : 0;
 		var nRateBytesFilled = nRateBitsFilled_ / 8;
 
@@ -173,18 +173,18 @@ public class Sha3 {
 			padded = true;
 		} else if ((nRateBitsFilled_ & 0x7) == 0) {
 			var nRateBytesFilledMod8 = nRateBytesFilled & 0x7;
-			var c = Math.min(-nRateBytesFilledMod8 & 0x7, nOutputBytes);
+			var c = Math.min(-nRateBytesFilledMod8 & 0x7, nOutputBytesLeft);
 			var shift = nRateBytesFilledMod8 * 8;
 			var shiftx = shift + c * 8;
 			var w = state[nRateBytesFilled / 8];
 
-			nOutputBytes -= c;
+			nOutputBytesLeft -= c;
 			nRateBytesFilled += c;
 
 			for (; shift < shiftx; shift += 8)
 				out.put((byte) (w >>> shift));
 
-			if (nOutputBytes == 0) {
+			if (nOutputBytesLeft == 0) {
 				nRateBitsFilled = nRateBytesFilled * 8;
 				return;
 			}
@@ -195,43 +195,43 @@ public class Sha3 {
 
 		var nRateLongs = nRateBits / 64;
 		var stateIndex = nRateBytesFilled / 8;
-		var nOutputLongs = nOutputBytes / 8;
+		var nOutputLongsLeft = nOutputBytesLeft / 8;
 		var order0 = out.order();
 
 		try {
 			out.order(ByteOrder.LITTLE_ENDIAN);
 
-			while (0 < nOutputLongs) {
+			while (0 < nOutputLongsLeft) {
 				if (nRateLongs <= stateIndex) {
 					squeezeSha3();
 					stateIndex = 0;
 				}
 
-				var c = Math.min(nOutputLongs, nRateLongs - stateIndex);
+				var c = Math.min(nOutputLongsLeft, nRateLongs - stateIndex);
 				var stateIndexEnd = stateIndex + c;
 
 				for (; stateIndex < stateIndexEnd; stateIndex++)
 					out.putLong(state[stateIndex]);
 
-				nOutputLongs -= c;
+				nOutputLongsLeft -= c;
 			}
 		} finally {
 			out.order(order0);
 		}
 
-		var nOutputBytesMod8 = nOutputBytes & 0x7;
+		var nOutputBytesMod8 = nOutputBytesLeft & 0x7;
 
 		if (0 < nOutputBytesMod8 && nRateLongs <= stateIndex) {
 			squeezeSha3();
 			stateIndex = 0;
 		}
 
-		var shiftx = nOutputBytesMod8 << 3;
+		var shiftx = nOutputBytesMod8 * 8;
 
 		for (var shift = 0; shift < shiftx; shift += 8)
 			out.put((byte) (state[stateIndex] >>> shift));
 
-		nRateBitsFilled = (stateIndex << 6) | shiftx;
+		nRateBitsFilled = shiftx + stateIndex * 64;
 	}
 
 	private void squeezeSha3() {
@@ -248,15 +248,15 @@ public class Sha3 {
 	private void padKeccak() {
 		updateBits(0x01, 1);
 		if (nRateBits <= nRateBitsFilled) {
-			keccak(state);
+			keccak();
 			nRateBitsFilled = 0;
 		}
 		nRateBitsFilled = nRateBits - 1;
 		updateBits(0x1, 1);
-		keccak(state);
+		keccak();
 	}
 
-	private void updateBits(long in, int nInputBits) {
+	public void updateBits(long in0, int nInputBits) {
 		if (nInputBits == 0)
 			return;
 		else if (padded)
@@ -271,128 +271,119 @@ public class Sha3 {
 
 			// logically must have space at this point
 			var c = Math.min(nInputBits, 64 - nRateBitsFilledMod64);
-			state[nRateBitsFilled >>> 6] ^= (in & (-1l >>> c)) << nRateBitsFilledMod64;
+			state[nRateBitsFilled / 64] ^= (in0 & -1l >>> 64 - c) << nRateBitsFilledMod64;
 
 			nRateBitsFilled += c;
 			nInputBits -= c;
 
 			if (nInputBits != 0)
-				in1 = in >>> c;
+				in1 = in0 >>> c;
 			else
 				return;
 		} else
-			in1 = in;
+			in1 = in0;
 
 		if (nRateBits <= nRateBitsFilled) {
-			keccak(state);
+			keccak();
 			nRateBitsFilled = 0;
 		}
 
-		state[nRateBitsFilled >>> 6] ^= in1 & (-1l >>> nInputBits);
+		state[nRateBitsFilled / 64] ^= in1 & -1l >>> 64 - nInputBits;
 		nRateBitsFilled = nRateBitsFilled + nInputBits;
 	}
 
-	private void keccak(long[] a) {
-		int c;
-		long x, a_10_;
-		long x0, x1, x2, x3, x4;
-		long t0, t1, t2, t3, t4;
-		long c0, c1, c2, c3, c4;
+	private void keccak() {
+		for (var i = 0; i < 24; i++) {
+			long a_10_;
 
-		var i = 0;
-
-		do {
 			// theta (precalculation part)
-			c0 = a[0] ^ a[5 + 0] ^ a[10 + 0] ^ a[15 + 0] ^ a[20 + 0];
-			c1 = a[1] ^ a[5 + 1] ^ a[10 + 1] ^ a[15 + 1] ^ a[20 + 1];
-			c2 = a[2] ^ a[5 + 2] ^ a[10 + 2] ^ a[15 + 2] ^ a[20 + 2];
-			c3 = a[3] ^ a[5 + 3] ^ a[10 + 3] ^ a[15 + 3] ^ a[20 + 3];
-			c4 = a[4] ^ a[5 + 4] ^ a[10 + 4] ^ a[15 + 4] ^ a[20 + 4];
+			var c0 = state[0] ^ state[5 + 0] ^ state[10 + 0] ^ state[15 + 0] ^ state[20 + 0];
+			var c1 = state[1] ^ state[5 + 1] ^ state[10 + 1] ^ state[15 + 1] ^ state[20 + 1];
+			var c2 = state[2] ^ state[5 + 2] ^ state[10 + 2] ^ state[15 + 2] ^ state[20 + 2];
+			var c3 = state[3] ^ state[5 + 3] ^ state[10 + 3] ^ state[15 + 3] ^ state[20 + 3];
+			var c4 = state[4] ^ state[5 + 4] ^ state[10 + 4] ^ state[15 + 4] ^ state[20 + 4];
 
-			t0 = (c0 << 1) ^ (c0 >>> (64 - 1)) ^ c3;
-			t1 = (c1 << 1) ^ (c1 >>> (64 - 1)) ^ c4;
-			t2 = (c2 << 1) ^ (c2 >>> (64 - 1)) ^ c0;
-			t3 = (c3 << 1) ^ (c3 >>> (64 - 1)) ^ c1;
-			t4 = (c4 << 1) ^ (c4 >>> (64 - 1)) ^ c2;
+			var t0 = (c0 << 1) ^ (c0 >>> (64 - 1)) ^ c3;
+			var t1 = (c1 << 1) ^ (c1 >>> (64 - 1)) ^ c4;
+			var t2 = (c2 << 1) ^ (c2 >>> (64 - 1)) ^ c0;
+			var t3 = (c3 << 1) ^ (c3 >>> (64 - 1)) ^ c1;
+			var t4 = (c4 << 1) ^ (c4 >>> (64 - 1)) ^ c2;
+			var i8 = 8;
+			var i9 = 9;
 
 			// theta (xorring part) + rho + pi
-			a[0] ^= t1;
-			x = a[1] ^ t2;
-			a_10_ = x << 1 | x >>> 64 - 1;
-			x = a[6] ^ t2;
-			a[1] = x << 44 | x >>> 64 - 44;
-			x = a[9] ^ t0;
-			a[6] = x << 20 | x >>> 64 - 20;
-			x = a[22] ^ t3;
-			a[9] = x << 61 | x >>> 64 - 61;
+			state[0] ^= t1;
+			var a01_t2 = state[01] ^ t2;
+			a_10_ = a01_t2 << 01 | a01_t2 >>> 64 - 01;
+			var a06_t2 = state[06] ^ t2;
+			state[01] = a06_t2 << 44 | a06_t2 >>> 64 - 44;
+			var a09_t0 = state[i9] ^ t0;
+			state[06] = a09_t0 << 20 | a09_t0 >>> 64 - 20;
+			var a22_t3 = state[22] ^ t3;
+			state[i9] = a22_t3 << 61 | a22_t3 >>> 64 - 61;
 
-			x = a[14] ^ t0;
-			a[22] = x << 39 | x >>> 64 - 39;
-			x = a[20] ^ t1;
-			a[14] = x << 18 | x >>> 64 - 18;
-			x = a[2] ^ t3;
-			a[20] = x << 62 | x >>> 64 - 62;
-			x = a[12] ^ t3;
-			a[2] = x << 43 | x >>> 64 - 43;
-			x = a[13] ^ t4;
-			a[12] = x << 25 | x >>> 64 - 25;
+			var a14_t0 = state[14] ^ t0;
+			state[22] = a14_t0 << 39 | a14_t0 >>> 64 - 39;
+			var a20_t1 = state[20] ^ t1;
+			state[14] = a20_t1 << 18 | a20_t1 >>> 64 - 18;
+			var a02_t3 = state[02] ^ t3;
+			state[20] = a02_t3 << 62 | a02_t3 >>> 64 - 62;
+			var a12_t3 = state[12] ^ t3;
+			state[02] = a12_t3 << 43 | a12_t3 >>> 64 - 43;
+			var a13_t4 = state[13] ^ t4;
+			state[12] = a13_t4 << 25 | a13_t4 >>> 64 - 25;
 
-			x = a[19] ^ t0;
-			a[13] = x << 8 | x >>> 64 - 8;
-			x = a[23] ^ t4;
-			a[19] = x << 56 | x >>> 64 - 56;
-			x = a[15] ^ t1;
-			a[23] = x << 41 | x >>> 64 - 41;
-			x = a[4] ^ t0;
-			a[15] = x << 27 | x >>> 64 - 27;
-			x = a[24] ^ t0;
-			a[4] = x << 14 | x >>> 64 - 14;
+			var a19_t0 = state[19] ^ t0;
+			state[13] = a19_t0 << i8 | a19_t0 >>> 64 - i8;
+			var a23_t4 = state[23] ^ t4;
+			state[19] = a23_t4 << 56 | a23_t4 >>> 64 - 56;
+			var a15_t1 = state[15] ^ t1;
+			state[23] = a15_t1 << 41 | a15_t1 >>> 64 - 41;
+			var a04_t0 = state[04] ^ t0;
+			state[15] = a04_t0 << 27 | a04_t0 >>> 64 - 27;
+			var a24_t0 = state[24] ^ t0;
+			state[04] = a24_t0 << 14 | a24_t0 >>> 64 - 14;
 
-			x = a[21] ^ t2;
-			a[24] = x << 2 | x >>> 64 - 2;
-			x = a[8] ^ t4;
-			a[21] = x << 55 | x >>> 64 - 55;
-			x = a[16] ^ t2;
-			a[8] = x << 45 | x >>> 64 - 45;
-			x = a[5] ^ t1;
-			a[16] = x << 36 | x >>> 64 - 36;
-			x = a[3] ^ t4;
-			a[5] = x << 28 | x >>> 64 - 28;
+			var a21_t2 = state[21] ^ t2;
+			state[24] = a21_t2 << 02 | a21_t2 >>> 64 - 02;
+			var a08_t4 = state[i8] ^ t4;
+			state[21] = a08_t4 << 55 | a08_t4 >>> 64 - 55;
+			var a16_t2 = state[16] ^ t2;
+			state[i8] = a16_t2 << 45 | a16_t2 >>> 64 - 45;
+			var a05_t1 = state[05] ^ t1;
+			state[16] = a05_t1 << 36 | a05_t1 >>> 64 - 36;
+			var a03_t4 = state[03] ^ t4;
+			state[05] = a03_t4 << 28 | a03_t4 >>> 64 - 28;
 
-			x = a[18] ^ t4;
-			a[3] = x << 21 | x >>> 64 - 21;
-			x = a[17] ^ t3;
-			a[18] = x << 15 | x >>> 64 - 15;
-			x = a[11] ^ t2;
-			a[17] = x << 10 | x >>> 64 - 10;
-			x = a[7] ^ t3;
-			a[11] = x << 6 | x >>> 64 - 6;
-			x = a[10] ^ t1;
-			a[7] = x << 3 | x >>> 64 - 3;
-			a[10] = a_10_;
+			var a18_t4 = state[18] ^ t4;
+			state[03] = a18_t4 << 21 | a18_t4 >>> 64 - 21;
+			var a17_t3 = state[17] ^ t3;
+			state[18] = a17_t3 << 15 | a17_t3 >>> 64 - 15;
+			var a11_t2 = state[11] ^ t2;
+			state[17] = a11_t2 << 10 | a11_t2 >>> 64 - 10;
+			var a07_t3 = state[07] ^ t3;
+			state[11] = a07_t3 << 06 | a07_t3 >>> 64 - 06;
+			var a10_t1 = state[10] ^ t1;
+			state[07] = a10_t1 << 03 | a10_t1 >>> 64 - 03;
+			state[10] = a_10_;
 
 			// chi
-			c = 0;
-			do {
-				x0 = a[c + 0];
-				x1 = a[c + 1];
-				x2 = a[c + 2];
-				x3 = a[c + 3];
-				x4 = a[c + 4];
-				a[c + 0] = x0 ^ ~x1 & x2;
-				a[c + 1] = x1 ^ ~x2 & x3;
-				a[c + 2] = x2 ^ ~x3 & x4;
-				a[c + 3] = x3 ^ ~x4 & x0;
-				a[c + 4] = x4 ^ ~x0 & x1;
-
-				c += 5;
-			} while (c < 25);
+			for (var c = 0; c < 25; c += 5) {
+				var x0 = state[c + 0];
+				var x1 = state[c + 1];
+				var x2 = state[c + 2];
+				var x3 = state[c + 3];
+				var x4 = state[c + 4];
+				state[c + 0] = x0 ^ ~x1 & x2;
+				state[c + 1] = x1 ^ ~x2 & x3;
+				state[c + 2] = x2 ^ ~x3 & x4;
+				state[c + 3] = x3 ^ ~x4 & x0;
+				state[c + 4] = x4 ^ ~x0 & x1;
+			}
 
 			// iota
-			a[0] ^= rc[i];
-
-			i++;
-		} while (i < 24);
+			state[0] ^= rc[i];
+		}
 	}
 
 }

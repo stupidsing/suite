@@ -27,9 +27,22 @@ public class Sha3Test {
 		assertEquals(0x01, Byte.toUnsignedInt(sha3(512, bs)[0]));
 	}
 
-	private byte[] sha3(int size, byte b) {
+	private byte[] sha30(int size, byte b) {
 		var sha = new Sha3(size);
 		sha.update(b);
+		return sha.digest();
+	}
+
+	private byte[] sha3(int size, byte b) {
+		var sha = new Sha3(size);
+		sha.updateBits((b >> 0), 1);
+		sha.updateBits((b >> 1), 1);
+		sha.updateBits((b >> 2), 1);
+		sha.updateBits((b >> 3), 1);
+		sha.updateBits((b >> 4), 1);
+		sha.updateBits((b >> 5), 1);
+		sha.updateBits((b >> 6), 1);
+		sha.updateBits((b >> 7), 1);
 		return sha.digest();
 	}
 
