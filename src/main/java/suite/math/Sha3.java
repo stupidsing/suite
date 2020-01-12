@@ -224,12 +224,15 @@ public class Sha3 {
 
 	private void padSha3() {
 		updateBits(0x06, 3);
-		nRateBitsFilled = nRateBits - 1;
-		updateBits(0x1, 1);
+		padRateBits();
 	}
 
 	private void padKeccak() {
 		updateBits(0x01, 1);
+		padRateBits();
+	}
+
+	private void padRateBits() {
 		nRateBitsFilled = nRateBits - 1;
 		updateBits(0x1, 1);
 	}
