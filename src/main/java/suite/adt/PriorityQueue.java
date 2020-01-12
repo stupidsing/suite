@@ -52,9 +52,10 @@ public class PriorityQueue<T> {
 		for (; (c = 2 * i) <= size; i = c) {
 			if (c + 1 <= size && compare(ts[c + 1], ts[c]) < 0)
 				c++;
-			if (compare(ts[i], ts[c]) <= 0)
+			if (0 < compare(ts[i], ts[c]))
+				swap(c, i);
+			else
 				break;
-			swap(c, i);
 		}
 		return t;
 	}
