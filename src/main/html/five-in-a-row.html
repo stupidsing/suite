@@ -86,7 +86,7 @@ let pqnew = () => {
 
 let size = 8;
 
-let search = (xy0, xyx) => {
+let search = (vm, xy0, xyx) => {
 	let key = xy => `${xy.x},${xy.y}`;
 	let todos = [{ xy0.x, xy0.y, prev: null, }];
 	let dones = {};
@@ -96,7 +96,9 @@ let search = (xy0, xyx) => {
 		let k = key(todo);
 		let { x, y, } = todo;
 		if (0 <= x && x < size && 0 <= y && y < size && dones[key(todo)] == null) {
-			let neighbours = [-1, 1].flatMap(dx => [-1, 1].map(dy => ({ x: x + dx, y: y + dy, prev: todo, })));
+			let neighbours = [{ dx: -1, dy: -1 }, { dx: -1, dy: 1 }, { dx: 1, dy: -1 }, { dx: 1, dy: 1 }, ]
+				.map(({ dx, dy }) => ({ x: x + dx, y: y + dy, prev: todo, }))
+				.filter(({ x, y }) => vm[x][y].d == null);
 			todos.push(...neighbours);
 			dones[k] = todo;
 			if (k == kx) return todo;
