@@ -68,7 +68,7 @@ public class Sha3 {
 	}
 
 	public void update(byte[] in) {
-		if (Boolean.FALSE)
+		if (Boolean.TRUE)
 			update(ByteBuffer.wrap(in));
 		else if (Boolean.FALSE)
 			for (var b : in)
@@ -81,84 +81,61 @@ public class Sha3 {
 
 	private void update(ByteBuffer in) {
 		var nInputBytes = in.remaining();
-		var nRateBitsFilled_ = nRateBitsFilled;
-		var nRateBytesFilled = nRateBitsFilled_ >>> 3;
-		var mod = nRateBytesFilled & 0x07;
+		var nRateBytesFilled0 = nRateBitsFilled / 8;
+		var nRateBytesFilledMod8 = nRateBytesFilled0 & 0x07;
 
-		if (nInputBytes <= 0)
-			return;
-		else if (padded)
+		if (padded)
 			throw new RuntimeException();
-		else if (0 < (nRateBitsFilled_ & 0x07))
-			// this could be implemented but would introduce considerable performance
-			// degradation
+		else if ((nRateBitsFilled & 0x07) != 0) // bad alignment
 			throw new RuntimeException();
 
 		// logically must have space at this point
-		var c0 = Math.min(nInputBytes, (-mod) & 0x07);
-		var shift = mod * 8;
+		var c0 = Math.min(nInputBytes, -nRateBytesFilledMod8 & 0x07);
+		var shift = nRateBytesFilledMod8 * 8;
 		var shiftx = shift + c0 * 8;
-		var stateIndex = nRateBytesFilled / 8;
+		var stateIndex0 = nRateBytesFilled0 / 8;
 
-		nRateBytesFilled += c0;
+		nRateBytesFilled0 += c0;
 		nInputBytes -= c0;
 
 		for (; shift < shiftx; shift += 8)
-			state[stateIndex] ^= (long) (in.get() & 0xFF) << shift;
+			state[stateIndex0] ^= (long) (in.get() & 0xFF) << shift;
 
-		if (nInputBytes <= 0) {
-			nRateBitsFilled = nRateBytesFilled * 8;
-			return;
-		}
+		nRateBitsFilled = nRateBytesFilled0 * 8;
+		keccakIfRequired();
 
-		var nRateLongs = nRateBits / 64;
+		var nRateBytesFilled1 = nRateBitsFilled / 8;
+		var stateIndex1 = nRateBytesFilled1 / 8;
 		var nInputLongs = nInputBytes / 8;
+		var nRateLongs = nRateBits / 64;
+		var order = in.order();
 
-		if (0 < nInputLongs) {
-			var order = in.order();
-			try {
-				in.order(ByteOrder.LITTLE_ENDIAN);
-				while (0 < nInputLongs) {
-					if (nRateLongs <= stateIndex) {
-						keccak();
-						stateIndex = 0;
-					}
-					var c1 = Math.min(nInputLongs, nRateLongs - stateIndex);
-					nInputLongs -= c1;
-					var stateIndexEnd = stateIndex + c1;
-					while (stateIndex < stateIndexEnd)
-						state[stateIndex++] ^= in.getLong();
+		try {
+			in.order(ByteOrder.LITTLE_ENDIAN);
+
+			while (0 < nInputLongs) {
+				var c1 = Math.min(nInputLongs, nRateLongs - stateIndex1);
+				nInputLongs -= c1;
+				var stateIndexEnd = stateIndex1 + c1;
+
+				while (stateIndex1 < stateIndexEnd)
+					state[stateIndex1++] ^= in.getLong();
+
+				if (nRateLongs <= stateIndex1) {
+					keccak();
+					stateIndex1 = 0;
 				}
-			} finally {
-				in.order(order);
 			}
-
-			nInputBytes &= 0x07;
-
-			if (nInputBytes <= 0) {
-				nRateBitsFilled = stateIndex / 64;
-				return;
-			}
+		} finally {
+			in.order(order);
 		}
 
-		if (nRateLongs <= stateIndex) {
-			keccak();
-			stateIndex = 0;
-		}
+		var nInputBits = (nInputBytes & 0x07) * 8;
 
-		var w = state[stateIndex];
+		for (var i = 0; i < nInputBits; i += 8)
+			state[stateIndex1] ^= (long) (in.get() & 0xFF) << i;
 
-		var nInputBits = nInputBytes * 8;
-		var i = 0;
-
-		do {
-			w ^= (long) (in.get() & 0xFF) << i;
-			i += 8;
-		} while (i < nInputBits);
-
-		state[stateIndex] = w;
-
-		nRateBitsFilled = nInputBits + stateIndex * 64;
+		nRateBitsFilled = nInputBits + stateIndex1 * 64;
 	}
 
 	public byte[] digest() {
@@ -192,10 +169,8 @@ public class Sha3 {
 				nRateBitsFilled = nRateBytesFilled * 8;
 				return;
 			}
-		} else
-			// this could be implemented but would introduce considerable performance
-			// degradation
-			throw new IllegalStateException("Cannot digest while in bit-mode");
+		} else // bad alignment
+			throw new RuntimeException();
 
 		var nRateLongs = nRateBits / 64;
 		var stateIndex = nRateBytesFilled / 8;
@@ -206,11 +181,6 @@ public class Sha3 {
 			out.order(ByteOrder.LITTLE_ENDIAN);
 
 			while (0 < nOutputLongsLeft) {
-				if (nRateLongs <= stateIndex) {
-					squeezeSha3();
-					stateIndex = 0;
-				}
-
 				var c = Math.min(nOutputLongsLeft, nRateLongs - stateIndex);
 				var stateIndexEnd = stateIndex + c;
 
@@ -218,6 +188,11 @@ public class Sha3 {
 					out.putLong(state[stateIndex]);
 
 				nOutputLongsLeft -= c;
+
+				if (nRateLongs <= stateIndex) {
+					squeezeSha3();
+					stateIndex = 0;
+				}
 			}
 		} finally {
 			out.order(order0);
@@ -249,24 +224,18 @@ public class Sha3 {
 
 	private void padSha3() {
 		updateBits(0x06, 3);
-		keccakIfRequired();
 		nRateBitsFilled = nRateBits - 1;
 		updateBits(0x1, 1);
-		keccak();
 	}
 
 	private void padKeccak() {
 		updateBits(0x01, 1);
-		keccakIfRequired();
 		nRateBitsFilled = nRateBits - 1;
 		updateBits(0x1, 1);
-		keccak();
 	}
 
 	public void updateBits(long in0, int nInputBits) {
-		if (nInputBits == 0)
-			return;
-		else if (padded)
+		if (padded)
 			throw new RuntimeException();
 		else if (nInputBits < 0 || 64 < nInputBits)
 			throw new RuntimeException();
@@ -279,11 +248,12 @@ public class Sha3 {
 		nRateBitsFilled += c;
 		nInputBits -= c;
 
-		if (0 < nInputBits)
-			keccakIfRequired();
+		keccakIfRequired();
 
 		state[nRateBitsFilled / 64] ^= in0 >>> c & mask(nInputBits);
 		nRateBitsFilled += nInputBits;
+
+		keccakIfRequired();
 	}
 
 	private long mask(int bits) {
