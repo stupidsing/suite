@@ -62,42 +62,44 @@ let pqnew = () => {
 		h[a] = h[b];
 		h[b] = temp;
 	};
-	add: e => {
-		let i;
-		h[++size] = e;
-		for (i = size; 1 < i && ts[i] < ts[p = i / 2]; i = p) swap(p, i);
-	},
-	extractMin: () => {
-		let i = 1;
-		let e = h[i];
-		h[i] = h[size--];
-		for (; (c = 2 * i) <= size; i = c) {
-			if (c + 1 <= size && h[c + 1] < h[c]) c++;
-			if (h[c] < h[i])
-				swap(c, i);
-			else
-				break;
-		}
-		return e;
-	},
-	min: () => 0 < size ? h[1] : null,
-	size: () => size,
+	return {
+		add: e => {
+			let i;
+			h[++size] = e;
+			for (i = size; 1 < i && ts[i] < ts[p = i / 2]; i = p) swap(p, i);
+		},
+		extractMin: () => {
+			let i = 1;
+			let e = h[i];
+			h[i] = h[size--];
+			for (; (c = 2 * i) <= size; i = c) {
+				if (c + 1 <= size && h[c + 1] < h[c]) c++;
+				if (h[c] < h[i])
+					swap(c, i);
+				else
+					break;
+			}
+			return e;
+		},
+		min: () => 0 < size ? h[1] : null,
+		size: () => size,
+	};
 };
 
 let size = 8;
 
 let search = (vm, xy0, xyx) => {
 	let key = xy => `${xy.x},${xy.y}`;
-	let todos = [{ xy0.x, xy0.y, prev: null, }];
+	let todos = [{ x: xy0.x, y: xy0.y, prev: null, }];
 	let dones = {};
 	let kx = key(xyx);
 	while (0 < todos.length) { // breadth-first search
 		let todo = todos.unshift();
-		let k = key(todo);
 		let { x, y, } = todo;
 		if (0 <= x && x < size && 0 <= y && y < size && dones[key(todo)] == null) {
-			let neighbours = [{ dx: -1, dy: -1 }, { dx: -1, dy: 1 }, { dx: 1, dy: -1 }, { dx: 1, dy: 1 }, ]
-				.map(({ dx, dy }) => ({ x: x + dx, y: y + dy, prev: todo, }))
+			let k = key(todo);
+			let neighbours = [[-1, -1], [-1, +1], [+1, -1], [+1, +1],]
+				.map(([dx, dy]) => ({ x: x + dx, y: y + dy, prev: todo, }))
 				.filter(({ x, y }) => vm[x][y].d == null);
 			todos.push(...neighbours);
 			dones[k] = todo;
@@ -128,20 +130,21 @@ let select = (vm, vmc) => {
 	select_xy = vmc;
 };
 
-let move = (vmc0, vmcx) => {
-	let node = search(vmc0, vmcx);
+let move = (vm, vmc0, vmcx) => {
+	let node = search(vm, vmc0, vmcx);
 	let r = () => {};
-	let rec = n => {
-		if (n.prev != null) {
-			let r0 = rec(n.prev);
+	let rec = ({ x, y, prev, }) => {
+		if (prev != null) {
+			let r0 = rec(prev);
 			return () => {
 				r0();
 				setInterval(() => {
 					unselect(vm);
-					select(vm, vm[n.x][n.y]);
+					select(vm, vm[x][y]);
 				}, 200);
 			};
-		}
+		} else
+			return () => {};
 	};
 	rec(node)();
 	let d = vm[vmc0].d;
@@ -153,22 +156,24 @@ let handleclick = (vmc, ev) => {
 	let select_xy0 = select_xy;
 
 	if (select_xy != null) {
-		vmc_ = vm[select_xy.x][select_xy.y];
-		renderAgain(view, vm => vmsetcell(vm, { ...vmc_, selected: false, }));
+		renderAgain(view, vm => {
+			let vmc_ = vm[select_xy.x][select_xy.y];
+			return vmsetcell(vm, { ...vmc_, selected: false, });
+		});
 		select_xy = null;
 	}
 
-	if (vm.d != null) {
+	if (vmc.d != null) {
 		select_xy = vmc;
 		renderAgain(view, vm => vmsetcell(vm, { ...vmc, selected: true, }));
 	} else
-		if (select_xy0 != null) move(select_xy0, vmc);
+		if (select_xy0 != null) move(abc, select_xy0, vmc);
 };
 
 // let interval = setInterval(() => renderAgain(view, vm => { vm[1][1].d = !vm[1][1].d; return JSON.parse(JSON.stringify(vm)); }), 500);
 
 renderAgain(view, vm => {
-	var vm0 = range(0, size).map(x => range(0, size).map(y => ({ d: false, x, y, })).list()).list();
+	var vm0 = range(0, size).map(x => range(0, size).map(y => ({ d: null, x, y, })).list()).list();
 	vm0[1][1].d = 1;
 	return vm0;
 });
