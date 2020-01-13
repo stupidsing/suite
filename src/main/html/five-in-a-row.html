@@ -4,6 +4,10 @@ file:///home/ywsing/suite/src/main/html/five-in-a-row.html
 -->
 <!DOCTYPE html>
 <html>
+	<head>
+		<title>0 - Five in a row</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	</head>
 	<body>
 		<div id='target'></div>
 	</body>
@@ -57,8 +61,9 @@ let view = rd.parse(`
 	</span>
 `);
 
-let size = 8;
+let size = 7;
 let nStoneTypes = 5;
+let score = 0;
 
 let search = (vm, xy0, xyx) => {
 	let key = xy => `${xy.x},${xy.y}`;
@@ -105,17 +110,33 @@ let select = (vm, vmc) => {
 
 let nEmptyPlaces = vm => {
 	let n = 0;
-	renderAgain(view, vm => {
-		for (let x = 0; x < size; x++)
-			for (let y = 0; y < size; y++)
-				n += vm[x][y].d != null ? 0 : 1;
-		return vm;
-	});
+	for (let x = 0; x < size; x++)
+		for (let y = 0; y < size; y++)
+			n += vm[x][y].d != null ? 0 : 1;
 	return n;
 };
 
-let check = vm => {
+let drop = (vm, count) => {
+	if (count <= nEmptyPlaces(vm))
+		for (let n = 0; n < count; n++)
+			for (let i = 0; i < 1000; i++) {
+				let x = Math.floor(Math.random() * size);
+				let y = Math.floor(Math.random() * size);
+				if (vm[x][y].d == null) {
+					vm = vmsetcell(vm, { ...vm[x][y], d: Math.floor(Math.random() * nStoneTypes) });
+					break;
+				}
+			}
+	else {
+		freeze = true;
+		console.log('lose');
+	}
+	return vm;
+};
+
+let check = () => {
 	renderAgain(view, vm => {
+		let isFiveInARow = false;
 		for (let x = 0; x < size; x++)
 			for (let y = 0; y < size; y++)
 				for (let [dx, dy] of [[0, 1], [1, 0], [-1, 1], [1, 1],]) {
@@ -124,23 +145,18 @@ let check = vm => {
 					while (true
 						&& (x1 = x + step * dx) != null
 						&& (y1 = y + step * dy) != null
-						&& 0 <= x1 && x1 < size && 0 <= y1 && y1 < size && vm[x][y].d == vm[x1][y1].d) step++;
-					if (5 <= step)
+						&& 0 <= x1 && x1 < size && 0 <= y1 && y1 < size
+						&& vm[x][y].d != null
+						&& vm[x][y].d == vm[x1][y1].d) step++;
+					if (5 <= step) {
+						isFiveInARow = true;
 						for (let i = 0; i < step; i++)
 							vm = vmsetcell(vm, { ...vm[x + i * dx][y + i * dy], d: null, });
-				}
-		if (3 <= nEmptyPlaces(vm))
-			for (let n = 0; n < 3; n++)
-				for (let i = 0; i < 1000; i++) {
-					let x = Math.floor(Math.random() * size);
-					let y = Math.floor(Math.random() * size);
-					if (vm[x][y].d == null) {
-						vm = vmsetcell(vm, { ...vm[x][y], d: Math.floor(Math.random() * nStoneTypes) });
-						break;
+						score += step;
+						document.title = `${score} - Five in a row`;
 					}
 				}
-		else
-			console.log('lose');
+		if (!isFiveInARow) vm = drop(vm, 3);
 		return vm;
 	});
 };
@@ -199,9 +215,7 @@ let handleclick = (vmc, ev) => {
 
 renderAgain(view, vm => {
 	var vm0 = range(0, size).map(x => range(0, size).map(y => ({ d: null, x, y, })).list()).list();
-	vm0[1][1].d = 1;
-	vm0[2][2].d = 2;
-	return vm0;
+	return drop(vm0, 15);
 });
 
 close = () => {
