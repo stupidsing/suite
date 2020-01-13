@@ -116,26 +116,18 @@ let nEmptyPlaces = vm => {
 
 let check = vm => {
 	renderAgain(view, vm => {
-		for (let x = 0; x <= size - 5; x++)
-			for (let y = 0;y <= size - 5; y++)
-				for (let [dx, dy] of [[0, 1], [1, 0], [1, 1],]) {
-					let vmcs = [0, 1, 2, 3, 4,].map(d => vm[x + dx * d][y + dy * d]);
-					let vmc0 = vm[x + dx * 0][y + dy * 0];
-					let vmc1 = vm[x + dx * 1][y + dy * 1];
-					let vmc2 = vm[x + dx * 2][y + dy * 2];
-					let vmc3 = vm[x + dx * 3][y + dy * 3];
-					let vmc4 = vm[x + dx * 4][y + dy * 4];
-					if (vm[x][y].d != null
-						&& vmcs[0].d == vmcs[1].d
-						&& vmcs[1].d == vmcs[2].d
-						&& vmcs[2].d == vmcs[3].d
-						&& vmcs[3].d == vmcs[4].d) {						
-						vm = vmsetcell(vm, { ...vmcs[0], d: null, });
-						vm = vmsetcell(vm, { ...vmcs[1], d: null, });
-						vm = vmsetcell(vm, { ...vmcs[2], d: null, });
-						vm = vmsetcell(vm, { ...vmcs[3], d: null, });
-						vm = vmsetcell(vm, { ...vmcs[4], d: null, });
-					}
+		for (let x = 0; x < size; x++)
+			for (let y = 0; y < size; y++)
+				for (let [dx, dy] of [[0, 1], [1, 0], [-1, 1], [1, 1],]) {
+					let step = 0;
+					let x1, y1;
+					while (true
+						&& (x1 = x + step * dx) != null
+						&& (y1 = y + step * dy) != null
+						&& 0 <= x1 && x1 < size && 0 <= y1 && y1 < size && vm[x][y].d == vm[x1][y1].d) step++;
+					if (5 <= step)
+						for (let i = 0; i < step; i++)
+							vm = vmsetcell(vm, { ...vm[x + i * dx][y + i * dy], d: null, });
 				}
 		if (3 <= nEmptyPlaces(vm))
 			for (let n = 0; n < 3; n++)
