@@ -10,6 +10,7 @@ file:///home/ywsing/suite/src/main/html/five-in-a-row.html
 
 	<script src='frp.js'></script>
 	<script src='fun.js'></script>
+	<script src='pq.js'></script>
 	<script src='render.js'></script>
 
 	<script type='text/javascript'>
@@ -31,9 +32,11 @@ let viewCell = rd.parse(`
 			width: 50px;
 		'
 		rd_on_click='handleclick(vm, ev)'>
-		<rd_if v='vm.d == 0'></rd_if>
-		<rd_if v='vm.d == 1'>😂</rd_if>
-		<rd_if v='vm.d == 2'>💖</rd_if>
+		<rd_if v='vm.d == 0'><font color='yellow'>😂</font></rd_if>
+		<rd_if v='vm.d == 1'><font color='green'>🌲</font></rd_if>
+		<rd_if v='vm.d == 2'><font color='red'>💖</font></rd_if>
+		<rd_if v='vm.d == 3'><font color='blue'>🐬</font></rd_if>
+		<rd_if v='vm.d == 4'><font color='brown'>🐵</font></rd_if>
 	</div>
 `);
 
@@ -54,39 +57,8 @@ let view = rd.parse(`
 	</span>
 `);
 
-let pqnew = () => {
-	let h = new Array(1024);
-	let size = 0;
-	let swap = (a, b) => {
-		let temp = h[a];
-		h[a] = h[b];
-		h[b] = temp;
-	};
-	return {
-		add: e => {
-			let i;
-			h[++size] = e;
-			for (i = size; 1 < i && ts[i] < ts[p = i / 2]; i = p) swap(p, i);
-		},
-		extractMin: () => {
-			let i = 1;
-			let e = h[i];
-			h[i] = h[size--];
-			for (; (c = 2 * i) <= size; i = c) {
-				if (c + 1 <= size && h[c + 1] < h[c]) c++;
-				if (h[c] < h[i])
-					swap(c, i);
-				else
-					break;
-			}
-			return e;
-		},
-		min: () => 0 < size ? h[1] : null,
-		size: () => size,
-	};
-};
-
 let size = 8;
+let nStoneTypes = 5;
 
 let search = (vm, xy0, xyx) => {
 	let key = xy => `${xy.x},${xy.y}`;
@@ -94,13 +66,13 @@ let search = (vm, xy0, xyx) => {
 	let dones = {};
 	let kx = key(xyx);
 	while (0 < todos.length) { // breadth-first search
-		let todo = todos.unshift();
+		let todo = todos.shift();
 		let { x, y, } = todo;
-		if (0 <= x && x < size && 0 <= y && y < size && dones[key(todo)] == null) {
-			let k = key(todo);
-			let neighbours = [[-1, -1], [-1, +1], [+1, -1], [+1, +1],]
+		let k = key(todo);
+		if (!dones.hasOwnProperty(k)) {
+			let neighbours = [[-1, 0], [+1, 0], [0, -1], [0, +1],]
 				.map(([dx, dy]) => ({ x: x + dx, y: y + dy, prev: todo, }))
-				.filter(({ x, y }) => vm[x][y].d == null);
+				.filter(({ x, y }) => 0 <= x && x < size && 0 <= y && y < size && vm[x][y].d == null);
 			todos.push(...neighbours);
 			dones[k] = todo;
 			if (k == kx) return todo;
@@ -117,6 +89,7 @@ let vmsetcell = (vmt0, vmc1) =>  {
 	return vmt1;
 };
 
+let freeze = false;
 let select_xy = null;
 
 let unselect = vm => {
@@ -130,26 +103,82 @@ let select = (vm, vmc) => {
 	select_xy = vmc;
 };
 
+let nEmptyPlaces = vm => {
+	let n = 0;
+	renderAgain(view, vm => {
+		for (let x = 0; x < size; x++)
+			for (let y = 0; y < size; y++)
+				n += vm[x][y].d != null ? 0 : 1;
+		return vm;
+	});
+	return n;
+};
+
+let check = vm => {
+	renderAgain(view, vm => {
+		for (let x = 0; x <= size - 5; x++)
+			for (let y = 0;y <= size - 5; y++)
+				for (let [dx, dy] of [[0, 1], [1, 0], [1, 1],]) {
+					let vmcs = [0, 1, 2, 3, 4,].map(d => vm[x + dx * d][y + dy * d]);
+					let vmc0 = vm[x + dx * 0][y + dy * 0];
+					let vmc1 = vm[x + dx * 1][y + dy * 1];
+					let vmc2 = vm[x + dx * 2][y + dy * 2];
+					let vmc3 = vm[x + dx * 3][y + dy * 3];
+					let vmc4 = vm[x + dx * 4][y + dy * 4];
+					if (vm[x][y].d != null
+						&& vmcs[0].d == vmcs[1].d
+						&& vmcs[1].d == vmcs[2].d
+						&& vmcs[2].d == vmcs[3].d
+						&& vmcs[3].d == vmcs[4].d) {						
+						vm = vmsetcell(vm, { ...vmcs[0], d: null, });
+						vm = vmsetcell(vm, { ...vmcs[1], d: null, });
+						vm = vmsetcell(vm, { ...vmcs[2], d: null, });
+						vm = vmsetcell(vm, { ...vmcs[3], d: null, });
+						vm = vmsetcell(vm, { ...vmcs[4], d: null, });
+					}
+				}
+		if (3 <= nEmptyPlaces(vm))
+			for (let n = 0; n < 3; n++)
+				for (let i = 0; i < 1000; i++) {
+					let x = Math.floor(Math.random() * size);
+					let y = Math.floor(Math.random() * size);
+					if (vm[x][y].d == null) {
+						vm = vmsetcell(vm, { ...vm[x][y], d: Math.floor(Math.random() * nStoneTypes) });
+						break;
+					}
+				}
+		else
+			console.log('lose');
+		return vm;
+	});
+};
+
 let move = (vm, vmc0, vmcx) => {
 	let node = search(vm, vmc0, vmcx);
-	let r = () => {};
-	let rec = ({ x, y, prev, }) => {
-		if (prev != null) {
-			let r0 = rec(prev);
-			return () => {
-				r0();
-				setInterval(() => {
-					unselect(vm);
-					select(vm, vm[x][y]);
-				}, 200);
-			};
-		} else
-			return () => {};
+	let rec = ({ x, y, prev, }, cb) => {
+		if (prev != null)
+			rec(prev, () => {
+				let timeout = setTimeout(() => {
+					renderAgain(view, vm => {
+						let vmc0 = vm[prev.x][prev.y];
+						let vmc1 = vm[x][y];
+						let d = vmc0.d;
+						vm = vmsetcell(vm, { ...vmc0, d: null, });
+						vm = vmsetcell(vm, { ...vmc1, d, });
+						return vm;
+					});
+					cb();
+					clearTimeout(timeout);
+				}, 50);
+			});
+		else
+			cb();
 	};
-	rec(node)();
-	let d = vm[vmc0].d;
-	renderAgain(view, vm => vmsetcell(vm, { ...vmc0, d: null, }));
-	renderAgain(view, vm => vmsetcell(vm, { ...vmcx, d, }));
+	if (node != null) {
+		freeze = true;
+		rec(node, () => { check(); freeze = false; });
+	} else
+		console.log('no path between', vmc0, vmcx);
 };
 
 let handleclick = (vmc, ev) => {
@@ -167,7 +196,11 @@ let handleclick = (vmc, ev) => {
 		select_xy = vmc;
 		renderAgain(view, vm => vmsetcell(vm, { ...vmc, selected: true, }));
 	} else
-		if (select_xy0 != null) move(abc, select_xy0, vmc);
+		if (select_xy0 != null) {
+			let vm_;
+			renderAgain(view, vm => vm_ = vm);
+			move(vm_, select_xy0, vmc);
+		}
 };
 
 // let interval = setInterval(() => renderAgain(view, vm => { vm[1][1].d = !vm[1][1].d; return JSON.parse(JSON.stringify(vm)); }), 500);
@@ -175,6 +208,7 @@ let handleclick = (vmc, ev) => {
 renderAgain(view, vm => {
 	var vm0 = range(0, size).map(x => range(0, size).map(y => ({ d: null, x, y, })).list()).list();
 	vm0[1][1].d = 1;
+	vm0[2][2].d = 2;
 	return vm0;
 });
 
