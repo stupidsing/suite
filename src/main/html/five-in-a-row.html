@@ -120,6 +120,15 @@ let nEmptyPlaces = vm => {
 	return n;
 };
 
+let lose = vm => {
+	freeze = true;
+	for (let x = 0; x < size; x++)
+		for (let y = 0; y < size; y++)
+			if (vm[x][y].d == null)
+				vm = vmsetcell(vm, { ...vm[x][y], d: -1 });
+	return vm;
+};
+
 let drop = (vm, count) => {
 	if (count <= nEmptyPlaces(vm))
 		for (let n = 0; n < count; n++)
@@ -131,13 +140,8 @@ let drop = (vm, count) => {
 					break;
 				}
 			}
-	else {
-		freeze = true;
-		for (let x = 0; x < size; x++)
-			for (let y = 0; y < size; y++)
-				if (vm[x][y].d != null)
-					vm = vmsetcell(vm, { ...vm[x][y], d: -1 });
-	}
+	else
+		vm = lose(vm);
 	return vm;
 };
 
@@ -230,7 +234,7 @@ let handleclick = (vmc, ev) => {
 
 renderAgain(view, vm => {
 	var vm0 = range(0, size).map(x => range(0, size).map(y => ({ d: null, x, y, })).list()).list();
-	return drop(vm0, 15);
+	return drop(vm0, Math.ceil(size * size * .3));
 });
 
 close = () => {
