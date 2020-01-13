@@ -62,7 +62,10 @@ let view = rd.parse(`
 	</span>
 `);
 
-let size = 7;
+const usp = new URLSearchParams(window.location.search);
+const sizep = usp.get('size');
+
+let size = sizep != null ? +sizep : 7;
 let nStoneTypes = 5;
 let score = 0;
 
