@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TreeMap;
 import java.util.function.BiPredicate;
 
 import primal.MoreVerbs.Pull;
@@ -34,6 +35,8 @@ import suite.os.Schedule;
 import suite.os.Scheduler;
 import suite.sample.TelegramBotMain;
 import suite.smtp.SmtpServer;
+import suite.trade.analysis.Summarize;
+import suite.trade.data.TradeCfgImpl;
 import suite.util.RunUtil;
 
 // mvn compile exec:java -Dexec.mainClass=suite.ServerMain
@@ -110,6 +113,13 @@ public class ServerMain {
 			}.dispatch();
 		});
 
+		Handler handlerStatus = request -> {
+			var cfg = new TradeCfgImpl();
+			var summarize = Summarize.of(cfg);
+			var sbs = summarize.summarize(trade -> trade.strategy);
+			return Response.of(Pull.from("<pre>" + sbs.log + new TreeMap<>(sbs.pnlByKey) + "</pre>"));
+		};
+
 		var hat = new HttpAuthToken();
 		var hh = new HttpHandle();
 
@@ -121,6 +131,7 @@ public class ServerMain {
 				.put("path", hh.dir(Tmp.root)) //
 				.put("site", hh.session(authenticate, handlerSite)) //
 				.put("sse", handlerSse) //
+				.put("status", handlerStatus) //
 				.put("token", hh.dispatchMethod(PerMap //
 						.<String, Handler> empty() //
 						.put("PATCH", hat.handleRefreshToken(authenticateRoles)) //

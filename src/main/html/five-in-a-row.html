@@ -36,6 +36,7 @@ let viewCell = rd.parse(`
 			width: 40px;
 		'
 		rd_on_click='handleclick(vm, ev)'>
+		<rd_if v='vm.d &lt; 0'><font color='grey'>💀</font></rd_if>
 		<rd_if v='vm.d == 0'><font color='yellow'>😂</font></rd_if>
 		<rd_if v='vm.d == 1'><font color='green'>🌲</font></rd_if>
 		<rd_if v='vm.d == 2'><font color='red'>💖</font></rd_if>
@@ -129,36 +130,40 @@ let drop = (vm, count) => {
 			}
 	else {
 		freeze = true;
-		console.log('lose');
+		for (let x = 0; x < size; x++)
+			for (let y = 0; y < size; y++)
+				if (vm[x][y].d != null)
+					vm = vmsetcell(vm, { ...vm[x][y], d: -1 });
 	}
 	return vm;
 };
 
 let check = () => {
-	renderAgain(view, vm => {
-		let isFiveInARow = false;
-		for (let x = 0; x < size; x++)
-			for (let y = 0; y < size; y++)
-				for (let [dx, dy] of [[0, 1], [1, 0], [-1, 1], [1, 1],]) {
-					let step = 0;
-					let x1, y1;
-					while (true
-						&& (x1 = x + step * dx) != null
-						&& (y1 = y + step * dy) != null
-						&& 0 <= x1 && x1 < size && 0 <= y1 && y1 < size
-						&& vm[x][y].d != null
-						&& vm[x][y].d == vm[x1][y1].d) step++;
-					if (5 <= step) {
-						isFiveInARow = true;
-						for (let i = 0; i < step; i++)
-							vm = vmsetcell(vm, { ...vm[x + i * dx][y + i * dy], d: null, });
-						score += step;
-						document.title = `${score} - Five in a row`;
+	let isFiveInARow = false;
+	if (!freeze)
+		renderAgain(view, vm => {
+			for (let x = 0; x < size; x++)
+				for (let y = 0; y < size; y++)
+					for (let [dx, dy] of [[0, 1], [1, 0], [-1, 1], [1, 1],]) {
+						let step = 0;
+						let x1, y1;
+						while (true
+							&& (x1 = x + step * dx) != null
+							&& (y1 = y + step * dy) != null
+							&& 0 <= x1 && x1 < size && 0 <= y1 && y1 < size
+							&& vm[x][y].d != null
+							&& vm[x][y].d == vm[x1][y1].d) step++;
+						if (5 <= step) {
+							isFiveInARow = true;
+							for (let i = 0; i < step; i++)
+								vm = vmsetcell(vm, { ...vm[x + i * dx][y + i * dy], d: null, });
+							score += step;
+							document.title = `${score} - Five in a row`;
+						}
 					}
-				}
-		if (!isFiveInARow) vm = drop(vm, 3);
-		return vm;
-	});
+			return vm;
+		});
+	return isFiveInARow;
 };
 
 let move = (vm, vmc0, vmcx) => {
@@ -184,31 +189,38 @@ let move = (vm, vmc0, vmcx) => {
 	};
 	if (node != null) {
 		freeze = true;
-		rec(node, () => { check(); freeze = false; });
+		rec(node, () => {
+			freeze = false;
+			if (!check()) {
+				renderAgain(view, vm => drop(vm, 3));
+				check();
+			}				
+		});
 	} else
 		console.log('no path between', vmc0, vmcx);
 };
 
 let handleclick = (vmc, ev) => {
-	let select_xy0 = select_xy;
+	if (!freeze) {
+		let select_xy0 = select_xy;
 
-	if (select_xy != null) {
-		renderAgain(view, vm => {
-			let vmc_ = vm[select_xy.x][select_xy.y];
-			return vmsetcell(vm, { ...vmc_, selected: false, });
-		});
-		select_xy = null;
-	}
+		if (select_xy != null) {
+			renderAgain(view, vm => {
+				let vmc_ = vm[select_xy.x][select_xy.y];
+				return vmsetcell(vm, { ...vmc_, selected: false, });
+			});
+			select_xy = null;
+		}
 
-	if (vmc.d != null) {
-		select_xy = vmc;
-		renderAgain(view, vm => vmsetcell(vm, { ...vmc, selected: true, }));
-	} else
-		if (select_xy0 != null) {
+		if (vmc.d != null) {
+			select_xy = vmc;
+			renderAgain(view, vm => vmsetcell(vm, { ...vmc, selected: true, }));
+		} else if (select_xy0 != null) {
 			let vm_;
 			renderAgain(view, vm => vm_ = vm);
 			move(vm_, select_xy0, vmc);
 		}
+	}
 };
 
 // let interval = setInterval(() => renderAgain(view, vm => { vm[1][1].d = !vm[1][1].d; return JSON.parse(JSON.stringify(vm)); }), 500);
