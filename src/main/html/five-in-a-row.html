@@ -98,74 +98,72 @@ let search = (xy0, xyx, isMovable) => {
 let freeze = false;
 let select_xy = null;
 
-let vmchange = f => renderAgain(view, f);
-
-let vminit = () => vmchange(vm0 => {
-	var vm1 = range(0, size).map(x => range(0, size).map(y => ({ d: null, x, y, })).list()).list();
-	return drop(vm1, Math.ceil(size * size * .3));
-});
-
-let vmsetcell = (vmt0, vmc1) =>  {
-	let vmr0 = vmt0[vmc1.x];
-	let vmc0 = vmr0[vmc1.y];
-	let vmr1 = vmr0.map(vmc => vmc != vmc0 ? vmc : vmc1);
-	let vmt1 = vmt0.map(vmr => vmr != vmr0 ? vmr : vmr1);
-	return vmt1;
-};
-
-let vmunselect = () => {
-	vmchange(vm => {
-		let vmc = vm[select_xy.x][select_xy.y];
-		return vmsetcell(vm, { ...vmc, selected: false, });}
-	);
-	select_xy = null;
-};
-
-let vmselect = (x, y) => {
-	vmchange(vm => {
-		let vmc = vm[x][y];
-		return vmsetcell(vm, { ...vmc, selected: true, });
-	});
-	select_xy = { x, y };
-};
-
-let nEmptyPlaces = vm => {
-	let n = 0;
-	for (let x = 0; x < size; x++)
-		for (let y = 0; y < size; y++)
-			n += vm[x][y].d != null ? 0 : 1;
-	return n;
-};
-
-let lose = vm => {
-	freeze = true;
-	for (let x = 0; x < size; x++)
-		for (let y = 0; y < size; y++)
-			if (vm[x][y].d == null)
-				vm = vmsetcell(vm, { ...vm[x][y], d: -1 });
-	return vm;
-};
-
-let drop = (vm, count) => {
-	if (count <= nEmptyPlaces(vm))
-		for (let n = 0; n < count; n++)
-			while(true) {
-				let x = Math.floor(Math.random() * size);
-				let y = Math.floor(Math.random() * size);
-				if (vm[x][y].d == null) {
-					vm = vmsetcell(vm, { ...vm[x][y], d: Math.floor(Math.random() * nStoneTypes) });
-					break;
+let vm_ = {
+	setcell: (vmt0, vmc1) =>  {
+		let vmr0 = vmt0[vmc1.x];
+		let vmc0 = vmr0[vmc1.y];
+		let vmr1 = vmr0.map(vmc => vmc != vmc0 ? vmc : vmc1);
+		let vmt1 = vmt0.map(vmr => vmr != vmr0 ? vmr : vmr1);
+		return vmt1;
+	},
+	emptycount: vm => {
+		let n = 0;
+		for (let x = 0; x < size; x++)
+			for (let y = 0; y < size; y++)
+				n += vm[x][y].d != null ? 0 : 1;
+		return n;
+	},
+	lose: vm => {
+		freeze = true;
+		for (let x = 0; x < size; x++)
+			for (let y = 0; y < size; y++)
+				if (vm[x][y].d == null)
+					vm = vm_.setcell(vm, { ...vm[x][y], d: -1 });
+		return vm;
+	},
+	drop: (vm, count) => {
+		if (count <= vm_.emptycount(vm))
+			for (let n = 0; n < count; n++)
+				while(true) {
+					let x = Math.floor(Math.random() * size);
+					let y = Math.floor(Math.random() * size);
+					if (vm[x][y].d == null) {
+						vm = vm_.setcell(vm, { ...vm[x][y], d: Math.floor(Math.random() * nStoneTypes) });
+						break;
+					}
 				}
-			}
-	else
-		vm = lose(vm);
-	return vm;
+		else
+			vm = vm_.lose(vm);
+		return vm;
+	},
+};
+
+let vw = {
+	change: f => renderAgain(view, f),
+	init: () => vw.change(vm0 => {
+		var vm1 = range(0, size).map(x => range(0, size).map(y => ({ d: null, x, y, })).list()).list();
+		return vm_.drop(vm1, Math.ceil(size * size * .3));
+	}),
+	unselect: () => {
+		vw.change(vm => {
+			let vmc = vm[select_xy.x][select_xy.y];
+			return vm_.setcell(vm, { ...vmc, selected: false, });
+		});
+		select_xy = null;
+	},
+	select: (x, y) => {
+		vw.change(vm => {
+			let vmc = vm[x][y];
+			return vm_.setcell(vm, { ...vmc, selected: true, });
+		});
+		select_xy = { x, y };
+	},
 };
 
 let check = () => {
 	let isFiveInARow = false;
 	if (!freeze)
-		vmchange(vm => {
+		vw.change(vm => {
 			for (let x = 0; x < size; x++)
 				for (let y = 0; y < size; y++)
 					for (let [dx, dy] of [[0, 1], [1, 0], [-1, 1], [1, 1],]) {
@@ -180,7 +178,7 @@ let check = () => {
 						if (5 <= step) {
 							isFiveInARow = true;
 							for (let i = 0; i < step; i++)
-								vm = vmsetcell(vm, { ...vm[x + i * dx][y + i * dy], d: null, });
+								vm = vm_.setcell(vm, { ...vm[x + i * dx][y + i * dy], d: null, });
 							score += step;
 							document.title = `${score} - Five in a row`;
 						}
@@ -196,12 +194,12 @@ let move = (vm, vmc0, vmcx) => {
 		if (prev != null)
 			rec(prev, () => {
 				let timeout = setTimeout(() => {
-					vmchange(vm => {
+					vw.change(vm => {
 						let vmc0 = vm[prev.x][prev.y];
 						let vmc1 = vm[x][y];
 						let d = vmc0.d;
-						vm = vmsetcell(vm, { ...vmc0, d: null, });
-						vm = vmsetcell(vm, { ...vmc1, d, });
+						vm = vm_.setcell(vm, { ...vmc0, d: null, });
+						vm = vm_.setcell(vm, { ...vmc1, d, });
 						return vm;
 					});
 					cb();
@@ -216,7 +214,7 @@ let move = (vm, vmc0, vmcx) => {
 		rec(node, () => {
 			freeze = false;
 			if (!check()) {
-				vmchange(vm => drop(vm, 3));
+				vw.change(vm => vm_.drop(vm, 3));
 				check();
 			}				
 		});
@@ -228,21 +226,21 @@ let handleclick = (vmc, ev) => {
 	if (!freeze) {
 		let select_xy0 = select_xy;
 
-		if (select_xy != null) vmunselect();
+		if (select_xy != null) vw.unselect();
 
 		if (vmc.d != null)
-			vmselect(vmc.x, vmc.y);
+			vw.select(vmc.x, vmc.y);
 		else if (select_xy0 != null) {
 			let vm_;
-			vmchange(vm => vm_ = vm);
+			vw.change(vm => vm_ = vm);
 			move(vm_, select_xy0, vmc);
 		}
 	}
 };
 
-vminit();
+vw.init();
 
-close = () => vmchange(vm => null);
+close = () => vw.change(vm => null);
 
 	</script>
 </html>
