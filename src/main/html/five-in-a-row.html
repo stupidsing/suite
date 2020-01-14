@@ -100,9 +100,9 @@ let select_xy = null;
 
 let vmchange = f => renderAgain(view, f);
 
-let vminit = () => vmchange(vm => {
-	var vm0 = range(0, size).map(x => range(0, size).map(y => ({ d: null, x, y, })).list()).list();
-	return drop(vm0, Math.ceil(size * size * .3));
+let vminit = () => vmchange(vm0 => {
+	var vm1 = range(0, size).map(x => range(0, size).map(y => ({ d: null, x, y, })).list()).list();
+	return drop(vm1, Math.ceil(size * size * .3));
 });
 
 let vmsetcell = (vmt0, vmc1) =>  {
@@ -149,7 +149,7 @@ let lose = vm => {
 let drop = (vm, count) => {
 	if (count <= nEmptyPlaces(vm))
 		for (let n = 0; n < count; n++)
-			for (let i = 0; i < 1000; i++) {
+			while(true) {
 				let x = Math.floor(Math.random() * size);
 				let y = Math.floor(Math.random() * size);
 				if (vm[x][y].d == null) {
