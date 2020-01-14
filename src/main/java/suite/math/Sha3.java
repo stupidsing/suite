@@ -19,7 +19,6 @@ public class Sha3 {
 	private int nDigestBits; // in bits, 224, 256, 384, 512 etc.
 	private int nRateBits; // in bits
 	private int nRateBitsFilled; // in bits, nRateBitsFilled < nRateBits
-	private boolean padded;
 	private long[] states = new long[maxStates / 64];
 
 	private long[] rc = { //
@@ -40,7 +39,14 @@ public class Sha3 {
 				entry(512, 576)) //
 				.get(nDigestBits);
 
-		reset(rateSize, nDigestBits);
+		if (rateSize + nDigestBits * 2 == maxStates && 0 < rateSize && (rateSize & 0x3F) == 0) {
+			Arrays.fill(states, 0);
+
+			this.nDigestBits = nDigestBits;
+			this.nRateBits = rateSize;
+			nRateBitsFilled = 0;
+		} else
+			throw new RuntimeException();
 	}
 
 	public Sha3(Sha3 sha3) {
@@ -48,19 +54,6 @@ public class Sha3 {
 		nDigestBits = sha3.nDigestBits;
 		nRateBits = sha3.nRateBits;
 		nRateBitsFilled = sha3.nRateBitsFilled;
-		padded = sha3.padded;
-	}
-
-	private void reset(int nRateBits, int nDigestBits) {
-		if (nRateBits + nDigestBits * 2 == maxStates && 0 < nRateBits && (nRateBits & 0x3F) == 0) {
-			Arrays.fill(states, 0);
-
-			this.nDigestBits = nDigestBits;
-			this.nRateBits = nRateBits;
-			nRateBitsFilled = 0;
-			padded = false;
-		} else
-			throw new RuntimeException();
 	}
 
 	public void update(byte in) {
@@ -84,11 +77,6 @@ public class Sha3 {
 		var nRateBytesFilled0 = nRateBitsFilled / 8;
 		var nRateBytesFilledMod8 = nRateBytesFilled0 & 0x07;
 
-		if (padded)
-			throw new RuntimeException();
-		else if ((nRateBitsFilled & 0x07) != 0) // bad alignment
-			throw new RuntimeException();
-
 		// logically must have space at this point
 		var c0 = Math.min(nInputBytes, -nRateBytesFilledMod8 & 0x07);
 		var shift = nRateBytesFilledMod8 * 8;
@@ -98,8 +86,11 @@ public class Sha3 {
 		nRateBytesFilled0 += c0;
 		nInputBytes -= c0;
 
-		for (; shift < shiftx; shift += 8)
-			states[stateIndex0] ^= (long) (in.get() & 0xFF) << shift;
+		if ((nRateBitsFilled & 0x07) == 0) // bad alignment
+			for (; shift < shiftx; shift += 8)
+				states[stateIndex0] ^= (long) (in.get() & 0xFF) << shift;
+		else
+			throw new RuntimeException();
 
 		nRateBitsFilled = nRateBytesFilled0 * 8;
 		keccakIfRequired();
@@ -138,6 +129,24 @@ public class Sha3 {
 		nRateBitsFilled = nInputBits + stateIndex1 * 64;
 	}
 
+	public void updateBits(long in0, int nInputBits) {
+
+		// logically must have space at this point
+		var nRateBitsFilledMod64 = nRateBitsFilled & 0x3F;
+		var c = Math.min(nInputBits, -nRateBitsFilled & 0x3F);
+
+		states[nRateBitsFilled / 64] ^= (in0 & mask(c)) << nRateBitsFilledMod64;
+		nRateBitsFilled += c;
+		nInputBits -= c;
+
+		keccakIfRequired();
+
+		states[nRateBitsFilled / 64] ^= in0 >>> c & mask(nInputBits);
+		nRateBitsFilled += nInputBits;
+
+		keccakIfRequired();
+	}
+
 	public byte[] digest() {
 		var bs = new byte[nDigestBits >>> 3];
 		digest(ByteBuffer.wrap(bs));
@@ -145,8 +154,10 @@ public class Sha3 {
 	}
 
 	private void digest(ByteBuffer out) {
-		if (!padded)
+		if (Boolean.TRUE)
 			padSha3();
+		else
+			padKeccak();
 
 		var nOutputBytesLeft0 = out.remaining();
 		var nRateBytesFilled0 = nRateBitsFilled / 8;
@@ -172,7 +183,10 @@ public class Sha3 {
 			var nOutputLongsLeft = nOutputBytesLeft1 / 8;
 
 			if (nRateLongs <= stateIndex) {
-				squeezeSha3();
+				if (Boolean.TRUE)
+					squeezeSha3();
+				else
+					squeezeKeccak();
 				stateIndex = 0;
 			}
 
@@ -210,38 +224,8 @@ public class Sha3 {
 		}
 	}
 
-	public void updateBits(long in0, int nInputBits) {
-		if (padded)
-			throw new RuntimeException();
-		else if (nInputBits < 0 || 64 < nInputBits)
-			throw new RuntimeException();
-
-		// logically must have space at this point
-		var nRateBitsFilledMod64 = nRateBitsFilled & 0x3F;
-		var c = Math.min(nInputBits, -nRateBitsFilled & 0x3F);
-
-		states[nRateBitsFilled / 64] ^= (in0 & mask(c)) << nRateBitsFilledMod64;
-		nRateBitsFilled += c;
-		nInputBits -= c;
-
-		keccakIfRequired();
-
-		states[nRateBitsFilled / 64] ^= in0 >>> c & mask(nInputBits);
-		nRateBitsFilled += nInputBits;
-
-		keccakIfRequired();
-	}
-
 	private long mask(int bits) {
 		return 0 < bits ? -1l >>> -bits : 0l;
-	}
-
-	private void squeezeSha3() {
-		throw new RuntimeException();
-	}
-
-	private void squeezeKeccak() {
-		keccak();
 	}
 
 	private void padSha3() {
@@ -257,7 +241,14 @@ public class Sha3 {
 	private void padRateBits() {
 		nRateBitsFilled = nRateBits - 1;
 		updateBits(0x01, 1);
-		padded = true;
+	}
+
+	private void squeezeSha3() {
+		throw new RuntimeException();
+	}
+
+	private void squeezeKeccak() {
+		keccak();
 	}
 
 	private void keccakIfRequired() {
