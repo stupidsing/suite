@@ -44,7 +44,7 @@ public class Sha3Test {
 
 	private byte[] sha3(int size, byte b) {
 		var sha = new Sha3(size);
-		sha.update(b);
+		sha.updateBits(b, 8);
 		return sha.digest();
 	}
 

@@ -1,11 +1,12 @@
 package suite.math;
 
+import static java.lang.Math.min;
 import static java.util.Map.entry;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.util.Arrays;
 import java.util.Map;
+
+import primal.primitive.adt.Bytes.BytesBuilder;
 
 /**
  * https://en.wikipedia.org/wiki/SHA-3
@@ -30,7 +31,7 @@ public class Sha3 {
 			0x8000000080008081l, 0x8000000000008080l, 0x0000000080000001l, 0x8000000080008008l };
 
 	public Sha3(int nDigestBits) {
-		var rateSize = Map.ofEntries( //
+		var nRateBits = Map.ofEntries( //
 				// entry(128, 1344), // Keccak
 				entry(224, 1152), //
 				entry(256, 1088), //
@@ -39,56 +40,46 @@ public class Sha3 {
 				entry(512, 576)) //
 				.get(nDigestBits);
 
-		if (rateSize + nDigestBits * 2 == maxStates && 0 < rateSize && (rateSize & 0x3F) == 0) {
+		if (nRateBits + nDigestBits * 2 == maxStates && 0 < nRateBits && (nRateBits & 0x3F) == 0) {
 			Arrays.fill(states, 0);
 
 			this.nDigestBits = nDigestBits;
-			this.nRateBits = rateSize;
+			this.nRateBits = nRateBits;
 			nRateBitsFilled = 0;
 		} else
 			throw new RuntimeException();
 	}
 
-	public Sha3(Sha3 sha3) {
-		System.arraycopy(sha3.states, 0, states, 0, sha3.states.length);
-		nDigestBits = sha3.nDigestBits;
-		nRateBits = sha3.nRateBits;
-		nRateBitsFilled = sha3.nRateBitsFilled;
-	}
-
-	public void update(byte in) {
-		updateBits(in, 8);
-	}
-
 	public void update(byte[] in) {
 		if (Boolean.TRUE)
-			update(ByteBuffer.wrap(in));
+			update_(in);
 		else if (Boolean.FALSE)
 			for (var b : in)
 				updateBits(b, 8);
 		else
 			for (var b : in)
-				for (var i = 0; i < 8; i++)
-					updateBits(b >> i, 1);
+				for (var shift = 0; shift < 8; shift++)
+					updateBits(b >> shift, 1);
 	}
 
-	private void update(ByteBuffer in) {
-		var nInputBytes = in.remaining();
+	private void update_(byte[] in) {
+		var inIndex = 0;
+		var nInputBytes = in.length;
 		var nRateBytesFilled0 = nRateBitsFilled / 8;
 		var nRateBytesFilledMod8 = nRateBytesFilled0 & 0x07;
 
 		// logically must have space at this point
-		var c0 = Math.min(nInputBytes, -nRateBytesFilledMod8 & 0x07);
-		var shift = nRateBytesFilledMod8 * 8;
-		var shiftx = shift + c0 * 8;
+		var c0 = min(nInputBytes, -nRateBytesFilledMod8 & 0x07);
+		var shift0 = nRateBytesFilledMod8 * 8;
+		var shiftx = shift0 + c0 * 8;
 		var stateIndex0 = nRateBytesFilled0 / 8;
 
 		nRateBytesFilled0 += c0;
 		nInputBytes -= c0;
 
 		if ((nRateBitsFilled & 0x07) == 0) // bad alignment
-			for (; shift < shiftx; shift += 8)
-				states[stateIndex0] ^= (long) (in.get() & 0xFF) << shift;
+			for (var shift = shift0; shift < shiftx; shift += 8)
+				states[stateIndex0] ^= (long) (in[inIndex++] & 0xFF) << shift;
 		else
 			throw new RuntimeException();
 
@@ -99,32 +90,29 @@ public class Sha3 {
 		var stateIndex1 = nRateBytesFilled1 / 8;
 		var nInputLongs = nInputBytes / 8;
 		var nRateLongs = nRateBits / 64;
-		var order = in.order();
 
-		try {
-			in.order(ByteOrder.LITTLE_ENDIAN);
+		while (0 < nInputLongs) {
+			var c1 = Math.min(nInputLongs, nRateLongs - stateIndex1);
+			nInputLongs -= c1;
+			var stateIndexEnd = stateIndex1 + c1;
 
-			while (0 < nInputLongs) {
-				var c1 = Math.min(nInputLongs, nRateLongs - stateIndex1);
-				nInputLongs -= c1;
-				var stateIndexEnd = stateIndex1 + c1;
-
-				while (stateIndex1 < stateIndexEnd)
-					states[stateIndex1++] ^= in.getLong();
-
-				if (nRateLongs <= stateIndex1) {
-					keccak();
-					stateIndex1 = 0;
-				}
+			while (stateIndex1 < stateIndexEnd) {
+				var l = 0l;
+				for (int shift = 0; shift < 64; shift += 8)
+					l |= Byte.toUnsignedLong(in[inIndex++]) << shift;
+				states[stateIndex1++] ^= l;
 			}
-		} finally {
-			in.order(order);
+
+			if (nRateLongs <= stateIndex1) {
+				keccak();
+				stateIndex1 = 0;
+			}
 		}
 
 		var nInputBits = (nInputBytes & 0x07) * 8;
 
-		for (var i = 0; i < nInputBits; i += 8)
-			states[stateIndex1] ^= (long) (in.get() & 0xFF) << i;
+		for (var shift = 0; shift < nInputBits; shift += 8)
+			states[stateIndex1] ^= (long) (in[inIndex++] & 0xFF) << shift;
 
 		nRateBitsFilled = nInputBits + stateIndex1 * 64;
 	}
@@ -148,79 +136,75 @@ public class Sha3 {
 	}
 
 	public byte[] digest() {
-		var bs = new byte[nDigestBits >>> 3];
-		digest(ByteBuffer.wrap(bs));
-		return bs;
+		var bb = new BytesBuilder();
+		digest(bb);
+		return bb.toBytes().toArray();
 	}
 
-	private void digest(ByteBuffer out) {
+	private void digest(BytesBuilder out) {
 		if (Boolean.TRUE)
 			padSha3();
 		else
 			padKeccak();
 
-		var nOutputBytesLeft0 = out.remaining();
+		var nOutputBytesLeft0 = nDigestBits / 8;
 		var nRateBytesFilled0 = nRateBitsFilled / 8;
 		var nRateBytesFilledMod8 = nRateBytesFilled0 & 0x07;
-		var c0 = Math.min(-nRateBytesFilledMod8 & 0x07, nOutputBytesLeft0);
+		var stateIndex0 = nRateBytesFilled0 / 8;
+		var c0 = min(-nRateBytesFilledMod8 & 0x07, nOutputBytesLeft0);
 		var shift0 = nRateBytesFilledMod8 * 8;
-		var shiftx0 = shift0 + c0 * 8;
-		var w = states[nRateBytesFilled0 / 8];
+		var shiftx = shift0 + c0 * 8;
 
 		if ((nRateBitsFilled & 0x07) == 0)
-			for (; shift0 < shiftx0; shift0 += 8)
-				out.put((byte) (w >>> shift0));
+			for (var shift = shift0; shift < shiftx; shift += 8)
+				out.append((byte) (states[stateIndex0] >>> shift));
 		else // bad alignment
 			throw new RuntimeException();
 
 		var nOutputBytesLeft1 = nOutputBytesLeft0 - c0;
 		var nRateBytesFilled1 = nRateBytesFilled0 + c0;
-		nRateBitsFilled = nRateBytesFilled1 * 8;
 
-		if (nOutputBytesLeft1 != 0) {
+		if (nOutputBytesLeft1 == 0)
+			nRateBitsFilled = nRateBytesFilled1 * 8;
+		else {
 			var nRateLongs = nRateBits / 64;
-			var stateIndex = nRateBitsFilled / 64;
+			var stateIndex1 = nRateBytesFilled1 / 8;
 			var nOutputLongsLeft = nOutputBytesLeft1 / 8;
 
-			if (nRateLongs <= stateIndex) {
+			if (nRateLongs <= stateIndex1) {
 				if (Boolean.TRUE)
 					squeezeSha3();
 				else
 					squeezeKeccak();
-				stateIndex = 0;
+				stateIndex1 = 0;
 			}
 
-			var order0 = out.order();
+			while (0 < nOutputLongsLeft) {
+				var c1 = min(nOutputLongsLeft, nRateLongs - stateIndex1);
+				var stateIndexEnd = stateIndex1 + c1;
 
-			try {
-				out.order(ByteOrder.LITTLE_ENDIAN);
-
-				while (0 < nOutputLongsLeft) {
-					var c = Math.min(nOutputLongsLeft, nRateLongs - stateIndex);
-					var stateIndexEnd = stateIndex + c;
-
-					for (; stateIndex < stateIndexEnd; stateIndex++)
-						out.putLong(states[stateIndex]);
-
-					nOutputLongsLeft -= c;
-
-					if (nRateLongs <= stateIndex) {
-						squeezeSha3();
-						stateIndex = 0;
-					}
+				for (; stateIndex1 < stateIndexEnd; stateIndex1++) {
+					var l = states[stateIndex1];
+					for (var shift = 0; shift < 64; shift += 8)
+						out.append((byte) (l >>> shift));
 				}
-			} finally {
-				out.order(order0);
+
+				nOutputLongsLeft -= c1;
+
+				if (nRateLongs <= stateIndex1) {
+					squeezeSha3();
+					stateIndex1 = 0;
+				}
 			}
 
 			var nOutputBytesMod8 = nOutputBytesLeft1 & 0x07;
 
-			var shiftx1 = nOutputBytesMod8 * 8;
+			var shifty = nOutputBytesMod8 * 8;
 
-			for (var shift1 = 0; shift1 < shiftx1; shift1 += 8)
-				out.put((byte) (states[stateIndex] >>> shift1));
+			for (var shift = 0; shift < shifty; shift += 8)
+				out.append((byte) (states[stateIndex1] >>> shift));
 
-			nRateBitsFilled = shiftx1 + stateIndex * 64;
+			nRateBitsFilled = shifty + stateIndex1 * 64;
 		}
 	}
 
