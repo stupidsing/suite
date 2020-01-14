@@ -67,13 +67,14 @@ let view = rd.parse(`
 `);
 
 const usp = new URLSearchParams(window.location.search);
+const colorsp = usp.get('colors');
 const sizep = usp.get('size');
 
 let size = sizep != null ? +sizep : 7;
-let nStoneTypes = 5;
+let nStoneTypes = colorsp != null ? +colorsp : 5;
 let score = 0;
 
-let search = (vm, xy0, xyx) => {
+let search = (xy0, xyx, isMovable) => {
 	let key = xy => `${xy.x},${xy.y}`;
 	let todos = [{ x: xy0.x, y: xy0.y, prev: null, }];
 	let dones = {};
@@ -85,7 +86,7 @@ let search = (vm, xy0, xyx) => {
 		if (!dones.hasOwnProperty(k)) {
 			let neighbours = [[-1, 0], [+1, 0], [0, -1], [0, +1],]
 				.map(([dx, dy]) => ({ x: x + dx, y: y + dy, prev: todo, }))
-				.filter(({ x, y }) => 0 <= x && x < size && 0 <= y && y < size && vm[x][y].d == null);
+				.filter(({ x, y }) => 0 <= x && x < size && 0 <= y && y < size && isMovable(x, y));
 			todos.push(...neighbours);
 			dones[k] = todo;
 			if (k == kx) return todo;
@@ -93,6 +94,16 @@ let search = (vm, xy0, xyx) => {
 	}
 	return null;
 };
+
+let freeze = false;
+let select_xy = null;
+
+let vmchange = f => renderAgain(view, f);
+
+let vminit = () => vmchange(vm => {
+	var vm0 = range(0, size).map(x => range(0, size).map(y => ({ d: null, x, y, })).list()).list();
+	return drop(vm0, Math.ceil(size * size * .3));
+});
 
 let vmsetcell = (vmt0, vmc1) =>  {
 	let vmr0 = vmt0[vmc1.x];
@@ -102,18 +113,20 @@ let vmsetcell = (vmt0, vmc1) =>  {
 	return vmt1;
 };
 
-let freeze = false;
-let select_xy = null;
-
-let unselect = vm => {
-	vmc = vm[select_xy.x][select_xy.y];
-	renderAgain(view, vm => vmsetcell(vm, { ...vmc, selected: false, }));
+let vmunselect = () => {
+	vmchange(vm => {
+		let vmc = vm[select_xy.x][select_xy.y];
+		return vmsetcell(vm, { ...vmc, selected: false, });}
+	);
 	select_xy = null;
 };
 
-let select = (vm, vmc) => {
-	renderAgain(view, vm => vmsetcell(vm, { ...vmc, selected: true, }));
-	select_xy = vmc;
+let vmselect = (x, y) => {
+	vmchange(vm => {
+		let vmc = vm[x][y];
+		return vmsetcell(vm, { ...vmc, selected: true, });
+	});
+	select_xy = { x, y };
 };
 
 let nEmptyPlaces = vm => {
@@ -152,7 +165,7 @@ let drop = (vm, count) => {
 let check = () => {
 	let isFiveInARow = false;
 	if (!freeze)
-		renderAgain(view, vm => {
+		vmchange(vm => {
 			for (let x = 0; x < size; x++)
 				for (let y = 0; y < size; y++)
 					for (let [dx, dy] of [[0, 1], [1, 0], [-1, 1], [1, 1],]) {
@@ -178,12 +191,12 @@ let check = () => {
 };
 
 let move = (vm, vmc0, vmcx) => {
-	let node = search(vm, vmc0, vmcx);
+	let node = search(vmc0, vmcx, (x, y) => vm[x][y].d == null);
 	let rec = ({ x, y, prev, }, cb) => {
 		if (prev != null)
 			rec(prev, () => {
 				let timeout = setTimeout(() => {
-					renderAgain(view, vm => {
+					vmchange(vm => {
 						let vmc0 = vm[prev.x][prev.y];
 						let vmc1 = vm[x][y];
 						let d = vmc0.d;
@@ -203,7 +216,7 @@ let move = (vm, vmc0, vmcx) => {
 		rec(node, () => {
 			freeze = false;
 			if (!check()) {
-				renderAgain(view, vm => drop(vm, 3));
+				vmchange(vm => drop(vm, 3));
 				check();
 			}				
 		});
@@ -215,36 +228,21 @@ let handleclick = (vmc, ev) => {
 	if (!freeze) {
 		let select_xy0 = select_xy;
 
-		if (select_xy != null) {
-			renderAgain(view, vm => {
-				let vmc_ = vm[select_xy.x][select_xy.y];
-				return vmsetcell(vm, { ...vmc_, selected: false, });
-			});
-			select_xy = null;
-		}
+		if (select_xy != null) vmunselect();
 
-		if (vmc.d != null) {
-			select_xy = vmc;
-			renderAgain(view, vm => vmsetcell(vm, { ...vmc, selected: true, }));
-		} else if (select_xy0 != null) {
+		if (vmc.d != null)
+			vmselect(vmc.x, vmc.y);
+		else if (select_xy0 != null) {
 			let vm_;
-			renderAgain(view, vm => vm_ = vm);
+			vmchange(vm => vm_ = vm);
 			move(vm_, select_xy0, vmc);
 		}
 	}
 };
 
-// let interval = setInterval(() => renderAgain(view, vm => { vm[1][1].d = !vm[1][1].d; return JSON.parse(JSON.stringify(vm)); }), 500);
+vminit();
 
-renderAgain(view, vm => {
-	var vm0 = range(0, size).map(x => range(0, size).map(y => ({ d: null, x, y, })).list()).list();
-	return drop(vm0, Math.ceil(size * size * .3));
-});
-
-close = () => {
-	// clearInterval(interval);
-	renderAgain(view, vm => null);
-};
+close = () => vmchange(vm => null);
 
 	</script>
 </html>
