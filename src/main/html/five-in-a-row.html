@@ -24,6 +24,10 @@ let { lens, range, read, } = fun();
 let { rd, renderAgain, } = render();
 let close;
 
+let icons = [ '🍋', '🌲', '💖', '🐬', '🐵', '🍊', '🍇', '💮', '✴️', ];
+icons[-1] = '💀';
+// 😂
+
 let viewCell = rd.parse(`
 	<div draggable='true'
 		style='
@@ -36,23 +40,16 @@ let viewCell = rd.parse(`
 			width: 40px;
 		'
 		rd_on_click='handleclick(vm, ev)'>
-		<rd_if v='vm.d &lt; 0'><font color='grey'>💀</font></rd_if>
-		<rd_if v='vm.d == 0'><font color='yellow'>🍋</font></rd_if><!-- 😂 -->
-		<rd_if v='vm.d == 1'><font color='green'>🌲</font></rd_if>
-		<rd_if v='vm.d == 2'><font color='red'>💖</font></rd_if>
-		<rd_if v='vm.d == 3'><font color='blue'>🐬</font></rd_if>
-		<rd_if v='vm.d == 4'><font color='brown'>🐵</font></rd_if>
-		<rd_if v='vm.d == 5'><font color='orange'>🍊</font></rd_if>
-		<rd_if v='vm.d == 6'><font color='purple'>🍇</font></rd_if>
-		<rd_if v='vm.d == 7'><font color='white'>💮</font></rd_if>
-		<rd_if v='vm.d == 8'><font color='black'>✴️</font></rd_if>
+		<rd_map v='vm.d'>
+			<rd_if v='vm != null'>{ icons[vm] }</rd_if>
+		</rd_map>
 	</div>
 `);
 
 let view = rd.parse(`
 	<span>
 		<rd_map v='vm.nextstones'>
-			<table style='font-family: monospace; font-size: 20; user-select: none;'>
+			<table style='user-select: none;'>
 				<tr>
 					<rd_for>
 						<td><rd_component v='viewCell' /></td>
@@ -62,7 +59,7 @@ let view = rd.parse(`
 		</rd_map>
 		<p/>
 		<rd_map v='vm.board'>
-			<table style='font-family: monospace; font-size: 20; user-select: none;'>
+			<table style='user-select: none;'>
 				<rd_for>
 					<tr>
 						<rd_for>

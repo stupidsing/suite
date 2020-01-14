@@ -24,6 +24,10 @@ let { lens, range, read, } = fun();
 let { rd, renderAgain, } = render();
 let close;
 
+let icons = [ '🍋', '🌲', '💖', '🐬', '🐵', '🍊', '🍇', '💮', '✴️', ];
+icons[-1] = '💀';
+// 😂
+
 let viewCell = rd.parse(`
 	<span draggable='true'
 		style='
@@ -37,41 +41,46 @@ let viewCell = rd.parse(`
 			width: 40px;
 		'
 		rd_on_click='handleclick(vm, ev)'>
-		<rd_if v='vm.d &lt; 0'><font color='grey'>💀</font></rd_if>
-		<rd_if v='vm.d == 0'><font color='yellow'>🍋</font></rd_if><!-- 😂 -->
-		<rd_if v='vm.d == 1'><font color='green'>🌲</font></rd_if>
-		<rd_if v='vm.d == 2'><font color='red'>💖</font></rd_if>
-		<rd_if v='vm.d == 3'><font color='blue'>🐬</font></rd_if>
-		<rd_if v='vm.d == 4'><font color='brown'>🐵</font></rd_if>
-		<rd_if v='vm.d == 5'><font color='orange'>🍊</font></rd_if>
-		<rd_if v='vm.d == 6'><font color='purple'>🍇</font></rd_if>
-		<rd_if v='vm.d == 7'><font color='white'>💮</font></rd_if>
-		<rd_if v='vm.d == 8'><font color='black'>✴️</font></rd_if>
+		<rd_map v='vm.d'>
+			<rd_if v='vm != null'>{ icons[vm] }</rd_if>
+		</rd_map>
 	</span>
 `);
 
 let view = rd.parse(`
 	<span>
-		<rd_for>
-			<div>
-				<rd_if v='vm[0].x % 2 == 0'>
-					<span
-						style='
-							display: inline-block;
-							font-size: 25px;
-							height: 40px;
-							margin: 2px 0px 2px 0px;
-							text-align: center;
-							vertical-align: middle;
-							width: 18px;
-						'
-					></span>
-				</rd_if>
-				<rd_for>
-					<rd_component v='viewCell' />
-				</rd_for>
-			</div>
-		</rd_for>
+		<rd_map v='vm.nextstones'>
+			<table style='user-select: none;'>
+				<tr>
+					<rd_for>
+						<td><rd_component v='viewCell' /></td>
+					</rd_for>
+				</tr>
+			</table>
+		</rd_map>
+		<p/>
+		<rd_map v='vm.board'>
+			<rd_for>
+				<div>
+					<rd_if v='vm[0].x % 2 == 0'>
+						<span
+							style='
+								display: inline-block;
+								font-size: 25px;
+								height: 40px;
+								margin: 2px 0px 2px 0px;
+								text-align: center;
+								vertical-align: middle;
+								width: 18px;
+							'
+						></span>
+					</rd_if>
+					<rd_for>
+						<rd_component v='viewCell' />
+					</rd_for>
+				</div>
+			</rd_for>
+		</rd_map>
 		<button rd_on_click='close()'>Close</button>
 	</span>
 `);
@@ -83,6 +92,14 @@ const sizep = usp.get('size');
 let size = sizep != null ? +sizep : 7;
 let nStoneTypes = colorsp != null ? +colorsp : 5;
 let score = 0;
+
+let randomstone = () => ({ d: Math.floor(Math.random() * nStoneTypes) });
+
+let randomstones = n => {
+	let stones = [];
+	for (let i = 0; i < n; i++) stones.push(randomstone());
+	return stones;
+};
 
 let search = (xy0, xyx, isMovable) => {
 	let key = xy => `${xy.x},${xy.y}`;
@@ -109,36 +126,37 @@ let freeze = false;
 let select_xy = null;
 
 let vm_ = {
-	setcell: (vmt0, vmc1) =>  {
+	setcell: (vm, vmc1) =>  {
+		let vmt0 = vm.board;
 		let vmr0 = vmt0[vmc1.x];
 		let vmc0 = vmr0[vmc1.y];
 		let vmr1 = vmr0.map(vmc => vmc != vmc0 ? vmc : vmc1);
 		let vmt1 = vmt0.map(vmr => vmr != vmr0 ? vmr : vmr1);
-		return vmt1;
+		return { ...vm, board: vmt1 };
 	},
 	emptycount: vm => {
 		let n = 0;
 		for (let x = 0; x < size; x++)
 			for (let y = 0; y < size; y++)
-				n += vm[x][y].d != null ? 0 : 1;
+				n += vm.board[x][y].d != null ? 0 : 1;
 		return n;
 	},
 	lose: vm => {
 		freeze = true;
 		for (let x = 0; x < size; x++)
 			for (let y = 0; y < size; y++)
-				if (vm[x][y].d == null)
-					vm = vm_.setcell(vm, { ...vm[x][y], d: -1 });
+				if (vm.board[x][y].d == null)
+					vm = vm_.setcell(vm, { ...vm.board[x][y], d: -1 });
 		return vm;
 	},
-	drop: (vm, count) => {
-		if (count <= vm_.emptycount(vm))
-			for (let n = 0; n < count; n++)
+	drop: (vm, stones) => {
+		if (stones.length <= vm_.emptycount(vm))
+			for (let stone of stones)
 				while(true) {
 					let x = Math.floor(Math.random() * size);
 					let y = Math.floor(Math.random() * size);
-					if (vm[x][y].d == null) {
-						vm = vm_.setcell(vm, { ...vm[x][y], d: Math.floor(Math.random() * nStoneTypes) });
+					if (vm.board[x][y].d == null) {
+						vm = vm_.setcell(vm, { ...vm.board[x][y], d: stone.d });
 						break;
 					}
 				}
@@ -149,21 +167,30 @@ let vm_ = {
 };
 
 let vw = {
-	change: f => renderAgain(view, f),
+	change: f => {
+		renderAgain(view, vm0 => {
+			let vm1 = f(vm0);
+			// console.log(vm1);
+			return vm1;
+		});
+	},
 	init: () => vw.change(vm0 => {
-		var vm1 = range(0, size).map(x => range(0, size).map(y => ({ d: null, x, y, })).list()).list();
-		return vm_.drop(vm1, Math.ceil(size * size * .3));
+		var vm1 = {
+			board: range(0, size).map(x => range(0, size).map(y => ({ d: null, x, y, })).list()).list(),
+			nextstones: [randomstone(), randomstone(), randomstone(),],
+		};
+		return vm_.drop(vm1, randomstones(Math.ceil(size * size * .3)));
 	}),
 	unselect: () => {
 		vw.change(vm => {
-			let vmc = vm[select_xy.x][select_xy.y];
+			let vmc = vm.board[select_xy.x][select_xy.y];
 			return vm_.setcell(vm, { ...vmc, selected: false, });
 		});
 		select_xy = null;
 	},
 	select: (x, y) => {
 		vw.change(vm => {
-			let vmc = vm[x][y];
+			let vmc = vm.board[x][y];
 			return vm_.setcell(vm, { ...vmc, selected: true, });
 		});
 		select_xy = { x, y };
@@ -183,12 +210,12 @@ let check = () => {
 							&& (x1 = x + step * dx) != null
 							&& (y1 = y + step * dy) != null
 							&& 0 <= x1 && x1 < size && 0 <= y1 && y1 < size
-							&& vm[x][y].d != null
-							&& vm[x][y].d == vm[x1][y1].d) step++;
+							&& vm.board[x][y].d != null
+							&& vm.board[x][y].d == vm.board[x1][y1].d) step++;
 						if (5 <= step) {
 							isFiveInARow = true;
 							for (let i = 0; i < step; i++)
-								vm = vm_.setcell(vm, { ...vm[x + i * dx][y + i * dy], d: null, });
+								vm = vm_.setcell(vm, { ...vm.board[x + i * dx][y + i * dy], d: null, });
 							score += step;
 							document.title = `${score} - Five in a row`;
 						}
@@ -199,14 +226,14 @@ let check = () => {
 };
 
 let move = (vm, vmc0, vmcx) => {
-	let node = search(vmc0, vmcx, (x, y) => vm[x][y].d == null);
+	let node = search(vmc0, vmcx, (x, y) => vm.board[x][y].d == null);
 	let rec = ({ x, y, prev, }, cb) => {
 		if (prev != null)
 			rec(prev, () => {
 				let timeout = setTimeout(() => {
 					vw.change(vm => {
-						let vmc0 = vm[prev.x][prev.y];
-						let vmc1 = vm[x][y];
+						let vmc0 = vm.board[prev.x][prev.y];
+						let vmc1 = vm.board[x][y];
 						let d = vmc0.d;
 						vm = vm_.setcell(vm, { ...vmc0, d: null, });
 						vm = vm_.setcell(vm, { ...vmc1, d, });
@@ -224,7 +251,10 @@ let move = (vm, vmc0, vmcx) => {
 		rec(node, () => {
 			freeze = false;
 			if (!check()) {
-				vw.change(vm => vm_.drop(vm, 3));
+				vw.change(vm => {
+					vm = vm_.drop(vm, vm.nextstones);
+					return { ...vm, nextstones: randomstones(3), };
+				});
 				check();
 			}				
 		});
