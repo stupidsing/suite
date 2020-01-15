@@ -17,7 +17,7 @@ RestartSec=5
 
 [Install]
 WantedBy=multi-user.target
-" | sudo tee /etc/systemd/system/suite.service
+" | sudo tee /etc/systemd/system/suite.service > /dev/null
 
 echo -e "#\x21/bin/sh
 HOME=${SERVE} ${JAVA_HOME}/bin/java -Dsuite.dir=${BASE} -cp \$(cat ${BASE}/target/classpath):${BASE}/target/suite-1.0.jar suite.ServerMain
