@@ -139,6 +139,11 @@ let mutate = (() => {
 			for (let y = 0; y < size; y++)
 				f(x, y);
 	};
+	let back_xy = f => {
+		for (let x = size - 1; 0 <= x; x--)
+			for (let y = size - 1; 0 <= y; y--)
+				f(x, y);
+	};
 	let setcell = (vm, vmc1) =>  {
 		let vmt0 = vm.board;
 		let vmr0 = vmt0[vmc1.x];
@@ -148,6 +153,7 @@ let mutate = (() => {
 		return { ...vm, board: vmt1 };
 	};
 	return {
+		back_xy,
 		drop: (vm, stones) => {
 			if (stones.length <= mutate.emptycount(vm))
 				for (let stone of stones)
@@ -220,8 +226,8 @@ let check = () => {
 	let isFiveInARow = false;
 	if (!freeze)
 		vw.change(vm => {
-			mutate.for_xy((x, y) => {
-				for (let [dx, dy] of eatdirs) {
+			for (let [dx, dy] of eatdirs)
+				(0 < dx * size + dy ? mutate.for_xy : mutate.back_xy)((x, y) => {
 					let step = 0;
 					let x1, y1;
 					while (true
@@ -237,8 +243,7 @@ let check = () => {
 						score += step;
 						document.title = `${score} - Five in a row`;
 					}
-				}
-			});
+				});
 			return vm;
 		});
 	return isFiveInARow;
