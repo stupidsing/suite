@@ -24,6 +24,9 @@ let { lens, range, read, } = fun();
 let { rd, renderAgain, } = render();
 let close;
 
+// https://www.colourlovers.com/palette/373610/Melon_Ball_Surprise
+let colors = ['#D1F2A5', '#EFFAB4', '#FFC48C', '#FF9F80', '#F56991',];
+
 let icons = [ '🍋', '🌲', '💖', '🐬', '🐵', '🍊', '🍇', '💮', '✴️', ];
 icons[-1] = '💀';
 // 😂
@@ -69,7 +72,15 @@ let view = rd.parse(`
 				</rd_for>
 			</table>
 		</rd_map>
-		<button rd_on_click='close()'>Close</button>
+		<button rd_on_click='close()'>close</button>
+		<rd_map v='vm.notifications'>
+			<div style='background: #EFFAB4; bottom: 0; left: 0; position: fixed; text-align: center; width: 100%;'>
+				<rd_for>
+					<p style='font-family: monospace;'>{ vm }</p>
+				</rd_for>
+				<span style='position: fixed; right: 5px; top: 5px'>X</span>
+			</div>
+		</rd_map>
 	</span>
 `);
 
@@ -110,80 +121,86 @@ let search = (xy0, xyx, isMovable) => {
 	return null;
 };
 
-let freeze = false;
-let select_xy = null;
+let freeze = false; // if we are accepting game inputs
 
-let vm_ = {
-	setcell: (vm, vmc1) =>  {
+let mutate = (() => {
+	let setcell = (vm, vmc1) =>  {
 		let vmt0 = vm.board;
 		let vmr0 = vmt0[vmc1.x];
 		let vmc0 = vmr0[vmc1.y];
 		let vmr1 = vmr0.map(vmc => vmc != vmc0 ? vmc : vmc1);
 		let vmt1 = vmt0.map(vmr => vmr != vmr0 ? vmr : vmr1);
 		return { ...vm, board: vmt1 };
-	},
-	emptycount: vm => {
-		let n = 0;
-		for (let x = 0; x < size; x++)
-			for (let y = 0; y < size; y++)
-				n += vm.board[x][y].d != null ? 0 : 1;
-		return n;
-	},
-	lose: vm => {
-		freeze = true;
-		for (let x = 0; x < size; x++)
-			for (let y = 0; y < size; y++)
-				if (vm.board[x][y].d == null)
-					vm = vm_.setcell(vm, { ...vm.board[x][y], d: -1 });
-		return vm;
-	},
-	drop: (vm, stones) => {
-		if (stones.length <= vm_.emptycount(vm))
-			for (let stone of stones)
-				while(true) {
-					let x = Math.floor(Math.random() * size);
-					let y = Math.floor(Math.random() * size);
-					if (vm.board[x][y].d == null) {
-						vm = vm_.setcell(vm, { ...vm.board[x][y], d: stone.d });
-						break;
+	};
+	return {
+		setcell,
+		emptycount: vm => {
+			let n = 0;
+			for (let x = 0; x < size; x++)
+				for (let y = 0; y < size; y++)
+					n += vm.board[x][y].d != null ? 0 : 1;
+			return n;
+		},
+		lose: vm => {
+			freeze = true;
+			for (let x = 0; x < size; x++)
+				for (let y = 0; y < size; y++)
+					if (vm.board[x][y].d == null)
+						vm = setcell(vm, { ...vm.board[x][y], d: -1 });
+			return vm;
+		},
+		drop: (vm, stones) => {
+			if (stones.length <= mutate.emptycount(vm))
+				for (let stone of stones)
+					while(true) {
+						let x = Math.floor(Math.random() * size);
+						let y = Math.floor(Math.random() * size);
+						if (vm.board[x][y].d == null) {
+							vm = setcell(vm, { ...vm.board[x][y], d: stone.d });
+							break;
+						}
 					}
-				}
-		else
-			vm = vm_.lose(vm);
-		return vm;
-	},
-};
+			else
+				vm = mutate.lose(vm);
+			return vm;
+		},
+	};
+})();
 
-let vw = {
-	change: f => {
-		renderAgain(view, vm0 => {
-			let vm1 = f(vm0);
-			// console.log(vm1);
-			return vm1;
-		});
-	},
-	init: () => vw.change(vm0 => {
-		var vm1 = {
-			board: range(0, size).map(x => range(0, size).map(y => ({ d: null, x, y, })).list()).list(),
-			nextstones: [randomstone(), randomstone(), randomstone(),],
-		};
-		return vm_.drop(vm1, randomstones(Math.ceil(size * size * .3)));
-	}),
-	unselect: () => {
-		vw.change(vm => {
-			let vmc = vm.board[select_xy.x][select_xy.y];
-			return vm_.setcell(vm, { ...vmc, selected: false, });
-		});
-		select_xy = null;
-	},
-	select: (x, y) => {
-		vw.change(vm => {
-			let vmc = vm.board[x][y];
-			return vm_.setcell(vm, { ...vmc, selected: true, });
-		});
-		select_xy = { x, y };
-	},
-};
+let vw = (() => {
+	let select_xy = null;
+	let change = f => renderAgain(view, vm0 => {
+		let vm1 = f(vm0);
+		// console.log(vm1);
+		return vm1;
+	});
+	return {
+		change,
+		getselected: () => select_xy,
+		init: () => change(vm0 => {
+			var vm1 = {
+				board: range(0, size).map(x => range(0, size).map(y => ({ d: null, x, y, })).list()).list(),
+				nextstones: [randomstone(), randomstone(), randomstone(),],
+				notifications: ['welcome!'],
+			};
+			return mutate.drop(vm1, randomstones(Math.ceil(size * size * .3)));
+		}),
+		select: (x, y) => {
+			change(vm => {
+				let vmc = vm.board[x][y];
+				return mutate.setcell(vm, { ...vmc, selected: true, });
+			});
+			select_xy = { x, y };
+		},
+		unselect: () => {
+			change(vm => {
+				let vmc = vm.board[select_xy.x][select_xy.y];
+				return mutate.setcell(vm, { ...vmc, selected: false, });
+			});
+			select_xy = null;
+		},
+	}
+})();
 
 let check = () => {
 	let isFiveInARow = false;
@@ -203,7 +220,7 @@ let check = () => {
 						if (5 <= step) {
 							isFiveInARow = true;
 							for (let i = 0; i < step; i++)
-								vm = vm_.setcell(vm, { ...vm.board[x + i * dx][y + i * dy], d: null, });
+								vm = mutate.setcell(vm, { ...vm.board[x + i * dx][y + i * dy], d: null, });
 							score += step;
 							document.title = `${score} - Five in a row`;
 						}
@@ -223,8 +240,8 @@ let move = (vm, vmc0, vmcx) => {
 						let vmc0 = vm.board[prev.x][prev.y];
 						let vmc1 = vm.board[x][y];
 						let d = vmc0.d;
-						vm = vm_.setcell(vm, { ...vmc0, d: null, });
-						vm = vm_.setcell(vm, { ...vmc1, d, });
+						vm = mutate.setcell(vm, { ...vmc0, d: null, });
+						vm = mutate.setcell(vm, { ...vmc1, d, });
 						return vm;
 					});
 					cb();
@@ -240,7 +257,7 @@ let move = (vm, vmc0, vmcx) => {
 			freeze = false;
 			if (!check()) {
 				vw.change(vm => {
-					vm = vm_.drop(vm, vm.nextstones);
+					vm = mutate.drop(vm, vm.nextstones);
 					return { ...vm, nextstones: randomstones(3), };
 				});
 				check();
@@ -252,9 +269,9 @@ let move = (vm, vmc0, vmcx) => {
 
 let handleclick = (vmc, ev) => {
 	if (!freeze) {
-		let select_xy0 = select_xy;
+		let select_xy0 = vw.getselected();
 
-		if (select_xy != null) vw.unselect();
+		if (select_xy0 != null) vw.unselect();
 
 		if (vmc.d != null)
 			vw.select(vmc.x, vmc.y);
