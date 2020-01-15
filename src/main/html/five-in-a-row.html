@@ -32,7 +32,7 @@ icons[-1] = '💀';
 // 😂
 
 let viewCell = rd.parse(`
-	<div draggable='true'
+	<span draggable='true'
 		style='
 			background: { vm.selected ? "#888888" : "#DDDDDD" };
 			display: table-cell;
@@ -46,29 +46,29 @@ let viewCell = rd.parse(`
 		<rd_map v='vm.d'>
 			<rd_if v='vm != null'>{ icons[vm] }</rd_if>
 		</rd_map>
-	</div>
+	</span>
+`);
+
+let viewCells = rd.parse(`
+	<tr>
+		<rd_for>
+			<td><rd_component v='viewCell' /></td>
+		</rd_for>
+	</tr>
 `);
 
 let view = rd.parse(`
 	<span>
 		<rd_map v='vm.nextstones'>
 			<table style='user-select: none;'>
-				<tr>
-					<rd_for>
-						<td><rd_component v='viewCell' /></td>
-					</rd_for>
-				</tr>
+				<rd_component v='viewCells' />
 			</table>
 		</rd_map>
 		<p/>
 		<rd_map v='vm.board'>
 			<table style='user-select: none;'>
 				<rd_for>
-					<tr>
-						<rd_for>
-							<td><rd_component v='viewCell' /></td>
-						</rd_for>
-					</tr>
+					<rd_component v='viewCells' />
 				</rd_for>
 			</table>
 		</rd_map>
@@ -124,6 +124,11 @@ let search = (xy0, xyx, isMovable) => {
 let freeze = false; // if we are accepting game inputs
 
 let mutate = (() => {
+	let for_xy = f => {
+		for (let x = 0; x < size; x++)
+			for (let y = 0; y < size; y++)
+				f(x, y);
+	};
 	let setcell = (vm, vmc1) =>  {
 		let vmt0 = vm.board;
 		let vmr0 = vmt0[vmc1.x];
@@ -133,22 +138,6 @@ let mutate = (() => {
 		return { ...vm, board: vmt1 };
 	};
 	return {
-		setcell,
-		emptycount: vm => {
-			let n = 0;
-			for (let x = 0; x < size; x++)
-				for (let y = 0; y < size; y++)
-					n += vm.board[x][y].d != null ? 0 : 1;
-			return n;
-		},
-		lose: vm => {
-			freeze = true;
-			for (let x = 0; x < size; x++)
-				for (let y = 0; y < size; y++)
-					if (vm.board[x][y].d == null)
-						vm = setcell(vm, { ...vm.board[x][y], d: -1 });
-			return vm;
-		},
 		drop: (vm, stones) => {
 			if (stones.length <= mutate.emptycount(vm))
 				for (let stone of stones)
@@ -164,6 +153,21 @@ let mutate = (() => {
 				vm = mutate.lose(vm);
 			return vm;
 		},
+		emptycount: vm => {
+			let n = 0;
+			for_xy((x, y) => n += vm.board[x][y].d != null ? 0 : 1);
+			return n;
+		},
+		for_xy,
+		lose: vm => {
+			freeze = true;
+			for_xy((x, y) => {
+				if (vm.board[x][y].d == null)
+					vm = setcell(vm, { ...vm.board[x][y], d: -1 });
+			});
+			return vm;
+		},
+		setcell,
 	};
 })();
 
@@ -206,25 +210,25 @@ let check = () => {
 	let isFiveInARow = false;
 	if (!freeze)
 		vw.change(vm => {
-			for (let x = 0; x < size; x++)
-				for (let y = 0; y < size; y++)
-					for (let [dx, dy] of [[0, 1], [1, 0], [-1, 1], [1, 1],]) {
-						let step = 0;
-						let x1, y1;
-						while (true
-							&& (x1 = x + step * dx) != null
-							&& (y1 = y + step * dy) != null
-							&& 0 <= x1 && x1 < size && 0 <= y1 && y1 < size
-							&& vm.board[x][y].d != null
-							&& vm.board[x][y].d == vm.board[x1][y1].d) step++;
-						if (5 <= step) {
-							isFiveInARow = true;
-							for (let i = 0; i < step; i++)
-								vm = mutate.setcell(vm, { ...vm.board[x + i * dx][y + i * dy], d: null, });
-							score += step;
-							document.title = `${score} - Five in a row`;
-						}
+			mutate.for_xy((x, y) => {
+				for (let [dx, dy] of [[0, 1], [1, 0], [-1, 1], [1, 1],]) {
+					let step = 0;
+					let x1, y1;
+					while (true
+						&& (x1 = x + step * dx) != null
+						&& (y1 = y + step * dy) != null
+						&& 0 <= x1 && x1 < size && 0 <= y1 && y1 < size
+						&& vm.board[x][y].d != null
+						&& vm.board[x][y].d == vm.board[x1][y1].d) step++;
+					if (5 <= step) {
+						isFiveInARow = true;
+						for (let i = 0; i < step; i++)
+							vm = mutate.setcell(vm, { ...vm.board[x + i * dx][y + i * dy], d: null, });
+						score += step;
+						document.title = `${score} - Five in a row`;
 					}
+				}
+			});
 			return vm;
 		});
 	return isFiveInARow;
