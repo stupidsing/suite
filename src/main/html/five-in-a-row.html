@@ -211,7 +211,7 @@ let check = () => {
 	if (!freeze)
 		vw.change(vm => {
 			mutate.for_xy((x, y) => {
-				for (let [dx, dy] of [[0, 1], [1, 0], [-1, 1], [1, 1],]) {
+				for (let [dx, dy] of [[0, -1], [-1, 0], [-1, +1],]) {
 					let step = 0;
 					let x1, y1;
 					while (true
