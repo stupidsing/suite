@@ -9,29 +9,6 @@ file:///home/ywsing/suite/src/main/html/five-in-a-row-hex.html
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	</head>
 	<body>
-		<style>
-			body {
-				font-family: monospace;
-			}
-			.hex {
-				float: left;
-				margin: 0px 0px -13px 1.5px;
-			}
-			.hex .middle {
-				font-size: 30px;
-				height: 30px;
-				position: relative;
-				width: 52px;
-			}
-			.hex .part {
-				border-left: 26px solid transparent;
-				border-right: 26px solid transparent;
-				width: 0;
-			}
-			.hex-row {
-				clear: left;
-			}
-		</style>
 		<div id='target'></div>
 	</body>
 
@@ -55,25 +32,29 @@ icons[-1] = '💀';
 // 😂
 
 let viewCell = rd.parse(`
-	<div class='hex' style='filter: { vm.selected ? "brightness(80%)" : "brightness(100%)" };' rd_on_click='handleclick(vm, ev)'>
-		<div class='part' style='border-bottom: 15px solid #DDDDDD;'></div>
-		<div class='middle' style='background: #DDDDDD'>
-			<span style='left: 50%; position: absolute; top: 50%; transform: translate(-50%, -50%);'>
-				<rd_map v='vm.d'>
-					<rd_if v='vm != null'>{ icons[vm] }</rd_if>
-				</rd_map>
-			</span>
-		</div>
-		<div class='part' style='border-top: 15px solid #DDDDDD;'></div>
-	</div>
+	<span draggable='true'
+		style='
+			background: { vm.background ? vm.background : "#DDDDDD" };
+			display: inline-block;
+			filter: { vm.selected ? "brightness(80%)" : "brightness(100%)" };
+			font-size: 25px;
+			height: 40px;
+			margin: 2px 0px 2px 0px;
+			text-align: center;
+			vertical-align: middle;
+			width: 40px;
+		'
+		rd_on_click='handleclick(vm, ev)'>
+		<rd_map v='vm.d'>
+			<rd_if v='vm != null'>{ icons[vm] }</rd_if>
+		</rd_map>
+	</span>
 `);
 
 let viewCells = rd.parse(`
-	<div class='hex-row' style='margin-left: { vm[0].x * 26.5 }px'>
-		<rd_for>
-			<rd_component v='viewCell' />
-		</rd_for>
-	</div>
+	<rd_for>
+		<rd_component v='viewCell' />
+	</rd_for>
 `);
 
 let view = rd.parse(`
@@ -81,10 +62,23 @@ let view = rd.parse(`
 		<rd_map v='vm.nextstones'>
 			<rd_component v='viewCells' />
 		</rd_map>
-		<img height='100' />
+		<p/>
 		<rd_map v='vm.board'>
 			<rd_for>
-				<rd_component v='viewCells' />
+				<div>
+					<span
+						style='
+							display: inline-block;
+							font-size: 25px;
+							height: 40px;
+							margin: 2px 0px 2px 0px;
+							text-align: center;
+							vertical-align: middle;
+							width: { vm[0].x * 18 }px;
+						'
+					></span>
+					<rd_component v='viewCells' />
+				</div>
 			</rd_for>
 		</rd_map>
 		<button rd_on_click='close()'>close</button>
