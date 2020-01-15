@@ -1,0 +1,68 @@
+<meta charset='utf-8'>
+<!--
+file:///home/ywsing/suite/src/main/html/hex.html
+
+reference: https://jtauber.github.io/articles/css-hexagon.html
+-->
+<!DOCTYPE html>
+<html>
+	<head>
+	</head>
+	<body>
+		<style>
+			body {
+				font-family: monospace;
+			}
+			.hex {
+				float: left;
+				margin: 0px -26px -50px 0px;
+			}
+			.hex .left {
+				border-bottom: 52px solid transparent;
+				border-right: 30px solid #FFC48C;
+				border-top: 52px solid transparent;
+				float: left;
+				width: 0;
+			}
+			.hex .middle {
+				background: #FFC48C;
+				float: left;
+				font-size: 60px;
+				height: 104px;
+				position: relative;
+				width: 60px;
+			}
+			.hex .right {
+				border-bottom: 52px solid transparent;
+				border-left: 30px solid #FFC48C;
+				border-top: 52px solid transparent;
+				float: left;
+				width: 0;
+			}
+			.hex-row {
+				clear: left;
+			}
+			.hex.even {
+				margin-top: 53px;
+			}
+		</style>
+
+		<div style='float: left; width: 400px;'>
+			<div class='hex-row'>
+				<div class='hex'><div class='left'></div><div class='middle'></div><div class='right'></div></div>
+				<div class='hex even'><div class='left'></div><div class='middle'></div><div class='right'></div></div>
+				<div class='hex'><div class='left'></div><div class='middle'></div><div class='right'></div></div>
+			</div>
+			<div class='hex-row'>
+				<div class='hex'><div class='left'></div><div class='middle'></div><div class='right'></div></div>
+				<div class='hex even'><div class='left'></div><div class='middle'><span style='left: 50%; position: absolute; top: 50%; transform: translate(-50%, -50%);'>🌲</span></div><div class='right'></div></div>
+				<div class='hex'><div class='left'></div><div class='middle'></div><div class='right'></div></div>
+			</div>
+			<div class='hex-row'>
+				<div class='hex'><div class='left'></div><div class='middle'></div><div class='right'></div></div>
+				<div class='hex even'><div class='left'></div><div class='middle'></div><div class='right'></div></div>
+				<div class='hex'><div class='left'></div><div class='middle'></div><div class='right'></div></div>
+			</div>
+		</div>
+	</body>
+</html>

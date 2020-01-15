@@ -9,7 +9,7 @@ reference: https://jtauber.github.io/articles/css-hexagon.html
 	<head>
 	</head>
 	<body>
-		<style>
+		<style>di
 			body {
 				font-family: monospace;
 			}
@@ -25,10 +25,9 @@ reference: https://jtauber.github.io/articles/css-hexagon.html
 			}
 			.hex .middle {
 				background: #FFC48C;
-				display: table-cell;
+				font-size: 60px;
 				height: 60px;
-				text-align: center;
-				vertical-align: middle;
+				position: relative;
 				width: 104px;
 			}
 			.hex .bottom {
@@ -46,13 +45,13 @@ reference: https://jtauber.github.io/articles/css-hexagon.html
 		</style>
 		<div style='float: left; width: 400px;'>
 			<div class='hex-row'>
-				<div class='hex'><div class='top'></div><div class='middle'>some<br>text</div><div class='bottom'></div></div>
+				<div class='hex'><div class='top'></div><div class='middle'></div><div class='bottom'></div></div>
 				<div class='hex'><div class='top'></div><div class='middle'></div><div class='bottom'></div></div>
 				<div class='hex'><div class='top'></div><div class='middle'></div><div class='bottom'></div></div>
 			</div>
 			<div class='hex-row even'>
 				<div class='hex'><div class='top'></div><div class='middle'></div><div class='bottom'></div></div>
-				<div class='hex'><div class='top'></div><div class='middle'></div><div class='bottom'></div></div>
+				<div class='hex'><div class='top'></div><div class='middle'><span style='left: 50%; position: absolute; top: 50%; transform: translate(-50%, -50%);'>🌲</span></div><div class='bottom'></div></div>
 				<div class='hex'><div class='top'></div><div class='middle'></div><div class='bottom'></div></div>
 			</div>
 			<div class='hex-row'>
