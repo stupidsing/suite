@@ -25,7 +25,7 @@ let { rd, renderAgain, } = render();
 let close;
 
 // https://www.colourlovers.com/palette/373610/Melon_Ball_Surprise
-let colors = ['#D1F2A5', '#EFFAB4', '#FFC48C', '#FF9F80', '#F56991',];
+let palette = ['#D1F2A5', '#EFFAB4', '#FFC48C', '#FF9F80', '#F56991',];
 
 let icons = [ '🍋', '🌲', '💖', '🐬', '🐵', '🍊', '🍇', '💮', '✴️', ];
 icons[-1] = '💀';
@@ -34,7 +34,7 @@ icons[-1] = '💀';
 let viewCell = rd.parse(`
 	<span draggable='true'
 		style='
-			background: { vm.selected ? "#888888" : "#DDDDDD" };
+			background: { vm.selected ? "#888888" : vm.background ? vm.background : "#DDDDDD" };
 			display: table-cell;
 			font-size: 25px;
 			height: 40px;
@@ -74,7 +74,7 @@ let view = rd.parse(`
 		</rd_map>
 		<button rd_on_click='close()'>close</button>
 		<rd_map v='vm.notifications'>
-			<div style='background: #EFFAB4; bottom: 0; left: 0; position: fixed; text-align: center; width: 100%;'>
+			<div style='background: { palette[1] }; bottom: 0; left: 0; position: fixed; text-align: center; width: 100%;'>
 				<rd_for>
 					<p style='font-family: monospace;'>{ vm }</p>
 				</rd_for>
@@ -83,6 +83,9 @@ let view = rd.parse(`
 		</rd_map>
 	</span>
 `);
+
+let eatdirs = [[0, -1], [-1, 0], [-1, +1],];
+let neighbourdirs = [[-1, 0], [+1, 0], [0, -1], [0, +1],];
 
 const usp = new URLSearchParams(window.location.search);
 const colorsp = usp.get('colors');
@@ -110,7 +113,7 @@ let search = (xy0, xyx, isMovable) => {
 		let { x, y, } = todo;
 		let k = key(todo);
 		if (!dones.hasOwnProperty(k)) {
-			let neighbours = [[-1, 0], [+1, 0], [0, -1], [0, +1],]
+			let neighbours = neighbourdirs
 				.map(([dx, dy]) => ({ x: x + dx, y: y + dy, prev: todo, }))
 				.filter(({ x, y }) => 0 <= x && x < size && 0 <= y && y < size && isMovable(x, y));
 			todos.push(...neighbours);
@@ -211,7 +214,7 @@ let check = () => {
 	if (!freeze)
 		vw.change(vm => {
 			mutate.for_xy((x, y) => {
-				for (let [dx, dy] of [[0, -1], [-1, 0], [-1, +1],]) {
+				for (let [dx, dy] of eatdirs) {
 					let step = 0;
 					let x1, y1;
 					while (true
