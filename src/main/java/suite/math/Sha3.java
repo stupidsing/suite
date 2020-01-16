@@ -192,13 +192,15 @@ public class Sha3 {
 				nOutputLongsLeft -= c1;
 
 				if (nRateLongs <= stateIndex1) {
-					squeezeSha3();
+					if (Boolean.TRUE)
+						squeezeSha3();
+					else
+						squeezeKeccak();
 					stateIndex1 = 0;
 				}
 			}
 
 			var nOutputBytesMod8 = nOutputBytesLeft1 & 0x07;
-
 			var shifty = nOutputBytesMod8 * 8;
 
 			for (var shift = 0; shift < shifty; shift += 8)
@@ -244,7 +246,6 @@ public class Sha3 {
 
 	private void keccak() {
 		for (var i = 0; i < 24; i++) {
-			long a_10_;
 
 			// theta (precalculation part)
 			var c0 = states[0] ^ states[5 + 0] ^ states[10 + 0] ^ states[15 + 0] ^ states[20 + 0];
@@ -264,7 +265,7 @@ public class Sha3 {
 			// theta (xorring part) + rho + pi
 			states[0] ^= t1;
 			var a01_t2 = states[01] ^ t2;
-			a_10_ = a01_t2 << 01 | a01_t2 >>> 64 - 01;
+			var a_10_ = a01_t2 << 01 | a01_t2 >>> 64 - 01;
 			var a06_t2 = states[06] ^ t2;
 			states[01] = a06_t2 << 44 | a06_t2 >>> 64 - 44;
 			var a09_t0 = states[i9] ^ t0;
