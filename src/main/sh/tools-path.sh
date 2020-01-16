@@ -41,16 +41,16 @@ tp_java10() {
 	for P in dl dl-ssl; do
 	echo "cat /dev/null | openssl s_client -showcerts -connect ${P}.google.com:443 -servername ${P}.google.com | openssl x509 | ./bin/keytool -import -keystore lib/security/cacerts -storepass changeit -noprompt -alias ${P}_google_com" >> /tmp/install-certs.sh
 	done
-	$(cchs "echo https://download.java.net/openjdk/jdk10/ri/openjdk-10+44_linux-x64_bin_ri.tar.gz" @curl @tar-zxf @dir "@do-cd sh /tmp/install-certs.sh")
+	cchs "echo https://download.java.net/openjdk/jdk10/ri/openjdk-10+44_linux-x64_bin_ri.tar.gz" @curl @tar-zxf @dir "@do-cd sh /tmp/install-certs.sh"
 }
 
 tp_kubectl() {
 	VER=$(cchs "echo https://storage.googleapis.com/kubernetes-release/release/stable.txt" @curl)
-	$(cchs "echo https://storage.googleapis.com/kubernetes-release/release/${VER}/bin/linux/amd64/kubectl" @curl "@chmod +x") $@
+	$(cchs "echo https://storage.googleapis.com/kubernetes-release/release/${VER}/bin/linux/amd64/kubectl" @curl "@do-chmod +x") $@
 }
 
 tp_minikube() {
-	$(cchs "echo https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64" @curl "@chmod +x") $@
+	$(cchs "echo https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64" @curl "@do-chmod +x") $@
 }
 
 tp_rocksndiamonds() {
