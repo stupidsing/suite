@@ -37,8 +37,32 @@ let mutate = (() => {
 		return { ...vm, board: vmt1 };
 	};
 
+	let checkfiveinarow = vm => {
+		let isFiveInARow = false;
+		if (!freeze)
+			for (let [dx, dy] of eatdirs)
+				(0 < dx * size + dy ? for_xy : back_xy)((x, y) => {
+					let step = 0;
+					let x1, y1;
+					while (true
+						&& (x1 = x + step * dx) != null
+						&& (y1 = y + step * dy) != null
+						&& 0 <= x1 && x1 < size && 0 <= y1 && y1 < size
+						&& vm.board[x][y].d != null
+						&& vm.board[x][y].d == vm.board[x1][y1].d) step++;
+					if (5 <= step) {
+						isFiveInARow = true;
+						for (let i = 0; i < step; i++)
+							vm = setcell(vm, { ...vm.board[x + i * dx][y + i * dy], d: null, });
+						vm = { ...vm, score: vm.score + step };
+						document.title = `${vm.score} - Five in a row`;
+					}
+				});
+		return { isFiveInARow, vm };
+	};
+
 	return {
-		back_xy,
+		checkfiveinarow,
 		drop: (vm, stones) => {
 			if (stones.length <= mutate.emptycount(vm))
 				for (let stone of stones)
@@ -59,13 +83,21 @@ let mutate = (() => {
 			for_xy((x, y) => n += vm.board[x][y].d != null ? 0 : 1);
 			return n;
 		},
-		for_xy,
 		lose: vm => {
 			freeze = true;
 			for_xy((x, y) => {
 				if (vm.board[x][y].d == null)
 					vm = setcell(vm, { ...vm.board[x][y], d: -1 });
 			});
+			return vm;
+		},
+		moveonestep: (vm, fr, to) => {
+			let vmc0 = vm.board[fr.x][fr.y];
+			let vmc1 = vm.board[to.x][to.y];
+			let d0 = vmc0.d;
+			let d1 = vmc1.d;
+			vm = setcell(vm, { ...vmc0, d: d1, });
+			vm = setcell(vm, { ...vmc1, d: d0, });
 			return vm;
 		},
 		setcell,
@@ -78,30 +110,6 @@ let vw = (() => {
 		// console.log(vm1);
 		return vm1;
 	});
-
-	let check_ = vm => {
-		let isFiveInARow = false;
-		if (!freeze)
-			for (let [dx, dy] of eatdirs)
-				(0 < dx * size + dy ? mutate.for_xy : mutate.back_xy)((x, y) => {
-					let step = 0;
-					let x1, y1;
-					while (true
-						&& (x1 = x + step * dx) != null
-						&& (y1 = y + step * dy) != null
-						&& 0 <= x1 && x1 < size && 0 <= y1 && y1 < size
-						&& vm.board[x][y].d != null
-						&& vm.board[x][y].d == vm.board[x1][y1].d) step++;
-					if (5 <= step) {
-						isFiveInARow = true;
-						for (let i = 0; i < step; i++)
-							vm = mutate.setcell(vm, { ...vm.board[x + i * dx][y + i * dy], d: null, });
-						vm = { ...vm, score: vm.score + step };
-						document.title = `${vm.score} - Five in a row`;
-					}
-				});
-		return { isFiveInARow, vm };
-	};
 
 	let movefromto = (vmc0, vmcx) => {
 		let board;
@@ -130,18 +138,12 @@ let vw = (() => {
 
 		let node = search(vmc0, vmcx, (x, y) => board[x][y].d == null);
 
-		let rec = ({ x, y, prev, }, cb) => {
+		let rec = (path, cb) => {
+			let prev = path.prev;
 			if (prev != null)
 				rec(prev, () => {
 					let timeout = setTimeout(() => {
-						change(vm => {
-							let vmc0 = vm.board[prev.x][prev.y];
-							let vmc1 = vm.board[x][y];
-							let d = vmc0.d;
-							vm = mutate.setcell(vm, { ...vmc0, d: null, });
-							vm = mutate.setcell(vm, { ...vmc1, d, });
-							return vm;
-						});
+						change(vm => mutate.moveonestep(vm, prev, path));
 						cb();
 						clearTimeout(timeout);
 					}, 50);
@@ -155,11 +157,11 @@ let vw = (() => {
 			rec(node, () => {
 				freeze = false;
 				change(vm_ => {
-					let { isFiveInARow, vm } = check_(vm_);
+					let { isFiveInARow, vm } = mutate.checkfiveinarow(vm_);
 					if (!isFiveInARow) {
 						vm = mutate.drop(vm, vm.nextstones);
 						vm = { ...vm, nextstones: randomstones(3), };
-						vm = check_(vm).vm;
+						vm = mutate.checkfiveinarow(vm).vm;
 					}				
 					return vm;
 				});
