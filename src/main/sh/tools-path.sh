@@ -1,7 +1,8 @@
 # source <(curl -sL https://raw.githubusercontent.com/stupidsing/suite/master/src/main/sh/tools-path.sh | bash -)
 
 curl -sL https://raw.githubusercontent.com/stupidsing/suite/master/src/main/sh/cache.sh
-echo '
+
+cat << IN
 GIT_HD=$(cchs "echo git@github.com:stupidsing/home-data.git" @git-clone)
 GOROOT=$(cchs "echo https://dl.google.com/go/go1.13.4.linux-amd64.tar.gz" @curl @tar-zxf @dir)
 GRADLE_HOME=$(cchs "echo https://services.gradle.org/distributions/gradle-6.0.1-bin.zip" @curl @unzip @dir)
@@ -68,7 +69,7 @@ tp_suite() {
 tp_wdp() {
 	wine $(cchs "echo https://stammel.net/spiele/wdp/wdp.exe" @curl)
 }
-'
+IN
 
 #GIT_PIECES=$(cchs "echo git@github.com:stupidsing/pieces.git" @git-clone "@git-cd pwd")
 #GIT_PRIMAL=$(cchs "echo git@github.com:stupidsing/primal.git" @git-clone "@do-git-cd ${M2_HOME}/bin/mvn install" "@git-cd pwd")
