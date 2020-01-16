@@ -5,6 +5,21 @@ const sizep = usp.get('size');
 let size = sizep != null ? +sizep : 7;
 let nStoneTypes = colorsp != null ? +colorsp : 5;
 
+let cc = {
+	back_xy: f => {
+		for (let x = size - 1; 0 <= x; x--)
+			for (let y = size - 1; 0 <= y; y--)
+				f(x, y);
+	},
+	for_xy: f => {
+		for (let x = 0; x < size; x++)
+			for (let y = 0; y < size; y++)
+				f(x, y);
+	},
+	inbounds: (x, y) => 0 <= x && x < size && 0 <= y && y < size,
+	random_xy: () => ({ x: Math.floor(Math.random() * size), y: Math.floor(Math.random() * size), }),
+};
+
 let randomstone = () => ({ d: Math.floor(Math.random() * nStoneTypes) });
 
 let randomstones = n => {
@@ -16,40 +31,28 @@ let randomstones = n => {
 let freeze = false; // if we are accepting game inputs
 
 let mutate = (() => {
-	let for_xy = f => {
-		for (let x = 0; x < size; x++)
-			for (let y = 0; y < size; y++)
-				f(x, y);
-	};
-
-	let back_xy = f => {
-		for (let x = size - 1; 0 <= x; x--)
-			for (let y = size - 1; 0 <= y; y--)
-				f(x, y);
-	};
-
-	let inbounds = (x, y) => 0 <= x && x < size && 0 <= y && y < size;
-
 	let setcell = (vm, vmc1) =>  {
 		let vmt0 = vm.board;
+		vmt0 = vmt0 != null ? vmt0 : { length: size };
 		let vmr0 = vmt0[vmc1.x];
-		let vmc0 = vmr0[vmc1.y];
-		let vmr1 = vmr0.map(vmc => vmc != vmc0 ? vmc : vmc1);
-		let vmt1 = vmt0.map(vmr => vmr != vmr0 ? vmr : vmr1);
-		return { ...vm, board: vmt1 };
+		vmr0 = vmr0 != null ? vmr0 : { length: size };
+		// let vmr1 = vmr0.map(vmc => vmc != vmc0 ? vmc : vmc1);
+		// let vmt1 = vmt0.map(vmr => vmr != vmr0 ? vmr : vmr1);
+		// return { ...vm, board: vmt1 };
+		return { ...vm, board: { ...vmt0, [vmc1.x]: { ...vmr0, [vmc1.y]: vmc1 } } };
 	};
 
 	let checkfiveinarow = vm => {
 		let isFiveInARow = false;
 		if (!freeze)
 			for (let [dx, dy] of eatdirs)
-				(0 < dx * size + dy ? for_xy : back_xy)((x, y) => {
+				(0 < dx * size + dy ? cc.for_xy : cc.back_xy)((x, y) => {
 					let step = 0;
 					let x1, y1;
 					while (true
 						&& (x1 = x + step * dx) != null
 						&& (y1 = y + step * dy) != null
-						&& inbounds(x1, y1)
+						&& cc.inbounds(x1, y1)
 						&& vm.board[x][y].d != null
 						&& vm.board[x][y].d == vm.board[x1][y1].d) step++;
 					if (5 <= step) {
@@ -69,8 +72,7 @@ let mutate = (() => {
 			if (stones.length <= mutate.emptycount(vm))
 				for (let stone of stones)
 					while(true) {
-						let x = Math.floor(Math.random() * size);
-						let y = Math.floor(Math.random() * size);
+						let { x, y } = cc.random_xy();
 						if (vm.board[x][y].d == null) {
 							vm = setcell(vm, { ...vm.board[x][y], d: stone.d });
 							break;
@@ -82,12 +84,12 @@ let mutate = (() => {
 		},
 		emptycount: vm => {
 			let n = 0;
-			for_xy((x, y) => n += vm.board[x][y].d != null ? 0 : 1);
+			cc.for_xy((x, y) => n += vm.board[x][y].d != null ? 0 : 1);
 			return n;
 		},
 		lose: vm => {
 			freeze = true;
-			for_xy((x, y) => {
+			cc.for_xy((x, y) => {
 				if (vm.board[x][y].d == null)
 					vm = setcell(vm, { ...vm.board[x][y], d: -1 });
 			});
@@ -174,15 +176,16 @@ let vw = (() => {
 
 	return {
 		change,
-		init: () => change(vm0 => {
-			var vm1 = {
-				board: range(0, size).map(x => range(0, size).map(y => ({ d: null, x, y, })).list()).list(),
-				nextstones: [randomstone(), randomstone(), randomstone(),],
+		init: () => change(vm_ => {
+			let vm = {
+				//board: range(0, size).map(x => range(0, size).map(y => ({ d: null, x, y, })).list()).list(),
+				nextstones: randomstones(3),
 				notifications: ['welcome!'],
 				score: 0,
 				select_xy: null,
 			};
-			return mutate.drop(vm1, randomstones(Math.ceil(size * size * .3)));
+			cc.for_xy((x, y) => vm = mutate.setcell(vm, { x, y, d: null, }));
+			return mutate.drop(vm, randomstones(Math.ceil(size * size * .3)));
 		}),
 		movefromto,
 		select: (x, y) => {
