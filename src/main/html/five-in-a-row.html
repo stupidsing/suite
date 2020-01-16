@@ -36,9 +36,9 @@ icons[-1] = '💀';
 let viewCell = rd.parse(`
 	<span draggable='true'
 		style='
-			background: { vm.background ? vm.background : "#DDDDDD" };
+			background: { vm.selected ? palette[2] : "#DDDDDD" };
 			display: table-cell;
-			filter: { vm.selected ? "brightness(80%)" : "brightness(100%)" };
+			filter___: { vm.selected ? "brightness(80%)" : "brightness(100%)" };
 			font-size: 25px;
 			height: 40px;
 			text-align: center;

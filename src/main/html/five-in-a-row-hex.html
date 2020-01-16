@@ -57,16 +57,16 @@ icons[-1] = '💀';
 // 😂
 
 let viewCell = rd.parse(`
-	<div class='hex' style='filter: { vm.selected ? "brightness(80%)" : "brightness(100%)" };' rd_on_click='handleclick(vm, ev)'>
-		<div class='part' style='border-bottom: 15px solid #DDDDDD;'></div>
-		<div class='middle' style='background: #DDDDDD'>
+	<div class='hex' style='filter___: { vm.selected ? "brightness(80%)" : "brightness(100%)" };' rd_on_click='handleclick(vm, ev)'>
+		<div class='part' style='border-bottom: 15px solid { vm.selected ? palette[2] : "#DDDDDD" };'></div>
+		<div class='middle' style='background: { vm.selected ? palette[2] : "#DDDDDD" }'>
 			<span style='left: 50%; position: absolute; top: 50%; transform: translate(-50%, -50%);'>
 				<rd_map v='vm.d'>
 					<rd_if v='vm != null'>{ icons[vm] }</rd_if>
 				</rd_map>
 			</span>
 		</div>
-		<div class='part' style='border-top: 15px solid #DDDDDD;'></div>
+		<div class='part' style='border-top: 15px solid { vm.selected ? palette[2] : "#DDDDDD" };'></div>
 	</div>
 `);
 
