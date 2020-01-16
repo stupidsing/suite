@@ -73,7 +73,7 @@ let view = rd.parse(`
 				</rd_for>
 			</table>
 		</rd_map>
-		<button rd_on_click='close()'>close</button>
+		<!-- button rd_on_click='close()'>close</button -->
 		<rd_map v='vm.notifications'>
 			<div style='background: { palette[1] }; bottom: 0; left: 0; position: fixed; text-align: center; width: 100%;'>
 				<rd_for>
@@ -189,7 +189,6 @@ let vw = (() => {
 	});
 	return {
 		change,
-		getselected: () => select_xy,
 		init: () => change(vm0 => {
 			var vm1 = {
 				board: range(0, size).map(x => range(0, size).map(y => ({ d: null, x, y, })).list()).list(),
@@ -206,11 +205,13 @@ let vw = (() => {
 			select_xy = { x, y };
 		},
 		unselect: () => {
+			let select_xy0 = select_xy;
 			change(vm => {
 				let vmc = vm.board[select_xy.x][select_xy.y];
 				return mutate.setcell(vm, { ...vmc, selected: false, });
 			});
 			select_xy = null;
+			return select_xy0;
 		},
 	}
 })();
@@ -281,9 +282,7 @@ let move = (vm, vmc0, vmcx) => {
 
 let handleclick = (vmc, ev) => {
 	if (!freeze) {
-		let select_xy0 = vw.getselected();
-
-		if (select_xy0 != null) vw.unselect();
+		let select_xy0 = vw.unselect();
 
 		if (vmc.d != null)
 			vw.select(vmc.x, vmc.y);
