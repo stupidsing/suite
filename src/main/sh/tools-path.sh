@@ -42,11 +42,7 @@ tp_eclipse() {
 }
 
 tp_jdk8() {
-	echo > /tmp/install-certs.sh
-	for P in dl dl-ssl; do
-	echo "cat /dev/null | openssl s_client -showcerts -connect ${P}.google.com:443 -servername ${P}.google.com | openssl x509 | ./bin/keytool -import -keystore jre/lib/security/cacerts -storepass changeit -noprompt -alias ${P}_google_com" >> /tmp/install-certs.sh
-	done
-	cchs "echo https://download.java.net/openjdk/jdk8u40/ri/openjdk-8u40-b25-linux-x64-10_feb_2015.tar.gz" @curl @tar-zxf @dir "@do-cd sh /tmp/install-certs.sh"
+	echo /usr/lib/jvm/java-8-openjdk-amd64
 }
 
 tp_jdk10() {
