@@ -4,7 +4,6 @@ const sizep = usp.get('size');
 
 let size = sizep != null ? +sizep : 7;
 let nStoneTypes = colorsp != null ? +colorsp : 5;
-let score = 0;
 
 let randomstone = () => ({ d: Math.floor(Math.random() * nStoneTypes) });
 
@@ -92,7 +91,6 @@ let mutate = (() => {
 })();
 
 let vw = (() => {
-	let select_xy = null;
 	let change = f => renderAgain(view, vm0 => {
 		let vm1 = f(vm0);
 		// console.log(vm1);
@@ -105,25 +103,29 @@ let vw = (() => {
 				board: range(0, size).map(x => range(0, size).map(y => ({ d: null, x, y, })).list()).list(),
 				nextstones: [randomstone(), randomstone(), randomstone(),],
 				notifications: ['welcome!'],
+				score: 0,
+				select_xy: null,
 			};
 			return mutate.drop(vm1, randomstones(Math.ceil(size * size * .3)));
 		}),
 		select: (x, y) => {
 			change(vm => {
 				let vmc = vm.board[x][y];
-				return mutate.setcell(vm, { ...vmc, selected: true, });
+				vm = mutate.setcell(vm, { ...vmc, selected: true, });
+				return { ...vm, select_xy: {x, y} };
 			});
-			select_xy = { x, y };
 		},
 		unselect: () => {
-			let select_xy0 = select_xy;
-			if (select_xy != null) {
-				change(vm => {
-					let vmc = vm.board[select_xy.x][select_xy.y];
-					return mutate.setcell(vm, { ...vmc, selected: false, });
-				});
-				select_xy = null;
-			}
+			let select_xy0;
+			change(vm => {
+				select_xy0 = vm.select_xy;
+				if (select_xy0 != null) {
+					let vmc = vm.board[select_xy0.x][select_xy0.y];
+					vm = mutate.setcell(vm, { ...vmc, selected: false, });
+					select_xy = null;
+				}
+				return { ...vm, select_xy: null };
+			});
 			return select_xy0;
 		},
 	}
@@ -147,8 +149,8 @@ let check = () => {
 						isFiveInARow = true;
 						for (let i = 0; i < step; i++)
 							vm = mutate.setcell(vm, { ...vm.board[x + i * dx][y + i * dy], d: null, });
-						score += step;
-						document.title = `${score} - Five in a row`;
+						vm = { ...vm, score: vm.score + step };
+						document.title = `${vm.score} - Five in a row`;
 					}
 				});
 			return vm;
