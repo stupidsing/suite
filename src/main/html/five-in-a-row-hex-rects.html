@@ -10,7 +10,7 @@ file:///home/ywsing/suite/src/main/html/five-in-a-row-hex-rects.html
 		<link href="https://fonts.googleapis.com/css?family=Oswald:200&display=swap" rel="stylesheet">
 	</head>
 	<body>
-		<div id='target'></div>
+		<div id='target' style='display: flex;'></div>
 	</body>
 
 	<script src='five-in-a-row.js'></script>
@@ -62,13 +62,13 @@ let viewCells = rd.parse(`
 let view = rd.parse(`
 	<span style='display: flex; flex-direction: column;'>
 		<span style='align-items: center; display: flex; justify-content: space-between;'>
-			<span style='justify-content: flex-start;'>
+			<span>
 				<rd_map v='vm.nextstones'>
 					<rd_component v='viewCells' />
 				</rd_map>
 			</span>
-			<span style='justify-content: flex-end;'>
-				<span style='font-family: Oswald, monospace;'>{ vm.score }</span>
+			<span>
+				<span style='font-family: Oswald, monospace; margin-right: 16px;'>{ vm.score }</span>
 			</span>
 		</span>
 		<p/>
@@ -94,7 +94,7 @@ let view = rd.parse(`
 		<rd_map v='vm.notifications'>
 			<div style='background: { palette[1] }; bottom: 0; left: 0; position: fixed; text-align: center; width: 100%;'>
 				<rd_for>
-					<p style='font-family: monospace;'>{ vm }</p>
+					<p style='font-family: Oswald, monospace;'>{ vm }</p>
 				</rd_for>
 			</div>
 		</rd_map>
