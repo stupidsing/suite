@@ -1,6 +1,6 @@
 <meta charset='utf-8'>
 <!--
-file:///home/ywsing/suite/src/main/html/five-in-a-row-hex.html
+file:///home/ywsing/suite/src/main/html/five-in-a-row-hex-rects.html
 -->
 <!DOCTYPE html>
 <html>
@@ -75,7 +75,7 @@ let view = rd.parse(`
 							margin: 2px 0px 2px 0px;
 							text-align: center;
 							vertical-align: middle;
-							width: { vm[0].x * 18 }px;
+							width: { (vm[0].x + vm[0].y) * 18 }px;
 						'
 					></span>
 					<rd_component v='viewCells' />

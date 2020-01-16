@@ -28,6 +28,8 @@ let mutate = (() => {
 				f(x, y);
 	};
 
+	let inbounds = (x, y) => 0 <= x && x < size && 0 <= y && y < size;
+
 	let setcell = (vm, vmc1) =>  {
 		let vmt0 = vm.board;
 		let vmr0 = vmt0[vmc1.x];
@@ -47,7 +49,7 @@ let mutate = (() => {
 					while (true
 						&& (x1 = x + step * dx) != null
 						&& (y1 = y + step * dy) != null
-						&& 0 <= x1 && x1 < size && 0 <= y1 && y1 < size
+						&& inbounds(x1, y1)
 						&& vm.board[x][y].d != null
 						&& vm.board[x][y].d == vm.board[x1][y1].d) step++;
 					if (5 <= step) {
