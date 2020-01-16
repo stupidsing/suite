@@ -13,19 +13,18 @@ PATH=${GIT_HD:9}/bin:${GOROOT}/bin:${GRADLE_HOME}/bin:${JAVA_HOME}/bin:${M2_HOME
 
 tp_android_avdmanager() {
 	JAVA_HOME=$(tp_jdk10) \
-	JAVA_OPTS="-XX:+IgnoreUnrecognizedVMOptions --add-modules java.se.ee" \
-	$(tp_android_sdk_tools)/bin/avdmanager $@
+	$(tp_android_sdk_tools)/tools/bin/avdmanager $@
 }
 
 tp_android_emulator() {
 	# sudo adduser ${USER} kvm
-	$(tp_android_sdk_tools)/emulator $@
+	$(tp_android_sdk_tools)/tools/emulator $@
 }
 
 tp_android_sdk_tools() {
-	cchs \
-	cchs "curl -sL https://developer.android.com/studio" "grep dl.google.com | grep sdk-tools-linux" "head -1" "cut -d\\\" -f2" @curl @unzip "@cd (cd tools; pwd)" \
-	"@do-cd JAVA_HOME=${JAVA_HOME} JAVA_OPTS='\''-XX:+IgnoreUnrecognizedVMOptions --add-modules java.se.ee'\'' ./bin/sdkmanager \
+	JAVA_HOME=$(tp_jdk10) \
+	cchs "curl -sL https://developer.android.com/studio" "grep dl.google.com | grep sdk-tools-linux" "head -1" "cut -d\\\" -f2" @curl @unzip "@cd pwd" \
+	"@do-cd JAVA_HOME=${JAVA_HOME} JAVA_OPTS='\''-XX:+IgnoreUnrecognizedVMOptions --add-modules java.se.ee'\'' ./tools/bin/sdkmanager \
 	'\''build-tools;23.0.3'\'' emulator platform-tools '\''platforms;android-23'\'' '\''system-images;android-23;default;x86_64'\''"
 }
 
