@@ -20,11 +20,9 @@ let cc = {
 	random_xy: () => ({ x: Math.floor(Math.random() * size), y: Math.floor(Math.random() * size), }),
 };
 
-let randomstone = () => ({ d: Math.floor(Math.random() * nStoneTypes) });
-
 let randomstones = n => {
 	let stones = [];
-	for (let i = 0; i < n; i++) stones.push(randomstone());
+	for (let i = 0; i < n; i++) stones.push({ d: Math.floor(Math.random() * nStoneTypes) });
 	return stones;
 };
 
