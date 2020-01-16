@@ -127,7 +127,7 @@ let vw = (() => {
 				let { x, y, } = todo;
 				let k = key(todo);
 				if (!dones.hasOwnProperty(k)) {
-					let neighbours = neighbourdirs
+					let neighbours = movedirs
 						.map(([dx, dy]) => ({ x: x + dx, y: y + dy, prev: todo, }))
 						.filter(({ x, y }) => 0 <= x && x < size && 0 <= y && y < size && isMovable(x, y));
 					todos.push(...neighbours);
