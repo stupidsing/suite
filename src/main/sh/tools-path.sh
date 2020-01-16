@@ -17,7 +17,7 @@ tp_android_avdmanager() {
 	$(tp_android_sdk_tools)/tools/bin/avdmanager $@
 }
 
- () {
+tp_android_emulator() {
 	# sudo adduser ${USER} kvm
 	$(tp_android_sdk_tools)/tools/emulator $@
 }
