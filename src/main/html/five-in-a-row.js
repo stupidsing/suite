@@ -67,7 +67,7 @@ let mutate = (() => {
 	return {
 		checkfiveinarow,
 		drop: (vm, stones) => {
-			if (stones.length <= mutate.emptycount(vm))
+			if (stones.length < mutate.emptycount(vm))
 				for (let stone of stones)
 					while(true) {
 						let { x, y } = cc.random_xy();
@@ -76,22 +76,20 @@ let mutate = (() => {
 							break;
 						}
 					}
-			else
-				vm = mutate.lose(vm);
+			else {
+				freeze = true;
+				cc.for_xy((x, y) => {
+					if (vm.board[x][y].d == null)
+						vm = setcell(vm, { ...vm.board[x][y], d: -1 });
+				});
+				vm = { ...vm, notifications: ['game over'] };
+			}
 			return vm;
 		},
 		emptycount: vm => {
 			let n = 0;
 			cc.for_xy((x, y) => n += vm.board[x][y].d != null ? 0 : 1);
 			return n;
-		},
-		lose: vm => {
-			freeze = true;
-			cc.for_xy((x, y) => {
-				if (vm.board[x][y].d == null)
-					vm = setcell(vm, { ...vm.board[x][y], d: -1 });
-			});
-			return vm;
 		},
 		moveonestep: (vm, fr, to) => {
 			let vmc0 = vm.board[fr.x][fr.y];
