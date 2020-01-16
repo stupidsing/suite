@@ -21,7 +21,8 @@ cchs() {
 		elif [ "${CMD}" == "@curl" ]; then
 			URL=$(cat ${F})
 			DF=${DCACHE}/$(url-dir "${URL}")
-			[ -f ${DF} ] || do-cmd curl -sL "${URL}" > ${DF}
+			DFI=${DF}.inprogress
+			[ -f ${DF} ] || do-cmd "curl -sL '${URL}' > ${DFI} && mv ${DFI} ${DF}"
 			F=$(cchf "printf ${DF}")
 		elif [ "${CMD}" == "@dir" ]; then
 			D=$(cat ${F})
