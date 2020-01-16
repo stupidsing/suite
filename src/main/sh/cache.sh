@@ -74,7 +74,7 @@ cchs() {
 			DF=${DCACHE}/$(url-dir "${S}")
 			mkdir -p ${DF}
 			F=$(cchf "printf ${DF}")
-		elif [ "${CMD:0:10}" == "@maven-get" ]; then
+		elif [ "${CMD:0:5}" == "@tar-" ]; then
 			OPT=${CMD:5}
 			TARF=$(cat ${F})
 			TARDIR=${TARF}.d
@@ -104,7 +104,7 @@ cchf() {
 
 	mkdir -p ${DIR}
 
-	if [ -f "${KF}" ] && diff <(printf "${CMD}") <(cat "${KF}"); then
+	if [ "${CACHE}" != "off" ] && [ -f "${KF}" ] && diff <(printf "${CMD}") <(cat "${KF}"); then
 		true
 	else
 		do-cmd "${CMD}" | tee "${VF}" 1>&2 && printf "${CMD}" > "${KF}"

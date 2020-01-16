@@ -12,7 +12,7 @@ NODE_HOME=$(cchs "echo https://nodejs.org/dist/v12.13.1/node-v12.13.1-linux-x64.
 PATH=${GIT_HD:9}/bin:${GOROOT}/bin:${GRADLE_HOME}/bin:${JAVA_HOME}/bin:${M2_HOME}/bin:${NODE_HOME}/bin:${PATH}
 
 tp_android_avdmanager() {
-	JAVA_HOME=$(tp_java10) \
+	JAVA_HOME=$(tp_jdk10) \
 	JAVA_OPTS="-XX:+IgnoreUnrecognizedVMOptions --add-modules java.se.ee" \
 	$(tp_android_sdk_tools)/bin/avdmanager $@
 }
@@ -41,7 +41,11 @@ tp_eclipse() {
 	$(cchs "echo http://ftp.jaist.ac.jp/pub/eclipse/technology/epp/downloads/release/2019-12/R/eclipse-java-2019-12-R-linux-gtk-x86_64.tar.gz" @curl @tar-zxf @dir)/eclipse $@
 }
 
-tp_java10() {
+tp_jdk8() {
+	cchs "echo https://download.java.net/openjdk/jdk8u40/ri/openjdk-8u40-b25-linux-x64-10_feb_2015.tar.gz" @curl @tar-zxf @dir
+}
+
+tp_jdk10() {
 	echo > /tmp/install-certs.sh
 	for P in dl dl-ssl; do
 	echo "cat /dev/null | openssl s_client -showcerts -connect ${P}.google.com:443 -servername ${P}.google.com | openssl x509 | ./bin/keytool -import -keystore lib/security/cacerts -storepass changeit -noprompt -alias ${P}_google_com" >> /tmp/install-certs.sh
