@@ -69,7 +69,12 @@ cchs() {
 			DF=${DCACHE}/$(url-dir "${URL}")
 			[ -f ${DF} ] || do-cmd curl -sL "${URL}" > ${DF}
 			F=$(cchf "printf ${DF}")
-		elif [ "${CMD:0:5}" == "@tar-" ]; then
+		elif [ "${CMD:0:6}" == "@mkdir" ]; then
+			S=$(cat ${F})
+			DF=${DCACHE}/$(url-dir "${S}")
+			mkdir -p ${DF}
+			F=$(cchf "printf ${DF}")
+		elif [ "${CMD:0:10}" == "@maven-get" ]; then
 			OPT=${CMD:5}
 			TARF=$(cat ${F})
 			TARDIR=${TARF}.d

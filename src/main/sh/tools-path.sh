@@ -18,6 +18,7 @@ tp_android_avdmanager() {
 }
 
 tp_android_emulator() {
+	# sudo adduser ${USER} kvm
 	$(tp_android_sdk_tools)/emulator $@
 }
 
@@ -30,6 +31,10 @@ tp_android_sdk_tools() {
 
 tp_android_studio() {
 	$(cchs "curl -sL https://developer.android.com/studio" "grep dl.google.com | grep linux.tar.gz" "head -1" "cut -d\\\" -f2" @curl @tar-zxf @dir)/bin/studio.sh $@
+}
+
+tp_cordova() {
+	$(cchs "echo https://cordova.apache.org/" @mkdir "@do-cd npm install cordova")/node_modules/.bin/cordova $@
 }
 
 tp_eclipse() {
