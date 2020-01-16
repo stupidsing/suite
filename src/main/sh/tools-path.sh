@@ -18,9 +18,14 @@ tp_android_avdmanager() {
 }
 
 tp_android_emulator() {
-	JAVA_HOME=$(tp_java10) \
-	JAVA_OPTS="-XX:+IgnoreUnrecognizedVMOptions --add-modules java.se.ee" \
 	$(tp_android_sdk_tools)/emulator $@
+}
+
+tp_android_sdk_tools() {
+	cchs \
+	cchs "curl -sL https://developer.android.com/studio" "grep dl.google.com | grep sdk-tools-linux" "head -1" "cut -d\\\" -f2" @curl @unzip "@cd (cd tools; pwd)" \
+	"@do-cd JAVA_HOME=${JAVA_HOME} JAVA_OPTS='\''-XX:+IgnoreUnrecognizedVMOptions --add-modules java.se.ee'\'' ./bin/sdkmanager \
+	'\''build-tools;23.0.3'\'' emulator platform-tools '\''platforms;android-23'\'' '\''system-images;android-23;default;x86_64'\''"
 }
 
 tp_android_studio() {
@@ -29,6 +34,14 @@ tp_android_studio() {
 
 tp_eclipse() {
 	$(cchs "echo http://ftp.jaist.ac.jp/pub/eclipse/technology/epp/downloads/release/2019-12/R/eclipse-java-2019-12-R-linux-gtk-x86_64.tar.gz" @curl @tar-zxf @dir)/eclipse $@
+}
+
+tp_java10() {
+	echo > /tmp/install-certs.sh
+	for P in dl dl-ssl; do
+	echo "cat /dev/null | openssl s_client -showcerts -connect ${P}.google.com:443 -servername ${P}.google.com | openssl x509 | ./bin/keytool -import -keystore lib/security/cacerts -storepass changeit -noprompt -alias ${P}_google_com" >> /tmp/install-certs.sh
+	done
+	$(cchs "echo https://download.java.net/openjdk/jdk10/ri/openjdk-10+44_linux-x64_bin_ri.tar.gz" @curl @tar-zxf @dir "@do-cd sh /tmp/install-certs.sh")
 }
 
 tp_kubectl() {
