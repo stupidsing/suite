@@ -2,7 +2,7 @@
 
 curl -sL https://raw.githubusercontent.com/stupidsing/suite/master/src/main/sh/cache.sh
 
-cat << IN
+echo '
 GIT_HD=$(cchs "echo git@github.com:stupidsing/home-data.git" @git-clone)
 GOROOT=$(cchs "echo https://dl.google.com/go/go1.13.4.linux-amd64.tar.gz" @curl @tar-zxf @dir)
 GRADLE_HOME=$(cchs "echo https://services.gradle.org/distributions/gradle-6.0.1-bin.zip" @curl @unzip @dir)
@@ -13,21 +13,14 @@ PATH=${GIT_HD:9}/bin:${GOROOT}/bin:${GRADLE_HOME}/bin:${JAVA_HOME}/bin:${M2_HOME
 
 tp_android_avdmanager() {
 	JAVA_HOME=$(tp_java10) \
-	JAVA_OPTS='-XX:+IgnoreUnrecognizedVMOptions --add-modules java.se.ee' \
+	JAVA_OPTS="-XX:+IgnoreUnrecognizedVMOptions --add-modules java.se.ee" \
 	$(tp_android_sdk_tools)/bin/avdmanager $@
 }
 
 tp_android_emulator() {
 	JAVA_HOME=$(tp_java10) \
-	JAVA_OPTS='-XX:+IgnoreUnrecognizedVMOptions --add-modules java.se.ee' \
+	JAVA_OPTS="-XX:+IgnoreUnrecognizedVMOptions --add-modules java.se.ee" \
 	$(tp_android_sdk_tools)/emulator $@
-}
-
-tp_android_sdk_tools() {
-	cchs \
-	"echo https://dl.google.com/android/repository/sdk-tools-linux-4333796.zip" @curl @unzip "@cd (cd tools; pwd)" \
-	"@do-cd JAVA_HOME=${JAVA_HOME} JAVA_OPTS='-XX:+IgnoreUnrecognizedVMOptions --add-modules java.se.ee' ./bin/sdkmanager \
-	'build-tools;23.0.3' emulator platform-tools 'platforms;android-23' 'system-images;android-23;default;x86_64'"
 }
 
 tp_android_studio() {
@@ -36,15 +29,6 @@ tp_android_studio() {
 
 tp_eclipse() {
 	$(cchs "echo http://ftp.jaist.ac.jp/pub/eclipse/technology/epp/downloads/release/2019-12/R/eclipse-java-2019-12-R-linux-gtk-x86_64.tar.gz" @curl @tar-zxf @dir)/eclipse $@
-}
-
-tp_java10() {
-	echo '
-	for P in dl dl-ssl; do
-		cat /dev/null | openssl s_client -showcerts -connect dl-ssl.google.com:443 -servername ${P}.google.com | openssl x509 | ./bin/keytool -import -keystore lib/security/cacerts -storepass changeit -noprompt -alias ${P}_google_com
-	done
-	' > /tmp/install-certs.sh
-	$(cchs "echo https://download.java.net/openjdk/jdk10/ri/openjdk-10+44_linux-x64_bin_ri.tar.gz" @curl @tar-zxf @dir "@do-cd sh /tmp/install-certs.sh")
 }
 
 tp_kubectl() {
@@ -69,7 +53,7 @@ tp_suite() {
 tp_wdp() {
 	wine $(cchs "echo https://stammel.net/spiele/wdp/wdp.exe" @curl)
 }
-IN
+'
 
 #GIT_PIECES=$(cchs "echo git@github.com:stupidsing/pieces.git" @git-clone "@git-cd pwd")
 #GIT_PRIMAL=$(cchs "echo git@github.com:stupidsing/primal.git" @git-clone "@do-git-cd ${M2_HOME}/bin/mvn install" "@git-cd pwd")
