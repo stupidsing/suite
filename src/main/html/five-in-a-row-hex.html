@@ -7,6 +7,7 @@ file:///home/ywsing/suite/src/main/html/five-in-a-row-hex.html
 	<head>
 		<title>0 - Five in a row</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link href="https://fonts.googleapis.com/css?family=Oswald:200&display=swap" rel="stylesheet">
 	</head>
 	<body>
 		<style>
@@ -78,11 +79,20 @@ let viewCells = rd.parse(`
 `);
 
 let view = rd.parse(`
-	<span>
-		<rd_map v='vm.nextstones'>
-			<rd_component v='viewCells' />
-		</rd_map>
-		<img height='100' />
+	<span style='display: flex; flex-direction: column;'>
+		<span style='align-items: center; display: flex; justify-content: space-between;'>
+			<span style='justify-content: flex-start;'>
+				<rd_map v='vm.nextstones'>
+					<rd_component v='viewCells' />
+				</rd_map>
+			</span>
+			<span style='justify-content: flex-end;'>
+				<span style='font-family: Oswald, monospace;'>{ vm.score }</span>
+			</span>
+		</span>
+		<span>
+			<img height='100' />
+		</span>
 		<rd_map v='vm.board'>
 			<rd_for>
 				<rd_component v='viewCells' />
