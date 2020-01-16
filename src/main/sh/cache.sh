@@ -51,7 +51,7 @@ cchs() {
 			fi
 			D0=$(date +%s)
 			D1=$(stat -c %Y ${DF}.pulltime)
-			if (( 3600 < ${D0} - ${D1} )); then
+			if (( 900 < ${D0} - ${D1} )); then
 				do-cmd "cd ${DF}/ && git pull --quiet"
 				touch ${DF}.pulltime
 			fi
