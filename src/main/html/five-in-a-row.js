@@ -13,27 +13,6 @@ let randomstones = n => {
 	return stones;
 };
 
-let search = (xy0, xyx, isMovable) => {
-	let key = xy => `${xy.x},${xy.y}`;
-	let todos = [{ x: xy0.x, y: xy0.y, prev: null, }];
-	let dones = {};
-	let kx = key(xyx);
-	while (0 < todos.length) { // breadth-first search
-		let todo = todos.shift();
-		let { x, y, } = todo;
-		let k = key(todo);
-		if (!dones.hasOwnProperty(k)) {
-			let neighbours = neighbourdirs
-				.map(([dx, dy]) => ({ x: x + dx, y: y + dy, prev: todo, }))
-				.filter(({ x, y }) => 0 <= x && x < size && 0 <= y && y < size && isMovable(x, y));
-			todos.push(...neighbours);
-			dones[k] = todo;
-			if (k == kx) return todo;
-		}
-	}
-	return null;
-};
-
 let freeze = false; // if we are accepting game inputs
 
 let mutate = (() => {
@@ -42,11 +21,13 @@ let mutate = (() => {
 			for (let y = 0; y < size; y++)
 				f(x, y);
 	};
+
 	let back_xy = f => {
 		for (let x = size - 1; 0 <= x; x--)
 			for (let y = size - 1; 0 <= y; y--)
 				f(x, y);
 	};
+
 	let setcell = (vm, vmc1) =>  {
 		let vmt0 = vm.board;
 		let vmr0 = vmt0[vmc1.x];
@@ -55,6 +36,7 @@ let mutate = (() => {
 		let vmt1 = vmt0.map(vmr => vmr != vmr0 ? vmr : vmr1);
 		return { ...vm, board: vmt1 };
 	};
+
 	return {
 		back_xy,
 		drop: (vm, stones) => {
@@ -96,6 +78,96 @@ let vw = (() => {
 		// console.log(vm1);
 		return vm1;
 	});
+
+	let check_ = vm => {
+		let isFiveInARow = false;
+		if (!freeze)
+			for (let [dx, dy] of eatdirs)
+				(0 < dx * size + dy ? mutate.for_xy : mutate.back_xy)((x, y) => {
+					let step = 0;
+					let x1, y1;
+					while (true
+						&& (x1 = x + step * dx) != null
+						&& (y1 = y + step * dy) != null
+						&& 0 <= x1 && x1 < size && 0 <= y1 && y1 < size
+						&& vm.board[x][y].d != null
+						&& vm.board[x][y].d == vm.board[x1][y1].d) step++;
+					if (5 <= step) {
+						isFiveInARow = true;
+						for (let i = 0; i < step; i++)
+							vm = mutate.setcell(vm, { ...vm.board[x + i * dx][y + i * dy], d: null, });
+						vm = { ...vm, score: vm.score + step };
+						document.title = `${vm.score} - Five in a row`;
+					}
+				});
+		return { isFiveInARow, vm };
+	};
+
+	let movefromto = (vmc0, vmcx) => {
+		let board;
+		change(vm => { board = vm.board; return vm; });
+
+		let search = (xy0, xyx, isMovable) => {
+			let key = xy => `${xy.x},${xy.y}`;
+			let todos = [{ x: xy0.x, y: xy0.y, prev: null, }];
+			let dones = {};
+			let kx = key(xyx);
+			while (0 < todos.length) { // breadth-first search
+				let todo = todos.shift();
+				let { x, y, } = todo;
+				let k = key(todo);
+				if (!dones.hasOwnProperty(k)) {
+					let neighbours = neighbourdirs
+						.map(([dx, dy]) => ({ x: x + dx, y: y + dy, prev: todo, }))
+						.filter(({ x, y }) => 0 <= x && x < size && 0 <= y && y < size && isMovable(x, y));
+					todos.push(...neighbours);
+					dones[k] = todo;
+					if (k == kx) return todo;
+				}
+			}
+			return null;
+		};
+
+		let node = search(vmc0, vmcx, (x, y) => board[x][y].d == null);
+
+		let rec = ({ x, y, prev, }, cb) => {
+			if (prev != null)
+				rec(prev, () => {
+					let timeout = setTimeout(() => {
+						change(vm => {
+							let vmc0 = vm.board[prev.x][prev.y];
+							let vmc1 = vm.board[x][y];
+							let d = vmc0.d;
+							vm = mutate.setcell(vm, { ...vmc0, d: null, });
+							vm = mutate.setcell(vm, { ...vmc1, d, });
+							return vm;
+						});
+						cb();
+						clearTimeout(timeout);
+					}, 50);
+				});
+			else
+				cb();
+		};
+
+		if (node != null) {
+			freeze = true;
+			rec(node, () => {
+				freeze = false;
+				change(vm_ => {
+					let { isFiveInARow, vm } = check_(vm_);
+					if (!isFiveInARow) {
+						vm = mutate.drop(vm, vm.nextstones);
+						vm = { ...vm, nextstones: randomstones(3), };
+						vm = check_(vm).vm;
+					}				
+					return vm;
+				});
+			});
+		} else
+			console.log('no path between', vmc0, vmcx);
+	};
+
 	return {
 		change,
 		init: () => change(vm0 => {
@@ -108,6 +180,7 @@ let vw = (() => {
 			};
 			return mutate.drop(vm1, randomstones(Math.ceil(size * size * .3)));
 		}),
+		movefromto,
 		select: (x, y) => {
 			change(vm => {
 				let vmc = vm.board[x][y];
@@ -131,81 +204,14 @@ let vw = (() => {
 	}
 })();
 
-let check = () => {
-	let isFiveInARow = false;
-	if (!freeze)
-		vw.change(vm => {
-			for (let [dx, dy] of eatdirs)
-				(0 < dx * size + dy ? mutate.for_xy : mutate.back_xy)((x, y) => {
-					let step = 0;
-					let x1, y1;
-					while (true
-						&& (x1 = x + step * dx) != null
-						&& (y1 = y + step * dy) != null
-						&& 0 <= x1 && x1 < size && 0 <= y1 && y1 < size
-						&& vm.board[x][y].d != null
-						&& vm.board[x][y].d == vm.board[x1][y1].d) step++;
-					if (5 <= step) {
-						isFiveInARow = true;
-						for (let i = 0; i < step; i++)
-							vm = mutate.setcell(vm, { ...vm.board[x + i * dx][y + i * dy], d: null, });
-						vm = { ...vm, score: vm.score + step };
-						document.title = `${vm.score} - Five in a row`;
-					}
-				});
-			return vm;
-		});
-	return isFiveInARow;
-};
-
-let move = (vm, vmc0, vmcx) => {
-	let node = search(vmc0, vmcx, (x, y) => vm.board[x][y].d == null);
-	let rec = ({ x, y, prev, }, cb) => {
-		if (prev != null)
-			rec(prev, () => {
-				let timeout = setTimeout(() => {
-					vw.change(vm => {
-						let vmc0 = vm.board[prev.x][prev.y];
-						let vmc1 = vm.board[x][y];
-						let d = vmc0.d;
-						vm = mutate.setcell(vm, { ...vmc0, d: null, });
-						vm = mutate.setcell(vm, { ...vmc1, d, });
-						return vm;
-					});
-					cb();
-					clearTimeout(timeout);
-				}, 50);
-			});
-		else
-			cb();
-	};
-	if (node != null) {
-		freeze = true;
-		rec(node, () => {
-			freeze = false;
-			if (!check()) {
-				vw.change(vm => {
-					vm = mutate.drop(vm, vm.nextstones);
-					return { ...vm, nextstones: randomstones(3), };
-				});
-				check();
-			}				
-		});
-	} else
-		console.log('no path between', vmc0, vmcx);
-};
-
 let handleclick = (vmc, ev) => {
 	if (!freeze) {
 		let select_xy0 = vw.unselect();
 
 		if (vmc.d != null)
 			vw.select(vmc.x, vmc.y);
-		else if (select_xy0 != null) {
-			let vm_;
-			vw.change(vm => vm_ = vm);
-			move(vm_, select_xy0, vmc);
-		}
+		else if (select_xy0 != null)
+			vw.movefromto(select_xy0, vmc);
 	}
 };
 
