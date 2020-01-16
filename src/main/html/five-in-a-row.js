@@ -82,7 +82,7 @@ let mutate = (() => {
 					if (vm.board[x][y].d == null)
 						vm = setcell(vm, { ...vm.board[x][y], d: -1 });
 				});
-				vm = { ...vm, notifications: ['game over'] };
+				vm = { ...vm, notification: { c: 4, message: 'game over', } };
 			}
 			return vm;
 		},
@@ -176,7 +176,7 @@ let vw = (() => {
 			let vm = {
 				//board: range(0, size).map(x => range(0, size).map(y => ({ d: null, x, y, })).list()).list(),
 				nextstones: randomstones(3),
-				notifications: ['welcome!'],
+				notification: { c: 1, message: 'welcome!', },
 				score: 0,
 				select_xy: null,
 			};

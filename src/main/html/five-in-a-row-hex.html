@@ -97,11 +97,9 @@ let view = rd.parse(`
 			</rd_for>
 		</rd_map>
 		<!-- button rd_on_click='handleclose()'>close</button -->
-		<rd_map v='vm.notifications'>
-			<div style='background: { palette[1] }; bottom: 0; left: 0; position: fixed; text-align: center; width: 100%;'>
-				<rd_for>
-					<p style='font-family: Oswald, monospace;'>{ vm }</p>
-				</rd_for>
+		<rd_map v='vm.notification'>
+			<div style='background: { palette[vm.c] }; bottom: 0; font-family: Oswald, monospace; left: 0; position: fixed; text-align: center; width: 100%;'>
+				<p>{ vm.message }</p>
 			</div>
 		</rd_map>
 	</span>
