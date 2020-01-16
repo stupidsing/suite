@@ -61,6 +61,14 @@ tp_minikube() {
 	$(cchs "echo https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64" @curl "@do-chmod +x") $@
 }
 
+tp_mirrormagic() {
+	$(cchs "echo https://www.artsoft.org/RELEASES/unix/mirrormagic/mirrormagic-3.0.0.tar.gz" @curl @tar-zxf @dir "@do-cd make")/mirrormagic $@
+}
+
+tp_slant() {
+	$(cchs "echo https://www.chiark.greenend.org.uk/~sgtatham/puzzles/puzzles.tar.gz" @curl @tar-zxf @dir "@do-cd ./configure" "@do-cd make")/slant $@
+}
+
 tp_rocksndiamonds() {
 	# https://www.artsoft.org/rocksndiamonds/news/
 	$(cchs "echo https://www.artsoft.org/RELEASES/unix/rocksndiamonds/rocksndiamonds-4.1.3.0.tar.gz" @curl @tar-zxf @dir "@do-cd make")/rocksndiamonds
