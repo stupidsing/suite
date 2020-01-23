@@ -33,7 +33,7 @@ tp_android_studio() {
 }
 
 tp_cordova() {
-	$(cchs "echo https://cordova.apache.org/" @mkdir "@do-cd npm install cordova")/node_modules/.bin/cordova $@
+	$(cchs "echo npm-i-cordova" @mkdir "@do-cd ${NODE_HOME}/bin/npm install cordova")/node_modules/.bin/cordova $@
 }
 
 tp_eclipse() {
@@ -77,6 +77,10 @@ tp_rocksndiamonds() {
 tp_suite() {
 	GIT_SUITE=$(cchs "echo git@github.com:stupidsing/suite.git" @git-clone "@do-git-cd ./build.sh" "@git-cd pwd")
 	${GIT_SUITE}/run.sh $@
+}
+
+tp_vms_empire() {
+	$(cchs "echo git@gitlab.com:esr/vms-empire.git" @git-clone "@do-git-cd make" "@git-cd pwd")/vms-empire $@
 }
 
 tp_wdp() {
