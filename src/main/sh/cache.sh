@@ -68,7 +68,8 @@ cchs() {
 			P=$(echo ${GROUPID} | sed s#\\.#/#g)
 			URL="${REPO}/${P}/${ARTIFACTID}/${VERSION}/${ARTIFACTID}-${VERSION}.pom"
 			DF=${DCACHE}/$(url-dir "${URL}")
-			[ -f ${DF} ] || do-cmd curl -sL "${URL}" > ${DF}
+			DFI=${DF}.inprogress
+			[ -f ${DF} ] || do-cmd curl -sL "${URL}" > ${DFI} && mv ${DFI} ${DF}
 			F=$(cchf "printf ${DF}")
 		elif [ "${CMD:0:6}" == "@mkdir" ]; then
 			S=$(cat ${F})
@@ -79,12 +80,14 @@ cchs() {
 			OPT=${CMD:5}
 			TARF=$(cat ${F})
 			TARDIR=${TARF}.d
-			[ -d ${TARDIR} ] || do-cmd "mkdir -p ${TARDIR} && tar ${OPT} ${TARF} -C ${TARDIR}"
+			TARDIRI=${TARDIR}.inprogress
+			[ -d ${TARDIR} ] || do-cmd "mkdir -p ${TARDIRI} && tar ${OPT} ${TARF} -C ${TARDIRI} && mv ${TARDIRI} ${TARDIR}"
 			F=$(cchf "printf ${TARDIR}")
 		elif [ "${CMD}" == "@unzip" ]; then
 			ZIPF=$(cat ${F})
 			ZIPDIR=${ZIPF}.d
-			[ -d ${ZIPDIR} ] || do-cmd "mkdir -p ${ZIPDIR} && unzip -d ${ZIPDIR} -q ${ZIPF}"
+			ZIPDIRI=${ZIPDIR}.inprogress
+			[ -d ${ZIPDIR} ] || do-cmd "mkdir -p ${ZIPDIRI} && unzip -d ${ZIPDIRI} -q ${ZIPF} && mv ${ZIPDIRI} ${ZIPDIR}"
 			F=$(cchf "printf ${ZIPDIR}")
 		else
 			F=$(cchf "cat ${F} | ${CMD}")
