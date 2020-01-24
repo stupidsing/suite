@@ -83,6 +83,10 @@ tp_vms_empire() {
 	$(cchs "echo git@gitlab.com:esr/vms-empire.git" @git-clone "@do-git-cd make" "@git-cd pwd")/vms-empire $@
 }
 
+tp_vscode() {
+	$(cchs "echo https://az764295.vo.msecnd.net/stable/26076a4de974ead31f97692a0d32f90d735645c0/code-stable-1576682093.tar.gz" @curl @tar-zxf @dir)/bin/code
+}
+
 tp_wdp() {
 	wine $(cchs "echo https://stammel.net/spiele/wdp/wdp.exe" @curl)
 }

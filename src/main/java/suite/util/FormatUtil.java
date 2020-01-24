@@ -5,7 +5,6 @@ import static suite.util.Streamlet_.forInt;
 import primal.MoreVerbs.Read;
 import primal.Verbs.Build;
 import primal.primitive.IntMoreVerbs.LiftInt;
-import primal.streamlet.Streamlet;
 import suite.streamlet.As;
 
 public class FormatUtil {
@@ -14,11 +13,13 @@ public class FormatUtil {
 		var arrays = Read.from(s.split("\n")).map(line -> line.split("\t")).collect();
 		var nColumns = arrays.collect(LiftInt.of(array -> array.length)).max();
 
-		var rows = arrays
-				.map(array -> To.array(nColumns, String.class, column -> column < array.length ? array[column] : ""));
+		var rows = arrays //
+				.map(array -> To.array(nColumns, String.class, column -> column < array.length ? array[column] : "")) //
+				.toArray(String[].class);
 
 		var widths = forInt(nColumns) //
-				.collect(As.ints(column -> rows //
+				.collect(As.ints(column -> Read //
+						.from(rows) //
 						.collect(LiftInt.of(row -> row[column].length())).max())) //
 				.toArray();
 
@@ -28,7 +29,7 @@ public class FormatUtil {
 			return buildWithBorders(nColumns, widths, rows);
 	}
 
-	private static String build(int nColumns, int[] widths, Streamlet<String[]> rows) {
+	private static String build(int nColumns, int[] widths, String[][] rows) {
 		return Build.string(sb -> {
 			for (var row : rows) {
 				for (var column = 0; column < nColumns; column++) {
@@ -46,11 +47,18 @@ public class FormatUtil {
 		});
 	}
 
-	private static String buildWithBorders(int nColumns, int[] widths, Streamlet<String[]> rows) {
+	private static String buildWithBorders(int nColumns, int[] widths, String[][] rows) {
 		return Build.string(sb -> {
-			appendBorder(sb, nColumns, widths, "┌", "┬", "─", "┐");
+			var first = true;
 
 			for (var row : rows) {
+				if (first)
+					appendBorder(sb, nColumns, widths, "┌", "┬", "─", "┐");
+				else
+					appendBorder(sb, nColumns, widths, "├", "┼", "─", "┤");
+
+				first = false;
+
 				for (var column = 0; column < nColumns; column++) {
 					var cell = row[column];
 					var width = widths[column];
@@ -63,8 +71,6 @@ public class FormatUtil {
 				}
 
 				sb.append("│\n");
-
-				appendBorder(sb, nColumns, widths, "├", "┼", "─", "┤");
 			}
 
 			appendBorder(sb, nColumns, widths, "└", "┴", "─", "┘");
