@@ -176,7 +176,7 @@ let vw = (() => {
 			let vm = {
 				//board: range(0, size).map(x => range(0, size).map(y => ({ d: null, x, y, })).list()).list(),
 				nextstones: randomstones(3),
-				notification: { c: 1, message: 'welcome!', },
+				notification: null, // { c: 1, message: 'welcome!', },
 				score: 0,
 				select_xy: null,
 			};
