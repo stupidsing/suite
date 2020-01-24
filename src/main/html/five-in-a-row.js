@@ -31,7 +31,7 @@ let randomstones = n => {
 let freeze = false; // if we are accepting game inputs
 
 let mutate = (() => {
-	let setcell = (vm, vmc1) =>  {
+	let setcell = (vm, vmc1) => {
 		let vmt0 = vm.board;
 		vmt0 = vmt0 != null ? vmt0 : { length: size };
 		let vmr0 = vmt0[vmc1.x];
