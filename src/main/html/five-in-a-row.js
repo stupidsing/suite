@@ -1,3 +1,5 @@
+'use strict';
+
 const usp = new URLSearchParams(window.location.search);
 const colorsp = usp.get('colors');
 const sizep = usp.get('size');
@@ -198,7 +200,6 @@ let vw = (() => {
 				if (select_xy0 != null) {
 					let vmc = vm.board[select_xy0.x][select_xy0.y];
 					vm = mutate.setcell(vm, { ...vmc, selected: false, });
-					select_xy = null;
 				}
 				return { ...vm, select_xy: null };
 			});
@@ -219,3 +220,10 @@ let handleclick = (vmc, ev) => {
 };
 
 let handleclose = () => vw.change(vm => null);
+
+// https://www.colourlovers.com/palette/373610/Melon_Ball_Surprise
+let palette = ['#D1F2A5', '#EFFAB4', '#FFC48C', '#FF9F80', '#F56991',];
+
+let icons = [ '🍋', '🌲', '💖', '🐬', '🐵', '🍊', '🍇', '💮', '✴️', ];
+icons[-1] = '💀';
+// 😂
