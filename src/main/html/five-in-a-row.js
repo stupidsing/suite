@@ -7,6 +7,12 @@ const sizep = usp.get('size');
 let size = sizep != null ? +sizep : 7;
 let nStoneTypes = colorsp != null ? +colorsp : 5;
 
+let randomstones = n => {
+	let stones = [];
+	for (let i = 0; i < n; i++) stones.push({ d: Math.floor(Math.random() * nStoneTypes) });
+	return stones;
+};
+
 let cc = {
 	back_xy: f => {
 		for (let x = size - 1; 0 <= x; x--)
@@ -20,12 +26,6 @@ let cc = {
 	},
 	inbounds: (x, y) => 0 <= x && x < size && 0 <= y && y < size,
 	random_xy: () => ({ x: Math.floor(Math.random() * size), y: Math.floor(Math.random() * size), }),
-};
-
-let randomstones = n => {
-	let stones = [];
-	for (let i = 0; i < n; i++) stones.push({ d: Math.floor(Math.random() * nStoneTypes) });
-	return stones;
 };
 
 let freeze = false; // if we are accepting game inputs
