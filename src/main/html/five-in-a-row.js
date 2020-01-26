@@ -7,6 +7,11 @@ const sizep = usp.get('size');
 let size = sizep != null ? +sizep : 7;
 let nStoneTypes = colorsp != null ? +colorsp : 5;
 
+let sizex = size;
+let sizey = size;
+let startx = 0, endx = startx + sizex;
+let starty = 0, endy = starty + sizey;
+
 let randomstones = n => {
 	let stones = [];
 	for (let i = 0; i < n; i++) stones.push({ d: Math.floor(Math.random() * nStoneTypes) });
@@ -15,17 +20,19 @@ let randomstones = n => {
 
 let cc = {
 	back_xy: f => {
-		for (let x = size - 1; 0 <= x; x--)
-			for (let y = size - 1; 0 <= y; y--)
+		for (let x = endx - 1; startx <= x; x--)
+			for (let y = endy - 1; starty <= y; y--)
 				f(x, y);
 	},
 	for_xy: f => {
-		for (let x = 0; x < size; x++)
-			for (let y = 0; y < size; y++)
+		for (let x = startx; x < endx; x++)
+			for (let y = starty; y < endy; y++)
 				f(x, y);
 	},
-	inbounds: (x, y) => 0 <= x && x < size && 0 <= y && y < size,
-	random_xy: () => ({ x: Math.floor(Math.random() * size), y: Math.floor(Math.random() * size), }),
+	inbounds: (x, y) => startx <= x && x < endx && starty <= y && y < endy,
+	random_xy: () => ({
+		x: startx + Math.floor(Math.random() * sizex),
+		y: starty + Math.floor(Math.random() * sizey), }),
 };
 
 let freeze = false; // if we are accepting game inputs
@@ -33,9 +40,9 @@ let freeze = false; // if we are accepting game inputs
 let mutate = (() => {
 	let setcell = (vm, vmc1) => {
 		let vmt0 = vm.board;
-		vmt0 = vmt0 != null ? vmt0 : { length: size };
+		vmt0 = vmt0 != null ? vmt0 : { length: endx };
 		let vmr0 = vmt0[vmc1.x];
-		vmr0 = vmr0 != null ? vmr0 : { length: size };
+		vmr0 = vmr0 != null ? vmr0 : { length: endy };
 		// let vmr1 = vmr0.map(vmc => vmc != vmc0 ? vmc : vmc1);
 		// let vmt1 = vmt0.map(vmr => vmr != vmr0 ? vmr : vmr1);
 		// return { ...vm, board: vmt1 };
@@ -46,7 +53,7 @@ let mutate = (() => {
 		let isFiveInARow = false;
 		if (!freeze)
 			for (let [dx, dy] of eatdirs)
-				(0 < dx * size + dy ? cc.for_xy : cc.back_xy)((x, y) => {
+				(0 < dx * sizey + dy ? cc.for_xy : cc.back_xy)((x, y) => {
 					let step = 0;
 					let x1, y1;
 					while (true
@@ -129,7 +136,7 @@ let vw = (() => {
 				if (!dones.hasOwnProperty(k)) {
 					let neighbours = movedirs
 						.map(([dx, dy]) => ({ x: x + dx, y: y + dy, prev: todo, }))
-						.filter(({ x, y }) => 0 <= x && x < size && 0 <= y && y < size && isMovable(x, y));
+						.filter(({ x, y }) => startx <= x && x < endx && starty <= y && y < endy && isMovable(x, y));
 					todos.push(...neighbours);
 					dones[k] = todo;
 					if (k == kx) return todo;
@@ -176,14 +183,14 @@ let vw = (() => {
 		change,
 		init: () => change(vm_ => {
 			let vm = {
-				//board: range(0, size).map(x => range(0, size).map(y => ({ d: null, x, y, })).list()).list(),
+				//board: range(startx, endx).map(x => range(starty, endy).map(y => ({ d: null, x, y, })).list()).list(),
 				nextstones: randomstones(3),
 				notification: null, // { c: 1, message: 'welcome!', },
 				score: 0,
 				select_xy: null,
 			};
 			cc.for_xy((x, y) => vm = mutate.setcell(vm, { x, y, d: null, }));
-			return mutate.drop(vm, randomstones(Math.ceil(size * size * .3)));
+			return mutate.drop(vm, randomstones(Math.ceil(sizex * sizey * .3)));
 		}),
 		movefromto,
 		select: (x, y) => {
