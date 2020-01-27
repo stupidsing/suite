@@ -1,62 +1,12 @@
 'use strict';
 
-const usp = new URLSearchParams(window.location.search);
-const colorsp = usp.get('colors');
-const sizep = usp.get('size');
-
-let size = sizep != null ? +sizep : 7;
-let nStoneTypes = colorsp != null ? +colorsp : 5;
-
-let sizex = size;
-let sizey = size;
-let startx = 0, endx = startx + sizex;
-let starty = 0, endy = starty + sizey;
-
 let rand = (s, e) => s + Math.floor(Math.random() * (e - s));
 
 let randomstones = n => {
 	let stones = [];
 	for (let i = 0; i < n; i++) stones.push({ d: rand(0, nStoneTypes), });
-	stones.indices = range(0, n).list();
 	return stones;
 };
-
-let cc = (() => {
-	let yrange = x => {
-		// let o = Math.floor(x / 2);
-		let o = 0;
-		return { starty: -o, endy: sizey - o, };
-	};
-
-	return {
-		arrayx: () => ({ indices: range(startx, endx).list(), length: endx, }),
-		arrayy: x => {
-			let { starty, endy, } = yrange(x);
-			return { indices: range(starty, endy).list(), length: endy, };
-		},
-		back_xy: f => {
-			for (let x = endx - 1; startx <= x; x--) {
-				let { starty, endy, } = yrange(x);
-				for (let y = endy - 1; starty <= y; y--) f(x, y);
-			}
-		},
-		for_xy: f => {
-			for (let x = startx; x < endx; x++) {
-				let { starty, endy, } = yrange(x);
-				for (let y = starty; y < endy; y++) f(x, y);
-			}
-		},
-		inbounds: (x, y) => {
-			let { starty, endy, } = yrange(x);
-			return startx <= x && x < endx && starty <= y && y < endy;
-		},
-		random_xy: () => {
-			let x = rand(startx, endx);
-			let { starty, endy, } = yrange(x);
-			return { x, y: rand(starty, endy), };
-		},
-	};
-})();
 
 let freeze = false; // if we are accepting game inputs
 
@@ -76,7 +26,7 @@ let mutate = (() => {
 		let isFiveInARow = false;
 		if (!freeze)
 			for (let [dx, dy] of eatdirs)
-				(0 < dx * sizey + dy ? cc.for_xy : cc.back_xy)((x, y,) => {
+				(0 < dx * 1000 + dy ? cc.for_xy : cc.back_xy)((x, y,) => {
 					let step = 0;
 					let x1, y1;
 					while (true
@@ -212,7 +162,7 @@ let vw = (() => {
 				select_xy: null,
 			};
 			cc.for_xy((x, y,) => vm = mutate.setcell(vm, { x, y, d: null, }));
-			return mutate.drop(vm, randomstones(Math.ceil(sizex * sizey * .3)));
+			return mutate.drop(vm, randomstones(Math.ceil(cc.area * .3)));
 		}),
 		movefromto,
 		select: (x, y) => {

@@ -47,11 +47,9 @@ let viewCell = rd.parse(`
 `);
 
 let viewCells = rd.parse(`
-	<rd_map v='vm.indices.map(i => vm[i])'>
-		<rd_for>
-			<rd_component v='viewCell' />
-		</rd_for>
-	</rd_map>
+	<rd_for>
+		<rd_component v='viewCell' />
+	</rd_for>
 `);
 
 let view = rd.parse(`
@@ -67,20 +65,20 @@ let view = rd.parse(`
 		<p/>
 		<rd_map v='vm.board'>
 			<rd_for>
-				<div>
-					<span
-						style='
+				<rd_map v='vm.indices.map(i => vm[i])'>
+					<div>
+						<span style='
 							display: inline-block;
 							font-size: 25px;
 							height: 40px;
 							margin: 2px 0px 2px 0px;
 							text-align: center;
 							vertical-align: middle;
-							width: { (vm[0].x + vm[0].y) * 18 }px;
-						'
-					></span>
-					<rd_component v='viewCells' />
-				</div>
+							width: { vm[0].x * 18 + vm[0].y * 36 }px;
+						'></span>
+						<rd_component v='viewCells' />
+					</div>
+				</rd_map>
 			</rd_for>
 		</rd_map>
 		<!-- button rd_on_click='handleclose()'>close</button -->
@@ -94,6 +92,52 @@ let view = rd.parse(`
 
 let eatdirs = [[0, -1], [-1, 0], [-1, +1], ];
 let movedirs = [[-1, 0], [+1, 0], [0, -1], [0, +1], [-1, +1,], [+1, -1,], ];
+
+const usp = new URLSearchParams(window.location.search);
+const colorsp = usp.get('colors');
+const sizep = usp.get('size');
+
+let size = sizep != null ? +sizep : 7;
+let nStoneTypes = colorsp != null ? +colorsp : 5;
+
+let cc = ((sizex, sizey) => {
+	let startx = 0, endx = startx + sizex;
+
+	let yrange = x => {
+		let o = Math.floor(x / 2);
+		return { starty: -o, endy: sizey - o, };
+	};
+
+	return {
+		area: sizex * sizey,
+		arrayx: () => ({ indices: range(startx, endx).list(), length: endx, }),
+		arrayy: x => {
+			let { starty, endy, } = yrange(x);
+			return { indices: range(starty, endy).list(), length: endy, };
+		},
+		back_xy: f => {
+			for (let x = endx - 1; startx <= x; x--) {
+				let { starty, endy, } = yrange(x);
+				for (let y = endy - 1; starty <= y; y--) f(x, y);
+			}
+		},
+		for_xy: f => {
+			for (let x = startx; x < endx; x++) {
+				let { starty, endy, } = yrange(x);
+				for (let y = starty; y < endy; y++) f(x, y);
+			}
+		},
+		inbounds: (x, y) => {
+			let { starty, endy, } = yrange(x);
+			return startx <= x && x < endx && starty <= y && y < endy;
+		},
+		random_xy: () => {
+			let x = rand(startx, endx);
+			let { starty, endy, } = yrange(x);
+			return { x, y: rand(starty, endy), };
+		},
+	};
+})(size, size);
 
 vw.init();
 
