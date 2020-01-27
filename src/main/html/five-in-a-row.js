@@ -17,6 +17,7 @@ let rand = n => Math.floor(Math.random() * n);
 let randomstones = n => {
 	let stones = [];
 	for (let i = 0; i < n; i++) stones.push({ d: rand(nStoneTypes), });
+	stones.indices = range(0, n).list();
 	return stones;
 };
 
@@ -40,9 +41,9 @@ let freeze = false; // if we are accepting game inputs
 let mutate = (() => {
 	let setcell = (vm, vmc1) => {
 		let vmt0 = vm.board;
-		vmt0 = vmt0 != null ? vmt0 : { length: endx, };
+		vmt0 = vmt0 != null ? vmt0 : { length: endx, indices: range(startx, endx).list(), };
 		let vmr0 = vmt0[vmc1.x];
-		vmr0 = vmr0 != null ? vmr0 : { length: endy, };
+		vmr0 = vmr0 != null ? vmr0 : { length: endy, indices: range(starty, endy).list(), };
 		// let vmr1 = vmr0.map(vmc => vmc != vmc0 ? vmc : vmc1);
 		// let vmt1 = vmt0.map(vmr => vmr != vmr0 ? vmr : vmr1);
 		// return { ...vm, board: vmt1, };

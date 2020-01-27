@@ -47,9 +47,11 @@ let viewCell = rd.parse(`
 
 let viewCells = rd.parse(`
 	<tr>
-		<rd_for>
-			<td><rd_component v='viewCell' /></td>
-		</rd_for>
+		<rd_map v='vm.indices.map(i => vm[i])'>
+			<rd_for>
+				<td><rd_component v='viewCell' /></td>
+			</rd_for>
+		</rd_map>
 	</tr>
 `);
 
