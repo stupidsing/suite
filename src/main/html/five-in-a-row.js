@@ -11,8 +11,6 @@ let sizex = size;
 let sizey = size;
 let startx = 0, endx = startx + sizex;
 let starty = 0, endy = starty + sizey;
-let xrange = { startx, endx, };
-let yrange = x => ({ starty, endy, });
 
 let rand = (s, e) => s + Math.floor(Math.random() * (e - s));
 
@@ -23,43 +21,51 @@ let randomstones = n => {
 	return stones;
 };
 
-let cc = {
-	back_xy: f => {
-		for (let x = endx - 1; startx <= x; x--) {
+let cc = (() => {
+	let yrange = x => {
+		// let o = Math.floor(x / 2);
+		let o = 0;
+		return { starty: -o, endy: sizey - o, };
+	};
+
+	return {
+		arrayx: () => ({ indices: range(startx, endx).list(), length: endx, }),
+		arrayy: x => {
 			let { starty, endy, } = yrange(x);
-			for (let y = endy - 1; starty <= y; y--) f(x, y);
-		}
-	},
-	for_xy: f => {
-		for (let x = startx; x < endx; x++) {
+			return { indices: range(starty, endy).list(), length: endy, };
+		},
+		back_xy: f => {
+			for (let x = endx - 1; startx <= x; x--) {
+				let { starty, endy, } = yrange(x);
+				for (let y = endy - 1; starty <= y; y--) f(x, y);
+			}
+		},
+		for_xy: f => {
+			for (let x = startx; x < endx; x++) {
+				let { starty, endy, } = yrange(x);
+				for (let y = starty; y < endy; y++) f(x, y);
+			}
+		},
+		inbounds: (x, y) => {
 			let { starty, endy, } = yrange(x);
-			for (let y = 0; y < endy; y++) f(x, y);
-		}
-	},
-	inbounds: (x, y) => {
-		let { starty, endy, } = yrange(x);		
-		return startx <= x && x < endx && starty <= y && y < endy;
-	},
-	random_xy: () => {
-		let x = rand(startx, endx);
-		let { starty, endy, } = yrange(x);
-		return { x, y: rand(starty, endy), };
-	},
-	rangex: () => range(startx, endx).list(),
-	rangey: x => {
-		let { starty, endy, } = yrange(x);
-		return range(starty, endy).list();
-	},
-};
+			return startx <= x && x < endx && starty <= y && y < endy;
+		},
+		random_xy: () => {
+			let x = rand(startx, endx);
+			let { starty, endy, } = yrange(x);
+			return { x, y: rand(starty, endy), };
+		},
+	};
+})();
 
 let freeze = false; // if we are accepting game inputs
 
 let mutate = (() => {
 	let setcell = (vm, vmc1) => {
 		let vmt0 = vm.board;
-		vmt0 = vmt0 != null ? vmt0 : { length: endx, indices: cc.rangex(), };
+		vmt0 = vmt0 != null ? vmt0 : cc.arrayx();
 		let vmr0 = vmt0[vmc1.x];
-		vmr0 = vmr0 != null ? vmr0 : { length: endy, indices: cc.rangey(vmc1.x), };
+		vmr0 = vmr0 != null ? vmr0 : cc.arrayy(vmc1.x);
 		// let vmr1 = vmr0.map(vmc => vmc != vmc0 ? vmc : vmc1);
 		// let vmt1 = vmt0.map(vmr => vmr != vmr0 ? vmr : vmr1);
 		// return { ...vm, board: vmt1, };
@@ -200,7 +206,6 @@ let vw = (() => {
 		change,
 		init: () => change(vm_ => {
 			let vm = {
-				//board: range(startx, endx).map(x => range(starty, endy).map(y => ({ d: null, x, y, })).list()).list(),
 				nextstones: randomstones(3),
 				notification: null, // { c: 1, message: 'welcome!', },
 				score: 0,
