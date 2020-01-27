@@ -6,8 +6,8 @@ file:///home/ywsing/suite/src/main/html/five-in-a-row-hex.html
 <html>
 	<head>
 		<title>0 - Five in a row</title>
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<link href="https://fonts.googleapis.com/css?family=Oswald:200&display=swap" rel="stylesheet">
+		<meta name='viewport' content='width=device-width, initial-scale=1.0'>
+		<link href='https://fonts.googleapis.com/css?family=Oswald:200&display=swap' rel='stylesheet'>
 	</head>
 	<body>
 		<style>
@@ -53,7 +53,7 @@ let viewCell = rd.parse(`
 	<div class='hex' style='filter___: { vm.selected ? "brightness(80%)" : "brightness(100%)" };' rd_on_click='handleclick(vm, ev)'>
 		<div class='part' style='border-bottom: 15px solid { vm.selected ? palette[2] : "#DDDDDD" };'></div>
 		<div class='middle' style='background: { vm.selected ? palette[2] : "#DDDDDD" }'>
-			<span style='left: 50%; position: absolute; top: 50%; transform: translate(-50%, -50%);'>
+			<span draggable='true' style='left: 50%; position: absolute; top: 50%; transform: translate(-50%, -50%);'>
 				<rd_map v='vm.d'>
 					<rd_if v='vm != null'>{ icons[vm] }</rd_if>
 				</rd_map>

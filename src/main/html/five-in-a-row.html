@@ -6,8 +6,8 @@ file:///home/ywsing/suite/src/main/html/five-in-a-row.html
 <html>
 	<head>
 		<title>0 - Five in a row</title>
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<link href="https://fonts.googleapis.com/css?family=Oswald:200&display=swap" rel="stylesheet">
+		<meta name='viewport' content='width=device-width, initial-scale=1.0'>
+		<link href='https://fonts.googleapis.com/css?family=Oswald:200&display=swap' rel='stylesheet'>
 	</head>
 	<body>
 		<div id='target' style='display: flex; justify-content: center;'></div>
@@ -27,8 +27,7 @@ let { rd, renderAgain, } = render();
 let close;
 
 let viewCell = rd.parse(`
-	<span draggable='true'
-		style='
+	<span draggable='true' style='
 			background: { vm.selected ? palette[2] : "#DDDDDD" };
 			display: table-cell;
 			filter___: { vm.selected ? "brightness(80%)" : "brightness(100%)" };
