@@ -12,9 +12,11 @@ let sizey = size;
 let startx = 0, endx = startx + sizex;
 let starty = 0, endy = starty + sizey;
 
+let rand = n => Math.floor(Math.random() * n);
+
 let randomstones = n => {
 	let stones = [];
-	for (let i = 0; i < n; i++) stones.push({ d: Math.floor(Math.random() * nStoneTypes) });
+	for (let i = 0; i < n; i++) stones.push({ d: rand(nStoneTypes) });
 	return stones;
 };
 
@@ -30,9 +32,7 @@ let cc = {
 				f(x, y);
 	},
 	inbounds: (x, y) => startx <= x && x < endx && starty <= y && y < endy,
-	random_xy: () => ({
-		x: startx + Math.floor(Math.random() * sizex),
-		y: starty + Math.floor(Math.random() * sizey), }),
+	random_xy: () => ({ x: startx + rand(sizex), y: starty + rand(sizey), }),
 };
 
 let freeze = false; // if we are accepting game inputs
