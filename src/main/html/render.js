@@ -346,10 +346,20 @@ let render = () => {
 			};
 	};
 
-	let rd_map = (vmf, rdf) => (vm0, vm1, cudf) => isClear(vm0, vm1) || rdf(
-		vm0 != null ? vmf(vm0) : null,
-		vm1 != null ? vmf(vm1) : null,
-		cudf);
+	let rd_map = (vmf, rdf) => {
+		let wm = new WeakMap();
+
+		let apply = vm => {
+			let result = wm.get(vm);
+			if (result == null) wm.set(vm, result = vmf(vm));
+			return result;
+		};
+
+		return (vm0, vm1, cudf) => isClear(vm0, vm1) || rdf(
+			vm0 != null ? apply(vm0) : null,
+			vm1 != null ? apply(vm1) : null,
+			cudf);
+	};
 
 	let rdb_tagf = (elementf, decorfs) => {
 		let decor = decorf => rdb_tagf(elementf, [...decorfs, decorf,]);
