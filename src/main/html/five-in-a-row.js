@@ -34,6 +34,8 @@ let cc = {
 	},
 	inbounds: (x, y,) => startx <= x && x < endx && starty <= y && y < endy,
 	random_xy: () => ({ x: startx + rand(sizex), y: starty + rand(sizey), }),
+	rangex: () => range(startx, endx).list(),
+	rangey: x => range(starty, endy).list(),
 };
 
 let freeze = false; // if we are accepting game inputs
@@ -41,9 +43,9 @@ let freeze = false; // if we are accepting game inputs
 let mutate = (() => {
 	let setcell = (vm, vmc1) => {
 		let vmt0 = vm.board;
-		vmt0 = vmt0 != null ? vmt0 : { length: endx, indices: range(startx, endx).list(), };
+		vmt0 = vmt0 != null ? vmt0 : { length: endx, indices: cc.rangex(), };
 		let vmr0 = vmt0[vmc1.x];
-		vmr0 = vmr0 != null ? vmr0 : { length: endy, indices: range(starty, endy).list(), };
+		vmr0 = vmr0 != null ? vmr0 : { length: endy, indices: cc.rangey(vmc1.x), };
 		// let vmr1 = vmr0.map(vmc => vmc != vmc0 ? vmc : vmc1);
 		// let vmt1 = vmt0.map(vmr => vmr != vmr0 ? vmr : vmr1);
 		// return { ...vm, board: vmt1, };

@@ -64,11 +64,13 @@ let viewCell = rd.parse(`
 `);
 
 let viewCells = rd.parse(`
-	<div class='hex-row' style='margin-left: { (vm[0].x + vm[0].y) * 26.5 }px'>
-		<rd_for>
-			<rd_component v='viewCell' />
-		</rd_for>
-	</div>
+	<rd_map v='vm.indices.map(i => vm[i])'>
+		<div class='hex-row' style='margin-left: { vm[0].x * 26.5 + vm[0].y * 53 }px'>
+			<rd_for>
+				<rd_component v='viewCell' />
+			</rd_for>
+		</div>
+	</rd_map>
 `);
 
 let view = rd.parse(`
