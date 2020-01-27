@@ -11,31 +11,45 @@ let sizex = size;
 let sizey = size;
 let startx = 0, endx = startx + sizex;
 let starty = 0, endy = starty + sizey;
+let xrange = { startx, endx, };
+let yrange = x => ({ starty, endy, });
 
-let rand = n => Math.floor(Math.random() * n);
+let rand = (s, e) => s + Math.floor(Math.random() * (e - s));
 
 let randomstones = n => {
 	let stones = [];
-	for (let i = 0; i < n; i++) stones.push({ d: rand(nStoneTypes), });
+	for (let i = 0; i < n; i++) stones.push({ d: rand(0, nStoneTypes), });
 	stones.indices = range(0, n).list();
 	return stones;
 };
 
 let cc = {
 	back_xy: f => {
-		for (let x = endx - 1; startx <= x; x--)
-			for (let y = endy - 1; starty <= y; y--)
-				f(x, y);
+		for (let x = endx - 1; startx <= x; x--) {
+			let { starty, endy, } = yrange(x);
+			for (let y = endy - 1; starty <= y; y--) f(x, y);
+		}
 	},
 	for_xy: f => {
-		for (let x = startx; x < endx; x++)
-			for (let y = starty; y < endy; y++)
-				f(x, y);
+		for (let x = startx; x < endx; x++) {
+			let { starty, endy, } = yrange(x);
+			for (let y = 0; y < endy; y++) f(x, y);
+		}
 	},
-	inbounds: (x, y,) => startx <= x && x < endx && starty <= y && y < endy,
-	random_xy: () => ({ x: startx + rand(sizex), y: starty + rand(sizey), }),
+	inbounds: (x, y) => {
+		let { starty, endy, } = yrange(x);		
+		return startx <= x && x < endx && starty <= y && y < endy;
+	},
+	random_xy: () => {
+		let x = rand(startx, endx);
+		let { starty, endy, } = yrange(x);
+		return { x, y: rand(starty, endy), };
+	},
 	rangex: () => range(startx, endx).list(),
-	rangey: x => range(starty, endy).list(),
+	rangey: x => {
+		let { starty, endy, } = yrange(x);
+		return range(starty, endy).list();
+	},
 };
 
 let freeze = false; // if we are accepting game inputs
@@ -139,7 +153,7 @@ let vw = (() => {
 				if (!dones.hasOwnProperty(k)) {
 					let neighbours = movedirs
 						.map(([dx, dy]) => ({ x: x + dx, y: y + dy, prev: todo, }))
-						.filter(({ x, y, }) => startx <= x && x < endx && starty <= y && y < endy && isMovable(x, y));
+						.filter(({ x, y, }) => cc.inbounds(x, y) && isMovable(x, y));
 					todos.push(...neighbours);
 					dones[k] = todo;
 					if (k == kx) return todo;
