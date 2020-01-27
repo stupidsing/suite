@@ -349,11 +349,15 @@ let render = () => {
 			};
 	};
 
-	let rd_map = (vmf, rdf) => (vm0, vm1, cudf) => rdf(
-		vm0 != null ? vmf(vm0) : null,
-		vm1 != null ? vmf(vm1) : null,
-		cudf
-	);
+	let rd_map = (vmf, rdf) => (vm0, vm1, cudf) => {
+		if (isClear(vm0, vm1))
+			;
+		else
+			return rdf(
+				vm0 != null ? vmf(vm0) : null,
+				vm1 != null ? vmf(vm1) : null,
+				cudf);
+	};
 
 	let rdb_tagf = (elementf, decorfs) => {
 		let decor = decorf => rdb_tagf(elementf, [...decorfs, decorf,]);
