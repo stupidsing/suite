@@ -83,12 +83,9 @@ let render = () => {
 				cudf.childRef.removeAttribute(key);
 	};
 
-	let rdt_child = childf => (vm0, vm1, cudf) => {
-		if (isClear(vm0, vm1))
-			;
-		else
-			childf(vm0, vm1, r_cud(cudf, null, cudf.childRef.lastChild));
-	};
+	let rdt_child = childf => (vm0, vm1, cudf) =>
+		isClear(vm0, vm1)
+		|| childf(vm0, vm1, r_cud(cudf, null, cudf.childRef.lastChild));
 
 	let rdt_forRange = (vmsf, rangef, rd_item) => (vm0, vm1, cudf) => {
 		let domc = cudf.childRef;
@@ -349,15 +346,10 @@ let render = () => {
 			};
 	};
 
-	let rd_map = (vmf, rdf) => (vm0, vm1, cudf) => {
-		if (isClear(vm0, vm1))
-			;
-		else
-			return rdf(
-				vm0 != null ? vmf(vm0) : null,
-				vm1 != null ? vmf(vm1) : null,
-				cudf);
-	};
+	let rd_map = (vmf, rdf) => (vm0, vm1, cudf) => isClear(vm0, vm1) || rdf(
+		vm0 != null ? vmf(vm0) : null,
+		vm1 != null ? vmf(vm1) : null,
+		cudf);
 
 	let rdb_tagf = (elementf, decorfs) => {
 		let decor = decorf => rdb_tagf(elementf, [...decorfs, decorf,]);

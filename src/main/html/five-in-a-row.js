@@ -66,7 +66,7 @@ let mutate = (() => {
 						isFiveInARow = true;
 						for (let i = 0; i < step; i++)
 							vm = setcell(vm, { ...vm.board[x + i * dx][y + i * dy], d: null, });
-						vm = { ...vm, score: vm.score + step };
+						vm = { ...vm, score: vm.score + step, };
 						document.title = `${vm.score} - Five in a row`;
 					}
 				});
@@ -79,9 +79,9 @@ let mutate = (() => {
 			if (stones.length < mutate.emptycount(vm))
 				for (let stone of stones)
 					while(true) {
-						let { x, y } = cc.random_xy();
+						let { x, y, } = cc.random_xy();
 						if (vm.board[x][y].d == null) {
-							vm = setcell(vm, { ...vm.board[x][y], d: stone.d });
+							vm = setcell(vm, { ...vm.board[x][y], d: stone.d, });
 							break;
 						}
 					}
@@ -136,7 +136,7 @@ let vw = (() => {
 				if (!dones.hasOwnProperty(k)) {
 					let neighbours = movedirs
 						.map(([dx, dy]) => ({ x: x + dx, y: y + dy, prev: todo, }))
-						.filter(({ x, y }) => startx <= x && x < endx && starty <= y && y < endy && isMovable(x, y));
+						.filter(({ x, y, }) => startx <= x && x < endx && starty <= y && y < endy && isMovable(x, y));
 					todos.push(...neighbours);
 					dones[k] = todo;
 					if (k == kx) return todo;
