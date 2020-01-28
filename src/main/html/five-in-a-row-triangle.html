@@ -116,8 +116,8 @@ renderAgain(view, vm => ({
     board: {
         indices: [0, 2,],
         ...(range(0, 4).map(x => ({
-            indices: [0, 2, 4,],
-            ...(range(0, 6).map(y => ({
+            indices: [0, 2, 4, 6,],
+            ...(range(0, 8).map(y => ({
                 d: rand(0, icons.length),
             })).list()),
         })).list()),
