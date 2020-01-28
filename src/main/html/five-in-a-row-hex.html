@@ -116,7 +116,7 @@ let cc = ((sizex, sizey) => {
 	let startx = 0, endx = startx + sizex;
 
 	let yrange = x => {
-		let o = Math.floor(x / 2);
+		let o = x >> 1;
 		return { starty: -o, endy: sizey - o, };
 	};
 
