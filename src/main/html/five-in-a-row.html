@@ -35,8 +35,7 @@ let viewCell = rd.parse(`
 			height: 40px;
 			text-align: center;
 			vertical-align: middle;
-			width: 40px;
-		'
+			width: 40px;'
 		rd_on_click='handleclick(vm, ev)'>
 		<rd_map v='vm.d'>
 			<rd_if v='vm != null'>{ icons[vm] }</rd_if>
@@ -76,7 +75,14 @@ let view = rd.parse(`
 		</rd_map>
 		<!-- button rd_on_click='handleclose()'>close</button -->
 		<rd_map v='vm.notification'>
-			<div style='background: { palette[vm.c] }; bottom: 0; font-family: Oswald, monospace; left: 0; position: fixed; text-align: center; width: 100%;'>
+			<div style='
+				background: { palette[vm.c] };
+				bottom: 0;
+				font-family: Oswald, monospace;
+				left: 0;
+				position: fixed;
+				text-align: center;
+				width: 100%;'>
 				<p>{ vm.message }</p>
 			</div>
 		</rd_map>
@@ -93,25 +99,23 @@ const sizep = usp.get('size');
 let size = sizep != null ? +sizep : 7;
 let nStoneTypes = colorsp != null ? +colorsp : 5;
 
-let cc = ((sizex, sizey) => {
-	return {
-		area: sizex * sizey,
-		arrayx: () => ({ indices: range(0, sizex).list(), length: sizex, }),
-		arrayy: x => ({ indices: range(0, sizey).list(), length: sizey, }),
-		back_xy: f => {
-			for (let x = sizex - 1; 0 <= x; x--)
-				for (let y = sizey - 1; 0 <= y; y--)
-					f(x, y);
-		},
-		for_xy: f => {
-			for (let x = 0; x < sizex; x++)
-				for (let y = 0; y < sizey; y++)
-					f(x, y);
-		},
-		inbounds: (x, y) => 0 <= x && x < sizex && 0 <= y && y < sizey,
-		random_xy: () => ({ x: rand(0, sizex), y: rand(0, sizey), }),
-	};
-})(size, size);
+let cc = ((sizex, sizey) => ({
+	area: sizex * sizey,
+	arrayx: () => ({ indices: range(0, sizex).list(), length: sizex, }),
+	arrayy: x => ({ indices: range(0, sizey).list(), length: sizey, }),
+	back_xy: f => {
+		for (let x = sizex - 1; 0 <= x; x--)
+			for (let y = sizey - 1; 0 <= y; y--)
+				f(x, y);
+	},
+	for_xy: f => {
+		for (let x = 0; x < sizex; x++)
+			for (let y = 0; y < sizey; y++)
+				f(x, y);
+	},
+	inbounds: (x, y) => 0 <= x && x < sizex && 0 <= y && y < sizey,
+	random_xy: () => ({ x: rand(0, sizex), y: rand(0, sizey), }),
+}))(size, size);
 
 vw.init();
 

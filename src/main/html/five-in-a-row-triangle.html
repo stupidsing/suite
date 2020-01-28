@@ -1,0 +1,158 @@
+<meta charset='utf-8'>
+<!--
+file:///home/ywsing/suite/src/main/html/five-in-a-row-triangle.html
+-->
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>0 - Five in a row</title>
+		<meta name='viewport' content='width=device-width, initial-scale=1.0'>
+		<link href='https://fonts.googleapis.com/css?family=Oswald:200&display=swap' rel='stylesheet'>
+	</head>
+	<body>
+		<div id='target' style='display: flex; justify-content: center;'></div>
+	</body>
+
+	<script src='five-in-a-row.js'></script>
+	<script src='frp.js'></script>
+	<script src='fun.js'></script>
+	<script src='pq.js'></script>
+	<script src='render.js'></script>
+
+	<script type='text/javascript'>
+'use strict';
+
+let { lens, range, read, } = fun();
+let { rd, renderAgain, } = render();
+let close;
+
+let view = rd.parse(`
+    <span style='display: flex; flex-direction:column;'>
+        <rd_map v='vm.board'>
+            <rd_for v='vm.indices.map(i => ({ l: vm[i], r: vm[i + 1], }))'>
+                <rd_map v='vm.l'>
+                    <span style='display: flex; font-family: monospace; font-size: 30px; margin-bottom: 5px;'>
+                        <rd_for v='vm.indices.map(i => ({ l: vm[i], r: vm[i + 1], }))'>
+                            <rd_map v='vm.l'>
+                                <span style='
+                                    border-bottom: 100px solid #DDDDDD;
+                                    border-left: 50px solid transparent;
+                                    border-right: 50px solid transparent;
+                                    display: flex;
+                                    height: 0;
+                                    justify-content: center;
+                                    left: 0px;
+                                    width: 0;'>
+                                    <span style='height: 50px; transform: translate(0, 100%);'>
+                                        <span style='align-items: flex-start; display: flex; height: 0;'>{ icons[vm.d] }</span>
+                                    </span>
+                                </span>
+                            </rd_map>
+                            <rd_map v='vm.r'>
+                                <span style='
+                                    border-left: 50px solid transparent;
+                                    border-right: 50px solid transparent;
+                                    border-top: 100px solid #DDDDDD;
+                                    display: flex;
+                                    height: 0;
+                                    justify-content: center;
+                                    left: -45px;
+                                    margin-right: -90px;
+                                    position: relative;
+                                    width: 0;'>
+                                    <span style='height: 50px; transform: translate(0, -100%);'>
+                                        <span style='align-items: flex-end; display: flex; height: 0;'>{ icons[vm.d] }</span>
+                                    </span>
+                                </span>
+                            </rd_map>
+                        </rd_for>
+                    </span>
+                </rd_map>
+                <rd_map v='vm.r'>
+                    <span style='display: flex; font-family: monospace; font-size: 30px; margin-bottom: 5px;'>
+                        <rd_for v='vm.indices.map(i => ({ l: vm[i], r: vm[i + 1], }))'>
+                            <rd_map v='vm.l'>
+                                <span style='
+                                    border-left: 50px solid transparent;
+                                    border-right: 50px solid transparent;
+                                    border-top: 100px solid #DDDDDD;
+                                    display: flex;
+                                    height: 0;
+                                    justify-content: center;
+                                    left: 0px;
+                                    position: relative;
+                                    width: 0;'>
+                                    <span style='height: 50px; transform: translate(0, -100%);'>
+                                        <span style='align-items: flex-end; display: flex; height: 0;'>{ icons[vm.d] }</span>
+                                    </span>
+                                </span>
+                            </rd_map>
+                            <rd_map v='vm.r'>
+                                <span style='
+                                    border-bottom: 100px solid #DDDDDD;
+                                    border-left: 50px solid transparent;
+                                    border-right: 50px solid transparent;
+                                    display: flex;
+                                    height: 0;
+                                    justify-content: center;
+                                    left: -45px;
+                                    margin-right: -90px;
+                                    position: relative;
+                                    width: 0;'>
+                                    <span style='height: 50px; transform: translate(0, 100%);'>
+                                        <span style='align-items: flex-start; display: flex; height: 0;'>{ icons[vm.d] }</span>
+                                    </span>
+                                </span>
+                            </rd_map>
+                        </rd_for>
+                    </span>
+                </rd_map>
+            </rd_for>
+        </rd_map>
+    </span>
+`);
+
+renderAgain(view, vm => ({
+    board: {
+        indices: [0, 2,],
+        [0]: {
+            indices: [0, 2, 4,],
+            [0]: { d: 0, },
+            [1]: { d: 1, },
+            [2]: { d: 0, },
+            [3]: { d: 1, },
+            [4]: { d: 0, },
+            [5]: { d: 1, },
+        },
+        [1]: {
+            indices: [0, 2, 4,],
+            [0]: { d: 2, },
+            [1]: { d: 3, },
+            [2]: { d: 2, },
+            [3]: { d: 3, },
+            [4]: { d: 2, },
+            [5]: { d: 3, },
+        },
+        [2]: {
+            indices: [0, 2, 4,],
+            [0]: { d: 4, },
+            [1]: { d: 5, },
+            [2]: { d: 4, },
+            [3]: { d: 5, },
+            [4]: { d: 4, },
+            [5]: { d: 5, },
+        },
+        [3]: {
+            indices: [0, 2, 4,],
+            [0]: { d: 6, },
+            [1]: { d: 7, },
+            [2]: { d: 6, },
+            [3]: { d: 7, },
+            [4]: { d: 6, },
+            [5]: { d: 7, },
+        },
+    },
+}));
+
+	</script>
+</html>

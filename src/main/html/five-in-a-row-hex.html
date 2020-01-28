@@ -16,7 +16,7 @@ file:///home/ywsing/suite/src/main/html/five-in-a-row-hex.html
 			}
 			.hex {
 				float: left;
-				margin: 0px 0px -13px 1.5px;
+				margin: 0px 0px -13px 2px;
 			}
 			.hex .middle {
 				font-size: 30px;
@@ -94,7 +94,14 @@ let view = rd.parse(`
 		<!-- button rd_on_click='handleclose()'>close</button -->
 		<rd_map v='vm.notification'>
 			<rd_if v='vm'>
-				<div style='background: { palette[vm.c] }; bottom: 0; font-family: Oswald, monospace; left: 0; position: fixed; text-align: center; width: 100%;'>
+				<div style='
+					background: { palette[vm.c] };
+					bottom: 0;
+					font-family: Oswald, monospace;
+					left: 0;
+					position: fixed;
+					text-align: center;
+					width: 100%;'>
 					<p>{ vm.message }</p>
 				</div>
 			</rd_if>
@@ -102,8 +109,8 @@ let view = rd.parse(`
 	</span>
 `);
 
-let eatdirs = [[0, -1], [-1, 0], [-1, +1], ];
-let movedirs = [[-1, 0], [+1, 0], [0, -1], [0, +1], [-1, +1,], [+1, -1,], ];
+let eatdirs = [[0, -1], [-1, 0], [-1, +1],];
+let movedirs = [[-1, 0], [+1, 0], [0, -1], [0, +1], [-1, +1,], [+1, -1,],];
 
 const usp = new URLSearchParams(window.location.search);
 const colorsp = usp.get('colors');

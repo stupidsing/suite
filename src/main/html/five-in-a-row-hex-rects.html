@@ -37,8 +37,7 @@ let viewCell = rd.parse(`
 			margin: 2px 0px 2px 0px;
 			text-align: center;
 			vertical-align: middle;
-			width: 40px;
-		'
+			width: 40px;'
 		rd_on_click='handleclick(vm, ev)'>
 		<rd_map v='vm.d'>
 			<rd_if v='vm != null'>{ icons[vm] }</rd_if>
@@ -74,8 +73,8 @@ let view = rd.parse(`
 							margin: 2px 0px 2px 0px;
 							text-align: center;
 							vertical-align: middle;
-							width: { vm[0].x * 18 + vm[0].y * 36 }px;
-						'></span>
+							width: { vm[0].x * 18 + vm[0].y * 36 }px;'>
+						</span>
 						<rd_component v='viewCells' />
 					</div>
 				</rd_map>
@@ -90,8 +89,8 @@ let view = rd.parse(`
 	</span>
 `);
 
-let eatdirs = [[0, -1], [-1, 0], [-1, +1], ];
-let movedirs = [[-1, 0], [+1, 0], [0, -1], [0, +1], [-1, +1,], [+1, -1,], ];
+let eatdirs = [[0, -1], [-1, 0], [-1, +1],];
+let movedirs = [[-1, 0], [+1, 0], [0, -1], [0, +1], [-1, +1,], [+1, -1,],];
 
 const usp = new URLSearchParams(window.location.search);
 const colorsp = usp.get('colors');
