@@ -180,4 +180,4 @@ let frp = function() {
 	};
 } ();
 
-frp();
+frp;

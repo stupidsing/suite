@@ -31,3 +31,5 @@ let pq = () => {
 		size: () => size,
 	};
 };
+
+pq;
