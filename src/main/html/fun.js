@@ -101,6 +101,8 @@ let fun = () => {
 		};
 	};
 
+	let rand = (s, e) => s + Math.floor(Math.random() * (e - s));
+
 	let read = object => read_(() => {
 		let list = typeof object == 'string' || Array.isArray(object) ? object : Object.entries(object);
 		let i = 0;
@@ -110,5 +112,5 @@ let fun = () => {
 	// test
 	// read([read([0, 1,]), read([2, 3,])]).concat().append(read([4, 5, 6,])).cons(-1).foreach(s => console.log(s))
 
-	return { lens, range, read, };
+	return { lens, rand, range, read, };
 };
