@@ -1,6 +1,6 @@
 'use strict';
 
-let frp = function() {
+let frp = evalscript('fun.js').then(({ read, }) => {
 	let newPusher = () => { // FRP dispatcher
 		let pushees = [];
 		let push_ = data => { for (let pushee of pushees) pushee(data); };
@@ -12,7 +12,7 @@ let frp = function() {
 			return pusher;
 		};
 
-		return {
+		return globalThis.frp = {
 			append: other => {
 				let pusher = newPusher();
 				wire_(pusher.push);
@@ -178,6 +178,6 @@ let frp = function() {
 			return pusher;
 		},
 	};
-} ();
+});
 
 frp;
