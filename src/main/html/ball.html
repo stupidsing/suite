@@ -7,98 +7,105 @@
 		</canvas>
 	</body>
 
+	<script src='eval-script.js'></script>
 	<script src='frp.js'></script>
 	<script src='fun.js'></script>
 
 	<script type='text/javascript'>
-		'use strict';
-		let { lens, range, read, } = fun();
+'use strict';
 
-		let width = window.innerWidth;
-		let height = window.innerHeight;
+Promise.resolve(true)
+.then(() => evalscriptglobal('https://raw.githubusercontent.com/stupidsing/suite/master/src/main/html/fun.js', 'fun()'))
+// .then(({ lens, range, read, }) => {
+.then(() => evalscriptglobal('https://raw.githubusercontent.com/stupidsing/suite/master/src/main/html/render.js', 'render()'))
+// .then(({ rd, renderAgain, }) => {
+.then(() => {
+	let width = window.innerWidth;
+	let height = window.innerHeight;
 
-		let canvas = document.getElementById('canvas');
-		canvas.width = width - 2;
-		canvas.height = height - 2;
+	let canvas = document.getElementById('canvas');
+	canvas.width = width - 2;
+	canvas.height = height - 2;
 
-		let frame = frp.animframe();
-		let fx = frp.kb.arrowx.resample(frame).last();
-		let fy = frp.kb.arrowy.resample(frame).last();
+	let frame = frp.animframe();
+	let fx = frp.kb.arrowx.resample(frame).last();
+	let fy = frp.kb.arrowy.resample(frame).last();
 
-		let background = {
-			move: () => [background],
+	let background = {
+		move: () => [background],
+		draw: context => {
+			context.fillStyle = '#556677';
+			context.fillRect(0, 0, width, height);
+
+			context.fillStyle = '#000000';
+			context.font = '10px Helvetica';
+			context.fillText('Demo', 16, height - 16);
+		},
+	};
+
+	let ballf = function(ballx, bally) {
+		let dx = 2, dy = 2;
+
+		let ball = {
+			move: () => {
+				let ix = fx();
+				let iy = fy();
+				if (ix) ballx += 2 * ix;
+				if (iy) bally += 2 * iy;
+				ballx += dx;
+				bally += dy;
+
+				if (ballx < 0) { ballx = 0; dx *= -1; }
+				if (bally < 0) { bally = 0; dy *= -1; }
+				if (width < ballx) { ballx = width; dx *= -1; }
+				if (height < bally) { bally = height; dy *= -1; }
+				return [ball];
+			},
 			draw: context => {
-				context.fillStyle = '#556677';
-				context.fillRect(0, 0, width, height);
+				let radius = 24;
 
-				context.fillStyle = '#000000';
-				context.font = '10px Helvetica';
-				context.fillText('Demo', 16, height - 16);
+				/* context.beginPath(); context.arc(ballx, bally, radius, 0, 2 * Math.PI); context.stroke(); */
+
+				context.fillStyle = '#AABBCC';
+				context.beginPath();
+				context.moveTo(ballx, bally - radius);
+				context.lineTo(ballx + radius * .866, bally - radius * .5);
+				context.lineTo(ballx + radius * .866, bally + radius * .5);
+				context.lineTo(ballx, bally + radius);
+				context.lineTo(ballx - radius * .866, bally + radius * .5);
+				context.lineTo(ballx - radius * .866, bally - radius * .5);
+				context.closePath();
+				context.fill();
 			},
 		};
 
-		let ballf = function(ballx, bally) {
-			let dx = 2, dy = 2;
+		return ball;
+	};
 
-			let ball = {
-				move: () => {
-					let ix = fx();
-					let iy = fy();
-					if (ix) ballx += 2 * ix;
-					if (iy) bally += 2 * iy;
-					ballx += dx;
-					bally += dy;
+	let ballx0 = Math.floor(width * Math.random());
+	let bally0 = Math.floor(height * Math.random());
+	let objects = [background, ballf(ballx0, bally0)];
 
-					if (ballx < 0) { ballx = 0; dx *= -1; }
-					if (bally < 0) { bally = 0; dy *= -1; }
-					if (width < ballx) { ballx = width; dx *= -1; }
-					if (height < bally) { bally = height; dy *= -1; }
-					return [ball];
-				},
-				draw: context => {
-					let radius = 24;
+	let clicks = frp.mouse.move
+		.resample(frp.mouse.click.filter(mb => mb))
+		.map(xy => { return { x: xy.x - canvas.offsetLeft, y: xy.y - canvas.offsetTop, }; })
+		.read();
 
-					/* context.beginPath(); context.arc(ballx, bally, radius, 0, 2 * Math.PI); context.stroke(); */
+	frame.wire(data => {
 
-					context.fillStyle = '#AABBCC';
-					context.beginPath();
-					context.moveTo(ballx, bally - radius);
-					context.lineTo(ballx + radius * .866, bally - radius * .5);
-					context.lineTo(ballx + radius * .866, bally + radius * .5);
-					context.lineTo(ballx, bally + radius);
-					context.lineTo(ballx - radius * .866, bally + radius * .5);
-					context.lineTo(ballx - radius * .866, bally - radius * .5);
-					context.closePath();
-					context.fill();
-				},
-			};
+		// move
+		objects = read(objects)
+			.map(object => read(object.move()))
+			.concat()
+			.append(clicks().map(({x, y}) => ballf(x, y)))
+			.list();
 
-			return ball;
-		};
+		// repaint
+		let context = canvas.getContext('2d');
+		read(objects).foreach(object => object.draw(context));
+	});
 
-		let ballx0 = Math.floor(width * Math.random());
-		let bally0 = Math.floor(height * Math.random());
-		let objects = [background, ballf(ballx0, bally0)];
-
-		let clicks = frp.mouse.move
-			.resample(frp.mouse.click.filter(mb => mb))
-			.map(xy => { return { x: xy.x - canvas.offsetLeft, y: xy.y - canvas.offsetTop, }; })
-			.read();
-
-		frame.wire(data => {
-
-			// move
-			objects = read(objects)
-				.map(object => read(object.move()))
-				.concat()
-				.append(clicks().map(({x, y}) => ballf(x, y)))
-				.list();
-
-			// repaint
-			let context = canvas.getContext('2d');
-			read(objects).foreach(object => object.draw(context));
-		});
-
-		frp.mouse.move.wire(d => console.log('mouse ' + d.x + ',' + d.y));
+	frp.mouse.move.wire(d => console.log('mouse ' + d.x + ',' + d.y));
+});
 	</script>
 </html>
