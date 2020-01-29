@@ -84,7 +84,7 @@ let mutate = (() => {
 	};
 })();
 
-let fiveinarow_ = (renderAgain, view) => {
+let fiveinarow = evalscript('render.js', 'render()').then(({ renderAgain, }) => view => {
 	let change = f => renderAgain(view, vm0 => {
 		let vm1 = f(vm0);
 		// console.log(vm1);
@@ -205,7 +205,4 @@ let fiveinarow_ = (renderAgain, view) => {
 	let handleclose = () => vw.change(vm => null);
 
 	return { handleclick, handleclose, icons, palette, vw, };
-};
-
-let fiveinarow = evalscript('render.js', 'render()')
-	.then(({ renderAgain, }) => view => fiveinarow_(renderAgain, view));
+});
