@@ -21,9 +21,7 @@ file:///home/ywsing/suite/src/main/html/webassembly.html
 
 Promise.resolve(true)
 .then(() => evalscriptglobal('fun.js', 'fun()'))
-// .then(({ lens, rand, range, read, }) => {
 .then(() => evalscriptglobal('render.js', 'render()'))
-// .then(({ rd, renderAgain, }) => {
 .then(() => {
 	let rd_vm = rd.parse(`
 		<span>{ vm.result }</span>

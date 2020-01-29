@@ -22,11 +22,8 @@ file:///home/ywsing/suite/src/main/html/five-in-a-row-triangle.html
 
 Promise.resolve(true)
 .then(() => evalscriptglobal('fun.js', 'fun()'))
-// .then(({ lens, rand, range, read, }) => {
 .then(() => evalscriptglobal('render.js', 'render()'))
-// .then(({ rd, renderAgain, }) => {
 .then(() => evalscript('five-in-a-row.js', 'fiveinarow'))
-// .then(() => loadsrcscript('five-in-a-row.js'))
 .then(fiveinarow => {
     let view = rd.parse(`
         <span style='display: flex; flex-direction:column; font-size: 36px;'>

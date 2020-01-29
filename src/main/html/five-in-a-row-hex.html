@@ -96,12 +96,9 @@ let cc = ((sizex, sizey) => {
 
 Promise.resolve(true)
 .then(() => evalscriptglobal('fun.js', 'fun()'))
-// .then(({ lens, rand, range, read, }) => {
 .then(() => evalscriptglobal('pq.js', 'pq()'))
 .then(() => evalscriptglobal('render.js', 'render()'))
-// .then(({ rd, renderAgain, }) => {
 .then(() => evalscript('five-in-a-row.js', 'fiveinarow'))
-// .then(() => loadsrcscript('five-in-a-row.js'))
 .then(fiveinarow => {
 	let viewCell = rd.parse(`
 		<div class='hex' style='filter___: { vm.selected ? "brightness(80%)" : "brightness(100%)" };' rd_on_click='handleclick(vm, ev)'>

@@ -15,9 +15,7 @@
 
 Promise.resolve(true)
 .then(() => evalscriptglobal('fun.js', 'fun()'))
-// .then(({ lens, rand, range, read, }) => {
 .then(() => evalscriptglobal('render.js', 'render()'))
-// .then(({ rd, renderAgain, }) => {
 .then(() => {
 	let width = window.innerWidth;
 	let height = window.innerHeight;

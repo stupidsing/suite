@@ -16,9 +16,7 @@ file:///home/ywsing/suite/src/main/html/render.html
 
 Promise.resolve(true)
 .then(() => evalscriptglobal('fun.js', 'fun()'))
-// .then(({ lens, rand, range, read, }) => {
 .then(() => evalscriptglobal('render.js', 'render()'))
-// .then(({ rd, renderAgain, }) => {
 .then(() => {
 let view0 = rd.parse(`
 	<span style='font-family: sans-serif;'>
