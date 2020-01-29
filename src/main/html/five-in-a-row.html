@@ -13,18 +13,48 @@ file:///home/ywsing/suite/src/main/html/five-in-a-row.html
 		<div id='target' style='display: flex; justify-content: center;'></div>
 	</body>
 
+	<script src='eval-script.js'></script>
 	<script src='five-in-a-row.js'></script>
 	<script src='frp.js'></script>
-	<script src='fun.js'></script>
 	<script src='pq.js'></script>
-	<script src='render.js'></script>
 
 	<script type='text/javascript'>
 'use strict';
 
-let { lens, range, read, } = fun();
-let { rd, renderAgain, } = render();
+let eatdirs = [[0, -1], [-1, 0], [-1, +1], [+1, +1],];
+let movedirs = [[-1, 0], [+1, 0], [0, -1], [0, +1],];
 
+const usp = new URLSearchParams(window.location.search);
+const colorsp = usp.get('colors');
+const sizep = usp.get('size');
+
+let size = sizep != null ? +sizep : 7;
+let nStoneTypes = colorsp != null ? +colorsp : 5;
+
+let cc = ((sizex, sizey) => ({
+	area: sizex * sizey,
+	arrayx: () => ({ indices: range(0, sizex).list(), length: sizex, }),
+	arrayy: x => ({ indices: range(0, sizey).list(), length: sizey, }),
+	back_xy: f => {
+		for (let x = sizex - 1; 0 <= x; x--)
+			for (let y = sizey - 1; 0 <= y; y--)
+				f(x, y);
+	},
+	for_xy: f => {
+		for (let x = 0; x < sizex; x++)
+			for (let y = 0; y < sizey; y++)
+				f(x, y);
+	},
+	inbounds: (x, y) => 0 <= x && x < sizex && 0 <= y && y < sizey,
+	random_xy: () => ({ x: rand(0, sizex), y: rand(0, sizey), }),
+}))(size, size);
+
+Promise.resolve(true)
+.then(() => evalscriptglobal('https://raw.githubusercontent.com/stupidsing/suite/master/src/main/html/fun.js', 'fun()'))
+// .then(({ lens, range, read, }) => {
+.then(() => evalscriptglobal('https://raw.githubusercontent.com/stupidsing/suite/master/src/main/html/render.js', 'render()'))
+// .then(({ rd, renderAgain, }) => {
+.then(() => {
 let viewCell = rd.parse(`
 	<span draggable='true' style='
 			background: { vm.selected ? palette[2] : "#DDDDDD" };
@@ -50,7 +80,7 @@ let viewCells = rd.parse(`
 	</tr>
 `, { viewCell, });
 
-let view = rd.parse(`
+globalThis.view = rd.parse(`
 	<span style='display: flex; flex-direction: column;'>
 		<span style='align-items: center; display: flex; justify-content: space-between;'>
 			<span>
@@ -88,35 +118,7 @@ let view = rd.parse(`
 	</span>
 `, { viewCells, });
 
-let eatdirs = [[0, -1], [-1, 0], [-1, +1], [+1, +1],];
-let movedirs = [[-1, 0], [+1, 0], [0, -1], [0, +1],];
-
-const usp = new URLSearchParams(window.location.search);
-const colorsp = usp.get('colors');
-const sizep = usp.get('size');
-
-let size = sizep != null ? +sizep : 7;
-let nStoneTypes = colorsp != null ? +colorsp : 5;
-
-let cc = ((sizex, sizey) => ({
-	area: sizex * sizey,
-	arrayx: () => ({ indices: range(0, sizex).list(), length: sizex, }),
-	arrayy: x => ({ indices: range(0, sizey).list(), length: sizey, }),
-	back_xy: f => {
-		for (let x = sizex - 1; 0 <= x; x--)
-			for (let y = sizey - 1; 0 <= y; y--)
-				f(x, y);
-	},
-	for_xy: f => {
-		for (let x = 0; x < sizex; x++)
-			for (let y = 0; y < sizey; y++)
-				f(x, y);
-	},
-	inbounds: (x, y) => 0 <= x && x < sizex && 0 <= y && y < sizey,
-	random_xy: () => ({ x: rand(0, sizex), y: rand(0, sizey), }),
-}))(size, size);
-
 vw.init();
-
+});
 	</script>
 </html>

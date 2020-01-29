@@ -87,7 +87,7 @@ let mutate = (() => {
 })();
 
 let vw = (() => {
-	let change = f => renderAgain(view, vm0 => {
+	let change = f => renderAgain(globalThis.view, vm0 => {
 		let vm1 = f(vm0);
 		// console.log(vm1);
 		return vm1;
