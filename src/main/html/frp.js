@@ -12,7 +12,7 @@ let frp = evalscript('fun.js').then(({ read, }) => {
 			return pusher;
 		};
 
-		return globalThis.frp = {
+		return {
 			append: other => {
 				let pusher = newPusher();
 				wire_(pusher.push);

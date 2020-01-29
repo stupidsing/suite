@@ -14,10 +14,15 @@ file:///home/ywsing/suite/src/main/html/block-fill.html
 	<script type='text/javascript'>
 'use strict';
 
-Promise.resolve(true)
-.then(() => evalscriptglobal('fun.js'))
-.then(() => evalscriptglobal('render.js'))
-.then(() => {
+Promise.resolve({})
+.then(ns => evalscript('frp.js').then(frp => ({ ...ns, frp, })))
+.then(ns => evalscript('fun.js').then(fun => ({ ...ns, fun, })))
+.then(ns => evalscript('render.js').then(render => ({ ...ns, render, })))
+.then(ns => {
+	let { frp, fun, render, } = ns;
+	let { rand, range, read, } = fun;
+	let { rd, renderAgain, } = render;
+
 	let vmsetcell = (vmt0, vmc1) =>  {
 		let vmr0 = vmt0[vmc1.x];
 		let vmc0 = vmr0[vmc1.y];
