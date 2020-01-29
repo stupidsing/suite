@@ -403,7 +403,7 @@ let render = () => {
 			);
 	};
 
-	let rd_parse = s => {
+	let rd_parse = (s, views) => {
 		let parseLambda = (v, s) => {
 			let e = s.startsWith('{') && s.endsWith('}') ? s : '(' + s + ')';
 			return eval(v + ' => ' + e);
