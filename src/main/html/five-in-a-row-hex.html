@@ -95,13 +95,13 @@ let cc = ((sizex, sizey) => {
 })(size, size);
 
 Promise.resolve(true)
-.then(() => evalscript('https://raw.githubusercontent.com/stupidsing/suite/master/src/main/html/fun.js', 'fun()'))
+.then(() => evalscript('fun.js', 'fun()'))
 .then(({ range, read, }) => {
 	globalThis.range = range;
 	globalThis.read = read;
 })
-.then(() => evalscriptglobal('https://raw.githubusercontent.com/stupidsing/suite/master/src/main/html/pq.js', 'pq()'))
-.then(() => evalscript('https://raw.githubusercontent.com/stupidsing/suite/master/src/main/html/render.js', 'render()'))
+.then(() => evalscriptglobal('pq.js', 'pq()'))
+.then(() => evalscript('render.js', 'render()'))
 .then(({ rd, renderAgain, }) => {
 	globalThis.rd = rd;
 	globalThis.renderAgain = renderAgain;

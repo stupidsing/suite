@@ -4,6 +4,9 @@ let evalscript = (() => {
 	let cache = {};
 
 	return (url, expr) => {
+		if (document.URL.startsWith('file://'))
+			url = 'https://raw.githubusercontent.com/stupidsing/suite/master/src/main/html/' + url;
+
 		let e = expr != null ? ';' + expr : '';
 		let key = url + '::' + e;
 		let r = cache[key];

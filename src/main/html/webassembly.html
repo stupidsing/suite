@@ -20,9 +20,9 @@ file:///home/ywsing/suite/src/main/html/webassembly.html
 'use strict';
 
 Promise.resolve(true)
-.then(() => evalscriptglobal('https://raw.githubusercontent.com/stupidsing/suite/master/src/main/html/fun.js', 'fun()'))
+.then(() => evalscriptglobal('fun.js', 'fun()'))
 // .then(({ lens, range, read, }) => {
-.then(() => evalscriptglobal('https://raw.githubusercontent.com/stupidsing/suite/master/src/main/html/render.js', 'render()'))
+.then(() => evalscriptglobal('render.js', 'render()'))
 // .then(({ rd, renderAgain, }) => {
 .then(() => {
 	let rd_vm = rd.parse(`
