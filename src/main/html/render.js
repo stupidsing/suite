@@ -1,6 +1,6 @@
 'use strict';
 
-let render = () => {
+let render = evalscript('fun.js', 'fun()').then(({ read, }) => {
 	let verifyList = (parent, nodes) => {
 		let e = parent.lastChild;
 		for (let i = nodes.length - 1; 0 <= i; i--)
@@ -495,4 +495,4 @@ let render = () => {
 	};
 
 	return { rd, renderAgain, };
-};
+});
