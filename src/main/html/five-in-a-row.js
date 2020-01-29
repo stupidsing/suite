@@ -11,6 +11,12 @@ let fiveinarow = evalscript('fun.js', 'fun()').then(({ rand, }) => {
 
 	return evalscript('render.js', 'render()').then(({ renderAgain, }) => (cc, view) => {
 		let mutate = (() => {
+			let emptycount = vm => {
+				let n = 0;
+				cc.for_xy((x, y,) => n += vm.board[x][y].d != null ? 0 : 1);
+				return n;
+			};
+
 			let setcell = (vm, vmc1) => {
 				let vmt0 = vm.board;
 				vmt0 = vmt0 != null ? vmt0 : cc.arrayx();
@@ -20,12 +26,6 @@ let fiveinarow = evalscript('fun.js', 'fun()').then(({ rand, }) => {
 				// let vmt1 = vmt0.map(vmr => vmr != vmr0 ? vmr : vmr1);
 				// return { ...vm, board: vmt1, };
 				return { ...vm, board: { ...vmt0, [vmc1.x]: { ...vmr0, [vmc1.y]: vmc1, }, }, };
-			};
-
-			let emptycount = vm => {
-				let n = 0;
-				cc.for_xy((x, y,) => n += vm.board[x][y].d != null ? 0 : 1);
-				return n;
 			};
 
 			return {
