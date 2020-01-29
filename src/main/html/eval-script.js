@@ -26,3 +26,7 @@ let evalscript = (() => {
 			.catch(error => console.error('evalscript()', url, e, error));
 	};
 })();
+
+let evalscriptglobal = (url, expr) => evalscript(url, expr).then(module => {
+	for (let [k, v] of Object.entries(module)) globalThis[k] = v;
+});
