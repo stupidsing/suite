@@ -53,7 +53,7 @@ let size = sizep != null ? +sizep : 7;
 let nStoneTypes = colorsp != null ? +colorsp : 5;
 
 Promise.resolve({})
-.then(ns => evalscript('five-in-a-row.js', 'fiveinarow').then(fiveinarow => ({ ...ns, fiveinarow, })))
+.then(ns => evalscript('five-in-a-row.js').then(fiveinarow => ({ ...ns, fiveinarow, })))
 .then(ns => evalscript('fun.js').then(fun => ({ ...ns, fun, })))
 .then(ns => evalscript('render.js').then(render => ({ ...ns, render, })))
 .then(ns => {
@@ -120,7 +120,7 @@ Promise.resolve({})
 	let viewCells = rd.parse(`
 		<div class='hex-row' style='margin-left: { vm[0].x * 26.5 + vm[0].y * 53 }px'>
 			<rd_for>
-				<rd_component v='views.viewCell' />
+				<rd_component v='env.viewCell' />
 			</rd_for>
 		</div>
 	`, { viewCell, });
@@ -130,7 +130,7 @@ Promise.resolve({})
 			<span style='align-items: center; display: flex; justify-content: space-between;'>
 				<span>
 					<rd_map v='vm.nextstones'>
-						<rd_component v='views.viewCells' />
+						<rd_component v='env.viewCells' />
 					</rd_map>
 				</span>
 				<span style='color: { palette[4] }; font-family: Oswald, monospace; margin-right: 16px;'>{ vm.score }</span>
@@ -141,7 +141,7 @@ Promise.resolve({})
 			<rd_map v='vm.board'>
 				<rd_for>
 					<rd_map v='vm.indices.map(i => vm[i])'>
-						<rd_component v='views.viewCells' />
+						<rd_component v='env.viewCells' />
 					</rd_map>
 				</rd_for>
 			</rd_map>

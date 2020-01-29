@@ -31,7 +31,7 @@ let size = sizep != null ? +sizep : 7;
 let nStoneTypes = colorsp != null ? +colorsp : 5;
 
 Promise.resolve({})
-.then(ns => evalscript('five-in-a-row.js', 'fiveinarow').then(fiveinarow => ({ ...ns, fiveinarow, })))
+.then(ns => evalscript('five-in-a-row.js').then(fiveinarow => ({ ...ns, fiveinarow, })))
 .then(ns => evalscript('fun.js').then(fun => ({ ...ns, fun, })))
 .then(ns => evalscript('render.js').then(render => ({ ...ns, render, })))
 .then(ns => {
@@ -77,7 +77,7 @@ Promise.resolve({})
 	let viewCells = rd.parse(`
 		<tr>
 			<rd_for>
-				<td><rd_component v='views.viewCell' /></td>
+				<td><rd_component v='env.viewCell' /></td>
 			</rd_for>
 		</tr>
 	`, { viewCell, });
@@ -88,7 +88,7 @@ Promise.resolve({})
 				<span>
 					<rd_map v='vm.nextstones'>
 						<table style='border-spacing: 0;'>
-							<rd_component v='views.viewCells' />
+							<rd_component v='env.viewCells' />
 						</table>
 					</rd_map>
 				</span>
@@ -99,7 +99,7 @@ Promise.resolve({})
 				<table style='border-spacing: 0;'>
 					<rd_for>
 						<rd_map v='vm.indices.map(i => vm[i])'>
-							<rd_component v='views.viewCells' />
+							<rd_component v='env.viewCells' />
 						</rd_map>
 					</rd_for>
 				</table>

@@ -179,3 +179,5 @@ let frp = function() {
 		},
 	};
 } ();
+
+frp();

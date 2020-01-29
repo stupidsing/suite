@@ -403,7 +403,7 @@ let render = evalscript('fun.js').then(({ read, }) => {
 			);
 	};
 
-	let rd_parse = (s, views) => {
+	let rd_parse = (s, env) => {
 		let parseLambda = (v, s) => {
 			let e = s.startsWith('{') && s.endsWith('}') ? s : '(' + s + ')';
 			return eval(v + ' => ' + e);
