@@ -30,3 +30,14 @@ let evalscript = (() => {
 let evalscriptglobal = (url, expr) => evalscript(url, expr).then(module => {
 	for (let [k, v] of Object.entries(module)) globalThis[k] = v;
 });
+
+let loadsrcscript = (url, cb) => new Promise((resolve, reject) => {
+	let cb = () => resolve();
+	let script = document.createElement('script');
+	script.onreadystatechange = cb;
+	script.onload = cb;
+	script.src = url;
+	script.type = 'text/javascript';
+
+	document.head.appendChild(script);
+});
