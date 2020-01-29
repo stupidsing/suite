@@ -80,7 +80,7 @@ Promise.resolve(true)
 		</tr>
 	`, { viewCell, });
 
-	globalThis.view = rd.parse(`
+	let view = rd.parse(`
 		<span style='display: flex; flex-direction: column;'>
 			<span style='align-items: center; display: flex; justify-content: space-between;'>
 				<span>
