@@ -78,17 +78,14 @@ let mutate = (() => {
 	};
 })();
 
-let fiveinarow = Promise.resolve(true)
-.then(() => evalscript('fun.js', 'fun()'))
-.then(({ rand, }) => {
+let fiveinarow = evalscript('fun.js', 'fun()').then(({ rand, }) => {
 	let randomstones = n => {
 		let stones = [];
 		for (let i = 0; i < n; i++) stones.push({ d: rand(0, nStoneTypes), });
 		return stones;
 	};
 
-	return evalscript('render.js', 'render()')
-	.then(({ renderAgain, }) => view => {
+	return evalscript('render.js', 'render()').then(({ renderAgain, }) => view => {
 		let change = f => renderAgain(view, vm0 => {
 			let vm1 = f(vm0);
 			// console.log(vm1);
