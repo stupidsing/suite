@@ -15,8 +15,8 @@ file:///home/ywsing/suite/src/main/html/render.html
 'use strict';
 
 Promise.resolve(true)
-.then(() => evalscriptglobal('fun.js', 'fun()'))
-.then(() => evalscriptglobal('render.js', 'render'))
+.then(() => evalscriptglobal('fun.js'))
+.then(() => evalscriptglobal('render.js'))
 .then(() => {
 let view0 = rd.parse(`
 	<span style='font-family: sans-serif;'>

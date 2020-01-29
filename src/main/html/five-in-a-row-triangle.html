@@ -22,8 +22,8 @@ file:///home/ywsing/suite/src/main/html/five-in-a-row-triangle.html
 
 Promise.resolve({})
 .then(ns => evalscript('five-in-a-row.js', 'fiveinarow').then(fiveinarow => ({ ...ns, fiveinarow, })))
-.then(ns => evalscript('fun.js', 'fun()').then(fun => ({ ...ns, fun, })))
-.then(ns => evalscript('render.js', 'render').then(render => ({ ...ns, render, })))
+.then(ns => evalscript('fun.js').then(fun => ({ ...ns, fun, })))
+.then(ns => evalscript('render.js').then(render => ({ ...ns, render, })))
 .then(ns => {
 	let { fiveinarow, fun, render, } = ns;
 	let { rand, range, } = fun;

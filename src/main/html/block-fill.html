@@ -15,8 +15,8 @@ file:///home/ywsing/suite/src/main/html/block-fill.html
 'use strict';
 
 Promise.resolve(true)
-.then(() => evalscriptglobal('fun.js', 'fun()'))
-.then(() => evalscriptglobal('render.js', 'render'))
+.then(() => evalscriptglobal('fun.js'))
+.then(() => evalscriptglobal('render.js'))
 .then(() => {
 	let vmsetcell = (vmt0, vmc1) =>  {
 		let vmr0 = vmt0[vmc1.x];

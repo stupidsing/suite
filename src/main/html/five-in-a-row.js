@@ -3,8 +3,8 @@
 let freeze = false; // if we are accepting game inputs
 
 let fiveinarow = Promise.resolve({})
-.then(ns => evalscript('fun.js', 'fun()').then(fun => ({ ...ns, fun, })))
-.then(ns => evalscript('render.js', 'render').then(render => ({ ...ns, render, })))
+.then(ns => evalscript('fun.js').then(fun => ({ ...ns, fun, })))
+.then(ns => evalscript('render.js').then(render => ({ ...ns, render, })))
 .then(ns => (cc, view) => {
 	let { fun, render, } = ns;
 	let { rand, } = fun;

@@ -15,8 +15,8 @@
 'use strict';
 
 Promise.resolve(true)
-.then(() => evalscriptglobal('fun.js', 'fun()'))
-.then(() => evalscriptglobal('render.js', 'render'))
+.then(() => evalscriptglobal('fun.js'))
+.then(() => evalscriptglobal('render.js'))
 .then(() => {
 	let width = window.innerWidth;
 	let height = window.innerHeight;
