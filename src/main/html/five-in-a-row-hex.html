@@ -160,7 +160,7 @@ Promise.resolve(true)
 		</span>
 	`, { viewCells, });
 
-	return p(view);
+	return p(cc, view);
 })
 .then(fiveinarow => {
 	for (let [k, v] of Object.entries(fiveinarow)) globalThis[k] = v;
