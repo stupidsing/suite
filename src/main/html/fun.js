@@ -113,6 +113,6 @@ let fun = (() => {
 	// read([read([0, 1,]), read([2, 3,])]).concat().append(read([4, 5, 6,])).cons(-1).foreach(s => console.log(s))
 
 	return { lens, rand, range, read, };
-});
+})();
 
 fun;

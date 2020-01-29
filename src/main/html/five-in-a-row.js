@@ -212,3 +212,5 @@ let fiveinarow = Promise.resolve({})
 
 	return { handleclick, handleclose, icons, palette, vw, };
 });
+
+fiveinarow;
