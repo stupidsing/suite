@@ -22,7 +22,7 @@ file:///home/ywsing/suite/src/main/html/five-in-a-row-triangle.html
 
 Promise.resolve(true)
 .then(() => evalscriptglobal('fun.js', 'fun()'))
-.then(() => evalscriptglobal('render.js', 'render()'))
+.then(() => evalscriptglobal('render.js', 'render'))
 .then(() => evalscript('five-in-a-row.js', 'fiveinarow'))
 .then(fiveinarow => {
     let view = rd.parse(`

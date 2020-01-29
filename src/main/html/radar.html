@@ -16,7 +16,7 @@
 
 Promise.resolve(true)
 .then(() => evalscriptglobal('fun.js', 'fun()'))
-.then(() => evalscriptglobal('render.js', 'render()'))
+.then(() => evalscriptglobal('render.js', 'render'))
 .then(() => {
 	let width = window.innerWidth;
 	let height = window.innerHeight;
