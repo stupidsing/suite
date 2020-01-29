@@ -2,82 +2,6 @@
 
 let freeze = false; // if we are accepting game inputs
 
-let mutate = (() => {
-	let setcell = (vm, vmc1) => {
-		let vmt0 = vm.board;
-		vmt0 = vmt0 != null ? vmt0 : cc.arrayx();
-		let vmr0 = vmt0[vmc1.x];
-		vmr0 = vmr0 != null ? vmr0 : cc.arrayy(vmc1.x);
-		// let vmr1 = vmr0.map(vmc => vmc != vmc0 ? vmc : vmc1);
-		// let vmt1 = vmt0.map(vmr => vmr != vmr0 ? vmr : vmr1);
-		// return { ...vm, board: vmt1, };
-		return { ...vm, board: { ...vmt0, [vmc1.x]: { ...vmr0, [vmc1.y]: vmc1, }, }, };
-	};
-
-	let checkfiveinarow = vm => {
-		let isFiveInARow = false;
-		if (!freeze)
-			for (let [dx, dy] of eatdirs)
-				(0 < dx * 1000 + dy ? cc.for_xy : cc.back_xy)((x, y,) => {
-					let step = 0;
-					let x1, y1;
-					while (true
-						&& (x1 = x + step * dx) != null
-						&& (y1 = y + step * dy) != null
-						&& cc.inbounds(x1, y1)
-						&& vm.board[x][y].d != null
-						&& vm.board[x][y].d == vm.board[x1][y1].d) step++;
-					if (5 <= step) {
-						isFiveInARow = true;
-						for (let i = 0; i < step; i++)
-							vm = setcell(vm, { ...vm.board[x + i * dx][y + i * dy], d: null, });
-						vm = { ...vm, score: vm.score + step, };
-						document.title = `${vm.score} - Five in a row`;
-					}
-				});
-		return { isFiveInARow, vm, };
-	};
-
-	return {
-		checkfiveinarow,
-		drop: (vm, stones) => {
-			if (stones.length < mutate.emptycount(vm))
-				for (let stone of stones)
-					while(true) {
-						let { x, y, } = cc.random_xy();
-						if (vm.board[x][y].d == null) {
-							vm = setcell(vm, { ...vm.board[x][y], d: stone.d, });
-							break;
-						}
-					}
-			else {
-				freeze = true;
-				cc.for_xy((x, y,) => {
-					if (vm.board[x][y].d == null)
-						vm = setcell(vm, { ...vm.board[x][y], d: -1, });
-				});
-				vm = { ...vm, notification: { c: 4, message: 'game over', }, };
-			}
-			return vm;
-		},
-		emptycount: vm => {
-			let n = 0;
-			cc.for_xy((x, y,) => n += vm.board[x][y].d != null ? 0 : 1);
-			return n;
-		},
-		moveonestep: (vm, fr, to) => {
-			let vmc0 = vm.board[fr.x][fr.y];
-			let vmc1 = vm.board[to.x][to.y];
-			let d0 = vmc0.d;
-			let d1 = vmc1.d;
-			vm = setcell(vm, { ...vmc0, d: d1, });
-			vm = setcell(vm, { ...vmc1, d: d0, });
-			return vm;
-		},
-		setcell,
-	};
-})();
-
 let fiveinarow = evalscript('fun.js', 'fun()').then(({ rand, }) => {
 	let randomstones = n => {
 		let stones = [];
@@ -85,7 +9,82 @@ let fiveinarow = evalscript('fun.js', 'fun()').then(({ rand, }) => {
 		return stones;
 	};
 
-	return evalscript('render.js', 'render()').then(({ renderAgain, }) => view => {
+	return evalscript('render.js', 'render()').then(({ renderAgain, }) => (cc, view) => {
+		let mutate = (() => {
+			let setcell = (vm, vmc1) => {
+				let vmt0 = vm.board;
+				vmt0 = vmt0 != null ? vmt0 : cc.arrayx();
+				let vmr0 = vmt0[vmc1.x];
+				vmr0 = vmr0 != null ? vmr0 : cc.arrayy(vmc1.x);
+				// let vmr1 = vmr0.map(vmc => vmc != vmc0 ? vmc : vmc1);
+				// let vmt1 = vmt0.map(vmr => vmr != vmr0 ? vmr : vmr1);
+				// return { ...vm, board: vmt1, };
+				return { ...vm, board: { ...vmt0, [vmc1.x]: { ...vmr0, [vmc1.y]: vmc1, }, }, };
+			};
+
+			let emptycount = vm => {
+				let n = 0;
+				cc.for_xy((x, y,) => n += vm.board[x][y].d != null ? 0 : 1);
+				return n;
+			};
+
+			return {
+				checkfiveinarow: vm => {
+					let isFiveInARow = false;
+					if (!freeze)
+						for (let [dx, dy] of eatdirs)
+							(0 < dx * 1000 + dy ? cc.for_xy : cc.back_xy)((x, y,) => {
+								let step = 0;
+								let x1, y1;
+								while (true
+									&& (x1 = x + step * dx) != null
+									&& (y1 = y + step * dy) != null
+									&& cc.inbounds(x1, y1)
+									&& vm.board[x][y].d != null
+									&& vm.board[x][y].d == vm.board[x1][y1].d) step++;
+								if (5 <= step) {
+									isFiveInARow = true;
+									for (let i = 0; i < step; i++)
+										vm = setcell(vm, { ...vm.board[x + i * dx][y + i * dy], d: null, });
+									vm = { ...vm, score: vm.score + step, };
+									document.title = `${vm.score} - Five in a row`;
+								}
+							});
+					return { isFiveInARow, vm, };
+				},
+				drop: (vm, stones) => {
+					if (stones.length < emptycount(vm))
+						for (let stone of stones)
+							while(true) {
+								let { x, y, } = cc.random_xy();
+								if (vm.board[x][y].d == null) {
+									vm = setcell(vm, { ...vm.board[x][y], d: stone.d, });
+									break;
+								}
+							}
+					else {
+						freeze = true;
+						cc.for_xy((x, y,) => {
+							if (vm.board[x][y].d == null)
+								vm = setcell(vm, { ...vm.board[x][y], d: -1, });
+						});
+						vm = { ...vm, notification: { c: 4, message: 'game over', }, };
+					}
+					return vm;
+				},
+				moveonestep: (vm, fr, to) => {
+					let vmc0 = vm.board[fr.x][fr.y];
+					let vmc1 = vm.board[to.x][to.y];
+					let d0 = vmc0.d;
+					let d1 = vmc1.d;
+					vm = setcell(vm, { ...vmc0, d: d1, });
+					vm = setcell(vm, { ...vmc1, d: d0, });
+					return vm;
+				},
+				setcell,
+			};
+		})();
+
 		let change = f => renderAgain(view, vm0 => {
 			let vm1 = f(vm0);
 			// console.log(vm1);
