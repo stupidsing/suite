@@ -109,7 +109,10 @@ let cc = ((sizex, sizey) => {
 
 	return {
 		area: sizex * sizey,
-		arrayx: () => ({ indices: range(startx, endx).list(), length: endx, }),
+		arrayx: () => ({
+			indices: range(startx, endx).list(),
+			length: endx,
+		}),
 		arrayy: x => {
 			let { starty, endy, } = yrange(x);
 			return { indices: range(starty, endy).list(), length: endy, };
