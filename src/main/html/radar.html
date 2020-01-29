@@ -1,24 +1,24 @@
-<meta charset="utf-8">
-<html style="width: 100%; height: 100%; margin: 0px;">
+<meta charset='utf-8'>
+<html style='width: 100%; height: 100%; margin: 0px;'>
 
-	<body style="width: 100%; height: 100%; margin: 0px;">
-		<canvas id="canvas" style="z-index:1; border:1px solid #000000">
-			<!-- style="position:fixed; left:10px; top:10px;" -->
+	<body style='width: 100%; height: 100%; margin: 0px;'>
+		<canvas id='canvas' style='z-index:1; border:1px solid #000000'>
+			<!-- style='position:fixed; left:10px; top:10px;' -->
 			Your browser does not support HTML5 canvas.
 		</canvas>
 	</body>
 
-	<script src="frp.js"></script>
-	<script src="fun.js"></script>
+	<script src='frp.js'></script>
+	<script src='fun.js'></script>
 
-	<script type="text/javascript">
-		"use strict";
+	<script type='text/javascript'>
+		'use strict';
 		let { lens, range, read, } = fun();
 
 		let width = window.innerWidth;
 		let height = window.innerHeight;
 
-		let canvas = document.getElementById("canvas");
+		let canvas = document.getElementById('canvas');
 		canvas.width = width;
 		canvas.height = height;
 
@@ -62,7 +62,7 @@
 					context.stroke();
 
 					if (state != 0) {
-						context.strokeStyle = "#CCCC00";
+						context.strokeStyle = '#CCCC00';
 						context.beginPath();
 						context.arc(centerx, centery, radius * fire0, angle - .5, angle + .5);
 						context.stroke();
@@ -73,8 +73,8 @@
 						context.beginPath();
 						context.arc(centerx, centery, radius * fire0, angle - .5, angle + .5);
 						context.arc(centerx, centery, radius * fire1, angle - .5, angle + .5);
-						context.strokeStyle = "#CCCC00";
-						context.fillStyle = "#CCCC00";
+						context.strokeStyle = '#CCCC00';
+						context.fillStyle = '#CCCC00';
 						context.fill();
 						*/
 					}
@@ -99,7 +99,7 @@
 					return [this];
 				},
 				draw: context => {
-					context.fillStyle = "#000000";
+					context.fillStyle = '#000000';
 					context.moveTo(x - 8, y - 8);
 					context.lineTo(x + 8, y + 8);
 					context.moveTo(x - 8, y + 8);
@@ -121,13 +121,13 @@
 				.list();
 
 			// repaint
-			let context = canvas.getContext("2d");
-			context.fillStyle = "#777777";
+			let context = canvas.getContext('2d');
+			context.fillStyle = '#777777';
 			context.fillRect(0, 0, width, height);
 
-			context.fillStyle = "#000000";
-			context.font = "10px Helvetica";
-			context.fillText("Demo", 16, height - 16);
+			context.fillStyle = '#000000';
+			context.font = '10px Helvetica';
+			context.fillText('Demo', 16, height - 16);
 
 			read(objects).foreach(object => object.draw(context));
 		});

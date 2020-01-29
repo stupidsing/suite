@@ -8,15 +8,18 @@ file:///home/ywsing/suite/src/main/html/render.html
 		<div id='target'></div>
 	</body>
 
+	<script src='eval-script.js'></script>
 	<script src='frp.js'></script>
-	<script src='fun.js'></script>
-	<script src='render.js'></script>
 
 	<script type='text/javascript'>
-let { lens, range, read, } = fun();
-let { rd, renderAgain, } = render();
-let close;
+'use strict';
 
+Promise.resolve(true)
+.then(() => evalscriptglobal('https://raw.githubusercontent.com/stupidsing/suite/master/src/main/html/fun.js', 'fun()'))
+// .then(({ lens, range, read, }) => {
+.then(() => evalscriptglobal('https://raw.githubusercontent.com/stupidsing/suite/master/src/main/html/render.js', 'render()'))
+// .then(({ rd, renderAgain, }) => {
+.then(() => {
 let view0 = rd.parse(`
 	<span style='font-family: sans-serif;'>
 		<font face='Monospac821 BT, Monaco, Consolas'>
@@ -43,7 +46,7 @@ let view0 = rd.parse(`
 		<div>
 			<!--rd_map v='vm.sse'>server sent events: <rd_for>{ vm }</rd_for></rd_map-->
 		</div>
-		<button rd_on_click='close()'>Close</button>
+		<button rd_on_click='closer()'>Close</button>
 	</span>
 `);
 
@@ -141,7 +144,7 @@ renderAgain(view, vm => ({ ...vm, sse, t, vscroll, message: 'hello world1', frui
 renderAgain(view, vm => ({ ...vm, sse, t, vscroll, message: 'hello world2', fruits: ['apple', 'orange', 'orange', 'banana',], }));
 renderAgain(view, vm => ({ ...vm, sse, t, vscroll, message: 'hello world~', fruits: ['banana', 'orange',], }));
 
-close = () => {
+globalThis.close = () => {
 	clearInterval(interval0);
 	clearInterval(interval1);
 	renderAgain(view, vm => null);
@@ -154,5 +157,7 @@ eventSource.onMessage = event => console.log(event);
 
 eventSource.addEventListener("close", ev => eventSource.close());
 eventSource.addEventListener("number", ev => renderAgain(view, vm => ({ ...vm, sse: [...vm.sse, JSON.parse(ev.data).i,], })));
+});
+
 	</script>
 </html>
