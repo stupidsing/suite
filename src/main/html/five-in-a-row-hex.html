@@ -60,22 +60,22 @@ let viewCell = rd.parse(`
 		</div>
 		<div class='part' style='border-top: 15px solid { vm.selected ? palette[2] : "#DDDDDD" };'></div>
 	</div>
-`);
+`, {});
 
 let viewCells = rd.parse(`
 	<div class='hex-row' style='margin-left: { vm[0].x * 26.5 + vm[0].y * 53 }px'>
 		<rd_for>
-			<rd_component v='viewCell' />
+			<rd_component v='views.viewCell' />
 		</rd_for>
 	</div>
-`);
+`, { viewCell, });
 
 let view = rd.parse(`
 	<span style='display: flex; flex-direction: column;'>
 		<span style='align-items: center; display: flex; justify-content: space-between;'>
 			<span>
 				<rd_map v='vm.nextstones'>
-					<rd_component v='viewCells' />
+					<rd_component v='views.viewCells' />
 				</rd_map>
 			</span>
 			<span style='color: { palette[4] }; font-family: Oswald, monospace; margin-right: 16px;'>{ vm.score }</span>
@@ -86,7 +86,7 @@ let view = rd.parse(`
 		<rd_map v='vm.board'>
 			<rd_for>
 				<rd_map v='vm.indices.map(i => vm[i])'>
-					<rd_component v='viewCells' />
+					<rd_component v='views.viewCells' />
 				</rd_map>
 			</rd_for>
 		</rd_map>
@@ -106,7 +106,7 @@ let view = rd.parse(`
 			</rd_if>
 		</rd_map>
 	</span>
-`);
+`, { viewCells, });
 
 let eatdirs = [[0, -1], [-1, 0], [-1, +1],];
 let movedirs = [[-1, 0], [+1, 0], [0, -1], [0, +1], [-1, +1,], [+1, -1,],];

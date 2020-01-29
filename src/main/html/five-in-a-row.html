@@ -40,15 +40,15 @@ let viewCell = rd.parse(`
 			<rd_if v='vm != null'>{ icons[vm] }</rd_if>
 		</rd_map>
 	</span>
-`);
+`, {});
 
 let viewCells = rd.parse(`
 	<tr>
 		<rd_for>
-			<td><rd_component v='viewCell' /></td>
+			<td><rd_component v='views.viewCell' /></td>
 		</rd_for>
 	</tr>
-`);
+`, { viewCell, });
 
 let view = rd.parse(`
 	<span style='display: flex; flex-direction: column;'>
@@ -56,7 +56,7 @@ let view = rd.parse(`
 			<span>
 				<rd_map v='vm.nextstones'>
 					<table style='border-spacing: 0;'>
-						<rd_component v='viewCells' />
+						<rd_component v='views.viewCells' />
 					</table>
 				</rd_map>
 			</span>
@@ -67,7 +67,7 @@ let view = rd.parse(`
 			<table style='border-spacing: 0;'>
 				<rd_for>
 					<rd_map v='vm.indices.map(i => vm[i])'>
-						<rd_component v='viewCells' />
+						<rd_component v='views.viewCells' />
 					</rd_map>
 				</rd_for>
 			</table>
@@ -86,7 +86,7 @@ let view = rd.parse(`
 			</div>
 		</rd_map>
 	</span>
-`);
+`, { viewCells, });
 
 let eatdirs = [[0, -1], [-1, 0], [-1, +1], [+1, +1],];
 let movedirs = [[-1, 0], [+1, 0], [0, -1], [0, +1],];
