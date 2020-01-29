@@ -1,7 +1,5 @@
 'use strict';
 
-let rand = (s, e) => s + Math.floor(Math.random() * (e - s));
-
 let randomstones = n => {
 	let stones = [];
 	for (let i = 0; i < n; i++) stones.push({ d: rand(0, nStoneTypes), });
