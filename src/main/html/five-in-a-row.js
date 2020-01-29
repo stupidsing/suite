@@ -1,11 +1,5 @@
 'use strict';
 
-let randomstones = n => {
-	let stones = [];
-	for (let i = 0; i < n; i++) stones.push({ d: rand(0, nStoneTypes), });
-	return stones;
-};
-
 let freeze = false; // if we are accepting game inputs
 
 let mutate = (() => {
@@ -84,125 +78,136 @@ let mutate = (() => {
 	};
 })();
 
-let fiveinarow = evalscript('render.js', 'render()').then(({ renderAgain, }) => view => {
-	let change = f => renderAgain(view, vm0 => {
-		let vm1 = f(vm0);
-		// console.log(vm1);
-		return vm1;
-	});
-
-	let movefromto = (vmc0, vmcx) => {
-		let board;
-		change(vm => { board = vm.board; return vm; });
-
-		let search = (xy0, xyx, isMovable) => {
-			let key = xy => `${xy.x},${xy.y}`;
-			let todos = [{ x: xy0.x, y: xy0.y, prev: null, },];
-			let dones = {};
-			let kx = key(xyx);
-			while (0 < todos.length) { // breadth-first search
-				let todo = todos.shift();
-				let { x, y, } = todo;
-				let k = key(todo);
-				if (!dones.hasOwnProperty(k)) {
-					let neighbours = movedirs
-						.map(([dx, dy]) => ({ x: x + dx, y: y + dy, prev: todo, }))
-						.filter(({ x, y, }) => cc.inbounds(x, y) && isMovable(x, y));
-					todos.push(...neighbours);
-					dones[k] = todo;
-					if (k == kx) return todo;
-				}
-			}
-			return null;
-		};
-
-		let node = search(vmc0, vmcx, (x, y,) => board[x][y].d == null);
-
-		let rec = (path, cb) => {
-			let prev = path.prev;
-			if (prev != null)
-				rec(prev, () => {
-					let timeout = setTimeout(() => {
-						change(vm => mutate.moveonestep(vm, prev, path));
-						cb();
-						clearTimeout(timeout);
-					}, 50);
-				});
-			else
-				cb();
-		};
-
-		if (node != null) {
-			freeze = true;
-			rec(node, () => {
-				freeze = false;
-				change(vm_ => {
-					let { isFiveInARow, vm, } = mutate.checkfiveinarow(vm_);
-					if (!isFiveInARow) {
-						vm = mutate.drop(vm, vm.nextstones);
-						vm = { ...vm, nextstones: randomstones(3), };
-						vm = mutate.checkfiveinarow(vm).vm;
-					}				
-					return vm;
-				});
-			});
-		} else
-			console.log('no path between', vmc0, vmcx);
+let fiveinarow = Promise.resolve(true)
+.then(() => evalscript('fun.js', 'fun()'))
+.then(({ rand, }) => {
+	let randomstones = n => {
+		let stones = [];
+		for (let i = 0; i < n; i++) stones.push({ d: rand(0, nStoneTypes), });
+		return stones;
 	};
 
-	let vw = {
-		change,
-		init: () => change(vm_ => {
-			let vm = {
-				nextstones: randomstones(3),
-				notification: null, // { c: 1, message: 'welcome!', },
-				score: 0,
-				select_xy: null,
+	return evalscript('render.js', 'render()')
+	.then(({ renderAgain, }) => view => {
+		let change = f => renderAgain(view, vm0 => {
+			let vm1 = f(vm0);
+			// console.log(vm1);
+			return vm1;
+		});
+
+		let movefromto = (vmc0, vmcx) => {
+			let board;
+			change(vm => { board = vm.board; return vm; });
+
+			let search = (xy0, xyx, isMovable) => {
+				let key = xy => `${xy.x},${xy.y}`;
+				let todos = [{ x: xy0.x, y: xy0.y, prev: null, },];
+				let dones = {};
+				let kx = key(xyx);
+				while (0 < todos.length) { // breadth-first search
+					let todo = todos.shift();
+					let { x, y, } = todo;
+					let k = key(todo);
+					if (!dones.hasOwnProperty(k)) {
+						let neighbours = movedirs
+							.map(([dx, dy]) => ({ x: x + dx, y: y + dy, prev: todo, }))
+							.filter(({ x, y, }) => cc.inbounds(x, y) && isMovable(x, y));
+						todos.push(...neighbours);
+						dones[k] = todo;
+						if (k == kx) return todo;
+					}
+				}
+				return null;
 			};
-			cc.for_xy((x, y,) => vm = mutate.setcell(vm, { x, y, d: null, }));
-			return mutate.drop(vm, randomstones(Math.ceil(cc.area * .3)));
-		}),
-		movefromto,
-		select: (x, y) => {
-			change(vm => {
-				let vmc = vm.board[x][y];
-				vm = mutate.setcell(vm, { ...vmc, selected: true, });
-				return { ...vm, select_xy: { x, y, }, };
-			});
-		},
-		unselect: () => {
-			let select_xy0;
-			change(vm => {
-				select_xy0 = vm.select_xy;
-				if (select_xy0 != null) {
-					let vmc = vm.board[select_xy0.x][select_xy0.y];
-					vm = mutate.setcell(vm, { ...vmc, selected: false, });
-				}
-				return { ...vm, select_xy: null };
-			});
-			return select_xy0;
-		},
-	}
 
-	// https://www.colourlovers.com/palette/373610/Melon_Ball_Surprise
-	let palette = ['#D1F2A5', '#EFFAB4', '#FFC48C', '#FF9F80', '#F56991',];
+			let node = search(vmc0, vmcx, (x, y,) => board[x][y].d == null);
 
-	let icons = [ '🍋', '🌲', '💖', '🐬', '🐵', '🍊', '🍇', '💮', '✴️', ];
-	icons[-1] = '💀';
-	// 😂
+			let rec = (path, cb) => {
+				let prev = path.prev;
+				if (prev != null)
+					rec(prev, () => {
+						let timeout = setTimeout(() => {
+							change(vm => mutate.moveonestep(vm, prev, path));
+							cb();
+							clearTimeout(timeout);
+						}, 50);
+					});
+				else
+					cb();
+			};
 
-	let handleclick = (vmc, ev) => {
-		if (!freeze) {
-			let select_xy0 = vw.unselect();
+			if (node != null) {
+				freeze = true;
+				rec(node, () => {
+					freeze = false;
+					change(vm_ => {
+						let { isFiveInARow, vm, } = mutate.checkfiveinarow(vm_);
+						if (!isFiveInARow) {
+							vm = mutate.drop(vm, vm.nextstones);
+							vm = { ...vm, nextstones: randomstones(3), };
+							vm = mutate.checkfiveinarow(vm).vm;
+						}
+						return vm;
+					});
+				});
+			} else
+				console.log('no path between', vmc0, vmcx);
+		};
 
-			if (vmc.d != null)
-				vw.select(vmc.x, vmc.y);
-			else if (select_xy0 != null)
-				vw.movefromto(select_xy0, vmc);
+		let vw = {
+			change,
+			init: () => change(vm_ => {
+				let vm = {
+					nextstones: randomstones(3),
+					notification: null, // { c: 1, message: 'welcome!', },
+					score: 0,
+					select_xy: null,
+				};
+				cc.for_xy((x, y,) => vm = mutate.setcell(vm, { x, y, d: null, }));
+				return mutate.drop(vm, randomstones(Math.ceil(cc.area * .3)));
+			}),
+			movefromto,
+			select: (x, y) => {
+				change(vm => {
+					let vmc = vm.board[x][y];
+					vm = mutate.setcell(vm, { ...vmc, selected: true, });
+					return { ...vm, select_xy: { x, y, }, };
+				});
+			},
+			unselect: () => {
+				let select_xy0;
+				change(vm => {
+					select_xy0 = vm.select_xy;
+					if (select_xy0 != null) {
+						let vmc = vm.board[select_xy0.x][select_xy0.y];
+						vm = mutate.setcell(vm, { ...vmc, selected: false, });
+					}
+					return { ...vm, select_xy: null };
+				});
+				return select_xy0;
+			},
 		}
-	};
 
-	let handleclose = () => vw.change(vm => null);
+		// https://www.colourlovers.com/palette/373610/Melon_Ball_Surprise
+		let palette = ['#D1F2A5', '#EFFAB4', '#FFC48C', '#FF9F80', '#F56991',];
 
-	return { handleclick, handleclose, icons, palette, vw, };
+		let icons = [ '🍋', '🌲', '💖', '🐬', '🐵', '🍊', '🍇', '💮', '✴️', ];
+		icons[-1] = '💀';
+		// 😂
+
+		let handleclick = (vmc, ev) => {
+			if (!freeze) {
+				let select_xy0 = vw.unselect();
+
+				if (vmc.d != null)
+					vw.select(vmc.x, vmc.y);
+				else if (select_xy0 != null)
+					vw.movefromto(select_xy0, vmc);
+			}
+		};
+
+		let handleclose = () => vw.change(vm => null);
+
+		return { handleclick, handleclose, icons, palette, vw, };
+	});
 });
