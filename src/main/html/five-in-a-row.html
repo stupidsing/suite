@@ -52,7 +52,7 @@ Promise.resolve(true)
 .then(() => evalscriptglobal('fun.js', 'fun()'))
 .then(() => evalscriptglobal('render.js', 'render()'))
 .then(() => evalscript('five-in-a-row.js', 'fiveinarow'))
-.then(fiveinarow => {
+.then(p => {
 	let viewCell = rd.parse(`
 		<span draggable='true' style='
 				background: { vm.selected ? palette[2] : "#DDDDDD" };
@@ -116,7 +116,10 @@ Promise.resolve(true)
 		</span>
 	`, { viewCells, });
 
-	for (let [k, v] of Object.entries(fiveinarow(renderAgain, view))) globalThis[k] = v;
+	return p(view);
+})
+.then(fiveinarow => {
+	for (let [k, v] of Object.entries(fiveinarow)) globalThis[k] = v;
 
 	vw.init();
 });
