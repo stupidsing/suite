@@ -50,11 +50,12 @@ let cc = ((sizex, sizey) => ({
 
 Promise.resolve(true)
 .then(() => evalscriptglobal('fun.js', 'fun()'))
-// .then(({ lens, range, read, }) => {
+// .then(({ lens, rand, range, read, }) => {
 .then(() => evalscriptglobal('render.js', 'render()'))
 // .then(({ rd, renderAgain, }) => {
-.then(() => loadsrcscript('five-in-a-row.js'))
-.then(() => {
+.then(() => evalscript('five-in-a-row.js', 'fiveinarow'))
+// .then(() => loadsrcscript('five-in-a-row.js'))
+.then(fiveinarow => {
 	let viewCell = rd.parse(`
 		<span draggable='true' style='
 				background: { vm.selected ? palette[2] : "#DDDDDD" };

@@ -95,19 +95,14 @@ let cc = ((sizex, sizey) => {
 })(size, size);
 
 Promise.resolve(true)
-.then(() => evalscript('fun.js', 'fun()'))
-.then(({ range, read, }) => {
-	globalThis.range = range;
-	globalThis.read = read;
-})
+.then(() => evalscriptglobal('fun.js', 'fun()'))
+// .then(({ lens, rand, range, read, }) => {
 .then(() => evalscriptglobal('pq.js', 'pq()'))
-.then(() => evalscript('render.js', 'render()'))
-.then(({ rd, renderAgain, }) => {
-	globalThis.rd = rd;
-	globalThis.renderAgain = renderAgain;
-})
-.then(() => loadsrcscript('five-in-a-row.js'))
-.then(() => {
+.then(() => evalscriptglobal('render.js', 'render()'))
+// .then(({ rd, renderAgain, }) => {
+.then(() => evalscript('five-in-a-row.js', 'fiveinarow'))
+// .then(() => loadsrcscript('five-in-a-row.js'))
+.then(fiveinarow => {
 	let viewCell = rd.parse(`
 		<div class='hex' style='filter___: { vm.selected ? "brightness(80%)" : "brightness(100%)" };' rd_on_click='handleclick(vm, ev)'>
 			<div class='part' style='border-bottom: 15px solid { vm.selected ? palette[2] : "#DDDDDD" };'></div>
