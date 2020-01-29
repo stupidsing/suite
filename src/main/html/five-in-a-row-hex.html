@@ -52,54 +52,57 @@ const sizep = usp.get('size');
 let size = sizep != null ? +sizep : 7;
 let nStoneTypes = colorsp != null ? +colorsp : 5;
 
-let cc = ((sizex, sizey) => {
-	let startx = 0, endx = startx + sizex;
+Promise.resolve({})
+.then(ns => evalscript('five-in-a-row.js', 'fiveinarow').then(fiveinarow => ({ ...ns, fiveinarow, })))
+.then(ns => evalscript('fun.js', 'fun()').then(fun => ({ ...ns, fun, })))
+.then(ns => evalscript('render.js', 'render').then(render => ({ ...ns, render, })))
+.then(ns => {
+	let { fiveinarow, fun, render, } = ns;
+	let { rand, range, } = fun;
+	let { rd, renderAgain, } = render;
 
-	let yrange = x => {
-		let o = x >> 1;
-		return { starty: -o, endy: sizey - o, };
-	};
+	let cc = ((sizex, sizey) => {
+		let startx = 0, endx = startx + sizex;
 
-	return {
-		area: sizex * sizey,
-		arrayx: () => ({
-			indices: range(startx, endx).list(),
-			length: endx,
-		}),
-		arrayy: x => {
-			let { starty, endy, } = yrange(x);
-			return { indices: range(starty, endy).list(), length: endy, };
-		},
-		back_xy: f => {
-			for (let x = endx - 1; startx <= x; x--) {
+		let yrange = x => {
+			let o = x >> 1;
+			return { starty: -o, endy: sizey - o, };
+		};
+
+		return {
+			area: sizex * sizey,
+			arrayx: () => ({
+				indices: range(startx, endx).list(),
+				length: endx,
+			}),
+			arrayy: x => {
 				let { starty, endy, } = yrange(x);
-				for (let y = endy - 1; starty <= y; y--) f(x, y);
-			}
-		},
-		for_xy: f => {
-			for (let x = startx; x < endx; x++) {
+				return { indices: range(starty, endy).list(), length: endy, };
+			},
+			back_xy: f => {
+				for (let x = endx - 1; startx <= x; x--) {
+					let { starty, endy, } = yrange(x);
+					for (let y = endy - 1; starty <= y; y--) f(x, y);
+				}
+			},
+			for_xy: f => {
+				for (let x = startx; x < endx; x++) {
+					let { starty, endy, } = yrange(x);
+					for (let y = starty; y < endy; y++) f(x, y);
+				}
+			},
+			inbounds: (x, y) => {
 				let { starty, endy, } = yrange(x);
-				for (let y = starty; y < endy; y++) f(x, y);
-			}
-		},
-		inbounds: (x, y) => {
-			let { starty, endy, } = yrange(x);
-			return startx <= x && x < endx && starty <= y && y < endy;
-		},
-		random_xy: () => {
-			let x = rand(startx, endx);
-			let { starty, endy, } = yrange(x);
-			return { x, y: rand(starty, endy), };
-		},
-	};
-})(size, size);
+				return startx <= x && x < endx && starty <= y && y < endy;
+			},
+			random_xy: () => {
+				let x = rand(startx, endx);
+				let { starty, endy, } = yrange(x);
+				return { x, y: rand(starty, endy), };
+			},
+		};
+	})(size, size);
 
-Promise.resolve(true)
-.then(() => evalscriptglobal('fun.js', 'fun()'))
-.then(() => evalscriptglobal('pq.js', 'pq()'))
-.then(() => evalscriptglobal('render.js', 'render'))
-.then(() => evalscript('five-in-a-row.js', 'fiveinarow'))
-.then(fiveinarow => {
 	let viewCell = rd.parse(`
 		<div class='hex' style='filter___: { vm.selected ? "brightness(80%)" : "brightness(100%)" };' rd_on_click='handleclick(vm, ev)'>
 			<div class='part' style='border-bottom: 15px solid { vm.selected ? palette[2] : "#DDDDDD" };'></div>
@@ -160,12 +163,14 @@ Promise.resolve(true)
 		</span>
 	`, { viewCells, });
 
-	return fiveinarow(cc, view);
-})
-.then(fiveinarow => {
-	for (let [k, v] of Object.entries(fiveinarow)) globalThis[k] = v;
+	let five = fiveinarow(cc, view);
 
-	vw.init();
+	globalThis.handleclick = five.handleclick;
+	globalThis.handleclose = five.handleclose;
+	globalThis.icons = five.icons;
+	globalThis.palette = five.palette;
+
+	five.vw.init();
 });
 	</script>
 </html>
