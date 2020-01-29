@@ -9,7 +9,7 @@ let fiveinarow = evalscript('fun.js', 'fun()').then(({ rand, }) => {
 		return stones;
 	};
 
-	return evalscript('render.js', 'render()').then(({ renderAgain, }) => (cc, view) => {
+	return evalscript('render.js', 'render').then(({ renderAgain, }) => (cc, view) => {
 		let mutate = (() => {
 			let emptycount = vm => {
 				let n = 0;
