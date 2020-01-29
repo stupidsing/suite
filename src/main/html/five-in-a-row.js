@@ -86,8 +86,8 @@ let mutate = (() => {
 	};
 })();
 
-let vw = (() => {
-	let change = f => renderAgain(globalThis.view, vm0 => {
+let fiveinarow = (renderAgain, view) => {
+	let change = f => renderAgain(view, vm0 => {
 		let vm1 = f(vm0);
 		// console.log(vm1);
 		return vm1;
@@ -152,7 +152,7 @@ let vw = (() => {
 			console.log('no path between', vmc0, vmcx);
 	};
 
-	return {
+	let vw = {
 		change,
 		init: () => change(vm_ => {
 			let vm = {
@@ -185,20 +185,22 @@ let vw = (() => {
 			return select_xy0;
 		},
 	}
-})();
 
-let handleclick = (vmc, ev) => {
-	if (!freeze) {
-		let select_xy0 = vw.unselect();
+	let handleclick = (vmc, ev) => {
+		if (!freeze) {
+			let select_xy0 = vw.unselect();
 
-		if (vmc.d != null)
-			vw.select(vmc.x, vmc.y);
-		else if (select_xy0 != null)
-			vw.movefromto(select_xy0, vmc);
-	}
+			if (vmc.d != null)
+				vw.select(vmc.x, vmc.y);
+			else if (select_xy0 != null)
+				vw.movefromto(select_xy0, vmc);
+		}
+	};
+
+	let handleclose = () => vw.change(vm => null);
+
+	return { handlers: { handleclick, handleclose, }, vw, };
 };
-
-let handleclose = () => vw.change(vm => null);
 
 // https://www.colourlovers.com/palette/373610/Melon_Ball_Surprise
 let palette = ['#D1F2A5', '#EFFAB4', '#FFC48C', '#FF9F80', '#F56991',];

@@ -37,10 +37,8 @@ file:///home/ywsing/suite/src/main/html/five-in-a-row-hex.html
 	</body>
 
 	<script src='eval-script.js'></script>
-	<script src='five-in-a-row.js'></script>
 	<script src='frp.js'></script>
 	<script src='pq.js'></script>
-
 	<script type='text/javascript'>
 'use strict';
 
@@ -64,7 +62,10 @@ let cc = ((sizex, sizey) => {
 
 	return {
 		area: sizex * sizey,
-		arrayx: () => ({ indices: range(startx, endx).list(), length: endx, }),
+		arrayx: () => ({
+			indices: range(startx, endx).list(),
+			length: endx,
+		}),
 		arrayy: x => {
 			let { starty, endy, } = yrange(x);
 			return { indices: range(starty, endy).list(), length: endy, };
@@ -94,10 +95,18 @@ let cc = ((sizex, sizey) => {
 })(size, size);
 
 Promise.resolve(true)
-.then(() => evalscriptglobal('https://raw.githubusercontent.com/stupidsing/suite/master/src/main/html/fun.js', 'fun()'))
-// .then(({ lens, range, read, }) => {
-.then(() => evalscriptglobal('https://raw.githubusercontent.com/stupidsing/suite/master/src/main/html/render.js', 'render()'))
-// .then(({ rd, renderAgain, }) => {
+.then(() => evalscript('https://raw.githubusercontent.com/stupidsing/suite/master/src/main/html/fun.js', 'fun()'))
+.then(({ range, read, }) => {
+	globalThis.range = range;
+	globalThis.read = read;
+})
+.then(() => evalscriptglobal('https://raw.githubusercontent.com/stupidsing/suite/master/src/main/html/pq.js', 'pq()'))
+.then(() => evalscript('https://raw.githubusercontent.com/stupidsing/suite/master/src/main/html/render.js', 'render()'))
+.then(({ rd, renderAgain, }) => {
+	globalThis.rd = rd;
+	globalThis.renderAgain = renderAgain;
+})
+.then(() => loadsrcscript('five-in-a-row.js'))
 .then(() => {
 let viewCell = rd.parse(`
 	<div class='hex' style='filter___: { vm.selected ? "brightness(80%)" : "brightness(100%)" };' rd_on_click='handleclick(vm, ev)'>
@@ -158,6 +167,10 @@ globalThis.view = rd.parse(`
 		</rd_map>
 	</span>
 `, { viewCells, });
+
+let { handlers, vw, } = fiveinarow(renderAgain, view);
+globalThis.handleclick = handlers.handleclick;
+globalThis.handleclose = handlers.handleclose;
 
 vw.init();
 });

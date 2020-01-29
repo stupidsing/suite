@@ -14,7 +14,6 @@ file:///home/ywsing/suite/src/main/html/five-in-a-row-hex-rects.html
 	</body>
 
 	<script src='eval-script.js'></script>
-	<script src='five-in-a-row.js'></script>
 	<script src='frp.js'></script>
 	<script src='pq.js'></script>
 
@@ -78,6 +77,7 @@ Promise.resolve(true)
 // .then(({ lens, range, read, }) => {
 .then(() => evalscriptglobal('https://raw.githubusercontent.com/stupidsing/suite/master/src/main/html/render.js', 'render()'))
 // .then(({ rd, renderAgain, }) => {
+.then(() => loadsrcscript('five-in-a-row.js'))
 .then(() => {
 let viewCell = rd.parse(`
 	<span draggable='true'
@@ -141,6 +141,10 @@ globalThis.view = rd.parse(`
 		</rd_map>
 	</span>
 `, { viewCells, });
+
+let { handlers, vw, } = fiveinarow(renderAgain, view);
+globalThis.handleclick = handlers.handleclick;
+globalThis.handleclose = handlers.handleclose;
 
 vw.init();
 });
