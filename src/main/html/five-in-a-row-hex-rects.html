@@ -79,74 +79,72 @@ Promise.resolve(true)
 // .then(({ rd, renderAgain, }) => {
 .then(() => loadsrcscript('five-in-a-row.js'))
 .then(() => {
-let viewCell = rd.parse(`
-	<span draggable='true'
-		style='
-			background: { vm.selected ? palette[2] : "#DDDDDD" };
-			display: inline-block;
-			filter___: { vm.selected ? "brightness(80%)" : "brightness(100%)" };
-			font-size: 25px;
-			height: 40px;
-			margin: 2px 0px 2px 0px;
-			text-align: center;
-			vertical-align: middle;
-			width: 40px;'
-		rd_on_click='handleclick(vm, ev)'>
-		<rd_map v='vm.d'>
-			<rd_if v='vm != null'>{ icons[vm] }</rd_if>
-		</rd_map>
-	</span>
-`, {});
-
-let viewCells = rd.parse(`
-	<rd_for>
-		<rd_component v='views.viewCell' />
-	</rd_for>
-`, { viewCell, });
-
-globalThis.view = rd.parse(`
-	<span style='display: flex; flex-direction: column;'>
-		<span style='align-items: center; display: flex; justify-content: space-between;'>
-			<span>
-				<rd_map v='vm.nextstones'>
-					<rd_component v='views.viewCells' />
-				</rd_map>
-			</span>
-			<span style='color: { palette[4] }; font-family: Oswald, monospace; margin-right: 16px;'>{ vm.score }</span>
+	let viewCell = rd.parse(`
+		<span draggable='true'
+			style='
+				background: { vm.selected ? palette[2] : "#DDDDDD" };
+				display: inline-block;
+				filter___: { vm.selected ? "brightness(80%)" : "brightness(100%)" };
+				font-size: 25px;
+				height: 40px;
+				margin: 2px 0px 2px 0px;
+				text-align: center;
+				vertical-align: middle;
+				width: 40px;'
+			rd_on_click='handleclick(vm, ev)'>
+			<rd_map v='vm.d'>
+				<rd_if v='vm != null'>{ icons[vm] }</rd_if>
+			</rd_map>
 		</span>
-		<p/>
-		<rd_map v='vm.board'>
-			<rd_for>
-				<rd_map v='vm.indices.map(i => vm[i])'>
-					<div>
-						<span style='
-							display: inline-block;
-							font-size: 25px;
-							height: 40px;
-							margin: 2px 0px 2px 0px;
-							text-align: center;
-							vertical-align: middle;
-							width: { vm[0].x * 18 + vm[0].y * 36 }px;'>
-						</span>
+	`, {});
+
+	let viewCells = rd.parse(`
+		<rd_for>
+			<rd_component v='views.viewCell' />
+		</rd_for>
+	`, { viewCell, });
+
+	globalThis.view = rd.parse(`
+		<span style='display: flex; flex-direction: column;'>
+			<span style='align-items: center; display: flex; justify-content: space-between;'>
+				<span>
+					<rd_map v='vm.nextstones'>
 						<rd_component v='views.viewCells' />
-					</div>
-				</rd_map>
-			</rd_for>
-		</rd_map>
-		<!-- button rd_on_click='handleclose()'>close</button -->
-		<rd_map v='vm.notification'>
-			<div style='background: { palette[vm.c] }; bottom: 0; font-family: Oswald, monospace; left: 0; position: fixed; text-align: center; width: 100%;'>
-				<p>{ vm.message }</p>
-			</div>
-		</rd_map>
-	</span>
-`, { viewCells, });
+					</rd_map>
+				</span>
+				<span style='color: { palette[4] }; font-family: Oswald, monospace; margin-right: 16px;'>{ vm.score }</span>
+			</span>
+			<p/>
+			<rd_map v='vm.board'>
+				<rd_for>
+					<rd_map v='vm.indices.map(i => vm[i])'>
+						<div>
+							<span style='
+								display: inline-block;
+								font-size: 25px;
+								height: 40px;
+								margin: 2px 0px 2px 0px;
+								text-align: center;
+								vertical-align: middle;
+								width: { vm[0].x * 18 + vm[0].y * 36 }px;'>
+							</span>
+							<rd_component v='views.viewCells' />
+						</div>
+					</rd_map>
+				</rd_for>
+			</rd_map>
+			<!-- button rd_on_click='handleclose()'>close</button -->
+			<rd_map v='vm.notification'>
+				<div style='background: { palette[vm.c] }; bottom: 0; font-family: Oswald, monospace; left: 0; position: fixed; text-align: center; width: 100%;'>
+					<p>{ vm.message }</p>
+				</div>
+			</rd_map>
+		</span>
+	`, { viewCells, });
 
-let { handlers, vw, } = fiveinarow(renderAgain, view);
-globalThis.handleclick = handlers.handleclick;
-globalThis.handleclose = handlers.handleclose;
+	for (let [k, v] of Object.entries(fiveinarow(renderAgain, view))) globalThis[k] = v;
 
-vw.init();
+	vw.init();
 });
 	</script>
 </html>

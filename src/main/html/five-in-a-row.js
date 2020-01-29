@@ -199,7 +199,7 @@ let fiveinarow = (renderAgain, view) => {
 
 	let handleclose = () => vw.change(vm => null);
 
-	return { handlers: { handleclick, handleclose, }, vw, };
+	return { handleclick, handleclose, vw, };
 };
 
 // https://www.colourlovers.com/palette/373610/Melon_Ball_Surprise
