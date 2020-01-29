@@ -186,6 +186,13 @@ let fiveinarow = (renderAgain, view) => {
 		},
 	}
 
+	// https://www.colourlovers.com/palette/373610/Melon_Ball_Surprise
+	let palette = ['#D1F2A5', '#EFFAB4', '#FFC48C', '#FF9F80', '#F56991',];
+
+	let icons = [ '🍋', '🌲', '💖', '🐬', '🐵', '🍊', '🍇', '💮', '✴️', ];
+	icons[-1] = '💀';
+	// 😂
+
 	let handleclick = (vmc, ev) => {
 		if (!freeze) {
 			let select_xy0 = vw.unselect();
@@ -199,12 +206,5 @@ let fiveinarow = (renderAgain, view) => {
 
 	let handleclose = () => vw.change(vm => null);
 
-	return { handleclick, handleclose, vw, };
+	return { handleclick, handleclose, icons, palette, vw, };
 };
-
-// https://www.colourlovers.com/palette/373610/Melon_Ball_Surprise
-let palette = ['#D1F2A5', '#EFFAB4', '#FFC48C', '#FF9F80', '#F56991',];
-
-let icons = [ '🍋', '🌲', '💖', '🐬', '🐵', '🍊', '🍇', '💮', '✴️', ];
-icons[-1] = '💀';
-// 😂
