@@ -23,9 +23,9 @@ file:///home/ywsing/suite/src/main/html/five-in-a-row-hex-rects.html
 let eatdirs = [[0, -1], [-1, 0], [-1, +1],];
 let movedirs = [[-1, 0], [+1, 0], [0, -1], [0, +1], [-1, +1,], [+1, -1,],];
 
-const usp = new URLSearchParams(window.location.search);
-const colorsp = usp.get('colors');
-const sizep = usp.get('size');
+let usp = new URLSearchParams(window.location.search);
+let colorsp = usp.get('colors');
+let sizep = usp.get('size');
 
 let size = sizep != null ? +sizep : 7;
 let nStoneTypes = colorsp != null ? +colorsp : 5;
