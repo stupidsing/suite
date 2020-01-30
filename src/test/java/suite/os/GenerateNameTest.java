@@ -13,7 +13,7 @@ public class GenerateNameTest {
 	private StoreCache storeCache = Ioc.of(StoreCache.class);
 
 	@Test
-	public void test() {
+	public void testGenerateName() {
 		var rg = "https://raw.githubusercontent.com";
 		var repo0 = rg + "/dominictarr/random-name/master";
 		var repo1 = rg + "/9b/heavy_pint/master/lists";
@@ -28,6 +28,16 @@ public class GenerateNameTest {
 		System.out.println(name);
 		System.out.println(biz);
 		System.out.println(street + ", " + city);
+	}
+
+	@Test
+	public void testGetRandomQuote() {
+		var quote = getRandom("https://raw.githubusercontent.com/akhiltak/inspirational-quotes/master/Quotes.csv")
+				.split(";");
+
+		System.out.println(quote[0]);
+		System.out.println(quote[1]);
+		System.out.println(quote[2]);
 	}
 
 	private String getRandom(String url) {
