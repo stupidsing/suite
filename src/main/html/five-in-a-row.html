@@ -59,7 +59,7 @@ Promise.resolve({})
 
 	let viewCell = rd.parse(`
 		<span draggable='true' style='
-				background: { vm.selected ? palette[2] : "#DDDDDD" };
+				background: { vm.selected ? env.palette[2] : "#DDDDDD" };
 				display: table-cell;
 				filter___: { vm.selected ? "brightness(80%)" : "brightness(100%)" };
 				font-size: 25px;
@@ -69,10 +69,10 @@ Promise.resolve({})
 				width: 40px;'
 			rd_on_click='handleclick(vm, ev)'>
 			<rd_map v='vm.d'>
-				<rd_if v='vm != null'>{ icons[vm] }</rd_if>
+				<rd_if v='vm != null'>{ env.icons[vm] }</rd_if>
 			</rd_map>
 		</span>
-	`, {});
+	`, { ...fiveinarow, });
 
 	let viewCells = rd.parse(`
 		<tr>
@@ -80,7 +80,7 @@ Promise.resolve({})
 				<td><rd_component v='env.viewCell' /></td>
 			</rd_for>
 		</tr>
-	`, { viewCell, });
+	`, { ...fiveinarow, viewCell, });
 
 	let view = rd.parse(`
 		<span style='display: flex; flex-direction: column;'>
@@ -92,7 +92,7 @@ Promise.resolve({})
 						</table>
 					</rd_map>
 				</span>
-				<span style='color: { palette[4] }; font-family: Oswald, monospace; margin-right: 16px;'>{ vm.score }</span>
+				<span style='color: { env.palette[4] }; font-family: Oswald, monospace; margin-right: 16px;'>{ vm.score }</span>
 			</span>
 			<p/>
 			<rd_map v='vm.board'>
@@ -107,7 +107,7 @@ Promise.resolve({})
 			<!-- button rd_on_click='handleclose()'>close</button -->
 			<rd_map v='vm.notification'>
 				<div style='
-					background: { palette[vm.c] };
+					background: { env.palette[vm.c] };
 					bottom: 0;
 					font-family: Oswald, monospace;
 					left: 0;
@@ -118,16 +118,14 @@ Promise.resolve({})
 				</div>
 			</rd_map>
 		</span>
-	`, { viewCells, });
+	`, { ...fiveinarow, viewCells, });
 
-	let five = fiveinarow(cc, view);
+	let game = fiveinarow.game(cc, view);
 
-	globalThis.handleclick = five.handleclick;
-	globalThis.handleclose = five.handleclose;
-	globalThis.icons = five.icons;
-	globalThis.palette = five.palette;
+	globalThis.handleclick = game.handleclick;
+	globalThis.handleclose = game.handleclose;
 
-	five.vw.init();
+	game.vw.init();
 });
 	</script>
 </html>

@@ -115,7 +115,7 @@ Promise.resolve({})
         </span>
     `);
 
-	for (let [k, v] of Object.entries(fiveinarow(renderAgain, view))) globalThis[k] = v;
+	for (let [k, v] of Object.entries(fiveinarow)) globalThis[k] = v;
 
     renderAgain(view, vm => ({
         board: {
