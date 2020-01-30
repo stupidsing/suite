@@ -17,8 +17,7 @@ Promise.resolve({})
 .then(ns => evalscript('frp.js').then(frp => ({ ...ns, frp, })))
 .then(ns => evalscript('fun.js').then(fun => ({ ...ns, fun, })))
 .then(ns => {
-	let { frp, fun, } = ns;
-	let { rand, range, read, } = fun;
+	let { frp, fun: { rand, range, read, }, } = ns;
 
 	let width = window.innerWidth;
 	let height = window.innerHeight;

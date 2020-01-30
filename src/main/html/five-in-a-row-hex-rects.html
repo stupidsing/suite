@@ -35,9 +35,7 @@ Promise.resolve({})
 .then(ns => evalscript('fun.js').then(fun => ({ ...ns, fun, })))
 .then(ns => evalscript('render.js').then(render => ({ ...ns, render, })))
 .then(ns => {
-	let { fiveinarow, fun, render, } = ns;
-	let { rand, range, } = fun;
-	let { rd, renderAgain, } = render;
+	let { fiveinarow, fun: { rand, range, }, render: { rd, renderAgain, }, } = ns;
 
 	let cc = ((sizex, sizey) => {
 		let startx = 0, endx = startx + sizex;

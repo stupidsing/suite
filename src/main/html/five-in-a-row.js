@@ -6,9 +6,7 @@ let fiveinarow = Promise.resolve({})
 .then(ns => evalscript('fun.js').then(fun => ({ ...ns, fun, })))
 .then(ns => evalscript('render.js').then(render => ({ ...ns, render, })))
 .then(ns => (cc, view) => {
-	let { fun, render, } = ns;
-	let { rand, } = fun;
-	let { renderAgain, } = render;
+	let { fun: { rand, }, render: { renderAgain, }, } = ns;
 
 	let randomstones = n => {
 		let stones = [];

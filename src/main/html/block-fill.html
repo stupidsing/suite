@@ -19,9 +19,7 @@ Promise.resolve({})
 .then(ns => evalscript('fun.js').then(fun => ({ ...ns, fun, })))
 .then(ns => evalscript('render.js').then(render => ({ ...ns, render, })))
 .then(ns => {
-	let { frp, fun, render, } = ns;
-	let { rand, range, read, } = fun;
-	let { rd, renderAgain, } = render;
+	let { frp, fun: { rand, range, read, }, render: { rd, renderAgain, }, } = ns;
 
 	let vmsetcell = (vmt0, vmc1) =>  {
 		let vmr0 = vmt0[vmc1.x];

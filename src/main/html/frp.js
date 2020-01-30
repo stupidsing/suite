@@ -82,7 +82,10 @@ let frp = evalscript('fun.js').then(({ read, }) => {
 
 	let kbpressed_ = (e, down) => {
 		let pusher = kbkeypushers[(!(e.which)) ? e.keyCode : (e.which ? e.which : 0)];
-		if (pusher) pusher.push(down);
+		if (pusher) {
+			pusher.push(down);
+			e.preventDefault();
+		}
 	};
 
 	document.onkeydown = e => kbpressed_(e, true);
