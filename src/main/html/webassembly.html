@@ -19,10 +19,7 @@ file:///home/ywsing/suite/src/main/html/webassembly.html
 <script>
 'use strict';
 
-Promise.resolve(true)
-.then(() => evalscriptglobal('fun.js'))
-.then(() => evalscriptglobal('render.js'))
-.then(() => {
+evalscript('render.js').then(({ rd, renderAgain, }) => {
 	let rd_vm = rd.parse(`
 		<span>{ vm.result }</span>
 	`);
