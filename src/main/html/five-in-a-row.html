@@ -62,7 +62,14 @@ Promise
 			text-align: center;
 			vertical-align: middle;
 			width: 40px;'
-			rd_on_click='handle.click(vm, ev)'>
+			rd_on_click='handle.click(vm, ev)'
+			rd_on_dragend='handle.dragend(vm, ev)'
+			rd_on_dragenter='handle.dragenter(vm, ev)'
+			rd_on_dragexit='{}'
+			rd_on_dragleave='{}'
+			rd_on_dragover='{ ev.dataTransfer.dropEffect = "move"; }'
+			rd_on_dragstart='handle.dragstart(vm, ev)'
+			rd_on_drop='{}'>
 			<rd_map v='vm.d'>
 				<rd_if v='vm != null'>{ env.icons[vm] }</rd_if>
 			</rd_map>

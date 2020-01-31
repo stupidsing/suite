@@ -1,5 +1,12 @@
 'use strict';
 
+// https://www.colourlovers.com/palette/373610/Melon_Ball_Surprise
+let palette = ['#D1F2A5', '#EFFAB4', '#FFC48C', '#FF9F80', '#F56991',];
+
+let icons = [ '🍋', '🌲', '💖', '🐬', '🐵', '🍊', '🍇', '💮', '✴️', ];
+icons[-1] = '💀';
+// 😂
+
 let freeze = false; // if we are accepting game inputs
 
 let fiveinarow = Promise.resolve({})
@@ -192,32 +199,54 @@ let fiveinarow = Promise.resolve({})
 		},
 	}
 
-	let handle = {
-		click: (vmc, ev) => {
-			if (!freeze) {
-				let select_xy0 = vw.unselect();
+	let handle = (() => {
+		let dragsource = null;
+		let dragtarget = null;
 
-				if (vmc.d != null)
-					vw.select(vmc.x, vmc.y);
-				else if (select_xy0 != null)
-					vw.movefromto(select_xy0, vmc);
-			}
-		},
-		close: () => vw.change(vm => null),
-	};
+		return {
+			click: (vmc, ev) => {
+				if (!freeze) {
+					let select_xy0 = vw.unselect();
+
+					if (vmc.d != null)
+						vw.select(vmc.x, vmc.y);
+					else if (select_xy0 != null)
+						vw.movefromto(select_xy0, vmc);
+				}
+			},
+			close: () => vw.change(vm => null),
+			dragend: (vm, ev) => vw.movefromto(dragsource, dragtarget),
+			dragenter: (vm, ev) => dragtarget = vm,
+			dragstart: (vm, ev) => {
+				dragsource = vm;
+
+				let dragIcon = document.createElement('span');
+				dragIcon.style.background = '#DDDDDD';
+				dragIcon.style.fontSize = '18px';
+				dragIcon.style.height = '40px';
+				dragIcon.style.width = '30px';
+				dragIcon.innerText = icons[vm.d];
+
+				// let dragIcon = document.createElement('img');
+				// dragIcon.src = 'http://img3.wikia.nocookie.net/__cb20140410195936/pokemon/images/archive/e/e1/20150101093317!025Pikachu_OS_anime_4.png';
+				// dragIcon.style.width = '500px';
+
+				let div = document.createElement('div');
+				div.style.left = '-500px';
+				div.style.position = 'absolute';
+				div.style.top = '-500px';
+				div.appendChild(dragIcon);
+
+				document.querySelector('body').appendChild(div);
+
+				ev.dataTransfer.setData('text/plain', '');
+				ev.dataTransfer.setDragImage(div, 15, 20);
+			},
+		};
+	})();
 
 	return { handle, vw, };
 })
-.then(game => {
-
-	// https://www.colourlovers.com/palette/373610/Melon_Ball_Surprise
-	let palette = ['#D1F2A5', '#EFFAB4', '#FFC48C', '#FF9F80', '#F56991',];
-
-	let icons = [ '🍋', '🌲', '💖', '🐬', '🐵', '🍊', '🍇', '💮', '✴️', ];
-	icons[-1] = '💀';
-	// 😂
-
-	return { game, icons, palette, };
-});
+.then(game => ({ game, icons, palette, }));
 
 loadedmodule = fiveinarow;
