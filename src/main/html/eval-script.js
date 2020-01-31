@@ -22,12 +22,9 @@ let { evalscript, loadsrcscript, } = (() => {
 
 		if (r != null)
 			return Promise.resolve(r);
-		else if (window.hasOwnProperty('cordova'))
+		else if (document.location.protocol == 'file:')
 			return loadsrcscript(url);
-		else {
-			if (document.URL.startsWith('file://'))
-				url = 'https://raw.githubusercontent.com/stupidsing/suite/master/src/main/html/' + url;
-
+		else
 			return fetch(url, {
 				cache: 'default',
 				credentials: 'omit',
@@ -42,7 +39,6 @@ let { evalscript, loadsrcscript, } = (() => {
 			.then(text => eval(text))
 			.then(m => cache[url] = m)
 			.catch(error => console.error('evalscript()', url, error));
-		}
 	};
 
 	return { evalscript, loadsrcscript, };
