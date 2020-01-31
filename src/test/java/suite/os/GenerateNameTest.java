@@ -32,10 +32,29 @@ public class GenerateNameTest {
 
 	@Test
 	public void testGetRandomQuote() {
-		var quote = getRandom("https://raw.githubusercontent.com/akhiltak/inspirational-quotes/master/Quotes.csv")
-				.split(";");
+		var url = "https://raw.githubusercontent.com/akhiltak/inspirational-quotes/master/Quotes.csv";
+		var quote = getRandom(url).split(";");
 
-		System.out.println(quote[0]);
+		var cm = new char[26];
+
+		for (var i = 0; i < 26; i++)
+			cm[i] = (char) ('a' + i);
+
+		for (var n = 0; n < 100; n++) {
+			var i = random.nextInt(26);
+			var j = random.nextInt(26);
+			var t = cm[i];
+			cm[i] = cm[j];
+			cm[j] = t;
+		}
+
+		var q = quote[0].toUpperCase();
+
+		for (var i = 0; i < 26; i++)
+			q = q.replace((char) ('A' + i), cm[i]);
+
+		System.out.println(q);
+		// System.out.println(quote[0]);
 		System.out.println(quote[1]);
 		System.out.println(quote[2]);
 	}
