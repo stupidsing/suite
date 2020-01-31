@@ -14,8 +14,6 @@ file:///home/ywsing/suite/src/main/html/five-in-a-row.html
 	</body>
 
 	<script src='eval-script.js'></script>
-	<script src='frp.js'></script>
-	<script src='pq.js'></script>
 
 	<script type='text/javascript'>
 'use strict';
@@ -30,13 +28,12 @@ let sizep = usp.get('size');
 let size = sizep != null ? +sizep : 7;
 let nStoneTypes = colorsp != null ? +colorsp : 5;
 
-Promise.resolve({})
+Promise
+.all(['frp.js', 'pq.js',].map(loadsrcscript))
 .then(ns => evalscript('five-in-a-row.js').then(fiveinarow => ({ ...ns, fiveinarow, })))
 .then(ns => evalscript('fun.js').then(fun => ({ ...ns, fun, })))
 .then(ns => evalscript('render.js').then(render => ({ ...ns, render, })))
-.then(ns => {
-	let { fiveinarow, fun: { rand, range, }, render: { rd, renderAgain, }, } = ns;
-
+.then(({ fiveinarow, fun: { rand, range, }, render: { rd, renderAgain, }, }) => {
 	let cc = ((sizex, sizey) => ({
 		area: sizex * sizey,
 		arrayx: () => ({ indices: range(0, sizex).list(), length: sizex, }),
