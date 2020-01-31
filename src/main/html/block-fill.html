@@ -9,7 +9,6 @@ file:///home/ywsing/suite/src/main/html/block-fill.html
 	</body>
 
 	<script src='eval-script.js'></script>
-	<script src='frp.js'></script>
 
 	<script type='text/javascript'>
 'use strict';
@@ -19,31 +18,33 @@ Promise.resolve({})
 .then(ns => evalscript('fun.js').then(fun => ({ ...ns, fun, })))
 .then(ns => evalscript('render.js').then(render => ({ ...ns, render, })))
 .then(ns => {
-	let { frp, fun: { rand, range, read, }, render: { rd, renderAgain, }, } = ns;
+	let { frp, fun: { range, }, render: { rd, renderAgain, }, } = ns;
 
-	let vmsetcell = (vmt0, vmc1) =>  {
-		let vmr0 = vmt0[vmc1.x];
-		let vmc0 = vmr0[vmc1.y];
-		let vmr1 = vmr0.map(vmc => vmc != vmc0 ? vmc : vmc1);
-		let vmt1 = vmt0.map(vmr => vmr != vmr0 ? vmr : vmr1);
-		return vmt1;
-	};
+	globalThis.handle = (() => {
+		let vmsetcell = (vmt0, vmc1) =>  {
+			let vmr0 = vmt0[vmc1.x];
+			let vmc0 = vmr0[vmc1.y];
+			let vmr1 = vmr0.map(vmc => vmc != vmc0 ? vmc : vmc1);
+			let vmt1 = vmt0.map(vmr => vmr != vmr0 ? vmr : vmr1);
+			return vmt1;
+		};
 
-	let dragsource = null;
-	let dragtarget = null;
+		let dragsource = null;
+		let dragtarget = null;
 
-	let handleclick = (vmc, ev) => renderAgain(view, vm => vmsetcell(vm, { ...vmc, d: !vmc.d, }));
-
-	let handledragend = (vm, ev) => {
-		renderAgain(view, vm => {
-			vm = vmsetcell(vm, { ...dragsource, d: dragtarget.d, });
-			vm = vmsetcell(vm, { ...dragtarget, d: dragsource.d, });
-			return vm;
-		});
-	};
-
-	let handledragenter = (vm, ev) => dragtarget = vm;
-	let handledragstart = (vm, ev) => dragsource = vm;
+		return {
+			click: (vmc, ev) => renderAgain(view, vm => vmsetcell(vm, { ...vmc, d: !vmc.d, })),
+			dragend: (vm, ev) => {
+				renderAgain(view, vm => {
+					vm = vmsetcell(vm, { ...dragsource, d: dragtarget.d, });
+					vm = vmsetcell(vm, { ...dragtarget, d: dragsource.d, });
+					return vm;
+				});
+			},
+			dragenter: (vm, ev) => dragtarget = vm,
+			dragstart: (vm, ev) => dragsource = vm,
+		};
+	})();
 
 	let viewCell = rd.parse(`
 		<div draggable='true' style='
@@ -54,13 +55,13 @@ Promise.resolve({})
 			text-align: center;
 			vertical-align: middle;
 			width: 50px;'
-			rd_on_click='handleclick(vm, ev)'
-			rd_on_dragend='handledragend(vm, ev)'
-			rd_on_dragenter='handledragenter(vm, ev)'
+			rd_on_click='handle.click(vm, ev)'
+			rd_on_dragend='handle.dragend(vm, ev)'
+			rd_on_dragenter='handle.dragenter(vm, ev)'
 			rd_on_dragexit='{}'
 			rd_on_dragleave='{}'
 			rd_on_dragover='{ ev.dataTransfer.dropEffect = "move"; }'
-			rd_on_dragstart='handledragstart(vm, ev)'
+			rd_on_dragstart='handle.dragstart(vm, ev)'
 			rd_on_drop='{}'>
 			<rd_if v='vm.d'>😂</rd_if>
 			<rd_if v='!vm.d'>💖</rd_if>
@@ -86,10 +87,10 @@ Promise.resolve({})
 
 	// let interval = setInterval(() => renderAgain(view, vm => { vm[1][1].d = !vm[1][1].d; return JSON.parse(JSON.stringify(vm)); }), 500);
 
-	renderAgain(view, vm => {
-		var vm0 = range(0, 8).map(x => range(0, 8).map(y => ({ d: false, x, y, })).list()).list();
-		vm0[1][1].d = true;
-		return vm0;
+	renderAgain(view, () => {
+		var vm = range(0, 8).map(x => range(0, 8).map(y => ({ d: false, x, y, })).list()).list();
+		vm[1][1].d = true;
+		return vm;
 	});
 
 	globalThis.closer = () => {
