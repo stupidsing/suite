@@ -13,43 +13,28 @@ let evalscript = (() => {
 		
 		if (r != null)
 			return Promise.resolve(r);
-		else {
-			let loader;
-
-			if (window.hasOwnProperty('webkitResolveLocalFileSystemURL')) // for cordova
-				loader = new Promise((resolve, reject) => {					
-					window.webkitResolveLocalFileSystemURL(
-						url,
-						fe => fe.file(file => {								
-							let fr = new FileReader();
-							fr.onloadend = e => resolve(this.result);
-							fr.readAsText(file);
-						}),
-						reject);
-				});
-			else
-				loader = fetch(url, {
-					cache: 'default',
-					credentials: 'omit',
-					method: 'GET',
-					mode: 'cors',
-					redirect: 'follow',
-					referrer: 'no-referrer',
-				})
-				.then(response => {
-					if (response.ok) return response.text(); else throw response.statusText;
-				});
-
-			return loader
+		else
+			return fetch(url, {
+				cache: 'default',
+				credentials: 'omit',
+				method: 'GET',
+				mode: 'cors',
+				redirect: 'follow',
+				referrer: 'no-referrer',
+			})
+			.then(response => {
+				if (response.ok) return response.text(); else throw response.statusText;
+			})
 			.then(text => eval(text + e))
 			.then(result => cache[key] = result)
 			.catch(error => console.error('evalscript()', url, e, error));
-		}
 	};
 })();
 
 let loadsrcscript = (url, cb) => new Promise((resolve, reject) => {
-	let cb = () => resolve();
+	globalThis.loadedmodule = null;
+
+	let cb = () => resolve(loadedmodule);
 	let script = document.createElement('script');
 	script.onreadystatechange = cb;
 	script.onload = cb;
