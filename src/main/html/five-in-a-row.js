@@ -34,7 +34,7 @@ let fiveinarow = Promise.resolve({})
 
 		return {
 			checkfiveinarow: vm => {
-				let isFiveInARow = false;
+				let eating = [];
 				if (!freeze)
 					for (let [dx, dy] of eatdirs)
 						(0 < dx * 1000 + dy ? cc.for_xy : cc.back_xy)((x, y,) => {
@@ -46,15 +46,19 @@ let fiveinarow = Promise.resolve({})
 								&& cc.inbounds(x1, y1)
 								&& vm.board[x][y].d != null
 								&& vm.board[x][y].d == vm.board[x1][y1].d) step++;
-							if (5 <= step) {
-								isFiveInARow = true;
-								for (let i = 0; i < step; i++)
-									vm = setcell(vm, { ...vm.board[x + i * dx][y + i * dy], d: null, });
-								vm = { ...vm, score: vm.score + step, };
-								document.title = `${vm.score} - Five in a row`;
-							}
+							if (5 <= step)
+								for (let i = 0; i < step; i++) {
+									let x_ = x + i * dx;
+									let y_ = y + i * dy;
+									eating[`${x_},${y_}`] = vm.board[x_][y_];
+								}
 						});
-				return { isFiveInARow, vm, };
+				let list = Object.values(eating);
+				for (let eaten of list)
+					vm = setcell(vm, { ...eaten, d: null, });
+				vm = { ...vm, score: vm.score + list.length, };
+				document.title = `${vm.score} - Five in a row`;
+				return { isFiveInARow: 0 < list.length, vm, };
 			},
 			drop: (vm, stones) => {
 				if (stones.length < emptycount(vm))
