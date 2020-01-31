@@ -497,4 +497,4 @@ let render = evalscript('fun.js').then(({ read, }) => {
 	return { rd, renderAgain, };
 });
 
-render;
+loadedmodule = render;

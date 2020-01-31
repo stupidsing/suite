@@ -183,4 +183,4 @@ let frp = evalscript('fun.js').then(({ read, }) => {
 	};
 });
 
-frp;
+loadedmodule = frp;

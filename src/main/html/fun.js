@@ -115,4 +115,4 @@ let fun = (() => {
 	return { lens, rand, range, read, };
 })();
 
-fun;
+loadedmodule = fun;

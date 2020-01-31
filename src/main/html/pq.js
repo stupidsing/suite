@@ -32,4 +32,4 @@ let pq = () => {
 	};
 };
 
-pq;
+loadedmodule = pq;
