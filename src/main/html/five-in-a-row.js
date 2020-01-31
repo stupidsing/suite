@@ -192,20 +192,21 @@ let fiveinarow = Promise.resolve({})
 		},
 	}
 
-	let handleclick = (vmc, ev) => {
-		if (!freeze) {
-			let select_xy0 = vw.unselect();
+	let handle = {
+		click: (vmc, ev) => {
+			if (!freeze) {
+				let select_xy0 = vw.unselect();
 
-			if (vmc.d != null)
-				vw.select(vmc.x, vmc.y);
-			else if (select_xy0 != null)
-				vw.movefromto(select_xy0, vmc);
-		}
+				if (vmc.d != null)
+					vw.select(vmc.x, vmc.y);
+				else if (select_xy0 != null)
+					vw.movefromto(select_xy0, vmc);
+			}
+		},
+		close: () => vw.change(vm => null),
 	};
 
-	let handleclose = () => vw.change(vm => null);
-
-	return { handleclick, handleclose, vw, };
+	return { handle, vw, };
 })
 .then(game => {
 

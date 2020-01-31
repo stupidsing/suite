@@ -87,7 +87,7 @@ Promise
 			text-align: center;
 			vertical-align: middle;
 			width: 40px;'
-			rd_on_click='handleclick(vm, ev)'>
+			rd_on_click='handle.click(vm, ev)'>
 			<rd_map v='vm.d'>
 				<rd_if v='vm != null'>{ env.icons[vm] }</rd_if>
 			</rd_map>
@@ -129,7 +129,7 @@ Promise
 					</rd_map>
 				</rd_for>
 			</rd_map>
-			<!-- button rd_on_click='handleclose()'>close</button -->
+			<!-- button rd_on_click='handle.close()'>close</button -->
 			<rd_map v='vm.notification'>
 				<div style='
 					background: { env.palette[vm.c] };
@@ -147,8 +147,7 @@ Promise
 
 	let game = fiveinarow.game(cc, view);
 
-	globalThis.handleclick = game.handleclick;
-	globalThis.handleclose = game.handleclose;
+	globalThis.handle = game.handle;
 
 	game.vw.init();
 });

@@ -100,7 +100,7 @@ Promise
 	})(size, size);
 
 	let viewCell = rd.parse(`
-		<div class='hex' style='filter___: { vm.selected ? "brightness(80%)" : "brightness(100%)" };' rd_on_click='handleclick(vm, ev)'>
+		<div class='hex' style='filter___: { vm.selected ? "brightness(80%)" : "brightness(100%)" };' rd_on_click='handle.click(vm, ev)'>
 			<div class='part' style='border-bottom: 15px solid { vm.selected ? env.palette[2] : "#DDDDDD" };'></div>
 			<div class='middle' style='background: { vm.selected ? env.palette[2] : "#DDDDDD" }'>
 				<span draggable='true' style='left: 50%; position: absolute; top: 50%; transform: translate(-50%, -50%);'>
@@ -141,7 +141,7 @@ Promise
 					</rd_map>
 				</rd_for>
 			</rd_map>
-			<!-- button rd_on_click='handleclose()'>close</button -->
+			<!-- button rd_on_click='handle.close()'>close</button -->
 			<rd_map v='vm.notification'>
 				<rd_if v='vm'>
 					<div style='
@@ -161,8 +161,7 @@ Promise
 
 	let game = fiveinarow.game(cc, view);
 
-	globalThis.handleclick = game.handleclick;
-	globalThis.handleclose = game.handleclose;
+	globalThis.handle = game.handle;
 
 	game.vw.init();
 });
