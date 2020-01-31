@@ -54,14 +54,14 @@ Promise
 
 	let viewCell = rd.parse(`
 		<span draggable='true' style='
-				background: { vm.selected ? env.palette[2] : "#DDDDDD" };
-				display: table-cell;
-				filter___: { vm.selected ? "brightness(80%)" : "brightness(100%)" };
-				font-size: 25px;
-				height: 40px;
-				text-align: center;
-				vertical-align: middle;
-				width: 40px;'
+			background: { vm.selected ? env.palette[2] : "#DDDDDD" };
+			display: inline-block;
+			filter___: { vm.selected ? "brightness(80%)" : "brightness(100%)" };
+			font-size: 25px;
+			height: 40px;
+			text-align: center;
+			vertical-align: middle;
+			width: 40px;'
 			rd_on_click='handleclick(vm, ev)'>
 			<rd_map v='vm.d'>
 				<rd_if v='vm != null'>{ env.icons[vm] }</rd_if>

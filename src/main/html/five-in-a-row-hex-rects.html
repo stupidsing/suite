@@ -77,17 +77,16 @@ Promise
 	})(size, size);
 
 	let viewCell = rd.parse(`
-		<span draggable='true'
-			style='
-				background: { vm.selected ? env.palette[2] : "#DDDDDD" };
-				display: inline-block;
-				filter___: { vm.selected ? "brightness(80%)" : "brightness(100%)" };
-				font-size: 25px;
-				height: 40px;
-				margin: 2px 0px 2px 0px;
-				text-align: center;
-				vertical-align: middle;
-				width: 40px;'
+		<span draggable='true' style='
+			background: { vm.selected ? env.palette[2] : "#DDDDDD" };
+			display: inline-block;
+			filter___: { vm.selected ? "brightness(80%)" : "brightness(100%)" };
+			font-size: 25px;
+			height: 40px;
+			margin: 2px 0px 2px 0px;
+			text-align: center;
+			vertical-align: middle;
+			width: 40px;'
 			rd_on_click='handleclick(vm, ev)'>
 			<rd_map v='vm.d'>
 				<rd_if v='vm != null'>{ env.icons[vm] }</rd_if>
@@ -132,7 +131,14 @@ Promise
 			</rd_map>
 			<!-- button rd_on_click='handleclose()'>close</button -->
 			<rd_map v='vm.notification'>
-				<div style='background: { env.palette[vm.c] }; bottom: 0; font-family: Oswald, monospace; left: 0; position: fixed; text-align: center; width: 100%;'>
+				<div style='
+					background: { env.palette[vm.c] };
+					bottom: 0;
+					font-family: Oswald, monospace;
+					left: 0;
+					position: fixed;
+					text-align: center;
+					width: 100%;'>
 					<p>{ vm.message }</p>
 				</div>
 			</rd_map>
