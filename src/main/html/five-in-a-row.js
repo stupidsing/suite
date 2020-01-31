@@ -34,7 +34,7 @@ let fiveinarow = Promise.resolve({})
 
 		return {
 			checkfiveinarow: vm => {
-				let eating = [];
+				let eating = {};
 				if (!freeze)
 					for (let [dx, dy] of eatdirs)
 						(0 < dx * 1000 + dy ? cc.for_xy : cc.back_xy)((x, y,) => {
