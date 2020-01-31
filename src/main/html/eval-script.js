@@ -1,19 +1,33 @@
 'use strict';
 
-let evalscript = (() => {
+let loadedmodule = null;
+
+let { evalscript, loadsrcscript, } = (() => {
 	let cache = {};
 
-	return (url, expr) => {
-		if (document.URL.startsWith('file://'))
-			url = 'https://raw.githubusercontent.com/stupidsing/suite/master/src/main/html/' + url;
+	let loadsrcscript = url => new Promise((resolve, reject) => {
+		let cb = () => resolve(cache[url] = loadedmodule);
 
-		let e = expr != null ? ';' + expr : '';
-		let key = url + '::' + e;
-		let r = cache[key];
-		
+		let script = document.createElement('script');
+		script.onreadystatechange = cb;
+		script.onload = cb;
+		script.src = url;
+		script.type = 'text/javascript';
+
+		document.head.appendChild(script);
+	});
+
+	let evalscript = url => {
+		let r = cache[url];
+
 		if (r != null)
 			return Promise.resolve(r);
-		else
+		else if (window.hasOwnProperty('cordova'))
+			return loadsrcscript(url);
+		else {
+			if (document.URL.startsWith('file://'))
+				url = 'https://raw.githubusercontent.com/stupidsing/suite/master/src/main/html/' + url;
+
 			return fetch(url, {
 				cache: 'default',
 				credentials: 'omit',
@@ -25,21 +39,11 @@ let evalscript = (() => {
 			.then(response => {
 				if (response.ok) return response.text(); else throw response.statusText;
 			})
-			.then(text => eval(text + e))
-			.then(result => cache[key] = result)
-			.catch(error => console.error('evalscript()', url, e, error));
+			.then(text => eval(text))
+			.then(m => cache[url] = m)
+			.catch(error => console.error('evalscript()', url, error));
+		}
 	};
+
+	return { evalscript, loadsrcscript, };
 })();
-
-let loadsrcscript = (url, cb) => new Promise((resolve, reject) => {
-	globalThis.loadedmodule = null;
-
-	let cb = () => resolve(loadedmodule);
-	let script = document.createElement('script');
-	script.onreadystatechange = cb;
-	script.onload = cb;
-	script.src = url;
-	script.type = 'text/javascript';
-
-	document.head.appendChild(script);
-});
