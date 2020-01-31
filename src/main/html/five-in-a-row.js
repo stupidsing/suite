@@ -215,4 +215,4 @@ let fiveinarow = Promise.resolve({})
 	return { game, icons, palette, };
 });
 
-fiveinarow;
+loadedmodule = fiveinarow;
