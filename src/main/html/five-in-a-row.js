@@ -215,7 +215,7 @@ let fiveinarow = Promise.resolve({})
 				}
 			},
 			close: () => vw.change(vm => null),
-			dragend: (vm, ev) => vw.movefromto(dragsource, dragtarget),
+			dragend: (vm, ev) => dragsource == dragtarget || vw.movefromto(dragsource, dragtarget),
 			dragenter: (vm, ev) => dragtarget = vm,
 			dragstart: (vm, ev) => {
 				dragsource = vm;
