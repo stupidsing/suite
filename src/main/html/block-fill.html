@@ -47,14 +47,7 @@ Promise.resolve({})
 	})();
 
 	let viewCell = rd.parse(`
-		<div draggable='true' style='
-			background: { vm.d ? "#888888" : "#DDDDDD" };
-			display: inline-block;
-			font-size: 32px;
-			height: 50px;
-			text-align: center;
-			vertical-align: middle;
-			width: 50px;'
+		<div draggable='true'
 			rd_on_click='handle.click(vm, ev)'
 			rd_on_dragend='handle.dragend(vm, ev)'
 			rd_on_dragenter='handle.dragenter(vm, ev)'
@@ -62,7 +55,15 @@ Promise.resolve({})
 			rd_on_dragleave='{}'
 			rd_on_dragover='{ ev.dataTransfer.dropEffect = "move"; }'
 			rd_on_dragstart='handle.dragstart(vm, ev)'
-			rd_on_drop='{}'>
+			rd_on_drop='{}'
+			style='
+				background: { vm.d ? "#888888" : "#DDDDDD" };
+				display: inline-block;
+				font-size: 32px;
+				height: 50px;
+				text-align: center;
+				vertical-align: middle;
+				width: 50px;'>
 			<rd_if v='vm.d'>😂</rd_if>
 			<rd_if v='!vm.d'>💖</rd_if>
 		</div>
