@@ -15,8 +15,8 @@ file:///home/ywsing/suite/src/main/html/render.html
 'use strict';
 
 Promise.resolve({})
-.then(ns => evalscript('fun.js').then(fun => ({ ...ns, fun, })))
-.then(ns => evalscript('render.js').then(render => ({ ...ns, render, })))
+.then(ns => evalscript('fun.js').then(m => ({ ...ns, fun: m, })))
+.then(ns => evalscript('render.js').then(m => ({ ...ns, render: m, })))
 .then(ns => {
 	let { fiveinarow, fun: { lens, read, }, render: { rd, renderAgain, }, } = ns;
 

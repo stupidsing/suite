@@ -10,8 +10,8 @@ icons[-1] = '💀';
 let freeze = false; // if we are accepting game inputs
 
 let fiveinarow = Promise.resolve({})
-.then(ns => evalscript('fun.js').then(fun => ({ ...ns, fun, })))
-.then(ns => evalscript('render.js').then(render => ({ ...ns, render, })))
+.then(ns => evalscript('fun.js').then(m => ({ ...ns, fun: m, })))
+.then(ns => evalscript('render.js').then(m => ({ ...ns, render: m, })))
 .then(ns => (cc, view) => {
 	let { fun: { rand, }, render: { renderAgain, }, } = ns;
 
