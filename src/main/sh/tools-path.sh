@@ -40,6 +40,10 @@ tp_eclipse() {
 	$(cchs "echo http://ftp.jaist.ac.jp/pub/eclipse/technology/epp/downloads/release/2019-12/R/eclipse-java-2019-12-R-linux-gtk-x86_64.tar.gz" @curl @tar-zxf @dir)/eclipse $@
 }
 
+tp_eclipse_cpp() {
+	$(cchs "echo http://ftp.jaist.ac.jp/pub/eclipse/technology/epp/downloads/release/2019-12/R/eclipse-cpp-2019-12-R-linux-gtk-x86_64.tar.gz" @curl @tar-zxf @dir)/eclipse $@
+}
+
 tp_jdk8() {
 	echo /usr/lib/jvm/java-8-openjdk-amd64
 }
