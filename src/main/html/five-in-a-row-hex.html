@@ -102,7 +102,6 @@ Promise
 	let viewCell = rd.parse(`
 		<div
 			class='hex'
-			style='filter___: { vm.selected ? "brightness(80%)" : "brightness(100%)" };'
 			rd_on_click='handle.click(vm, ev)'
 			rd_on_dragend='handle.dragend(vm, ev)'
 			rd_on_dragenter='handle.dragenter(vm, ev)'
@@ -110,7 +109,8 @@ Promise
 			rd_on_dragleave='{}'
 			rd_on_dragover='{ ev.dataTransfer.dropEffect = "move"; }'
 			rd_on_dragstart='handle.dragstart(vm, ev)'
-			rd_on_drop='{}'>
+			rd_on_drop='{}'
+			style='filter___: { vm.selected ? "brightness(80%)" : "brightness(100%)" };'>
 			<div class='part' style='border-bottom: 15px solid { vm.selected ? env.palette[2] : "#DDDDDD" };'></div>
 			<div class='middle' style='background: { vm.selected ? env.palette[2] : "#DDDDDD" }'>
 				<span draggable='true' style='left: 50%; position: absolute; top: 50%; transform: translate(-50%, -50%);'>

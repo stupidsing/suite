@@ -53,15 +53,7 @@ Promise
 	}))(size, size);
 
 	let viewCell = rd.parse(`
-		<span draggable='true' style='
-			background: { vm.selected ? env.palette[2] : "#DDDDDD" };
-			display: inline-block;
-			filter___: { vm.selected ? "brightness(80%)" : "brightness(100%)" };
-			font-size: 25px;
-			height: 40px;
-			text-align: center;
-			vertical-align: middle;
-			width: 40px;'
+		<span draggable='true'
 			rd_on_click='handle.click(vm, ev)'
 			rd_on_dragend='handle.dragend(vm, ev)'
 			rd_on_dragenter='handle.dragenter(vm, ev)'
@@ -69,7 +61,16 @@ Promise
 			rd_on_dragleave='{}'
 			rd_on_dragover='{ ev.dataTransfer.dropEffect = "move"; }'
 			rd_on_dragstart='handle.dragstart(vm, ev)'
-			rd_on_drop='{}'>
+			rd_on_drop='{}'
+			style='
+				background: { vm.selected ? env.palette[2] : "#DDDDDD" };
+				display: inline-block;
+				filter___: { vm.selected ? "brightness(80%)" : "brightness(100%)" };
+				font-size: 25px;
+				height: 40px;
+				text-align: center;
+				vertical-align: middle;
+				width: 40px;'>
 			<rd_map v='vm.d'>
 				<rd_if v='vm != null'>{ env.icons[vm] }</rd_if>
 			</rd_map>
