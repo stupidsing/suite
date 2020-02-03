@@ -34,11 +34,7 @@ public class GenerateNameTest {
 	public void testGetRandomQuote() {
 		var url = "https://raw.githubusercontent.com/akhiltak/inspirational-quotes/master/Quotes.csv";
 		var quote = getRandom(url).split(";");
-
-		var cm = new char[26];
-
-		for (var i = 0; i < 26; i++)
-			cm[i] = (char) ('a' + i);
+		var cm = "abcdefghijklmnopqrstuvwxyz".toCharArray();
 
 		for (var n = 0; n < 100; n++) {
 			var i = random.nextInt(26);
