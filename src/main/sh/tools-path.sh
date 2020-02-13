@@ -79,8 +79,7 @@ tp_rocksndiamonds() {
 }
 
 tp_suite() {
-	GIT_SUITE=$(cchs "echo git@github.com:stupidsing/suite.git" @git-clone "@do-git-cd ./build.sh" "@git-cd pwd")
-	${GIT_SUITE}/run.sh $@
+	$(cchs "echo git@github.com:stupidsing/suite.git" @git-clone "@do-git-cd ./build.sh" "@git-cd pwd")/run.sh $@
 }
 
 tp_vms_empire() {
@@ -92,6 +91,7 @@ tp_vscode() {
 }
 
 tp_wdp() {
+	PKG=wine sh -c 'dpkg -l ${PKG} > /dev/null || sudo apt install -y --force-yes --no-install-recommends ${PKG}'
 	wine $(cchs "echo https://stammel.net/spiele/wdp/wdp.exe" @curl)
 }
 '

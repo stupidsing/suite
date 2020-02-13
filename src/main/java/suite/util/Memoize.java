@@ -20,15 +20,7 @@ public class Memoize {
 	}
 
 	/**
-	 * Cache results of a two-parameters function call, no clean-up.
-	 */
-	public static <I0, I1, O> Fun2<I0, I1, O> biFunction(Fun2<I0, I1, O> fun) {
-		var results = new ConcurrentHashMap<Pair<I0, I1>, O>();
-		return (in0, in1) -> results.computeIfAbsent(Pair.of(in0, in1), p -> fun.apply(in0, in1));
-	}
-
-	/**
-	 * Cache results of a function call, no clean-up.
+	 * Memoize the results of an one-parameter function call. No clean-up.
 	 */
 	public static <I, O> Fun<I, O> fun(Fun<I, O> fun) {
 		var isEnteredFun = ThreadLocal.withInitial(() -> false);
@@ -47,6 +39,18 @@ public class Memoize {
 		};
 	}
 
+	/**
+	 * Memoize the results of a two-parameters function call. No clean-up.
+	 */
+	public static <I0, I1, O> Fun2<I0, I1, O> fun2(Fun2<I0, I1, O> fun) {
+		var results = new ConcurrentHashMap<Pair<I0, I1>, O>();
+		return (in0, in1) -> results.computeIfAbsent(Pair.of(in0, in1), p -> fun.apply(in0, in1));
+	}
+
+	/**
+	 * Memoize the results of an one-parameter function call, allowing re-entrancy.
+	 * No clean-up.
+	 */
 	public static <I, O> Fun<I, O> funRec(Fun<I, O> fun) {
 		var results = new ConcurrentHashMap<I, O>();
 		return in -> {
@@ -58,7 +62,7 @@ public class Memoize {
 	}
 
 	/**
-	 * Memoizer for a parameterless function, guaranteeing a single call.
+	 * Memoize the result of a parameterless function, guaranteeing a single call.
 	 */
 	public static <T> Source<T> future(Source<T> source) {
 		return new Source<>() {
@@ -80,8 +84,8 @@ public class Memoize {
 	}
 
 	/**
-	 * Cache results of a function call, clean-up using clock algorithm as cache
-	 * exceeded the given size.
+	 * Memoize the results of an one-parameter function call, clean-up using clock
+	 * algorithm as cache exceeds the given size.
 	 */
 	public static <I, O> Fun<I, O> limited(Fun<I, O> fun, int size) {
 		return new Fun<>() {
@@ -124,8 +128,8 @@ public class Memoize {
 	}
 
 	/**
-	 * Cache results of a function call, removes the least recently used result as
-	 * cache exceeded the given size.
+	 * Memoize the results of an one-parameter function call, removing the least
+	 * recently used result when the cache exceeds specified size.
 	 */
 	public static <I, O> Fun<I, O> queued(Fun<I, O> fun, int size) {
 		return new Fun<>() {
@@ -172,7 +176,7 @@ public class Memoize {
 	}
 
 	/**
-	 * Simplest memoizer for a parameterless function.
+	 * Memoize the reult of a parameterless function.
 	 */
 	public static <T> Source<T> source(Source<T> source) {
 		return new Source<>() {
@@ -185,7 +189,8 @@ public class Memoize {
 	}
 
 	/**
-	 * Time-bounded memoizer for a parameterless function.
+	 * Memoize the result of a parameterless function, with fixed expiry time in
+	 * milliseconds.
 	 */
 	public static <T> Source<T> timed(Source<T> source, long duration) {
 		return new Source<>() {
