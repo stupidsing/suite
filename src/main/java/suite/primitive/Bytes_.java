@@ -78,7 +78,7 @@ public class Bytes_ {
 				buffer = bb.toBytes();
 			}
 
-			if (cont && 0 < p0) {
+			if (cont || 0 < p0) {
 				var head = buffer.range(0, p0);
 				buffer = buffer.range(p1);
 				return head;
