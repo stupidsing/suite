@@ -99,16 +99,18 @@ Promise
 		};
 	})(size, size);
 
+	let handle = {};
+
 	let viewCell = rd.parse(`
 		<div
 			class='hex'
-			rd_on_click='handle.click(vm, ev)'
-			rd_on_dragend='handle.dragend(vm, ev)'
-			rd_on_dragenter='handle.dragenter(vm, ev)'
+			rd_on_click='env.handle.click(vm, ev)'
+			rd_on_dragend='env.handle.dragend(vm, ev)'
+			rd_on_dragenter='env.handle.dragenter(vm, ev)'
 			rd_on_dragexit='{}'
 			rd_on_dragleave='{}'
 			rd_on_dragover='{ ev.dataTransfer.dropEffect = "move"; }'
-			rd_on_dragstart='handle.dragstart(vm, ev)'
+			rd_on_dragstart='env.handle.dragstart(vm, ev)'
 			rd_on_drop='{}'
 			style='filter___: { vm.selected ? "brightness(80%)" : "brightness(100%)" };'>
 			<div class='part' style='border-bottom: 15px solid { vm.selected ? env.palette[2] : "#DDDDDD" };'></div>
@@ -121,7 +123,7 @@ Promise
 			</div>
 			<div class='part' style='border-top: 15px solid { vm.selected ? env.palette[2] : "#DDDDDD" };'></div>
 		</div>
-	`, { ...fiveinarow, });
+	`, { ...fiveinarow, handle, });
 
 	let viewCells = rd.parse(`
 		<div class='hex-row' style='margin-left: { vm[0].x * 26.5 + vm[0].y * 53 }px'>
@@ -129,7 +131,7 @@ Promise
 				<rd_component v='env.viewCell' />
 			</rd_for>
 		</div>
-	`, { ...fiveinarow, viewCell, });
+	`, { ...fiveinarow, handle, viewCell, });
 
 	let view = rd.parse(`
 		<span style='display: flex; flex-direction: column;'>
@@ -151,7 +153,7 @@ Promise
 					</rd_map>
 				</rd_for>
 			</rd_map>
-			<!-- button rd_on_click='handle.close()'>close</button -->
+			<!-- button rd_on_click='env.handle.close()'>close</button -->
 			<rd_map v='vm.notification'>
 				<rd_if v='vm'>
 					<div style='
@@ -167,11 +169,10 @@ Promise
 				</rd_if>
 			</rd_map>
 		</span>
-	`, { ...fiveinarow, viewCells, });
+	`, { ...fiveinarow, handle, viewCells, });
 
 	let game = fiveinarow.game(cc, view);
-
-	globalThis.handle = game.handle;
+	for (let [k, v] of Object.entries(game.handle)) handle[k] = v;
 
 	game.vw.init();
 });

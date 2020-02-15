@@ -52,15 +52,17 @@ Promise
 		random_xy: () => ({ x: rand(0, sizex), y: rand(0, sizey), }),
 	}))(size, size);
 
+	let handle = {};
+
 	let viewCell = rd.parse(`
 		<span draggable='true'
-			rd_on_click='handle.click(vm, ev)'
-			rd_on_dragend='handle.dragend(vm, ev)'
-			rd_on_dragenter='handle.dragenter(vm, ev)'
+			rd_on_click='env.handle.click(vm, ev)'
+			rd_on_dragend='env.handle.dragend(vm, ev)'
+			rd_on_dragenter='env.handle.dragenter(vm, ev)'
 			rd_on_dragexit='{}'
 			rd_on_dragleave='{}'
 			rd_on_dragover='{ ev.dataTransfer.dropEffect = "move"; }'
-			rd_on_dragstart='handle.dragstart(vm, ev)'
+			rd_on_dragstart='env.handle.dragstart(vm, ev)'
 			rd_on_drop='{}'
 			style='
 				background: { vm.selected ? env.palette[2] : "#DDDDDD" };
@@ -75,7 +77,7 @@ Promise
 				<rd_if v='vm != null'>{ env.icons[vm] }</rd_if>
 			</rd_map>
 		</span>
-	`, { ...fiveinarow, });
+	`, { ...fiveinarow, handle, });
 
 	let viewCells = rd.parse(`
 		<tr>
@@ -107,7 +109,7 @@ Promise
 					</rd_for>
 				</table>
 			</rd_map>
-			<!-- button rd_on_click='handle.close()'>close</button -->
+			<!-- button rd_on_click='env.handle.close()'>close</button -->
 			<rd_map v='vm.notification'>
 				<div style='
 					background: { env.palette[vm.c] };
@@ -121,11 +123,10 @@ Promise
 				</div>
 			</rd_map>
 		</span>
-	`, { ...fiveinarow, viewCells, });
+	`, { ...fiveinarow, handle, viewCells, });
 
 	let game = fiveinarow.game(cc, view);
-
-	globalThis.handle = game.handle;
+	for (let [k, v] of Object.entries(game.handle)) handle[k] = v;
 
 	game.vw.init();
 });
