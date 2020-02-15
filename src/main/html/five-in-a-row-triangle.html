@@ -81,7 +81,7 @@ Promise
                                         position: relative;
                                         width: 0;'>
                                         <span style='height: 50px; transform: translate(0, -100%);'>
-                                            <span style='align-items: flex-end; display: flex; height: 0;'>{ icons[vm.d] }</span>
+                                            <span style='align-items: flex-end; display: flex; height: 0;'>{ env.icons[vm.d] }</span>
                                         </span>
                                     </span>
                                 </rd_map>
@@ -98,7 +98,7 @@ Promise
                                         position: relative;
                                         width: 0;'>
                                         <span style='height: 50px; transform: translate(0, 100%);'>
-                                            <span style='align-items: flex-start; display: flex; height: 0;'>{ icons[vm.d] }</span>
+                                            <span style='align-items: flex-start; display: flex; height: 0;'>{ env.icons[vm.d] }</span>
                                         </span>
                                     </span>
                                 </rd_map>
@@ -108,9 +108,7 @@ Promise
                 </rd_for>
             </rd_map>
         </span>
-    `);
-
-	for (let [k, v] of Object.entries(fiveinarow)) globalThis[k] = v;
+    `, { ...fiveinarow, });
 
     renderAgain(view, vm => ({
         board: {
