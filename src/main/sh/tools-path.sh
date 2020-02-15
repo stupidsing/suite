@@ -91,7 +91,7 @@ tp_vscode() {
 }
 
 tp_wdp() {
-	PKG=wine sh -c 'dpkg -l ${PKG} > /dev/null || sudo apt install -y --force-yes --no-install-recommends ${PKG}'
+	PKG=wine sh -c "dpkg -l \${PKG} > /dev/null || sudo apt install -y --force-yes --no-install-recommends \${PKG}"
 	wine $(cchs "echo https://stammel.net/spiele/wdp/wdp.exe" @curl)
 }
 '

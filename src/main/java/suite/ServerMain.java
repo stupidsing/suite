@@ -126,7 +126,7 @@ public class ServerMain {
 		return hh.dispatchPath(PerMap //
 				.<String, Handler> empty() //
 				.put("api", hat.handleFilter("role", hh.data("in good shape"))) //
-				.put("hello", hh.data("Hello world")) //
+				.put("hello", hh.data("hello world")) //
 				.put("html", hh.dir(Paths.get(FileUtil.suiteDir() + "/src/main/html"))) //
 				.put("path", hh.dir(Tmp.root)) //
 				.put("site", hh.session(authenticate, handlerSite)) //
