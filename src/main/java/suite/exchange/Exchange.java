@@ -65,8 +65,7 @@ public class Exchange {
 
 				var position = new Position() {
 					public Order close() {
-						var buySell = participant.getPosition(symbolPositionId).getBuySell();
-						return closePartially(buySell);
+						return closePartially(participant.getPosition(symbolPositionId).getBuySell());
 					}
 
 					public synchronized Order closePartially(int buySell) {
@@ -95,7 +94,7 @@ public class Exchange {
 						var orderx = lob.new Order(key, price, buySell);
 						orderx.xBuySell = order0.xBuySell;
 
-						if (Math.abs(orderx.xBuySell) < Math.abs(orderx.buySell)) {
+						if (Math.abs(orderx.xBuySell) < Math.abs(orderx.buySell)) { // not yet fullfilled
 							update(order0, orderx);
 							participant.putOrder(orderId, orderx);
 							return key;

@@ -2,6 +2,7 @@ package suite.exchange;
 
 import static java.lang.Math.min;
 
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
@@ -25,6 +26,7 @@ public class LimitOrderBook<Key> {
 		public float price; // NaN for market order
 		public int buySell; // total quantity, signed, negative for sell
 		public int xBuySell; // executed quantity, signed, negative for sell
+		public long expiry = Long.MAX_VALUE;
 		public Order prev = this, next = this;
 
 		public Order() {
@@ -42,6 +44,10 @@ public class LimitOrderBook<Key> {
 
 		private boolean isMarket() {
 			return Float.isNaN(price);
+		}
+
+		private boolean isValid(long now) {
+			return now < expiry;
 		}
 
 		private float price() {
@@ -92,6 +98,7 @@ public class LimitOrderBook<Key> {
 	}
 
 	private void match() {
+		long now = System.currentTimeMillis();
 		Entry<Float, Order> be, se;
 		var bp = Float.NaN;
 		var sp = Float.NaN;
@@ -106,27 +113,34 @@ public class LimitOrderBook<Key> {
 			if (!bq.isEmpty() && !sq.isEmpty() && sp <= bp) {
 				var bo = bq.prev;
 				var so = sq.prev;
+				int quantity;
 
-				if (bo.isMarket() && so.isMarket())
-					; // follows previous price
-				else if (bo.isMarket())
-					lastPrice = sp;
-				else if (so.isMarket())
-					lastPrice = bp;
-				else
-					lastPrice = (bp + sp) * .5f;
+				if (!bo.isValid(now))
+					dispose(buyOrders, be, bo);
+				else if (!so.isValid(now))
+					dispose(sellOrders, se, so);
+				else {
+					if (bo.isMarket() && so.isMarket())
+						; // follows previous price
+					else if (bo.isMarket())
+						lastPrice = sp;
+					else if (so.isMarket())
+						lastPrice = bp;
+					else
+						lastPrice = (bp + sp) * .5f;
 
-				var quantity = min(bo.buySell - bo.xBuySell, so.xBuySell - so.buySell);
+					quantity = min(bo.buySell - bo.xBuySell, so.xBuySell - so.buySell);
 
-				bo.xBuySell += quantity;
-				so.xBuySell -= quantity;
+					bo.xBuySell += quantity;
+					so.xBuySell -= quantity;
 
-				listener.handleOrderFulfilled(bo, lastPrice, +quantity);
-				listener.handleOrderFulfilled(so, lastPrice, -quantity);
-				total += quantity;
+					listener.handleOrderFulfilled(bo, lastPrice, +quantity);
+					listener.handleOrderFulfilled(so, lastPrice, -quantity);
+					total += quantity;
 
-				disposeIfCompleted(buyOrders, be, bo);
-				disposeIfCompleted(sellOrders, se, so);
+					disposeIfCompleted(buyOrders, be, bo);
+					disposeIfCompleted(sellOrders, se, so);
+				}
 			} else
 				break;
 		}
@@ -134,13 +148,16 @@ public class LimitOrderBook<Key> {
 		listener.handleQuoteChanged(bp, sp, total);
 	}
 
-	private void disposeIfCompleted(TreeMap<Float, Order> orders, Entry<Float, Order> entry, Order order) {
-		if (order.buySell == order.xBuySell) {
-			listener.handleOrderDisposed(order);
-			order.delete();
-			if (entry.getValue().isEmpty())
-				orders.remove(entry.getKey());
-		}
+	private void disposeIfCompleted(Map<Float, Order> orders, Entry<Float, Order> entry, Order order) {
+		if (order.buySell == order.xBuySell)
+			dispose(orders, entry, order);
+	}
+
+	private void dispose(Map<Float, Order> orders, Entry<Float, Order> entry, Order order) {
+		listener.handleOrderDisposed(order);
+		order.delete();
+		if (entry.getValue().isEmpty())
+			orders.remove(entry.getKey());
 	}
 
 }
