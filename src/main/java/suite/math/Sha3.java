@@ -98,7 +98,7 @@ public class Sha3 {
 
 			while (stateIndex1 < stateIndexEnd) {
 				var l = 0l;
-				for (int shift = 0; shift < 64; shift += 8)
+				for (var shift = 0; shift < 64; shift += 8)
 					l |= Byte.toUnsignedLong(in[inIndex++]) << shift;
 				states[stateIndex1++] ^= l;
 			}
