@@ -3,7 +3,7 @@ package suite.ebnf;
 import java.io.IOException;
 import java.io.StringReader;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import primal.Verbs.Build;
 import suite.ebnf.lr.LrParse;

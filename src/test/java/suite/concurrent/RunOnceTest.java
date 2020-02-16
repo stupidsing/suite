@@ -1,12 +1,12 @@
 package suite.concurrent;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static primal.statics.Fail.fail;
 import static suite.util.Streamlet_.forInt;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import primal.Verbs.New;
 import primal.Verbs.Sleep;

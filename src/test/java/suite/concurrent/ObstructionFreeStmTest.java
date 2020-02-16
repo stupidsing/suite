@@ -10,8 +10,8 @@ import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import suite.concurrent.stm.ObstructionFreeStm;
 import suite.concurrent.stm.ObstructionFreeStm.Memory;
@@ -89,7 +89,7 @@ public class ObstructionFreeStmTest {
 		}
 	}
 
-	@Before
+	@BeforeEach
 	public void before() {
 		random.setSeed(0);
 	}

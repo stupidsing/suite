@@ -2,7 +2,7 @@ package suite.math.linalg;
 
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import primal.primitive.adt.pair.DblObjPair;
 import suite.math.Math_;

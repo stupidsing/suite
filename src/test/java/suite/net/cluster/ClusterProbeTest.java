@@ -1,6 +1,6 @@
 package suite.net.cluster;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static primal.statics.Rethrow.ex;
 import static suite.util.Streamlet_.forInt;
 
@@ -10,7 +10,7 @@ import java.net.InetSocketAddress;
 import java.time.LocalDateTime;
 import java.util.Map;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import primal.MoreVerbs.Read;
 import primal.Verbs.Sleep;

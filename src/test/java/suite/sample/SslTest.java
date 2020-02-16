@@ -10,7 +10,7 @@ import java.io.PrintWriter;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 // https://docs.oracle.com/javase/8/docs/technotes/guides/security/jsse/samples/sockets/client/SSLSocketClient.java
 public class SslTest {

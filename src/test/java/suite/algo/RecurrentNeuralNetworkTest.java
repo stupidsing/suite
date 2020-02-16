@@ -1,6 +1,6 @@
 package suite.algo;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import suite.math.linalg.Matrix;
 import suite.math.linalg.Vector;

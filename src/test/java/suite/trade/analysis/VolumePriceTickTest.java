@@ -1,6 +1,6 @@
 package suite.trade.analysis;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import suite.math.linalg.Vector;
 import suite.trade.Time;

@@ -1,11 +1,11 @@
 package suite.lcs;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Collections;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import primal.primitive.IntMoreVerbs.ReadInt;
 

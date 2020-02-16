@@ -1,6 +1,6 @@
 package suite.fs;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static primal.statics.Fail.fail;
 
 import java.io.File;
@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import primal.Nouns.Tmp;
 import primal.Nouns.Utf8;

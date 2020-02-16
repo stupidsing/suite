@@ -1,14 +1,14 @@
 package suite.btree;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.io.IOException;
 import java.util.Comparator;
 import java.util.Random;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import primal.Nouns.Tmp;
 import primal.Verbs.Compare;
@@ -30,7 +30,7 @@ public class B_TreeTest {
 	private Serialize ser = Singleton.me.serialize;
 	private int[] keys;
 
-	@Before
+	@BeforeEach
 	public void before() {
 		keys = AsInt.array(nKeys, i -> i);
 	}

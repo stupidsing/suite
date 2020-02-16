@@ -2,7 +2,7 @@ package suite.game;
 
 import static java.lang.Math.exp;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import primal.MoreVerbs.Read;
 import primal.primitive.FltMoreVerbs.ReadFlt;

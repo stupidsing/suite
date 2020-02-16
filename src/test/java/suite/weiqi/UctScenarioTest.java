@@ -1,9 +1,9 @@
 package suite.weiqi;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import suite.uct.ShuffleUtil;
 import suite.uct.UctSearch;
@@ -12,7 +12,7 @@ import suite.weiqi.Weiqi.Occupation;
 
 public class UctScenarioTest {
 
-	@Before
+	@BeforeEach
 	public void before() {
 		Weiqi.adjustSize(7);
 	}

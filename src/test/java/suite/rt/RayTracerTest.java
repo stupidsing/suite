@@ -7,7 +7,7 @@ import java.util.Set;
 
 import javax.imageio.ImageIO;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import primal.Nouns.Tmp;
 import primal.Verbs.Get;

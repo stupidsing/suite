@@ -2,12 +2,12 @@ package suite.nn;
 
 import static java.lang.Math.abs;
 import static java.lang.Math.sqrt;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static suite.util.Streamlet_.forInt;
 
 import java.util.Random;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import primal.MoreVerbs.Read;
 import suite.math.Tanh;

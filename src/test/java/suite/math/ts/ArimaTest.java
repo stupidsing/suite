@@ -5,7 +5,7 @@ import static suite.util.Streamlet_.forInt;
 import java.util.Arrays;
 import java.util.Random;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import primal.primitive.adt.pair.DblObjPair;
 import primal.primitive.fp.AsFlt;

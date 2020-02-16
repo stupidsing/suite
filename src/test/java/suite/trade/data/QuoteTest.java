@@ -2,7 +2,7 @@ package suite.trade.data;
 
 import java.util.Map;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import primal.MoreVerbs.Read;
 import primal.fp.Funs.Fun;

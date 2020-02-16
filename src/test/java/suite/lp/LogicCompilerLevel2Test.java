@@ -3,7 +3,7 @@ package suite.lp;
 import java.io.IOException;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import suite.Suite;
 import suite.lp.Configuration.ProverCfg;

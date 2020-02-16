@@ -1,10 +1,10 @@
 package suite.math.ts;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import suite.trade.Time;
 import suite.trade.TimeRange;

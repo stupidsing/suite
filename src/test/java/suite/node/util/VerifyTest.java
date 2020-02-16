@@ -2,7 +2,7 @@ package suite.node.util;
 
 import static primal.statics.Fail.fail;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import primal.fp.Funs.Fun;
 import primal.fp.Funs2.Fun2;

@@ -1,6 +1,6 @@
 package suite.exchange;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import suite.math.Math_;
 

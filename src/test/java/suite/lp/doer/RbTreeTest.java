@@ -1,11 +1,11 @@
 package suite.lp.doer;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import suite.Suite;
 import suite.lp.search.InterpretedProverBuilder;

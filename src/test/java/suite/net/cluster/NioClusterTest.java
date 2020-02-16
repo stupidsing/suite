@@ -1,7 +1,7 @@
 package suite.net.cluster;
 
 import static java.util.Map.entry;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -9,7 +9,7 @@ import java.net.InetSocketAddress;
 import java.time.LocalDateTime;
 import java.util.Map;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import primal.Verbs.Sleep;
 import primal.Verbs.Start;

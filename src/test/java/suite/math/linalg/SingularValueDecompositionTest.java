@@ -1,6 +1,6 @@
 package suite.math.linalg;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import suite.util.To;
 

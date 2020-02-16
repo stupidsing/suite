@@ -1,12 +1,12 @@
 package suite.weiqi;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.text.DecimalFormat;
 import java.util.Random;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import primal.Verbs.Compare;
 import suite.cfg.Defaults;
@@ -19,7 +19,7 @@ import suite.weiqi.Weiqi.Occupation;
 
 public class UctTest {
 
-	@Before
+	@BeforeEach
 	public void before() {
 		Weiqi.adjustSize(7);
 	}

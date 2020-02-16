@@ -1,9 +1,9 @@
 package suite.funp;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static primal.statics.Fail.fail;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import primal.os.Log_;
 import primal.primitive.adt.Bytes;

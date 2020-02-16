@@ -1,6 +1,6 @@
 package suite.trade.data;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import primal.Verbs.Sleep;
 import primal.streamlet.Streamlet;

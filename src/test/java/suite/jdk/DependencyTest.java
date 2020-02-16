@@ -8,7 +8,7 @@ import java.util.ArrayDeque;
 import java.util.HashMap;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import primal.MoreVerbs.Read;
 import primal.Verbs.Compare;

@@ -3,7 +3,7 @@ package suite.text;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import primal.Verbs.ReadString;
 import primal.Verbs.Sort;

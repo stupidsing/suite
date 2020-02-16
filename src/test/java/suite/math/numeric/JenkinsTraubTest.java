@@ -3,7 +3,7 @@ package suite.math.numeric;
 import static java.lang.Math.max;
 import static primal.statics.Fail.fail;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import suite.math.Complex;
 

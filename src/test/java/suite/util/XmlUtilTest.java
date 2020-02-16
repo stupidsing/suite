@@ -3,7 +3,7 @@ package suite.util;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.xml.sax.SAXException;
 
 import primal.Verbs.ReadFile;

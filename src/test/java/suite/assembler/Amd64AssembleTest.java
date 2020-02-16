@@ -1,18 +1,15 @@
 package suite.assembler;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import primal.primitive.adt.Bytes;
 import primal.primitive.puller.IntPuller;
-import suite.assembler.Amd64;
 import suite.assembler.Amd64.Insn;
-import suite.assembler.Amd64Assemble;
-import suite.assembler.Amd64Mode;
 
 public class Amd64AssembleTest {
 

@@ -6,7 +6,7 @@ import static suite.util.Streamlet_.forInt;
 
 import java.util.Arrays;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import primal.os.Log_;
 import primal.primitive.FltMoreVerbs.ReadFlt;

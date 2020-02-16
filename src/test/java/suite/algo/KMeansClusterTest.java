@@ -1,13 +1,13 @@
 package suite.algo;
 
 import static java.util.Map.entry;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static suite.util.Streamlet_.forInt;
 
 import java.util.Map;
 import java.util.Random;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import primal.MoreVerbs.Read;
 import primal.fp.Funs.Source;

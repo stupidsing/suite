@@ -2,7 +2,7 @@ package suite.math.linalg;
 
 import java.util.Random;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import suite.util.To;
 

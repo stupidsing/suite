@@ -1,11 +1,11 @@
 package suite.persistent;
 
 import static java.lang.Math.min;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Random;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import primal.Verbs.ReadString;
 import primal.primitive.fp.AsChr;

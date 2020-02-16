@@ -1,6 +1,6 @@
 package suite.http;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import primal.MoreVerbs.Pull;
 import suite.primitive.Bytes_;

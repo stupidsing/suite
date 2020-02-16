@@ -1,13 +1,13 @@
 package suite.jdk.gen;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Map;
 import java.util.function.BiPredicate;
 
 import org.apache.bcel.generic.Type;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Iterate;
