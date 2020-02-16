@@ -86,7 +86,6 @@ public class P4GenerateCode {
 	private int is = Funp_.integerSize;
 	private int ps = Funp_.pointerSize;
 	private int pushSize = Funp_.pushSize;
-	private OpReg[] integerRegs = Funp_.integerRegs;
 	private OpReg[] pointerRegs = Funp_.pointerRegs;
 	private OpReg[] pushRegs = Funp_.pushRegs;
 
@@ -266,32 +265,19 @@ public class P4GenerateCode {
 				if ((number = expr.cast(FunpNumber.class)) != null)
 					return returnOp(amd64.imm(number.i.value(), toSize));
 				else if (frSize != toSize) {
-					var byteReg = pop1 != null && pop1.reg < 4 ? pop1 : rs.get(bs);
-					var integerReg = integerRegs[byteReg.reg];
-					var pointerReg = pointerRegs[byteReg.reg];
+					var reg = (pop0 != null && pop0.reg < 4 ? pop0 : rs.get(1)).reg;
+					var frReg = amd64.regs(frSize)[reg];
+					var toReg = amd64.regs(toSize)[reg];
 
 					if (fr == Coerce.BYTE)
-						compileByte(expr, pushRegs[byteReg.reg]);
-					else if (fr == Coerce.NUMBER)
-						compileSpec(expr, integerReg);
-					else if (fr == Coerce.NUMBERP || fr == Coerce.POINTER)
-						compileSpec(expr, pointerReg);
+						compileByte(expr, pushRegs[reg]);
 					else
-						fail();
+						compileSpec(expr, frReg);
 
 					if (Funp_.isSigned(fr) && Funp_.isSigned(to) && frSize < toSize)
-						em.emit(frSize < 4 ? Insn.MOVSX : Insn.MOVSXD, //
-								amd64.regs(toSize)[byteReg.reg], //
-								amd64.regs(frSize)[byteReg.reg]);
+						em.emit(frSize < 4 ? Insn.MOVSX : Insn.MOVSXD, toReg, frReg);
 
-					if (to == Coerce.BYTE)
-						return returnOp(byteReg);
-					else if (to == Coerce.NUMBER)
-						return returnOp(integerReg);
-					else if (to == Coerce.NUMBERP || to == Coerce.POINTER)
-						return returnOp(pointerReg);
-					else
-						return fail();
+					return returnOp(toReg);
 				} else
 					return compile(expr);
 			})).applyIf(FunpData.class, f -> f.apply(pairs -> {
@@ -983,8 +969,8 @@ public class P4GenerateCode {
 			// em.emitJump(Insn.JZ, label));
 		}
 
-		private void compileByte(Funp n, Operand op0) {
-			compileAllocStack(op0.size, FunpNumber.ofNumber(0), List.of(op0), (c1, s) -> {
+		private void compileByte(Funp n, Operand opTarget) {
+			compileAllocStack(opTarget.size, FunpNumber.ofNumber(0), List.of(opTarget), (c1, s) -> {
 				var fd1 = c1.fd;
 				c1.compileAssign(n, frame(fd1, fd1 + 1));
 				return new CompileOut();
