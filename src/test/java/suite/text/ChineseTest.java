@@ -10,6 +10,7 @@ public class ChineseTest {
 
 	@Test
 	public void test() {
+		assertEquals("", chinese.cj("diu"));
 		assertEquals("成", chinese.cj("ihs"));
 		assertEquals("成", chinese.cj("ihs1"));
 		assertEquals("成事在人", chinese.cjs("ihs jlln klg o "));
