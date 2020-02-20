@@ -87,7 +87,6 @@ public class PopupMain {
 		Listen.componentResized(frame).wire(refresh, refresh::run);
 
 		refresh.run();
-		System.in.read();
 		return true;
 	}
 
