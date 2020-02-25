@@ -4,11 +4,11 @@ curl -sL https://raw.githubusercontent.com/stupidsing/suite/master/src/main/sh/c
 
 echo '
 GIT_HD=$(cchs "echo git@github.com:stupidsing/home-data.git" @git-clone)
-GOROOT=$(cchs "echo https://dl.google.com/go/go1.13.4.linux-amd64.tar.gz" @curl @tar-zxf @dir)
-GRADLE_HOME=$(cchs "echo https://services.gradle.org/distributions/gradle-6.0.1-bin.zip" @curl @unzip @dir)
+GOROOT=$(cchs "echo https://dl.google.com/go/go1.13.8.linux-amd64.tar.gz" @curl @tar-zxf @dir)
+GRADLE_HOME=$(cchs "echo https://services.gradle.org/distributions/gradle-6.2.1-bin.zip" @curl @unzip @dir)
 JAVA_HOME=$(cchs "curl -sL https://jdk.java.net/13/" "grep https://download.java.net/ | grep -v sha256 | grep linux | grep \\.tar\\.gz" "cut -d\\\" -f2" @curl @tar-zxf @dir)
-M2_HOME=$(cchs "echo http://ftp.cuhk.edu.hk/pub/packages/apache.org/maven/maven-3/3.6.2/binaries/apache-maven-3.6.2-bin.tar.gz" @curl @tar-zxf @dir)
-NODE_HOME=$(cchs "echo https://nodejs.org/dist/v12.14.1/node-v12.14.1-linux-x64.tar.xz" @curl @tar-xf @dir)
+M2_HOME=$(cchs "echo http://ftp.cuhk.edu.hk/pub/packages/apache.org/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.tar.gz" @curl @tar-zxf @dir)
+NODE_HOME=$(cchs "echo https://nodejs.org/dist/v12.16.1/node-v12.16.1-linux-x64.tar.xz" @curl @tar-xf @dir)
 PATH=${GIT_HD:9}/bin:${GOROOT}/bin:${GRADLE_HOME}/bin:${JAVA_HOME}/bin:${M2_HOME}/bin:${NODE_HOME}/bin:${PATH}
 
 tp_android_avdmanager() {
@@ -42,6 +42,16 @@ tp_eclipse() {
 
 tp_eclipse_cpp() {
 	$(cchs "echo http://ftp.jaist.ac.jp/pub/eclipse/technology/epp/downloads/release/2019-12/R/eclipse-cpp-2019-12-R-linux-gtk-x86_64.tar.gz" @curl @tar-zxf @dir)/eclipse $@
+}
+
+tp_gradle4() {
+	D=$(cchs "echo https://downloads.gradle-dn.com/distributions/gradle-4.10.3-bin.zip" @curl @unzip @dir)
+	GRADLE_HOME=${D} ${D}/bin/gradle $@
+}
+
+tp_gradle5() {
+	D=$(cchs "echo https://downloads.gradle-dn.com/distributions/gradle-5.6.4-bin.zip" @curl @unzip @dir)
+	GRADLE_HOME=${D} ${D}/bin/gradle $@
 }
 
 tp_jdk8() {
