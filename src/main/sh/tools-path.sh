@@ -36,12 +36,21 @@ tp_cordova() {
 	$(cchs "echo npm-i-cordova" @mkdir "@do-cd ${NODE_HOME}/bin/npm install cordova")/node_modules/.bin/cordova $@
 }
 
+tp_dpkg_i() {
+	PKG=${1} sh -c "dpkg -l \${PKG} > /dev/null || sudo apt install -y --force-yes --no-install-recommends \${PKG}"
+}
+
 tp_eclipse() {
 	$(cchs "echo http://ftp.jaist.ac.jp/pub/eclipse/technology/epp/downloads/release/2019-12/R/eclipse-java-2019-12-R-linux-gtk-x86_64.tar.gz" @curl @tar-zxf @dir)/eclipse $@
 }
 
 tp_eclipse_cpp() {
 	$(cchs "echo http://ftp.jaist.ac.jp/pub/eclipse/technology/epp/downloads/release/2019-12/R/eclipse-cpp-2019-12-R-linux-gtk-x86_64.tar.gz" @curl @tar-zxf @dir)/eclipse $@
+}
+
+tp_gh() {
+	# https://github.com/cli/cli/releases/latest
+	$(cchs "echo https://github.com/cli/cli/releases/download/v0.5.7/gh_0.5.7_linux_amd64.tar.gz" @curl @tar-zxf @dir)/bin/gh $@
 }
 
 tp_gradle4() {
@@ -54,14 +63,20 @@ tp_gradle5() {
 	GRADLE_HOME=${D} ${D}/bin/gradle $@
 }
 
+tp_hkex_securities_list() {
+	tp_dpkg_i gnumeric
+	cchs "curl -sL https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx" "ssconvert -I Gnumeric_Excel:xlsx -T Gnumeric_stf:stf_csv fd://0 fd://1"
+}
+
 tp_jdk8() {
+	tp_dpkg_i openjdk-8-jdk
 	echo /usr/lib/jvm/java-8-openjdk-amd64
 }
 
 tp_jdk10() {
 	echo > /tmp/install-certs.sh
 	for P in dl dl-ssl; do
-	echo "cat /dev/null | openssl s_client -showcerts -connect ${P}.google.com:443 -servername ${P}.google.com | openssl x509 | ./bin/keytool -import -keystore lib/security/cacerts -storepass changeit -noprompt -alias ${P}_google_com" >> /tmp/install-certs.sh
+		echo "cat /dev/null | openssl s_client -showcerts -connect ${P}.google.com:443 -servername ${P}.google.com | openssl x509 | ./bin/keytool -import -keystore lib/security/cacerts -storepass changeit -noprompt -alias ${P}_google_com" >> /tmp/install-certs.sh
 	done
 	cchs "echo https://download.java.net/openjdk/jdk10/ri/openjdk-10+44_linux-x64_bin_ri.tar.gz" @curl @tar-zxf @dir "@do-cd sh /tmp/install-certs.sh"
 }
@@ -79,13 +94,13 @@ tp_mirrormagic() {
 	$(cchs "echo https://www.artsoft.org/RELEASES/unix/mirrormagic/mirrormagic-3.0.0.tar.gz" @curl @tar-zxf @dir "@do-cd make")/mirrormagic $@
 }
 
-tp_slant() {
-	$(cchs "echo https://www.chiark.greenend.org.uk/~sgtatham/puzzles/puzzles.tar.gz" @curl @tar-zxf @dir "@do-cd ./configure" "@do-cd make")/slant $@
-}
-
 tp_rocksndiamonds() {
 	# https://www.artsoft.org/rocksndiamonds/news/
 	$(cchs "echo https://www.artsoft.org/RELEASES/unix/rocksndiamonds/rocksndiamonds-4.1.3.0.tar.gz" @curl @tar-zxf @dir "@do-cd make")/rocksndiamonds
+}
+
+tp_slant() {
+	$(cchs "echo https://www.chiark.greenend.org.uk/~sgtatham/puzzles/puzzles.tar.gz" @curl @tar-zxf @dir "@do-cd ./configure" "@do-cd make")/slant $@
 }
 
 tp_suite() {
@@ -101,7 +116,7 @@ tp_vscode() {
 }
 
 tp_wdp() {
-	PKG=wine sh -c "dpkg -l \${PKG} > /dev/null || sudo apt install -y --force-yes --no-install-recommends \${PKG}"
+	tp_dpkg_i wine
 	wine $(cchs "echo https://stammel.net/spiele/wdp/wdp.exe" @curl)
 }
 '
