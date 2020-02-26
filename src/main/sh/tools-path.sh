@@ -63,6 +63,10 @@ tp_gradle5() {
 	GRADLE_HOME=${D} ${D}/bin/gradle $@
 }
 
+tp_group_add() {
+	G=${1} sh -c "groups | grep \${G} > /dev/null || sudo adduser \${USER} \${G}"
+}
+
 tp_hkex_securities_list() {
 	tp_dpkg_i gnumeric
 	cchs "curl -sL https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx" "ssconvert -I Gnumeric_Excel:xlsx -T Gnumeric_stf:stf_csv fd://0 fd://1"
