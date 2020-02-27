@@ -43,7 +43,7 @@ cchs() {
 			DOCKERDIR=${DCACHE}/${DOCKERNAME}
 			mkdir -p ${DOCKERDIR}
 			cp ${F} ${DOCKERDIR}/Dockerfile
-			docker-build -t cchs/${DOCKERNAME} ${DOCKERDIR}
+			docker build -t cchs/${DOCKERNAME} ${DOCKERDIR}
 			F=$(cchf "printf cchs/${DOCKERNAME}")
 		elif [ "${CMD:0:7}" == "@git-cd" ]; then
 			D=$(cat ${F})
