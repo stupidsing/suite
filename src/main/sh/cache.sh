@@ -39,11 +39,8 @@ cchs() {
 			D=$(cat ${F})
 			F=$(cchf "V=${D:0:8}; cd ${D:9}/; ${CMD:11} 1>&2; echo ${D}")
 		elif [ "${CMD}" == "@docker-build" ]; then
-			DOCKERNAME=$(cat "${F}" | md5sum - | cut -d" " -f1)
-			DOCKERDIR=${DCACHE}/${DOCKERNAME}
-			mkdir -p ${DOCKERDIR}
-			cp ${F} ${DOCKERDIR}/Dockerfile
-			F=$(cchf "docker build -t cchs/${DOCKERNAME} ${DOCKERDIR} 1>&2 && printf cchs/${DOCKERNAME}")
+			DOCKERNAME=${CMD:13:}-$(cat "${F}" | md5sum - | cut -d" " -f1)
+			F=$(cchf "cat ${F} | docker build -q -t cchs/${DOCKERNAME} -")
 		elif [ "${CMD:0:7}" == "@git-cd" ]; then
 			D=$(cat ${F})
 			F=$(cchf "V=${D:0:8}; cd ${D:9}/; ${CMD:8}")
