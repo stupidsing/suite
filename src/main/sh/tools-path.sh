@@ -32,6 +32,11 @@ tp_android_studio() {
 	$(cchs "curl -sL https://developer.android.com/studio" "grep dl.google.com | grep linux.tar.gz" "head -1" "cut -d\\\" -f2" @curl @tar-zxf @dir)/bin/studio.sh $@
 }
 
+tp_cdk() {
+	# https://github.com/aws/aws-cdk
+	$(cchs "echo npm-i-aws-cdk" @mkdir "@do-cd npm install aws-cdk")/node_modules/.bin/cdk $@
+}
+
 tp_cordova() {
 	$(cchs "echo npm-i-cordova" @mkdir "@do-cd ${NODE_HOME}/bin/npm install cordova")/node_modules/.bin/cordova $@
 }
@@ -46,6 +51,10 @@ tp_eclipse() {
 
 tp_eclipse_cpp() {
 	$(cchs "echo http://ftp.jaist.ac.jp/pub/eclipse/technology/epp/downloads/release/2019-12/R/eclipse-cpp-2019-12-R-linux-gtk-x86_64.tar.gz" @curl @tar-zxf @dir)/eclipse $@
+}
+
+tp_eksctl() {
+	$(cchs "echo https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" @curl @tar-zxf)/eksctl $@
 }
 
 tp_gh() {
