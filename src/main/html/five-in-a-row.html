@@ -22,11 +22,9 @@ let eatdirs = [[0, -1], [-1, 0], [-1, +1], [+1, +1],];
 let movedirs = [[-1, 0], [+1, 0], [0, -1], [0, +1],];
 
 let usp = new URLSearchParams(window.location.search);
-let colorsp = usp.get('colors');
 let sizep = usp.get('size');
 
-let size = sizep != null ? +sizep : 7;
-let nStoneTypes = colorsp != null ? +colorsp : 5;
+let nStoneTypes = +usp.get('colors') || 5;
 
 Promise
 .all(['frp.js', 'pq.js',].map(loadsrcscript))
@@ -50,7 +48,9 @@ Promise
 		},
 		inbounds: (x, y) => 0 <= x && x < sizex && 0 <= y && y < sizey,
 		random_xy: () => ({ x: rand(0, sizex), y: rand(0, sizey), }),
-	}))(size, size);
+	}))(
+		+usp.get('sizex') || sizep || 8,
+		+usp.get('sizey') || sizep || 7);
 
 	let handle = {};
 

@@ -48,8 +48,8 @@ let usp = new URLSearchParams(window.location.search);
 let colorsp = usp.get('colors');
 let sizep = usp.get('size');
 
-let size = sizep != null ? +sizep : 7;
-let nStoneTypes = colorsp != null ? +colorsp : 5;
+let size = +sizep || 7;
+let nStoneTypes = +colorsp || 5;
 
 Promise
 .all(['frp.js', 'pq.js',].map(loadsrcscript))
