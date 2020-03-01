@@ -32,6 +32,10 @@ tp_android_studio() {
 	$(cchs "curl -sL https://developer.android.com/studio" "grep dl.google.com | grep linux.tar.gz" "head -1" "cut -d\\\" -f2" @curl @tar-zxf @dir)/bin/studio.sh $@
 }
 
+tp_apt_i() {
+	PKG=${1} sh -c "dpkg -l \${PKG} > /dev/null || sudo apt install -y --force-yes --no-install-recommends \${PKG}"
+}
+
 tp_cdk() {
 	# https://github.com/aws/aws-cdk
 	$(cchs "echo npm-i-aws-cdk" @mkdir "@do-cd npm install aws-cdk")/node_modules/.bin/cdk $@
@@ -39,10 +43,6 @@ tp_cdk() {
 
 tp_cordova() {
 	$(cchs "echo npm-i-cordova" @mkdir "@do-cd ${NODE_HOME}/bin/npm install cordova")/node_modules/.bin/cordova $@
-}
-
-tp_dpkg_i() {
-	PKG=${1} sh -c "dpkg -l \${PKG} > /dev/null || sudo apt install -y --force-yes --no-install-recommends \${PKG}"
 }
 
 tp_eclipse() {
@@ -77,12 +77,12 @@ tp_group_add() {
 }
 
 tp_hkex_securities_list() {
-	tp_dpkg_i gnumeric
+	tp_apt_i gnumeric
 	cchs "curl -sL https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx" "ssconvert -I Gnumeric_Excel:xlsx -T Gnumeric_stf:stf_csv fd://0 fd://1"
 }
 
 tp_jdk8() {
-	tp_dpkg_i openjdk-8-jdk
+	tp_apt_i openjdk-8-jdk
 	echo /usr/lib/jvm/java-8-openjdk-amd64
 }
 
@@ -129,7 +129,7 @@ tp_vscode() {
 }
 
 tp_wdp() {
-	tp_dpkg_i wine
+	tp_apt_i wine
 	wine $(cchs "echo https://stammel.net/spiele/wdp/wdp.exe" @curl)
 }
 '
