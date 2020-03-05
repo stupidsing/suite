@@ -361,6 +361,16 @@ let render = evalscript('fun.js').then(({ read, }) => {
 			cudf);
 	};
 
+	let rd_switch = routes => (vm0, vm1, cudf) => {
+		let key0 = vm0 != null ? vm0.k : null;
+		let key1 = vm1 != null ? vm1.k : null;
+		if (key0 != key1) {
+			if (key0 != null) routes[key0](vm0.v, null, cudf);
+			if (key1 != null) routes[key1](null, vm1.v, cudf);
+		} else if (key0 != null)
+			routes[key0](vm0.v, vm1.v, cudf);
+	};
+
 	let rdb_tagf = (elementf, decorfs) => {
 		let decor = decorf => rdb_tagf(elementf, [...decorfs, decorf,]);
 		let attrs = attrs => decor(rdt_attrs(attrs));
@@ -442,6 +452,11 @@ let render = evalscript('fun.js').then(({ read, }) => {
 					return rd_ifElse(parseExpr(node0.getAttribute('v')), parseDomNodes(node0.childNodes), (vm0, vm1, cudf) => {});
 				else if (node0.localName == 'rd_map')
 					return rd_map(parseExpr(node0.getAttribute('v')), parseDomNodes(node0.childNodes));
+				else if (node0.localName == 'rd_switch')
+					return rd_switch(Object.fromEntries(Array
+						.from(node0.childNodes)
+						.filter(n => n.nodeType == Node.ELEMENT_NODE)
+						.map(n => [n.getAttribute('k'), parseDom(n),])));
 				else {
 					let name = node0.localName;
 					let as = {}, cs = parseDomNodes(node0.childNodes);

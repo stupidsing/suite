@@ -18,7 +18,7 @@ Promise.resolve({})
 .then(ns => evalscript('fun.js').then(m => ({ ...ns, fun: m, })))
 .then(ns => evalscript('render.js').then(m => ({ ...ns, render: m, })))
 .then(ns => {
-	let { fiveinarow, fun: { lens, read, }, render: { rd, renderAgain, }, } = ns;
+	let { fun: { lens, read, }, render: { rd, renderAgain, }, } = ns;
 
 	let view0 = rd.parse(`
 		<span style='font-family: sans-serif;'>

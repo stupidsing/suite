@@ -1,0 +1,47 @@
+<meta charset='utf-8'>
+<!--
+file:///home/ywsing/suite/src/main/html/render.html
+-->
+<!DOCTYPE html>
+<html>
+	<body>
+		<div id='target'></div>
+	</body>
+
+	<script src='eval-script.js'></script>
+	<script src='frp.js'></script>
+
+	<script type='text/javascript'>
+'use strict';
+
+Promise.resolve({})
+.then(ns => evalscript('fun.js').then(m => ({ ...ns, fun: m, })))
+.then(ns => evalscript('render.js').then(m => ({ ...ns, render: m, })))
+.then(ns => {
+	let { fun: { lens, read, }, render: { rd, renderAgain, }, } = ns;
+
+	let view = rd.parse(`
+		<span>
+			<rd_switch>
+				<span k='a'>{ vm.a }</span>
+				<span k='b'>{ vm.b }</span>
+				<span k='c'>{ vm.c }</span>
+			</rd_switch>
+		</span>
+	`);
+
+	let sse = [];
+	let t = 0;
+	let vscroll = { start: 0, vms: read().range(0, 256).list(), };
+
+	let upd0 = lens.key('t').apply(t => t + 1);
+	let upd1 = lens.key('vscroll').key('vms').index(3).apply(vm => Math.random().toString());
+
+	renderAgain(view, vm => null);
+	setTimeout(() => renderAgain(view, vm => ({ ...vm, k: 'a', v: { a: 0, }, })), 1 * 1000);
+	setTimeout(() => renderAgain(view, vm => ({ ...vm, k: 'b', v: { b: 'zero', }, })), 2 * 1000);
+	setTimeout(() => renderAgain(view, vm => ({ ...vm, k: 'c', v: { c: 'ZERO', }, })), 3 * 1000);
+});
+
+	</script>
+</html>
