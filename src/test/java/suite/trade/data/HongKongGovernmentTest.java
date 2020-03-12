@@ -14,7 +14,7 @@ public class HongKongGovernmentTest {
 	public void test() {
 		var publicHolidays = hkg.queryPublicHolidays();
 		System.out.println(publicHolidays);
-		assertTrue(publicHolidays.contains(Time.of(2018, 12, 25)));
+		assertTrue(publicHolidays.contains(Time.of(2020, 12, 25)));
 	}
 
 }

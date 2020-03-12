@@ -4,6 +4,9 @@ import static java.util.Map.entry;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -11,6 +14,7 @@ import java.util.Map;
 import primal.MoreVerbs.Fit;
 import primal.MoreVerbs.Read;
 import primal.Verbs.Equals;
+import primal.adt.Pair;
 import primal.primitive.adt.Floats.FloatsBuilder;
 import primal.primitive.adt.Longs.LongsBuilder;
 import suite.node.util.Singleton;
@@ -28,21 +32,28 @@ public class HongKongGovernment {
 	public List<Time> queryPublicHolidays() {
 		var yyyymmdd = DateTimeFormatter.ofPattern("yyyyMMdd", Locale.ENGLISH);
 
-		return Singleton.me.storeCache //
+		var lines = Singleton.me.storeCache //
 				.http("http://www.1823.gov.hk/common/ical/gc/en.ics") //
 				.collect(As::lines) //
 				.map(line -> line.split(":")) //
-				.filter(array -> 2 <= array.length) //
-				.split(array -> Equals.string(array[0], "BEGIN") && Equals.string(array[1], "VEVENT")) //
-				.map(arrays -> Read //
-						.from(arrays) //
-						.map2(array -> array[0], array -> array[1]) //
-						.toMap()) //
-				.map2(map -> map.get("DTSTART;VALUE=DATE"), map -> map.get("SUMMARY")) //
-				.filterKey(s -> s != null) //
-				.keys() //
-				.map(s -> Time.of(LocalDate.parse(s, yyyymmdd).atStartOfDay())) //
-				.toList();
+				.filter(array -> 2 <= array.length);
+
+		var maps = new ArrayDeque<Map<String, String>>();
+		var phs = new ArrayList<Pair<Time, String>>();
+
+		for (var line : lines)
+			if (Equals.string(line[0], "BEGIN")) {
+				maps.push(new HashMap<>());
+			} else if (Equals.string(line[0], "END")) {
+				var map = maps.pop();
+				if (Equals.string(line[1], "VEVENT")) {
+					var date = LocalDate.parse(map.get("DTSTART;VALUE=DATE"), yyyymmdd);
+					phs.add(Pair.of(Time.of(date.atStartOfDay()), map.get("SUMMARY")));
+				}
+			} else
+				maps.peekFirst().put(line[0], line[1]);
+
+		return Read.from(phs).map(Pair::fst).toList();
 	}
 
 	public Map<String, DataSource> queryWeather() {
