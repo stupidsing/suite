@@ -30,7 +30,7 @@ import suite.streamlet.As;
 import suite.util.Memoize;
 import suite.util.RunUtil;
 
-// urxvt -e sh -c 'BASE=~/suite/; java -cp $(cat ${BASE}/target/classpath):${BASE}/target/suite-1.0.jar suite.text.Chinese | xclip -selection c
+// urxvt -e sh -c 'BASE=~/suite/; java -cp $(cat ${BASE}/target/classpath):${BASE}/target/suite-1.0.jar suite.text.Chinese | xclip -selection c'
 public class Chinese {
 
 	private ClipboardUtil cb = new ClipboardUtil();
