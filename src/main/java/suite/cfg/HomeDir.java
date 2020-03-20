@@ -6,6 +6,7 @@ import java.nio.file.Paths;
 import primal.Nouns.Tmp;
 import primal.Verbs.Mk;
 import primal.adt.Opt;
+import primal.os.Env;
 
 public class HomeDir {
 
@@ -26,7 +27,7 @@ public class HomeDir {
 	private static Path getHomePath() {
 		return Opt //
 				.<String> none() //
-				.ifNone(Opt.of(System.getenv("HOME"))) //
+				.ifNone(Opt.of(Env.HOME)) //
 				.ifNone(Opt.of(System.getenv("USERPROFILE"))) //
 				.map(Paths::get) //
 				.or(Tmp.root);

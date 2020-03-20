@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import primal.Verbs.ReadString;
 import primal.adt.FixieArray;
 import primal.fp.Funs.Source;
+import primal.os.Env;
 import suite.Suite;
 import suite.lp.doer.Generalizer;
 import suite.lp.doer.Prover;
@@ -20,7 +21,7 @@ public class Defaults {
 
 	public static int bufferLimit = 65536;
 	public static int nThreads = Runtime.getRuntime().availableProcessors();
-	public static String salt = System.getenv("USER");
+	public static String salt = Env.USER;
 	public static boolean testFlag = false; // for controlled experiments
 
 	public static FixieArray<String> bindSecrets(String pattern) {
