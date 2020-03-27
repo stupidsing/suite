@@ -50,7 +50,7 @@ tp_eclipse() {
 }
 
 tp_eclipse_cpp() {
-	$(cchs "echo http://ftp.jaist.ac.jp/pub/eclipse/technology/epp/downloads/release/2019-12/R/eclipse-cpp-2019-12-R-linux-gtk-x86_64.tar.gz" @curl @tar-zxf @dir)/eclipse $@
+	$(cchs "echo http://ftp.jaist.ac.jp/pub/eclipse/technology/epp/downloads/release/2020-03/R/eclipse-cpp-2020-03-R-linux-gtk-x86_64.tar.gz" @curl @tar-zxf @dir)/eclipse $@
 }
 
 tp_eksctl() {
