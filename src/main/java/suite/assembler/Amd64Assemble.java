@@ -557,26 +557,15 @@ public class Amd64Assemble {
 					encode = invalid;
 			else if (instruction.op0 instanceof OpRegSegment) {
 				var sreg = (OpRegSegment) instruction.op0;
-				switch (sreg.sreg) {
-				case 0: // POP ES
-					encode = isLongMode ? invalid : assemble(0x07);
-					break;
-				// case 1: // POP CS, no such thing
-				case 2: // POP SS
-					encode = isLongMode ? invalid : assemble(0x17);
-					break;
-				case 3: // POP DS
-					encode = isLongMode ? invalid : assemble(0x1F);
-					break;
-				case 4: // POP FS
-					encode = new InsnCode(sreg.size, bs(0x0F, 0xA1));
-					break;
-				case 5: // POP GS
-					encode = new InsnCode(sreg.size, bs(0x0F, 0xA9));
-					break;
-				default:
-					encode = invalid;
-				}
+				encode = switch (sreg.sreg) {
+				case 0 -> isLongMode ? invalid : assemble(0x07); // POP ES
+				case 1 -> invalid; // POP CS, no such thing
+				case 2 -> isLongMode ? invalid : assemble(0x17); // POP SS
+				case 3 -> isLongMode ? invalid : assemble(0x1F); // POP DS
+				case 4 -> new InsnCode(sreg.size, bs(0x0F, 0xA1)); // POP FS
+				case 5 -> new InsnCode(sreg.size, bs(0x0F, 0xA9)); // POP GS
+				default -> invalid;
+				};
 			} else
 				encode = invalid;
 			break;
@@ -597,28 +586,15 @@ public class Amd64Assemble {
 					encode = invalid;
 			else if (instruction.op0 instanceof OpRegSegment) {
 				var sreg = (OpRegSegment) instruction.op0;
-				switch (sreg.sreg) {
-				case 0: // PUSH ES
-					encode = isLongMode ? invalid : assemble(0x06);
-					break;
-				case 1: // PUSH CS
-					encode = isLongMode ? invalid : assemble(0x0E);
-					break;
-				case 2: // PUSH SS
-					encode = isLongMode ? invalid : assemble(0x16);
-					break;
-				case 3: // PUSH DS
-					encode = isLongMode ? invalid : assemble(0x1E);
-					break;
-				case 4: // PUSH FS
-					encode = new InsnCode(sreg.size, bs(0x0F, 0xA0));
-					break;
-				case 5: // PUSH GS
-					encode = new InsnCode(sreg.size, bs(0x0F, 0xA8));
-					break;
-				default:
-					encode = invalid;
-				}
+				encode = switch (sreg.sreg) {
+				case 0 -> isLongMode ? invalid : assemble(0x06); // PUSH ES
+				case 1 -> isLongMode ? invalid : assemble(0x0E); // PUSH CS
+				case 2 -> isLongMode ? invalid : assemble(0x16); // PUSH SS
+				case 3 -> isLongMode ? invalid : assemble(0x1E); // PUSH DS
+				case 4 -> new InsnCode(sreg.size, bs(0x0F, 0xA0)); // PUSH FS
+				case 5 -> new InsnCode(sreg.size, bs(0x0F, 0xA8)); // PUSH GS
+				default -> invalid;
+				};
 			} else
 				encode = invalid;
 			break;

@@ -35,25 +35,19 @@ public class Weiqi {
 		EMPTY, BLACK, WHITE;
 
 		public Occupation opponent() {
-			switch (this) {
-			case BLACK:
-				return WHITE;
-			case WHITE:
-				return BLACK;
-			default:
-				return this;
-			}
+			return switch (this) {
+			case BLACK -> WHITE;
+			case WHITE -> BLACK;
+			default -> this;
+			};
 		}
 
 		public String display() {
-			switch (this) {
-			case BLACK:
-				return "X";
-			case WHITE:
-				return "O";
-			default:
-				return ".";
-			}
+			return switch (this) {
+			case BLACK -> "X";
+			case WHITE -> "O";
+			default -> ".";
+			};
 		}
 	}
 

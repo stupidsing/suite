@@ -90,19 +90,12 @@ public class Grapher {
 
 		var nodes = Read //
 				.from(gns) //
-				.map(gn -> {
-					switch (gn.type) {
-					case DICT:
-						return Dict.of();
-					case TERM:
-						return gn.terminal;
-					case TREE:
-						return Tree.of(gn.op, null, null);
-					case TUPLE:
-						return Tuple.of(new Node[gn.children.size()]);
-					default:
-						return fail();
-					}
+				.map(gn -> switch (gn.type) {
+				case DICT -> Dict.of();
+				case TERM -> gn.terminal;
+				case TREE -> Tree.of(gn.op, null, null);
+				case TUPLE -> Tuple.of(new Node[gn.children.size()]);
+				default -> fail();
 				}) //
 				.toList();
 
@@ -243,22 +236,13 @@ public class Grapher {
 			if (type == ReadType.TERM) {
 				var ch = (char) dis.readByte();
 
-				switch (ch) {
-				case 'a':
-					terminal = Atom.of(dis.readUTF());
-					break;
-				case 'i':
-					terminal = Int.of(dis.readInt());
-					break;
-				case 'r':
-					terminal = new Reference();
-					break;
-				case 's':
-					terminal = new Str(dis.readUTF());
-					break;
-				default:
-					terminal = fail("unknown type " + ch);
-				}
+				terminal = switch (ch) {
+				case 'a' -> Atom.of(dis.readUTF());
+				case 'i' -> Int.of(dis.readInt());
+				case 'r' -> new Reference();
+				case 's' -> new Str(dis.readUTF());
+				default -> fail("unknown type " + ch);
+				};
 			} else
 				terminal = null;
 
@@ -327,29 +311,24 @@ public class Grapher {
 	public String toString() {
 		return Build.string(sb -> {
 			for (var gn : gns) {
-				String s;
-				switch (gn.type) {
-				case DICT:
-					s = Read //
-							.from(gn.children) //
-							.map(p -> p.t0 + ":" + p.t1 + ", ") //
-							.toJoinedString("dict(", ", ", ")");
-					break;
-				case TERM:
-					s = Formatter.dump(gn.terminal);
-					break;
-				case TREE:
-					s = "tree(" + gn.children.get(0).t1 + gn.op.name_() + gn.children.get(1).t1 + ")";
-					break;
-				case TUPLE:
-					s = Read //
-							.from(gn.children) //
-							.map(p -> p.t1 + ", ") //
-							.toJoinedString("tuple(", ", ", ")");
-					break;
-				default:
-					s = fail();
-				}
+				var s = switch (gn.type) {
+				case DICT -> Read //
+						.from(gn.children) //
+						.map(p -> p.t0 + "->" + p.t1 + ", ") //
+						.toJoinedString("dict(", ", ", ")");
+
+				case TERM -> Formatter.dump(gn.terminal);
+
+				case TREE -> "tree(" + gn.children.get(0).t1 + gn.op.name_() + gn.children.get(1).t1 + ")";
+
+				case TUPLE -> Read //
+						.from(gn.children) //
+						.map(p -> p.t1 + ", ") //
+						.toJoinedString("tuple(", ", ", ")");
+
+				default -> fail();
+				};
+
 				sb.append(s + "\n");
 			}
 

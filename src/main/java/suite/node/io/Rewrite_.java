@@ -85,22 +85,13 @@ public class Rewrite_ {
 		public final Node node;
 
 		public NodeWrite(ReadType type, Node terminal, Operator op, List<Pair<Node, Node>> children) {
-			switch (type) {
-			case DICT:
-				node = Dict.of(Read.from2(children).mapValue(Reference::of).toMap());
-				break;
-			case TERM:
-				node = terminal;
-				break;
-			case TREE:
-				node = Tree.of(op, children.get(0).v, children.get(1).v);
-				break;
-			case TUPLE:
-				node = Tuple.of(Read.from(children).map(p -> p.v).toArray(Node.class));
-				break;
-			default:
-				node = fail();
-			}
+			node = switch (type) {
+			case DICT -> Dict.of(Read.from2(children).mapValue(Reference::of).toMap());
+			case TERM -> terminal;
+			case TREE -> Tree.of(op, children.get(0).v, children.get(1).v);
+			case TUPLE -> Tuple.of(Read.from(children).map(p -> p.v).toArray(Node.class));
+			default -> fail();
+			};
 		}
 	}
 
