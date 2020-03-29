@@ -5,6 +5,18 @@ file:///home/ywsing/suite/src/main/html/render.html
 <!DOCTYPE html>
 <html>
 	<body>
+		<style>
+			.overlay {
+				background-color: white;
+				bottom: 0;
+				left: 0;
+				position: fixed;
+				right: 0;
+				top: 0;
+				opacity: 0.8;
+				z-index: 9998;
+			}
+		</style>
 		<div id='target'></div>
 	</body>
 
@@ -22,16 +34,21 @@ Promise.resolve({})
 
 	let fetchBase = { cache: 'no-cache', credentials: 'omit', redirect: 'follow', referrer: 'no-referrer', };
 
+	let view;
+
 	let login = ({ username, password, }) => {
 		console.log('login()');
 
-		return fetch('../token', {
+		return Promise
+		.resolve()
+		.then(() => renderAgain(view, vm => ({ ...vm, overlay: { isOverlay: true, }, })))
+		.then(() => fetch('../token', {
 			...fetchBase,
 			mode: 'no-cors',
 			body: JSON.stringify({ username, password, }),
 			headers: { 'Content-Type': 'application/json', },
 			method: 'POST',
-		})
+		}))
 		.then(response => {
 			if (response.ok) return response.json(); else throw response.statusText;
 		})
@@ -61,38 +78,52 @@ Promise.resolve({})
 		.catch(error => {
 			console.error('login()', error);
 			renderAgain(view, vm => ({ ...vm, token: error, }));
-		});
+		})
+		.finally(() => renderAgain(view, vm => ({ ...vm, overlay: { isOverlay: false, }, })));
 	};
 
-	let view;
-
-	let componentLogin = (path => {
+	let component = (path, initvm, xhtml, envf) => {
 		let lens_ = lens.key(path);
 		let change = f => renderAgain(view, lens_.apply(f));
+		let init = () => renderAgain(view, vm => ({ ...vm, [path]: initvm, }));
+		let view_ = rd.parse(`<rd_map v='vm.${path}'>${xhtml}</rd_map>`, envf(change));
+		return { init, view: view_, };
+	};
 
-		let view_ = rd.parse(`
-			<rd_map v='vm.${path}'>
-				<font face='Monospac821 BT, Monaco, Consolas'>
-					<form name='login'>
-						Username <input rd_on_input='env.setUsername(ev.target.value)' value='{ vm.username }' type='text' autofocus='autofocus' /><br />
-						Password <input rd_on_input='env.setPassword(ev.target.value)' value='{ vm.password }' type='password' /><br />
-						<input type='button' value='Login' rd_on_click='env.handleLogin()' /><br />
-						token: { vm.token }
-					</form>
-				</font>
-			</rd_map>
-		`, {
+	let componentLogin = component(
+		'login',
+		{ username: '', password: '', },
+		`
+			<font face='Monospac821 BT, Monaco, Consolas'>
+				<form name='login'>
+					Username <input rd_on_input='env.setUsername(ev.target.value)' value='{ vm.username }' type='text' autofocus='autofocus' /><br />
+					Password <input rd_on_input='env.setPassword(ev.target.value)' value='{ vm.password }' type='password' /><br />
+					<input type='button' value='Login' rd_on_click='env.handleLogin()' /><br />
+					token: { vm.token }
+				</form>
+			</font>
+		`,
+		change => ({
 			setUsername: username => change(vm => ({ ...vm, username, })),
 			setPassword: password => change(vm => ({ ...vm, password, })),
-			handleLogin: () => change(vm => { login(vm); return { username: '', password: '', }; }),
-		});
+			handleLogin: () => change(vm => {
+				login(vm);
+				return { username: '', password: '', };
+			}),
+		}),
+	);
 
-		return { initvm: { username: '', password: '', }, view: view_, };
-	})('login');
+	let componentOverlay = component(
+		'overlay',
+		{ isOverlay: false, },
+		`<div class='{ vm.isOverlay ? "overlay" : "" }'></div>`,
+		change => ({}),
+	);
 
 	let view0 = rd.parse(`
 		<span style='font-family: sans-serif;'>
 			<rd_component v='env.viewLogin' />
+			<rd_component v='env.viewOverlay' />
 
 			<rd_map v='vm.message'>
 				<p style='font-weight: bold;'>
@@ -140,7 +171,10 @@ Promise.resolve({})
 			<button rd_on_click='messager(true)'>Message</button>
 			<button rd_on_click='closer()'>Close</button>
 		</span>
-	`, { viewLogin: componentLogin.view, });
+	`, {
+		viewLogin: componentLogin.view,
+		viewOverlay: componentOverlay.view,
+	});
 
 	let view1 = rd.span().children(
 		rd.map(vm => vm.message,
@@ -185,7 +219,8 @@ Promise.resolve({})
 	let interval0 = setInterval(() => renderAgain(view, upd0), 1000);
 	let interval1 = setInterval(() => renderAgain(view, upd1), 3000);
 
-	renderAgain(view, vm => ({ ...vm, login: componentLogin.initvm, }));
+	componentLogin.init();
+	componentOverlay.init();
 	renderAgain(view, vm => ({ ...vm, sse, t, vscroll, message: 'hello world0', fruits: ['banana',], }));
 	renderAgain(view, vm => ({ ...vm, sse, t, vscroll, message: 'hello world1', fruits: ['apple', 'banana',], }));
 	renderAgain(view, vm => ({ ...vm, sse, t, vscroll, message: 'hello world2', fruits: ['apple', 'orange', 'orange', 'banana',], }));
