@@ -165,15 +165,13 @@ public class Amd64Interpret {
 
 				switch (instruction.insn) {
 				case ADD -> assign.f(setFlags(source0 + source1));
-				case ALIGN -> {
-				}
+				case ALIGN -> jumpIf(false, 0);
 				case AND -> assign.f(setFlags(source0 & source1));
 				case CALL -> {
 					push(eip);
-					eip = labelAddressByInsnIndex.get(source0);
+					jumpIf(true, labelAddressByInsnIndex.get(source0));
 				}
-				case CLD -> {
-				}
+				case CLD -> jumpIf(false, 0);
 				case CMP -> c = Long.compare(source0, source1);
 				case CMPSB -> cmpsb();
 				case CMPSD -> cmpsd();
@@ -187,69 +185,38 @@ public class Amd64Interpret {
 					regs[edx] = mod;
 				}
 				case INC -> assign.f(source0 + 1);
-				case IMUL -> {
-					if (instruction.op2 instanceof OpNone)
-						assign.f(setFlags(source0 * source1));
-					else
-						assign.f(setFlags(source1 * fetch.apply(instruction.op2)));
-				}
+				case IMUL -> assign.f(setFlags(instruction.op2 instanceof OpNone //
+						? source0 * source1 //
+						: source1 * fetch.apply(instruction.op2)));
 				case INT -> {
 					p0 = (int) (regs[eax] & 0xFF);
 					p1 = (int) regs[ebx];
 					p2 = (int) regs[ecx];
 					p3 = (int) regs[edx];
-					if ((byte) source0 == -128)
-						rc = switch (p0) {
-						case 0x01 -> {
-							return p1;
-						}
-						case 0x03 -> io.read(p1, p2, p3);
-						case 0x04 -> io.write(p1, p2, p3);
-						case 0x5A -> { // map
-							var size = mem.getInt(index(p1) + 4);
-							yield size < posData.length() ? baseData.s : fail();
-						}
-						default -> fail("invalid int 80h call " + regs[eax]);
-						};
-					else
-						rc = fail();
+					rc = (byte) source0 == -128 ? switch (p0) {
+					case 0x01 -> {
+						return p1;
+					}
+					case 0x03 -> io.read(p1, p2, p3);
+					case 0x04 -> io.write(p1, p2, p3);
+					case 0x5A -> { // map
+						var size = mem.getInt(index(p1) + 4);
+						yield size < posData.length() ? baseData.s : fail();
+					}
+					default -> fail("invalid int 80h call " + regs[eax]);
+					} : fail();
 					regs[eax] = rc;
 				}
-				case JE -> {
-					if (c == 0)
-						eip = labelAddressByInsnIndex.get(source0);
-				}
-				case JMP -> eip = labelAddressByInsnIndex.get(source0);
-				case JG -> {
-					if (0 < c)
-						eip = labelAddressByInsnIndex.get(source0);
-				}
-				case JGE -> {
-					if (0 <= c)
-						eip = labelAddressByInsnIndex.get(source0);
-				}
-				case JL -> {
-					if (c < 0)
-						eip = labelAddressByInsnIndex.get(source0);
-				}
-				case JLE -> {
-					if (c <= 0)
-						eip = labelAddressByInsnIndex.get(source0);
-				}
-				case JNE -> {
-					if (c != 0)
-						eip = labelAddressByInsnIndex.get(source0);
-				}
-				case JNZ -> {
-					if (c != 0)
-						eip = labelAddressByInsnIndex.get(source0);
-				}
-				case JZ -> {
-					if (c == 0)
-						eip = labelAddressByInsnIndex.get(source0);
-				}
-				case LABEL -> {
-				}
+				case JE -> jumpIf(c == 0, labelAddressByInsnIndex.get(source0));
+				case JMP -> jumpIf(true, labelAddressByInsnIndex.get(source0));
+				case JG -> jumpIf(0 < c, labelAddressByInsnIndex.get(source0));
+				case JGE -> jumpIf(0 <= c, labelAddressByInsnIndex.get(source0));
+				case JL -> jumpIf(c < 0, labelAddressByInsnIndex.get(source0));
+				case JLE -> jumpIf(c <= 0, labelAddressByInsnIndex.get(source0));
+				case JNE -> jumpIf(c != 0, labelAddressByInsnIndex.get(source0));
+				case JNZ -> jumpIf(c != 0, labelAddressByInsnIndex.get(source0));
+				case JZ -> jumpIf(c == 0, labelAddressByInsnIndex.get(source0));
+				case LABEL -> jumpIf(false, 0);
 				case LEA -> assign.f(address((OpMem) op1));
 				case LOG -> Log_.info("value = " + Format.hex8(source0));
 				case MOV -> assign.f(source1);
@@ -258,14 +225,12 @@ public class Amd64Interpret {
 				case MOVSX -> assign.f(source1);
 				case MOVSXD -> assign.f(source1);
 				case NEG -> assign.f(-source0);
-				case NOP -> {
-				}
+				case NOP -> jumpIf(false, 0);
 				case NOT -> assign.f(~source0);
 				case OR -> assign.f(setFlags(source0 | source1));
 				case POP -> assign.f(pop());
 				case PUSH -> push(source0);
-				case REMARK -> {
-				}
+				case REMARK -> jumpIf(false, 0);
 				case REP -> {
 					r = getNextRepeatInsn(instructions);
 					while (0 < regs[ecx]--)
@@ -304,17 +269,13 @@ public class Amd64Interpret {
 					p1 = (int) regs[edi];
 					p2 = (int) regs[esi];
 					p3 = (int) regs[edx];
-					if (p0 == 0x00)
-						rc = io.read(p1, p2, p3);
-					else if (p0 == 0x01)
-						rc = io.write(p1, p2, p3);
-					else if (p0 == 0x09) // map
-						rc = p2 < posData.length() ? baseData.s : fail();
-					else if (p0 == 0x3C) // exit
-						return (int) p1;
-					else
-						rc = fail("invalid syscall " + regs[eax]);
-					regs[eax] = rc;
+					regs[eax] = switch (p0) {
+					case 0x00 -> io.read(p1, p2, p3);
+					case 0x01 -> io.write(p1, p2, p3);
+					case 0x09 -> p2 < posData.length() ? baseData.s : fail(); // map
+					case 0x3C -> (int) p1; // exit
+					default -> fail("invalid syscall " + regs[eax]);
+					};
 				}
 				case XOR -> assign.f(setFlags(source0 ^ source1));
 				default -> fail("unknown instruction " + instruction.insn);
@@ -327,15 +288,15 @@ public class Amd64Interpret {
 	}
 
 	private Runnable getNextRepeatInsn(List<Instruction> instructions) {
-		Insn insn = instructions.get(eip++).insn;
-		Runnable r = null;
-		r = insn == Insn.CMPSB ? this::cmpsb : r;
-		r = insn == Insn.CMPSD ? this::cmpsd : r;
-		r = insn == Insn.CMPSQ ? this::cmpsq : r;
-		r = insn == Insn.MOVSB ? this::movsb : r;
-		r = insn == Insn.MOVSD ? this::movsd : r;
-		r = insn == Insn.MOVSQ ? this::movsq : r;
-		return r != null ? r : fail();
+		return switch (instructions.get(eip++).insn) {
+		case CMPSB -> this::cmpsb;
+		case CMPSD -> this::cmpsd;
+		case CMPSQ -> this::cmpsq;
+		case MOVSB -> this::movsb;
+		case MOVSD -> this::movsd;
+		case MOVSQ -> this::movsq;
+		default -> fail();
+		};
 	}
 
 	private void cmpsb() {
@@ -383,6 +344,11 @@ public class Amd64Interpret {
 		var i = trim(mem.getLong(index(regs[esp])), Funp_.pushSize);
 		regs[esp] += Funp_.pushSize;
 		return i;
+	}
+
+	private void jumpIf(boolean b, int target) {
+		if (b)
+			eip = target;
 	}
 
 	private long setFlags(long value) {
