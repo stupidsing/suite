@@ -181,63 +181,47 @@ public class TopDownParse {
 	}
 
 	private Parser build(Grammar eg) {
-		Parser parser, g;
-		List<Parser> parsers;
-
-		switch (eg.type) {
-		case AND___:
-			parsers = buildChildren(eg);
-			parser = (parse, st) -> {
+		return switch (eg.type) {
+		case AND___ -> {
+			var parsers = buildChildren(eg);
+			yield (parse, st) -> {
 				var o = Puller.of(st);
 				for (var g_ : parsers)
 					o = o.concatMap(st_ -> st_.pr(parse, g_));
 				return o;
 			};
-			break;
-		case ENTITY:
-			parser = buildEntity(eg.content);
-			break;
-		case EXCEPT:
+		}
+		case ENTITY -> buildEntity(eg.content);
+		case EXCEPT -> {
 			var parser0 = build(eg.children.get(0));
 			var parser1 = build(eg.children.get(1));
-			parser = (parse, st) -> st.p(parse, parser0).filter(st1 -> {
+			yield (parse, st) -> st.p(parse, parser0).filter(st1 -> {
 				String in1 = parse.in.substring(st.pos, st1.pos);
 				return new State(null, 0, null, 0).p(new Parse(in1), parser1).count() == 0;
 			});
-			break;
-		case NAMED_:
-			parser = deepen(build(eg.children.get(0)), eg.content);
-			break;
-		case ONCE__:
-			g = build(eg.children.get(0));
-			parser = (parse, st) -> Puller.of(st.pr(parse, g).take(1));
-			break;
-		case OPTION:
-			g = build(eg.children.get(0));
-			parser = (parse, st) -> st.pr(parse, g).cons(st);
-			break;
-		case OR____:
-			parsers = buildChildren(eg);
-			parser = (parse, st) -> Puller.of(parsers).concatMap(g_ -> st.pr(parse, g_));
-			break;
-		case REPT0_:
-			parser = buildRepeat(eg, true);
-			break;
-		case REPT0H:
-			parser = buildRepeatHeadRecursion(eg);
-			break;
-		case REPT1_:
-			parser = buildRepeat(eg, false);
-			break;
-		case STRING:
-			var e = expect.string(eg.content);
-			parser = skipWhitespaces((parse, st) -> parse.expect(st, e, st.pos));
-			break;
-		default:
-			parser = null;
 		}
-
-		return parser;
+		case NAMED_ -> deepen(build(eg.children.get(0)), eg.content);
+		case ONCE__ -> {
+			var g = build(eg.children.get(0));
+			yield (parse, st) -> Puller.of(st.pr(parse, g).take(1));
+		}
+		case OPTION -> {
+			var g = build(eg.children.get(0));
+			yield (parse, st) -> st.pr(parse, g).cons(st);
+		}
+		case OR____ -> {
+			var parsers = buildChildren(eg);
+			yield (parse, st) -> Puller.of(parsers).concatMap(g_ -> st.pr(parse, g_));
+		}
+		case REPT0_ -> buildRepeat(eg, true);
+		case REPT0H -> buildRepeatHeadRecursion(eg);
+		case REPT1_ -> buildRepeat(eg, false);
+		case STRING -> {
+			var e = expect.string(eg.content);
+			yield skipWhitespaces((parse, st) -> parse.expect(st, e, st.pos));
+		}
+		default -> null;
+		};
 	}
 
 	private List<Parser> buildChildren(Grammar eg) {
@@ -274,7 +258,7 @@ public class TopDownParse {
 		var g = build(eg.children.get(0));
 
 		return (parse, st) -> {
-			Puller<State> states = Puller.of(new Source<>() {
+			var states = Puller.<State> of(new Source<>() {
 				private State state_ = st;
 				private Deque<Puller<State>> pullers = new ArrayDeque<>();
 
@@ -304,7 +288,6 @@ public class TopDownParse {
 				else
 					return fail("entity " + entity + " not found");
 			};
-
 		return parser1;
 	}
 

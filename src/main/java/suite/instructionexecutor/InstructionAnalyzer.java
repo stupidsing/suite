@@ -223,9 +223,9 @@ public class InstructionAnalyzer {
 		while ((instruction = source.g()) != null)
 			switch (instruction.insn) {
 			case ASSIGNFRAMEREG -> {
-				if (instruction.op1 == 0 && instruction.op2 == returnReg) {
+				if (instruction.op1 == 0 && instruction.op2 == returnReg)
 					returnReg = instruction.op0;
-				} else
+				else
 					return false;
 			}
 			case LEAVE_________ -> {
