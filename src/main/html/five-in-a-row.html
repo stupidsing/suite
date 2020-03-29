@@ -56,13 +56,13 @@ Promise
 
 	let viewCell = rd.parse(`
 		<span draggable='true'
-			rd_on_click='env.handle.click(vm, ev)'
-			rd_on_dragend='env.handle.dragend(vm, ev)'
-			rd_on_dragenter='env.handle.dragenter(vm, ev)'
+			rd_on_click='env.handle.click(ev, vm)'
+			rd_on_dragend='env.handle.dragend(ev, vm)'
+			rd_on_dragenter='env.handle.dragenter(ev, vm)'
 			rd_on_dragexit='{}'
 			rd_on_dragleave='{}'
 			rd_on_dragover='{ ev.dataTransfer.dropEffect = "move"; }'
-			rd_on_dragstart='env.handle.dragstart(vm, ev)'
+			rd_on_dragstart='env.handle.dragstart(ev, vm)'
 			rd_on_drop='{}'
 			style='
 				background: { vm.selected ? env.palette[2] : "#DDDDDD" };

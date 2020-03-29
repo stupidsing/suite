@@ -20,16 +20,75 @@ Promise.resolve({})
 .then(ns => {
 	let { fun: { lens, read, }, render: { rd, renderAgain, }, } = ns;
 
+	let fetchBase = { cache: 'no-cache', credentials: 'omit', redirect: 'follow', referrer: 'no-referrer', };
+
+	let login = vm => {
+		console.log('login()');
+		let { username, password, } = vm;
+
+		return fetch('../token', {
+			...fetchBase,
+			mode: 'no-cors',
+			body: JSON.stringify({ username, password, }),
+			headers: { 'Content-Type': 'application/json', },
+			method: 'POST',
+		})
+		.then(response => {
+			if (response.ok) return response.json(); else throw response.statusText;
+		})
+		.then(json => json.token)
+		.then(token => fetch('../token', {
+			...fetchBase,
+			headers: { 'Authorization': token, },
+			method: 'PATCH',
+		}))
+		.then(response => {
+			if (response.ok) return response.json(); else throw response.statusText;
+		})
+		.then(json => json.token)
+		.then(token => { renderAgain(view, vm => ({ ...vm, token, })); return token; })
+		.then(token => fetch('../api', {
+			...fetchBase,
+			headers: { 'Authorization': token, },
+			method: 'GET',
+		}))
+		.then(response => {
+			if (response.ok) return response.text(); else throw response.statusText;
+		})
+		.then(message => {
+			renderAgain(view, vm => ({ ...vm, message, }));
+			console.log('login() = ', message);
+		})
+		.catch(error => {
+			console.error('login()', error);
+			renderAgain(view, vm => ({ ...vm, token: error, }));
+		});
+	};
+
+	let vmLogin = { username: '', password: '', };
+	let setUsername = username => renderAgain(view, vm => ({ ...vm, login: { ...vm.login, username, }, }));
+	let setPassword = password => renderAgain(view, vm => ({ ...vm, login: { ...vm.login, password, }, }));
+	let handleLogin = () => renderAgain(view, vm => {
+		login(vm.login);
+		return { ...vm, login: { username: '', password: '', }, };
+	});
+
+	let viewLogin = rd.parse(`
+		<font face='Monospac821 BT, Monaco, Consolas'>
+			<form name='login'>
+				Username <input rd_on_input='env.setUsername(ev.target.value)' value='{ vm.username }' type='text' autofocus='autofocus' /><br />
+				Password <input rd_on_input='env.setPassword(ev.target.value)' value='{ vm.password }' type='password' /><br />
+				<input type='button' value='Login' rd_on_click='env.handleLogin()' /><br />
+				token: { vm.token }
+			</form>
+		</font>
+	`, { setUsername, setPassword, handleLogin, });
+
 	let view0 = rd.parse(`
 		<span style='font-family: sans-serif;'>
-			<font face='Monospac821 BT, Monaco, Consolas'>
-				<form name='login'>
-					Username <input id='username' rd_on_input='vm.username = ev.target.value' value='{ vm.username }' type='text' autofocus='autofocus' /><br />
-					Password <input id='password' rd_on_input='vm.password = ev.target.value' value='{ vm.password }' type='password' /><br />
-					<input type='button' value='Login' rd_on_click='login(vm)' /><br />
-					token: { vm.token }
-				</form>
-			</font>
+			<rd_map v='vm.login'>
+				<rd_component v='env.viewLogin' />
+			</rd_map>
 
 			<rd_map v='vm.message'>
 				<p style='font-weight: bold;'>
@@ -77,7 +136,7 @@ Promise.resolve({})
 			<button rd_on_click='messager(true)'>Message</button>
 			<button rd_on_click='closer()'>Close</button>
 		</span>
-	`);
+	`, { viewLogin });
 
 	let view1 = rd.span().children(
 		rd.map(vm => vm.message,
@@ -89,7 +148,7 @@ Promise.resolve({})
 		rd.map(vm => vm.fruits,
 			rd.ul().child(rd.for(vm => vm, rd.li().text().rd())).rd()
 		),
-		rd.tag('button').child(rd.dom(vm => document.createTextNode('Close'))).listen('click', (vm, ev) => close()).rd(),
+		rd.tag('button').child(rd.dom(vm => document.createTextNode('Close'))).listen('click', ev => close()).rd(),
 	).rd();
 
 	let view = rd
@@ -112,51 +171,6 @@ Promise.resolve({})
 		)
 		.rd();
 
-	let fetchBase = { cache: 'no-cache', credentials: 'omit', redirect: 'follow', referrer: 'no-referrer', };
-
-	let login = vm => {
-		console.log('login()');
-		let { username, password, } = vm;
-
-		fetch('../token', {
-			...fetchBase,
-			mode: 'no-cors',
-			body: JSON.stringify({ username, password, }),
-			headers: { 'Content-Type': 'application/json', },
-			method: 'POST',
-		})
-		.then(response => {
-			if (response.ok) return response.json(); else throw response.statusText;
-		})
-		.then(json => json.token)
-		.then(token => fetch('../token', {
-			...fetchBase,
-			headers: { 'Authorization': token, },
-			method: 'PATCH',
-		}))
-		.then(response => {
-			if (response.ok) return response.json(); else throw response.statusText;
-		})
-		.then(json => json.token)
-		.then(token => { renderAgain(view, vm => ({ ...vm, token, })); return token; })
-		.then(token => fetch('../api', {
-			...fetchBase,
-			headers: { 'Authorization': token, },
-			method: 'GET',
-		}))
-		.then(response => {
-			if (response.ok) return response.text(); else throw response.statusText;
-		})
-		.then(message => {
-			renderAgain(view, vm => ({ ...vm, message, }));
-			console.log('login() = ', message);
-		})
-		.catch(error => {
-			console.error('login()', error);
-			renderAgain(view, vm => ({ ...vm, token: error, }));
-		});
-	};
-
 	let sse = [];
 	let t = 0;
 	let vscroll = { start: 0, vms: read().range(0, 256).list(), };
@@ -167,7 +181,7 @@ Promise.resolve({})
 	let interval0 = setInterval(() => renderAgain(view, upd0), 1000);
 	let interval1 = setInterval(() => renderAgain(view, upd1), 3000);
 
-	renderAgain(view, vm => ({ ...vm, username: '', password: '' }));
+	renderAgain(view, vm => ({ ...vm, login: vmLogin, }));
 	renderAgain(view, vm => ({ ...vm, sse, t, vscroll, message: 'hello world0', fruits: ['banana',], }));
 	renderAgain(view, vm => ({ ...vm, sse, t, vscroll, message: 'hello world1', fruits: ['apple', 'banana',], }));
 	renderAgain(view, vm => ({ ...vm, sse, t, vscroll, message: 'hello world2', fruits: ['apple', 'orange', 'orange', 'banana',], }));

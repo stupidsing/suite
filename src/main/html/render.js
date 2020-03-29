@@ -77,10 +77,16 @@ let render = evalscript('fun.js').then(({ read, }) => {
 			;
 		else if (vm1 != null)
 			for (let [key, value] of Object.entries(attrsf(vm1)))
-				cudf.childRef.setAttribute(key, value);
+				if (key !== 'value')
+					cudf.childRef.setAttribute(key, value);
+				else
+					cudf.childRef[key] = value;
 		else
 			for (let [key, value] of Object.entries(attrsf(vm0)))
-				cudf.childRef.removeAttribute(key);
+				if (key !== 'value')
+					cudf.childRef.removeAttribute(key);
+				else
+					delete cudf.childRef[key];
 	};
 
 	let rdt_child = childf => (vm0, vm1, cudf) =>
@@ -140,7 +146,7 @@ let render = evalscript('fun.js').then(({ read, }) => {
 					delete els[domc];
 				}
 				if (vm1 != null) {
-					domc.addEventListener(event, els[domc] = ev => cb(vm1, ev));
+					domc.addEventListener(event, els[domc] = ev => cb(ev, vm1));
 				}
 			}
 		};
@@ -398,7 +404,7 @@ let render = evalscript('fun.js').then(({ read, }) => {
 
 		return rdb_tag('div')
 			.style({ height: height + 'px', overflow: 'auto', position: 'absolute', })
-			.listen('scroll', (vm, ev) => cbScroll(Math.floor(ev.target.scrollTop / rowHeight)))
+			.listen('scroll', (ev, vm) => cbScroll(Math.floor(ev.target.scrollTop / rowHeight)))
 			.child(rdb_tag('div')
 				.stylef(vm => ({
 					height: (vm.vms.length - vm.start) * rowHeight + 'px',
@@ -420,7 +426,7 @@ let render = evalscript('fun.js').then(({ read, }) => {
 		};
 
 		let parseExpr = s =>  s != null ? parseLambda('vm', s) : vm => vm;
-		let parseListen = s => parseLambda('(vm, ev)', s);
+		let parseListen = s => parseLambda('(ev, vm)', s);
 
 		let parseTemplate = s => {
 			let pos0 = 0, pos1, pos2;

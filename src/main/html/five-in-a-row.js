@@ -204,7 +204,7 @@ let fiveinarow = Promise.resolve({})
 		let dragtarget = null;
 
 		return {
-			click: (vmc, ev) => {
+			click: (ev, vmc) => {
 				if (!freeze) {
 					let select_xy0 = vw.unselect();
 
@@ -215,9 +215,9 @@ let fiveinarow = Promise.resolve({})
 				}
 			},
 			close: () => vw.change(vm => null),
-			dragend: (vm, ev) => dragsource == dragtarget || vw.movefromto(dragsource, dragtarget),
-			dragenter: (vm, ev) => dragtarget = vm,
-			dragstart: (vm, ev) => {
+			dragend: (ev, vm) => dragsource == dragtarget || vw.movefromto(dragsource, dragtarget),
+			dragenter: (ev, vm) => dragtarget = vm,
+			dragstart: (ev, vm) => {
 				dragsource = vm;
 
 				let dragIcon = document.createElement('span');
