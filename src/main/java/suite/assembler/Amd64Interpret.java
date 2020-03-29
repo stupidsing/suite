@@ -273,7 +273,9 @@ public class Amd64Interpret {
 					case 0x00 -> io.read(p1, p2, p3);
 					case 0x01 -> io.write(p1, p2, p3);
 					case 0x09 -> p2 < posData.length() ? baseData.s : fail(); // map
-					case 0x3C -> (int) p1; // exit
+					case 0x3C -> {
+						return (int) p1; // exit
+					}
 					default -> fail("invalid syscall " + regs[eax]);
 					};
 				}
