@@ -216,6 +216,9 @@ public class Amd64Assemble {
 	}
 
 	public Bytes assemble(boolean isPass2, long offset, Instruction instruction) {
+		var i_op0 = instruction.op0;
+		var i_op1 = instruction.op1;
+		var i_op2 = instruction.op2;
 		Encode encode;
 		OpImm opImm;
 		OpReg opReg;
@@ -224,339 +227,200 @@ public class Amd64Assemble {
 		byte[] bs;
 
 		switch (instruction.insn) {
-		case AAA:
-			encode = assemble(0x37);
-			break;
-		case ADC:
-			encode = assembleRmRegImm(instruction, 0x10, 0x80, 2);
-			break;
-		case ADD:
-			encode = assembleRmRegImm(instruction, 0x00, 0x80, 0);
-			break;
-		case ADDPS:
-			encode = assembleRegRm(instruction.op0, instruction.op1, 0x58).pre(0x0F);
-			break;
-		case ADVANCE:
-			encode = new InsnCode(new byte[(int) (((OpImm) instruction.op0).imm - offset)]);
-			break;
-		case ALIGN:
-			var align = instruction.op0.cast(OpImm.class).imm;
+		case AAA -> encode = assemble(0x37);
+		case ADC -> encode = assembleRmRegImm(instruction, 0x10, 0x80, 2);
+		case ADD -> encode = assembleRmRegImm(instruction, 0x00, 0x80, 0);
+		case ADDPS -> encode = assembleRegRm(i_op0, i_op1, 0x58).pre(0x0F);
+		case ADVANCE -> encode = new InsnCode(new byte[(int) (((OpImm) i_op0).imm - offset)]);
+		case ALIGN -> {
+			var align = i_op0.cast(OpImm.class).imm;
 			var alignm1 = align - 1;
 			bs = new byte[(int) (align - (offset & alignm1) & alignm1)];
 			Arrays.fill(bs, (byte) 0x90);
 			encode = new InsnCode(Bytes.of(bs).toArray());
-			break;
-		case AND:
-			encode = assembleRmRegImm(instruction, 0x20, 0x80, 4);
-			break;
-		case AOP:
-			encode = assemble(0x67);
-			break;
-		case CALL:
-			if ((opImm = instruction.op0.cast(OpImm.class)) != null && 4 <= instruction.op0.size)
+		}
+		case AND -> encode = assembleRmRegImm(instruction, 0x20, 0x80, 4);
+		case AOP -> encode = assemble(0x67);
+		case CALL -> {
+			if ((opImm = i_op0.cast(OpImm.class)) != null && 4 <= i_op0.size)
 				encode = assembleJumpImm(opImm, offset, -1, bs(0xE8));
-			else if (isRm.test(instruction.op0))
-				encode = assemble(instruction.op0, 0xFF, 2);
+			else if (isRm.test(i_op0))
+				encode = assemble(i_op0, 0xFF, 2);
 			else
 				encode = invalid;
-			break;
-		case CLD:
-			encode = assemble(0xFC);
-			break;
-		case CLI:
-			encode = assemble(0xFA);
-			break;
-		case CMP:
-			encode = assembleRmRegImm(instruction, 0x38, 0x80, 7);
-			break;
-		case CMPSB:
-			encode = new InsnCode(1, bs(0xA6));
-			break;
-		case CMPSD:
-			encode = new InsnCode(4, bs(0xA7));
-			break;
-		case CMPSQ:
-			encode = new InsnCode(8, bs(0xA7));
-			break;
-		case CMPSW:
-			encode = new InsnCode(2, bs(0xA7));
-			break;
-		case CMPXCHG:
-			encode = assembleRmReg(instruction, 0xB0, -1, isReg).pre(0x0F);
-			break;
-		case CPUID:
-			encode = new InsnCode(bs(0x0F, 0xA2));
-			break;
-		case D:
-			opImm = (OpImm) instruction.op0;
+		}
+		case CLD -> encode = assemble(0xFC);
+		case CLI -> encode = assemble(0xFA);
+		case CMP -> encode = assembleRmRegImm(instruction, 0x38, 0x80, 7);
+		case CMPSB -> encode = new InsnCode(1, bs(0xA6));
+		case CMPSD -> encode = new InsnCode(4, bs(0xA7));
+		case CMPSQ -> encode = new InsnCode(8, bs(0xA7));
+		case CMPSW -> encode = new InsnCode(2, bs(0xA7));
+		case CMPXCHG -> encode = assembleRmReg(instruction, 0xB0, -1, isReg).pre(0x0F);
+		case CPUID -> encode = new InsnCode(bs(0x0F, 0xA2));
+		case D -> {
+			opImm = (OpImm) i_op0;
 			var bb = new BytesBuilder();
 			appendImm(bb, opImm.size, opImm.imm);
 			encode = new InsnCode(bb.toBytes().toArray());
-			break;
-		case DEC:
-			encode = assembleRm(instruction, isLongMode ? -1 : 0x48, 0xFE, 1);
-			break;
-		case DIV:
-			encode = assembleByteFlag(instruction.op0, 0xF6, 6);
-			break;
-		case DS:
-			bs = new byte[(int) instruction.op0.cast(OpImm.class).imm];
-			var b = (opImm = instruction.op1.cast(OpImm.class)) != null ? opImm.imm : 0x90;
+		}
+		case DEC -> encode = assembleRm(instruction, isLongMode ? -1 : 0x48, 0xFE, 1);
+		case DIV -> encode = assembleByteFlag(i_op0, 0xF6, 6);
+		case DS -> {
+			bs = new byte[(int) i_op0.cast(OpImm.class).imm];
+			var b = (opImm = i_op1.cast(OpImm.class)) != null ? opImm.imm : 0x90;
 			Arrays.fill(bs, (byte) b);
 			encode = new InsnCode(Bytes.of(bs).toArray());
-			break;
-		case HLT:
-			encode = assemble(0xF4);
-			break;
-		case IDIV:
-			encode = assembleByteFlag(instruction.op0, 0xF6, 7);
-			break;
-		case IMM:
-			if ((opImm = instruction.op0.cast(OpImm.class)) != null) {
+		}
+		case HLT -> encode = assemble(0xF4);
+		case IDIV -> encode = assembleByteFlag(i_op0, 0xF6, 7);
+		case IMM -> {
+			if ((opImm = i_op0.cast(OpImm.class)) != null) {
 				var insnCode_ = new InsnCode(mode.opSize, opImm);
 				insnCode_.bs = new byte[] {};
 				encode = insnCode_;
 			} else
 				encode = invalid;
-			break;
-		case IMUL:
-			if (instruction.op1 instanceof OpNone)
-				encode = assembleByteFlag(instruction.op0, 0xF6, 5);
-			else if (instruction.op2 instanceof OpNone)
-				encode = assembleRegRm(instruction.op0, instruction.op1, 0xAF).pre(0x0F);
-			else if ((opImm = instruction.op2.cast(OpImm.class)) != null) {
+		}
+		case IMUL -> {
+			if (i_op1 instanceof OpNone)
+				encode = assembleByteFlag(i_op0, 0xF6, 5);
+			else if (i_op2 instanceof OpNone)
+				encode = assembleRegRm(i_op0, i_op1, 0xAF).pre(0x0F);
+			else if ((opImm = i_op2.cast(OpImm.class)) != null) {
 				if (opImm.size <= 1)
-					encode = assembleRegRm(instruction.op0, instruction.op1, 0x6B).imm(opImm);
-				else if (opImm.size == instruction.op0.size)
-					encode = assembleRegRm(instruction.op0, instruction.op1, 0x69).imm(opImm);
+					encode = assembleRegRm(i_op0, i_op1, 0x6B).imm(opImm);
+				else if (opImm.size == i_op0.size)
+					encode = assembleRegRm(i_op0, i_op1, 0x69).imm(opImm);
 				else
 					encode = invalid;
 			} else
 				encode = invalid;
-			break;
-		case IN:
-			encode = assembleInOut(instruction.op1, instruction.op0, 0xE4);
-			break;
-		case INC:
-			encode = assembleRm(instruction, isLongMode ? -1 : 0x40, 0xFE, 0);
-			break;
-		case INT:
-			if ((opImm = instruction.op0.cast(OpImm.class)) != null) {
+		}
+		case IN -> encode = assembleInOut(i_op1, i_op0, 0xE4);
+		case INC -> encode = assembleRm(instruction, isLongMode ? -1 : 0x40, 0xFE, 0);
+		case INT -> {
+			if ((opImm = i_op0.cast(OpImm.class)) != null)
 				encode = opImm.imm != 3 ? assemble(0xCD).imm(opImm.imm, 1) : assemble(0xCC);
-			} else
+			else
 				encode = invalid;
-			break;
-		case INTO:
-			encode = assemble(0xCE);
-			break;
-		case INVLPG:
-			encode = assemble(instruction.op0, 0x01, 7).pre(0x0F);
-			break;
-		case IRET:
-			encode = assemble(0xCF);
-			break;
-		case JA:
-			encode = assembleJump(instruction, offset, 0x77, bs(0x0F, 0x87));
-			break;
-		case JAE:
-			encode = assembleJump(instruction, offset, 0x73, bs(0x0F, 0x83));
-			break;
-		case JB:
-			encode = assembleJump(instruction, offset, 0x72, bs(0x0F, 0x82));
-			break;
-		case JBE:
-			encode = assembleJump(instruction, offset, 0x76, bs(0x0F, 0x86));
-			break;
-		case JE:
-			encode = assembleJump(instruction, offset, 0x74, bs(0x0F, 0x84));
-			break;
-		case JG:
-			encode = assembleJump(instruction, offset, 0x7F, bs(0x0F, 0x8F));
-			break;
-		case JGE:
-			encode = assembleJump(instruction, offset, 0x7D, bs(0x0F, 0x8D));
-			break;
-		case JL:
-			encode = assembleJump(instruction, offset, 0x7C, bs(0x0F, 0x8C));
-			break;
-		case JLE:
-			encode = assembleJump(instruction, offset, 0x7E, bs(0x0F, 0x8E));
-			break;
-		case JMP:
-			if (isRm.test(instruction.op0) && instruction.op0.size == mode.addrSize)
-				encode = assemble(instruction.op0, 0xFF, 4);
+		}
+		case INTO -> encode = assemble(0xCE);
+		case INVLPG -> encode = assemble(i_op0, 0x01, 7).pre(0x0F);
+		case IRET -> encode = assemble(0xCF);
+		case JA -> encode = assembleJump(instruction, offset, 0x77, bs(0x0F, 0x87));
+		case JAE -> encode = assembleJump(instruction, offset, 0x73, bs(0x0F, 0x83));
+		case JB -> encode = assembleJump(instruction, offset, 0x72, bs(0x0F, 0x82));
+		case JBE -> encode = assembleJump(instruction, offset, 0x76, bs(0x0F, 0x86));
+		case JE -> encode = assembleJump(instruction, offset, 0x74, bs(0x0F, 0x84));
+		case JG -> encode = assembleJump(instruction, offset, 0x7F, bs(0x0F, 0x8F));
+		case JGE -> encode = assembleJump(instruction, offset, 0x7D, bs(0x0F, 0x8D));
+		case JL -> encode = assembleJump(instruction, offset, 0x7C, bs(0x0F, 0x8C));
+		case JLE -> encode = assembleJump(instruction, offset, 0x7E, bs(0x0F, 0x8E));
+		case JMP -> {
+			if (isRm.test(i_op0) && i_op0.size == mode.addrSize)
+				encode = assemble(i_op0, 0xFF, 4);
 			else
 				encode = assembleJump(instruction, offset, 0xEB, bs(0xE9));
-			break;
-		case JNE:
-			encode = assembleJump(instruction, offset, 0x75, bs(0x0F, 0x85));
-			break;
-		case JNO:
-			encode = assembleJump(instruction, offset, 0x71, bs(0x0F, 0x81));
-			break;
-		case JNP:
-			encode = assembleJump(instruction, offset, 0x7B, bs(0x0F, 0x8B));
-			break;
-		case JNS:
-			encode = assembleJump(instruction, offset, 0x79, bs(0x0F, 0x89));
-			break;
-		case JNZ:
-			encode = assembleJump(instruction, offset, 0x75, bs(0x0F, 0x85));
-			break;
-		case JO:
-			encode = assembleJump(instruction, offset, 0x70, bs(0x0F, 0x80));
-			break;
-		case JP:
-			encode = assembleJump(instruction, offset, 0x7A, bs(0x0F, 0x8A));
-			break;
-		case JS:
-			encode = assembleJump(instruction, offset, 0x78, bs(0x0F, 0x88));
-			break;
-		case JZ:
-			encode = assembleJump(instruction, offset, 0x74, bs(0x0F, 0x84));
-			break;
-		case LABEL:
+		}
+		case JNE -> encode = assembleJump(instruction, offset, 0x75, bs(0x0F, 0x85));
+		case JNO -> encode = assembleJump(instruction, offset, 0x71, bs(0x0F, 0x81));
+		case JNP -> encode = assembleJump(instruction, offset, 0x7B, bs(0x0F, 0x8B));
+		case JNS -> encode = assembleJump(instruction, offset, 0x79, bs(0x0F, 0x89));
+		case JNZ -> encode = assembleJump(instruction, offset, 0x75, bs(0x0F, 0x85));
+		case JO -> encode = assembleJump(instruction, offset, 0x70, bs(0x0F, 0x80));
+		case JP -> encode = assembleJump(instruction, offset, 0x7A, bs(0x0F, 0x8A));
+		case JS -> encode = assembleJump(instruction, offset, 0x78, bs(0x0F, 0x88));
+		case JZ -> encode = assembleJump(instruction, offset, 0x74, bs(0x0F, 0x84));
+		case LABEL -> {
 			if (!isPass2)
-				((OpImmLabel) instruction.op0).adjustImm(offset);
+				((OpImmLabel) i_op0).adjustImm(offset);
 			encode = new InsnCode(new byte[0]);
-			break;
-		case LEA:
-			encode = assembleRegRm_(instruction.op0, instruction.op1, 0x8D);
-			break;
-		case LOG:
-			encode = new InsnCode(new byte[0]);
-			break;
-		case LOCK:
-			encode = assemble(0xF0);
-			break;
-		case LOOP:
-			encode = assembleJump(instruction, offset, 0xE2, null);
-			break;
-		case LOOPE:
-			encode = assembleJump(instruction, offset, 0xE1, null);
-			break;
-		case LOOPNE:
-			encode = assembleJump(instruction, offset, 0xE0, null);
-			break;
-		case LOOPNZ:
-			encode = assembleJump(instruction, offset, 0xE0, null);
-			break;
-		case LOOPZ:
-			encode = assembleJump(instruction, offset, 0xE1, null);
-			break;
-		case LGDT:
-			encode = assemble(instruction.op0, 0x01, 2, mode.opSize).pre(0x0F);
-			break;
-		case LIDT:
-			encode = assemble(instruction.op0, 0x01, 3, mode.opSize).pre(0x0F);
-			break;
-		case LTR:
-			encode = assemble(instruction.op0, 0x00, 3, mode.opSize).pre(0x0F);
-			break;
-		case MOV:
-			if ((opImm = instruction.op1.cast(OpImm.class)) != null //
-					&& isRm.test(instruction.op0) //
+		}
+		case LEA -> encode = assembleRegRm_(i_op0, i_op1, 0x8D);
+		case LOG -> encode = new InsnCode(new byte[0]);
+		case LOCK -> encode = assemble(0xF0);
+		case LOOP -> encode = assembleJump(instruction, offset, 0xE2, null);
+		case LOOPE -> encode = assembleJump(instruction, offset, 0xE1, null);
+		case LOOPNE -> encode = assembleJump(instruction, offset, 0xE0, null);
+		case LOOPNZ -> encode = assembleJump(instruction, offset, 0xE0, null);
+		case LOOPZ -> encode = assembleJump(instruction, offset, 0xE1, null);
+		case LGDT -> encode = assemble(i_op0, 0x01, 2, mode.opSize).pre(0x0F);
+		case LIDT -> encode = assemble(i_op0, 0x01, 3, mode.opSize).pre(0x0F);
+		case LTR -> encode = assemble(i_op0, 0x00, 3, mode.opSize).pre(0x0F);
+		case MOV -> {
+			if ((opImm = i_op1.cast(OpImm.class)) != null //
+					&& isRm.test(i_op0) //
 					&& Integer.MIN_VALUE <= opImm.imm && opImm.imm <= Integer.MAX_VALUE //
-					&& (!isNonRexReg.test(instruction.op0) //
-							|| instruction.op0 instanceof OpMem //
-							|| instruction.op0.size == 8))
+					&& (!isNonRexReg.test(i_op0) //
+							|| i_op0 instanceof OpMem //
+							|| i_op0.size == 8))
 				// MOV r/m8, imm8
 				// MOV r/m16, imm16
 				// MOV r/m32, imm32
 				// MOV r/m64, imm32 sign-extended
-				encode = assembleByteFlag(instruction.op0, 0xC6, 0).imm(opImm.imm, min(opImm.size, 4));
+				encode = assembleByteFlag(i_op0, 0xC6, 0).imm(opImm.imm, min(opImm.size, 4));
 			else if ((encode = assembleRmReg(instruction, 0x88)).isValid())
 				;
-			else if (instruction.op0.size == instruction.op1.size)
-				if ((opImm = instruction.op1.cast(OpImm.class)) != null)
-					if (instruction.op0 instanceof OpReg && isNonRexReg.test(instruction.op0))
+			else if (i_op0.size == i_op1.size)
+				if ((opImm = i_op1.cast(OpImm.class)) != null)
+					if (i_op0 instanceof OpReg && isNonRexReg.test(i_op0))
 						encode = assembleReg(instruction, 0xB0 + (opImm.size <= 1 ? 0 : 8)).imm(opImm);
 					else
 						encode = invalid;
-				else if ((opRegSegment = instruction.op0.cast(OpRegSegment.class)) != null)
-					encode = assemble(instruction.op1, 0x8E, opRegSegment.sreg);
-				else if ((opRegSegment = instruction.op1.cast(OpRegSegment.class)) != null)
-					encode = assemble(instruction.op0, 0x8C, opRegSegment.sreg);
-				else if (instruction.op0.size == 4 //
-						&& (opReg = instruction.op0.cast(OpReg.class)) != null //
-						&& (opRegCtrl = instruction.op1.cast(OpRegControl.class)) != null)
+				else if ((opRegSegment = i_op0.cast(OpRegSegment.class)) != null)
+					encode = assemble(i_op1, 0x8E, opRegSegment.sreg);
+				else if ((opRegSegment = i_op1.cast(OpRegSegment.class)) != null)
+					encode = assemble(i_op0, 0x8C, opRegSegment.sreg);
+				else if (i_op0.size == 4 //
+						&& (opReg = i_op0.cast(OpReg.class)) != null //
+						&& (opRegCtrl = i_op1.cast(OpRegControl.class)) != null)
 					encode = new InsnCode(4, new byte[] { (byte) 0x0F, (byte) 0x20, b(opReg.reg, opRegCtrl.creg, 3), });
-				else if (instruction.op0.size == 4 //
-						&& (opRegCtrl = instruction.op0.cast(OpRegControl.class)) != null //
-						&& (opReg = instruction.op1.cast(OpReg.class)) != null)
+				else if (i_op0.size == 4 //
+						&& (opRegCtrl = i_op0.cast(OpRegControl.class)) != null //
+						&& (opReg = i_op1.cast(OpReg.class)) != null)
 					encode = new InsnCode(4, new byte[] { (byte) 0x0F, (byte) 0x22, b(opReg.reg, opRegCtrl.creg, 3), });
 				else
 					encode = invalid;
 			else
 				encode = invalid;
-			break;
-		case MOVAPS:
-			encode = assembleRmReg(instruction, 0x29, 0x28, isXmm).size(4).pre(0x0F);
-			break;
-		case MOVD:
-			encode = assembleRmReg(instruction, 0x7E, 0x6E, isXmm).size(4).pre(bs(0x66, 0x0F));
-			break;
-		case MOVQ:
-			encode = assembleRmReg(instruction, 0x7E, 0x6E, isXmm).size(8).pre(bs(0x66, 0x0F));
-			break;
-		case MOVSB:
-			encode = new InsnCode(1, bs(0xA4));
-			break;
-		case MOVSD:
-			encode = new InsnCode(4, bs(0xA5));
-			break;
-		case MOVSQ:
-			encode = new InsnCode(8, bs(0xA5));
-			break;
-		case MOVSW:
-			encode = new InsnCode(2, bs(0xA5));
-			break;
-		case MOVSX:
-			if (instruction.op1.size < instruction.op0.size && (instruction.op1.size == 1 || instruction.op1.size == 2))
+		}
+		case MOVAPS -> encode = assembleRmReg(instruction, 0x29, 0x28, isXmm).size(4).pre(0x0F);
+		case MOVD -> encode = assembleRmReg(instruction, 0x7E, 0x6E, isXmm).size(4).pre(bs(0x66, 0x0F));
+		case MOVQ -> encode = assembleRmReg(instruction, 0x7E, 0x6E, isXmm).size(8).pre(bs(0x66, 0x0F));
+		case MOVSB -> encode = new InsnCode(1, bs(0xA4));
+		case MOVSD -> encode = new InsnCode(4, bs(0xA5));
+		case MOVSQ -> encode = new InsnCode(8, bs(0xA5));
+		case MOVSW -> encode = new InsnCode(2, bs(0xA5));
+		case MOVSX -> {
+			if (i_op1.size < i_op0.size && (i_op1.size == 1 || i_op1.size == 2))
 				encode = assembleRegRmExtended(instruction, 0xBE).pre(0x0F);
 			else
 				encode = fail();
-			break;
-		case MOVSXD:
-			if (instruction.op1.size < instruction.op0.size && instruction.op1.size == 4) {
-				var reg = (OpReg) instruction.op0;
-				encode = assemble(instruction.op1, 0x63, reg.reg, reg.size);
-			} else {
+		}
+		case MOVSXD -> {
+			if (i_op1.size < i_op0.size && i_op1.size == 4) {
+				var reg = (OpReg) i_op0;
+				encode = assemble(i_op1, 0x63, reg.reg, reg.size);
+			} else
 				encode = fail();
-			}
-			break;
-		case MOVZX:
-			encode = assembleRegRmExtended(instruction, 0xB6).pre(0x0F);
-			break;
-		case MUL:
-			encode = assembleByteFlag(instruction.op0, 0xF6, 4);
-			break;
-		case MULPS:
-			encode = assembleRegRm(instruction.op0, instruction.op1, 0x59).pre(0x0F);
-			break;
-		case NEG:
-			encode = assembleByteFlag(instruction.op0, 0xF6, 3);
-			break;
-		case NOP:
-			encode = assemble(0x90);
-			break;
-		case NOT:
-			encode = assembleByteFlag(instruction.op0, 0xF6, 2);
-			break;
-		case OR:
-			encode = assembleRmRegImm(instruction, 0x08, 0x80, 1);
-			break;
-		case OUT:
-			encode = assembleInOut(instruction.op0, instruction.op1, 0xE6);
-			break;
-		case POP:
-			if (isRm.test(instruction.op0))
-				if (instruction.op0.size == 2 || instruction.op0.size == mode.addrSize)
+		}
+		case MOVZX -> encode = assembleRegRmExtended(instruction, 0xB6).pre(0x0F);
+		case MUL -> encode = assembleByteFlag(i_op0, 0xF6, 4);
+		case MULPS -> encode = assembleRegRm(i_op0, i_op1, 0x59).pre(0x0F);
+		case NEG -> encode = assembleByteFlag(i_op0, 0xF6, 3);
+		case NOP -> encode = assemble(0x90);
+		case NOT -> encode = assembleByteFlag(i_op0, 0xF6, 2);
+		case OR -> encode = assembleRmRegImm(instruction, 0x08, 0x80, 1);
+		case OUT -> encode = assembleInOut(i_op0, i_op1, 0xE6);
+		case POP -> {
+			if (isRm.test(i_op0))
+				if (i_op0.size == 2 || i_op0.size == mode.addrSize)
 					encode = assembleRm(instruction, 0x58, 0x8E, 0);
 				else
 					encode = invalid;
-			else if (instruction.op0 instanceof OpRegSegment) {
-				var sreg = (OpRegSegment) instruction.op0;
+			else if (i_op0 instanceof OpRegSegment) {
+				var sreg = (OpRegSegment) i_op0;
 				encode = switch (sreg.sreg) {
 				case 0 -> isLongMode ? invalid : assemble(0x07); // POP ES
 				case 1 -> invalid; // POP CS, no such thing
@@ -568,24 +432,20 @@ public class Amd64Assemble {
 				};
 			} else
 				encode = invalid;
-			break;
-		case POPA:
-			encode = assemble(0x61);
-			break;
-		case POPF:
-			encode = assemble(0x9D);
-			break;
-		case PUSH:
-			if ((opImm = instruction.op0.cast(OpImm.class)) != null) {
-				var size = instruction.op0.size;
+		}
+		case POPA -> encode = assemble(0x61);
+		case POPF -> encode = assemble(0x9D);
+		case PUSH -> {
+			if ((opImm = i_op0.cast(OpImm.class)) != null) {
+				var size = i_op0.size;
 				encode = new InsnCode(size, opImm).setByte(0x68 + (1 < size ? 0 : 2));
-			} else if (isRm.test(instruction.op0))
-				if (instruction.op0.size == 2 || instruction.op0.size == mode.addrSize)
+			} else if (isRm.test(i_op0))
+				if (i_op0.size == 2 || i_op0.size == mode.addrSize)
 					encode = assembleRm(instruction, 0x50, 0xFE, 6);
 				else
 					encode = invalid;
-			else if (instruction.op0 instanceof OpRegSegment) {
-				var sreg = (OpRegSegment) instruction.op0;
+			else if (i_op0 instanceof OpRegSegment) {
+				var sreg = (OpRegSegment) i_op0;
 				encode = switch (sreg.sreg) {
 				case 0 -> isLongMode ? invalid : assemble(0x06); // PUSH ES
 				case 1 -> isLongMode ? invalid : assemble(0x0E); // PUSH CS
@@ -597,160 +457,74 @@ public class Amd64Assemble {
 				};
 			} else
 				encode = invalid;
-			break;
-		case PUSHA:
-			encode = assemble(0x60);
-			break;
-		case PUSHF:
-			encode = assemble(0x9C);
-			break;
-		case RDMSR:
-			encode = new InsnCode(bs(0x0F, 0x32));
-			break;
-		case RDTSC:
-			encode = new InsnCode(bs(0x0F, 0x31));
-			break;
-		case RDTSCP:
-			encode = new InsnCode(bs(0x0F, 0x01, 0xF9));
-			break;
-		case REMARK:
-			encode = new InsnCode(bs());
-			break;
-		case REP:
-			encode = assemble(0xF3);
-			break;
-		case REPE:
-			encode = assemble(0xF3);
-			break;
-		case REPNE:
-			encode = assemble(0xF2);
-			break;
-		case RET:
-			if (instruction.op0 instanceof OpNone)
+		}
+		case PUSHA -> encode = assemble(0x60);
+		case PUSHF -> encode = assemble(0x9C);
+		case RDMSR -> encode = new InsnCode(bs(0x0F, 0x32));
+		case RDTSC -> encode = new InsnCode(bs(0x0F, 0x31));
+		case RDTSCP -> encode = new InsnCode(bs(0x0F, 0x01, 0xF9));
+		case REMARK -> encode = new InsnCode(bs());
+		case REP -> encode = assemble(0xF3);
+		case REPE -> encode = assemble(0xF3);
+		case REPNE -> encode = assemble(0xF2);
+		case RET -> {
+			if (i_op0 instanceof OpNone)
 				encode = assemble(0xC3);
-			else if ((opImm = instruction.op0.cast(OpImm.class)) != null && instruction.op0.size == 2)
-				encode = new InsnCode(instruction.op0.size, opImm).setByte(0xC2);
+			else if ((opImm = i_op0.cast(OpImm.class)) != null && i_op0.size == 2)
+				encode = new InsnCode(i_op0.size, opImm).setByte(0xC2);
 			else
 				encode = invalid;
-			break;
-		case SAL:
-			encode = assembleShift(instruction, 0xC0, 4);
-			break;
-		case SAR:
-			encode = assembleShift(instruction, 0xC0, 7);
-			break;
-		case SBB:
-			encode = assembleRmRegImm(instruction, 0x18, 0x80, 3);
-			break;
-		case SETA:
-			encode = assemble(instruction.op0, 0x97, 0).pre(0x0F);
-			break;
-		case SETAE:
-			encode = assemble(instruction.op0, 0x93, 0).pre(0x0F);
-			break;
-		case SETB:
-			encode = assemble(instruction.op0, 0x92, 0).pre(0x0F);
-			break;
-		case SETBE:
-			encode = assemble(instruction.op0, 0x96, 0).pre(0x0F);
-			break;
-		case SETE:
-			encode = assemble(instruction.op0, 0x94, 0).pre(0x0F);
-			break;
-		case SETG:
-			encode = assemble(instruction.op0, 0x9F, 0).pre(0x0F);
-			break;
-		case SETGE:
-			encode = assemble(instruction.op0, 0x9D, 0).pre(0x0F);
-			break;
-		case SETL:
-			encode = assemble(instruction.op0, 0x9C, 0).pre(0x0F);
-			break;
-		case SETLE:
-			encode = assemble(instruction.op0, 0x9E, 0).pre(0x0F);
-			break;
-		case SETNE:
-			encode = assemble(instruction.op0, 0x95, 0).pre(0x0F);
-			break;
-		case SHL:
-			encode = assembleShift(instruction, 0xC0, 4);
-			break;
-		case SHR:
-			encode = assembleShift(instruction, 0xC0, 5);
-			break;
-		case STI:
-			encode = assemble(0xFB);
-			break;
-		case STOSB:
-			encode = new InsnCode(1, bs(0xAA));
-			break;
-		case STOSD:
-			encode = new InsnCode(4, bs(0xAB));
-			break;
-		case STOSQ:
-			encode = new InsnCode(8, bs(0xAB));
-			break;
-		case STOSW:
-			encode = new InsnCode(2, bs(0xAB));
-			break;
-		case SUB:
-			encode = assembleRmRegImm(instruction, 0x28, 0x80, 5);
-			break;
-		case SUBPS:
-			encode = assembleRegRm(instruction.op0, instruction.op1, 0x5C).pre(0x0F);
-			break;
-		case SYSCALL:
-			encode = new InsnCode(bs(0x0F, 0x05));
-			break;
-		case SYSENTER:
-			encode = new InsnCode(bs(0x0F, 0x34));
-			break;
-		case SYSEXIT:
-			encode = new InsnCode(bs(0x0F, 0x35));
-			break;
-		case TEST:
-			if ((opImm = instruction.op1.cast(OpImm.class)) != null)
-				encode = instruction.op0.size == instruction.op1.size
-						? assembleRmImm(instruction.op0, opImm, 0xA8, 0xF6, 0)
-						: invalid;
+		}
+		case SAL -> encode = assembleShift(instruction, 0xC0, 4);
+		case SAR -> encode = assembleShift(instruction, 0xC0, 7);
+		case SBB -> encode = assembleRmRegImm(instruction, 0x18, 0x80, 3);
+		case SETA -> encode = assemble(i_op0, 0x97, 0).pre(0x0F);
+		case SETAE -> encode = assemble(i_op0, 0x93, 0).pre(0x0F);
+		case SETB -> encode = assemble(i_op0, 0x92, 0).pre(0x0F);
+		case SETBE -> encode = assemble(i_op0, 0x96, 0).pre(0x0F);
+		case SETE -> encode = assemble(i_op0, 0x94, 0).pre(0x0F);
+		case SETG -> encode = assemble(i_op0, 0x9F, 0).pre(0x0F);
+		case SETGE -> encode = assemble(i_op0, 0x9D, 0).pre(0x0F);
+		case SETL -> encode = assemble(i_op0, 0x9C, 0).pre(0x0F);
+		case SETLE -> encode = assemble(i_op0, 0x9E, 0).pre(0x0F);
+		case SETNE -> encode = assemble(i_op0, 0x95, 0).pre(0x0F);
+		case SHL -> encode = assembleShift(instruction, 0xC0, 4);
+		case SHR -> encode = assembleShift(instruction, 0xC0, 5);
+		case STI -> encode = assemble(0xFB);
+		case STOSB -> encode = new InsnCode(1, bs(0xAA));
+		case STOSD -> encode = new InsnCode(4, bs(0xAB));
+		case STOSQ -> encode = new InsnCode(8, bs(0xAB));
+		case STOSW -> encode = new InsnCode(2, bs(0xAB));
+		case SUB -> encode = assembleRmRegImm(instruction, 0x28, 0x80, 5);
+		case SUBPS -> encode = assembleRegRm(i_op0, i_op1, 0x5C).pre(0x0F);
+		case SYSCALL -> encode = new InsnCode(bs(0x0F, 0x05));
+		case SYSENTER -> encode = new InsnCode(bs(0x0F, 0x34));
+		case SYSEXIT -> encode = new InsnCode(bs(0x0F, 0x35));
+		case TEST -> {
+			if ((opImm = i_op1.cast(OpImm.class)) != null)
+				encode = i_op0.size == i_op1.size ? assembleRmImm(i_op0, opImm, 0xA8, 0xF6, 0) : invalid;
 			else
-				encode = assembleByteFlag(instruction.op0, 0x84, instruction.op1);
-			break;
-		case VADDPS:
-			encode = assembleRegRm(instruction.op0, instruction.op2, 0x58).vex(Vexp.VP__, instruction.op1, Vexm.VM0F__);
-			break;
-		case VMOVAPS:
-			encode = assembleRmReg(instruction, 0x29, 0x28, isXmmYmm).vex(Vexp.VP__, 0, Vexm.VM0F__);
-			break;
-		case VMOVD:
-			encode = assembleRmReg(instruction, 0x7E, 0x6E, isXmm).size(4).vex(Vexp.VP66, 0, Vexm.VM0F__);
-			break;
-		case VMOVQ:
-			encode = assembleRmReg(instruction, 0x7E, 0x6E, isXmm).size(8).vex(Vexp.VP66, 0, Vexm.VM0F__);
-			break;
-		case VMULPS:
-			encode = assembleRegRm(instruction.op0, instruction.op2, 0x59).vex(Vexp.VP__, instruction.op1, Vexm.VM0F__);
-			break;
-		case VSUBPS:
-			encode = assembleRegRm(instruction.op0, instruction.op2, 0x5C).vex(Vexp.VP__, instruction.op1, Vexm.VM0F__);
-			break;
-		case XCHG:
-			if ((opReg = instruction.op1.cast(OpReg.class)) != null)
-				if (isAcc.test(instruction.op0) && instruction.op0.size == instruction.op1.size)
+				encode = assembleByteFlag(i_op0, 0x84, i_op1);
+		}
+		case VADDPS -> encode = assembleRegRm(i_op0, i_op2, 0x58).vex(Vexp.VP__, i_op1, Vexm.VM0F__);
+		case VMOVAPS -> encode = assembleRmReg(instruction, 0x29, 0x28, isXmmYmm).vex(Vexp.VP__, 0, Vexm.VM0F__);
+		case VMOVD -> encode = assembleRmReg(instruction, 0x7E, 0x6E, isXmm).size(4).vex(Vexp.VP66, 0, Vexm.VM0F__);
+		case VMOVQ -> encode = assembleRmReg(instruction, 0x7E, 0x6E, isXmm).size(8).vex(Vexp.VP66, 0, Vexm.VM0F__);
+		case VMULPS -> encode = assembleRegRm(i_op0, i_op2, 0x59).vex(Vexp.VP__, i_op1, Vexm.VM0F__);
+		case VSUBPS -> encode = assembleRegRm(i_op0, i_op2, 0x5C).vex(Vexp.VP__, i_op1, Vexm.VM0F__);
+		case XCHG -> {
+			if ((opReg = i_op1.cast(OpReg.class)) != null)
+				if (isAcc.test(i_op0) && i_op0.size == i_op1.size)
 					encode = assemble(0x90 + opReg.reg);
 				else
-					encode = assembleByteFlag(instruction.op0, 0x86, instruction.op1);
+					encode = assembleByteFlag(i_op0, 0x86, i_op1);
 			else
 				encode = invalid;
-			break;
-		case WRMSR:
-			encode = new InsnCode(bs(0x0F, 0x30));
-			break;
-		case XOR:
-			encode = assembleRmRegImm(instruction, 0x30, 0x80, 6);
-			break;
-		default:
-			encode = invalid;
+		}
+		case WRMSR -> encode = new InsnCode(bs(0x0F, 0x30));
+		case XOR -> encode = assembleRmRegImm(instruction, 0x30, 0x80, 6);
+		default -> encode = invalid;
+
 		}
 
 		return encode.encode_(offset, instruction);
