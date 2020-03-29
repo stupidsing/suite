@@ -37,7 +37,7 @@ Promise.resolve({})
 	let view;
 
 	let login = ({ username, password, }) => {
-		console.log('login()');
+		console.log('login()', username);
 
 		return Promise
 		.resolve()
@@ -84,10 +84,11 @@ Promise.resolve({})
 
 	let component = (path, initvm, xhtml, envf) => {
 		let lens_ = lens.key(path);
-		let change = f => renderAgain(view, lens_.apply(f));
-		let init = () => renderAgain(view, vm => ({ ...vm, [path]: initvm, }));
-		let view_ = rd.parse(`<rd_map v='vm.${path}'>${xhtml}</rd_map>`, envf(change));
-		return { init, view: view_, };
+		let change = f => renderAgain(view, vm => ({ ...vm, [path]: f(vm[path]), }));
+		return {
+			init: () => renderAgain(view, vm => ({ ...vm, [path]: initvm, })),
+			view: rd.parse(`<rd_map v='vm.${path}'>${xhtml}</rd_map>`, envf(change)),
+		};
 	};
 
 	let componentLogin = component(

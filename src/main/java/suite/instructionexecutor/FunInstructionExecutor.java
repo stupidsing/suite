@@ -47,8 +47,6 @@ public class FunInstructionExecutor extends InstructionExecutor {
 
 		var ds = exec.stack;
 		var dsp = exec.sp;
-
-		Node n0, n1;
 		Data<?> data;
 
 		Node result = switch (insn.insn) {
@@ -60,40 +58,30 @@ public class FunInstructionExecutor extends InstructionExecutor {
 			yield Data.<Intrinsic> get(data).invoke(intrinsicCallback, ps);
 		}
 		case COMPARE_______ -> {
-			n0 = (Node) ds[--dsp];
-			n1 = (Node) ds[--dsp];
+			var n0 = (Node) ds[--dsp];
+			var n1 = (Node) ds[--dsp];
 			yield Int.of(comparer.compare(n0, n1));
 		}
 		case CONSLIST______ -> {
-			n0 = (Node) ds[--dsp];
-			n1 = (Node) ds[--dsp];
+			var n0 = (Node) ds[--dsp];
+			var n1 = (Node) ds[--dsp];
 			yield Tree.ofOr(n0, n1);
 		}
 		case CONSPAIR______ -> {
-			n0 = (Node) ds[--dsp];
-			n1 = (Node) ds[--dsp];
+			var n0 = (Node) ds[--dsp];
+			var n1 = (Node) ds[--dsp];
 			yield Tree.ofAnd(n0, n1);
 		}
-		case DATACHARS_____ -> {
-			yield new Data<>(To.chars(Str.str(regs[insn.op1])));
-		}
+		case DATACHARS_____ -> new Data<>(To.chars(Str.str(regs[insn.op1])));
 		case GETINTRINSIC__ -> {
 			var atom = (Atom) ds[--dsp];
 			var intrinsicName = atom.name.split("!")[1];
 			yield new Data<>(Intrinsics.intrinsics.get(intrinsicName));
 		}
-		case HEAD__________ -> {
-			yield Tree.decompose((Node) ds[--dsp]).getLeft();
-		}
-		case ISCONS________ -> {
-			yield atom(Tree.decompose((Node) ds[--dsp]) != null);
-		}
-		case TAIL__________ -> {
-			yield Tree.decompose((Node) ds[--dsp]).getRight();
-		}
-		default -> {
-			yield fail("unknown instruction " + insn);
-		}
+		case HEAD__________ -> Tree.decompose((Node) ds[--dsp]).getLeft();
+		case ISCONS________ -> atom(Tree.decompose((Node) ds[--dsp]) != null);
+		case TAIL__________ -> Tree.decompose((Node) ds[--dsp]).getRight();
+		default -> fail("unknown instruction " + insn);
 		};
 
 		exec.sp = dsp;
