@@ -242,7 +242,7 @@ public class TopDownParse {
 
 						public State g() {
 							if (state_ != null) {
-								State state0 = state_.deepen(frame, -1);
+								var state0 = state_.deepen(frame, -1);
 								pullers.push(state0.pr(parse, gc));
 								while (!pullers.isEmpty() && (state_ = pullers.peek().pull()) == null)
 									pullers.pop();
@@ -283,10 +283,7 @@ public class TopDownParse {
 		if ((parser1 = buildLiteral(entity)) == null)
 			parser1 = (parse, st) -> {
 				var parser = parserByEntity.get(entity);
-				if (parser != null)
-					return st.p(parse, parser);
-				else
-					return fail("entity " + entity + " not found");
+				return parser != null ? st.p(parse, parser) : fail("entity " + entity + " not found");
 			};
 		return parser1;
 	}

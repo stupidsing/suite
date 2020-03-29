@@ -109,74 +109,42 @@ public class CommandDispatcher {
 		var node = Suite.parse(input.trim());
 
 		switch (type) {
-		case EVALUATE:
-			pw.println(Formatter.dump(evaluateFunctional(node)));
-			break;
-		case EVALUATEDO:
-			node = Suite.applyPerform(node, Atom.of("any"));
-			pw.println(Formatter.dump(evaluateFunctional(node)));
-			break;
-		case EVALUATEDOCHARS:
-			node = Suite.applyPerform(node, Suite.parse("[n^Chars]"));
-			printEvaluated(writer, node);
-			break;
-		case EVALUATEDOSTR:
-			node = Suite.applyPerform(node, Atom.of("string"));
-			printEvaluated(writer, Suite.applyWriter(node));
-			break;
-		case EVALUATEEFI:
+		case EVALUATE -> pw.println(Formatter.dump(evaluateFunctional(node)));
+		case EVALUATEDO -> pw.println(Formatter.dump(evaluateFunctional(Suite.applyPerform(node, Atom.of("any")))));
+		case EVALUATEDOCHARS -> printEvaluated(writer, Suite.applyPerform(node, Suite.parse("[n^Chars]")));
+		case EVALUATEDOSTR -> printEvaluated(writer, Suite.applyWriter(Suite.applyPerform(node, Atom.of("string"))));
+		case EVALUATEEFI -> {
 			var efi = new InterpretFunEager();
 			efi.setLazyify(opt.isLazy());
 			pw.println(efi.eager(node));
-			break;
-		case EVALUATELFI0:
-			pw.println(new InterpretFunLazy0().lazy(node).get());
-			break;
-		case EVALUATELFI:
-			pw.println(new InterpretFunLazy().lazy(node).get());
-			break;
-		case EVALUATESTR:
-			node = Suite.substitute("string of .0", node);
-			printEvaluated(writer, Suite.applyWriter(node));
-			break;
-		case EVALUATETYPE:
-			pw.println(Formatter.dump(Suite.evaluateFunType(opt.fcc(node))));
-			break;
-		case FACT:
-			ruleSet.addRule(Rule.of(node));
-			break;
-		case OPTION:
-			Source<String> source = Take.from(("-" + input).split(" "));
+		}
+		case EVALUATELFI0 -> pw.println(new InterpretFunLazy0().lazy(node).get());
+		case EVALUATELFI -> pw.println(new InterpretFunLazy().lazy(node).get());
+		case EVALUATESTR -> printEvaluated(writer, Suite.applyWriter(Suite.substitute("string of .0", node)));
+		case EVALUATETYPE -> pw.println(Formatter.dump(Suite.evaluateFunType(opt.fcc(node))));
+		case FACT -> ruleSet.addRule(Rule.of(node));
+		case OPTION -> {
+			var source = Take.from(("-" + input).split(" "));
 			String option;
 			while ((option = source.g()) != null)
 				opt.processOption(option, source);
-			break;
-		case PRETTYPRINT:
-			pw.println(new PrettyPrinter().prettyPrint(node));
-			break;
-		case QUERY:
-			code = query(new InterpretedProverBuilder(opt.pc(ruleSet)), ruleSet, node);
-			break;
-		case QUERYCOMPILED:
-			code = query(CompiledProverBuilder.level1(opt.pc(ruleSet)), ruleSet, node);
-			break;
-		case QUERYCOMPILED2:
+		}
+		case PRETTYPRINT -> pw.println(new PrettyPrinter().prettyPrint(node));
+		case QUERY -> code = query(new InterpretedProverBuilder(opt.pc(ruleSet)), ruleSet, node);
+		case QUERYCOMPILED -> code = query(CompiledProverBuilder.level1(opt.pc(ruleSet)), ruleSet, node);
+		case QUERYCOMPILED2 -> {
 			if (builderLevel2 == null)
 				builderLevel2 = CompiledProverBuilder.level2(opt.pc(ruleSet));
 			code = query(builderLevel2, ruleSet, node);
-			break;
-		case QUERYELABORATE:
-			elaborate(node, new Prover(opt.pc(ruleSet))::prove);
-			break;
-		case QUERYSEWING:
-			code = query(new SewingProverBuilder(opt.pc(ruleSet)), ruleSet, node);
-			break;
-		case QUERYSEWINGELAB:
-			elaborate(node, n -> new SewingProverImpl(ruleSet).prover(n).test(new ProverCfg(ruleSet)));
-			break;
-		case RESET:
+		}
+		case QUERYELABORATE -> elaborate(node, new Prover(opt.pc(ruleSet))::prove);
+		case QUERYSEWING -> code = query(new SewingProverBuilder(opt.pc(ruleSet)), ruleSet, node);
+		case QUERYSEWINGELAB -> elaborate(node,
+				n -> new SewingProverImpl(ruleSet).prover(n).test(new ProverCfg(ruleSet)));
+		case RESET -> {
 			ruleSet = Suite.newRuleSet();
 			importFiles(List.of());
+		}
 		}
 
 		pw.flush();
