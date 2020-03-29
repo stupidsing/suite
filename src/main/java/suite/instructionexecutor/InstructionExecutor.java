@@ -86,159 +86,161 @@ public class InstructionExecutor implements AutoCloseable {
 				int i;
 
 				switch (insn.insn) {
-				case ASSIGNCONST___:
+				case ASSIGNCONST___ -> {
 					regs[insn.op0] = constantPool.get(insn.op1);
-					break;
-				case ASSIGNFRAMEREG:
+				}
+				case ASSIGNFRAMEREG -> {
 					i = insn.op1;
 					while (i++ < 0)
 						frame = frame.previous;
 					regs[insn.op0] = frame.registers[insn.op2];
-					break;
-				case ASSIGNINT_____:
+				}
+				case ASSIGNINT_____ -> {
 					regs[insn.op0] = number(insn.op1);
-					break;
-				case ASSIGNRESULT__:
+				}
+				case ASSIGNRESULT__ -> {
 					regs[insn.op0] = returnValue;
-					break;
-				case ASSIGNTHUNK___:
+				}
+				case ASSIGNTHUNK___ -> {
 					regs[insn.op0] = new Thunk(frame, insn.op1);
-					break;
-				case ASSIGNTHUNKRES:
+				}
+				case ASSIGNTHUNKRES -> {
 					regs[insn.op0] = returnValue;
 					thunk = (Thunk) regs[insn.op1];
 					thunk.frame = null; // facilitates garbage collection
 					thunk.result = returnValue;
-					break;
-				case CALL__________:
+				}
+				case CALL__________ -> {
 					current = new Activation(frame, insn.op0, current);
-					break;
-				case CALLTHUNK_____:
+				}
+				case CALLTHUNK_____ -> {
 					thunk = (Thunk) regs[insn.op0];
 					if (thunk.result == null)
 						current = new Activation(thunk, current);
 					else
 						returnValue = thunk.result;
-					break;
-				case ENTER_________:
+				}
+				case ENTER_________ -> {
 					var af = analyzer.getFrame(ip);
 					Frame parent = af.isRequireParent() ? frame : null;
 					var frameBegin = instructions[af.getFrameBeginIp()];
 					current.frame = new Frame(parent, frameBegin.op0);
-					break;
-				case ERROR_________:
+				}
+				case ERROR_________ -> {
 					fail("error termination");
-				case EVALADD_______:
+				}
+				case EVALADD_______ -> {
 					regs[insn.op0] = number(Int.num(regs[insn.op1]) + Int.num(regs[insn.op2]));
-					break;
-				case EVALDIV_______:
+				}
+				case EVALDIV_______ -> {
 					regs[insn.op0] = number(Int.num(regs[insn.op1]) / Int.num(regs[insn.op2]));
-					break;
-				case EVALEQ________:
+				}
+				case EVALEQ________ -> {
 					i = comparer.compare(regs[insn.op1], regs[insn.op2]);
 					regs[insn.op0] = atom(i == 0);
-					break;
-				case EVALLE________:
+				}
+				case EVALLE________ -> {
 					i = comparer.compare(regs[insn.op1], regs[insn.op2]);
 					regs[insn.op0] = atom(i <= 0);
-					break;
-				case EVALLT________:
+				}
+				case EVALLT________ -> {
 					i = comparer.compare(regs[insn.op1], regs[insn.op2]);
 					regs[insn.op0] = atom(i < 0);
-					break;
-				case EVALNE________:
+				}
+				case EVALNE________ -> {
 					i = comparer.compare(regs[insn.op1], regs[insn.op2]);
 					regs[insn.op0] = atom(i != 0);
-					break;
-				case EVALMOD_______:
+				}
+				case EVALMOD_______ -> {
 					regs[insn.op0] = number(Int.num(regs[insn.op1]) % Int.num(regs[insn.op2]));
-					break;
-				case EVALMUL_______:
+				}
+				case EVALMUL_______ -> {
 					regs[insn.op0] = number(Int.num(regs[insn.op1]) * Int.num(regs[insn.op2]));
-					break;
-				case EVALSUB_______:
+				}
+				case EVALSUB_______ -> {
 					regs[insn.op0] = number(Int.num(regs[insn.op1]) - Int.num(regs[insn.op2]));
-					break;
-				case EXIT__________:
+				}
+				case EXIT__________ -> {
 					return returnValue;
-				case FORMTREE0_____:
+				}
+				case FORMTREE0_____ -> {
 					var left = regs[insn.op0];
 					var right = regs[insn.op1];
 					insn = instructions[current.ip++];
 					op = TermOp.find(Atom.name(constantPool.get(insn.op0)));
 					regs[insn.op1] = Tree.of(op, left, right);
-					break;
-				case FRAMEBEGIN____:
-				case FRAMEEND______:
-					break;
-				case IFFALSE_______:
+				}
+				case FRAMEBEGIN____, FRAMEEND______ -> {
+				}
+				case IFFALSE_______ -> {
 					if (regs[insn.op0] != Atom.TRUE)
 						current.ip = insn.op1;
-					break;
-				case IFNOTCONS_____:
+				}
+				case IFNOTCONS_____ -> {
 					if ((tree = Tree.decompose(regs[insn.op0], TermOp.OR____)) != null) {
 						stack[sp++] = tree.getLeft();
 						stack[sp++] = tree.getRight();
 					} else
 						current.ip = insn.op1;
-					break;
-				case IFNOTPAIR_____:
+				}
+				case IFNOTPAIR_____ -> {
 					if ((tree = Tree.decompose(regs[insn.op0], TermOp.AND___)) != null) {
 						stack[sp++] = tree.getLeft();
 						stack[sp++] = tree.getRight();
 					} else
 						current.ip = insn.op1;
-					break;
-				case IFNOTEQUALS___:
+				}
+				case IFNOTEQUALS___ -> {
 					if (regs[insn.op1] != regs[insn.op2])
 						current.ip = insn.op0;
-					break;
-				case JUMP__________:
+				}
+				case JUMP__________ -> {
 					current.ip = insn.op0;
-					break;
-				case JUMPCLOSURE___:
+				}
+				case JUMPCLOSURE___ -> {
 					thunk = (Thunk) regs[insn.op0];
 					current = current.previous;
 					if (thunk.result == null)
 						current = new Activation(thunk, current);
 					else
 						returnValue = thunk.result;
-					break;
-				case LEAVE_________:
+				}
+				case LEAVE_________ -> {
 					current.frame = current.frame.previous;
-					break;
-				case LOGREG________:
+				}
+				case LOGREG________ -> {
 					Log_.info(regs[insn.op0].toString());
-					break;
-				case NEWNODE_______:
+				}
+				case NEWNODE_______ -> {
 					regs[insn.op0] = new Reference();
-					break;
-				case PUSH__________:
+				}
+				case PUSH__________ -> {
 					stack[sp++] = regs[insn.op0];
-					break;
-				case POP___________:
+				}
+				case POP___________ -> {
 					regs[insn.op0] = stack[--sp];
-					break;
-				case POPANY________:
+				}
+				case POPANY________ -> {
 					--sp;
-					break;
-				case REMARK________:
-					break;
-				case RETURN________:
+				}
+				case REMARK________ -> {
+				}
+				case RETURN________ -> {
 					current = current.previous;
-					break;
-				case SETRESULT_____:
+				}
+				case SETRESULT_____ -> {
 					returnValue = regs[insn.op0];
-					break;
-				case TOP___________:
+				}
+				case TOP___________ -> {
 					regs[insn.op0] = stack[sp + insn.op1];
-					break;
-				default:
+				}
+				default -> {
 					exec.current = current;
 					exec.sp = sp;
 					handle(exec, insn);
 					current = exec.current;
 					sp = exec.sp;
+				}
 				}
 			} catch (Exception ex) {
 				fail("at IP = " + ip, ex);

@@ -48,52 +48,53 @@ public class FunInstructionExecutor extends InstructionExecutor {
 		var ds = exec.stack;
 		var dsp = exec.sp;
 
-		Node n0, n1, result;
+		Node n0, n1;
 		Data<?> data;
 
-		switch (insn.insn) {
-		case CALLINTRINSIC_:
+		Node result = switch (insn.insn) {
+		case CALLINTRINSIC_ -> {
 			data = (Data<?>) ds[--dsp];
 			var ps = new ArrayList<Node>(3);
 			for (var i = 1; i < insn.op1; i++)
 				ps.add((Node) ds[--dsp]);
-			result = Data.<Intrinsic> get(data).invoke(intrinsicCallback, ps);
-			break;
-		case COMPARE_______:
+			yield Data.<Intrinsic> get(data).invoke(intrinsicCallback, ps);
+		}
+		case COMPARE_______ -> {
 			n0 = (Node) ds[--dsp];
 			n1 = (Node) ds[--dsp];
-			result = Int.of(comparer.compare(n0, n1));
-			break;
-		case CONSLIST______:
+			yield Int.of(comparer.compare(n0, n1));
+		}
+		case CONSLIST______ -> {
 			n0 = (Node) ds[--dsp];
 			n1 = (Node) ds[--dsp];
-			result = Tree.ofOr(n0, n1);
-			break;
-		case CONSPAIR______:
+			yield Tree.ofOr(n0, n1);
+		}
+		case CONSPAIR______ -> {
 			n0 = (Node) ds[--dsp];
 			n1 = (Node) ds[--dsp];
-			result = Tree.ofAnd(n0, n1);
-			break;
-		case DATACHARS_____:
-			result = new Data<>(To.chars(Str.str(regs[insn.op1])));
-			break;
-		case GETINTRINSIC__:
+			yield Tree.ofAnd(n0, n1);
+		}
+		case DATACHARS_____ -> {
+			yield new Data<>(To.chars(Str.str(regs[insn.op1])));
+		}
+		case GETINTRINSIC__ -> {
 			var atom = (Atom) ds[--dsp];
 			var intrinsicName = atom.name.split("!")[1];
-			result = new Data<>(Intrinsics.intrinsics.get(intrinsicName));
-			break;
-		case HEAD__________:
-			result = Tree.decompose((Node) ds[--dsp]).getLeft();
-			break;
-		case ISCONS________:
-			result = atom(Tree.decompose((Node) ds[--dsp]) != null);
-			break;
-		case TAIL__________:
-			result = Tree.decompose((Node) ds[--dsp]).getRight();
-			break;
-		default:
-			result = fail("unknown instruction " + insn);
+			yield new Data<>(Intrinsics.intrinsics.get(intrinsicName));
 		}
+		case HEAD__________ -> {
+			yield Tree.decompose((Node) ds[--dsp]).getLeft();
+		}
+		case ISCONS________ -> {
+			yield atom(Tree.decompose((Node) ds[--dsp]) != null);
+		}
+		case TAIL__________ -> {
+			yield Tree.decompose((Node) ds[--dsp]).getRight();
+		}
+		default -> {
+			yield fail("unknown instruction " + insn);
+		}
+		};
 
 		exec.sp = dsp;
 		regs[insn.op0] = result;

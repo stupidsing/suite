@@ -105,20 +105,21 @@ public class Grapher {
 			var children = Read.from(gn.children).map(p -> Pair.of(nodes.get(p.t0), nodes.get(p.t1))).toList();
 
 			switch (gn.type) {
-			case DICT:
+			case DICT -> {
 				Dict.m(node).putAll(Read.from2(children).mapValue(Reference::of).toMap());
-				break;
-			case TERM:
-				break;
-			case TREE:
+			}
+			case TERM -> {
+			}
+			case TREE -> {
 				var tree = (Tree) node;
 				Tree.forceSetLeft(tree, children.get(0).v);
 				Tree.forceSetRight(tree, children.get(1).v);
-				break;
-			case TUPLE:
+			}
+			case TUPLE -> {
 				var list = Tuple.t(node);
 				for (var j = 0; j < children.size(); j++)
 					list[j] = children.get(j).v;
+			}
 			}
 		}
 

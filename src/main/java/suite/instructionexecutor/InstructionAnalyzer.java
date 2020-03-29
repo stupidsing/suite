@@ -222,22 +222,24 @@ public class InstructionAnalyzer {
 
 		while ((instruction = source.g()) != null)
 			switch (instruction.insn) {
-			case ASSIGNFRAMEREG:
+			case ASSIGNFRAMEREG -> {
 				if (instruction.op1 == 0 && instruction.op2 == returnReg) {
 					returnReg = instruction.op0;
-					break;
 				} else
 					return false;
-			case LEAVE_________:
+			}
+			case LEAVE_________ -> {
 				isLeft = true;
-				break;
-			case RETURN________:
+			}
+			case RETURN________ -> {
 				return isLeft && isReturningValue;
-			case SETRESULT_____:
+			}
+			case SETRESULT_____ -> {
 				isReturningValue = instruction.op0 == returnReg;
-				break;
-			default:
+			}
+			default -> {
 				return false;
+			}
 			}
 
 		return false;

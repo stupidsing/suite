@@ -173,49 +173,45 @@ public class BuildLr {
 			return new Blr(1, next);
 		};
 
-		Pair<String, Set<String>> k;
-		Blr blr;
-
-		switch (eg.type) {
-		case AND___:
+		return switch (eg.type) {
+		case AND___ -> {
 			if (!eg.children.isEmpty()) {
 				var tail = new Grammar(GrammarType.AND___, Right.of(eg.children, 1));
 				var blr1 = build(ps, tail, nextx);
 				var blr0 = build(ps, eg.children.get(0), blr1.next);
-				blr = new Blr(blr0.nTokens + blr1.nTokens, blr0.next);
+				yield new Blr(blr0.nTokens + blr1.nTokens, blr0.next);
 			} else
-				blr = new Blr(0, nextx);
-			break;
-		case ENTITY:
-			k = Pair.of(eg.content, nextx.keySet());
+				yield new Blr(0, nextx);
+		}
+		case ENTITY -> {
+			var k = Pair.of(eg.content, nextx.keySet());
 			var next1 = transitions.computeIfAbsent(k, k_ -> new Transition());
-			blr = mergeAll.apply(Read.<String, Transition> empty2().cons(eg.content, next1));
-			break;
-		case NAMED_:
+			yield mergeAll.apply(Read.<String, Transition> empty2().cons(eg.content, next1));
+		}
+		case NAMED_ -> {
 			var reduce = new Reduce();
 			var next = newTransition(nextx.keySet(), Pair.of(null, reduce));
 			var blr1 = build(ps, eg.children.get(0), next);
 			reduce.n = blr1.nTokens;
 			reduce.name = eg.content;
-			blr = new Blr(1, blr1.next);
-			break;
-		case OR____:
+			yield new Blr(1, blr1.next);
+		}
+		case OR____ -> {
 			var pairs = new ArrayList<Pair<String, Transition>>();
 			for (var eg1 : Read.from(eg.children)) {
 				var egn = "OR." + System.identityHashCode(eg1);
 				pairs.add(Pair.of(egn, build(ps, new Grammar(GrammarType.NAMED_, egn, eg1), nextx).next));
 			}
-			blr = mergeAll.apply(Read.from2(pairs));
-			break;
-		case STRING:
-			var state1 = newState(nextx);
-			blr = new Blr(1, kv(eg.content, state1));
-			break;
-		default:
-			blr = fail("LR parser cannot recognize " + eg.type);
+			yield mergeAll.apply(Read.from2(pairs));
 		}
-
-		return blr;
+		case STRING -> {
+			var state1 = newState(nextx);
+			yield new Blr(1, kv(eg.content, state1));
+		}
+		default -> {
+			yield fail("LR parser cannot recognize " + eg.type);
+		}
+		};
 	}
 
 	private State newState(Transition nextx) {

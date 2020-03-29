@@ -35,23 +35,23 @@ public class LogicInstructionExecutor extends InstructionExecutor {
 		Instruction insn1;
 
 		switch (insn.insn) {
-		case BACKUPCSP_____:
+		case BACKUPCSP_____ -> {
 			regs[insn.op0] = exec.current.previous;
-			break;
-		case BACKUPDSP_____:
+		}
+		case BACKUPDSP_____ -> {
 			regs[insn.op0] = number(exec.sp);
-			break;
-		case BIND__________:
+		}
+		case BIND__________ -> {
 			if (!Binder.bind(regs[insn.op0], regs[insn.op1], trail))
 				current.ip = insn.op2; // fail
-			break;
-		case BINDMARK______:
+		}
+		case BINDMARK______ -> {
 			regs[insn.op0] = number(trail.getPointInTime());
-			break;
-		case BINDUNDO______:
+		}
+		case BINDUNDO______ -> {
 			trail.unwind(Int.num(regs[insn.op0]));
-			break;
-		case DECOMPOSETREE0:
+		}
+		case DECOMPOSETREE0 -> {
 			var node = regs[insn.op0].finalNode();
 
 			insn1 = getInstructions()[current.ip++];
@@ -72,23 +72,24 @@ public class LogicInstructionExecutor extends InstructionExecutor {
 				trail.addBind((Reference) node, tree);
 			} else
 				current.ip = insn.op1;
-			break;
-		case PROVEINTERPRET:
+		}
+		case PROVEINTERPRET -> {
 			if (!prover.prove(regs[insn.op0]))
 				current.ip = insn.op1;
-			break;
-		case PROVESYS______:
+		}
+		case PROVESYS______ -> {
 			if (!systemPredicates.call(regs[insn.op0]))
 				current.ip = insn.op1;
-			break;
-		case RESTORECSP____:
+		}
+		case RESTORECSP____ -> {
 			exec.current.previous = (Activation) regs[insn.op0];
-			break;
-		case RESTOREDSP____:
+		}
+		case RESTOREDSP____ -> {
 			exec.sp = Int.num(regs[insn.op0]);
-			break;
-		default:
+		}
+		default -> {
 			fail("unknown instruction " + insn);
+		}
 		}
 	}
 
