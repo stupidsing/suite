@@ -153,220 +153,153 @@ public class Amd64Interpret {
 					assign = assignMemory(address((OpMem) op0), op0.size);
 				else if (op0 instanceof OpReg) {
 					var reg = ((OpReg) op0).reg;
-					if (op0.size == 1)
-						assign = i -> regs[reg] = regs[reg] & 0xFFFFFFFFFFFFFF00l | i & 0x00000000000000FFl;
-					else if (op0.size == 2)
-						assign = i -> regs[reg] = regs[reg] & 0xFFFFFFFFFFFF0000l | i & 0x000000000000FFFFl;
-					else if (op0.size == 4)
-						assign = i -> regs[reg] = i & 0xFFFFFFFFl;
-					else if (op0.size == 8)
-						assign = i -> regs[reg] = i;
-					else
-						assign = null;
+					assign = switch (op0.size) {
+					case 1 -> i -> regs[reg] = regs[reg] & 0xFFFFFFFFFFFFFF00l | i & 0x00000000000000FFl;
+					case 2 -> i -> regs[reg] = regs[reg] & 0xFFFFFFFFFFFF0000l | i & 0x000000000000FFFFl;
+					case 4 -> i -> regs[reg] = i & 0xFFFFFFFFl;
+					case 8 -> i -> regs[reg] = i;
+					default -> null;
+					};
 				} else
 					assign = null;
 
 				switch (instruction.insn) {
-				case ADD:
-					assign.f(setFlags(source0 + source1));
-					break;
-				case ALIGN:
-					break;
-				case AND:
-					assign.f(setFlags(source0 & source1));
-					break;
-				case CALL:
+				case ADD -> assign.f(setFlags(source0 + source1));
+				case ALIGN -> {
+				}
+				case AND -> assign.f(setFlags(source0 & source1));
+				case CALL -> {
 					push(eip);
 					eip = labelAddressByInsnIndex.get(source0);
-					break;
-				case CLD:
-					break;
-				case CMP:
-					c = Long.compare(source0, source1);
-					break;
-				case CMPSB:
-					cmpsb();
-					break;
-				case CMPSD:
-					cmpsd();
-					break;
-				case DEC:
-					assign.f(source0 - 1);
-					break;
-				case HLT:
-					fail(op0 instanceof OpRemark ? ((OpRemark) op0).remark : null);
-				case IDIV:
+				}
+				case CLD -> {
+				}
+				case CMP -> c = Long.compare(source0, source1);
+				case CMPSB -> cmpsb();
+				case CMPSD -> cmpsd();
+				case DEC -> assign.f(source0 - 1);
+				case HLT -> fail(op0 instanceof OpRemark ? ((OpRemark) op0).remark : null);
+				case IDIV -> {
 					var n = (regs[edx] << 32) + regs[eax];
 					var div = n / source0;
 					var mod = n % source0;
 					regs[eax] = div;
 					regs[edx] = mod;
-					break;
-				case INC:
-					assign.f(source0 + 1);
-					break;
-				case IMUL:
+				}
+				case INC -> assign.f(source0 + 1);
+				case IMUL -> {
 					if (instruction.op2 instanceof OpNone)
 						assign.f(setFlags(source0 * source1));
 					else
 						assign.f(setFlags(source1 * fetch.apply(instruction.op2)));
-					break;
-				case INT:
+				}
+				case INT -> {
 					p0 = (int) (regs[eax] & 0xFF);
 					p1 = (int) regs[ebx];
 					p2 = (int) regs[ecx];
 					p3 = (int) regs[edx];
 					if ((byte) source0 == -128)
-						if (p0 == 0x01) // exit
+						rc = switch (p0) {
+						case 0x01 -> {
 							return p1;
-						else if (p0 == 0x03)
-							rc = io.read(p1, p2, p3);
-						else if (p0 == 0x04)
-							rc = io.write(p1, p2, p3);
-						else if (p0 == 0x5A) { // map
+						}
+						case 0x03 -> io.read(p1, p2, p3);
+						case 0x04 -> io.write(p1, p2, p3);
+						case 0x5A -> { // map
 							var size = mem.getInt(index(p1) + 4);
-							rc = size < posData.length() ? baseData.s : fail();
-						} else
-							rc = fail("invalid int 80h call " + regs[eax]);
+							yield size < posData.length() ? baseData.s : fail();
+						}
+						default -> fail("invalid int 80h call " + regs[eax]);
+						};
 					else
 						rc = fail();
 					regs[eax] = rc;
-					break;
-				case JE:
+				}
+				case JE -> {
 					if (c == 0)
 						eip = labelAddressByInsnIndex.get(source0);
-					break;
-				case JMP:
-					eip = labelAddressByInsnIndex.get(source0);
-					break;
-				case JG:
+				}
+				case JMP -> eip = labelAddressByInsnIndex.get(source0);
+				case JG -> {
 					if (0 < c)
 						eip = labelAddressByInsnIndex.get(source0);
-					break;
-				case JGE:
+				}
+				case JGE -> {
 					if (0 <= c)
 						eip = labelAddressByInsnIndex.get(source0);
-					break;
-				case JL:
+				}
+				case JL -> {
 					if (c < 0)
 						eip = labelAddressByInsnIndex.get(source0);
-					break;
-				case JLE:
+				}
+				case JLE -> {
 					if (c <= 0)
 						eip = labelAddressByInsnIndex.get(source0);
-					break;
-				case JNE:
+				}
+				case JNE -> {
 					if (c != 0)
 						eip = labelAddressByInsnIndex.get(source0);
-					break;
-				case JNZ:
+				}
+				case JNZ -> {
 					if (c != 0)
 						eip = labelAddressByInsnIndex.get(source0);
-					break;
-				case JZ:
+				}
+				case JZ -> {
 					if (c == 0)
 						eip = labelAddressByInsnIndex.get(source0);
-					break;
-				case LABEL:
-					break;
-				case LEA:
-					assign.f(address((OpMem) op1));
-					break;
-				case LOG:
-					Log_.info("value = " + Format.hex8(source0));
-					break;
-				case MOV:
-					assign.f(source1);
-					break;
-				case MOVSB:
-					movsb();
-					break;
-				case MOVSD:
-					movsd();
-					break;
-				case MOVSX:
-					assign.f(source1);
-					break;
-				case MOVSXD:
-					assign.f(source1);
-					break;
-				case NEG:
-					assign.f(-source0);
-					break;
-				case NOP:
-					break;
-				case NOT:
-					assign.f(~source0);
-					break;
-				case OR:
-					assign.f(setFlags(source0 | source1));
-					break;
-				case POP:
-					assign.f(pop());
-					break;
-				case PUSH:
-					push(source0);
-					break;
-				case REMARK:
-					break;
-				case REP:
+				}
+				case LABEL -> {
+				}
+				case LEA -> assign.f(address((OpMem) op1));
+				case LOG -> Log_.info("value = " + Format.hex8(source0));
+				case MOV -> assign.f(source1);
+				case MOVSB -> movsb();
+				case MOVSD -> movsd();
+				case MOVSX -> assign.f(source1);
+				case MOVSXD -> assign.f(source1);
+				case NEG -> assign.f(-source0);
+				case NOP -> {
+				}
+				case NOT -> assign.f(~source0);
+				case OR -> assign.f(setFlags(source0 | source1));
+				case POP -> assign.f(pop());
+				case PUSH -> push(source0);
+				case REMARK -> {
+				}
+				case REP -> {
 					r = getNextRepeatInsn(instructions);
 					while (0 < regs[ecx]--)
 						r.run();
-					break;
-				case REPE:
+				}
+				case REPE -> {
 					r = getNextRepeatInsn(instructions);
 					while (0 < regs[ecx]--) {
 						r.run();
 						if (c != 0)
 							break;
 					}
-					break;
-				case REPNE:
+				}
+				case REPNE -> {
 					r = getNextRepeatInsn(instructions);
 					while (0 < regs[ecx]--) {
 						r.run();
 						if (c == 0)
 							break;
 					}
-					break;
-				case RET:
-					eip = (int) pop();
-					break;
-				case SAL:
-					assign.f(source0 << source1);
-					break;
-				case SAR:
-					assign.f(source0 >>> source1);
-					break;
-				case SETE:
-					assign.f(c == 0 ? 1 : 0);
-					break;
-				case SETG:
-					assign.f(0 < c ? 1 : 0);
-					break;
-				case SETGE:
-					assign.f(0 <= c ? 1 : 0);
-					break;
-				case SETL:
-					assign.f(c < 0 ? 1 : 0);
-					break;
-				case SETLE:
-					assign.f(c <= 0 ? 1 : 0);
-					break;
-				case SETNE:
-					assign.f(c != 0 ? 1 : 0);
-					break;
-				case SHL:
-					assign.f(source0 << source1);
-					break;
-				case SHR:
-					assign.f(source0 >> source1);
-					break;
-				case SUB:
-					assign.f(setFlags(source0 - source1));
-					break;
-				case SYSCALL:
+				}
+				case RET -> eip = (int) pop();
+				case SAL -> assign.f(source0 << source1);
+				case SAR -> assign.f(source0 >>> source1);
+				case SETE -> assign.f(c == 0 ? 1 : 0);
+				case SETG -> assign.f(0 < c ? 1 : 0);
+				case SETGE -> assign.f(0 <= c ? 1 : 0);
+				case SETL -> assign.f(c < 0 ? 1 : 0);
+				case SETLE -> assign.f(c <= 0 ? 1 : 0);
+				case SETNE -> assign.f(c != 0 ? 1 : 0);
+				case SHL -> assign.f(source0 << source1);
+				case SHR -> assign.f(source0 >> source1);
+				case SUB -> assign.f(setFlags(source0 - source1));
+				case SYSCALL -> {
 					p0 = (int) (regs[eax] & 0xFF);
 					p1 = (int) regs[edi];
 					p2 = (int) regs[esi];
@@ -382,12 +315,9 @@ public class Amd64Interpret {
 					else
 						rc = fail("invalid syscall " + regs[eax]);
 					regs[eax] = rc;
-					break;
-				case XOR:
-					assign.f(setFlags(source0 ^ source1));
-					break;
-				default:
-					fail("unknown instruction " + instruction.insn);
+				}
+				case XOR -> assign.f(setFlags(source0 ^ source1));
+				default -> fail("unknown instruction " + instruction.insn);
 				}
 			} catch (Exception ex) {
 				Log_.info(state(eip_, instruction));
@@ -461,32 +391,24 @@ public class Amd64Interpret {
 	}
 
 	private LngSink assignMemory(long address, int size) {
-		LngSink assign;
 		var index = index(address);
-		if (size == 1)
-			assign = i -> mem.put(index, (byte) i);
-		else if (size == 2)
-			assign = i -> mem.putShort(index, (short) i);
-		else if (size == 4)
-			assign = i -> mem.putInt(index, (int) i);
-		else if (size == 8)
-			assign = i -> mem.putLong(index, i);
-		else
-			assign = null;
-		return assign;
+		return switch (size) {
+		case 1 -> i -> mem.put(index, (byte) i);
+		case 2 -> i -> mem.putShort(index, (short) i);
+		case 4 -> i -> mem.putInt(index, (int) i);
+		case 8 -> i -> mem.putLong(index, i);
+		default -> null;
+		};
 	}
 
 	private long trim(long i, int size) {
-		if (size == 1)
-			return (byte) i;
-		else if (size == 2)
-			return (short) i;
-		else if (size == 4)
-			return (int) i;
-		else if (size == 8)
-			return i;
-		else
-			return i;
+		return switch (size) {
+		case 1 -> (byte) i;
+		case 2 -> (short) i;
+		case 4 -> (int) i;
+		case 8 -> i;
+		default -> i;
+		};
 	}
 
 	private long address(OpMem opMem) {
