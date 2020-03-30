@@ -35,13 +35,15 @@ Promise.resolve({})
 	let fetchBase = { cache: 'no-cache', credentials: 'omit', redirect: 'follow', referrer: 'no-referrer', };
 
 	let view;
+	let componentLogin;
+	let componentOverlay;
 
 	let login = ({ username, password, }) => {
 		console.log('login()', username);
 
 		return Promise
 		.resolve()
-		.then(() => renderAgain(view, vm => ({ ...vm, overlay: { isOverlay: true, }, })))
+		.then(componentOverlay.enable)
 		.then(() => fetch('../token', {
 			...fetchBase,
 			mode: 'no-cors',
@@ -62,7 +64,7 @@ Promise.resolve({})
 			if (response.ok) return response.json(); else throw response.statusText;
 		})
 		.then(json => json.token)
-		.then(token => { renderAgain(view, vm => ({ ...vm, token, })); return token; })
+		.then(componentLogin.setToken)
 		.then(token => fetch('../api', {
 			...fetchBase,
 			headers: { 'Authorization': token, },
@@ -79,19 +81,20 @@ Promise.resolve({})
 			console.error('login()', error);
 			renderAgain(view, vm => ({ ...vm, token: error, }));
 		})
-		.finally(() => renderAgain(view, vm => ({ ...vm, overlay: { isOverlay: false, }, })));
+		.finally(componentOverlay.disable);
 	};
 
-	let component = (path, initvm, xhtml, envf) => {
+	let component = (path, initvm, xhtml, envf, intf) => {
 		let lens_ = lens.key(path);
 		let change = f => renderAgain(view, vm => ({ ...vm, [path]: f(vm[path]), }));
 		return {
 			init: () => renderAgain(view, vm => ({ ...vm, [path]: initvm, })),
 			view: rd.parse(`<rd_map v='vm.${path}'>${xhtml}</rd_map>`, envf(change)),
+			...intf(change),
 		};
 	};
 
-	let componentLogin = component(
+	componentLogin = component(
 		'login',
 		{ username: '', password: '', },
 		`
@@ -112,13 +115,20 @@ Promise.resolve({})
 				return { username: '', password: '', };
 			}),
 		}),
+		change => ({
+			setToken: token => change(vm => ({ ...vm, token, })),
+		}),
 	);
 
-	let componentOverlay = component(
+	componentOverlay = component(
 		'overlay',
-		{ isOverlay: false, },
-		`<div class='{ vm.isOverlay ? "overlay" : "" }'></div>`,
+		{ count: 0, },
+		`<div class='{ vm.count !== 0 ? "overlay" : "" }'></div>`,
 		change => ({}),
+		change => ({
+			enable: token => change(vm => ({ ...vm, count: vm.count + 1, })),
+			disable: token => change(vm => ({ ...vm, count: vm.count - 1, })),
+		}),
 	);
 
 	let view0 = rd.parse(`
