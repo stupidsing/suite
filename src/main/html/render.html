@@ -32,13 +32,80 @@ Promise.resolve({})
 .then(ns => {
 	let { fun: { lens, read, }, render: { rd, renderAgain, }, } = ns;
 
+	let component = (path, initvm, xhtml, envf, intf) => {
+		let lens_ = lens.key(path);
+		let change = f => renderAgain(view, vm => ({ ...vm, [path]: f(vm[path]), }));
+		return {
+			init: () => renderAgain(view, vm => ({ ...vm, [path]: initvm, })),
+			view: rd.parse(`<rd_map v='vm.${path}'>${xhtml}</rd_map>`, envf(change)),
+			...intf(change),
+		};
+	};
+
+	let login;
+	let view;
+
+	let componentLogin = component(
+		'login',
+		{ username: '', password: '', },
+		`
+			<font face='Monospac821 BT, Monaco, Consolas'>
+				<form name='login'>
+					Username <input rd_on_input='env.setUsername(ev.target.value)' value='{ vm.username }' type='text' autofocus='autofocus' /><br />
+					Password <input rd_on_input='env.setPassword(ev.target.value)' value='{ vm.password }' type='password' /><br />
+					<input type='button' value='Login' rd_on_click='env.handleLogin()' /><br />
+					token: { vm.token }
+				</form>
+			</font>
+		`,
+		change => ({
+			setUsername: username => change(vm => ({ ...vm, username, })),
+			setPassword: password => change(vm => ({ ...vm, password, })),
+			handleLogin: () => change(vm => {
+				login(vm);
+				return { username: '', password: '', };
+			}),
+		}),
+		change => ({
+			setToken: token => change(vm => ({ ...vm, token, })),
+		}),
+	);
+
+	let componentNotification = component(
+		'notification',
+		{ message: '', },
+		`
+			<div style='
+				background: #DDDDDD;
+				bottom: 0;
+				font-family: Oswald, monospace;
+				left: 0;
+				position: fixed;
+				text-align: center;
+				width: 100%;'>
+				<p>{ vm.message }</p>
+			</div>
+		`,
+		change => ({}),
+		change => ({
+			setMessage: token => change(vm => ({ ...vm, message, })),
+		}),
+	);
+
+	let componentOverlay = component(
+		'overlay',
+		{ count: 0, },
+		`<div class='{ vm.count !== 0 ? "overlay" : "" }'></div>`,
+		change => ({}),
+		change => ({
+			enable: token => change(vm => ({ ...vm, count: vm.count + 1, })),
+			disable: token => change(vm => ({ ...vm, count: vm.count - 1, })),
+		}),
+	);
+
 	let fetchBase = { cache: 'no-cache', credentials: 'omit', redirect: 'follow', referrer: 'no-referrer', };
 
-	let view;
-	let componentLogin;
-	let componentOverlay;
-
-	let login = ({ username, password, }) => {
+	login = ({ username, password, }) => {
 		console.log('login()', username);
 
 		return Promise
@@ -84,56 +151,10 @@ Promise.resolve({})
 		.finally(componentOverlay.disable);
 	};
 
-	let component = (path, initvm, xhtml, envf, intf) => {
-		let lens_ = lens.key(path);
-		let change = f => renderAgain(view, vm => ({ ...vm, [path]: f(vm[path]), }));
-		return {
-			init: () => renderAgain(view, vm => ({ ...vm, [path]: initvm, })),
-			view: rd.parse(`<rd_map v='vm.${path}'>${xhtml}</rd_map>`, envf(change)),
-			...intf(change),
-		};
-	};
-
-	componentLogin = component(
-		'login',
-		{ username: '', password: '', },
-		`
-			<font face='Monospac821 BT, Monaco, Consolas'>
-				<form name='login'>
-					Username <input rd_on_input='env.setUsername(ev.target.value)' value='{ vm.username }' type='text' autofocus='autofocus' /><br />
-					Password <input rd_on_input='env.setPassword(ev.target.value)' value='{ vm.password }' type='password' /><br />
-					<input type='button' value='Login' rd_on_click='env.handleLogin()' /><br />
-					token: { vm.token }
-				</form>
-			</font>
-		`,
-		change => ({
-			setUsername: username => change(vm => ({ ...vm, username, })),
-			setPassword: password => change(vm => ({ ...vm, password, })),
-			handleLogin: () => change(vm => {
-				login(vm);
-				return { username: '', password: '', };
-			}),
-		}),
-		change => ({
-			setToken: token => change(vm => ({ ...vm, token, })),
-		}),
-	);
-
-	componentOverlay = component(
-		'overlay',
-		{ count: 0, },
-		`<div class='{ vm.count !== 0 ? "overlay" : "" }'></div>`,
-		change => ({}),
-		change => ({
-			enable: token => change(vm => ({ ...vm, count: vm.count + 1, })),
-			disable: token => change(vm => ({ ...vm, count: vm.count - 1, })),
-		}),
-	);
-
 	let view0 = rd.parse(`
 		<span style='font-family: sans-serif;'>
 			<rd_component v='env.viewLogin' />
+			<rd_component v='env.viewNotification' />
 			<rd_component v='env.viewOverlay' />
 
 			<rd_map v='vm.message'>
@@ -184,6 +205,7 @@ Promise.resolve({})
 		</span>
 	`, {
 		viewLogin: componentLogin.view,
+		viewNotification: componentNotification.view,
 		viewOverlay: componentOverlay.view,
 	});
 
@@ -197,7 +219,7 @@ Promise.resolve({})
 		rd.map(vm => vm.fruits,
 			rd.ul().child(rd.for(vm => vm, rd.li().text().rd())).rd()
 		),
-		rd.tag('button').child(rd.dom(vm => document.createTextNode('Close'))).listen('click', ev => close()).rd(),
+		rd.tag('button').child(rd.dom(vm => document.createTextNode('Close'))).listen('click', ev => closer()).rd(),
 	).rd();
 
 	view = rd
@@ -231,6 +253,7 @@ Promise.resolve({})
 	let interval1 = setInterval(() => renderAgain(view, upd1), 3000);
 
 	componentLogin.init();
+	componentNotification.init();
 	componentOverlay.init();
 	renderAgain(view, vm => ({ ...vm, sse, t, vscroll, message: 'hello world0', fruits: ['banana',], }));
 	renderAgain(view, vm => ({ ...vm, sse, t, vscroll, message: 'hello world1', fruits: ['apple', 'banana',], }));
