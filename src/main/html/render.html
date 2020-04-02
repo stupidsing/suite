@@ -33,7 +33,6 @@ Promise.resolve({})
 	let { fun: { lens, read, }, render: { rd, renderAgain, }, } = ns;
 
 	let component = (path, initvm, xhtml, envf, intf) => {
-		let lens_ = lens.key(path);
 		let change = f => renderAgain(view, vm => ({ ...vm, [path]: f(vm[path]), }));
 		return {
 			init: () => renderAgain(view, vm => ({ ...vm, [path]: initvm, })),
