@@ -32,6 +32,8 @@ Promise.resolve({})
 .then(ns => {
 	let { fun: { lens, read, }, render: { rd, renderAgain, }, } = ns;
 
+	let view;
+
 	let component = (path, initvm, xhtml, envf, intf) => {
 		let change = f => renderAgain(view, vm => ({ ...vm, [path]: f(vm[path]), }));
 		return {
@@ -42,7 +44,6 @@ Promise.resolve({})
 	};
 
 	let login;
-	let view;
 
 	let componentLogin = component(
 		'login',
