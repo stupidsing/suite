@@ -51,6 +51,7 @@ Promise.resolve({})
 		'login',
 		change => ({
 			init: () => change(vm => ({ username: '', password: '', })),
+			deinit: () => change(vm => null),
 			setToken: token => change(vm => ({ ...vm, token, })),
 		}),
 		`
@@ -77,6 +78,7 @@ Promise.resolve({})
 		'notification',
 		change => ({
 			init: () => change(vm => ({ message: '', })),
+			deinit: () => change(vm => null),
 			setMessage: token => change(vm => ({ ...vm, message, })),
 		}),
 		`
@@ -98,6 +100,7 @@ Promise.resolve({})
 		'overlay',
 		change => ({
 			init: () => change(vm => ({ count: 0, })),
+			deinit: () => change(vm => null),
 			enable: token => change(vm => ({ ...vm, count: vm.count + 1, })),
 			disable: token => change(vm => ({ ...vm, count: vm.count - 1, })),
 		}),
