@@ -40,7 +40,6 @@ Promise.resolve({})
 			return ({ ...vm, [path]: f(vm_), });
 		});
 		return {
-			init: () => renderAgain(view, vm => ({ ...vm, [path]: initvm, })),
 			view: rd.parse(`<rd_map v='vm.${path}'>${xhtml}</rd_map>`, privatef(change)),
 			...publicf(change),
 		};
