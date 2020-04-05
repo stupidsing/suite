@@ -47,14 +47,16 @@ Promise.resolve({})
 
 	let login;
 
-	let componentLogin = component(
-		'login',
-		change => ({
-			init: () => change(vm => ({ username: '', password: '', })),
-			deinit: () => change(vm => null),
-			setToken: token => change(vm => ({ ...vm, token, })),
-		}),
-		`
+	let componentLogin = (vm, cudf) => {
+		let vm_ = null;
+		let view_;
+
+		let change = f => {
+			let pvm_ = vm_;
+			view_(pvm_, vm_ = f(pvm_), cudf);
+		};
+
+		view_ = rd.parse(`
 			<font face='Monospac821 BT, Monaco, Consolas'>
 				<form name='login'>
 					Username <input rd_on_input='env.setUsername(ev.target.value)' value='{ vm.username }' type='text' autofocus='autofocus' /><br />
@@ -63,16 +65,15 @@ Promise.resolve({})
 					token: { vm.token }
 				</form>
 			</font>
-		`,
-		change => ({
+		`, {
 			setUsername: username => change(vm => ({ ...vm, username, })),
 			setPassword: password => change(vm => ({ ...vm, password, })),
-			handleLogin: () => change(vm => {
-				login(vm);
-				return { username: '', password: '', };
-			}),
-		}),
-	);
+			handleLogin: () => login(vm).then(token => change(vm => ({ ...vm, username: '', password: '', token, }))),
+		});
+
+		change(vm_ => ({ username: '', password: '' }));
+		return { change, };
+	};
 
 	let componentNotification = component(
 		'notification',
@@ -136,31 +137,33 @@ Promise.resolve({})
 			if (response.ok) return response.json(); else throw response.statusText;
 		})
 		.then(json => json.token)
-		.then(componentLogin.setToken)
 		.then(token => fetch('../api', {
 			...fetchBase,
 			headers: { 'Authorization': token, },
 			method: 'GET',
-		}))
+		})
 		.then(response => {
 			if (response.ok) return response.text(); else throw response.statusText;
 		})
 		.then(message => {
 			renderAgain(view, vm => ({ ...vm, message, }));
 			console.log('login() = ', message);
-		})
+			return token;
+		}))
 		.catch(error => {
 			console.error('login()', error);
-			renderAgain(view, vm => ({ ...vm, token: error, }));
+			return 'error';
 		})
 		.finally(componentOverlay.disable);
 	};
 
 	let view0 = rd.parse(`
 		<span style='font-family: sans-serif;'>
-			<rd_component v='env.viewLogin' />
-			<rd_component v='env.viewNotification' />
-			<rd_component v='env.viewOverlay' />
+			<rd_map v='true'>
+				<rd_component_isolated v='env.componentLogin' />
+			</rd_map>
+			<rd_component v='env.componentNotification' />
+			<rd_component v='env.componentOverlay' />
 
 			<rd_map v='vm.message'>
 				<p style='font-weight: bold;'>
@@ -209,9 +212,9 @@ Promise.resolve({})
 			<button rd_on_click='closer()'>Close</button>
 		</span>
 	`, {
-		viewLogin: componentLogin.view,
-		viewNotification: componentNotification.view,
-		viewOverlay: componentOverlay.view,
+		componentLogin,
+		componentNotification,
+		componentOverlay,
 	});
 
 	let view1 = rd.span().children(
@@ -257,7 +260,6 @@ Promise.resolve({})
 	let interval0 = setInterval(() => renderAgain(view, upd0), 1000);
 	let interval1 = setInterval(() => renderAgain(view, upd1), 3000);
 
-	componentLogin.init();
 	componentNotification.init();
 	componentOverlay.init();
 	renderAgain(view, vm => ({ ...vm, sse, t, vscroll, message: 'hello world0', fruits: ['banana',], }));

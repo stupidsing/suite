@@ -452,7 +452,27 @@ let render = evalscript('fun.js').then(({ read, }) => {
 			} else if (node0.nodeType == Node.ELEMENT_NODE)
 				if (node0.localName == 'rd_component')
 					return eval(node0.getAttribute('v'));
-				else if (node0.localName == 'rd_for')
+				else if (node0.localName == 'rd_component_isolated') {
+					let icf = eval(node0.getAttribute('v'));
+					let ics = {};
+					return (vm0, vm1, cudf) => {
+						if (isClear(vm0, vm1))
+							;
+						else {
+							if (vm0 != null) {
+								ics[vm0].change(vm_ => null);
+								delete ics[vm0];
+								cudf.delete();
+							}
+							if (vm1 != null) {
+								let span = document.createElement('span');
+								cudf.create(span);
+								let cudf_ = r_cud({ childRef: span, }, null, span.lastChild); 
+								ics[vm1] = icf(vm1, cudf_);
+							}
+						}
+					};
+				} else if (node0.localName == 'rd_for')
 					return rd_map(parseExpr(node0.getAttribute('v')), rd_for(vm => vm, parseDomNodes(node0.childNodes)));
 				else if (node0.localName == 'rd_if')
 					return rd_ifElse(parseExpr(node0.getAttribute('v')), parseDomNodes(node0.childNodes), (vm0, vm1, cudf) => {});
@@ -508,11 +528,12 @@ let render = evalscript('fun.js').then(({ read, }) => {
 	};
 
 	let pvm = null;
+	let target = document.getElementById('target');
+	let cudf_ = r_cud({ childRef: target, }, null, target.lastChild);
 
 	let renderAgain = (renderer, f) => {
-		let target = document.getElementById('target');
 		let ppvm = pvm;
-		renderer(ppvm, pvm = f(pvm), r_cud({ childRef: target, }, null, target.lastChild));
+		renderer(ppvm, pvm = f(pvm), cudf_);
 	};
 
 	return { rd, renderAgain, };
