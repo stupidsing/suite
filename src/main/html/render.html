@@ -34,7 +34,7 @@ Promise.resolve({})
 
 	let view;
 
-	let component = (path, publicf, xhtml, privatef) => {
+	let component = (path, publicf, privatef, xhtml) => {
 		let change = f => renderAgain(view, vm => {
 			let vm_ = vm != null ? vm[path] : null;
 			return ({ ...vm, [path]: f(vm_), });
@@ -45,9 +45,7 @@ Promise.resolve({})
 		};
 	};
 
-	let login;
-
-	let componentLogin = (vm, cudf) => {
+	let isolatedComponent = (init, publicf, privatef, xhtml) => (vm, cudf) => {
 		let vm_ = null;
 		let view_;
 
@@ -56,11 +54,37 @@ Promise.resolve({})
 			view_(pvm_, vm_ = f(pvm_), cudf);
 		};
 
-		view_ = rd.parse({
+		let changeAsync = f => {
+			let vm0 = vm_;
+			f(vm0).then(vm1 => {
+				if (vm_ === vm0) {
+					view_(vm_, vm1, cudf);
+					vm_ = vm1;
+				} else
+					console.error('race condition in view updates');
+			});
+		};
+
+		view_ = rd.parse(privatef(change, changeAsync), xhtml);
+
+		return {
+			init: () => change(vm_ => init),
+			deinit: () => change(vm_ => null),
+			...publicf(change),
+		};
+	};
+
+	let login;
+
+	let componentLogin = isolatedComponent(
+		{ username: 'ywsing', password: '' },
+		(change, changeAsync) => ({}),
+		(change, changeAsync) => ({
 			setUsername: username => change(vm => ({ ...vm, username, })),
 			setPassword: password => change(vm => ({ ...vm, password, })),
-			handleLogin: () => login(vm).then(token => change(vm => ({ ...vm, username: '', password: '', token, }))),
-		}, `
+			handleLogin: () => changeAsync(vm => login(vm).then(token => ({ ...vm, username: '', password: '', token, }))),
+		}),
+		`
 			<font face='Monospac821 BT, Monaco, Consolas'>
 				<form name='login'>
 					Username <input rd_on_input='env.setUsername(ev.target.value)' value='{ vm.username }' type='text' autofocus='autofocus' /><br />
@@ -71,10 +95,6 @@ Promise.resolve({})
 			</font>
 		`);
 
-		change(vm_ => ({ username: '', password: '' }));
-		return { change, };
-	};
-
 	let componentNotification = component(
 		'notification',
 		change => ({
@@ -82,6 +102,7 @@ Promise.resolve({})
 			deinit: () => change(vm => null),
 			setMessage: token => change(vm => ({ ...vm, message, })),
 		}),
+		change => ({}),
 		`
 			<div style='
 				background: #DDDDDD;
@@ -94,7 +115,6 @@ Promise.resolve({})
 				<p>{ vm.message }</p>
 			</div>
 		`,
-		change => ({}),
 	);
 
 	let componentOverlay = component(
@@ -105,8 +125,8 @@ Promise.resolve({})
 			enable: token => change(vm => ({ ...vm, count: vm.count + 1, })),
 			disable: token => change(vm => ({ ...vm, count: vm.count - 1, })),
 		}),
-		`<div class='{ vm.count !== 0 ? "overlay" : "" }'></div>`,
 		change => ({}),
+		`<div class='{ vm.count !== 0 ? "overlay" : "" }'></div>`,
 	);
 
 	let fetchBase = { cache: 'no-cache', credentials: 'omit', redirect: 'follow', referrer: 'no-referrer', };

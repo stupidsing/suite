@@ -460,7 +460,7 @@ let render = evalscript('fun.js').then(({ read, }) => {
 							;
 						else {
 							if (vm0 != null) {
-								ics[vm0].change(vm_ => null);
+								ics[vm0].deinit();
 								delete ics[vm0];
 								cudf.delete();
 							}
@@ -468,7 +468,7 @@ let render = evalscript('fun.js').then(({ read, }) => {
 								let span = document.createElement('span');
 								cudf.create(span);
 								let cudf_ = r_cud({ childRef: span, }, null, span.lastChild); 
-								ics[vm1] = icf(vm1, cudf_);
+								(ics[vm1] = icf(vm1, cudf_)).init();
 							}
 						}
 					};
