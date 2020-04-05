@@ -512,27 +512,7 @@ let render = evalscript('fun.js').then(({ read, }) => {
 					return rd_ifElse(parseExpr(node0.getAttribute('v')), parseDomNodes(node0.childNodes), (vm0, vm1, cudf) => {});
 				else if (node0.localName == 'rd_map')
 					return rd_map(parseExpr(node0.getAttribute('v')), parseDomNodes(node0.childNodes));
-				else if (node0.localName == 'rd_span_component') {
-					let icf = eval(node0.getAttribute('v'));
-					let ics = {};
-					return (vm0, vm1, cudf) => {
-						if (isClear(vm0, vm1))
-							;
-						else {
-							if (vm0 != null) {
-								ics[vm0].deinit();
-								delete ics[vm0];
-								cudf.delete();
-							}
-							if (vm1 != null) {
-								let span = document.createElement('span');
-								cudf.create(span);
-								let cudf_ = r_cud({ childRef: span, }, null, span.lastChild);
-								(ics[vm1] = icf(vm1, cudf_)).init();
-							}
-						}
-					};
-				} else if (node0.localName == 'rd_switch')
+				else if (node0.localName == 'rd_switch')
 					return rd_switch(Object.fromEntries(Array
 						.from(node0.childNodes)
 						.filter(n => n.nodeType == Node.ELEMENT_NODE)
