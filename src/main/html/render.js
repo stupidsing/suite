@@ -172,6 +172,37 @@ let render = evalscript('fun.js').then(({ read, }) => {
 				cudf.childRef.style[key] = null;
 	};
 
+	let rd_component = (initf, publicf, privatef, xhtml) => (vm, cudf) => {
+		let vm_ = null;
+		let view;
+
+		let change = f => {
+			let pvm_ = vm_;
+			view(pvm_, vm_ = f(pvm_), cudf);
+		};
+
+		let changeAsync = f => {
+			let vm0 = vm_;
+			f(vm0).then(vm1 => {
+				if (vm_ === vm0) {
+					view(vm_, vm1, cudf);
+					vm_ = vm1;
+				} else
+					console.error('race condition in view updates');
+			});
+		};
+
+		let muts = { change, changeAsync, };
+
+		view = rd.parse(privatef(muts), xhtml);
+
+		return {
+			init: () => change(vm_ => initf(vm)),
+			deinit: () => change(vm_ => null),
+			...publicf(muts),
+		};
+	};
+
 	let rd_dom = elementf => (vm0, vm1, cudf) => {
 		if (isClear(vm0, vm1))
 			;
@@ -417,35 +448,6 @@ let render = evalscript('fun.js').then(({ read, }) => {
 					rdb_tag('div').style({ height: rowHeight + 'px', }).child(rd_item).rd()))
 				.rd()
 			);
-	};
-
-	let rd_component = (initf, publicf, privatef, xhtml) => (vm, cudf) => {
-		let vm_ = null;
-		let view;
-
-		let change = f => {
-			let pvm_ = vm_;
-			view(pvm_, vm_ = f(pvm_), cudf);
-		};
-
-		let changeAsync = f => {
-			let vm0 = vm_;
-			f(vm0).then(vm1 => {
-				if (vm_ === vm0) {
-					view(vm_, vm1, cudf);
-					vm_ = vm1;
-				} else
-					console.error('race condition in view updates');
-			});
-		};
-
-		view = rd.parse(privatef({ change, changeAsync, }), xhtml);
-
-		return {
-			init: () => change(vm_ => initf(vm)),
-			deinit: () => change(vm_ => null),
-			...publicf(change),
-		};
 	};
 
 	let rd_parse = (env, s) => {
