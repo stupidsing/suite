@@ -54,7 +54,7 @@ Promise
 
 	let handle = {};
 
-	let viewCell = rd.parse(`
+	let viewCell = rd.parse({ ...fiveinarow, handle, }, `
 		<span draggable='true'
 			rd_on_click='env.handle.click(ev, vm)'
 			rd_on_dragend='env.handle.dragend(ev, vm)'
@@ -77,23 +77,23 @@ Promise
 				<rd_if v='vm != null'>{ env.icons[vm] }</rd_if>
 			</rd_map>
 		</span>
-	`, { ...fiveinarow, handle, });
+	`);
 
-	let viewCells = rd.parse(`
+	let viewCells = rd.parse({ ...fiveinarow, viewCell, }, `
 		<tr>
 			<rd_for>
-				<td><rd_component v='env.viewCell' /></td>
+				<td><rd_view v='env.viewCell' /></td>
 			</rd_for>
 		</tr>
-	`, { ...fiveinarow, viewCell, });
+	`);
 
-	let view = rd.parse(`
+	let view = rd.parse({ ...fiveinarow, handle, viewCells, }, `
 		<span style='display: flex; flex-direction: column;'>
 			<span style='align-items: center; display: flex; justify-content: space-between;'>
 				<span>
 					<rd_map v='vm.nextstones'>
 						<table style='border-spacing: 0;'>
-							<rd_component v='env.viewCells' />
+							<rd_view v='env.viewCells' />
 						</table>
 					</rd_map>
 				</span>
@@ -104,7 +104,7 @@ Promise
 				<table style='border-spacing: 0;'>
 					<rd_for>
 						<rd_map v='vm.indices.map(i => vm[i])'>
-							<rd_component v='env.viewCells' />
+							<rd_view v='env.viewCells' />
 						</rd_map>
 					</rd_for>
 				</table>
@@ -123,7 +123,7 @@ Promise
 				</div>
 			</rd_map>
 		</span>
-	`, { ...fiveinarow, handle, viewCells, });
+	`);
 
 	let game = fiveinarow.game(cc, view);
 	for (let [k, v] of Object.entries(game.handle)) handle[k] = v;

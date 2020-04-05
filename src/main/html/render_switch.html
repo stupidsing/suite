@@ -20,7 +20,7 @@ Promise.resolve({})
 .then(ns => {
 	let { fun: { lens, read, }, render: { rd, renderAgain, }, } = ns;
 
-	let view = rd.parse(`
+	let view = rd.parse({}, `
 		<span>
 			<rd_switch>
 				<span k='a'>{ vm.a }</span>

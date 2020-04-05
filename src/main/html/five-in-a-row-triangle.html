@@ -24,7 +24,7 @@ Promise
 .then(ns => evalscript('fun.js').then(m => ({ ...ns, fun: m, })))
 .then(ns => evalscript('render.js').then(m => ({ ...ns, render: m, })))
 .then(({ fiveinarow, fun: { rand, range, }, render: { rd, renderAgain, }, }) => {
-    let view = rd.parse(`
+    let view = rd.parse({ ...fiveinarow, }, `
         <span style='display: flex; flex-direction:column; font-size: 36px;'>
             <rd_map v='vm.board'>
                 <rd_for v='vm.indices.map(i => ({ l: vm[i], r: vm[i + 1], }))'>
@@ -108,7 +108,7 @@ Promise
                 </rd_for>
             </rd_map>
         </span>
-    `, { ...fiveinarow, });
+    `);
 
     renderAgain(view, vm => ({
         board: {

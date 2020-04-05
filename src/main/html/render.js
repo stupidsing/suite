@@ -419,7 +419,7 @@ let render = evalscript('fun.js').then(({ read, }) => {
 			);
 	};
 
-	let rd_parse = (s, env) => {
+	let rd_parse = (env, s) => {
 		let parseLambda = (v, s) => {
 			let e = s.startsWith('{') && s.endsWith('}') ? s : '(' + s + ')';
 			return eval(v + ' => ' + e);
@@ -483,6 +483,8 @@ let render = evalscript('fun.js').then(({ read, }) => {
 						.from(node0.childNodes)
 						.filter(n => n.nodeType == Node.ELEMENT_NODE)
 						.map(n => [n.getAttribute('k'), parseDom(n),])));
+				else if (node0.localName == 'rd_view')
+					return eval(node0.getAttribute('v'));
 				else {
 					let name = node0.localName;
 					let as = {}, cs = parseDomNodes(node0.childNodes);

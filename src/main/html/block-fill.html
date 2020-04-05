@@ -33,28 +33,28 @@ Promise.resolve({})
 		let dragtarget = null;
 
 		return {
-			click: (vmc, ev) => renderAgain(view, vm => vmsetcell(vm, { ...vmc, d: !vmc.d, })),
-			dragend: (vm, ev) => {
+			click: (ev, vmc) => renderAgain(view, vm => vmsetcell(vm, { ...vmc, d: !vmc.d, })),
+			dragend: (ev, vm) => {
 				renderAgain(view, vm => {
 					vm = vmsetcell(vm, { ...dragsource, d: dragtarget.d, });
 					vm = vmsetcell(vm, { ...dragtarget, d: dragsource.d, });
 					return vm;
 				});
 			},
-			dragenter: (vm, ev) => dragtarget = vm,
-			dragstart: (vm, ev) => dragsource = vm,
+			dragenter: (ev, vm) => dragtarget = vm,
+			dragstart: (ev, vm) => dragsource = vm,
 		};
 	})();
 
-	let viewCell = rd.parse(`
+	let viewCell = rd.parse({}, `
 		<div draggable='true'
-			rd_on_click='handle.click(vm, ev)'
-			rd_on_dragend='handle.dragend(vm, ev)'
-			rd_on_dragenter='handle.dragenter(vm, ev)'
+			rd_on_click='handle.click(ev, vm)'
+			rd_on_dragend='handle.dragend(ev, vm)'
+			rd_on_dragenter='handle.dragenter(ev, vm)'
 			rd_on_dragexit='{}'
 			rd_on_dragleave='{}'
 			rd_on_dragover='{ ev.dataTransfer.dropEffect = "move"; }'
-			rd_on_dragstart='handle.dragstart(vm, ev)'
+			rd_on_dragstart='handle.dragstart(ev, vm)'
 			rd_on_drop='{}'
 			style='
 				background: { vm.d ? "#888888" : "#DDDDDD" };
@@ -69,14 +69,14 @@ Promise.resolve({})
 		</div>
 	`);
 
-	let view = rd.parse(`
+	let view = rd.parse({ viewCell, }, `
 		<span>
 			<table style='font-family: monospace; font-size: 20; user-select: none;'>
 				<rd_for>
 					<tr>
 						<rd_for>
 							<td>
-								<rd_component v='env.viewCell' />
+								<rd_view v='env.viewCell' />
 							</td>
 						</rd_for>
 					</tr>
@@ -84,7 +84,7 @@ Promise.resolve({})
 			</table>
 			<button rd_on_click='closer()'>Close</button>
 		</span>
-	`, { viewCell, });
+	`);
 
 	// let interval = setInterval(() => renderAgain(view, vm => { vm[1][1].d = !vm[1][1].d; return JSON.parse(JSON.stringify(vm)); }), 500);
 

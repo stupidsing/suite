@@ -101,7 +101,7 @@ Promise
 
 	let handle = {};
 
-	let viewCell = rd.parse(`
+	let viewCell = rd.parse({ ...fiveinarow, handle, }, `
 		<div
 			class='hex'
 			rd_on_click='env.handle.click(ev, vm)'
@@ -123,22 +123,22 @@ Promise
 			</div>
 			<div class='part' style='border-top: 15px solid { vm.selected ? env.palette[2] : "#DDDDDD" };'></div>
 		</div>
-	`, { ...fiveinarow, handle, });
+	`);
 
-	let viewCells = rd.parse(`
+	let viewCells = rd.parse({ ...fiveinarow, handle, viewCell, }, `
 		<div class='hex-row' style='margin-left: { vm[0].x * 26.5 + vm[0].y * 53 }px'>
 			<rd_for>
-				<rd_component v='env.viewCell' />
+				<rd_view v='env.viewCell' />
 			</rd_for>
 		</div>
-	`, { ...fiveinarow, handle, viewCell, });
+	`);
 
-	let view = rd.parse(`
+	let view = rd.parse({ ...fiveinarow, handle, viewCells, }, `
 		<span style='display: flex; flex-direction: column;'>
 			<span style='align-items: center; display: flex; justify-content: space-between;'>
 				<span>
 					<rd_map v='vm.nextstones'>
-						<rd_component v='env.viewCells' />
+						<rd_view v='env.viewCells' />
 					</rd_map>
 				</span>
 				<span style='color: { env.palette[4] }; font-family: Oswald, monospace; margin-right: 16px;'>{ vm.score }</span>
@@ -149,7 +149,7 @@ Promise
 			<rd_map v='vm.board'>
 				<rd_for>
 					<rd_map v='vm.indices.map(i => vm[i])'>
-						<rd_component v='env.viewCells' />
+						<rd_view v='env.viewCells' />
 					</rd_map>
 				</rd_for>
 			</rd_map>
@@ -169,7 +169,7 @@ Promise
 				</rd_if>
 			</rd_map>
 		</span>
-	`, { ...fiveinarow, handle, viewCells, });
+	`);
 
 	let game = fiveinarow.game(cc, view);
 	for (let [k, v] of Object.entries(game.handle)) handle[k] = v;
