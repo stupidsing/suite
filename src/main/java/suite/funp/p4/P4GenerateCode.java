@@ -403,14 +403,14 @@ public class P4GenerateCode {
 				default -> switch (result.nRegs) {
 					case 1 -> {
 						op0 = p4deOp.decompose(fd, pointer, start, size);
-						return op0 != null //
+						yield op0 != null //
 								? returnOp(op0) //
 								: mfp.g().map((start_, r) -> returnOp(amd64.mem(r, start_, size)));
 					}
 					case 2 -> {
 						op0 = p4deOp.decompose(fd, pointer, start, ps);
 						op1 = p4deOp.decompose(fd, pointer, start + ps, ps);
-						return op0 != null && op1 != null //
+						yield op0 != null && op1 != null //
 								? return2Op(op0, op1)//
 								: mfp.g().map((p, r) -> return2Op(amd64.mem(r, p, ps), amd64.mem(r, p + ps, ps)));
 					}

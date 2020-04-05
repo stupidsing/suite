@@ -193,18 +193,18 @@ public class Amd64Interpret {
 					p1 = (int) regs[ebx];
 					p2 = (int) regs[ecx];
 					p3 = (int) regs[edx];
-					rc = (byte) source0 == -128 ? switch (p0) {
-					case 0x01 -> {
+					if (p0 == 0x01)
 						return p1;
-					}
-					case 0x03 -> io.read(p1, p2, p3);
-					case 0x04 -> io.write(p1, p2, p3);
-					case 0x5A -> { // map
-						var size = mem.getInt(index(p1) + 4);
-						yield size < posData.length() ? baseData.s : fail();
-					}
-					default -> fail("invalid int 80h call " + regs[eax]);
-					} : fail();
+					else
+						rc = (byte) source0 == -128 ? switch (p0) {
+						case 0x03 -> io.read(p1, p2, p3);
+						case 0x04 -> io.write(p1, p2, p3);
+						case 0x5A -> { // map
+							var size = mem.getInt(index(p1) + 4);
+							yield size < posData.length() ? baseData.s : fail();
+						}
+						default -> fail("invalid int 80h call " + regs[eax]);
+						} : fail();
 					regs[eax] = rc;
 				}
 				case JE -> jumpIf(c == 0, labelAddressByInsnIndex.get(source0));
@@ -269,15 +269,15 @@ public class Amd64Interpret {
 					p1 = (int) regs[edi];
 					p2 = (int) regs[esi];
 					p3 = (int) regs[edx];
-					regs[eax] = switch (p0) {
-					case 0x00 -> io.read(p1, p2, p3);
-					case 0x01 -> io.write(p1, p2, p3);
-					case 0x09 -> p2 < posData.length() ? baseData.s : fail(); // map
-					case 0x3C -> {
-						return (int) p1; // exit
-					}
-					default -> fail("invalid syscall " + regs[eax]);
-					};
+					if (p0 == 0x3C)
+						return (int) p1;
+					else
+						regs[eax] = switch (p0) {
+						case 0x00 -> io.read(p1, p2, p3);
+						case 0x01 -> io.write(p1, p2, p3);
+						case 0x09 -> p2 < posData.length() ? baseData.s : fail(); // map
+						default -> fail("invalid syscall " + regs[eax]);
+						};
 				}
 				case XOR -> assign.f(setFlags(source0 ^ source1));
 				default -> fail("unknown instruction " + instruction.insn);
