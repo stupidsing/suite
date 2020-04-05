@@ -451,7 +451,7 @@ let render = evalscript('fun.js').then(({ read, }) => {
 				return rd_dom(vm => document.createComment(sf(vm)));
 			} else if (node0.nodeType == Node.ELEMENT_NODE)
 				if (node0.localName == 'rd_component')
-					return eval(node0.getAttribute('v'));
+					return eval(node0.getAttribute('v')).view;
 				else if (node0.localName == 'rd_component_isolated') {
 					let icf = eval(node0.getAttribute('v'));
 					let ics = {};
