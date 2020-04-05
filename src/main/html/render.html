@@ -45,41 +45,12 @@ Promise.resolve({})
 		};
 	};
 
-	let isolatedComponent = (init, publicf, privatef, xhtml) => (vm, cudf) => {
-		let vm_ = null;
-		let view_;
-
-		let change = f => {
-			let pvm_ = vm_;
-			view_(pvm_, vm_ = f(pvm_), cudf);
-		};
-
-		let changeAsync = f => {
-			let vm0 = vm_;
-			f(vm0).then(vm1 => {
-				if (vm_ === vm0) {
-					view_(vm_, vm1, cudf);
-					vm_ = vm1;
-				} else
-					console.error('race condition in view updates');
-			});
-		};
-
-		view_ = rd.parse(privatef(change, changeAsync), xhtml);
-
-		return {
-			init: () => change(vm_ => init),
-			deinit: () => change(vm_ => null),
-			...publicf(change),
-		};
-	};
-
 	let login;
 
-	let componentLogin = isolatedComponent(
-		{ username: 'ywsing', password: '' },
-		(change, changeAsync) => ({}),
-		(change, changeAsync) => ({
+	let componentLogin = rd.component(
+		vm => ({ username: 'ywsing', password: '' }),
+		({}) => ({}),
+		({ change, changeAsync, }) => ({
 			setUsername: username => change(vm => ({ ...vm, username, })),
 			setPassword: password => change(vm => ({ ...vm, password, })),
 			handleLogin: () => changeAsync(vm => login(vm).then(token => ({ ...vm, username: '', password: '', token, }))),
