@@ -421,25 +421,25 @@ let render = evalscript('fun.js').then(({ read, }) => {
 
 	let rd_component = (initf, publicf, privatef, xhtml) => (vm, cudf) => {
 		let vm_ = null;
-		let view_;
+		let view;
 
 		let change = f => {
 			let pvm_ = vm_;
-			view_(pvm_, vm_ = f(pvm_), cudf);
+			view(pvm_, vm_ = f(pvm_), cudf);
 		};
 
 		let changeAsync = f => {
 			let vm0 = vm_;
 			f(vm0).then(vm1 => {
 				if (vm_ === vm0) {
-					view_(vm_, vm1, cudf);
+					view(vm_, vm1, cudf);
 					vm_ = vm1;
 				} else
 					console.error('race condition in view updates');
 			});
 		};
 
-		view_ = rd.parse(privatef({ change, changeAsync, }), xhtml);
+		view = rd.parse(privatef({ change, changeAsync, }), xhtml);
 
 		return {
 			init: () => change(vm_ => initf(vm)),
