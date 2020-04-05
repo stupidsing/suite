@@ -45,12 +45,10 @@ Promise.resolve({})
 		};
 	};
 
-	let login;
-
 	let componentLogin = (overlay, unoverlay) => {
 		let fetchBase = { cache: 'no-cache', credentials: 'omit', redirect: 'follow', referrer: 'no-referrer', };
 
-		login = ({ username, password, }) => {
+		let login = ({ username, password, }) => {
 			console.log('login()', username);
 
 			return Promise
