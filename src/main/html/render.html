@@ -47,24 +47,74 @@ Promise.resolve({})
 
 	let login;
 
-	let componentLogin = rd.component(
-		vm => ({ username: 'ywsing', password: '' }),
-		({}) => ({}),
-		({ change, changeAsync, }) => ({
-			setUsername: username => change(vm => ({ ...vm, username, })),
-			setPassword: password => change(vm => ({ ...vm, password, })),
-			handleLogin: () => changeAsync(vm => login(vm).then(token => ({ ...vm, username: '', password: '', token, }))),
-		}),
-		`
-			<font face='Monospac821 BT, Monaco, Consolas'>
-				<form name='login'>
-					Username <input rd_on_input='env.setUsername(ev.target.value)' value='{ vm.username }' type='text' autofocus='autofocus' /><br />
-					Password <input rd_on_input='env.setPassword(ev.target.value)' value='{ vm.password }' type='password' /><br />
-					<input type='button' value='Login' rd_on_click='env.handleLogin()' /><br />
-					token: { vm.token }
-				</form>
-			</font>
-		`);
+	let componentLogin = (overlay, unoverlay) => {
+		let fetchBase = { cache: 'no-cache', credentials: 'omit', redirect: 'follow', referrer: 'no-referrer', };
+
+		login = ({ username, password, }) => {
+			console.log('login()', username);
+
+			return Promise
+			.resolve()
+			.then(overlay)
+			.then(() => fetch('../token', {
+				...fetchBase,
+				mode: 'no-cors',
+				body: JSON.stringify({ username, password, }),
+				headers: { 'Content-Type': 'application/json', },
+				method: 'POST',
+			}))
+			.then(response => {
+				if (response.ok) return response.json(); else throw response.statusText;
+			})
+			.then(json => json.token)
+			.then(token => fetch('../token', {
+				...fetchBase,
+				headers: { 'Authorization': token, },
+				method: 'PATCH',
+			}))
+			.then(response => {
+				if (response.ok) return response.json(); else throw response.statusText;
+			})
+			.then(json => json.token)
+			.then(token => fetch('../api', {
+				...fetchBase,
+				headers: { 'Authorization': token, },
+				method: 'GET',
+			})
+			.then(response => {
+				if (response.ok) return response.text(); else throw response.statusText;
+			})
+			.then(message => {
+				renderAgain(view, vm => ({ ...vm, message, }));
+				console.log('login() = ', message);
+				return token;
+			}))
+			.catch(error => {
+				console.error('login()', error);
+				return 'error';
+			})
+			.finally(unoverlay);
+		};
+
+		return rd.span_component(
+			vm => ({ username: 'ywsing', password: '' }),
+			({}) => ({}),
+			({ change, changeAsync, }) => ({
+				setUsername: username => change(vm => ({ ...vm, username, })),
+				setPassword: password => change(vm => ({ ...vm, password, })),
+				handleLogin: () => changeAsync(vm => login(vm).then(token => ({ ...vm, username: '', password: '', token, }))),
+			}),
+			`
+				<font face='Monospac821 BT, Monaco, Consolas'>
+					<form name='login'>
+						Username <input rd_on_input='env.setUsername(ev.target.value)' value='{ vm.username }' type='text' autofocus='autofocus' /><br />
+						Password <input rd_on_input='env.setPassword(ev.target.value)' value='{ vm.password }' type='password' /><br />
+						<input type='button' value='Login' rd_on_click='env.handleLogin()' /><br />
+						token: { vm.token }
+					</form>
+				</font>
+			`);
+	};
 
 	let componentNotification = component(
 		'notification',
@@ -88,11 +138,9 @@ Promise.resolve({})
 		`,
 	);
 
-	let componentOverlay = component(
-		'overlay',
-		change => ({
-			init: () => change(vm => ({ count: 0, })),
-			deinit: () => change(vm => null),
+	let componentOverlay = rd.span_component(
+		vm => ({ count: 0, }),
+		({ change, }) => ({
 			enable: token => change(vm => ({ ...vm, count: vm.count + 1, })),
 			disable: token => change(vm => ({ ...vm, count: vm.count - 1, })),
 		}),
@@ -100,65 +148,32 @@ Promise.resolve({})
 		`<div class='{ vm.count !== 0 ? "overlay" : "" }'></div>`,
 	);
 
-	let fetchBase = { cache: 'no-cache', credentials: 'omit', redirect: 'follow', referrer: 'no-referrer', };
-
-	login = ({ username, password, }) => {
-		console.log('login()', username);
-
-		return Promise
-		.resolve()
-		.then(componentOverlay.enable)
-		.then(() => fetch('../token', {
-			...fetchBase,
-			mode: 'no-cors',
-			body: JSON.stringify({ username, password, }),
-			headers: { 'Content-Type': 'application/json', },
-			method: 'POST',
-		}))
-		.then(response => {
-			if (response.ok) return response.json(); else throw response.statusText;
-		})
-		.then(json => json.token)
-		.then(token => fetch('../token', {
-			...fetchBase,
-			headers: { 'Authorization': token, },
-			method: 'PATCH',
-		}))
-		.then(response => {
-			if (response.ok) return response.json(); else throw response.statusText;
-		})
-		.then(json => json.token)
-		.then(token => fetch('../api', {
-			...fetchBase,
-			headers: { 'Authorization': token, },
-			method: 'GET',
-		})
-		.then(response => {
-			if (response.ok) return response.text(); else throw response.statusText;
-		})
-		.then(message => {
-			renderAgain(view, vm => ({ ...vm, message, }));
-			console.log('login() = ', message);
-			return token;
-		}))
-		.catch(error => {
-			console.error('login()', error);
-			return 'error';
-		})
-		.finally(componentOverlay.disable);
+	let loginOverlay = vm => {
+		let co = componentOverlay(vm);
+		let cl = componentLogin(co.enable, co.disable)(vm);
+		return {
+			init: cudf => {
+				co.init(cudf);
+				cl.init(cudf);
+			},
+			deinit: cudf => {
+				cl.deinit(cudf);
+				co.deinit(cudf);
+			},
+		};
 	};
 
 	let view0 = rd.parse({
 		componentLogin,
 		componentNotification,
 		componentOverlay,
+		loginOverlay,
 	}, `
 		<span style='font-family: sans-serif;'>
 			<rd_map v='true'>
-				<rd_component_isolated v='env.componentLogin' />
+				<rd_component v='env.loginOverlay' />
 			</rd_map>
-			<rd_component v='env.componentNotification' />
-			<rd_component v='env.componentOverlay' />
+			<rd_view v='env.componentNotification.view' />
 
 			<rd_map v='vm.message'>
 				<p style='font-weight: bold;'>
@@ -252,7 +267,6 @@ Promise.resolve({})
 	let interval1 = setInterval(() => renderAgain(view, upd1), 3000);
 
 	componentNotification.init();
-	componentOverlay.init();
 	renderAgain(view, vm => ({ ...vm, sse, t, vscroll, message: 'hello world0', fruits: ['banana',], }));
 	renderAgain(view, vm => ({ ...vm, sse, t, vscroll, message: 'hello world1', fruits: ['apple', 'banana',], }));
 	renderAgain(view, vm => ({ ...vm, sse, t, vscroll, message: 'hello world2', fruits: ['apple', 'orange', 'orange', 'banana',], }));

@@ -172,37 +172,6 @@ let render = evalscript('fun.js').then(({ read, }) => {
 				cudf.childRef.style[key] = null;
 	};
 
-	let rd_component = (initf, publicf, privatef, xhtml) => (vm, cudf) => {
-		let vm_ = null;
-		let view;
-
-		let change = f => {
-			let pvm_ = vm_;
-			view(pvm_, vm_ = f(pvm_), cudf);
-		};
-
-		let changeAsync = f => {
-			let vm0 = vm_;
-			f(vm0).then(vm1 => {
-				if (vm_ === vm0) {
-					view(vm_, vm1, cudf);
-					vm_ = vm1;
-				} else
-					console.error('race condition in view updates');
-			});
-		};
-
-		let muts = { change, changeAsync, };
-
-		view = rd.parse(privatef(muts), xhtml);
-
-		return {
-			init: () => change(vm_ => initf(vm)),
-			deinit: () => change(vm_ => null),
-			...publicf(muts),
-		};
-	};
-
 	let rd_dom = elementf => (vm0, vm1, cudf) => {
 		if (isClear(vm0, vm1))
 			;
@@ -398,6 +367,46 @@ let render = evalscript('fun.js').then(({ read, }) => {
 			cudf);
 	};
 
+	let rd_span_component = (initf, publicf, privatef, xhtml) => vm => {
+		let span = document.createElement('span');
+		let cudf_;
+		let vm_ = null;
+		let view;
+
+		let change = f => {
+			let pvm_ = vm_;
+			view(pvm_, vm_ = f(pvm_), cudf_);
+		};
+
+		let changeAsync = f => {
+			let vm0 = vm_;
+			f(vm0).then(vm1 => {
+				if (vm_ === vm0) {
+					view(vm_, vm1, cudf_);
+					vm_ = vm1;
+				} else
+					console.error('race condition in view updates');
+			});
+		};
+
+		let muts = { change, changeAsync, };
+
+		view = rd.parse(privatef(muts), xhtml);
+
+		return {
+			init: cudf => {
+				cudf.create(span);
+				cudf_ = r_cud({ childRef: span, }, null, span.lastChild);
+				change(vm_ => initf(vm));
+			},
+			deinit: cudf => {
+				change(vm_ => null);
+				cudf.delete();
+			},
+			...publicf(muts),
+		};
+	};
+
 	let rd_switch = routes => (vm0, vm1, cudf) => {
 		let key0 = vm0 != null ? vm0.k : null;
 		let key1 = vm1 != null ? vm1.k : null;
@@ -481,9 +490,29 @@ let render = evalscript('fun.js').then(({ read, }) => {
 				let sf = parseTemplate(node0.nodeValue);
 				return rd_dom(vm => document.createComment(sf(vm)));
 			} else if (node0.nodeType == Node.ELEMENT_NODE)
-				if (node0.localName == 'rd_component')
-					return eval(node0.getAttribute('v')).view;
-				else if (node0.localName == 'rd_component_isolated') {
+				if (node0.localName == 'rd_component') {
+					let icf = eval(node0.getAttribute('v'));
+					let ics = {};
+					return (vm0, vm1, cudf) => {
+						if (isClear(vm0, vm1))
+							;
+						else {
+							if (vm0 != null) {
+								ics[vm0].deinit(cudf);
+								delete ics[vm0];
+							}
+							if (vm1 != null) {
+								(ics[vm1] = icf(vm1)).init(cudf);
+							}
+						}
+					};
+				} else if (node0.localName == 'rd_for')
+					return rd_map(parseExpr(node0.getAttribute('v')), rd_for(vm => vm, parseDomNodes(node0.childNodes)));
+				else if (node0.localName == 'rd_if')
+					return rd_ifElse(parseExpr(node0.getAttribute('v')), parseDomNodes(node0.childNodes), (vm0, vm1, cudf) => {});
+				else if (node0.localName == 'rd_map')
+					return rd_map(parseExpr(node0.getAttribute('v')), parseDomNodes(node0.childNodes));
+				else if (node0.localName == 'rd_span_component') {
 					let icf = eval(node0.getAttribute('v'));
 					let ics = {};
 					return (vm0, vm1, cudf) => {
@@ -498,18 +527,12 @@ let render = evalscript('fun.js').then(({ read, }) => {
 							if (vm1 != null) {
 								let span = document.createElement('span');
 								cudf.create(span);
-								let cudf_ = r_cud({ childRef: span, }, null, span.lastChild); 
+								let cudf_ = r_cud({ childRef: span, }, null, span.lastChild);
 								(ics[vm1] = icf(vm1, cudf_)).init();
 							}
 						}
 					};
-				} else if (node0.localName == 'rd_for')
-					return rd_map(parseExpr(node0.getAttribute('v')), rd_for(vm => vm, parseDomNodes(node0.childNodes)));
-				else if (node0.localName == 'rd_if')
-					return rd_ifElse(parseExpr(node0.getAttribute('v')), parseDomNodes(node0.childNodes), (vm0, vm1, cudf) => {});
-				else if (node0.localName == 'rd_map')
-					return rd_map(parseExpr(node0.getAttribute('v')), parseDomNodes(node0.childNodes));
-				else if (node0.localName == 'rd_switch')
+				} else if (node0.localName == 'rd_switch')
 					return rd_switch(Object.fromEntries(Array
 						.from(node0.childNodes)
 						.filter(n => n.nodeType == Node.ELEMENT_NODE)
@@ -544,7 +567,6 @@ let render = evalscript('fun.js').then(({ read, }) => {
 	};
 
 	let rd = {
-		component: rd_component,
 		div: () => rdb_tag('div'),
 		dom: rd_dom,
 		for: rd_for,
@@ -556,6 +578,7 @@ let render = evalscript('fun.js').then(({ read, }) => {
 		p: () => rdb_tag('p'),
 		parse: rd_parse,
 		span: () => rdb_tag('span'),
+		span_component: rd_span_component,
 		tag: rdb_tag,
 		ul: () => rdb_tag('ul'),
 		vscrollf: rdb_vscrollf,
