@@ -148,7 +148,7 @@ Promise.resolve({})
 		`<div class='{ vm.count !== 0 ? "overlay" : "" }'></div>`,
 	);
 
-	let componentloginOverlay = vm => {
+	let componentLoginOverlay = vm => {
 		let co = componentOverlay(vm);
 		let cl = componentLogin(co.enable, co.disable)(vm);
 		return {
@@ -164,12 +164,12 @@ Promise.resolve({})
 	};
 
 	let view0 = rd.parse({
-		componentloginOverlay,
+		componentLoginOverlay,
 		componentNotification,
 	}, `
 		<span style='font-family: sans-serif;'>
 			<rd_map v='true'>
-				<rd_component v='env.componentloginOverlay' />
+				<rd_component v='env.componentLoginOverlay' />
 			</rd_map>
 			<rd_view v='env.componentNotification.view' />
 
