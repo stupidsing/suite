@@ -1,6 +1,6 @@
 'use strict';
 
-let frp = evalscript('fun.js').then(({ read, }) => {
+loadedmodule = globalThis.frp = evalscript('fun.js').then(({ read, }) => {
 	let newPusher = () => { // FRP dispatcher
 		let pushees = [];
 		let push_ = data => { for (let pushee of pushees) pushee(data); };
@@ -182,5 +182,3 @@ let frp = evalscript('fun.js').then(({ read, }) => {
 		},
 	};
 });
-
-loadedmodule = frp;

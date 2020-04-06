@@ -1,6 +1,6 @@
 'use strict';
 
-let render = evalscript('fun.js').then(({ read, }) => {
+loadedmodule = globalThis.render = evalscript('fun.js').then(({ read, }) => {
 	let verifyList = (parent, nodes) => {
 		let e = parent.lastChild;
 		for (let i = nodes.length - 1; 0 <= i; i--)
@@ -575,5 +575,3 @@ let render = evalscript('fun.js').then(({ read, }) => {
 
 	return { rd, renderAgain, };
 });
-
-loadedmodule = render;

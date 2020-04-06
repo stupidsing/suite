@@ -1,6 +1,6 @@
 'use strict';
 
-let fun = (() => {
+loadedmodule = globalThis.fun = (() => {
 	let lens_ = gp => {
 		return {
 			apply: f => object0 => {
@@ -114,5 +114,3 @@ let fun = (() => {
 
 	return { lens, rand, range, read, };
 })();
-
-loadedmodule = fun;

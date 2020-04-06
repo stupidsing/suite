@@ -1,6 +1,6 @@
 'use strict';
 
-let pq = () => {
+loadedmodule = globalThis.pq = () => {
 	let h = new Array(1024);
 	let size = 0;
 	let swap = (a, b) => {
@@ -31,5 +31,3 @@ let pq = () => {
 		size: () => size,
 	};
 };
-
-loadedmodule = pq;

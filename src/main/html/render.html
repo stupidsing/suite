@@ -21,7 +21,6 @@ file:///home/ywsing/suite/src/main/html/render.html
 	</body>
 
 	<script src='eval-script.js'></script>
-	<script src='frp.js'></script>
 
 	<script type='text/javascript'>
 'use strict';
@@ -146,20 +145,21 @@ Promise.resolve({})
 		`<div class='{ vm.count !== 0 ? "overlay" : "" }'></div>`,
 	);
 
-	let componentLoginOverlay = vm => {
-		let co = componentOverlay(vm);
-		let cl = componentLogin(co.enable, co.disable)(vm);
-		return {
-			init: cudf => {
-				co.init(cudf);
-				cl.init(cudf);
-			},
-			deinit: cudf => {
-				cl.deinit(cudf);
-				co.deinit(cudf);
-			},
-		};
-	};
+	let componentLoginOverlay = (() => {
+		let co = componentOverlay;
+		let cl = componentLogin(co.enable, co.disable);
+		return rd.span_component(
+			vm => true,
+			({}) => ({}),
+			({}) => ({ cl, co, }),
+			`
+				<span>
+					<rd_component v='env.cl' />
+					<rd_component v='env.co' />
+				</span>
+			`
+		);
+	})();
 
 	let view0 = rd.parse({
 		componentLoginOverlay,
