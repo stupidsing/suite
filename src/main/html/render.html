@@ -82,11 +82,12 @@ Promise.resolve({})
 				if (response.ok) return response.text(); else throw response.statusText;
 			})
 			.then(message => {
-				renderAgain(view, vm => ({ ...vm, message, }));
+				componentNotification.setMessage('login success');
 				console.log('login() = ', message);
 				return token;
 			}))
 			.catch(error => {
+				componentNotification.setMessage('login failed');
 				console.error('login()', error);
 				return 'error';
 			})
@@ -118,7 +119,7 @@ Promise.resolve({})
 		change => ({
 			init: () => change(vm => ({ message: '', })),
 			deinit: () => change(vm => null),
-			setMessage: token => change(vm => ({ ...vm, message, })),
+			setMessage: message => change(vm => ({ ...vm, message, })),
 		}),
 		change => ({}),
 		`
