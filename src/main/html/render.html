@@ -114,11 +114,9 @@ Promise.resolve({})
 			`);
 	};
 
-	let componentNotification = component(
-		'notification',
+	let componentNotification = rd.span_component(
+		vm => ({ message: '', }),
 		({ change, }) => ({
-			init: () => change(vm => ({ message: '', })),
-			deinit: () => change(vm => null),
 			setMessage: message => change(vm => ({ ...vm, message, })),
 		}),
 		({}) => ({}),
@@ -146,31 +144,31 @@ Promise.resolve({})
 		`<div class='{ vm.count !== 0 ? "overlay" : "" }'></div>`,
 	);
 
-	let componentLoginOverlay = (() => {
-		let co = componentOverlay;
-		let cl = componentLogin(co.enable, co.disable, componentNotification.setMessage);
+	let componentLoginNotificationOverlay = vm => {
+		let co = componentOverlay(vm);
+		let cn = componentNotification(vm);
+		let cl = componentLogin(co.enable, co.disable, cn.setMessage)(vm);
 		return rd.span_component(
 			vm => true,
 			({}) => ({}),
-			({}) => ({ cl, co, }),
+			({}) => ({ cl, cn, co, }),
 			`
 				<span>
-					<rd_component v='env.cl' />
-					<rd_component v='env.co' />
+					<rd_component v='vm_ => env.cl' />
+					<rd_component v='vm_ => env.cn' />
+					<rd_component v='vm_ => env.co' />
 				</span>
 			`
-		);
-	})();
+		)(vm);
+	};
 
 	let view0 = rd.parse({
-		componentLoginOverlay,
-		componentNotification,
+		componentLoginNotificationOverlay,
 	}, `
 		<span style='font-family: sans-serif;'>
 			<rd_map v='true'>
-				<rd_component v='env.componentLoginOverlay' />
+				<rd_component v='env.componentLoginNotificationOverlay' />
 			</rd_map>
-			<rd_view v='env.componentNotification.view' />
 
 			<rd_map v='vm.message'>
 				<p style='font-weight: bold;'>
@@ -263,7 +261,6 @@ Promise.resolve({})
 	let interval0 = setInterval(() => renderAgain(view, upd0), 1000);
 	let interval1 = setInterval(() => renderAgain(view, upd1), 3000);
 
-	componentNotification.init();
 	renderAgain(view, vm => ({ ...vm, sse, t, vscroll, message: 'hello world0', fruits: ['banana',], }));
 	renderAgain(view, vm => ({ ...vm, sse, t, vscroll, message: 'hello world1', fruits: ['apple', 'banana',], }));
 	renderAgain(view, vm => ({ ...vm, sse, t, vscroll, message: 'hello world2', fruits: ['apple', 'orange', 'orange', 'banana',], }));
