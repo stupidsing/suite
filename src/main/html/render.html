@@ -44,7 +44,7 @@ Promise.resolve({})
 		};
 	};
 
-	let componentLogin = (overlay, unoverlay) => {
+	let componentLogin = (overlay, unoverlay, setMessage) => {
 		let fetchBase = { cache: 'no-cache', credentials: 'omit', redirect: 'follow', referrer: 'no-referrer', };
 
 		let login = ({ username, password, }) => {
@@ -82,12 +82,12 @@ Promise.resolve({})
 				if (response.ok) return response.text(); else throw response.statusText;
 			})
 			.then(message => {
-				componentNotification.setMessage('login success');
+				setMessage('login success');
 				console.log('login() = ', message);
 				return token;
 			}))
 			.catch(error => {
-				componentNotification.setMessage('login failed');
+				setMessage('login failed');
 				console.error('login()', error);
 				return 'error';
 			})
@@ -148,7 +148,7 @@ Promise.resolve({})
 
 	let componentLoginOverlay = (() => {
 		let co = componentOverlay;
-		let cl = componentLogin(co.enable, co.disable);
+		let cl = componentLogin(co.enable, co.disable, componentNotification.setMessage);
 		return rd.span_component(
 			vm => true,
 			({}) => ({}),
