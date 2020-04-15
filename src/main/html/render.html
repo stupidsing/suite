@@ -139,8 +139,8 @@ Promise.resolve({})
 	let componentOverlay = rd.span_component(
 		vm => ({ count: 0, }),
 		({ change, }) => ({
-			enable: token => change(vm => ({ ...vm, count: vm.count + 1, })),
-			disable: token => change(vm => ({ ...vm, count: vm.count - 1, })),
+			enable: () => change(vm => ({ ...vm, count: vm.count + 1, })),
+			disable: () => change(vm => ({ ...vm, count: vm.count - 1, })),
 		}),
 		change => ({}),
 		`<div class='{ vm.count !== 0 ? "overlay" : "" }'></div>`,
