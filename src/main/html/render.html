@@ -39,8 +39,8 @@ Promise.resolve({})
 			return ({ ...vm, [path]: f(vm_), });
 		});
 		return {
-			view: rd.parse(privatef(change), `<rd_map v='vm.${path}'>${xhtml}</rd_map>`),
-			...publicf(change),
+			view: rd.parse(privatef({ change, }), `<rd_map v='vm.${path}'>${xhtml}</rd_map>`),
+			...publicf({ change, }),
 		};
 	};
 
@@ -116,12 +116,12 @@ Promise.resolve({})
 
 	let componentNotification = component(
 		'notification',
-		change => ({
+		({ change, }) => ({
 			init: () => change(vm => ({ message: '', })),
 			deinit: () => change(vm => null),
 			setMessage: message => change(vm => ({ ...vm, message, })),
 		}),
-		change => ({}),
+		({}) => ({}),
 		`
 			<div style='
 				background: #DDDDDD;
