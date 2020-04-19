@@ -13,7 +13,7 @@
 
 			let formatDocument = (sCmd, sValue) => {
 				if (validateMode()) { document.execCommand(sCmd, false, sValue); doc_.focus(); }
-			}
+			};
 
 			let validateMode = () => {
 				if (!document.compForm.switchMode.checked) {
@@ -23,9 +23,9 @@
 					doc_.focus();
 					return false;
 				}
-			}
+			};
 
-			function setIsViewSource = isViewSource => {
+			let setIsViewSource = isViewSource => {
 				if (isViewSource) {
 					let content_ = document.createTextNode(doc_.innerHTML);
 
@@ -51,16 +51,16 @@
 					doc_.contentEditable = true;
 				}
 				doc_.focus();
-			}
+			};
 
-			function printDocument = () => {
+			let printDocument = () => {
 				if (validateMode()) {
 					let printWindow_ = window.open('', '_blank', 'width=450,height=470,left=400,top=100,menubar=yes,toolbar=no,location=no,scrollbars=yes');
 					printWindow_.document.open();
 					printWindow_.document.write('<!doctype html><html><head><title>Print<\/title><\/head><body onload=\'print();\'>' + doc_.innerHTML + '<\/body><\/html>');
 					printWindow_.document.close();
 				}
-			}
+			};
 		</script>
 		<style type='text/css'>
 			#editMode label { cursor: pointer; }
