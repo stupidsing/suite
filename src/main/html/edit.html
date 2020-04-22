@@ -7,7 +7,7 @@ file:///home/ywsing/suite/src/main/html/edit.html
 	<head>
 		<title>Rich Text Editor</title>
 		<script type='text/javascript'>
-			let doc_, defaultText = '<p>Lorem ipsum</p>';
+			let doc_, defaultText = '<div>Lorem ipsum</div>';
 
 			let initDocument = () => {
 				doc_ = document.getElementById('textbox');
@@ -37,7 +37,7 @@ file:///home/ywsing/suite/src/main/html/edit.html
 					let content_ = document.createTextNode(doc_.innerHTML);
 
 					let pre_ = document.createElement('pre');
-					pre_.id = 'sourceText';
+					pre_.className = 'sourceText';
 					pre_.contentEditable = true;
 					pre_.appendChild(content_);
 
@@ -81,18 +81,15 @@ file:///home/ywsing/suite/src/main/html/edit.html
 		</script>
 		<style type='text/css'>
 			#editMode label { cursor: pointer; }
-			#textbox {
+			.sourceText { margin: 0; }
+			.textbox {
 				border: 1px #000000 solid;
 				height: 768px;
 				width: 1024px;
 				padding: 12px;
 				overflow: scroll;
 			}
-			#textbox #sourceText {
-				margin: 0;
-				padding: 0;
-			}
-			#toolbar0 select { font-size: 10px; }
+			.toolbar0 select { font-size: 10px; }
 			.toolbarButton { cursor: pointer; }
 			body { font-family: monospace; }
 			img.toolbarButton { border: 0; }
@@ -102,7 +99,7 @@ file:///home/ywsing/suite/src/main/html/edit.html
 	<body onload='initDocument();'>
 		<form name='submitter' method='post' action='sample.php' onsubmit='if (validateMode()) { this.editDoc.value = doc_.innerHTML; return true; } else return false;'>
 			<input type='hidden' name='editDoc'>
-			<div id='toolbar0'>
+			<div class='toolbar0'>
 				<select onchange='formatDocument("formatblock", this[this.selectedIndex].value); this.selectedIndex = 0;'>
 					<option selected>- formatting -</option>
 					<option value='h1'>Title 1 &lt;h1&gt;</option>
@@ -145,7 +142,7 @@ file:///home/ywsing/suite/src/main/html/edit.html
 					<option value='black'>Black</option>
 				</select>
 			</div>
-			<div id='toolbar1'>
+			<div class='toolbar1'>
 				<img class='toolbarButton' title='Clean' onclick='if(validateMode() && confirm("Are you sure?")) { doc_.innerHTML = defaultText; };' src='data:image/gif;base64,R0lGODlhFgAWAIQbAD04KTRLYzFRjlldZl9vj1dusY14WYODhpWIbbSVFY6O7IOXw5qbms+wUbCztca0ccS4kdDQjdTLtMrL1O3YitHa7OPcsd/f4PfvrvDv8Pv5xv///////////////////yH5BAEKAB8ALAAAAAAWABYAAAV84CeOZGmeaKqubMteyzK547QoBcFWTm/jgsHq4rhMLoxFIehQQSAWR+Z4IAyaJ0kEgtFoLIzLwRE4oCQWrxoTOTAIhMCZ0tVgMBQKZHAYyFEWEV14eQ8IflhnEHmFDQkAiSkQCI2PDC4QBg+OAJc0ewadNCOgo6anqKkoIQA7' />
 				<img class='toolbarButton' title='Print' onclick='printDocument();' src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAWCAYAAADEtGw7AAAABGdBTUEAALGPC/xhBQAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9oEBxcZFmGboiwAAAAIdEVYdENvbW1lbnQA9syWvwAAAuFJREFUOMvtlUtsjFEUx//n3nn0YdpBh1abRpt4LFqtqkc3jRKkNEIsiIRIBBEhJJpKlIVo4m1RRMKKjQiRMJRUqUdKPT71qpIpiRKPaqdF55tv5vvusZjQTjOlseUkd3Xu/3dPzusC/22wtu2wRn+jG5So/OCDh8ycMJDflehMlkJkVK7KUYN+ufzA/RttH76zaVocDptRxzQtNi3mRWuPc+6cKtlXZ/sddP2uu9uXlmYXZ6Qm8v4Tz8lhF1H+zDQXt7S8oLMXtbF4e8QaFHjj3kbP2MzkktHpiTjp9VH6iHiA+whtAsX5brpwueMGdONdf/2A4M7ukDs1JW662+XkqTkeUoqjKtOjm2h53YFL15pSJ04Zc94wdtibr26fXlC2mzRvBccEbz2kiRFD414tKMlEZbVGT33+qCoHgha81SWYsew0r1uzfNylmtpx80pngQQ91LwVk2JGvGnfvZG6YcYRAT16GFtW5kKKfo1EQLtfh5Q2etT0BIWF+aitq4fDbk+ImYo1OxvGF03waFJQvBCkvDffRyEtxQiFFYgAZTHS0zwAGD7fG5TNnYNTp8/FzvGwJOfmgG7GOx0SAKKgQgDMgKBI0NJGMEImpGDk5+WACEwEd0ywblhGUZ4Hw5OdUekRBLT7DTgdEgxACsIznx8zpmWh7k4rkpJcuHDxCul6MDsmmBXDlWCH2+XozSgBnzsNCEE4euYV4pwCpsWYPW0UHDYBKSWu1NYjENDReqtKjwn2+zvtTc1vMSTB/mvev/WEYSlASsLimcOhOBJxw+N3aP/SjefNL5GePZmpu4kG7OPr1+tOfPyUu3BecWYKcwQcDFmwFKAUo90fhKDInBCAmvqnyMgqUEagQwCoHBDc1rjv9pIlD8IbVkz6qYViIBQGTJPx4k0XpIgEZoRN1Da0cij4VfR0ta3WvBXH/rjdCufv6R2zPgPH/e4pxSBCpeatqPrjNiso203/5s/zA171Mv8+w1LOAAAAAElFTkSuQmCC'>
 				<img class='toolbarButton' title='Undo' onclick='formatDocument("undo");' src='data:image/gif;base64,R0lGODlhFgAWAOMKADljwliE33mOrpGjuYKl8aezxqPD+7/I19DV3NHa7P///////////////////////yH5BAEKAA8ALAAAAAAWABYAAARR8MlJq7046807TkaYeJJBnES4EeUJvIGapWYAC0CsocQ7SDlWJkAkCA6ToMYWIARGQF3mRQVIEjkkSVLIbSfEwhdRIH4fh/DZMICe3/C4nBQBADs=' />
@@ -167,7 +164,7 @@ file:///home/ywsing/suite/src/main/html/edit.html
 				<img class='toolbarButton' title='Copy' onclick='formatDocument("copy");' src='data:image/gif;base64,R0lGODlhFgAWAIQcAB1ChBFNsTRLYyJYwjljwl9vj1iE31iGzF6MnHWX9HOdz5GjuYCl2YKl8ZOt4qezxqK63aK/9KPD+7DI3b/I17LM/MrL1MLY9NHa7OPs++bx/Pv8/f///////////////yH5BAEAAB8ALAAAAAAWABYAAAWG4CeOZGmeaKqubOum1SQ/kPVOW749BeVSus2CgrCxHptLBbOQxCSNCCaF1GUqwQbBd0JGJAyGJJiobE+LnCaDcXAaEoxhQACgNw0FQx9kP+wmaRgYFBQNeAoGihCAJQsCkJAKOhgXEw8BLQYciooHf5o7EA+kC40qBKkAAAGrpy+wsbKzIiEAOw==' />
 				<img class='toolbarButton' title='Paste' onclick='formatDocument("paste");' src='data:image/gif;base64,R0lGODlhFgAWAIQUAD04KTRLY2tXQF9vj414WZWIbXmOrpqbmpGjudClFaezxsa0cb/I1+3YitHa7PrkIPHvbuPs+/fvrvv8/f///////////////////////////////////////////////yH5BAEAAB8ALAAAAAAWABYAAAWN4CeOZGmeaKqubGsusPvBSyFJjVDs6nJLB0khR4AkBCmfsCGBQAoCwjF5gwquVykSFbwZE+AwIBV0GhFog2EwIDchjwRiQo9E2Fx4XD5R+B0DDAEnBXBhBhN2DgwDAQFjJYVhCQYRfgoIDGiQJAWTCQMRiwwMfgicnVcAAAMOaK+bLAOrtLUyt7i5uiUhADs=' />
 			</div>
-			<div id='textbox' autofocus contenteditable='true' spellcheck='false' oninput='console.log(event);'></div>
+			<div id='textbox' class='textbox' autofocus contenteditable='true' spellcheck='false' oninput='console.log(event);'></div>
 			<p id='editMode'><input type='checkbox' name='switchMode' id='switchBox' onchange='setIsViewSource(this.checked);' /><label for='switchBox'>Show HTML</label></p>
 			<p><input type='submit' value='Send' /></p>
 		</form>
