@@ -200,8 +200,7 @@ evalscripts(['fun', 'render',])
 					margin: 15% auto;
 					padding: 20px;
 					width: 50%;'>
-					<span rd_on_click='messager(false)'
-						style='
+					<span rd_on_click='messager(false)' style='
 						cursor: pointer;
 						font-size: 28px;
 						float: right;'>
@@ -259,10 +258,10 @@ evalscripts(['fun', 'render',])
 	let interval0 = setInterval(() => renderAgain(view, upd0), 1000);
 	let interval1 = setInterval(() => renderAgain(view, upd1), 3000);
 
-	renderAgain(view, vm => ({ ...vm, sse, t, vscroll, message: 'hello world0', fruits: ['banana',], }));
-	renderAgain(view, vm => ({ ...vm, sse, t, vscroll, message: 'hello world1', fruits: ['apple', 'banana',], }));
-	renderAgain(view, vm => ({ ...vm, sse, t, vscroll, message: 'hello world2', fruits: ['apple', 'orange', 'orange', 'banana',], }));
-	renderAgain(view, vm => ({ ...vm, sse, t, vscroll, message: 'hello world~', fruits: ['banana', 'orange',], }));
+	renderAgain(view, vm => ({ ...vm, message: 'hello world0', sse, t, vscroll, fruits: ['banana',], }));
+	renderAgain(view, vm => ({ ...vm, message: 'hello world1', sse, t, vscroll, fruits: ['apple', 'banana',], }));
+	renderAgain(view, vm => ({ ...vm, message: 'hello world2', sse, t, vscroll, fruits: ['apple', 'orange', 'orange', 'banana',], }));
+	renderAgain(view, vm => ({ ...vm, message: 'hello world~', sse, t, vscroll, fruits: ['banana', 'orange',], }));
 
 	globalThis.closer = () => {
 		clearInterval(interval0);
@@ -270,7 +269,7 @@ evalscripts(['fun', 'render',])
 		renderAgain(view, vm => null);
 	};
 
-	globalThis.messager = b => renderAgain(view, vm => ({ ...vm, isPopup: b }));
+	globalThis.messager = b => renderAgain(view, vm => ({ ...vm, isPopup: b, }));
 
 	let eventSource = new EventSource('/sse');
 
