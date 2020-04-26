@@ -62,6 +62,10 @@ tp_gh() {
 	$(cchs "echo https://github.com/cli/cli/releases/download/v0.5.7/gh_0.5.7_linux_amd64.tar.gz" @curl @tar-zxf @dir)/bin/gh $@
 }
 
+tp_google_java_format() {
+	java -jar $(cchs "echo https://github.com/google/google-java-format/releases/download/google-java-format-1.7/google-java-format-1.7-all-deps.jar" @curl) $@
+}
+
 tp_gradle() {
 	${D}/bin/gradle $@
 }
