@@ -1,9 +1,5 @@
 package suite.funp.p0;
 
-import static primal.statics.Rethrow.ex;
-
-import java.io.IOException;
-
 import primal.Verbs.ReadFile;
 import primal.Verbs.ReadString;
 import primal.fp.Funs.Fun;
@@ -21,6 +17,10 @@ import suite.node.io.Formatter;
 import suite.node.io.SwitchNode;
 import suite.node.io.TermOp;
 
+import java.io.IOException;
+
+import static primal.statics.Rethrow.ex;
+
 public class P00Consult {
 
 	public Node c(Node node) {
@@ -29,9 +29,10 @@ public class P00Consult {
 			return c(consult(Formatter.display(a).replace("${platform}", Funp_.isAmd64 ? "amd64" : "i686"), b));
 		}).match("consult .0", a -> {
 			return c(consult(Formatter.display(a)));
+		}).applyIf(Tree.class, tree -> {
+			return Tree.of(tree.getOperator(), c(tree.getLeft()), c(tree.getRight()));
 		}).applyIf(Node.class, n -> {
-			var tree = Tree.decompose(node);
-			return tree != null ? Tree.of(tree.getOperator(), c(tree.getLeft()), c(tree.getRight())) : node;
+			return node;
 		}).nonNullResult();
 	}
 
