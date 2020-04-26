@@ -247,6 +247,7 @@ let fiveinarow = Promise.resolve({})
 
 	return { handle, vw, };
 })
-.then(game => ({ game, icons, palette, }));
+.then(game => ({ game, icons, palette, }))
+.catch(console.error);
 
 loadedmodule = fiveinarow;

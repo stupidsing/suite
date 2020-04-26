@@ -11,34 +11,34 @@ let { evalscript, loadsrcscript, } = (() => {
 		let script = document.createElement('script');
 		script.onreadystatechange = cb;
 		script.onload = cb;
+		script.onerror = reject;
 		script.src = url;
 		script.type = 'text/javascript';
 
 		document.head.appendChild(script);
 	});
 
-	let evalscript = url => {
+	let evalscript = async url => {
 		let r = cache[url];
 
 		if (r != null)
-			return Promise.resolve(r);
+			return r;
 		else if (document.location.protocol == 'file:')
 			return loadsrcscript(url);
-		else
-			return fetch(url, {
+		else {
+			let response = await fetch(url, {
 				cache: 'default',
 				credentials: 'omit',
 				method: 'GET',
 				mode: 'cors',
 				redirect: 'follow',
 				referrer: 'no-referrer',
-			})
-			.then(response => {
-				if (response.ok) return response.text(); else throw response.statusText;
-			})
-			.then(text => eval(text))
-			.then(m => cache[url] = m)
-			.catch(error => console.error('evalscript()', url, error));
+			});
+			if (response.ok)
+				return cache[url] = eval(await response.text());
+			else
+				throw response.statusText;
+		}
 	};
 
 	return { evalscript, loadsrcscript, };

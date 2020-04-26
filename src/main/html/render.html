@@ -281,7 +281,7 @@ Promise.resolve({})
 
 	eventSource.addEventListener("close", ev => eventSource.close());
 	eventSource.addEventListener("number", ev => renderAgain(view, vm => ({ ...vm, sse: [...vm.sse, JSON.parse(ev.data).i,], })));
-});
-
+})
+.catch(console.error);
 	</script>
 </html>

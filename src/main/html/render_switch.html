@@ -40,7 +40,7 @@ Promise.resolve({})
 	setTimeout(() => renderAgain(view, vm => ({ ...vm, k: 'a', v: { a: 0, }, })), 1 * 1000);
 	setTimeout(() => renderAgain(view, vm => ({ ...vm, k: 'b', v: { b: 'zero', }, })), 2 * 1000);
 	setTimeout(() => renderAgain(view, vm => ({ ...vm, k: 'c', v: { c: 'ZERO', }, })), 3 * 1000);
-});
-
+})
+.catch(console.error);
 	</script>
 </html>

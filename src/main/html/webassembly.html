@@ -39,5 +39,6 @@ evalscript('render.js').then(({ rd, renderAgain, }) => {
 		let result = 'Finished compiling! Ready when you are... 3^2 = ' + squarer(3);
 		renderAgain(rd_vm, vm => ({ result: result, }));	
 	});
-});
+})
+.catch(console.error);
 </script>

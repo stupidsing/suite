@@ -135,7 +135,8 @@ Promise.resolve({})
 
 		read(objects).foreach(object => object.draw(context));
 	});
-});
+})
+.catch(console.error);
 	</script>
 
 </html>

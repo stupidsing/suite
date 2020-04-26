@@ -104,6 +104,7 @@ Promise.resolve({})
 	});
 
 	frp.mouse.move.wire(d => console.log('mouse ' + d.x + ',' + d.y));
-});
+})
+.catch(console.error);
 	</script>
 </html>
