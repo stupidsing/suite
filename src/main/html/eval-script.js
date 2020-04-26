@@ -9,9 +9,9 @@ let { addevalscript, addevalscripts, evalscript, evalscripts, loadsrcscript, } =
 		let cb = () => resolve(cache[url] = loadedmodule);
 
 		let script = document.createElement('script');
-		script.onreadystatechange = cb;
 		script.onerror = reject;
 		script.onload = cb;
+		script.onreadystatechange = cb;
 		script.src = url;
 		script.type = 'text/javascript';
 
