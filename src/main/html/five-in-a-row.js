@@ -7,9 +7,7 @@ let icons = [ '🍋', '🌲', '💖', '🐬', '🐵', '🍊', '🍇', '💮', '�
 icons[-1] = '💀';
 // 😂
 
-let fiveinarow = Promise.resolve({})
-.then(ns => evalscript('fun.js').then(m => ({ ...ns, fun: m, })))
-.then(ns => evalscript('render.js').then(m => ({ ...ns, render: m, })))
+let fiveinarow = evalscripts(['fun', 'render',])
 .then(ns => (cc, view) => {
 	let { fun: { rand, }, render: { renderAgain, }, } = ns;
 

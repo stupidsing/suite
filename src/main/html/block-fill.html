@@ -13,10 +13,7 @@ file:///home/ywsing/suite/src/main/html/block-fill.html
 	<script type='text/javascript'>
 'use strict';
 
-Promise.resolve({})
-.then(ns => evalscript('frp.js').then(m => ({ ...ns, frp: m, })))
-.then(ns => evalscript('fun.js').then(m => ({ ...ns, fun: m, })))
-.then(ns => evalscript('render.js').then(m => ({ ...ns, render: m, })))
+evalscripts(['frp', 'fun', 'render'])
 .then(ns => {
 	let { frp, fun: { range, }, render: { rd, renderAgain, }, } = ns;
 

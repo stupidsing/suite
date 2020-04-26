@@ -12,9 +12,7 @@
 	<script type='text/javascript'>
 'use strict';
 
-Promise.resolve({})
-.then(ns => evalscript('frp.js').then(m => ({ ...ns, frp: m, })))
-.then(ns => evalscript('fun.js').then(m => ({ ...ns, fun: m, })))
+evalscripts(['frp', 'fun'])
 .then(ns => {
 	let { frp, fun: { rand, range, read, }, } = ns;
 

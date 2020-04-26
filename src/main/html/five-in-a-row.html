@@ -28,10 +28,8 @@ let nStoneTypes = +usp.get('colors') || 5;
 
 Promise
 .all(['frp.js', 'pq.js',].map(loadsrcscript))
-.then(ns => evalscript('five-in-a-row.js').then(m => ({ ...ns, fiveinarow: m, })))
-.then(ns => evalscript('fun.js').then(m => ({ ...ns, fun: m, })))
-.then(ns => evalscript('render.js').then(m => ({ ...ns, render: m, })))
-.then(({ fiveinarow, fun: { rand, range, }, render: { rd, renderAgain, }, }) => {
+.then(addevalscripts(['five-in-a-row', 'fun', 'render',]))
+.then(({ ['five-in-a-row']: fiveinarow, fun: { rand, range, }, render: { rd, renderAgain, }, }) => {
 	let cc = ((sizex, sizey) => ({
 		area: sizex * sizey,
 		arrayx: () => ({ indices: range(0, sizex).list(), length: sizex, }),
