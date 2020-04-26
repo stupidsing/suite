@@ -10,8 +10,8 @@ let { addevalscript, addevalscripts, evalscript, evalscripts, loadsrcscript, } =
 
 		let script = document.createElement('script');
 		script.onreadystatechange = cb;
-		script.onload = cb;
 		script.onerror = reject;
+		script.onload = cb;
 		script.src = url;
 		script.type = 'text/javascript';
 
