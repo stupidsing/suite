@@ -47,26 +47,6 @@ public class P2 {
 		}
 	}
 
-	public static class FunpAllocStack implements Funp, P4.End {
-		public int size;
-		public Funp value;
-		public Funp expr;
-		public IntMutable stack;
-
-		public static FunpAllocStack of(int size, Funp value, Funp expr, IntMutable stack) {
-			var f = new FunpAllocStack();
-			f.size = size;
-			f.value = value;
-			f.expr = expr;
-			f.stack = stack;
-			return f;
-		}
-
-		public <R> R apply(FixieFun4<Integer, Funp, Funp, IntMutable, R> fun) {
-			return fun.apply(size, value, expr, stack);
-		}
-	}
-
 	public static class FunpAllocReg implements Funp, P4.End {
 		public int size;
 		public Funp value;
@@ -84,6 +64,26 @@ public class P2 {
 
 		public <R> R apply(FixieFun4<Integer, Funp, Funp, Mutable<Operand>, R> fun) {
 			return fun.apply(size, value, expr, reg);
+		}
+	}
+
+	public static class FunpAllocStack implements Funp, P4.End {
+		public int size;
+		public Funp value;
+		public Funp expr;
+		public IntMutable stack;
+
+		public static FunpAllocStack of(int size, Funp value, Funp expr, IntMutable stack) {
+			var f = new FunpAllocStack();
+			f.size = size;
+			f.value = value;
+			f.expr = expr;
+			f.stack = stack;
+			return f;
+		}
+
+		public <R> R apply(FixieFun4<Integer, Funp, Funp, IntMutable, R> fun) {
+			return fun.apply(size, value, expr, stack);
 		}
 	}
 
