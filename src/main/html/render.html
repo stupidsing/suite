@@ -64,7 +64,7 @@ evalscripts(['fun', 'render',])
 			.then(json => json.token)
 			.then(token => fetch('../token', {
 				...fetchBase,
-				headers: { 'Authorization': token, },
+				headers: { Authorization: token, },
 				method: 'PATCH',
 			}))
 			.then(response => {
@@ -73,7 +73,7 @@ evalscripts(['fun', 'render',])
 			.then(json => json.token)
 			.then(token => fetch('../api', {
 				...fetchBase,
-				headers: { 'Authorization': token, },
+				headers: { Authorization: token, },
 				method: 'GET',
 			})
 			.then(response => {
