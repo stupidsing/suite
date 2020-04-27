@@ -221,8 +221,10 @@ public class P2 {
 
 	public static class FunpInvoke1 implements Funp, P4.End {
 		public Funp routine;
-		public int is, os;
-		public int istack, ostack;
+		public int is;
+		public int os;
+		public int istack;
+		public int ostack;
 
 		public static FunpInvoke1 of(Funp routine, int is, int os, int istack, int ostack) {
 			var f = new FunpInvoke1();
@@ -241,8 +243,10 @@ public class P2 {
 
 	public static class FunpInvoke2 implements Funp, P4.End {
 		public Funp routine;
-		public int is, os;
-		public int istack, ostack;
+		public int is;
+		public int os;
+		public int istack;
+		public int ostack;
 
 		public static FunpInvoke2 of(Funp routine, int is, int os, int istack, int ostack) {
 			var f = new FunpInvoke2();
@@ -261,8 +265,10 @@ public class P2 {
 
 	public static class FunpInvokeIo implements Funp, P4.End {
 		public Funp routine;
-		public int is, os;
-		public int istack, ostack;
+		public int is;
+		public int os;
+		public int istack;
+		public int ostack;
 
 		public static FunpInvokeIo of(Funp routine, int is, int os, int istack, int ostack) {
 			var f = new FunpInvokeIo();
@@ -322,12 +328,12 @@ public class P2 {
 			return f;
 		}
 
-		public int size() {
-			return end - start;
-		}
-
 		public <R> R apply(FixieFun3<Funp, Integer, Integer, R> fun) {
 			return fun.apply(pointer, start, end);
+		}
+
+		public int size() {
+			return end - start;
 		}
 	}
 
@@ -384,8 +390,10 @@ public class P2 {
 	public static class FunpRoutine1 implements Funp, P4.End {
 		public Funp frame;
 		public Funp expr;
-		public int is, os;
-		public int istack, ostack;
+		public int is;
+		public int os;
+		public int istack;
+		public int ostack;
 
 		public static FunpRoutine1 of(Funp frame, Funp expr, int is, int os, int istack, int ostack) {
 			var f = new FunpRoutine1();
@@ -406,8 +414,10 @@ public class P2 {
 	public static class FunpRoutine2 implements Funp, P4.End {
 		public Funp frame;
 		public Funp expr;
-		public int is, os;
-		public int istack, ostack;
+		public int is;
+		public int os;
+		public int istack;
+		public int ostack;
 
 		public static FunpRoutine2 of(Funp frame, Funp expr, int is, int os, int istack, int ostack) {
 			var f = new FunpRoutine2();
@@ -428,8 +438,10 @@ public class P2 {
 	public static class FunpRoutineIo implements Funp, P4.End {
 		public Funp frame;
 		public Funp expr;
-		public int is, os;
-		public int istack, ostack;
+		public int is;
+		public int os;
+		public int istack;
+		public int ostack;
 
 		public static FunpRoutineIo of(Funp frame, Funp expr, int is, int os, int istack, int ostack) {
 			var f = new FunpRoutineIo();
