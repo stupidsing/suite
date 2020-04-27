@@ -50,7 +50,6 @@
 			div.dropdown-container > div.dropdown-list {
 				float: left;
 				position: relative;
-				transform: scale(1, 0);
 				transition: -webkit-transform ease 250ms;
 				transition: transform ease 250ms;
 				width: 100%;
@@ -67,14 +66,14 @@
 				border-top: none;
 				box-sizing: border-box;
 				float: left;
-				padding: 0 10px;
+				padding: 0 4px 0 10px;
 				width: 100%;
 			}
 			div.dropdown-container > div.dropdown-list > div > div:hover {
 				background: #F0F0F0;
 			}
 			div.dropdown-container > div.dropdown-list > div > div.selected {
-				background: #2875c7;
+				background: #E0E0E0;
 				color: white;
 			}
 			div.dropdown-container > div.dropdown-list > div > div > * {
@@ -99,8 +98,8 @@
 			div.dropdown-container > div.dropdown-list > div > div.selected > i {
 				display: inline-block;
 			}
-			div.dropdown-container.show > div.dropdown-list {
-				transform: scale(1, 1);
+			div.dropdown-container.hide > div.dropdown-list {
+				transform: scale(1, 0);
 			}
 			span.dropdown {
 				color: #888888;
@@ -116,30 +115,61 @@
 
 		<script type='text/jsx'>
 			let LtDropDown = ({ list, getSelected, setSelected, }) => {
+				let [filter, setFilter] = React.useState('');
+				let [index, setIndex] = React.useState(0);
 				let [isDropDown, setIsDropDown] = React.useState(false);
 
-				let hide = () => {
-					setIsDropDown(false);
-					document.removeEventListener('click', hide);
+				let hide = () => setIsDropDown(false);
+
+				let toggle = () => {
+					setFilter('');
+					setIsDropDown(!isDropDown);
 				};
 
-				let show = () => {
-					if (!isDropDown) {
-						setIsDropDown(true);
-						document.addEventListener('click', hide);
+				let selectByFilter = f => {
+					let i = list.findIndex(item => item.name.startsWith(f));
+					if (0 <= i) {
+						setFilter(f);
+						setIndex(i);
+						setSelected(list[i]);
+					}
+				};
+
+				let selectByIndex = i => {
+					setFilter('');
+					setIndex(i);
+					setSelected(list[i]);
+				};
+
+				let onBlur = e => {
+					setTimeout(() => hide(), 120);
+				};
+
+				let onKeyUp = e => {
+					if (e.which === 8) // backspace
+						setFilter(filter.substring(0, Math.max(0, filter.length - 1)));
+					else if (e.which === 13) // enter
+						toggle();
+					else if (e.which === 38) // up
+						selectByIndex(Math.max(0, index - 1));
+					else if (e.which === 40) // down
+						selectByIndex(Math.min(list.length - 1, index + 1));
+					else {
+						let c = String.fromCharCode(e.which);
+						if (/^[0-9a-zA-Z]$/.test(c)) selectByFilter(filter + c);
 					}
 				};
 
 				return (
-					<div className={'dropdown-container' + (isDropDown ? ' show' : '')}>
-						<div className={'dropdown-display' + (isDropDown ? ' clicked' : '')} onClick={show}>
+					<div className={'dropdown-container' + (isDropDown ? '' : ' hide')}>
+						<div className={'dropdown-display' + (isDropDown ? ' clicked' : '')} onBlur={onBlur} onClick={toggle} onKeyUp={onKeyUp} tabIndex={0}>
 							<span className='dropdown' style={{ color: getSelected().hex }}>{getSelected().name}</span>
 							<i className='fa fa-angle-down'></i>
 						</div>
 						<div className='dropdown-list'>
 							<div>
-								{list.map(item =>
-									<div key={item.name} onClick={() => setSelected(item)}>
+								{list.map((item, i) =>
+									<div key={item.name} className={i === index ? 'selected' : ''} onClick={() => selectByIndex(i)} onMouseOver={() => selectByIndex(i)}>
 										<span className='dropdown' style={{ color: item.hex }}>{item.name}</span>
 										<i className='fa fa-check'></i>
 									</div>
