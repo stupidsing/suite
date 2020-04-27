@@ -35,8 +35,8 @@ public class P2 {
 
 		public static FunpAllocGlobal of(int size, Funp value, Funp expr, Mutable<Operand> address) {
 			var f = new FunpAllocGlobal();
-			f.value = value;
 			f.size = size;
+			f.value = value;
 			f.expr = expr;
 			f.address = address;
 			return f;
