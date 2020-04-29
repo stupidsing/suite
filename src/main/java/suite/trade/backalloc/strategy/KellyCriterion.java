@@ -22,13 +22,13 @@ public class KellyCriterion {
 	private double dailyInterestRate = Trade_.riskFreeInterestRate(1);
 
 	public List<Pair<String, Double>> allocate(Streamlet2<String, float[]> predictedPricesBySymbol, double kellyReduction) {
-		var returnsBySymbol = predictedPricesBySymbol //
-				.mapValue(ts::returns) //
+		var returnsBySymbol = predictedPricesBySymbol
+				.mapValue(ts::returns)
 				.toMap();
 
-		var excessReturnBySymbol = Read //
-				.from2(returnsBySymbol) //
-				.mapValue(returns -> (float) (stat.meanVariance(returns).mean - dailyInterestRate)) //
+		var excessReturnBySymbol = Read
+				.from2(returnsBySymbol)
+				.mapValue(returns -> (float) (stat.meanVariance(returns).mean - dailyInterestRate))
 				.toMap();
 
 		var symbols = returnsBySymbol.keySet().toArray(new String[0]);
@@ -43,8 +43,8 @@ public class KellyCriterion {
 		var returns = To.vector(symbols, excessReturnBySymbol::get);
 		var allocations = cholesky.inverseMul(cov).apply(returns);
 
-		return forInt(nSymbols) //
-				.map2(i -> symbols[i], i -> (double) allocations[i] * kellyReduction) //
+		return forInt(nSymbols)
+				.map2(i -> symbols[i], i -> (double) allocations[i] * kellyReduction)
 				.toList();
 	}
 

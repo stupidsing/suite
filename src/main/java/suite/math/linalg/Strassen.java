@@ -16,8 +16,8 @@ public class Strassen {
 		return ks == mtx.height(b) ? mul_(a, 0, height, 0, ks, b, 0, ks, 0, width) : fail("wrong input sizes");
 	}
 
-	private float[][] mul_( //
-			float[][] a, int ai0, int aix, int aj0, int ajx, //
+	private float[][] mul_(
+			float[][] a, int ai0, int aix, int aj0, int ajx,
 			float[][] b, int bi0, int bix, int bj0, int bjx) {
 		if (8 <= aix - ai0 || 8 <= ajx - aj0 || 8 <= bjx - bj0) {
 			var aim = (ai0 + aix) / 2;
@@ -33,39 +33,39 @@ public class Strassen {
 			var m6 = mtx.of(aim, bjm); // (a21 - a11) * (b11 + b12)
 			var m7 = mtx.of(aim, bjm); // (a12 - a22) * (b21 + b22)
 
-			mul0( //
-					(i, j) -> a[i + ai0][j + aj0] + a[i + aim][j + ajm], aim, ajm, //
-					(i, j) -> b[i + bi0][j + bj0] + a[i + bim][j + bjm], bim, bjm, //
+			mul0(
+					(i, j) -> a[i + ai0][j + aj0] + a[i + aim][j + ajm], aim, ajm,
+					(i, j) -> b[i + bi0][j + bj0] + a[i + bim][j + bjm], bim, bjm,
 					(i, j, f) -> m1[i][j] = f);
 
-			mul0( //
-					(i, j) -> a[i + aim][j + aj0] + a[i + aim][j + ajm], aim, ajm, //
-					(i, j) -> b[i + bi0][j + bj0], bim, bjm, //
+			mul0(
+					(i, j) -> a[i + aim][j + aj0] + a[i + aim][j + ajm], aim, ajm,
+					(i, j) -> b[i + bi0][j + bj0], bim, bjm,
 					(i, j, f) -> m2[i][j] = f);
 
-			mul0( //
-					(i, j) -> a[i + ai0][j + aj0], aim, ajm, //
-					(i, j) -> b[i + bi0][j + bjm] - b[i + bim][j + bjm], bim, bjm, //
+			mul0(
+					(i, j) -> a[i + ai0][j + aj0], aim, ajm,
+					(i, j) -> b[i + bi0][j + bjm] - b[i + bim][j + bjm], bim, bjm,
 					(i, j, f) -> m3[i][j] = f);
 
-			mul0( //
-					(i, j) -> a[i + aim][j + ajm], aim, ajm, //
-					(i, j) -> b[i + bim][j + bj0] - b[i + bi0][j + bj0], bim, bjm, //
+			mul0(
+					(i, j) -> a[i + aim][j + ajm], aim, ajm,
+					(i, j) -> b[i + bim][j + bj0] - b[i + bi0][j + bj0], bim, bjm,
 					(i, j, f) -> m4[i][j] = f);
 
-			mul0( //
-					(i, j) -> a[i + ai0][j + aj0] + a[i + ai0][j + ajm], aim, ajm, //
-					(i, j) -> b[i + bim][j + bjm], bim, bjm, //
+			mul0(
+					(i, j) -> a[i + ai0][j + aj0] + a[i + ai0][j + ajm], aim, ajm,
+					(i, j) -> b[i + bim][j + bjm], bim, bjm,
 					(i, j, f) -> m5[i][j] = f);
 
-			mul0( //
-					(i, j) -> a[i + aim][j + aj0] - a[i + ai0][j + aj0], aim, ajm, //
-					(i, j) -> b[i + bi0][j + bj0] + b[i + bi0][j + bjm], bim, bjm, //
+			mul0(
+					(i, j) -> a[i + aim][j + aj0] - a[i + ai0][j + aj0], aim, ajm,
+					(i, j) -> b[i + bi0][j + bj0] + b[i + bi0][j + bjm], bim, bjm,
 					(i, j, f) -> m6[i][j] = f);
 
-			mul0( //
-					(i, j) -> a[i + ai0][j + ajm] - a[i + aim][j + ajm], aim, ajm, //
-					(i, j) -> b[i + bim][j + bj0] + b[i + bim][j + bjm], bim, bjm, //
+			mul0(
+					(i, j) -> a[i + ai0][j + ajm] - a[i + aim][j + ajm], aim, ajm,
+					(i, j) -> b[i + bim][j + bj0] + b[i + bim][j + bjm], bim, bjm,
 					(i, j, f) -> m7[i][j] = f);
 
 			var ci0 = 0;
@@ -87,23 +87,23 @@ public class Strassen {
 			return mul0(a, ai0, aix, aj0, ajx, b, bi0, bix, bj0, bjx);
 	}
 
-	private float[][] mul0( //
-			float[][] m, int mi0, int mix, int mj0, int mjx, //
+	private float[][] mul0(
+			float[][] m, int mi0, int mix, int mj0, int mjx,
 			float[][] n, int ni0, int nix, int nj0, int njx) {
 		var ks = mjx - mj0;
 		var height = mix - mi0;
 		var width = njx - nj0;
 		var o = mtx.of(height, width);
-		mul0( //
-				(i, j) -> m[i + mi0][j + mj0], height, ks, //
-				(i, j) -> n[i + ni0][j + nj0], ks, width, //
+		mul0(
+				(i, j) -> m[i + mi0][j + mj0], height, ks,
+				(i, j) -> n[i + ni0][j + nj0], ks, width,
 				(i, j, f) -> o[i][j] += f);
 		return o;
 	}
 
-	private void mul0( //
-			IntInt_Flt a, int ah, int aw, //
-			IntInt_Flt b, int bh, int bw, //
+	private void mul0(
+			IntInt_Flt a, int ah, int aw,
+			IntInt_Flt b, int bh, int bw,
 			Add add) {
 		var ks = aw;
 		var height = bh;

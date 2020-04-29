@@ -197,16 +197,16 @@ public class UctSearch<Move> {
 				var winRate = (float) child.nWins / child.nVisits;
 				String uct;
 				if (parent != null)
-					uct = df3.format(uct(child, //
-							log1p(parent.nVisits), //
+					uct = df3.format(uct(child,
+							log1p(parent.nVisits),
 							log1p(getMoveRave(nRaveVisits, parent.move))));
 				else
 					uct = "-";
 
-				sb.append(child.move //
-						+ ", " + child.nWins + "/" + child.nVisits //
-						+ ", winRate = " + df3.format(winRate) //
-						+ ", UCT = " + uct //
+				sb.append(child.move
+						+ ", " + child.nWins + "/" + child.nVisits
+						+ ", winRate = " + df3.format(winRate)
+						+ ", UCT = " + uct
 						+ "\n");
 
 				if (parent == null || parent.bestChild == child)

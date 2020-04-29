@@ -48,13 +48,13 @@ public class WriteElf {
 			}
 		});
 
-		ex(() -> Files.setPosixFilePermissions(path, new HashSet<>(List.of( //
-				PosixFilePermission.GROUP_EXECUTE, //
-				PosixFilePermission.GROUP_READ, //
-				PosixFilePermission.OTHERS_EXECUTE, //
-				PosixFilePermission.OTHERS_READ, //
-				PosixFilePermission.OWNER_EXECUTE, //
-				PosixFilePermission.OWNER_READ, //
+		ex(() -> Files.setPosixFilePermissions(path, new HashSet<>(List.of(
+				PosixFilePermission.GROUP_EXECUTE,
+				PosixFilePermission.GROUP_READ,
+				PosixFilePermission.OTHERS_EXECUTE,
+				PosixFilePermission.OTHERS_READ,
+				PosixFilePermission.OWNER_EXECUTE,
+				PosixFilePermission.OWNER_READ,
 				PosixFilePermission.OWNER_WRITE))));
 	}
 
@@ -64,11 +64,11 @@ public class WriteElf {
 	}
 
 	private Bytes header32(Bytes code, SerOutput do_) throws IOException {
-		return new Write_() //
+		return new Write_()
 				.db(0x7F) // e_ident
-				.append("ELF".getBytes(Utf8.charset)) //
-				.append(new byte[] { 1, 1, 1, 0, }) //
-				.append(new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, }) //
+				.append("ELF".getBytes(Utf8.charset))
+				.append(new byte[] { 1, 1, 1, 0, })
+				.append(new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, })
 				.dw(2) // e_type
 				.dw(0x03) // e_machine
 				.dd(1) // e_version
@@ -94,11 +94,11 @@ public class WriteElf {
 	}
 
 	private Bytes header64(Bytes code, SerOutput do_) throws IOException {
-		return new Write_() //
+		return new Write_()
 				.db(0x7F) // e_ident
-				.append("ELF".getBytes(Utf8.charset)) //
-				.append(new byte[] { 2, 1, 1, 0, }) //
-				.append(new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, }) //
+				.append("ELF".getBytes(Utf8.charset))
+				.append(new byte[] { 2, 1, 1, 0, })
+				.append(new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, })
 				.dw(2) // e_type
 				.dw(0x3E) // e_machine
 				.dd(1) // e_version

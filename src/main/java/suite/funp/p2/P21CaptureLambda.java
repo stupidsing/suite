@@ -89,7 +89,7 @@ public class P21CaptureLambda {
 				return inspect.rewrite(node, Funp.class, n -> {
 					var lambda = lambdaByFunp.get(n);
 
-					return n.sw( //
+					return n.sw(
 					).doIf(FunpDoAssignVar.class, f -> {
 						infoByVar.get(f.var).setLambda(true, lambda);
 					}).doIf(FunpReference.class, f -> {
@@ -133,7 +133,7 @@ public class P21CaptureLambda {
 			}
 
 			private Funp c_(Funp n) {
-				return n.sw( //
+				return n.sw(
 				).applyIf(FunpDoAssignVar.class, f -> f.apply((var, value, expr) -> {
 					var accessor = accessors.get(var);
 					if (accessor != null) {

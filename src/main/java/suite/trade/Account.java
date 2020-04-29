@@ -112,7 +112,7 @@ public class Account {
 
 	public boolean validate() {
 		var cash = cash_();
-		return (Trade_.isValidCash(cash) || failBool("too much leverage: " + cash)) //
+		return (Trade_.isValidCash(cash) || failBool("too much leverage: " + cash))
 				&& (Read.from2(assets).isAll((symbol, nShares) -> {
 					return Trade_.isValidStock(symbol, nShares) || failBool("no short-selling " + symbol + " " + nShares);
 				}));

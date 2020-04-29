@@ -24,7 +24,7 @@ public class P20ExtractPredefine {
 		var node1 = new Object() {
 			private Funp extract(Funp n) {
 				return inspect.rewrite(n, Funp.class, n_ -> {
-					return n_.sw( //
+					return n_.sw(
 					).applyIf(FunpLambda.class, f -> f.apply((vn, expr, fct) -> {
 						return FunpLambda.of(vn, extractPredefine(expr), fct);
 					})).applyIf(FunpPredefine.class, f -> f.apply((vn, expr) -> {

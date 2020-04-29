@@ -31,22 +31,22 @@ public class LazyPbTreeFileSystemImpl implements FileSystem {
 		var pfs = FileFactory.subPageFiles(jpf, 0, 10240, 20480, 30720);
 
 		mutator = new FileSystemMutatorImpl(keyUtil, () -> new KeyDataStore<>() {
-			private KeyValueStore<Bytes, Bytes> kvss = LazyPbTreeStore.ofExtent( //
-					pfs[0], //
-					Bytes.comparator, //
-					ser.variableLengthBytes, //
+			private KeyValueStore<Bytes, Bytes> kvss = LazyPbTreeStore.ofExtent(
+					pfs[0],
+					Bytes.comparator,
+					ser.variableLengthBytes,
 					ser.variableLengthBytes);
 
-			private KeyValueStore<Bytes, Integer> kvsis = LazyPbTreeStore.ofExtent( //
-					pfs[1], //
-					Bytes.comparator, //
-					ser.variableLengthBytes, //
+			private KeyValueStore<Bytes, Integer> kvsis = LazyPbTreeStore.ofExtent(
+					pfs[1],
+					Bytes.comparator,
+					ser.variableLengthBytes,
 					ser.int_);
 
-			private KeyValueStore<Bytes, Boolean> kvsbs = LazyPbTreeStore.ofExtent( //
-					pfs[2], //
-					Bytes.comparator, //
-					ser.variableLengthBytes, //
+			private KeyValueStore<Bytes, Boolean> kvsbs = LazyPbTreeStore.ofExtent(
+					pfs[2],
+					Bytes.comparator,
+					ser.variableLengthBytes,
 					ser.boolean_);
 
 			public KeyValueMutator<Bytes, Integer> mutate() {

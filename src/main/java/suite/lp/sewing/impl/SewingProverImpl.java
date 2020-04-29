@@ -234,9 +234,9 @@ public class SewingProverImpl implements ProverFactory {
 				Trampoline tr;
 
 				if (rulesByProto1 != null) {
-					var trByProto1 = Read //
-							.from2(rulesByProto1) //
-							.mapValue(rules_ -> compileTrRules(prototype, rules_, traceLevel)) //
+					var trByProto1 = Read
+							.from2(rulesByProto1)
+							.mapValue(rules_ -> compileTrRules(prototype, rules_, traceLevel))
 							.toMap();
 
 					tr = rt -> {
@@ -256,9 +256,9 @@ public class SewingProverImpl implements ProverFactory {
 				Cps cps;
 
 				if (rulesByProto1 != null) {
-					var cpsByProto1 = Read //
-							.from2(rulesByProto1) //
-							.mapValue(rules_ -> compileCpsRules(prototype, rules_, traceLevel)) //
+					var cpsByProto1 = Read
+							.from2(rulesByProto1)
+							.mapValue(rules_ -> compileCpsRules(prototype, rules_, traceLevel))
 							.toMap();
 
 					cps = rt -> {
@@ -274,9 +274,9 @@ public class SewingProverImpl implements ProverFactory {
 	}
 
 	private boolean isHasCut(List<Rule> rules) {
-		return Boolean.TRUE || Read //
-				.from(rules) //
-				.map(rule -> rw.contains(ProverConstant.cut, rule.tail)) //
+		return Boolean.TRUE || Read
+				.from(rules)
+				.map(rule -> rw.contains(ProverConstant.cut, rule.tail))
 				.isAny(b -> b);
 	}
 
@@ -893,8 +893,8 @@ public class SewingProverImpl implements ProverFactory {
 			var head = prototype.head;
 			var name = head instanceof Atom ? Atom.name(head) : null;
 
-			traceLevel = name != null //
-					&& !name.startsWith("member") //
+			traceLevel = name != null
+					&& !name.startsWith("member")
 					&& !name.startsWith("rbt-") ? TraceLevel.TRACE : TraceLevel.NONE;
 		} else
 			traceLevel = TraceLevel.NONE;

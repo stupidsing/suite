@@ -56,18 +56,18 @@ public class DpkgUtil {
 	}
 
 	public ListMultimap<String, String> getDependeesOf(List<Map<String, String>> packages) {
-		return Read //
-				.from(packages) //
+		return Read
+				.from(packages)
 				.map(pm -> {
 					var line = pm.getOrDefault("Depends", "");
-					var list = Read //
-							.from(line.split(",")) //
-							.filter(s -> !s.isEmpty()) //
-							.map(s -> s.trim().split(" ")[0]) //
+					var list = Read
+							.from(line.split(","))
+							.filter(s -> !s.isEmpty())
+							.map(s -> s.trim().split(" ")[0])
 							.toList();
 					return Pair.of(pm.get("Package"), list);
-				}) //
-				.map2(Pair::fst, Pair::snd) //
+				})
+				.map2(Pair::fst, Pair::snd)
 				.collect(As::multimap);
 	}
 

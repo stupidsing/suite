@@ -24,8 +24,8 @@ public class Aastocks {
 		}
 
 		// extract the number we want
-		return Float.parseFloat(new String(ReadChr.from(s.toCharArray()) //
-				.filter(c -> c == '.' || '0' <= c && c <= '9') //
+		return Float.parseFloat(new String(ReadChr.from(s.toCharArray())
+				.filter(c -> c == '.' || '0' <= c && c <= '9')
 				.toArray()));
 	}
 

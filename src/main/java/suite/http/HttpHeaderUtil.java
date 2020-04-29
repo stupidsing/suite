@@ -40,10 +40,10 @@ public class HttpHeaderUtil {
 
 	private static Map<String, String> decodeMap(String query, String sep) {
 		var qs = query != null ? query.split(sep) : new String[0];
-		return Read //
-				.from(qs) //
-				.concatMap2(q -> Read.each2(Split.strl(q, "="))) //
-				.mapValue(HttpHeaderUtil::decode) //
+		return Read
+				.from(qs)
+				.concatMap2(q -> Read.each2(Split.strl(q, "=")))
+				.mapValue(HttpHeaderUtil::decode)
 				.toMap();
 	}
 

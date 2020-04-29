@@ -71,9 +71,9 @@ public class TreeIntern {
 	}
 
 	public Node intern(Node node) {
-		var key = new SwitchNode<Key>(node) //
-				.applyTree((op, l, r) -> treeKey(op, intern(l), intern(r))) //
-				.applyIf(Node.class, NodeKey::new) //
+		var key = new SwitchNode<Key>(node)
+				.applyTree((op, l, r) -> treeKey(op, intern(l), intern(r)))
+				.applyIf(Node.class, NodeKey::new)
 				.result();
 		return interns.computeIfAbsent(key, k -> node);
 	}

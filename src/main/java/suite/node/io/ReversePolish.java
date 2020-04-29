@@ -51,10 +51,10 @@ public class ReversePolish {
 					var value = deque.pop();
 					children.add(Pair.of(key, value));
 				}
-				n = new NodeWrite( //
-						ReadType.valueOf(a[0]), //
-						!Equals.string(a[1], "null") ? Suite.parse(a[1]) : null, //
-						TermOp.valueOf(a[2]), //
+				n = new NodeWrite(
+						ReadType.valueOf(a[0]),
+						!Equals.string(a[1], "null") ? Suite.parse(a[1]) : null,
+						TermOp.valueOf(a[2]),
 						children).node;
 				// n = Suite.parse(s);
 			} else if (type == 'i')
@@ -82,7 +82,7 @@ public class ReversePolish {
 		var list = new ArrayList<String>();
 
 		while (!deque.isEmpty()) {
-			var s = new SwitchNode<String>(deque.pop() //
+			var s = new SwitchNode<String>(deque.pop()
 			).applyIf(Atom.class, n_ -> {
 				return "\\" + n_.name;
 			}).applyIf(Int.class, n_ -> {

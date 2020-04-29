@@ -32,7 +32,7 @@ public class EvaluateUtil {
 	private Fun<Boolean, Node> fccNodeFun = Memoize.fun(isLazy -> {
 		var mode = Atom.of(isLazy ? "LAZY" : "EAGER");
 
-		return new Specializer().specialize(Suite.substitute("" //
+		return new Specializer().specialize(Suite.substitute(""
 				+ "source .in, compile-function .0 .in .out, sink .out", mode));
 	});
 
@@ -77,13 +77,13 @@ public class EvaluateUtil {
 	}
 
 	public Node evaluateFunType(FunCompilerCfg fcc) {
-		var node = Suite.parse("" //
-				+ "source .in" //
-				+ ", fc-parse .in .p" //
-				+ ", fc-infer-type .p .t0" //
-				+ ", graph.specialize .t0 .t1" //
-				+ ", fc-parse-type .t2 .t1" //
-				+ ", graph.generalize .t2 .out" //
+		var node = Suite.parse(""
+				+ "source .in"
+				+ ", fc-parse .in .p"
+				+ ", fc-infer-type .p .t0"
+				+ ", graph.specialize .t0 .t1"
+				+ ", fc-parse-type .t2 .t1"
+				+ ", graph.generalize .t2 .out"
 				+ ", sink .out");
 
 		var type = doFcc(node, fcc);

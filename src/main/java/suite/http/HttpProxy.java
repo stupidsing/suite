@@ -40,10 +40,10 @@ public class HttpProxy {
 			var pp = Split.string(url, "://");
 			var path = pp != null ? Split.strl(pp.v, "/").v : url;
 
-			try (var socket1 = connect(path); //
-					var is0 = is; //
-					var os0 = os; //
-					var is1 = socket1.getInputStream(); //
+			try (var socket1 = connect(path);
+					var is0 = is;
+					var os0 = os;
+					var is1 = socket1.getInputStream();
 					var os1 = socket1.getOutputStream();) {
 				os1.write((line + "\r\nConnection: close\r\n").getBytes(Utf8.charset));
 				Read.each(Copy.streamByThread(is0, os1), Copy.streamByThread(is1, os0)).collect(Start::thenJoin);
@@ -61,21 +61,21 @@ public class HttpProxy {
 
 			var headers1 = request0.headers.remove("Connection").put("Connection", "close");
 
-			var request1 = new Request( //
-					request0.method, //
-					request0.server, //
-					request0.paths, //
-					request0.query, //
-					headers1, //
+			var request1 = new Request(
+					request0.method,
+					request0.server,
+					request0.paths,
+					request0.query,
+					headers1,
 					request0.in);
 
-			try (var socket1 = connect(pq); //
-					var is0 = is; //
-					var os0 = os; //
-					var is1 = socket1.getInputStream(); //
+			try (var socket1 = connect(pq);
+					var is0 = is;
+					var os0 = os;
+					var is1 = socket1.getInputStream();
 					var os1 = socket1.getOutputStream();) {
-				Start.thenJoin( //
-						() -> httpIo.writeRequest(os1, request1), //
+				Start.thenJoin(
+						() -> httpIo.writeRequest(os1, request1),
 						() -> httpIo.writeResponse(os0, httpIo.readResponse(is1)));
 			}
 		});

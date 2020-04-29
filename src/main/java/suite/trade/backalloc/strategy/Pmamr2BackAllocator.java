@@ -41,17 +41,17 @@ public class Pmamr2BackAllocator {
 			return index -> {
 				// Time time = Time.ofEpochSec(akds.ts[index - 1]);
 
-				var mrsBySymbol = akds.dsByKey //
-						.map2((symbol, ds) -> dsv.get(symbol, index)) //
-						.filterValue(mrsReversionStat -> mrsReversionStat != null) //
+				var mrsBySymbol = akds.dsByKey
+						.map2((symbol, ds) -> dsv.get(symbol, index))
+						.filterValue(mrsReversionStat -> mrsReversionStat != null)
 						.toMap();
 
 				// make sure all time-series are mean-reversions:
 				// ensure ADF < 0d: price is not random walk
 				// ensure Hurst exponent < .5d: price is weakly mean reverting
-				return Read //
-						.from2(mrsBySymbol) //
-						.filterValue(mrs -> mrs.adf < 0d && mrs.hurst < .5d) //
+				return Read
+						.from2(mrsBySymbol)
+						.filterValue(mrs -> mrs.adf < 0d && mrs.hurst < .5d)
 						.map2((symbol, mrs) -> {
 							var ds = dsBySymbol.get(symbol);
 							var prices = ds.prices;
@@ -65,13 +65,13 @@ public class Pmamr2BackAllocator {
 							var sharpe = returnsStat.sharpeRatio();
 							var kelly = returnsStat.kellyCriterion();
 							return new PotentialStat(dailyReturn, sharpe, kelly);
-						}) //
-						.filterValue(ps -> ps.dailyReturn < 0d) //
-						.filterValue(ps -> 0d < ps.sharpe) //
-						.cons(Instrument.cashSymbol, new PotentialStat(Trade_.riskFreeInterestRate, 1d, 0d)) //
-						.mapValue(ps -> ps.kelly) //
-						.sortBy((symbol, potential) -> -potential) //
-						.take(top) //
+						})
+						.filterValue(ps -> ps.dailyReturn < 0d)
+						.filterValue(ps -> 0d < ps.sharpe)
+						.cons(Instrument.cashSymbol, new PotentialStat(Trade_.riskFreeInterestRate, 1d, 0d))
+						.mapValue(ps -> ps.kelly)
+						.sortBy((symbol, potential) -> -potential)
+						.take(top)
 						.toList();
 			};
 		};
@@ -91,8 +91,8 @@ public class Pmamr2BackAllocator {
 		}
 
 		public String toString() {
-			return "dailyReturn = " + To.string(dailyReturn) //
-					+ ", sharpe = " + To.string(sharpe) //
+			return "dailyReturn = " + To.string(dailyReturn)
+					+ ", sharpe = " + To.string(sharpe)
 					+ ", kelly = " + To.string(kelly);
 		}
 	}
@@ -125,8 +125,8 @@ public class Pmamr2BackAllocator {
 		}
 
 		public String toString() {
-			return "adf = " + adf //
-					+ ", hurst = " + hurst //
+			return "adf = " + adf
+					+ ", hurst = " + hurst
 					+ ", movingAvgHalfLife = " + movingAvgHalfLife();
 		}
 	}

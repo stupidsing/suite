@@ -134,14 +134,14 @@ public class Exchange {
 
 		return lobBySymbol.computeIfAbsent(symbol, s -> new LimitOrderBook<>(new LobListener<>() {
 			public void handleOrderFulfilled(LimitOrderBook<String>.Order order, float price, int buySell) {
-				pspo(order).map((participantId, symbolPositionId, orderId) -> participantById //
-						.get(participantId) //
+				pspo(order).map((participantId, symbolPositionId, orderId) -> participantById
+						.get(participantId)
 						.record(buySell, symbolPositionId, price, isLeveraged));
 			}
 
 			public void handleOrderDisposed(LimitOrderBook<String>.Order order) {
-				pspo(order).map((participantId, symbolPositionId, orderId) -> participantById //
-						.get(participantId) //
+				pspo(order).map((participantId, symbolPositionId, orderId) -> participantById
+						.get(participantId)
 						.removeOrder(orderId));
 			}
 

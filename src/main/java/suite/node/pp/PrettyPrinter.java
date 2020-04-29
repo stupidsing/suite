@@ -87,8 +87,8 @@ public class PrettyPrinter {
 					var opLength = op.name_().length();
 
 					// breaks "a + b + xxx" in the second operator
-					if (assoc == Assoc.RIGHT //
-							&& x + es0 + es1 + opLength < lineLength //
+					if (assoc == Assoc.RIGHT
+							&& x + es0 + es1 + opLength < lineLength
 							&& r0 != preferLineBreakBeforeKeyword) {
 						prettyPrint_(left, op, leftPrec);
 						var opPos = appendOperator(op);

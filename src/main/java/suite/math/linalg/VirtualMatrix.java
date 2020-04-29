@@ -70,9 +70,9 @@ public class VirtualMatrix {
 		var mtx = VirtualMatrixUtil.mtx;
 		var kh = mtx.height(k);
 		var kw = mtx.width(k);
-		return VirtualMatrix.of( //
-				height - kh + 1, //
-				width_ - kw + 1, //
+		return VirtualMatrix.of(
+				height - kh + 1,
+				width_ - kw + 1,
 				(i, j) -> {
 					var sum = 0d;
 					for (var di = 0; di < kh; di++)

@@ -38,38 +38,38 @@ public class AptUtil {
 	public String getDownloadUrl(Repo repo, List<Map<String, String>> packages, String packageName) {
 		String prefix = packageName.substring(0, packageName.startsWith("lib") ? 4 : 1);
 
-		return Read //
-				.from(packages) //
-				.filter(pm -> Equals.string(pm.get("Package"), packageName)) //
+		return Read
+				.from(packages)
+				.filter(pm -> Equals.string(pm.get("Package"), packageName))
 				.map(pm -> {
 					var p = pm.get("Filename");
 					if (p != null)
-						return repo.urlAddress //
+						return repo.urlAddress
 								+ "/" + p;
 					else
-						return repo.urlAddress //
-								+ "/pool" //
-								+ "/" + repo.tag //
-								+ "/" + prefix //
-								+ "/" + packageName //
+						return repo.urlAddress
+								+ "/pool"
+								+ "/" + repo.tag
+								+ "/" + prefix
+								+ "/" + packageName
 								+ "/" + packageName + "_" + pm.get("Version") + "_" + pm.get("Architecture") + ".deb";
-				}) //
+				})
 				.uniqueResult();
 	}
 
 	public Streamlet<String> readManuallyInstalled() {
-		return debianUtil.readDpkgConfiguration(new File(aptDir + "/extended_states")) //
-				.filter(pm -> Equals.ab(pm.get("Auto-Installed"), "0")) //
+		return debianUtil.readDpkgConfiguration(new File(aptDir + "/extended_states"))
+				.filter(pm -> Equals.ab(pm.get("Auto-Installed"), "0"))
 				.map(pm -> pm.get("Package"));
 	}
 
 	public List<Map<String, String>> readRepoPackages() {
 		var files = new File(aptDir + "/lists").listFiles();
-		return Read //
-				.from(files) //
-				.filter(File::isFile) //
-				.filter(file -> file.getName().endsWith("_Packages")) //
-				.concatMap(debianUtil::readDpkgConfiguration) //
+		return Read
+				.from(files)
+				.filter(File::isFile)
+				.filter(file -> file.getName().endsWith("_Packages"))
+				.concatMap(debianUtil::readDpkgConfiguration)
 				.toList();
 	}
 

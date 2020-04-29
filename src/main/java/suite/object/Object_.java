@@ -83,9 +83,9 @@ public class Object_ {
 			else {
 				var inspect = Singleton.me.inspect;
 
-				var sfs = inspect //
-						.fields(clazz) //
-						.map(field -> Pair.of(field.getName(), field)) //
+				var sfs = inspect
+						.fields(clazz)
+						.map(field -> Pair.of(field.getName(), field))
 						.toList();
 
 				mapper = new Mapper(object -> ex(() -> {

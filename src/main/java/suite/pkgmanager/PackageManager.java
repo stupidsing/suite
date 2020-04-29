@@ -28,16 +28,16 @@ public class PackageManager {
 	public boolean install(String packageFilename) {
 		var packageManifest = getPackageManifest(packageFilename);
 
-		var filenameMappings = Read //
-				.from2(packageManifest.getFilenameMappings()) //
-				.sort((p0, p1) -> p1.k.length() - p0.k.length()) //
+		var filenameMappings = Read
+				.from2(packageManifest.getFilenameMappings())
+				.sort((p0, p1) -> p1.k.length() - p0.k.length())
 				.toList();
 
 		var installActions = new ArrayList<InstallAction>();
 
 		try (var zipFile = new ZipFile(packageFilename)) {
-			installActions.addAll(Read //
-					.from(FileUtil.listZip(zipFile)) //
+			installActions.addAll(Read
+					.from(FileUtil.listZip(zipFile))
 					.map(filename0 -> {
 						var filename1 = filename0;
 						for (var filenameMapping : filenameMappings) {
@@ -48,15 +48,15 @@ public class PackageManager {
 							}
 						}
 						return new ExtractFileAction(packageFilename, filename0, filename1);
-					}) //
+					})
 					.toList());
 		} catch (IOException ex) {
 			return fail(ex);
 		}
 
-		installActions.addAll(Read //
-				.from(packageManifest.getCommands()) //
-				.map(command -> new ExecCommandAction(command.getInstallCommand(), command.getUninstallCommand())) //
+		installActions.addAll(Read
+				.from(packageManifest.getCommands())
+				.map(command -> new ExecCommandAction(command.getInstallCommand(), command.getUninstallCommand()))
 				.toList());
 
 		var progress = 0;

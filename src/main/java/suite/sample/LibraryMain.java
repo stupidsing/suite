@@ -46,23 +46,23 @@ public class LibraryMain {
 	}
 
 	private boolean run() {
-		var partition = FileUtil //
-				.findPaths(Paths.get(inputDir)) //
-				.filter(path -> fileExtensions.contains(Get.fileExtension(path))) //
-				.map2(path -> ex(() -> Files.size(path))) //
+		var partition = FileUtil
+				.findPaths(Paths.get(inputDir))
+				.filter(path -> fileExtensions.contains(Get.fileExtension(path)))
+				.map2(path -> ex(() -> Files.size(path)))
 				.partition((path, size) -> 0 < size);
 
 		// remove empty files
 		partition.v.sink((path, size) -> DeleteFile.on(path));
 
 		// get all file information
-		var path_fileInfos = partition.k //
+		var path_fileInfos = partition.k
 				.map2((path, size) -> {
 					var attrs = ex(() -> Files.readAttributes(path, BasicFileAttributes.class));
 
-					var tags = forInt(path.getNameCount()) //
-							.map(i -> path.getName(i).toString()) //
-							.cons(Format.ymdHms(attrs.lastModifiedTime().toInstant())) //
+					var tags = forInt(path.getNameCount())
+							.map(i -> path.getName(i).toString())
+							.cons(Format.ymdHms(attrs.lastModifiedTime().toInstant()))
 							.collect();
 
 					var fileInfo = new FileInfo();
@@ -77,7 +77,7 @@ public class LibraryMain {
 				pw.println(path_fileInfo.k + path_fileInfo.v.md5);
 		});
 
-		path_fileInfos //
+		path_fileInfos
 				.map2((path, fileInfo) -> {
 
 					// move file to library, by md5
@@ -85,7 +85,7 @@ public class LibraryMain {
 					Mk.dir(path1.getParent());
 					ex(() -> Files.move(path, path1, StandardCopyOption.REPLACE_EXISTING));
 					return fileInfo;
-				}) //
+				})
 				.concatMap((path, fileInfo) -> fileInfo.tags.map(tag -> {
 
 					// add to tag indices

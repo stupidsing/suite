@@ -46,7 +46,7 @@ public class TimeSeries {
 	public double adf(float[] ys, int tor) {
 		var ydiffs = differences_(1, ys);
 		var length = ys.length;
-		var lr = stat.linearRegression(forInt(tor, length) //
+		var lr = stat.linearRegression(forInt(tor, length)
 				.map(i -> FltObjPair.of(ydiffs[i],
 						// i - drift term, necessary?
 						AsFlt.concat(Floats.of(ys[i - 1], 1f, i), Floats.of(ydiffs, i - tor, i)).toArray())));

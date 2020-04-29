@@ -33,9 +33,9 @@ public class HttpAuthSession {
 			public Response handle(Request request) {
 				var current = System.currentTimeMillis();
 
-				var sessionIdOpt = request //
-						.headers //
-								.getOpt("Cookie") //
+				var sessionIdOpt = request
+						.headers
+								.getOpt("Cookie")
 								.map(cookie -> HttpHeaderUtil.getCookieAttrs(cookie).get("session"));
 
 				var session = sessionIdOpt.map(sm::get).or(null);
@@ -51,12 +51,12 @@ public class HttpAuthSession {
 						var sessionId = getRandomSessionId();
 						sm.put(sessionId, session = new Session(username, current));
 
-						var request1 = new Request( //
-								request.method, //
-								request.server, //
-								paths, //
-								request.query, //
-								request.headers, //
+						var request1 = new Request(
+								request.method,
+								request.server,
+								paths,
+								request.query,
+								request.headers,
 								request.in);
 
 						response = showProtectedPage(request1, sessionId);
@@ -83,19 +83,19 @@ public class HttpAuthSession {
 			private Response showLoginPage(PerList<String> redirectPath, boolean isLoginFailed) {
 				var redirectPath1 = redirectPath.streamlet().map(p -> "/" + p).toJoinedString();
 
-				return Response.of(Pull.from("<html>" //
-						+ "<head><title>Login</title></head>" //
-						+ "<body>" //
-						+ "<font face=\"Monospac821 BT,Monaco,Consolas\">" //
-						+ (isLoginFailed ? "<b>LOGIN FAILED</b><p/>" : "") //
-						+ "<form name=\"login\" action=\"login\" method=\"post\">" //
-						+ "Username <input type=\"text\" name=\"username\" autofocus /><br/>" //
-						+ "Password <input type=\"password\" name=\"password\" /><br/>" //
-						+ "<input type=\"hidden\" name=\"path\" value=\"" + htmlUtil.encode(redirectPath1) + "\" />" //
-						+ "<input type=\"submit\" value=\"Login\">" //
-						+ "</form>" //
-						+ "</font>" //
-						+ "</body>" //
+				return Response.of(Pull.from("<html>"
+						+ "<head><title>Login</title></head>"
+						+ "<body>"
+						+ "<font face=\"Monospac821 BT,Monaco,Consolas\">"
+						+ (isLoginFailed ? "<b>LOGIN FAILED</b><p/>" : "")
+						+ "<form name=\"login\" action=\"login\" method=\"post\">"
+						+ "Username <input type=\"text\" name=\"username\" autofocus /><br/>"
+						+ "Password <input type=\"password\" name=\"password\" /><br/>"
+						+ "<input type=\"hidden\" name=\"path\" value=\"" + htmlUtil.encode(redirectPath1) + "\" />"
+						+ "<input type=\"submit\" value=\"Login\">"
+						+ "</form>"
+						+ "</font>"
+						+ "</body>"
 						+ "</html>"));
 			}
 

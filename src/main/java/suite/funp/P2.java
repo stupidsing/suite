@@ -293,12 +293,12 @@ public class P2 {
 		public Funp expr;
 		public Fct fct;
 
-		public static FunpLambdaCapture of( //
-				FunpVariable fpIn, //
-				FunpVariable frameVar, //
-				FunpStruct struct, //
-				String vn, //
-				Funp expr, //
+		public static FunpLambdaCapture of(
+				FunpVariable fpIn,
+				FunpVariable frameVar,
+				FunpStruct struct,
+				String vn,
+				Funp expr,
 				Fct fct) {
 			var f = new FunpLambdaCapture();
 			f.fpIn = fpIn;

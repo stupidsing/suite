@@ -64,9 +64,9 @@ public class ExParticipant {
 	}
 
 	private ExSummary summary_(Obj_Flt<String> getCurrentPrice, double invLeverage) {
-		var summaries = Read //
-				.from2(positionByPositionId) //
-				.map((symbolPositionId, position) -> Exchange.sp(symbolPositionId).map((symbol, positionId) -> position //
+		var summaries = Read
+				.from2(positionByPositionId)
+				.map((symbolPositionId, position) -> Exchange.sp(symbolPositionId).map((symbol, positionId) -> position
 						.summary(getCurrentPrice.apply(symbol), invLeverage)));
 
 		var summary = new ExSummary();

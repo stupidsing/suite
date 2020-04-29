@@ -209,8 +209,8 @@ public class InstructionAnalyzer {
 			var instruction0 = source.g();
 			var instruction1 = source.g();
 
-			if (instruction0 != null && instruction0.insn == Insn.CALLTHUNK_____ //
-					&& instruction1 != null && instruction1.insn == Insn.ASSIGNRESULT__ //
+			if (instruction0 != null && instruction0.insn == Insn.CALLTHUNK_____
+					&& instruction1 != null && instruction1.insn == Insn.ASSIGNRESULT__
 					&& isReturningValue(source, instruction1.op0))
 				tailCalls.add(ip);
 		}

@@ -49,7 +49,7 @@ public class P11ReduceTailCall {
 			private boolean b = false;
 
 			private Funp tco(Funp do_) {
-				return new Switch<Funp>(do_ //
+				return new Switch<Funp>(do_
 				).applyIf(FunpApply.class, f -> f.apply((value, lambda) -> {
 					return lambda.cast(FunpVariable.class, g -> g.apply(vn_ -> {
 						return Equals.string(lambdaVn, vn_) ? cont(true, value, FunpDontCare.of()) : null;
@@ -63,9 +63,9 @@ public class P11ReduceTailCall {
 
 			private Funp cont(boolean c, Funp n, Funp r) {
 				b |= c;
-				return FunpStruct.of(List.of( //
-						Pair.of("c", FunpBoolean.of(c)), //
-						Pair.of("n", n), //
+				return FunpStruct.of(List.of(
+						Pair.of("c", FunpBoolean.of(c)),
+						Pair.of("n", n),
 						Pair.of("r", r)));
 			}
 		};

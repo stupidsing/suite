@@ -29,19 +29,19 @@ public class Fractional<I> {
 
 	public static Fractional<Integer> ofIntegral() {
 		var integral = new Integral();
-		return new Fractional<>( //
-				integral.ring, //
-				integral::sign, //
-				integral::divMod, //
-				integral::parse, //
+		return new Fractional<>(
+				integral.ring,
+				integral::sign,
+				integral::divMod,
+				integral::parse,
 				integral::format);
 	}
 
-	public Fractional( //
-			Ring<I> ring0, //
-			Obj_Int<I> sgn_, //
-			Fun2<I, I, Pair<I, I>> divMod_, //
-			Fun<Node, Opt<I>> parse_, //
+	public Fractional(
+			Ring<I> ring0,
+			Obj_Int<I> sgn_,
+			Fun2<I, I, Pair<I, I>> divMod_,
+			Fun<Node, Opt<I>> parse_,
 			Fun<I, Node> format_) {
 		this.n0 = ring0.n0;
 		this.n1 = ring0.n1;
@@ -67,7 +67,7 @@ public class Fractional<I> {
 
 		return new Object() {
 			private Opt<Fract<I>> fract(Node node) {
-				return new SwitchNode<Opt<Fract<I>>>(node //
+				return new SwitchNode<Opt<Fract<I>>>(node
 				).match(patAdd, (a, b) -> {
 					return fract(a).join(fract(b), fr::add);
 				}).match(patNeg, a -> {

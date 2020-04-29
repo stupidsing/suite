@@ -16,28 +16,28 @@ public class P4JumpIf {
 
 	private FixieFun5<Integer, Insn, Insn, Funp, Funp, Boolean> cmpJmp;
 
-	private Map<TermOp, Insn> jxxInsnByOp = Map.ofEntries( //
-			entry(TermOp.EQUAL_, Insn.JE), //
-			entry(TermOp.LE____, Insn.JLE), //
-			entry(TermOp.LT____, Insn.JL), //
+	private Map<TermOp, Insn> jxxInsnByOp = Map.ofEntries(
+			entry(TermOp.EQUAL_, Insn.JE),
+			entry(TermOp.LE____, Insn.JLE),
+			entry(TermOp.LT____, Insn.JL),
 			entry(TermOp.NOTEQ_, Insn.JNE));
 
-	private Map<TermOp, Insn> jnxInsnByOp = Map.ofEntries( //
-			entry(TermOp.EQUAL_, Insn.JNE), //
-			entry(TermOp.LE____, Insn.JG), //
-			entry(TermOp.LT____, Insn.JGE), //
+	private Map<TermOp, Insn> jnxInsnByOp = Map.ofEntries(
+			entry(TermOp.EQUAL_, Insn.JNE),
+			entry(TermOp.LE____, Insn.JG),
+			entry(TermOp.LT____, Insn.JGE),
 			entry(TermOp.NOTEQ_, Insn.JE));
 
-	private Map<TermOp, Insn> jxxRevInsnByOp = Map.ofEntries( //
-			entry(TermOp.EQUAL_, Insn.JE), //
-			entry(TermOp.LE____, Insn.JGE), //
-			entry(TermOp.LT____, Insn.JG), //
+	private Map<TermOp, Insn> jxxRevInsnByOp = Map.ofEntries(
+			entry(TermOp.EQUAL_, Insn.JE),
+			entry(TermOp.LE____, Insn.JGE),
+			entry(TermOp.LT____, Insn.JG),
 			entry(TermOp.NOTEQ_, Insn.JNE));
 
-	private Map<TermOp, Insn> jnxRevInsnByOp = Map.ofEntries( //
-			entry(TermOp.EQUAL_, Insn.JNE), //
-			entry(TermOp.LE____, Insn.JL), //
-			entry(TermOp.LT____, Insn.JLE), //
+	private Map<TermOp, Insn> jnxRevInsnByOp = Map.ofEntries(
+			entry(TermOp.EQUAL_, Insn.JNE),
+			entry(TermOp.LE____, Insn.JL),
+			entry(TermOp.LT____, Insn.JLE),
 			entry(TermOp.NOTEQ_, Insn.JE));
 
 	public P4JumpIf(FixieFun5<Integer, Insn, Insn, Funp, Funp, Boolean> cmpJmp) {

@@ -75,8 +75,8 @@ public class Grapher {
 
 			var nr = NodeRead.of(node);
 
-			var children = nr.children //
-					.map((k, v) -> IntIntPair.of(graph_(ids, k), graph_(ids, v))) //
+			var children = nr.children
+					.map((k, v) -> IntIntPair.of(graph_(ids, k), graph_(ids, v)))
 					.toList();
 
 			gns.set(id, new GN(nr.type, nr.terminal, nr.op, children));
@@ -88,15 +88,15 @@ public class Grapher {
 	private Node ungraph_(int id) {
 		var size = gns.size();
 
-		var nodes = Read //
-				.from(gns) //
+		var nodes = Read
+				.from(gns)
 				.map(gn -> switch (gn.type) {
 				case DICT -> Dict.of();
 				case TERM -> gn.terminal;
 				case TREE -> Tree.of(gn.op, null, null);
 				case TUPLE -> Tuple.of(new Node[gn.children.size()]);
 				default -> fail();
-				}) //
+				})
 				.toList();
 
 		for (var i = 0; i < size; i++) {
@@ -151,12 +151,12 @@ public class Grapher {
 				var gn0 = g0.gns.get(pair.t0);
 				var gn1 = g1.gns.get(pair.t1);
 
-				if (gn0.type == ReadType.TERM //
-						&& gn0.terminal instanceof Reference //
+				if (gn0.type == ReadType.TERM
+						&& gn0.terminal instanceof Reference
 						&& Binder.bind(gn0.terminal, mapi1.get(pair.t1).key, trail))
 					;
-				else if (gn1.type == ReadType.TERM //
-						&& gn1.terminal instanceof Reference //
+				else if (gn1.type == ReadType.TERM
+						&& gn1.terminal instanceof Reference
 						&& Binder.bind(gn1.terminal, mapi0.get(pair.t0).key, trail))
 					;
 				else if (gn0.type == gn1.type && Equals.ab(gn0.terminal, gn1.terminal) && gn0.op == gn1.op) {
@@ -181,25 +181,25 @@ public class Grapher {
 	}
 
 	public void generalize() {
-		gns = Read //
-				.from(gns) //
+		gns = Read
+				.from(gns)
 				.map(gn -> {
 					Node node;
 					GN gn1;
-					if (gn.type == ReadType.TERM //
-							&& (node = gn.terminal) instanceof Atom //
+					if (gn.type == ReadType.TERM
+							&& (node = gn.terminal) instanceof Atom
 							&& Atom.name(node).startsWith(ProverConstant.variablePrefix))
 						gn1 = new GN(new Reference());
 					else
 						gn1 = gn;
 					return gn1;
-				}) //
+				})
 				.toList();
 	}
 
 	public void specialize() {
-		gns = Read //
-				.from(gns) //
+		gns = Read
+				.from(gns)
 				.map(gn -> {
 					Node node;
 					GN gn1;
@@ -208,7 +208,7 @@ public class Grapher {
 					else
 						gn1 = gn;
 					return gn1;
-				}) //
+				})
 				.toList();
 	}
 
@@ -280,7 +280,7 @@ public class Grapher {
 			dos.writeByte(type.value);
 
 			if (type == ReadType.TERM)
-				new SwitchNode<Node>(gn.terminal //
+				new SwitchNode<Node>(gn.terminal
 				).doIf(Atom.class, n -> {
 					dos.writeByte((byte) 'a');
 					dos.writeUTF(n.name);
@@ -313,18 +313,18 @@ public class Grapher {
 		return Build.string(sb -> {
 			for (var gn : gns) {
 				var s = switch (gn.type) {
-				case DICT -> Read //
-						.from(gn.children) //
-						.map(p -> p.t0 + "->" + p.t1 + ", ") //
+				case DICT -> Read
+						.from(gn.children)
+						.map(p -> p.t0 + "->" + p.t1 + ", ")
 						.toJoinedString("dict(", ", ", ")");
 
 				case TERM -> Formatter.dump(gn.terminal);
 
 				case TREE -> "tree(" + gn.children.get(0).t1 + gn.op.name_() + gn.children.get(1).t1 + ")";
 
-				case TUPLE -> Read //
-						.from(gn.children) //
-						.map(p -> p.t1 + ", ") //
+				case TUPLE -> Read
+						.from(gn.children)
+						.map(p -> p.t1 + ", ")
 						.toJoinedString("tuple(", ", ", ")");
 
 				default -> fail();

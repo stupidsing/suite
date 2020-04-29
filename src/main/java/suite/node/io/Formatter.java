@@ -44,7 +44,7 @@ public class Formatter {
 		private void treeize(Node node, String indent) {
 			var indent1 = indent + "  ";
 
-			new SwitchNode<Node>(node //
+			new SwitchNode<Node>(node
 			).doIf(Dict.class, n -> {
 				for (var e : Dict.m(node).entrySet()) {
 					sb.append(indent + "d:" + dump(e.getKey()) + "\n");
@@ -116,7 +116,7 @@ public class Formatter {
 	}
 
 	private void format_(Node node, int parentPrec) {
-		new SwitchNode<Node>(node //
+		new SwitchNode<Node>(node
 		).doIf(Atom.class, n -> {
 			sb.append(quoteAtomIfRequired(n.name));
 		}).doIf(Data.class, n -> {
@@ -207,18 +207,18 @@ public class Formatter {
 		String s1;
 		if (isDump)
 			if (!s0.isEmpty()) {
-				var quote = false //
-						|| s0.startsWith(ProverConstant.variablePrefix) //
-						|| s0.startsWith(ProverConstant.wildcardPrefix) //
-						|| ReadChars.from(s0).isAny(c -> true //
-								&& !('0' <= c && c <= '9') //
-								&& !('a' <= c && c <= 'z') //
-								&& !('A' <= c && c <= 'Z') //
-								&& c != '.' && c != '-' && c != '_' && c != '$' && c != '!') //
-						|| s0.contains(CommentPreprocessor.openGroupComment) //
-						|| s0.contains(CommentPreprocessor.closeGroupComment) //
-						|| s0.contains(CommentPreprocessor.openLineComment) //
-						|| s0.contains(CommentPreprocessor.closeLineComment) //
+				var quote = false
+						|| s0.startsWith(ProverConstant.variablePrefix)
+						|| s0.startsWith(ProverConstant.wildcardPrefix)
+						|| ReadChars.from(s0).isAny(c -> true
+								&& !('0' <= c && c <= '9')
+								&& !('a' <= c && c <= 'z')
+								&& !('A' <= c && c <= 'Z')
+								&& c != '.' && c != '-' && c != '_' && c != '$' && c != '!')
+						|| s0.contains(CommentPreprocessor.openGroupComment)
+						|| s0.contains(CommentPreprocessor.closeGroupComment)
+						|| s0.contains(CommentPreprocessor.openLineComment)
+						|| s0.contains(CommentPreprocessor.closeLineComment)
 						|| Is.integer(s0);
 
 				s1 = quote ? Escaper.escape(s0, '\'') : s0;

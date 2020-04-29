@@ -99,14 +99,14 @@ public class LazyPbTree<T> implements PerTree<T> {
 		var size = slots.size();
 		T p = null;
 
-		var b = size == 0 || true //
-				&& (minBranchFactor <= size || failBool("too few branches")) //
+		var b = size == 0 || true
+				&& (minBranchFactor <= size || failBool("too few branches"))
 				&& (size < maxBranchFactor || failBool("too many branches"));
 
 		for (var slot_ : slots) {
-			b = b //
-					&& (comparator.compare(slot.pivot, slot_.pivot) <= 0 || failBool("wrong slot")) //
-					&& validate(slot_) //
+			b = b
+					&& (comparator.compare(slot.pivot, slot_.pivot) <= 0 || failBool("wrong slot"))
+					&& validate(slot_)
 					&& (p == null || comparator.compare(p, slot_.pivot) < 0 || failBool("wrong key order"));
 			p = slot_.pivot;
 		}

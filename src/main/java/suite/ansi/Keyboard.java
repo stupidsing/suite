@@ -16,44 +16,44 @@ public class Keyboard {
 	private Trie<Integer, VK> trie = new Trie<>();
 
 	public enum VK {
-		ALT_J____, //
-		ALT_DOWN_, //
-		ALT_LEFT_, //
-		ALT_UP___, //
-		ALT_RIGHT, //
-		BKSP_, //
-		CTRL_C____, //
-		CTRL_D____, //
-		CTRL_DOWN_, //
-		CTRL_END__, //
-		CTRL_HOME_, //
-		CTRL_K____, //
-		CTRL_LEFT_, //
-		CTRL_Q____, //
-		CTRL_U____, //
-		CTRL_RIGHT, //
-		CTRL_UP___, //
-		CTRL_V____, //
-		CTRL_W____, //
-		CTRL_X____, //
-		CTRL_Y____, //
-		CTRL_Z____, //
-		DEL__, //
-		DOWN_, //
-		END__, //
-		F7___, //
-		F8___, //
-		HOME_, //
-		INS__, //
-		LEFT_, //
-		PGUP_, //
-		PGDN_, //
-		RIGHT, //
-		SHIFT_DOWN_, //
-		SHIFT_LEFT_, //
-		SHIFT_UP___, //
-		SHIFT_RIGHT, //
-		UP___, //
+		ALT_J____,
+		ALT_DOWN_,
+		ALT_LEFT_,
+		ALT_UP___,
+		ALT_RIGHT,
+		BKSP_,
+		CTRL_C____,
+		CTRL_D____,
+		CTRL_DOWN_,
+		CTRL_END__,
+		CTRL_HOME_,
+		CTRL_K____,
+		CTRL_LEFT_,
+		CTRL_Q____,
+		CTRL_U____,
+		CTRL_RIGHT,
+		CTRL_UP___,
+		CTRL_V____,
+		CTRL_W____,
+		CTRL_X____,
+		CTRL_Y____,
+		CTRL_Z____,
+		DEL__,
+		DOWN_,
+		END__,
+		F7___,
+		F8___,
+		HOME_,
+		INS__,
+		LEFT_,
+		PGUP_,
+		PGDN_,
+		RIGHT,
+		SHIFT_DOWN_,
+		SHIFT_LEFT_,
+		SHIFT_UP___,
+		SHIFT_RIGHT,
+		UP___,
 	}
 
 	public Keyboard(LibcJna libc) {

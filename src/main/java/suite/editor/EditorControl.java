@@ -91,7 +91,7 @@ public class EditorControl {
 		var frame = view.getFrame();
 		var editor = view.getEditor();
 
-		var fun = JOptionPane.showInputDialog(frame //
+		var fun = JOptionPane.showInputDialog(frame
 				, "Enter " + (isDo ? "do " : "") + "function:", "Functional Filter", JOptionPane.PLAIN_MESSAGE);
 
 		editor.setText(Suite.evaluateFilterFun(fun, editor.getText(), false, false));
@@ -160,9 +160,9 @@ public class EditorControl {
 
 	public void searchFiles(String text) {
 		if (!text.isEmpty()) {
-			var files = FileUtil //
-					.findPaths(Paths.get(".")) //
-					.map(Path::toString) //
+			var files = FileUtil
+					.findPaths(Paths.get("."))
+					.map(Path::toString)
 					.filter(filename -> filename.contains(text));
 
 			view.showSearchFileResult(files);
@@ -215,9 +215,9 @@ public class EditorControl {
 	private void confirmSave(Runnable action) {
 		var frame = view.getFrame();
 		if (model.isModified())
-			switch (JOptionPane.showConfirmDialog(frame, //
-					"Would you like to save your changes?", //
-					"Close", //
+			switch (JOptionPane.showConfirmDialog(frame,
+					"Would you like to save your changes?",
+					"Close",
 					JOptionPane.YES_NO_CANCEL_OPTION)) {
 			case JOptionPane.YES_OPTION:
 				save();

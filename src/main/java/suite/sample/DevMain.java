@@ -63,7 +63,7 @@ public class DevMain {
 	private void run(Termios termios, Keyboard keyboard, Text inputText) {
 		var state0 = new State(new EditSt(null, null, inputText, c(0, 0), c(0, 0)), "");
 
-		FixieFun3<VK, Character, EditSt, EditSt> mutateEs = (vk, ch, es) -> es //
+		FixieFun3<VK, Character, EditSt, EditSt> mutateEs = (vk, ch, es) -> es
 				.apply((st, undo, redo, text, oc, cc) -> oc.map((ox, oy) -> cc.map((cx, cy) -> {
 					var ci = text.index(cx, cy);
 
@@ -168,8 +168,8 @@ public class DevMain {
 
 		Sink<State> redraw = state -> state.editState
 				.apply((st, undo, redo, text, oc, cc) -> cc.map((cx, cy) -> oc.map((ox, oy) -> {
-					var lines = forInt(viewSizeY) //
-							.map(screenY -> text.get(ox, oy + screenY, viewSizeX).replace('\t', ' ')) //
+					var lines = forInt(viewSizeY)
+							.map(screenY -> text.get(ox, oy + screenY, viewSizeX).replace('\t', ' '))
 							.toArray(String.class);
 
 					termios.cursor(false);
@@ -190,8 +190,8 @@ public class DevMain {
 		termios.clear();
 		redraw.f(state0);
 
-		keyboard.loop(pusher -> pusher //
-				.fold(state0, (state, pair_) -> pair_.map((vk, ch) -> mutateState.apply(vk, ch, state))) //
+		keyboard.loop(pusher -> pusher
+				.fold(state0, (state, pair_) -> pair_.map((vk, ch) -> mutateState.apply(vk, ch, state)))
 				.wire(this, redraw));
 	}
 

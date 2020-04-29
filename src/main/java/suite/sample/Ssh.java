@@ -70,8 +70,8 @@ public class Ssh {
 	}
 
 	private <T> T session(SshFun<Session, T> fun) {
-		return Defaults //
-				.bindSecrets("ssh") //
+		return Defaults
+				.bindSecrets("ssh")
 				.map((host, portString, username, password) -> ex(() -> {
 					return session(host, Integer.valueOf(portString), username, password, fun);
 				}));

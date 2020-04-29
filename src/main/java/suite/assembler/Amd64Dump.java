@@ -23,9 +23,9 @@ public class Amd64Dump {
 		var op0 = instruction.op0;
 		var op1 = instruction.op1;
 		var op2 = instruction.op2;
-		return instruction.insn //
-				+ (!(op0 instanceof OpNone) ? " " + dump(op0) : "") //
-				+ (!(op1 instanceof OpNone) ? "," + dump(op1) : "") //
+		return instruction.insn
+				+ (!(op0 instanceof OpNone) ? " " + dump(op0) : "")
+				+ (!(op1 instanceof OpNone) ? "," + dump(op1) : "")
 				+ (!(op2 instanceof OpNone) ? "," + dump(op2) : "");
 	}
 
@@ -41,9 +41,9 @@ public class Amd64Dump {
 			var opMem = (OpMem) op;
 			var baseReg = opMem.baseReg;
 			var indexReg = opMem.indexReg;
-			var s = "" //
-					+ (0 <= baseReg ? " + " + dump(regs[baseReg]) : "") //
-					+ (0 <= indexReg ? " + " + dump(regs[indexReg]) + " * " + (1 << opMem.scale) : "") //
+			var s = ""
+					+ (0 <= baseReg ? " + " + dump(regs[baseReg]) : "")
+					+ (0 <= indexReg ? " + " + dump(regs[indexReg]) + " * " + (1 << opMem.scale) : "")
 					+ (0 < opMem.disp.size ? dumpDisp(opMem.disp.imm) : "");
 			return "[" + s.substring(3) + "]";
 		} else if (op instanceof OpRemark)

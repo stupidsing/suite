@@ -51,16 +51,16 @@ public class QueryRewriter {
 
 	public Node rewriteClause(Node node0) {
 		Node nodex;
-		if ((nodex = rewriteClause(".0, .1", List.of(0, 1), node0)) != null //
+		if ((nodex = rewriteClause(".0, .1", List.of(0, 1), node0)) != null
 				|| (nodex = rewriteClause(".0; .1", List.of(0, 1), node0)) != null//
-				|| (nodex = rewriteClause("find.all .0 .1 .2", List.of(1), node0)) != null //
-				|| (nodex = rewriteClause("find.all.memoized .0 .1 .2", List.of(1), node0)) != null //
-				|| (nodex = rewriteClause("if .0 .1 .2", List.of(0, 1, 2), node0)) != null //
-				|| (nodex = rewriteClause("list.fold .0 .1 .2", List.of(2), node0)) != null //
-				|| (nodex = rewriteClause("list.query .0 .1 .2", List.of(2), node0)) != null //
-				|| (nodex = rewriteClause("not .0", List.of(0), node0)) != null //
-				|| (nodex = rewriteClause("once .0", List.of(0), node0)) != null //
-				|| (nodex = rewriteClause("suspend .0 .1 .2", List.of(2), node0)) != null //
+				|| (nodex = rewriteClause("find.all .0 .1 .2", List.of(1), node0)) != null
+				|| (nodex = rewriteClause("find.all.memoized .0 .1 .2", List.of(1), node0)) != null
+				|| (nodex = rewriteClause("if .0 .1 .2", List.of(0, 1, 2), node0)) != null
+				|| (nodex = rewriteClause("list.fold .0 .1 .2", List.of(2), node0)) != null
+				|| (nodex = rewriteClause("list.query .0 .1 .2", List.of(2), node0)) != null
+				|| (nodex = rewriteClause("not .0", List.of(0), node0)) != null
+				|| (nodex = rewriteClause("once .0", List.of(0), node0)) != null
+				|| (nodex = rewriteClause("suspend .0 .1 .2", List.of(2), node0)) != null
 				|| (nodex = rewriteClause("try .0 .1 .2", List.of(0, 2), node0)) != null)
 			;
 		else if (Tree.decompose(node0, TermOp.TUPLE_) != null)

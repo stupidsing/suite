@@ -97,9 +97,9 @@ public class InstructionExtractor implements AutoCloseable {
 			insn = InstructionUtil.getInsn(insnName);
 
 		if (insn != null) {
-			var instruction = new Instruction(insn //
-					, getRegisterNumber(rs, 1) //
-					, getRegisterNumber(rs, 2) //
+			var instruction = new Instruction(insn
+					, getRegisterNumber(rs, 1)
+					, getRegisterNumber(rs, 2)
 					, getRegisterNumber(rs, 3));
 
 			if (insn == Insn.FRAMEBEGIN____)

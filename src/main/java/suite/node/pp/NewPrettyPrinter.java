@@ -75,15 +75,15 @@ public class NewPrettyPrinter {
 					node = tree.getRight();
 				}
 				format_(node, prec, indent1, operator.name_());
-			} else if ((m = Suite.pattern("if .0 then .1 else .2").match(node)) != null //
+			} else if ((m = Suite.pattern("if .0 then .1 else .2").match(node)) != null
 					&& lineLength < estimateLength.getEstimatedLength(node)) {
 				format_(m[0], prec, indent, concatWithSpace(prefix, "if"));
 				format_(m[1], prec, indent, "then");
 				format_(m[2], prec, indent, "else");
-			} else if ((m = Suite.pattern("not .0").match(node)) != null //
+			} else if ((m = Suite.pattern("not .0").match(node)) != null
 					&& lineLength < estimateLength.getEstimatedLength(node))
 				format_(m[0], prec, indent, concatWithSpace(prefix, "not"));
-			else if ((m = Suite.pattern("once .0").match(node)) != null //
+			else if ((m = Suite.pattern("once .0").match(node)) != null
 					&& lineLength < estimateLength.getEstimatedLength(node))
 				format_(m[0], prec, indent, concatWithSpace(prefix, "once"));
 			else

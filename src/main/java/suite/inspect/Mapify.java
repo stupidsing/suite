@@ -80,8 +80,8 @@ public class Mapify {
 	private Mapifier getMapifier(Type type) {
 		var mapifier = mapifiers.get(type);
 		if (mapifier == null) {
-			mapifiers.put(type, new Mapifier( //
-					o -> apply_(o, getMapifier(type).mapify), //
+			mapifiers.put(type, new Mapifier(
+					o -> apply_(o, getMapifier(type).mapify),
 					o -> apply_(o, getMapifier(type).unmapify)));
 			mapifiers.put(type, mapifier = newMapifier(type));
 		}
@@ -90,7 +90,7 @@ public class Mapify {
 
 	@SuppressWarnings("unchecked")
 	private Mapifier newMapifier(Type type) {
-		return new Switch<Mapifier>(type //
+		return new Switch<Mapifier>(type
 		).applyIf(Class.class, clazz -> {
 			if (Util.isSimple(clazz))
 				return new Mapifier(id, id);
@@ -125,15 +125,15 @@ public class Mapify {
 						return o;
 				});
 			else {
-				var fis = inspect //
-						.fields(clazz) //
-						.map(field -> new FieldInfo(field, field.getName(), getMapifier(field.getGenericType()))) //
+				var fis = inspect
+						.fields(clazz)
+						.map(field -> new FieldInfo(field, field.getName(), getMapifier(field.getGenericType())))
 						.toList();
 
 				return new Mapifier(o -> {
-					return Read //
-							.from(fis) //
-							.map2(fi -> fi.name, fi -> apply_(ex(() -> fi.field.get(o)), fi.mapifier.mapify)) //
+					return Read
+							.from(fis)
+							.map2(fi -> fi.name, fi -> apply_(ex(() -> fi.field.get(o)), fi.mapifier.mapify))
 							.toMap();
 				}, o -> ex(() -> {
 					var map = (Map<?, ?>) o;
@@ -168,9 +168,9 @@ public class Mapify {
 				var km = getMapifier(typeArgs[0]);
 				var vm = getMapifier(typeArgs[1]);
 				return new Mapifier(o -> {
-					return Read //
-							.from2((Map<?, ?>) o) //
-							.map2((k, v) -> apply_(k, km.unmapify), (k, v) -> apply_(v, vm.mapify)) //
+					return Read
+							.from2((Map<?, ?>) o)
+							.map2((k, v) -> apply_(k, km.unmapify), (k, v) -> apply_(v, vm.mapify))
 							.toMap();
 				}, o -> {
 					var object1 = (Map<Object, Object>) Instantiate.clazz(clazz);

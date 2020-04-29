@@ -32,18 +32,18 @@ public class Ioc {
 	private <T> T instantiateIfRequired(Class<T> clazz) {
 		var className = clazz.getCanonicalName();
 
-		return instances //
-				.getOpt(className) //
+		return instances
+				.getOpt(className)
 				.map(instance -> {
 					@SuppressWarnings("unchecked")
 					var t = (T) instance;
 					return t;
-				}) //
+				})
 				.ifNone(() -> {
 					var t = instantiate(clazz);
 					instances = instances.put(className, t);
 					return t;
-				}) //
+				})
 				.g();
 	}
 
@@ -53,9 +53,9 @@ public class Ioc {
 
 		for (var ctor : clazz.getConstructors())
 			try {
-				instance = ctor.newInstance(Read //
-						.from(ctor.getParameters()) //
-						.map(parameter -> (Object) instantiateIfRequired(parameter.getType())) //
+				instance = ctor.newInstance(Read
+						.from(ctor.getParameters())
+						.map(parameter -> (Object) instantiateIfRequired(parameter.getType()))
 						.toArray(Object.class));
 
 				break;

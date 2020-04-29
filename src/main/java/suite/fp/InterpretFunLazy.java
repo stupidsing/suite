@@ -54,14 +54,14 @@ public class InterpretFunLazy {
 		var parsed = parse(node);
 		inferType(parsed);
 
-		var boolOpMap = Read //
-				.from2(TreeUtil.boolOperations) //
-				.<String, Thunk> map2((k, fun) -> k.name_(), (k, fun) -> bi((a, b) -> b(fun.apply(compare(a.get(), b.get()), 0)))) //
+		var boolOpMap = Read
+				.from2(TreeUtil.boolOperations)
+				.<String, Thunk> map2((k, fun) -> k.name_(), (k, fun) -> bi((a, b) -> b(fun.apply(compare(a.get(), b.get()), 0))))
 				.toMap();
 
-		var intOpMap = Read //
-				.from2(TreeUtil.intOperations) //
-				.<String, Thunk> map2((k, fun) -> k.name_(), (k, fun) -> bi((a, b) -> Int.of(fun.apply(i(a), i(b))))) //
+		var intOpMap = Read
+				.from2(TreeUtil.intOperations)
+				.<String, Thunk> map2((k, fun) -> k.name_(), (k, fun) -> bi((a, b) -> Int.of(fun.apply(i(a), i(b)))))
 				.toMap();
 
 		var df = new HashMap<String, Thunk>();
@@ -88,27 +88,27 @@ public class InterpretFunLazy {
 		var prover = new Prover(Suite.newRuleSet(List.of("auto.sl", "fc/fc.sl")));
 		var parsed = new Reference();
 
-		return prover.prove(Suite.substitute("fc-parse .0 .1", node, parsed)) //
-				? parsed //
+		return prover.prove(Suite.substitute("fc-parse .0 .1", node, parsed))
+				? parsed
 				: fail("cannot parse " + node);
 	}
 
 	private Node inferType(Node node) {
-		var env0 = PerMap //
-				.<String, Node> empty() //
-				.put(TermOp.AND___.name, Suite.substitute("FUN .0 FUN .1 CONS .0 .1")) //
-				.put("fst", Suite.substitute("FUN (CONS .0 .1) .0")) //
-				.put("if", Suite.substitute("FUN BOOLEAN FUN .1 FUN .1 .1")) //
+		var env0 = PerMap
+				.<String, Node> empty()
+				.put(TermOp.AND___.name, Suite.substitute("FUN .0 FUN .1 CONS .0 .1"))
+				.put("fst", Suite.substitute("FUN (CONS .0 .1) .0"))
+				.put("if", Suite.substitute("FUN BOOLEAN FUN .1 FUN .1 .1"))
 				.put("snd", Suite.substitute("FUN (CONS .0 .1) .1"));
 
-		var env1 = Read //
-				.from2(TreeUtil.boolOperations) //
-				.keys() //
+		var env1 = Read
+				.from2(TreeUtil.boolOperations)
+				.keys()
 				.fold(env0, (e, o) -> e.put(o.name_(), Suite.substitute("FUN .0 FUN .0 BOOLEAN")));
 
-		var env2 = Read //
-				.from2(TreeUtil.intOperations) //
-				.keys() //
+		var env2 = Read
+				.from2(TreeUtil.intOperations)
+				.keys()
 				.fold(env1, (e, o) -> e.put(o.name_(), Suite.substitute("FUN NUMBER FUN NUMBER NUMBER")));
 
 		class InferType {
@@ -119,7 +119,7 @@ public class InterpretFunLazy {
 			}
 
 			private Node infer(Node node) {
-				return new SwitchNode<Node>(node //
+				return new SwitchNode<Node>(node
 				).match(Matcher.apply, (param, fun) -> {
 					var tr = new Reference();
 					bind(Suite.substitute("FUN .0 .1", infer(param), tr), infer(fun));
@@ -208,7 +208,7 @@ public class InterpretFunLazy {
 		}
 
 		private Fun<Frame, Thunk> lazy(Node node) {
-			return new SwitchNode<Fun<Frame, Thunk>>(node //
+			return new SwitchNode<Fun<Frame, Thunk>>(node
 			).match(Matcher.apply, (param, fun) -> {
 				var param_ = lazy(param);
 				var fun_ = lazy(fun);

@@ -137,7 +137,7 @@ public class Main implements AutoCloseable {
 						sb.append(line + "\n");
 					else
 						return code;
-				} while (!opt.isQuiet() //
+				} while (!opt.isQuiet()
 						&& (!ss.isParseable(sb.toString(), true) || !line.isEmpty() && !line.endsWith("#")));
 
 				code &= dispatcher.dispatchCommand(sb.toString(), writer);

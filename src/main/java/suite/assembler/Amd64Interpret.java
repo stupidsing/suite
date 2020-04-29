@@ -185,8 +185,8 @@ public class Amd64Interpret {
 					regs[edx] = mod;
 				}
 				case INC -> assign.f(source0 + 1);
-				case IMUL -> assign.f(setFlags(instruction.op2 instanceof OpNone //
-						? source0 * source1 //
+				case IMUL -> assign.f(setFlags(instruction.op2 instanceof OpNone
+						? source0 * source1
 						: source1 * fetch.apply(instruction.op2)));
 				case INT -> {
 					p0 = (int) (regs[eax] & 0xFF);
@@ -399,8 +399,8 @@ public class Amd64Interpret {
 	private String state(int eip, Instruction instruction) {
 		return Build.string(sb -> {
 			for (var i = 0; i < 8; i++)
-				sb.append((i % 2 == 0 ? "\n" : " ") //
-						+ amd64.regByName.inverse().get(amd64.reg32[i]) //
+				sb.append((i % 2 == 0 ? "\n" : " ")
+						+ amd64.regByName.inverse().get(amd64.reg32[i])
 						+ ":" + Format.hex8(regs[i]));
 			sb.append("\nCMP = " + c);
 			sb.append("\n[" + Format.hex8(eip) + "] INSTRUCTION = " + dump.dump(instruction));

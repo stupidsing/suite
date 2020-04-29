@@ -270,11 +270,11 @@ public class ClusterProbeImpl implements ClusterProbe {
 	}
 
 	private byte[] formMessage(Command data) {
-		return Read //
-				.from2(lastActiveTimeByPeer) //
-				.map((peer, lastActiveTime) -> "," + peer + "," + lastActiveTime) //
-				.cons(data.name() + "," + me) //
-				.toJoinedString() //
+		return Read
+				.from2(lastActiveTimeByPeer)
+				.map((peer, lastActiveTime) -> "," + peer + "," + lastActiveTime)
+				.cons(data.name() + "," + me)
+				.toJoinedString()
 				.getBytes(Utf8.charset);
 	}
 
@@ -290,9 +290,9 @@ public class ClusterProbeImpl implements ClusterProbe {
 
 	@Override
 	public String toString() {
-		return Read //
-				.from2(lastActiveTimeByPeer) //
-				.map((peer, lastActiveTime) -> peer + " (last-active = " + Format.ymdHms(lastActiveTime) + ")") //
+		return Read
+				.from2(lastActiveTimeByPeer)
+				.map((peer, lastActiveTime) -> peer + " (last-active = " + Format.ymdHms(lastActiveTime) + ")")
 				.collect(As.conc("\n"));
 	}
 

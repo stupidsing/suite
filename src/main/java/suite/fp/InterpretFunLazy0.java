@@ -45,7 +45,7 @@ public class InterpretFunLazy0 {
 			}
 
 			private Node infer(Node node) {
-				return new SwitchNode<Node>(node //
+				return new SwitchNode<Node>(node
 				).match("define .0 := .1 ~ .2", (a, b, c) -> {
 					var tv = new Reference();
 					var i1 = new InferType(env.put(Atom.name(a), tv));
@@ -84,23 +84,23 @@ public class InterpretFunLazy0 {
 			}
 		}
 
-		var env0 = PerMap //
-				.<String, Node> empty() //
-				.put(Atom.TRUE.name, Suite.parse("BOOLEAN")) //
-				.put(Atom.FALSE.name, Suite.parse("BOOLEAN")) //
-				.put(TermOp.AND___.name, Suite.substitute("FUN .0 FUN .1 CONS .0 .1")) //
-				.put(ERROR.name, new Reference()) //
-				.put(FST__.name, Suite.substitute("FUN (CONS .0 .1) .0")) //
+		var env0 = PerMap
+				.<String, Node> empty()
+				.put(Atom.TRUE.name, Suite.parse("BOOLEAN"))
+				.put(Atom.FALSE.name, Suite.parse("BOOLEAN"))
+				.put(TermOp.AND___.name, Suite.substitute("FUN .0 FUN .1 CONS .0 .1"))
+				.put(ERROR.name, new Reference())
+				.put(FST__.name, Suite.substitute("FUN (CONS .0 .1) .0"))
 				.put(SND__.name, Suite.substitute("FUN (CONS .0 .1) .1"));
 
-		var env1 = Read //
-				.from2(TreeUtil.boolOperations) //
-				.keys() //
+		var env1 = Read
+				.from2(TreeUtil.boolOperations)
+				.keys()
 				.fold(env0, (e, o) -> e.put(o.name_(), Suite.substitute("FUN NUMBER FUN NUMBER BOOLEAN")));
 
-		var env2 = Read //
-				.from2(TreeUtil.intOperations) //
-				.keys() //
+		var env2 = Read
+				.from2(TreeUtil.intOperations)
+				.keys()
 				.fold(env1, (e, o) -> e.put(o.name_(), Suite.substitute("FUN NUMBER FUN NUMBER NUMBER")));
 
 		return new InferType(env2).infer(node);
@@ -109,28 +109,28 @@ public class InterpretFunLazy0 {
 	public Thunk lazy(Node node) {
 		Thunk error = () -> fail("error termination");
 
-		var env0 = PerMap //
-				.<String, Thunk> empty() //
-				.put(Atom.TRUE.name, () -> Atom.TRUE) //
-				.put(Atom.FALSE.name, () -> Atom.FALSE) //
-				.put(TermOp.AND___.name, () -> f(a -> () -> f(b -> () -> cons(a, b)))) //
-				.put(ERROR.name, error) //
-				.put(FST__.name, () -> f(in -> ((Cons) in.get()).fst)) //
+		var env0 = PerMap
+				.<String, Thunk> empty()
+				.put(Atom.TRUE.name, () -> Atom.TRUE)
+				.put(Atom.FALSE.name, () -> Atom.FALSE)
+				.put(TermOp.AND___.name, () -> f(a -> () -> f(b -> () -> cons(a, b))))
+				.put(ERROR.name, error)
+				.put(FST__.name, () -> f(in -> ((Cons) in.get()).fst))
 				.put(SND__.name, () -> f(in -> ((Cons) in.get()).snd));
 
-		var env1 = Read //
-				.from2(TreeUtil.boolOperations) //
+		var env1 = Read
+				.from2(TreeUtil.boolOperations)
 				.fold(env0, (e, k, f) -> e.put(k.name_(), () -> f(a -> () -> f(b -> () -> b(f.apply(i(a), i(b)))))));
 
-		var env2 = Read //
-				.from2(TreeUtil.intOperations) //
+		var env2 = Read
+				.from2(TreeUtil.intOperations)
 				.fold(env1, (e, k, f) -> e.put(k.name_(), () -> f(a -> () -> f(b -> () -> i(f.apply(i(a), i(b)))))));
 
 		return lazy0(node).apply(env2);
 	}
 
 	private Fun<PerMap<String, Thunk>, Thunk> lazy0(Node node) {
-		return new SwitchNode<Fun<PerMap<String, Thunk>, Thunk>>(node //
+		return new SwitchNode<Fun<PerMap<String, Thunk>, Thunk>>(node
 		).match("define .0 := .1 ~ .2", (a, b, c) -> {
 			var vk = Atom.name(a);
 			var value = lazy0(b);

@@ -58,8 +58,8 @@ public class WalkForwardAllocTester {
 		start = System.currentTimeMillis();
 		instrumentBySymbol = instruments.toMap(instrument -> instrument.symbol);
 
-		dsBySymbol = instruments //
-				.map2(instrument -> instrument.symbol, instrument -> DataSource.of(times, new float[windowSize])) //
+		dsBySymbol = instruments
+				.map2(instrument -> instrument.symbol, instrument -> DataSource.of(times, new float[windowSize]))
 				.toMap();
 	}
 
@@ -107,9 +107,9 @@ public class WalkForwardAllocTester {
 		else
 			actions = "wait";
 
-		return time.ymdHms() //
-				+ ", valuation = " + valuation_ //
-				+ ", portfolio = " + account //
+		return time.ymdHms()
+				+ ", valuation = " + valuation_
+				+ ", portfolio = " + account
 				+ ", actions = " + actions;
 	}
 
@@ -124,12 +124,12 @@ public class WalkForwardAllocTester {
 				sb.append(e.<String> map((symbol, hold) -> symbol + ":" + To.percent(hold / length) + ","));
 		});
 
-		return "nTicks:" + length //
-				+ " val:" + (0 < length ? valuations_[length - 1] : "N/A") //
-				+ " tickRtn:" + To.string(rs.return_) //
-				+ " sharpe:" + To.string(rs.sharpeRatio()) //
-				+ " skew:" + To.string(stat.skewness(valuations_)) //
-				+ " " + account.transactionSummary(cfg::transactionFee).out0() //
+		return "nTicks:" + length
+				+ " val:" + (0 < length ? valuations_[length - 1] : "N/A")
+				+ " tickRtn:" + To.string(rs.return_)
+				+ " sharpe:" + To.string(rs.sharpeRatio())
+				+ " skew:" + To.string(stat.skewness(valuations_))
+				+ " " + account.transactionSummary(cfg::transactionFee).out0()
 				+ " holds:" + holds + "...";
 	}
 

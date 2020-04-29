@@ -52,7 +52,7 @@ public class HttpNio {
 			private Puller<Bytes> write;
 
 			private Source<Boolean> eater = () -> parseLine(line -> handleRequest1stLine(line.trim(), response -> {
-				var data = "HTTP/1.1 " + response.status + "\r\n" //
+				var data = "HTTP/1.1 " + response.status + "\r\n"
 						+ response.headers.streamlet().map((k, v) -> k + ": " + v + "\r\n").toJoinedString() + "\r\n";
 
 				stage = 1;
@@ -123,21 +123,21 @@ public class HttpNio {
 			}
 
 			private void handleRequestBody(String line0, List<String> headerLines, Sink<Response> cb) {
-				eater = () -> FixieArray //
-						.of(line0.split(" ")) //
+				eater = () -> FixieArray
+						.of(line0.split(" "))
 						.map((method, url, proto) -> handleRequestBody(proto, method, url, headerLines, cb));
 			}
 
-			private boolean handleRequestBody( //
-					String proto, //
-					String method, //
-					String url, //
-					List<String> lines, //
+			private boolean handleRequestBody(
+					String proto,
+					String method,
+					String url,
+					List<String> lines,
 					Sink<Response> cb) {
-				var headers = Read //
-						.from(lines) //
-						.fold(new Header(), (headers_, line_) -> Split //
-								.strl(line_, ":") //
+				var headers = Read
+						.from(lines)
+						.fold(new Header(), (headers_, line_) -> Split
+								.strl(line_, ":")
 								.map((k, v) -> headers_.put(k, v)));
 
 				var queue = new ArrayBlockingQueue<Bytes>(Buffer.size);
@@ -148,8 +148,8 @@ public class HttpNio {
 					var path1 = path0.startsWith("/") ? path0 : "/" + path0;
 					var path2 = ex(() -> URLDecoder.decode(path1, Utf8.charset));
 
-					return Equals.string(proto, "HTTP/1.1") //
-							? new Request(method, host, path2, query, headers, Puller.of(take)) //
+					return Equals.string(proto, "HTTP/1.1")
+							? new Request(method, host, path2, query, headers, Puller.of(take))
 							: fail("only HTTP/1.1 is supported");
 				});
 
@@ -170,10 +170,10 @@ public class HttpNio {
 				return true;
 			}
 
-			private Source<Boolean> handleRequestBody( //
-					Request request, //
-					Sink<Bytes> body, //
-					long contentLength, //
+			private Source<Boolean> handleRequestBody(
+					Request request,
+					Sink<Bytes> body,
+					long contentLength,
 					Sink<Response> cb) {
 				return new Source<>() {
 					private int n;

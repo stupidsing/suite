@@ -48,8 +48,8 @@ public class BindArrayUtil {
 		return new Pattern() {
 			public Node[] match(Node node) {
 				var env = cbm.env();
-				return pred.test(new BindEnv(env), node) //
-						? To.array(size, Node.class, i -> env.get(cbi[i])) //
+				return pred.test(new BindEnv(env), node)
+						? To.array(size, Node.class, i -> env.get(cbi[i]))
 						: null;
 			}
 

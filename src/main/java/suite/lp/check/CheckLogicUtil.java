@@ -18,17 +18,17 @@ import suite.streamlet.As;
 
 public class CheckLogicUtil {
 
-	private List<Pattern> patterns = List.of( //
-			Suite.pattern(".0, .1"), //
-			Suite.pattern(".0; .1"), //
-			Suite.pattern("find.all _ .0 _"), //
-			Suite.pattern("find.all.memoized _ .0 _"), //
-			Suite.pattern("if .0 then .1 else .2"), //
-			Suite.pattern("list.fold _ _ .0"), //
-			Suite.pattern("list.query _ _ .0"), //
-			Suite.pattern("not .0"), //
-			Suite.pattern("once .0"), //
-			Suite.pattern("suspend _ _ .0"), //
+	private List<Pattern> patterns = List.of(
+			Suite.pattern(".0, .1"),
+			Suite.pattern(".0; .1"),
+			Suite.pattern("find.all _ .0 _"),
+			Suite.pattern("find.all.memoized _ .0 _"),
+			Suite.pattern("if .0 then .1 else .2"),
+			Suite.pattern("list.fold _ _ .0"),
+			Suite.pattern("list.query _ _ .0"),
+			Suite.pattern("not .0"),
+			Suite.pattern("once .0"),
+			Suite.pattern("suspend _ _ .0"),
 			Suite.pattern("try .0 _ .1"));
 
 	public Streamlet<Node> scan(Node node) {

@@ -35,7 +35,7 @@ public class P4DecomposeOperand {
 		if (number != null)
 			return amd64.imm(number, size);
 		else
-			return node.<Operand> switch_( //
+			return node.<Operand> switch_(
 			).applyIf(FunpDontCare.class, f -> {
 				return amd64.regs(size)[amd64.axReg];
 			}).applyIf(FunpMemory.class, f -> {
@@ -91,8 +91,8 @@ public class P4DecomposeOperand {
 						reg = Funp_._bp;
 					else if ((number = isNumber(n1)) != null)
 						scale *= number;
-					else if ((tree = n1.cast(FunpOp.class)) != null //
-							&& tree.operator == TreeUtil.SHL //
+					else if ((tree = n1.cast(FunpOp.class)) != null
+							&& tree.operator == TreeUtil.SHL
 							&& (number = isNumber(tree.right)) != null) {
 						decompose(tree.left);
 						scale <<= number;

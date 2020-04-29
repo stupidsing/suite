@@ -103,21 +103,21 @@ public class Chinese {
 		return true;
 	}
 
-	private Source<Map<String, List<String>>> cjTable = Memoize.source(() -> Singleton.me.storeCache //
-			.http("https://pointless.online/storey/cangjie5.txt") //
-			.collect(As::lines) //
-			.dropWhile(line -> !Equals.string(line, "BEGIN_TABLE")) //
-			.drop(1) //
-			.takeWhile(line -> !Equals.string(line, "END_TABLE")) //
-			.map(line -> line.split("\t")) //
-			.map2(array -> array[0], array -> array[1]) //
+	private Source<Map<String, List<String>>> cjTable = Memoize.source(() -> Singleton.me.storeCache
+			.http("https://pointless.online/storey/cangjie5.txt")
+			.collect(As::lines)
+			.dropWhile(line -> !Equals.string(line, "BEGIN_TABLE"))
+			.drop(1)
+			.takeWhile(line -> !Equals.string(line, "END_TABLE"))
+			.map(line -> line.split("\t"))
+			.map2(array -> array[0], array -> array[1])
 			.toListMap());
 
 	public String cjs(String sequences) {
-		return Read //
-				.from(sequences.split(" ")) //
-				.filter(sequence -> !sequence.isEmpty()) //
-				.map(this::cj) //
+		return Read
+				.from(sequences.split(" "))
+				.filter(sequence -> !sequence.isEmpty())
+				.map(this::cj)
 				.toJoinedString();
 	}
 

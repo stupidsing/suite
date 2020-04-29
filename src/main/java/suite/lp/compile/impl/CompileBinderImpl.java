@@ -52,7 +52,7 @@ public class CompileBinderImpl extends CompileClonerImpl implements BinderFactor
 				var br = bind(f.object_(node, Node.class), target);
 				var brc = bindClone(node, target);
 
-				return new SwitchNode<FunExpr>(node //
+				return new SwitchNode<FunExpr>(node
 				).applyIf(Atom.class, n -> {
 					return f.ifEquals(target, f.object(node), ok, br);
 				}).applyIf(Int.class, n -> {

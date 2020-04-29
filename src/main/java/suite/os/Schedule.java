@@ -55,14 +55,14 @@ public class Schedule {
 	}
 
 	public Schedule filterTime(Predicate<LocalDateTime> pred) {
-		return Schedule.of(nextRunDateTime, () -> Read //
-				.from(run.g()) //
+		return Schedule.of(nextRunDateTime, () -> Read
+				.from(run.g())
 				.map(schedule -> {
 					var t = schedule.nextRunDateTime;
 					while (!pred.test(t))
 						t = t.plusHours(1);
 					return Schedule.of(t, schedule.run);
-				}) //
+				})
 				.toList());
 	}
 

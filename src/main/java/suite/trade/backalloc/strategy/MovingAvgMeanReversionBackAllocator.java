@@ -40,20 +40,20 @@ public class MovingAvgMeanReversionBackAllocator {
 			var dsv = DataSourceView.of(tor, 256, akds, (symbol, ds, period) -> new MeanReversionStat(ds, period));
 
 			return index -> {
-				var mrsBySymbol = akds.dsByKey //
-						.map2((symbol, ds) -> dsv.get(symbol, index)) //
-						.filterValue(mrsReversionStat -> mrsReversionStat != null) //
+				var mrsBySymbol = akds.dsByKey
+						.map2((symbol, ds) -> dsv.get(symbol, index))
+						.filterValue(mrsReversionStat -> mrsReversionStat != null)
 						.toMap();
 
 				// make sure all time-series are mean-reversions:
 				// ensure ADF < 0d: price is not random walk
 				// ensure Hurst exponent < .5d: price is weakly mean reverting
 				// ensure 0 < half-life: determine investment period
-				return Read //
-						.from2(mrsBySymbol) //
-						.filterValue(mrs -> mrs.adf < 0d //
-								&& mrs.hurst < .5d //
-								&& mrs.movingAvgMeanReversionRatio() < 0d) //
+				return Read
+						.from2(mrsBySymbol)
+						.filterValue(mrs -> mrs.adf < 0d
+								&& mrs.hurst < .5d
+								&& mrs.movingAvgMeanReversionRatio() < 0d)
 						.map2((symbol, mrs) -> {
 							var ds = dsBySymbol.get(symbol);
 							var price = ds.prices[index - 1];
@@ -66,12 +66,12 @@ public class MovingAvgMeanReversionBackAllocator {
 							var sharpe = returnsStat.sharpeRatio();
 							var kelly = dailyReturn * price * price / mrs.movingAvgMeanReversion.sse;
 							return new PotentialStat(dailyReturn, sharpe, kelly);
-						}) //
-						.filterValue(ps -> 0d < ps.kelly) //
-						.cons(Instrument.cashSymbol, new PotentialStat(Trade_.riskFreeInterestRate, 1d, 0d)) //
-						.mapValue(ps -> ps.kelly) //
-						.sortBy((symbol, potential) -> -potential) //
-						.take(top) //
+						})
+						.filterValue(ps -> 0d < ps.kelly)
+						.cons(Instrument.cashSymbol, new PotentialStat(Trade_.riskFreeInterestRate, 1d, 0d))
+						.mapValue(ps -> ps.kelly)
+						.sortBy((symbol, potential) -> -potential)
+						.take(top)
 						.toList();
 			};
 		};
@@ -89,8 +89,8 @@ public class MovingAvgMeanReversionBackAllocator {
 		}
 
 		public String toString() {
-			return "dailyReturn = " + To.string(dailyReturn) //
-					+ ", sharpe = " + To.string(sharpe) //
+			return "dailyReturn = " + To.string(dailyReturn)
+					+ ", sharpe = " + To.string(sharpe)
 					+ ", kelly = " + To.string(kelly);
 		}
 	}
@@ -139,10 +139,10 @@ public class MovingAvgMeanReversionBackAllocator {
 		}
 
 		public String toString() {
-			return "adf = " + adf //
-					+ ", hurst = " + hurst //
-					+ ", halfLife = " + halfLife() //
-					+ ", movingAvgHalfLife = " + movingAvgHalfLife() //
+			return "adf = " + adf
+					+ ", hurst = " + hurst
+					+ ", halfLife = " + halfLife()
+					+ ", movingAvgHalfLife = " + movingAvgHalfLife()
 					+ ", latestMovingAverage = " + latestMovingAverage();
 		}
 	}

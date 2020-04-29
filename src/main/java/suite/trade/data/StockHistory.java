@@ -54,12 +54,12 @@ public class StockHistory {
 		while ((tag = puller.pull()) != null)
 			data.put(tag, readPairs(timeZone, puller));
 
-		return of( //
-				exchange, //
-				Time.ofYmdHms(line), //
-				!Equals.string(isActive, "N"), //
-				data, //
-				dividends, //
+		return of(
+				exchange,
+				Time.ofYmdHms(line),
+				!Equals.string(isActive, "N"),
+				data,
+				dividends,
 				splits);
 	}
 
@@ -85,21 +85,21 @@ public class StockHistory {
 	}
 
 	public static StockHistory of(//
-			String exchange, //
-			Time time, //
-			boolean isActive, //
-			Map<String, LngFltPair[]> data, //
-			LngFltPair[] dividends, //
+			String exchange,
+			Time time,
+			boolean isActive,
+			Map<String, LngFltPair[]> data,
+			LngFltPair[] dividends,
 			LngFltPair[] splits) {
 		return new StockHistory(exchange, time, isActive, data, dividends, splits);
 	}
 
-	private StockHistory( //
-			String exchange, //
-			Time time, //
-			boolean isActive, //
-			Map<String, LngFltPair[]> data, //
-			LngFltPair[] dividends, //
+	private StockHistory(
+			String exchange,
+			Time time,
+			boolean isActive,
+			Map<String, LngFltPair[]> data,
+			LngFltPair[] dividends,
 			LngFltPair[] splits) {
 		this.exchange = exchange;
 		this.time = time;
@@ -114,13 +114,13 @@ public class StockHistory {
 	}
 
 	public StockHistory cleanse() {
-		var data_ = Read //
-				.from2(data) //
+		var data_ = Read
+				.from2(data)
 				.map2((name, pairs) -> {
 					if (!Equals.string(name, "volume"))
 						cleanse.cleanse(pairs);
 					return pairs;
-				}) //
+				})
 				.toMap();
 
 		return create(data_, dividends, splits);
@@ -130,9 +130,9 @@ public class StockHistory {
 		var t0 = period.fr.epochSec();
 		var tx = period.to.epochSec();
 
-		Iterate<LngFltPair[]> filter_ = pairs0 -> Read //
-				.from(pairs0) //
-				.filter(pair -> t0 <= pair.t0 && pair.t0 < tx) //
+		Iterate<LngFltPair[]> filter_ = pairs0 -> Read
+				.from(pairs0)
+				.filter(pair -> t0 <= pair.t0 && pair.t0 < tx)
 				.toArray(LngFltPair.class);
 
 		var data1 = Read.from2(data).mapValue(filter_).toMap();
@@ -166,9 +166,9 @@ public class StockHistory {
 			return pairs.toArray(new LngFltPair[0]);
 		};
 
-		var data1 = Read //
-				.from(keys) //
-				.map2(key -> merge_.apply(get(key), other.get(key))) //
+		var data1 = Read
+				.from(keys)
+				.map2(key -> merge_.apply(get(key), other.get(key)))
 				.toMap();
 
 		return create(isActive_, data1, merge_.apply(dividends, other.dividends), merge_.apply(splits, other.splits));
@@ -211,13 +211,13 @@ public class StockHistory {
 			io = scan(opPairs, io, t);
 			ic = scan(clPairs, ic, t);
 
-			data[i] = new Datum( //
-					t, //
-					t + DataSource.tickDuration, //
-					opPairs[io_].t1, //
-					clPairs[ic - 1].t1, //
-					forInt(il_, il = scan(loPairs, il_, t)).collect(As.floats(i_ -> loPairs[i_].t1)).min(), //
-					forInt(ih_, ih = scan(hiPairs, ih_, t)).collect(As.floats(i_ -> hiPairs[i_].t1)).max(), //
+			data[i] = new Datum(
+					t,
+					t + DataSource.tickDuration,
+					opPairs[io_].t1,
+					clPairs[ic - 1].t1,
+					forInt(il_, il = scan(loPairs, il_, t)).collect(As.floats(i_ -> loPairs[i_].t1)).min(),
+					forInt(ih_, ih = scan(hiPairs, ih_, t)).collect(As.floats(i_ -> hiPairs[i_].t1)).max(),
 					forInt(iv_, iv = scan(vlPairs, iv_, t)).collect(As.floats(i_ -> vlPairs[i_].t1)).sum());
 		}
 
@@ -232,9 +232,9 @@ public class StockHistory {
 	}
 
 	public String write() {
-		var s0 = Read.each( //
-				"exchange = " + exchange, //
-				"timeZone = 8", //
+		var s0 = Read.each(
+				"exchange = " + exchange,
+				"timeZone = 8",
 				time.ymdHms());
 		var s1 = Read.each(dividends, splits).concatMap(this::concat);
 		var s2 = Read.from2(data).concatMap((tag, fs) -> concat(fs).cons(tag));
@@ -242,9 +242,9 @@ public class StockHistory {
 	}
 
 	private Streamlet<String> concat(LngFltPair[] pairs) {
-		return Streamlet.concat( //
-				Read.each("{"), //
-				Read.from(pairs).map(pair -> Time.ofEpochSec(pair.t0).ymdHms() + ":" + pair.t1), //
+		return Streamlet.concat(
+				Read.each("{"),
+				Read.from(pairs).map(pair -> Time.ofEpochSec(pair.t0).ymdHms() + ":" + pair.t1),
 				Read.each("}"));
 	}
 
@@ -294,10 +294,10 @@ public class StockHistory {
 		return create(isActive, data, dividends, splits);
 	}
 
-	private StockHistory create( //
-			boolean isActive, //
-			Map<String, LngFltPair[]> data, //
-			LngFltPair[] dividends, //
+	private StockHistory create(
+			boolean isActive,
+			Map<String, LngFltPair[]> data,
+			LngFltPair[] dividends,
 			LngFltPair[] splits) {
 		return of(null, time, isActive, data, dividends, splits);
 	}

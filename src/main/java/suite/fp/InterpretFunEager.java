@@ -63,7 +63,7 @@ public class InterpretFunEager {
 		}
 
 		private Fun<Frame, Node> eager_(Node node) {
-			return new SwitchNode<Fun<Frame, Node>>(node //
+			return new SwitchNode<Fun<Frame, Node>>(node
 			).match(Matcher.apply, (param, fun) -> {
 				var param_ = eager_(param);
 				var fun_ = eager_(fun);
@@ -185,14 +185,14 @@ public class InterpretFunEager {
 		var parsed = finder.collectSingle(node);
 		var ic = isLazyify ? lazyIntrinsicCallback() : Intrinsics.eagerIntrinsicCallback;
 
-		var boolOpMap = Read //
-				.from2(TreeUtil.boolOperations) //
-				.<String, Node> map2((k, fun) -> k.name_(), (k, fun) -> f2((a, b) -> b(fun.apply(compare(a, b), 0)))) //
+		var boolOpMap = Read
+				.from2(TreeUtil.boolOperations)
+				.<String, Node> map2((k, fun) -> k.name_(), (k, fun) -> f2((a, b) -> b(fun.apply(compare(a, b), 0))))
 				.toMap();
 
-		var intOpMap = Read //
-				.from2(TreeUtil.intOperations) //
-				.<String, Node> map2((k, fun) -> k.name_(), (k, fun) -> f2((a, b) -> Int.of(fun.apply(Int.num(a), Int.num(b))))) //
+		var intOpMap = Read
+				.from2(TreeUtil.intOperations)
+				.<String, Node> map2((k, fun) -> k.name_(), (k, fun) -> f2((a, b) -> Int.of(fun.apply(Int.num(a), Int.num(b)))))
 				.toMap();
 
 		var df = new HashMap<String, Node>();

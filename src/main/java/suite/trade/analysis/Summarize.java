@@ -59,27 +59,27 @@ public class Summarize {
 	}
 
 	public <K> SummarizeByStrategy<K> summarize(Fun<Trade, K> fun) {
-		var summaryByKey = trades //
-				.groupBy(fun, trades_ -> summarize_(trades_, priceBySymbol, s -> null)) //
-				.filterKey(key -> key != null) //
+		var summaryByKey = trades
+				.groupBy(fun, trades_ -> summarize_(trades_, priceBySymbol, s -> null))
+				.filterKey(key -> key != null)
 				.collect();
 
-		var nSharesByKeyBySymbol = summaryByKey //
-				.concatMap((key, summary) -> summary.account //
-						.portfolio() //
-						.map((symbol, n) -> Fixie.of(symbol, key, n))) //
-				.groupBy(Fixie3::get0, fixies0 -> fixies0 //
-						.groupBy(Fixie3::get1, fixies1 -> fixies1 //
+		var nSharesByKeyBySymbol = summaryByKey
+				.concatMap((key, summary) -> summary.account
+						.portfolio()
+						.map((symbol, n) -> Fixie.of(symbol, key, n)))
+				.groupBy(Fixie3::get0, fixies0 -> fixies0
+						.groupBy(Fixie3::get1, fixies1 -> fixies1
 								.map(Fixie3::get2).uniqueResult())
-						.toMap()) //
+						.toMap())
 				.toMap();
 
 		var acquiredPrices = trades.collect(Trade_::collectBrokeredTrades).collect(Trade_::collectAcquiredPrices);
 		var now = Time.now();
 
 		var overall = summarize_(trades, priceBySymbol, symbol -> {
-			var isMarketOpen = false //
-					|| HkexUtil.isMarketOpen(now) //
+			var isMarketOpen = false
+					|| HkexUtil.isMarketOpen(now)
 					|| HkexUtil.isMarketOpen(now.addHours(1));
 
 			var ds = cfg.dataSource(symbol);
@@ -87,24 +87,24 @@ public class Summarize {
 			var price1 = ds.get(isMarketOpen ? -1 : -2).t1; // previous close
 			var pricex = isMarketOpen ? priceBySymbol.get(symbol) : ds.get(-1).t1; // now
 
-			var keys = Read //
-					.from2(nSharesByKeyBySymbol.getOrDefault(symbol, Map.ofEntries())) //
-					.keys() //
-					.map(Object::toString) //
-					.sort(Compare::string) //
+			var keys = Read
+					.from2(nSharesByKeyBySymbol.getOrDefault(symbol, Map.ofEntries()))
+					.keys()
+					.map(Object::toString)
+					.sort(Compare::string)
 					.toJoinedString("/");
 
-			return percent(price1, pricex) //
-					+ ", " + percent(price0, pricex) //
+			return percent(price1, pricex)
+					+ ", " + percent(price0, pricex)
 					+ (!keys.isEmpty() ? ", " + keys : "");
 		});
 
 		var text = Build.string(sb -> {
 			Sink<String> log = sb::append;
 
-			var outs = summaryByKey //
-					.mapValue(Summarize_::out0) //
-					.sortByKey(Compare::anyway) //
+			var outs = summaryByKey
+					.mapValue(Summarize_::out0)
+					.sortByKey(Compare::anyway)
 					.map((k, v) -> "\nFor strategy " + k + ":" + v);
 
 			for (var out : outs)
@@ -114,8 +114,8 @@ public class Summarize {
 		});
 
 		// profit and loss
-		var pnlByKey = sellAll(trades, priceBySymbol) //
-				.groupBy(fun, t -> (double) Account.ofHistory(t).cash()) //
+		var pnlByKey = sellAll(trades, priceBySymbol)
+				.groupBy(fun, t -> (double) Account.ofHistory(t).cash())
 				.toMap();
 
 		return new SummarizeByStrategy<>(text, overall.account, pnlByKey);
@@ -133,25 +133,25 @@ public class Summarize {
 		}
 	}
 
-	private Summarize_ summarize_( //
-			Streamlet<Trade> trades_, //
-			Map<String, Float> priceBySymbol, //
+	private Summarize_ summarize_(
+			Streamlet<Trade> trades_,
+			Map<String, Float> priceBySymbol,
 			Iterate<String> infoFun) {
 		var trades0 = trades_;
 		var trades1 = sellAll(trades0, priceBySymbol);
 
-		var details = Read //
-				.from2(Trade_.portfolio(trades0)) //
+		var details = Read
+				.from2(Trade_.portfolio(trades0))
 				.map((symbol, nShares) -> {
 					var instrument = cfg.queryCompany(symbol);
 					var price = priceBySymbol.get(symbol);
 					var info = infoFun.apply(symbol);
-					return instrument //
-							+ ": " + price + " * " + nShares //
-							+ " = " + ((long) (nShares * price)) //
+					return instrument
+							+ ": " + price + " * " + nShares
+							+ " = " + ((long) (nShares * price))
 							+ (info != null ? " \t(" + info + ")" : "");
-				}) //
-				.sort(Compare::objects) //
+				})
+				.sort(Compare::objects)
 				.collect();
 
 		return new Summarize_(details, trades0, trades1);
@@ -181,12 +181,12 @@ public class Summarize {
 		}
 
 		public String out0() {
-			return details //
-					.snoc("" //
-							+ "size:" + To.string(size) //
-							+ ", pnl:" + To.string(pnl) //
-							+ ", div:" + To.string(dividend) //
-							+ ", " + transactionSummary.out0()) //
+			return details
+					.snoc(""
+							+ "size:" + To.string(size)
+							+ ", pnl:" + To.string(pnl)
+							+ ", div:" + To.string(dividend)
+							+ ", " + transactionSummary.out0())
 					.toString();
 		}
 
@@ -199,12 +199,12 @@ public class Summarize {
 			var rtn = nav1 / nav0;
 			var cagr = expm1(log(rtn) / nYears);
 
-			return details //
-					.snoc("SIZ = " + To.string(size)) //
-					.snoc("PNL = " + To.string(pnl)) //
-					.snoc("DIV = " + To.string(dividend)) //
-					.snoc(transactionSummary.out1()) //
-					.snoc("CAGR = " + To.percent(cagr)) //
+			return details
+					.snoc("SIZ = " + To.string(size))
+					.snoc("PNL = " + To.string(pnl))
+					.snoc("DIV = " + To.string(dividend))
+					.snoc(transactionSummary.out1())
+					.snoc("CAGR = " + To.percent(cagr))
 					.toString();
 		}
 	}

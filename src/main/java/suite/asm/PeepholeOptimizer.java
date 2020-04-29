@@ -20,7 +20,7 @@ public class PeepholeOptimizer {
 		for (var lni0 : lnis0) {
 			var node0 = lni0.v;
 
-			var node1 = new SwitchNode<Node>(node0 //
+			var node1 = new SwitchNode<Node>(node0
 			).match("ADDI (.0, .1)", (m0, m1) -> {
 				var i = TreeUtil.evaluate(m1);
 				if (i == 1)

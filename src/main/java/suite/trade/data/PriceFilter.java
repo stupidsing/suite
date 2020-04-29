@@ -23,11 +23,11 @@ public class PriceFilter {
 
 	public DataSource dataSource(String symbol, TimeRange period) {
 		var ds = cfg.dataSource(s(symbol), period);
-		return DataSource.ofOhlcv(ds.ts, //
-				ReadFlt.from(ds.opens).mapFlt(priceFun).toArray(), //
-				ReadFlt.from(ds.closes).mapFlt(priceFun).toArray(), //
-				ReadFlt.from(ds.lows).mapFlt(priceFun).toArray(), //
-				ReadFlt.from(ds.highs).mapFlt(priceFun).toArray(), //
+		return DataSource.ofOhlcv(ds.ts,
+				ReadFlt.from(ds.opens).mapFlt(priceFun).toArray(),
+				ReadFlt.from(ds.closes).mapFlt(priceFun).toArray(),
+				ReadFlt.from(ds.lows).mapFlt(priceFun).toArray(),
+				ReadFlt.from(ds.highs).mapFlt(priceFun).toArray(),
 				ds.volumes);
 	}
 

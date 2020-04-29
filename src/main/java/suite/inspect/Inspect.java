@@ -46,8 +46,8 @@ public class Inspect {
 	}
 
 	public List<?> values(Object object) {
-		return fields(object.getClass()) //
-				.map(field -> ex(() -> field.get(object))) //
+		return fields(object.getClass())
+				.map(field -> ex(() -> field.get(object)))
 				.toList();
 	}
 
@@ -73,28 +73,28 @@ public class Inspect {
 		// do not display same field of different base classes
 		var names = new HashSet<>();
 		var parentFields = superClass != null ? fields(superClass) : Read.<Field> empty();
-		var childFields = Read //
-				.from(clazz.getDeclaredFields()) //
+		var childFields = Read
+				.from(clazz.getDeclaredFields())
 				.filter(field -> {
 					var modifiers = field.getModifiers();
 					var name = field.getName();
-					return !Modifier.isStatic(modifiers) //
-							&& !Modifier.isTransient(modifiers) //
-							&& !name.startsWith("this") //
+					return !Modifier.isStatic(modifiers)
+							&& !Modifier.isTransient(modifiers)
+							&& !name.startsWith("this")
 							&& names.add(name);
-				}) //
+				})
 				.collect();
 
-		return Streamlet //
-				.concat(parentFields, childFields) //
+		return Streamlet
+				.concat(parentFields, childFields)
 				.filter(field -> field.trySetAccessible());
 	});
 
 	private Fun<Class<?>, Streamlet<Method>> gettersFun = Memoize.funRec(clazz -> {
-		return methods(clazz) //
+		return methods(clazz)
 				.filter(getter -> {
 					return getter.getName().startsWith("get") && getter.getParameterTypes().length == 0;
-				}) //
+				})
 				.collect();
 	});
 
@@ -104,41 +104,41 @@ public class Inspect {
 		// do not display same method of different base classes
 		var names = new HashSet<>();
 		var parentMethods = superClass != null ? methods(superClass) : Read.<Method> empty();
-		var childMethods = Read //
-				.from(clazz.getDeclaredMethods()) //
+		var childMethods = Read
+				.from(clazz.getDeclaredMethods())
 				.filter(m -> {
 					var mods = m.getModifiers();
 					return !Modifier.isStatic(mods) && !Modifier.isTransient(mods) && names.add(m.getName());
-				}) //
+				})
 				.collect();
 
-		return Streamlet //
-				.concat(parentMethods, childMethods) //
+		return Streamlet
+				.concat(parentMethods, childMethods)
 				.filter(method -> method.getDeclaringClass() != Object.class && method.trySetAccessible());
 	});
 
 	private Fun<Class<?>, Streamlet<Property>> propertiesFun = Memoize.funRec(clazz -> {
 		var methods = methods(clazz);
 
-		var getMethods = methods //
+		var getMethods = methods
 				.filter(getter -> {
 					return getter.getName().startsWith("get") && getter.getParameterTypes().length == 0;
-				}) //
-				.map2(getter -> getter.getName().substring(3), getter -> getter) //
+				})
+				.map2(getter -> getter.getName().substring(3), getter -> getter)
 				.toMap();
 
-		var setMethods = methods //
+		var setMethods = methods
 				.filter(setter -> {
 					return setter.getName().startsWith("set") && setter.getParameterTypes().length == 1;
-				}) //
-				.map2(setter -> setter.getName().substring(3), setter -> setter) //
+				})
+				.map2(setter -> setter.getName().substring(3), setter -> setter)
 				.toMap();
 
 		var propertyNames = new HashSet<>(getMethods.keySet());
 		propertyNames.retainAll(setMethods.keySet());
 
-		return Read //
-				.from(propertyNames) //
+		return Read
+				.from(propertyNames)
 				.<Property> map(propertyName -> {
 					var getMethod = getMethods.get(propertyName);
 					var setMethod = setMethods.get(propertyName);
@@ -151,7 +151,7 @@ public class Inspect {
 							ex(() -> setMethod.invoke(object, value));
 						}
 					};
-				}) //
+				})
 				.collect();
 	});
 

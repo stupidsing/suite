@@ -28,7 +28,7 @@ public class FormatPredicates {
 	private ReversePolish rpn = new ReversePolish();
 
 	public BuiltinPredicate charAscii = PredicateUtil.p2((prover, p0, p1) -> {
-		return p0 instanceof Str && prover.bind(Int.of(Str.str(p0).charAt(0)), p1) //
+		return p0 instanceof Str && prover.bind(Int.of(Str.str(p0).charAt(0)), p1)
 				|| p1 instanceof Int && prover.bind(new Str("" + (char) Int.num(p1)), p0);
 	});
 
@@ -85,9 +85,9 @@ public class FormatPredicates {
 			return prover.bind(new Str(rpn.toRpn(node)), r);
 	});
 
-	public BuiltinPredicate startsWith = PredicateUtil.p2((prover, s, start) -> true //
-			&& s instanceof Atom //
-			&& start instanceof Atom //
+	public BuiltinPredicate startsWith = PredicateUtil.p2((prover, s, start) -> true
+			&& s instanceof Atom
+			&& start instanceof Atom
 			&& Atom.name(s).startsWith(Atom.name(start)));
 
 	public BuiltinPredicate stringLength = PredicateUtil.fun(n -> Int.of(Str.str(n).length()));

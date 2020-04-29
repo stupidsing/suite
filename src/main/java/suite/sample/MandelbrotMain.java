@@ -15,11 +15,11 @@ public class MandelbrotMain {
 	}
 
 	private boolean run() {
-		return new Render() //
+		return new Render()
 				.render(width, height, (fx, fy) -> {
 					var n = mandelbrot(Complex.of(fx * 4f, fy * 4f)) / 256f;
 					return new R3(n, n, n);
-				}) //
+				})
 				.view();
 	}
 

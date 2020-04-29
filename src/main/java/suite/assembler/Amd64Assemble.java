@@ -47,15 +47,15 @@ public class Amd64Assemble {
 		VP__, VP66, VPF3, VPF2,
 	};
 
-	private Map<Vexp, Integer> vexps = Map.ofEntries( //
-			entry(Vexp.VP__, 0), //
-			entry(Vexp.VP66, 1), //
-			entry(Vexp.VPF3, 2), //
+	private Map<Vexp, Integer> vexps = Map.ofEntries(
+			entry(Vexp.VP__, 0),
+			entry(Vexp.VP66, 1),
+			entry(Vexp.VPF3, 2),
 			entry(Vexp.VPF2, 3));
 
-	private Map<Vexm, Integer> vexms = Map.ofEntries( //
-			entry(Vexm.VM0F__, 1), //
-			entry(Vexm.VM0F38, 2), //
+	private Map<Vexm, Integer> vexms = Map.ofEntries(
+			entry(Vexm.VM0F__, 1),
+			entry(Vexm.VM0F38, 2),
 			entry(Vexm.VM0F3A, 3));
 
 	private interface Encode {
@@ -167,12 +167,12 @@ public class Amd64Assemble {
 		public Bytes encode_(long offset, Instruction instruction) {
 			var isValid = opSize == 1 || opSize == 2 || opSize == 4 || opSize == 8 ? this : invalid;
 
-			var isEnforceRex = false //
-					|| amd64.reg8nonHighs.contains(instruction.op0) //
+			var isEnforceRex = false
+					|| amd64.reg8nonHighs.contains(instruction.op0)
 					|| amd64.reg8nonHighs.contains(instruction.op1);
 
-			var isNotEnforceRex = false //
-					|| amd64.reg8highs.contains(instruction.op0) //
+			var isNotEnforceRex = false
+					|| amd64.reg8highs.contains(instruction.op0)
 					|| amd64.reg8highs.contains(instruction.op1);
 
 			if (!isLongMode)
@@ -348,11 +348,11 @@ public class Amd64Assemble {
 		case LIDT -> assemble(i_op0, 0x01, 3, mode.opSize).pre(0x0F);
 		case LTR -> assemble(i_op0, 0x00, 3, mode.opSize).pre(0x0F);
 		case MOV -> {
-			if ((opImm = i_op1.cast(OpImm.class)) != null //
-					&& isRm.test(i_op0) //
-					&& Integer.MIN_VALUE <= opImm.imm && opImm.imm <= Integer.MAX_VALUE //
-					&& (!isNonRexReg.test(i_op0) //
-							|| i_op0 instanceof OpMem //
+			if ((opImm = i_op1.cast(OpImm.class)) != null
+					&& isRm.test(i_op0)
+					&& Integer.MIN_VALUE <= opImm.imm && opImm.imm <= Integer.MAX_VALUE
+					&& (!isNonRexReg.test(i_op0)
+							|| i_op0 instanceof OpMem
 							|| i_op0.size == 8))
 				// MOV r/m8, imm8
 				// MOV r/m16, imm16
@@ -371,12 +371,12 @@ public class Amd64Assemble {
 					yield assemble(i_op1, 0x8E, opRegSegment.sreg);
 				else if ((opRegSegment = i_op1.cast(OpRegSegment.class)) != null)
 					yield assemble(i_op0, 0x8C, opRegSegment.sreg);
-				else if (i_op0.size == 4 //
-						&& (opReg = i_op0.cast(OpReg.class)) != null //
+				else if (i_op0.size == 4
+						&& (opReg = i_op0.cast(OpReg.class)) != null
 						&& (opRegCtrl = i_op1.cast(OpRegControl.class)) != null)
 					yield new InsnCode(4, new byte[] { (byte) 0x0F, (byte) 0x20, b(opReg.reg, opRegCtrl.creg, 3), });
-				else if (i_op0.size == 4 //
-						&& (opRegCtrl = i_op0.cast(OpRegControl.class)) != null //
+				else if (i_op0.size == 4
+						&& (opRegCtrl = i_op0.cast(OpRegControl.class)) != null
 						&& (opReg = i_op1.cast(OpReg.class)) != null)
 					yield new InsnCode(4, new byte[] { (byte) 0x0F, (byte) 0x22, b(opReg.reg, opRegCtrl.creg, 3), });
 				else
@@ -569,8 +569,8 @@ public class Amd64Assemble {
 		var rel = op0.isBound() ? op0.imm - (offset + bs0.length + size) : 0l;
 		InsnCode insnCode;
 
-		if (size == 1 && Byte.MIN_VALUE <= rel && rel <= Byte.MAX_VALUE //
-				|| size == 2 && Short.MIN_VALUE <= rel && rel <= Short.MAX_VALUE //
+		if (size == 1 && Byte.MIN_VALUE <= rel && rel <= Byte.MAX_VALUE
+				|| size == 2 && Short.MIN_VALUE <= rel && rel <= Short.MAX_VALUE
 				|| size == 4 && Integer.MIN_VALUE <= rel && rel <= Integer.MAX_VALUE) {
 			insnCode = new InsnCode(size, bs0);
 			insnCode.immSize = size;
@@ -895,9 +895,9 @@ public class Amd64Assemble {
 	}
 
 	private int rex(int opSize, int r, int x, int b) {
-		return ((opSize != 8 ? 0 : 1) << 3) //
-				+ (bit4(r) << 2) //
-				+ (bit4(x) << 1) //
+		return ((opSize != 8 ? 0 : 1) << 3)
+				+ (bit4(r) << 2)
+				+ (bit4(x) << 1)
 				+ (bit4(b) << 0);
 	}
 
@@ -907,19 +907,19 @@ public class Amd64Assemble {
 		var b = bit4(modrm.b);
 		var w_ = bit4(w);
 		if (m == 1 && x == 0 && b == 0 && w == 0) {
-			var b1 = ((bit4(modrm.num) ^ 1) << 7) //
-					+ (~v << 3) //
-					+ ((size != 16 ? 1 : 0) << 2) //
+			var b1 = ((bit4(modrm.num) ^ 1) << 7)
+					+ (~v << 3)
+					+ ((size != 16 ? 1 : 0) << 2)
 					+ (p << 0);
 			return bs(0xC5, b1);
 		} else {
-			var b1 = ((bit4(modrm.num) ^ 1) << 7) //
-					+ ((x ^ 1) << 6) //
-					+ ((b ^ 1) << 5) //
+			var b1 = ((bit4(modrm.num) ^ 1) << 7)
+					+ ((x ^ 1) << 6)
+					+ ((b ^ 1) << 5)
 					+ (~m << 0);
-			var b2 = (w_ << 7) //
+			var b2 = (w_ << 7)
 					+ (~v << 3)//
-					+ ((size != 16 ? 1 : 0) << 2) //
+					+ ((size != 16 ? 1 : 0) << 2)
 					+ (p << 0);
 			return bs(0xC4, b1, b2);
 		}

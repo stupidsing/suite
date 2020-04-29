@@ -57,9 +57,9 @@ public class RayHit_ {
 	}
 
 	private static List<List<RayHit>> getHits(Ray ray, Collection<RtObject> objects) {
-		return Read //
-				.from(objects) //
-				.map(object -> filter_(object.hit(ray)).sort(RayHit.comparator).toList()) //
+		return Read
+				.from(objects)
+				.map(object -> filter_(object.hit(ray)).sort(RayHit.comparator).toList())
 				.toList();
 	}
 

@@ -159,8 +159,8 @@ public class EvalPredicates {
 		Tree tree;
 		if ((tree = Tree.decompose(t)) != null) {
 			var oper = Atom.of(tree.getOperator().name_());
-			return prover.bind(tree.getLeft(), l) //
-					&& prover.bind(oper, op) //
+			return prover.bind(tree.getLeft(), l)
+					&& prover.bind(oper, op)
 					&& prover.bind(tree.getRight(), r);
 		} else if (op instanceof Atom) {
 			var operator = TermOp.find(Atom.name(op));

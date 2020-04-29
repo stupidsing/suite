@@ -17,9 +17,9 @@ import suite.util.Copy;
 public class Pipe {
 
 	public static Streamlet<String> shell(String sh) {
-		var command = Read //
-				.each("/bin/sh", "C:\\cygwin\\bin\\sh.exe", "C:\\cygwin64\\bin\\sh.exe") //
-				.filter(s -> Files.exists(Paths.get(s))) //
+		var command = Read
+				.each("/bin/sh", "C:\\cygwin\\bin\\sh.exe", "C:\\cygwin64\\bin\\sh.exe")
+				.filter(s -> Files.exists(Paths.get(s)))
 				.uniqueResult();
 
 		Log_.info("START " + sh);
@@ -33,8 +33,8 @@ public class Pipe {
 			var pes = process.getErrorStream();
 			var pos = process.getOutputStream();
 
-			var threads = new Thread[] { //
-					Copy.streamByThread(pes, System.err, false), //
+			var threads = new Thread[] {
+					Copy.streamByThread(pes, System.err, false),
 					Copy.streamByThread(bis, pos), };
 
 			for (var thread : threads)

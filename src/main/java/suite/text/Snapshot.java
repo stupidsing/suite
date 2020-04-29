@@ -32,8 +32,8 @@ public interface Snapshot {
 
 	public void patchDir(Path path, Map<String, List<BytesPair>> map);
 
-	public Map<String, List<BytesPair>> merge( //
-			Map<String, List<BytesPair>> map0, //
+	public Map<String, List<BytesPair>> merge(
+			Map<String, List<BytesPair>> map0,
 			Map<String, List<BytesPair>> map1);
 
 	public List<BytesPair> readPatch(InputStream is);
@@ -73,12 +73,12 @@ class Impl implements Snapshot {
 		}
 	}
 
-	public Map<String, List<BytesPair>> merge( //
-			Map<String, List<BytesPair>> map0, //
+	public Map<String, List<BytesPair>> merge(
+			Map<String, List<BytesPair>> map0,
 			Map<String, List<BytesPair>> map1) {
-		return Read //
-				.from(Union.of(map0.keySet(), map1.keySet())) //
-				.map2(key -> textUtil.merge(map0.get(key), map1.get(key))) //
+		return Read
+				.from(Union.of(map0.keySet(), map1.keySet()))
+				.map2(key -> textUtil.merge(map0.get(key), map1.get(key)))
 				.toMap();
 	}
 
@@ -161,9 +161,9 @@ class Impl implements Snapshot {
 	}
 
 	private Map<String, Bytes> readMap(Path path) {
-		return FileUtil //
-				.findPaths(path) //
-				.map2(Path::toString, p -> Bytes.of(ReadFile.from(p).readBytes())) //
+		return FileUtil
+				.findPaths(path)
+				.map2(Path::toString, p -> Bytes.of(ReadFile.from(p).readBytes()))
 				.toMap();
 	}
 

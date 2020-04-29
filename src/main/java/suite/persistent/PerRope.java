@@ -68,10 +68,10 @@ public class PerRope<T> {
 	}
 
 	private static IRopeList<Character> ropeList(String s) {
-		return new IRopeList<>( //
-				s.length(), //
-				s::charAt, //
-				(i0, ix) -> ropeList(s.substring(i0, ix)), //
+		return new IRopeList<>(
+				s.length(),
+				s::charAt,
+				(i0, ix) -> ropeList(s.substring(i0, ix)),
 				list -> ropeList(s + list.toString())) {
 			public String toString() {
 				return s;
@@ -205,17 +205,17 @@ public class PerRope<T> {
 	public boolean validate(boolean isRoot) {
 		Streamlet<PerRope<T>> rs;
 		int s;
-		return (false //
-				|| depth == 0 //
-						&& weight == (s = ts.size) //
-						&& s < maxBranchFactor //
-						&& ropes == null //
-				|| (rs = Read.from(ropes)) != null //
-						&& rs.isAll(rope -> rope.depth + 1 == depth) //
-						&& rs.toInt(AsInt.sum(rope -> rope.weight)) == weight //
-						&& ts == null //
-						&& (s = rs.size()) < maxBranchFactor //
-						&& rs.isAll(rope -> rope.validate(false))) //
+		return (false
+				|| depth == 0
+						&& weight == (s = ts.size)
+						&& s < maxBranchFactor
+						&& ropes == null
+				|| (rs = Read.from(ropes)) != null
+						&& rs.isAll(rope -> rope.depth + 1 == depth)
+						&& rs.toInt(AsInt.sum(rope -> rope.weight)) == weight
+						&& ts == null
+						&& (s = rs.size()) < maxBranchFactor
+						&& rs.isAll(rope -> rope.validate(false)))
 				&& (isRoot || minBranchFactor <= s) ? true : fail();
 	}
 

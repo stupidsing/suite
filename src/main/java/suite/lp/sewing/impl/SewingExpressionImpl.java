@@ -16,7 +16,7 @@ public class SewingExpressionImpl implements EvaluatorFactory {
 	}
 
 	public Evaluate_ evaluator(Node node) {
-		return new SwitchNode<Evaluate_>(node //
+		return new SwitchNode<Evaluate_>(node
 		).match(".0 .1 .2", (l, op, r) -> {
 			var lhs = evaluator(l);
 			var rhs = evaluator(r);

@@ -77,22 +77,22 @@ public class Http {
 		public final Header headers;
 		public final Puller<Bytes> in;
 
-		public Request( //
-				String method, //
-				String server, //
-				String path, //
-				String query, //
-				Header headers, //
+		public Request(
+				String method,
+				String server,
+				String path,
+				String query,
+				Header headers,
 				Puller<Bytes> in) {
 			this(method, server, HttpHeaderUtil.getPaths(path), query, headers, in);
 		}
 
-		public Request( //
-				String method, //
-				String server, //
-				PerList<String> paths, //
-				String query, //
-				Header headers, //
+		public Request(
+				String method,
+				String server,
+				PerList<String> paths,
+				String query,
+				Header headers,
 				Puller<Bytes> in) {
 			this.method = method;
 			this.server = server;

@@ -178,8 +178,8 @@ public class As {
 	}
 
 	public static Streamlet<String[]> table(Puller<Bytes> puller) {
-		return Read.from(puller.collect(As::lines_) //
-				.map(bytes -> To.string(bytes).split("\t")) //
+		return Read.from(puller.collect(As::lines_)
+				.map(bytes -> To.string(bytes).split("\t"))
 				.toList());
 	}
 

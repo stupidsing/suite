@@ -76,17 +76,17 @@ public class DailyMain {
 		var td = ymd + "#";
 
 		// perform systematic trading
-		var results = Read.each( //
-				alloc(bacs.pair_bb, 66666f), //
-				alloc("bug", bacs.bac_sell, 0f), //
-				alloc(bacs.pair_donchian, 100000f), //
-				alloc(bacs.pair_ema, 0f), //
-				mamr(50000f), //
-				alloc(bacs.pair_pmamr, 150000f), //
-				alloc(bacs.pair_pmamr2, 366666f), //
-				alloc(bacs.pair_pmmmr, 80000f), //
-				alloc(bacs.pair_revco, 0f), //
-				alloc(bacs.pair_tma, 0f), //
+		var results = Read.each(
+				alloc(bacs.pair_bb, 66666f),
+				alloc("bug", bacs.bac_sell, 0f),
+				alloc(bacs.pair_donchian, 100000f),
+				alloc(bacs.pair_ema, 0f),
+				mamr(50000f),
+				alloc(bacs.pair_pmamr, 150000f),
+				alloc(bacs.pair_pmamr2, 366666f),
+				alloc(bacs.pair_pmmmr, 80000f),
+				alloc(bacs.pair_revco, 0f),
+				alloc(bacs.pair_tma, 0f),
 				alloc(sellPool, bacs.bac_sell, 0f));
 
 		// unused strategies
@@ -98,9 +98,9 @@ public class DailyMain {
 
 		var sbs = Summarize.of(cfg).summarize(trade -> trade.strategy);
 
-		var strategyTrades = results //
-				.concatMap2(result -> Read.from(result.trades).map2(trade -> result.strategy, trade -> trade)) //
-				.filterValue(trade -> trade.buySell != 0) //
+		var strategyTrades = results
+				.concatMap2(result -> Read.from(result.trades).map2(trade -> result.strategy, trade -> trade))
+				.filterValue(trade -> trade.buySell != 0)
 				.collect();
 
 		var requestTrades = strategyTrades.filterKey(strategy -> !Equals.string(strategy, sellPool));
@@ -108,30 +108,30 @@ public class DailyMain {
 		var buys_ = amounts.filter(amount -> 0d < amount).sum();
 		var sells = amounts.filter(amount -> amount < 0d).sum();
 
-		sb.append(sbs.log //
-				+ "\n" + sbs.pnlByKey //
-				+ "\nBUY REQUESTS" //
-				+ requestTrades //
-						.filterValue(trade -> 0 < trade.buySell) //
-						.sortByValue(Trade::compare) //
-						.map((strategy, t) -> "" //
-								+ Trade.of(td, -t.buySell, t.symbol, t.price, sellPool).record() + "\n" //
-								+ Trade.of(td, +t.buySell, t.symbol, t.price, strategy).record()) //
-				+ "\n" //
-				+ "\nSELL REQUESTS" //
-				+ requestTrades //
-						.filterValue(trade -> trade.buySell < 0) //
-						.sortByValue(Trade::compare) //
-						.map((strategy, t) -> "" //
-								+ Trade.of(td, +t.buySell, t.symbol, t.price, strategy).record() + "\n" //
-								+ Trade.of(td, -t.buySell, t.symbol, t.price, sellPool).record()) //
-				+ "\n" //
-				+ "\nTOTAL BUYS_ = " + To.string(buys_) //
-				+ "\nTOTAL SELLS = " + To.string(sells) //
-				+ "\n" //
-				+ "\nSUGGESTIONS" //
-				+ "\n- check your balance" //
-				+ "\n- sell mamr and " + sellPool //
+		sb.append(sbs.log
+				+ "\n" + sbs.pnlByKey
+				+ "\nBUY REQUESTS"
+				+ requestTrades
+						.filterValue(trade -> 0 < trade.buySell)
+						.sortByValue(Trade::compare)
+						.map((strategy, t) -> ""
+								+ Trade.of(td, -t.buySell, t.symbol, t.price, sellPool).record() + "\n"
+								+ Trade.of(td, +t.buySell, t.symbol, t.price, strategy).record())
+				+ "\n"
+				+ "\nSELL REQUESTS"
+				+ requestTrades
+						.filterValue(trade -> trade.buySell < 0)
+						.sortByValue(Trade::compare)
+						.map((strategy, t) -> ""
+								+ Trade.of(td, +t.buySell, t.symbol, t.price, strategy).record() + "\n"
+								+ Trade.of(td, -t.buySell, t.symbol, t.price, sellPool).record())
+				+ "\n"
+				+ "\nTOTAL BUYS_ = " + To.string(buys_)
+				+ "\nTOTAL SELLS = " + To.string(sells)
+				+ "\n"
+				+ "\nSUGGESTIONS"
+				+ "\n- check your balance"
+				+ "\n- sell mamr and " + sellPool
 				+ "\n");
 
 		var result = sb.toString().replace(".0\t", "\t");
@@ -153,9 +153,9 @@ public class DailyMain {
 		cfg.quote(instruments.map(instrument -> instrument.symbol).toSet());
 
 		// identify stocks that are mean-reverting
-		var backTestBySymbol = SerializedStoreCache //
-				.of(ser.mapOfString(ser.boolean_)) //
-				.get(getClass().getSimpleName() + ".backTestBySymbol", () -> instruments //
+		var backTestBySymbol = SerializedStoreCache
+				.of(ser.mapOfString(ser.boolean_))
+				.get(getClass().getSimpleName() + ".backTestBySymbol", () -> instruments
 						.map2(stock -> stock.symbol, stock -> {
 							try {
 								var period = TimeRange.threeYears();
@@ -166,7 +166,7 @@ public class DailyMain {
 								Log_.warn(ex + " for " + stock);
 								return false;
 							}
-						}) //
+						})
 						.toMap());
 
 		var period = TimeRange.daysBefore(128);
@@ -212,16 +212,16 @@ public class DailyMain {
 		var history = cfg.queryHistory().filter(r -> Equals.string(r.strategy, tag));
 		var account = Account.ofPortfolio(history);
 
-		var faceValueBySymbol = history //
-				.groupBy(record -> record.symbol, rs -> (float) Read.from(rs).toDouble(AsDbl.sum(Trade::amount))) //
+		var faceValueBySymbol = history
+				.groupBy(record -> record.symbol, rs -> (float) Read.from(rs).toDouble(AsDbl.sum(Trade::amount)))
 				.toMap();
 
-		var trades = account //
-				.portfolio() //
+		var trades = account
+				.portfolio()
 				.map((symbol, sell) -> {
 					var targetPrice = (1d + 3 * Trade_.riskFreeInterestRate) * faceValueBySymbol.get(symbol) / sell;
 					return Trade.of(-sell, symbol, (float) targetPrice);
-				}) //
+				})
 				.toList();
 
 		return new Result(tag, trades);

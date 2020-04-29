@@ -35,15 +35,15 @@ public class P3Optimize {
 	}
 
 	private Funp optimize_(Funp n) {
-		return n.sw( //
+		return n.sw(
 		).applyIf(FunpCoerce.class, f -> f.apply((from, to, expr) -> {
 			return expr instanceof FunpDontCare ? optimize(expr) : n;
 		})).applyIf(FunpData.class, f -> f.apply(pairs -> {
 			return FunpData.of(Read.from2(pairs).concatMap((expr, range) -> {
 				var expr1 = optimize(expr);
 				var start = range.s;
-				var pairsx = expr1.cast(FunpData.class, g -> g.apply(pairs1 -> Read //
-						.from2(pairs1) //
+				var pairsx = expr1.cast(FunpData.class, g -> g.apply(pairs1 -> Read
+						.from2(pairs1)
 						.map((exprc, range1) -> Pair.of(optimize(exprc), IntRange.of(start + range1.s, start + range1.e)))));
 				return pairsx != null ? pairsx : Read.each(Pair.of(expr1, range));
 			}).toList());
@@ -54,7 +54,7 @@ public class P3Optimize {
 		})).applyIf(FunpIf.class, f -> f.apply((if_, then, else_) -> {
 			return optimize(if_).sw().applyIf(FunpBoolean.class, g -> g.apply(b -> b ? then : else_)).result();
 		})).applyIf(FunpMemory.class, f -> f.apply((pointer, start, end) -> {
-			return optimize(pointer).sw( //
+			return optimize(pointer).sw(
 			).applyIf(FunpData.class, g -> g.apply(pairs -> {
 				for (var pair : pairs) {
 					var range = pair.v;

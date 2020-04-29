@@ -6,33 +6,33 @@ import primal.Verbs.Equals;
 
 public enum TermOp implements Operator {
 
-	NEXT__("#", Assoc.RIGHT), //
-	IS____(" :- ", Assoc.RIGHT), //
-	CONTD_(" ~ ", Assoc.RIGHT), //
-	DEFINE(" := ", Assoc.RIGHT), //
-	BIGOR_(" || ", Assoc.RIGHT), //
-	BIGAND(" && ", Assoc.RIGHT), //
-	FUN___(" => ", Assoc.RIGHT), //
-	ARROW_(" -> ", Assoc.RIGHT), //
-	SEP___(" | ", Assoc.LEFT), //
-	JOIN__(" . ", Assoc.LEFT), //
-	OR____(";", Assoc.RIGHT), //
-	AND___(",", Assoc.RIGHT), //
-	EQUAL_(" = ", Assoc.RIGHT), //
-	NOTEQ_(" != ", Assoc.RIGHT), //
-	LE____(" <= ", Assoc.RIGHT), //
-	LT____(" < ", Assoc.RIGHT), //
-	PLUS__(" + ", Assoc.RIGHT), //
-	MINUS_(" - ", Assoc.LEFT), //
-	MULT__(" * ", Assoc.RIGHT), //
-	DIVIDE(" / ", Assoc.LEFT), //
-	MODULO(" % ", Assoc.LEFT), //
-	POWER_("^", Assoc.RIGHT), //
-	BRACES("_{", Assoc.LEFT), //
-	TUPLE_(" ", Assoc.RIGHT), //
-	ITEM__("/", Assoc.LEFT), //
-	COLON_(":", Assoc.RIGHT), //
-	DEREF_("*", Assoc.LEFT), //
+	NEXT__("#", Assoc.RIGHT),
+	IS____(" :- ", Assoc.RIGHT),
+	CONTD_(" ~ ", Assoc.RIGHT),
+	DEFINE(" := ", Assoc.RIGHT),
+	BIGOR_(" || ", Assoc.RIGHT),
+	BIGAND(" && ", Assoc.RIGHT),
+	FUN___(" => ", Assoc.RIGHT),
+	ARROW_(" -> ", Assoc.RIGHT),
+	SEP___(" | ", Assoc.LEFT),
+	JOIN__(" . ", Assoc.LEFT),
+	OR____(";", Assoc.RIGHT),
+	AND___(",", Assoc.RIGHT),
+	EQUAL_(" = ", Assoc.RIGHT),
+	NOTEQ_(" != ", Assoc.RIGHT),
+	LE____(" <= ", Assoc.RIGHT),
+	LT____(" < ", Assoc.RIGHT),
+	PLUS__(" + ", Assoc.RIGHT),
+	MINUS_(" - ", Assoc.LEFT),
+	MULT__(" * ", Assoc.RIGHT),
+	DIVIDE(" / ", Assoc.LEFT),
+	MODULO(" % ", Assoc.LEFT),
+	POWER_("^", Assoc.RIGHT),
+	BRACES("_{", Assoc.LEFT),
+	TUPLE_(" ", Assoc.RIGHT),
+	ITEM__("/", Assoc.LEFT),
+	COLON_(":", Assoc.RIGHT),
+	DEREF_("*", Assoc.LEFT),
 	;
 
 	public String name;

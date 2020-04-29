@@ -122,8 +122,8 @@ public class Statistic {
 			nDepVariables = nDepVariables_;
 			in = x;
 			coefficients = coeffs;
-			coefficientNames = coefficientNames_ != null //
-					? coefficientNames_ //
+			coefficientNames = coefficientNames_ != null
+					? coefficientNames_
 					: To.array(nDepVariables_, String.class, i -> "c" + i);
 			residuals = residuals_;
 			invn2 = 1d / (nDataPoints_ - nDepVariables_ - 1);
@@ -172,7 +172,7 @@ public class Statistic {
 			return Build.string(sb -> {
 				var tStatistic = tStatistic();
 				for (var i = 0; i < nDepVariables; i++)
-					sb.append("\n" + coefficientNames[i] + " = " + To.string(coefficients[i]) //
+					sb.append("\n" + coefficientNames[i] + " = " + To.string(coefficients[i])
 							+ ", t-statistic = " + To.string(tStatistic[i]));
 				sb.append("\nstandard error = " + To.string(standardError) + ", r2 = " + To.string(r2));
 			});
@@ -226,9 +226,9 @@ public class Statistic {
 
 	public String moments(float[] fs) {
 		var mv = meanVariance_(fs);
-		return "mean = " + mv.mean //
-				+ ", variance = " + mv.variance //
-				+ ", skewness = " + skewness_(mv, fs) //
+		return "mean = " + mv.mean
+				+ ", variance = " + mv.variance
+				+ ", skewness = " + skewness_(mv, fs)
 				+ ", kurtosis = " + kurtosis_(mv, fs);
 	}
 
@@ -384,9 +384,9 @@ public class Statistic {
 		}
 
 		public String toString() {
-			return "(mean:" + To.string(mean) //
-					+ " sd:" + To.string(standardDeviation()) //
-					+ " range:" + To.string(min) + "~" + To.string(max) //
+			return "(mean:" + To.string(mean)
+					+ " sd:" + To.string(standardDeviation())
+					+ " range:" + To.string(min) + "~" + To.string(max)
 					+ ")";
 		}
 	}

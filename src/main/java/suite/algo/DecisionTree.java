@@ -28,10 +28,10 @@ public class DecisionTree {
 			return of(input_).classify;
 		}).collect();
 
-		Obj_Int<Object[]> classify = xs -> classifyList //
-				.map(cl -> cl.apply(xs)) //
-				.groupBy(y -> y, Streamlet::size) //
-				.sortByValue(Integer::compareTo) //
+		Obj_Int<Object[]> classify = xs -> classifyList
+				.map(cl -> cl.apply(xs))
+				.groupBy(y -> y, Streamlet::size)
+				.sortByValue(Integer::compareTo)
 				.first().k;
 
 		return new Classifier(input, classify);
@@ -53,9 +53,9 @@ public class DecisionTree {
 					var max = DblIntPair.of(Double.MIN_VALUE, -1);
 
 					forInt(first.v.length).sink(p -> {
-						var es = data //
-								.groupBy(datum -> datum.v[p]) //
-								.values() //
+						var es = data
+								.groupBy(datum -> datum.v[p])
+								.values()
 								.toDouble(AsDbl.sum(set -> entropy(set) * set.size()));
 
 						var informationGain = entropy0 - es / data.size();
@@ -66,9 +66,9 @@ public class DecisionTree {
 
 					return max.map((informationGain, p) -> {
 						if (0 < informationGain) {
-							var funs = data //
-									.groupBy(datum -> datum.v[p], data_ -> data_) //
-									.mapValue(this::id3) //
+							var funs = data
+									.groupBy(datum -> datum.v[p], data_ -> data_)
+									.mapValue(this::id3)
 									.toMap();
 
 							return xs -> funs.get(xs[p]).apply(xs);

@@ -29,14 +29,14 @@ public class WalkForwardTestMain {
 		Trade_.isShortSell = true;
 		Trade_.leverageAmount = fund0;
 
-		var wfac = new WalkForwardAllocConfiguration( //
-				cfg.queryCompaniesByMarketCap(Time.now()), //
+		var wfac = new WalkForwardAllocConfiguration(
+				cfg.queryCompaniesByMarketCap(Time.now()),
 				bag.rsi.unleverage().walkForwardAllocator());
 
 		var tester = new WalkForwardAllocTester(cfg, wfac.instruments, fund0, wfac.walkForwardAllocator);
 
-		var schedule = Schedule //
-				.ofRepeat(5, () -> System.out.println(tester.tick())) //
+		var schedule = Schedule
+				.ofRepeat(5, () -> System.out.println(tester.tick()))
 				.filterTime(dt -> HkexUtil.isMarketOpen(Time.of(dt)));
 
 		Scheduler.of(schedule).run();

@@ -34,20 +34,20 @@ public class BackAllocTester {
 	private Statistic stat = new Statistic();
 	private TimeSeries ts = new TimeSeries();
 
-	public static BackAllocTester of( //
-			TradeCfg cfg, //
-			TimeRange period, //
-			Streamlet<Instrument> instruments, //
-			BackAllocator backAllocator, //
+	public static BackAllocTester of(
+			TradeCfg cfg,
+			TimeRange period,
+			Streamlet<Instrument> instruments,
+			BackAllocator backAllocator,
 			Sink<String> log) {
 		return new BackAllocTester(cfg, period, instruments.distinct(), backAllocator, log);
 	}
 
-	private BackAllocTester( //
-			TradeCfg cfg, //
-			TimeRange period, //
-			Streamlet<Instrument> instruments, //
-			BackAllocator backAllocator, //
+	private BackAllocTester(
+			TradeCfg cfg,
+			TimeRange period,
+			Streamlet<Instrument> instruments,
+			BackAllocator backAllocator,
 			Sink<String> log) {
 		this.cfg = cfg;
 		this.period = period;
@@ -85,11 +85,11 @@ public class BackAllocTester {
 			var t0 = period.fr.epochSec();
 			var tx = period.to.epochSec();
 
-			var indices = forInt(tradeTs.length) //
+			var indices = forInt(tradeTs.length)
 					.filter(i -> {
 						var t = tradeTs[i];
 						return t0 <= t && t < tx;
-					}) //
+					})
 					.toArray();
 
 			var size = indices.length;
@@ -117,9 +117,9 @@ public class BackAllocTester {
 
 					var actions = play(up.trades);
 
-					log.f(ymd //
-							+ ", valuation = " + valuation_ //
-							+ ", portfolio = " + account //
+					log.f(ymd
+							+ ", valuation = " + valuation_
+							+ ", portfolio = " + account
 							+ ", actions = " + actions);
 				}
 
@@ -154,12 +154,12 @@ public class BackAllocTester {
 				sb.append(e.<String> map((symbol, hold) -> symbol + ":" + To.percent(hold) + ","));
 
 			if (exception == null)
-				return period //
-						+ " val:" + (0 < length ? valuations[length - 1] : "N/A") //
-						+ " cagr:" + To.string(annualReturn) //
-						+ " sharpe:" + To.string(sharpe) //
-						+ " skew:" + To.string(skewness) //
-						+ " " + account.transactionSummary(cfg::transactionFee).out0() //
+				return period
+						+ " val:" + (0 < length ? valuations[length - 1] : "N/A")
+						+ " cagr:" + To.string(annualReturn)
+						+ " sharpe:" + To.string(sharpe)
+						+ " skew:" + To.string(skewness)
+						+ " " + account.transactionSummary(cfg::transactionFee).out0()
 						+ " holds:" + sb + "...";
 			else {
 				Log_.error(exception);

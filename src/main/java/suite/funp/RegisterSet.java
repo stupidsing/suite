@@ -19,11 +19,11 @@ public class RegisterSet {
 	public final int flag;
 
 	static {
-		var map = Read //
-				.from2(amd64.regByName) //
-				.values() //
-				.filter(opReg -> opReg.size == Funp_.pushSize) //
-				.map2(opReg -> opReg.reg, opReg -> opReg) //
+		var map = Read
+				.from2(amd64.regByName)
+				.values()
+				.filter(opReg -> opReg.size == Funp_.pushSize)
+				.map2(opReg -> opReg.reg, opReg -> opReg)
 				.toMap();
 
 		registers = forInt(nRegisters).map(map::get).toArray(OpReg.class);
@@ -59,10 +59,10 @@ public class RegisterSet {
 	}
 
 	public OpReg[] list(IntPred pred) {
-		return forInt(nRegisters) //
-				.filter(this::isMasked_) //
-				.filter(pred) //
-				.map(r -> registers[r]) //
+		return forInt(nRegisters)
+				.filter(this::isMasked_)
+				.filter(pred)
+				.map(r -> registers[r])
 				.toArray(OpReg.class);
 	}
 

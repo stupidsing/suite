@@ -79,9 +79,9 @@ public class TextUtil {
 		return merge(pairsx, pairsy, false);
 	}
 
-	public List<BytesPair> merge( //
-			List<BytesPair> pairsx, //
-			List<BytesPair> pairsy, //
+	public List<BytesPair> merge(
+			List<BytesPair> pairsx,
+			List<BytesPair> pairsy,
 			boolean isDetectSameChanges) {
 		var isEmptyx = pairsx.isEmpty();
 		var isEmptyy = pairsy.isEmpty();
@@ -101,15 +101,15 @@ public class TextUtil {
 				BytesPair pair;
 				List<BytesPair> pairs;
 
-				if (isDetectSameChanges //
-						&& phx.t0 != phx.t1 //
-						&& phy.t0 != phy.t1 //
-						&& 0 < (s0 = detectSame(phx.t0, phy.t0)) //
+				if (isDetectSameChanges
+						&& phx.t0 != phx.t1
+						&& phy.t0 != phy.t1
+						&& 0 < (s0 = detectSame(phx.t0, phy.t0))
 						&& 0 < (s1 = detectSame(phx.t1, phy.t1))) {
 					pair = new BytesPair(phx.t0.range(0, s0), phx.t1.range(0, s1));
-					pairs = merge( //
-							cons(new BytesPair(phx.t0.range(s0), phx.t1.range(s1)), ptx), //
-							cons(new BytesPair(phy.t0.range(s0), phy.t1.range(s1)), pty), //
+					pairs = merge(
+							cons(new BytesPair(phx.t0.range(s0), phx.t1.range(s1)), ptx),
+							cons(new BytesPair(phy.t0.range(s0), phy.t1.range(s1)), pty),
 							isDetectSameChanges);
 				} else if (phx.t0 != phx.t1) {
 					pair = phx;

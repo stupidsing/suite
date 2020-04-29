@@ -111,10 +111,10 @@ public class CalculateReturns {
 		public String toString() {
 			var return_ = return_();
 			var yearPeriod = Trade_.nTradeDaysPerYear / (double) vals.length;
-			return "o/c =" //
-					+ " rtn:" + To.string(return_) //
-					+ " cagr:" + To.string(expm1(log1p(return_) * yearPeriod)) //
-					+ " sharpe:" + To.string(sharpe()) //
+			return "o/c ="
+					+ " rtn:" + To.string(return_)
+					+ " cagr:" + To.string(expm1(log1p(return_) * yearPeriod))
+					+ " sharpe:" + To.string(sharpe())
 					+ " dist:" + rmv;
 		}
 

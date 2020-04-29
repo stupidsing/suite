@@ -24,9 +24,9 @@ public class MapObject_ {
 	public static <T extends MapObject<T>> MapObject<T> construct(Class<?> clazz, List<?> list) {
 		return ex(() -> {
 			var size = list.size();
-			var m = Read //
-					.from(clazz.getMethods()) //
-					.filter(method -> Equals.string(method.getName(), "of") && method.getParameterCount() == size) //
+			var m = Read
+					.from(clazz.getMethods())
+					.filter(method -> Equals.string(method.getName(), "of") && method.getParameterCount() == size)
 					.uniqueResult();
 			@SuppressWarnings("unchecked")
 			var t = (MapObject<T>) m.invoke(null, list.toArray());
@@ -37,9 +37,9 @@ public class MapObject_ {
 	public static <T extends MapObject<?>> List<?> list(T object) {
 		var clazz = object.getClass();
 
-		var m = Read //
-				.from(clazz.getMethods()) //
-				.filter(method -> Equals.string(method.getName(), "apply")) //
+		var m = Read
+				.from(clazz.getMethods())
+				.filter(method -> Equals.string(method.getName(), "apply"))
 				.uniqueResult();
 
 		var type = m.getParameters()[0].getType();

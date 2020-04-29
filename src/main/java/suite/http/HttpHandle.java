@@ -43,11 +43,11 @@ public class HttpHandle {
 				try (var raf = new RandomAccessFile(file, "r")) {
 					size = raf.getChannel().size();
 
-					var array = request.headers //
-							.getOpt("Range") //
-							.map(range -> range.split(",")) //
-							.filter(ranges -> ranges.length == 1) //
-							.map(ranges -> ranges[0].split("-")) //
+					var array = request.headers
+							.getOpt("Range")
+							.map(range -> range.split(","))
+							.filter(ranges -> ranges.length == 1)
+							.map(ranges -> ranges[0].split("-"))
 							.or(new String[0]);
 
 					if (array.length == 2) {
@@ -57,8 +57,8 @@ public class HttpHandle {
 						var px = min(!a1.isEmpty() ? Long.valueOf(a1) : Long.MAX_VALUE, size);
 						var p = LngMutable.of(p0);
 
-						var empty = new Header() //
-								.put("Content-Range", "bytes " + p0 + "-" + px + "/" + size) //
+						var empty = new Header()
+								.put("Content-Range", "bytes " + p0 + "-" + px + "/" + size)
 								.put("Content-Type", "text/html; charset=UTF-8");
 
 						return Response.of(Http.S206, empty, Pull.from(new InputStream() {
@@ -93,18 +93,18 @@ public class HttpHandle {
 	}
 
 	public Handler dispatchMethod(PerMap<String, Handler> map) {
-		return request -> map //
-				.getOpt(request.method) //
-				.map(handler -> handler.handle(request)) //
+		return request -> map
+				.getOpt(request.method)
+				.map(handler -> handler.handle(request))
 				.or(Http.R405);
 	}
 
 	public Handler dispatchPath(PerMap<String, Handler> map) {
-		return request0 -> request0 //
-				.split() //
-				.map((path, request1) -> map //
-						.getOpt(path) //
-						.map(handler -> handler.handle(request1)) //
+		return request0 -> request0
+				.split()
+				.map((path, request1) -> map
+						.getOpt(path)
+						.map(handler -> handler.handle(request1))
 						.or(Http.R404));
 	}
 
@@ -113,9 +113,9 @@ public class HttpHandle {
 	}
 
 	public Handler sse(Sink<Sink<Bytes>> write) {
-		var sseHeaders = new Header(PerMap //
-				.<String, PerList<String>> empty() //
-				.put("Cache-Control", PerList.of("no-cache")) //
+		var sseHeaders = new Header(PerMap
+				.<String, PerList<String>> empty()
+				.put("Cache-Control", PerList.of("no-cache"))
 				.put("Content-Type", PerList.of("text/event-stream")));
 
 		return request -> Response.ofWriter(Http.S200, sseHeaders, write);

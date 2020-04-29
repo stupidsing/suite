@@ -24,19 +24,19 @@ public class Lexer {
 	private Reader reader;
 	private Set<String> operators;
 
-	private static Set<String> javaOperators = new HashSet<>(List.of( //
-			"++", "--", "+", "-", "~", "!", //
-			"*", "/", "%", //
-			"+", "-", //
-			"<<", ">>", ">>>", //
-			"<", ">", "<=", ">=", "instanceof", //
-			"==", "!=", //
-			"&", //
-			"^", //
-			"|", //
-			"&&", //
-			"||", //
-			"?", ":", //
+	private static Set<String> javaOperators = new HashSet<>(List.of(
+			"++", "--", "+", "-", "~", "!",
+			"*", "/", "%",
+			"+", "-",
+			"<<", ">>", ">>>",
+			"<", ">", "<=", ">=", "instanceof",
+			"==", "!=",
+			"&",
+			"^",
+			"|",
+			"&&",
+			"||",
+			"?", ":",
 			"=", "+=", "-=", "*=", "/=", "%=", "&=", "^=", "|=", "<<=", ">>=", ">>>="));
 
 	public Lexer(String in) {

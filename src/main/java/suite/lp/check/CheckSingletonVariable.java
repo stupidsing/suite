@@ -39,8 +39,8 @@ public class CheckSingletonVariable {
 
 					// check all variables starting with alphabets; ignore
 					// computer-generated code
-					if (name.startsWith(ProverConstant.variablePrefix) //
-							&& 1 < name.length() //
+					if (name.startsWith(ProverConstant.variablePrefix)
+							&& 1 < name.length()
 							&& Character.isAlphabetic(name.charAt(1))) {
 						var value = isSingleton.get(node);
 						if (value == null)

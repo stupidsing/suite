@@ -39,9 +39,9 @@ public class NioDispatch implements Closeable {
 	private Selector selector = Selector.open();
 	private ThreadLocal<byte[]> threadBuffer = ThreadLocal.withInitial(() -> new byte[Buffer.size]);
 
-	private PriorityQueue<TimeDispatch> timeDispatches = new PriorityQueue<>( //
-			TimeDispatch.class, //
-			256, //
+	private PriorityQueue<TimeDispatch> timeDispatches = new PriorityQueue<>(
+			TimeDispatch.class,
+			256,
 			(td0, td1) -> Long.compare(td0.time, td1.time));
 
 	private class TimeDispatch {

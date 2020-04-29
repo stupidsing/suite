@@ -20,9 +20,9 @@ public class TelegramBotMain {
 	}
 
 	public TelegramBotMain(String botUsername, Path tokenPath) {
-		tb = new TelegramBot(botUsername, tokenPath, //
-				token -> true, //
-				() -> "time is " + System.currentTimeMillis(), //
+		tb = new TelegramBot(botUsername, tokenPath,
+				token -> true,
+				() -> "time is " + System.currentTimeMillis(),
 				(chatId, do_) -> Execute.shell(System.getenv("DO_" + do_.toUpperCase())));
 	}
 

@@ -24,7 +24,7 @@ public class CompileProverImpl implements ProverFactory {
 
 		var compiled = new Object() {
 			private FunExpr compile_(Node node, FunExpr cps) {
-				return new SwitchNode<FunExpr>(node //
+				return new SwitchNode<FunExpr>(node
 				).matchArray(".0, .1", m -> {
 					return compile_(m[0], compile_(m[1], cps));
 				}).matchArray(".0; .1", m -> {

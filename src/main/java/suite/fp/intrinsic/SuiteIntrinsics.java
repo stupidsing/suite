@@ -30,9 +30,9 @@ public class SuiteIntrinsics {
 
 	public Intrinsic substitute = (callback, inputs) -> {
 		var s = Data.get(inputs.get(0)).toString();
-		var array = ThunkUtil //
-				.yawnList(callback::yawn, inputs.get(1), true) //
-				.map(Data::<Node> get) //
+		var array = ThunkUtil
+				.yawnList(callback::yawn, inputs.get(1), true)
+				.map(Data::<Node> get)
 				.toArray(Node.class);
 		return new Data<>(Suite.substitute(s, array));
 	};

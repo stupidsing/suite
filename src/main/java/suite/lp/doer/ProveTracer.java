@@ -40,10 +40,10 @@ public class ProveTracer {
 			if (traceLevel == TraceLevel.SIMPLE)
 				sb.append(String.format("[%4s:%-2d]  ", 0 < nOkays ? "OK__" : "FAIL", depth));
 			else if (traceLevel == TraceLevel.DETAIL)
-				sb.append(String.format("%-4d[up=%-4d|oks=%-2d|end=%-4s]  ", //
-						start, //
-						parent != null ? parent.start : 0, //
-						nOkays, //
+				sb.append(String.format("%-4d[up=%-4d|oks=%-2d|end=%-4s]  ",
+						start,
+						parent != null ? parent.start : 0,
+						nOkays,
 						0 <= end ? String.valueOf(end) : ""));
 
 			for (var i = 1; i < depth; i++)

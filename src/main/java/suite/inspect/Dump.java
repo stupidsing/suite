@@ -76,7 +76,7 @@ public class Dump {
 				} else if (Util.isSimple(clazz))
 					sink.f(object.toString());
 				else
-					new Switch<Object>(object //
+					new Switch<Object>(object
 					).doIf(Collection.class, collection -> {
 						sink.f("[");
 						for (var object1 : collection)
@@ -272,9 +272,9 @@ public class Dump {
 						if (last == close && 0 <= pos) {
 							var left = Left.of(s, pos);
 							var right = Substring.of(s, pos + 1, -1);
-							return Streamlet.concat( //
-									Read.each(indent + left + open), //
-									split(indent + "  ", right, ""), //
+							return Streamlet.concat(
+									Read.each(indent + left + open),
+									split(indent + "  ", right, ""),
 									Read.each(indent + Character.toString(last) + tail));
 						}
 					}

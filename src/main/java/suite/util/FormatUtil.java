@@ -13,14 +13,14 @@ public class FormatUtil {
 		var arrays = Read.from(s.split("\n")).map(line -> line.split("\t")).collect();
 		var nColumns = arrays.collect(LiftInt.of(array -> array.length)).max();
 
-		var rows = arrays //
-				.map(array -> To.array(nColumns, String.class, column -> column < array.length ? array[column] : "")) //
+		var rows = arrays
+				.map(array -> To.array(nColumns, String.class, column -> column < array.length ? array[column] : ""))
 				.toArray(String[].class);
 
-		var widths = forInt(nColumns) //
-				.collect(As.ints(column -> Read //
-						.from(rows) //
-						.collect(LiftInt.of(row -> row[column].length())).max())) //
+		var widths = forInt(nColumns)
+				.collect(As.ints(column -> Read
+						.from(rows)
+						.collect(LiftInt.of(row -> row[column].length())).max()))
 				.toArray();
 
 		if (Boolean.TRUE)
@@ -77,8 +77,8 @@ public class FormatUtil {
 		});
 	}
 
-	private static void appendBorder( //
-			StringBuilder sb, int nColumns, int[] widths, //
+	private static void appendBorder(
+			StringBuilder sb, int nColumns, int[] widths,
 			String ch0, String ch1, String ch2, String ch3) {
 		for (var column = 0; column < nColumns; column++) {
 			var width = widths[column];

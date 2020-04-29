@@ -17,12 +17,12 @@ class MarketData {
 	public class Data {
 		public int length = 0;
 
-		public DataSource ds = DataSource.ofOhlcv( //
-				new long[128], //
-				new float[128], //
-				new float[128], //
-				new float[128], //
-				new float[128], //
+		public DataSource ds = DataSource.ofOhlcv(
+				new long[128],
+				new float[128],
+				new float[128],
+				new float[128],
+				new float[128],
 				new float[128]);
 	}
 
@@ -40,12 +40,12 @@ class MarketData {
 				while (ds.ts.length <= l) {
 					var expand = ds.ts.length * 2;
 
-					ds = data.ds = DataSource.ofOhlcv( //
-							Arrays.copyOf(ds.ts, expand), //
-							Arrays.copyOf(ds.opens, expand), //
-							Arrays.copyOf(ds.closes, expand), //
-							Arrays.copyOf(ds.lows, expand), //
-							Arrays.copyOf(ds.highs, expand), //
+					ds = data.ds = DataSource.ofOhlcv(
+							Arrays.copyOf(ds.ts, expand),
+							Arrays.copyOf(ds.opens, expand),
+							Arrays.copyOf(ds.closes, expand),
+							Arrays.copyOf(ds.lows, expand),
+							Arrays.copyOf(ds.highs, expand),
 							Arrays.copyOf(ds.volumes, expand));
 				}
 

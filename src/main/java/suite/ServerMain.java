@@ -74,26 +74,26 @@ public class ServerMain {
 	}
 
 	private Handler handler() {
-		BiPredicate<String, String> authenticate = (username, password) -> Defaults //
-				.secrets() //
+		BiPredicate<String, String> authenticate = (username, password) -> Defaults
+				.secrets()
 				.prove(Suite.substitute("auth .0 .1", new Str(username), new Str(password)));
 
 		Fun2<String, String, List<String>> authenticateRoles = (username, password) -> {
 			return authenticate.test(username, password) ? List.of("role") : null;
 		};
 
-		var sseHeaders = new Header(PerMap //
-				.<String, PerList<String>> empty() //
-				.put("Cache-Control", PerList.of("no-cache")) //
+		var sseHeaders = new Header(PerMap
+				.<String, PerList<String>> empty()
+				.put("Cache-Control", PerList.of("no-cache"))
 				.put("Content-Type", PerList.of("text/event-stream")));
 
-		Handler handlerSite = request -> Response.of(Pull.from("" //
-				+ "<html>" //
-				+ "<br/>method = " + request.method //
-				+ "<br/>server = " + request.server //
-				+ "<br/>paths = " + request.paths //
-				+ "<br/>attrs = " + HttpHeaderUtil.getAttrs(request.query) //
-				+ "<br/>headers = " + request.headers //
+		Handler handlerSite = request -> Response.of(Pull.from(""
+				+ "<html>"
+				+ "<br/>method = " + request.method
+				+ "<br/>server = " + request.server
+				+ "<br/>paths = " + request.paths
+				+ "<br/>attrs = " + HttpHeaderUtil.getAttrs(request.query)
+				+ "<br/>headers = " + request.headers
 				+ "</html>"));
 
 		Handler handlerSse = request -> Response.ofWriter(Http.S200, sseHeaders, write -> {
@@ -123,26 +123,26 @@ public class ServerMain {
 		var hat = new HttpAuthToken();
 		var hh = new HttpHandle();
 
-		return hh.dispatchPath(PerMap //
-				.<String, Handler> empty() //
-				.put("api", hat.handleFilter("role", hh.data("in good shape"))) //
-				.put("hello", hh.data("hello world")) //
-				.put("html", hh.dir(Paths.get(FileUtil.suiteDir() + "/src/main/html"))) //
-				.put("path", hh.dir(Tmp.root)) //
-				.put("site", hh.session(authenticate, handlerSite)) //
-				.put("sse", handlerSse) //
-				.put("status", handlerStatus) //
-				.put("token", hh.dispatchMethod(PerMap //
-						.<String, Handler> empty() //
-						.put("PATCH", hat.handleRefreshToken(authenticateRoles)) //
+		return hh.dispatchPath(PerMap
+				.<String, Handler> empty()
+				.put("api", hat.handleFilter("role", hh.data("in good shape")))
+				.put("hello", hh.data("hello world"))
+				.put("html", hh.dir(Paths.get(FileUtil.suiteDir() + "/src/main/html")))
+				.put("path", hh.dir(Tmp.root))
+				.put("site", hh.session(authenticate, handlerSite))
+				.put("sse", handlerSse)
+				.put("status", handlerStatus)
+				.put("token", hh.dispatchMethod(PerMap
+						.<String, Handler> empty()
+						.put("PATCH", hat.handleRefreshToken(authenticateRoles))
 						.put("POST", hat.handleGetToken(authenticateRoles)))));
 	}
 
 	private void runScheduler() {
-		new Scheduler(List.of( //
-				Schedule.ofDaily(LocalTime.of(18, 0), () -> DailyMain.main(null)), //
-				Schedule.ofRepeat(5, () -> System.out.println("." + LocalDateTime.now())), //
-				Schedule.of(LocalDateTime.of(2099, 1, 1, 0, 0), ArrayList::new)) //
+		new Scheduler(List.of(
+				Schedule.ofDaily(LocalTime.of(18, 0), () -> DailyMain.main(null)),
+				Schedule.ofRepeat(5, () -> System.out.println("." + LocalDateTime.now())),
+				Schedule.of(LocalDateTime.of(2099, 1, 1, 0, 0), ArrayList::new))
 		).run();
 	}
 

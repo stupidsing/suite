@@ -29,11 +29,11 @@ public class VariableMapper<K> {
 
 		public String dumpVariables() {
 			var refs = env.refs;
-			return Read //
-					.from2(indices) //
-					.map2((key, index) -> display(key), (key, index) -> refs[index].finalNode()) //
-					.sortByKey(Compare::string) //
-					.map((k, v) -> k + " = " + Formatter.dump(v)) //
+			return Read
+					.from2(indices)
+					.map2((key, index) -> display(key), (key, index) -> refs[index].finalNode())
+					.sortByKey(Compare::string)
+					.map((k, v) -> k + " = " + Formatter.dump(v))
 					.toJoinedString(", ");
 		}
 

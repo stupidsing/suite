@@ -19,17 +19,17 @@ public class RecursiveFileFactorizerMain {
 
 	public static void main(String[] args) {
 		RunUtil.run(() -> {
-			var fts = Read.each( //
-					Pair.of("fc-define-var-types .0 .1 .2 .3", "fc-define-var-types .1 .2 .3 .0") //
+			var fts = Read.each(
+					Pair.of("fc-define-var-types .0 .1 .2 .3", "fc-define-var-types .1 .2 .3 .0")
 			);
 
-			FileUtil.findPaths(Paths.get("src/main/ll/fc")) //
-					.filter(path -> Wildcard.isMatch("*.sl", path.getFileName().toString())) //
+			FileUtil.findPaths(Paths.get("src/main/ll/fc"))
+					.filter(path -> Wildcard.isMatch("*.sl", path.getFileName().toString()))
 					.forEach(path -> {
 						var recursiveFactorizer = new RecursiveFactorizer(TermOp.values());
 
-						var bs = fts //
-								.fold(ReadString.from(path), (s_, ft) -> recursiveFactorizer.rewrite(ft.k, ft.v, s_)) //
+						var bs = fts
+								.fold(ReadString.from(path), (s_, ft) -> recursiveFactorizer.rewrite(ft.k, ft.v, s_))
 								.getBytes(Utf8.charset);
 
 						ex(() -> Files.write(path, bs));

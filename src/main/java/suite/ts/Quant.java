@@ -23,27 +23,27 @@ public class Quant {
 		return n / d1;
 	}
 
-	public static Int_Dbl enterExit( //
-			int start, int end, //
-			int timedExit, //
-			IntPredicate isEnterShort, IntPredicate isEnterLong, //
+	public static Int_Dbl enterExit(
+			int start, int end,
+			int timedExit,
+			IntPredicate isEnterShort, IntPredicate isEnterLong,
 			IntPredicate isExitShort, IntPredicate isExitLong) {
 		var isKeepShort = isExitShort.negate();
 		var isKeepLong = isExitLong.negate();
 		return enterKeep(start, end, timedExit, isEnterShort, isEnterLong, isKeepShort, isKeepLong);
 	}
 
-	public static Int_Dbl enterKeep( //
-			int start, int end, //
-			IntPredicate isEnterShort, IntPredicate isEnterLong, //
+	public static Int_Dbl enterKeep(
+			int start, int end,
+			IntPredicate isEnterShort, IntPredicate isEnterLong,
 			IntPredicate isKeepShort, IntPredicate isKeepLong) {
 		return enterKeep(start, end, Integer.MAX_VALUE, isEnterShort, isEnterLong, isKeepShort, isKeepLong);
 	}
 
-	private static Int_Dbl enterKeep( //
-			int start, int end, //
-			int timedExit, //
-			IntPredicate isEnterShort, IntPredicate isEnterLong, //
+	private static Int_Dbl enterKeep(
+			int start, int end,
+			int timedExit,
+			IntPredicate isEnterShort, IntPredicate isEnterLong,
 			IntPredicate isKeepShort, IntPredicate isKeepLong) {
 		return fold(start, end, timedExit, (i, hold) -> {
 			if (hold == 0f)
@@ -54,10 +54,10 @@ public class Quant {
 	}
 
 	// manual enter, auto exit when draw-down exceeded threshold
-	public static Int_Dbl enterUntilDrawDown( //
-			float[] prices, //
-			double exitThreshold, //
-			IntFltPredicate isEnterShort, //
+	public static Int_Dbl enterUntilDrawDown(
+			float[] prices,
+			double exitThreshold,
+			IntFltPredicate isEnterShort,
 			IntFltPredicate isEnterLong) {
 		var length = prices.length;
 		var holds = new float[length];

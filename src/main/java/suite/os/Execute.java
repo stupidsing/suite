@@ -23,9 +23,9 @@ public class Execute {
 	public final String err;
 
 	public static String shell(String sh) {
-		var command = Read //
-				.each("/bin/sh", "C:\\cygwin\\bin\\sh.exe", "C:\\cygwin64\\bin\\sh.exe") //
-				.filter(s -> Files.exists(Paths.get(s))) //
+		var command = Read
+				.each("/bin/sh", "C:\\cygwin\\bin\\sh.exe", "C:\\cygwin64\\bin\\sh.exe")
+				.filter(s -> Files.exists(Paths.get(s)))
 				.uniqueResult();
 
 		Log_.info("START " + sh);
@@ -54,9 +54,9 @@ public class Execute {
 			var pes = process.getErrorStream();
 			var pos = process.getOutputStream();
 
-			var threads = Read.each( //
-					Copy.streamByThread(pis, bos0), //
-					Copy.streamByThread(pes, bos1), //
+			var threads = Read.each(
+					Copy.streamByThread(pis, bos0),
+					Copy.streamByThread(pes, bos1),
 					Copy.streamByThread(bis, pos));
 
 			threads.sink(Th::start);
@@ -74,8 +74,8 @@ public class Execute {
 
 	@Override
 	public String toString() {
-		return "code = " + code //
-				+ "\nout = " + out //
+		return "code = " + code
+				+ "\nout = " + out
 				+ "\nerr = " + err;
 	}
 

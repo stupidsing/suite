@@ -75,7 +75,7 @@ public class P10Inline {
 			}
 
 			private Funp rename(Funp node_) {
-				return inspect.rewrite(node_, Funp.class, n_ -> n_.sw( //
+				return inspect.rewrite(node_, Funp.class, n_ -> n_.sw(
 				).applyIf(FunpDefine.class, f -> f.apply((vn0, value, expr, fdt) -> {
 					var vn1 = newVarName.apply(vn0);
 					var r1 = new Rename(vns.replace(vn0, vn1));
@@ -84,9 +84,9 @@ public class P10Inline {
 					var pairs = Read.from2(pairs0);
 					var vns1 = pairs.keys().fold(vns, (vns_, vn) -> vns_.replace(vn, newVarName.apply(vn)));
 					var r1 = new Rename(vns1);
-					return FunpDefineRec.of( //
-							pairs.map2((vn, value) -> vns1.getOrFail(vn), (vn, value) -> r1.rename(value)).toList(), //
-							r1.rename(expr), //
+					return FunpDefineRec.of(
+							pairs.map2((vn, value) -> vns1.getOrFail(vn), (vn, value) -> r1.rename(value)).toList(),
+							r1.rename(expr),
 							fdt);
 				})).applyIf(FunpLambda.class, f -> f.apply((vn0, expr, fct) -> {
 					var vn1 = newVarName.apply(vn0);
@@ -112,8 +112,8 @@ public class P10Inline {
 					FunpTypeCheck check;
 					FunpDefine define;
 
-					while ((define = n0.cast(FunpDefine.class)) != null //
-							&& Fdt.isLocal(define.fdt) //
+					while ((define = n0.cast(FunpDefine.class)) != null
+							&& Fdt.isLocal(define.fdt)
 							&& define.value instanceof FunpDontCare) {
 						vns.add(Pair.of(define.vn, define.fdt));
 						n0 = define.expr;
@@ -157,7 +157,7 @@ public class P10Inline {
 
 		new Object() {
 			public void count(Funp node_) {
-				inspect.rewrite(node_, Funp.class, n_ -> n_.sw( //
+				inspect.rewrite(node_, Funp.class, n_ -> n_.sw(
 				).applyIf(FunpDoAssignVar.class, f -> f.apply((var, value, expr) -> {
 					getCount(var).update(9999);
 					return null;
@@ -180,19 +180,19 @@ public class P10Inline {
 
 		var zero = IntMutable.of(0);
 
-		var defines = Read //
-				.from2(defByVariables) //
-				.values() //
-				.distinct() //
-				.filter(def -> def instanceof FunpDefine && countByDefs.getOrDefault(def, zero).value() <= 1) //
-				.map2(def -> (FunpDefine) def) //
-				.filterValue(def -> def.fdt == Fdt.L_MONO || def.fdt == Fdt.L_POLY) //
+		var defines = Read
+				.from2(defByVariables)
+				.values()
+				.distinct()
+				.filter(def -> def instanceof FunpDefine && countByDefs.getOrDefault(def, zero).value() <= 1)
+				.map2(def -> (FunpDefine) def)
+				.filterValue(def -> def.fdt == Fdt.L_MONO || def.fdt == Fdt.L_POLY)
 				.toMap();
 
-		var expands = Read //
-				.from2(defByVariables) //
-				.mapValue(defines::get) //
-				.filterValue(def -> def != null) //
+		var expands = Read
+				.from2(defByVariables)
+				.mapValue(defines::get)
+				.filterValue(def -> def != null)
 				.toMap();
 
 		return new Object() {
@@ -222,14 +222,14 @@ public class P10Inline {
 					FunpField field;
 					FunpStruct struct;
 					FunpVariable variable;
-					if ((field = n_.cast(FunpField.class)) != null //
-							&& (variable = field.reference.expr.cast(FunpVariable.class)) != null //
-							&& (define = defs.get(variable).cast(FunpDefine.class)) != null //
-							&& (define.fdt == Fdt.L_MONO || define.fdt == Fdt.L_POLY) //
+					if ((field = n_.cast(FunpField.class)) != null
+							&& (variable = field.reference.expr.cast(FunpVariable.class)) != null
+							&& (define = defs.get(variable).cast(FunpDefine.class)) != null
+							&& (define.fdt == Fdt.L_MONO || define.fdt == Fdt.L_POLY)
 							&& (struct = define.value.cast(FunpStruct.class)) != null) {
-						var pair = Read //
-								.from2(struct.pairs) //
-								.filterKey(field_ -> Equals.string(field_, field.field)) //
+						var pair = Read
+								.from2(struct.pairs)
+								.filterKey(field_ -> Equals.string(field_, field.field))
 								.first();
 						return pair != null ? inline(pair.v) : null;
 					} else
@@ -244,11 +244,11 @@ public class P10Inline {
 	private Funp inlineLambdas(Funp node) {
 		return new Object() {
 			private Funp inline(Funp node_) {
-				return inspect.rewrite(node_, Funp.class, n_ -> n_.sw() //
+				return inspect.rewrite(node_, Funp.class, n_ -> n_.sw()
 						.applyIf(FunpApply.class, f -> f.apply((value, lambda) -> {
 							return lambda.cast(FunpLambda.class,
 									l -> FunpDefine.of(l.vn, inline(value), inline(l.expr), Fdt.L_MONO));
-						})) //
+						}))
 						.result());
 			}
 		}.inline(node);
@@ -266,12 +266,12 @@ public class P10Inline {
 					FunpTagId tagId;
 					FunpTagValue tagValue;
 					FunpVariable variable;
-					if ((tagId = n_.cast(FunpTagId.class)) != null //
-							&& (variable = tagId.reference.expr.cast(FunpVariable.class)) != null //
+					if ((tagId = n_.cast(FunpTagId.class)) != null
+							&& (variable = tagId.reference.expr.cast(FunpVariable.class)) != null
 							&& (tag = defs.get(variable).cast(FunpDefine.class, n -> n.value.cast(FunpTag.class))) != null)
 						return FunpNumber.of(tag.id);
-					else if ((tagValue = n_.cast(FunpTagValue.class)) != null //
-							&& (variable = tagValue.reference.expr.cast(FunpVariable.class)) != null //
+					else if ((tagValue = n_.cast(FunpTagValue.class)) != null
+							&& (variable = tagValue.reference.expr.cast(FunpVariable.class)) != null
 							&& (tag = defs.get(variable).cast(FunpDefine.class, n -> n.value.cast(FunpTag.class))) != null)
 						return Equals.string(tag.tag, tagValue.tag) ? tag.value : FunpDontCare.of();
 					else

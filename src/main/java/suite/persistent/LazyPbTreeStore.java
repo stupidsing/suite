@@ -24,10 +24,10 @@ public class LazyPbTreeStore<Pointer, Key, Value> implements KeyValueStore<Key, 
 	private LazyPbTreePersister<Pointer, Pair<Key, Value>> persister;
 	private LazyPbTreeMutator<Key, Value> mutator;
 
-	public static <K, V> LazyPbTreeStore<Extent, K, V> ofExtent( //
-			PageFile pageFile, //
-			Comparator<K> kc, //
-			Serializer<K> ks, //
+	public static <K, V> LazyPbTreeStore<Extent, K, V> ofExtent(
+			PageFile pageFile,
+			Comparator<K> kc,
+			Serializer<K> ks,
 			Serializer<V> vs) {
 		var pc = Comparator.nullsLast(Comparator.<Pair<K, V>, K> comparing(p -> p.k, kc));
 		var ps = ser.pair(ks, vs);
@@ -38,10 +38,10 @@ public class LazyPbTreeStore<Pointer, Key, Value> implements KeyValueStore<Key, 
 		return new LazyPbTreeStore<>(superblockFile, persister, kc);
 	}
 
-	public static <K, V> LazyPbTreeStore<Integer, K, V> ofPage( //
-			PageFile pageFile, //
-			Comparator<K> kc, //
-			Serializer<K> ks, //
+	public static <K, V> LazyPbTreeStore<Integer, K, V> ofPage(
+			PageFile pageFile,
+			Comparator<K> kc,
+			Serializer<K> ks,
 			Serializer<V> vs) {
 		var pc = Comparator.<Pair<K, V>, K> comparing(p -> p.k, kc);
 		var ps = ser.pair(ks, vs);
@@ -51,9 +51,9 @@ public class LazyPbTreeStore<Pointer, Key, Value> implements KeyValueStore<Key, 
 		return new LazyPbTreeStore<>(superblockFile, persister, kc);
 	}
 
-	public LazyPbTreeStore( //
-			SerializedPageFile<Pointer> superblockFile, //
-			LazyPbTreePersister<Pointer, Pair<Key, Value>> persister, //
+	public LazyPbTreeStore(
+			SerializedPageFile<Pointer> superblockFile,
+			LazyPbTreePersister<Pointer, Pair<Key, Value>> persister,
 			Comparator<Key> kc) {
 		this.superblockFile = superblockFile;
 		this.persister = persister;

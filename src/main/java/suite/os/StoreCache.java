@@ -122,14 +122,14 @@ public class StoreCache {
 				var vos = WriteFile.to(pair.v);
 				var vdo = SerOutput.of(vos);
 
-				return Puller //
+				return Puller
 						.of(() -> ex(() -> {
 							var value = puller.pull();
 							if (value != null)
 								vdo.writeBytes(value);
 							return value;
-						})) //
-						.closeAtEnd(vos) //
+						}))
+						.closeAtEnd(vos)
 						.closeAtEnd(vdo);
 			}
 		});

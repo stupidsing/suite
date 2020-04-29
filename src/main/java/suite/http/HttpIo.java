@@ -42,8 +42,8 @@ public class HttpIo {
 				var path1 = path0.startsWith("/") ? path0 : "/" + path0;
 				var path2 = ex(() -> URLDecoder.decode(path1, Utf8.charset));
 
-				return Equals.string(protocol, "HTTP/1.1") //
-						? new Request(method, host, path2, query, headers, Pull.from_(is1)) //
+				return Equals.string(protocol, "HTTP/1.1")
+						? new Request(method, host, path2, query, headers, Pull.from_(is1))
 						: fail("only HTTP/1.1 is supported");
 			});
 
@@ -57,14 +57,14 @@ public class HttpIo {
 		var headers = readHeaders(is0);
 
 		return FixieArray.of(ls).map((protocol, status) -> {
-			var is1 = headers //
-					.getOpt("Content-Length") //
-					.map(Integer::parseInt) //
-					.map(cl -> sizeLimitedInputStream(is0, cl)) //
+			var is1 = headers
+					.getOpt("Content-Length")
+					.map(Integer::parseInt)
+					.map(cl -> sizeLimitedInputStream(is0, cl))
 					.or(is0);
 
-			return Equals.string(protocol, "HTTP/1.1") //
-					? new Response(status, headers, Pull.from(is1)) //
+			return Equals.string(protocol, "HTTP/1.1")
+					? new Response(status, headers, Pull.from(is1))
 					: fail("only HTTP/1.1 is supported");
 		});
 	}
@@ -75,8 +75,8 @@ public class HttpIo {
 		var query = request.query;
 		var url = (!server.isEmpty() ? "http://" + server + "/" : "") + path + (!query.isEmpty() ? "?" + query : "");
 
-		var s = request.method + " " + url + " HTTP/1.1\r\n" //
-				+ request.headers.streamlet().map((k, v) -> k + ": " + v + "\r\n").toJoinedString() //
+		var s = request.method + " " + url + " HTTP/1.1\r\n"
+				+ request.headers.streamlet().map((k, v) -> k + ": " + v + "\r\n").toJoinedString()
 				+ "\r\n";
 
 		os.write(s.getBytes(Utf8.charset));
@@ -84,8 +84,8 @@ public class HttpIo {
 	}
 
 	public void writeResponse(OutputStream os, Response response) throws IOException {
-		var s = "HTTP/1.1 " + response.status + "\r\n" //
-				+ response.headers.streamlet().map((k, v) -> k + ": " + v + "\r\n").toJoinedString() //
+		var s = "HTTP/1.1 " + response.status + "\r\n"
+				+ response.headers.streamlet().map((k, v) -> k + ": " + v + "\r\n").toJoinedString()
 				+ "\r\n";
 
 		os.write(s.getBytes(Utf8.charset));

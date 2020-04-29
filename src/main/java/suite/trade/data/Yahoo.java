@@ -44,11 +44,11 @@ public class Yahoo {
 		var urlString = tableUrl(symbol, period);
 
 		// Date, Open, High, Low, Close, Volume, Adj Close
-		var arrays = Singleton.me.storeCache //
-				.http(urlString) //
-				.collect(As::csv) //
-				.skip(1) //
-				.sort((a0, a1) -> Compare.objects(a0[0], a1[0])) //
+		var arrays = Singleton.me.storeCache
+				.http(urlString)
+				.collect(As::csv)
+				.skip(1)
+				.sort((a0, a1) -> Compare.objects(a0[0], a1[0]))
 				.collect();
 
 		var ts = arrays.collect(LiftLng.of(array -> closeTs(array[0]))).toArray();
@@ -111,65 +111,65 @@ public class Yahoo {
 		if (stockHistory0.isActive && Time.compare(stockHistory0.time, time) < 0) {
 			var json = queryL1(symbol, TimeRange.of(stockHistory0.time.addDays(-14), Time.now()));
 
-			var jsons = Read.each(json) //
+			var jsons = Read.each(json)
 					.flatMap(json_ -> json_.path("chart").path("result"));
 
-			var exchange = jsons //
-					.map(json_ -> json_.path("meta").path("exchangeName").textValue()) //
+			var exchange = jsons
+					.map(json_ -> json_.path("meta").path("exchangeName").textValue())
 					.uniqueResult();
 
-			var ts = jsons //
-					.flatMap(json_ -> json_.path("timestamp")) //
-					.collect(LiftLng.of(t -> getOpenTimeBefore(exchange, t.longValue()))) //
+			var ts = jsons
+					.flatMap(json_ -> json_.path("timestamp"))
+					.collect(LiftLng.of(t -> getOpenTimeBefore(exchange, t.longValue())))
 					.toArray();
 
 			var length = ts.length;
 
-			var dataJsons0 = Read //
-					.<String> empty() //
-					.map2(tag -> jsons //
+			var dataJsons0 = Read
+					.<String> empty()
+					.map2(tag -> jsons
 							.flatMap(json_ -> {
 								var json0 = json_.path("indicators");
 								JsonNode json1;
-								if (false //
-										|| !(json1 = json0.path("unadjclose")).isMissingNode() //
+								if (false
+										|| !(json1 = json0.path("unadjclose")).isMissingNode()
 										|| !(json1 = json0.path("unadjquote")).isMissingNode())
 									return json1;
 								else
 									return List.of();
-							}) //
+							})
 							.flatMap(json_ -> json_.path("unadj" + tag)));
 
-			var dataJsons1 = Read //
-					.each("open", "close", "high", "low", "volume") //
-					.map2(tag -> jsons //
-							.flatMap(json_ -> json_.path("indicators").path("quote")) //
+			var dataJsons1 = Read
+					.each("open", "close", "high", "low", "volume")
+					.map2(tag -> jsons
+							.flatMap(json_ -> json_.path("indicators").path("quote"))
 							.flatMap(json_ -> json_.path(tag)));
 
-			var data = Streamlet2 //
-					.concat(dataJsons0, dataJsons1) //
-					.mapValue(json_ -> json_.collect(LiftFlt.of(JsonNode::floatValue)).toArray()) //
-					.filterValue(fs -> length <= fs.length) //
-					.mapValue(fs -> To.array(length, LngFltPair.class, i -> LngFltPair.of(ts[i], fs[i]))) //
+			var data = Streamlet2
+					.concat(dataJsons0, dataJsons1)
+					.mapValue(json_ -> json_.collect(LiftFlt.of(JsonNode::floatValue)).toArray())
+					.filterValue(fs -> length <= fs.length)
+					.mapValue(fs -> To.array(length, LngFltPair.class, i -> LngFltPair.of(ts[i], fs[i])))
 					.toMap();
 
-			var dividends = jsons //
-					.flatMap(json_ -> json_.path("events").path("dividends")) //
-					.map(json_ -> LngFltPair.of(json_.path("date").longValue(), json_.path("amount").floatValue())) //
-					.sort(LngFltPair.comparatorByFirst()) //
+			var dividends = jsons
+					.flatMap(json_ -> json_.path("events").path("dividends"))
+					.map(json_ -> LngFltPair.of(json_.path("date").longValue(), json_.path("amount").floatValue()))
+					.sort(LngFltPair.comparatorByFirst())
 					.toArray(LngFltPair.class);
 
-			var splits = jsons //
-					.flatMap(json_ -> json_.path("events").path("splits")) //
+			var splits = jsons
+					.flatMap(json_ -> json_.path("events").path("splits"))
 					.map(json_ -> LngFltPair.of(json_.path("date").longValue(),
-							json_.path("numerator").floatValue() / json_.path("denominator").floatValue())) //
-					.sort(LngFltPair.comparatorByFirst()) //
+							json_.path("numerator").floatValue() / json_.path("denominator").floatValue()))
+					.sort(LngFltPair.comparatorByFirst())
 					.toArray(LngFltPair.class);
 
 			if (data.containsKey("close"))
-				stockHistory1 = StockHistory //
-						.of(exchange, time, true, data, dividends, splits) //
-						.merge(stockHistory0) //
+				stockHistory1 = StockHistory
+						.of(exchange, time, true, data, dividends, splits)
+						.merge(stockHistory0)
 						.alignToDate();
 			else
 				stockHistory1 = fail();
@@ -188,8 +188,8 @@ public class Yahoo {
 		else
 			splitFilter = null;
 
-		splits2 = splitFilter != null //
-				? Read.from(stockHistory1.splits).filter(splitFilter).toArray(LngFltPair.class) //
+		splits2 = splitFilter != null
+				? Read.from(stockHistory1.splits).filter(splitFilter).toArray(LngFltPair.class)
 				: stockHistory1.splits;
 
 		var stockHistory2 = stockHistory1.create(stockHistory1.data, stockHistory1.dividends, splits2);
@@ -198,16 +198,16 @@ public class Yahoo {
 	}
 
 	private JsonNode queryL1(String symbol, TimeRange period) {
-		var url = "" //
-				+ "https://l1-query.finance.yahoo.com/v7/finance/chart/" //
-				+ encode(symbol) //
-				+ "?period1=" + period.fr.epochSec() //
-				+ "&period2=" + period.to.epochSec() //
-				+ "&interval=1d" //
-				+ "&indicators=quote" //
-				+ "&includeTimestamps=true" //
-				+ "&includePrePost=true" //
-				+ "&events=div%7Csplit%7Cearn" //
+		var url = ""
+				+ "https://l1-query.finance.yahoo.com/v7/finance/chart/"
+				+ encode(symbol)
+				+ "?period1=" + period.fr.epochSec()
+				+ "&period2=" + period.to.epochSec()
+				+ "&interval=1d"
+				+ "&indicators=quote"
+				+ "&includeTimestamps=true"
+				+ "&includePrePost=true"
+				+ "&events=div%7Csplit%7Cearn"
 				+ "&corsDomain=finance.yahoo.com";
 
 		return HttpClient.get(url).inputStream().doRead(om::readTree);
@@ -229,8 +229,8 @@ public class Yahoo {
 
 	private Map<String, Float> quote_(Streamlet<String> symbols, String field) {
 		if (0 < symbols.size()) {
-			var url = "https://download.finance.yahoo.com/d/quotes.csv" //
-					+ "?s=" + symbols.sort(Compare::objects).map(this::encode).toJoinedString("+") //
+			var url = "https://download.finance.yahoo.com/d/quotes.csv"
+					+ "?s=" + symbols.sort(Compare::objects).map(this::encode).toJoinedString("+")
 					+ "&f=s" + field;
 
 			return HttpClient.get(url).out().collect(As::csv).toMap(array -> array[0], array -> Float.parseFloat(array[1]));
@@ -241,11 +241,11 @@ public class Yahoo {
 	public String tableUrl(String symbol, TimeRange period) {
 		var frDate = period.fr;
 		var toDate = period.to;
-		return "https://chart.finance.yahoo.com/table.csv" //
-				+ "?s=" + encode(symbol) //
-				+ "&a=" + frDate.month() + "&b=" + frDate.dow() + "&c=" + frDate.year() //
-				+ "&d=" + toDate.month() + "&e=" + toDate.dow() + "&f=" + toDate.year() //
-				+ "&g=d" //
+		return "https://chart.finance.yahoo.com/table.csv"
+				+ "?s=" + encode(symbol)
+				+ "&a=" + frDate.month() + "&b=" + frDate.dow() + "&c=" + frDate.year()
+				+ "&d=" + toDate.month() + "&e=" + toDate.dow() + "&f=" + toDate.year()
+				+ "&g=d"
 				+ "&ignore=.csv";
 	}
 

@@ -56,10 +56,10 @@ public class Rewrite_ {
 
 			if (node instanceof Dict) {
 				var map = Dict.m(node);
-				return new NodeRead(ReadType.DICT, null, null, Read //
-						.from2(map) //
-						.sort((p0, p1) -> Comparer.comparer.compare(p0.k, p1.k)) //
-						.mapValue(Node::finalNode) //
+				return new NodeRead(ReadType.DICT, null, null, Read
+						.from2(map)
+						.sort((p0, p1) -> Comparer.comparer.compare(p0.k, p1.k))
+						.mapValue(Node::finalNode)
 						.collect());
 			} else if ((tree = Tree.decompose(node)) != null) {
 				var p0 = Pair.of(LEFT_, tree.getLeft());
@@ -67,9 +67,9 @@ public class Rewrite_ {
 				return new NodeRead(ReadType.TREE, null, tree.getOperator(), Read.each2(p0, p1));
 			} else if (node instanceof Tuple) {
 				var nodes = Tuple.t(node);
-				return new NodeRead(ReadType.TUPLE, null, null, Read //
-						.from(nodes) //
-						.<Node, Node> map2(n -> Atom.NIL, Node::finalNode) //
+				return new NodeRead(ReadType.TUPLE, null, null, Read
+						.from(nodes)
+						.<Node, Node> map2(n -> Atom.NIL, Node::finalNode)
 						.collect());
 			} else
 				return new NodeRead(ReadType.TERM, node, null, Read.empty2());

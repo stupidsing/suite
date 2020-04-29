@@ -96,19 +96,19 @@ public class EditorView {
 
 		lay = new LayoutCalculator(frame.getContentPane());
 
-		layout = lay.boxh( //
-				lay.ex(u, lay.boxv( //
-						lay.fx(24, lay.c(searchTextField)), //
-						lay.ex(u, lay.c(searchList)))), //
-				lay.ex(u3, lay.boxv( //
-						lay.fx(24, lay.c(filenameTextField)), //
-						lay.ex(u3, lay.c(editorScrollPane)), //
-						lay.fx(8, lay.b()), //
-						lay.fx(24, lay.boxh( //
-								lay.ex(u3, lay.b()), //
-								lay.fx(64, lay.c(okButton)), //
-								lay.ex(u3, lay.b()))), //
-						lay.ex(u, lay.c(messageScrollPane)))), //
+		layout = lay.boxh(
+				lay.ex(u, lay.boxv(
+						lay.fx(24, lay.c(searchTextField)),
+						lay.ex(u, lay.c(searchList)))),
+				lay.ex(u3, lay.boxv(
+						lay.fx(24, lay.c(filenameTextField)),
+						lay.ex(u3, lay.c(editorScrollPane)),
+						lay.fx(8, lay.b()),
+						lay.fx(24, lay.boxh(
+								lay.ex(u3, lay.b()),
+								lay.fx(64, lay.c(okButton)),
+								lay.ex(u3, lay.b()))),
+						lay.ex(u, lay.c(messageScrollPane)))),
 				lay.ex(u, lay.c(rightLabel)));
 
 		Listen.action(searchTextField).wire(gc, event -> control.searchFiles(model.searchText()));
@@ -216,19 +216,19 @@ public class EditorView {
 		var newWindowMenuItem = applyDefaults(new JMenuItem("New Window", KeyEvent.VK_N));
 		Listen.action(newWindowMenuItem).wire(gc, control::newWindow);
 
-		var fileMenu = newMenu("File", KeyEvent.VK_F, //
+		var fileMenu = newMenu("File", KeyEvent.VK_F,
 				newMenuItem, openMenuItem, saveMenuItem, searchMenuItem, exitMenuItem);
 
-		var editMenu = newMenu("Edit", KeyEvent.VK_E, //
+		var editMenu = newMenu("Edit", KeyEvent.VK_E,
 				copyMenuItem, copyAppendMenuItem, pasteMenuItem, formatMenuItem, funFilterMenuItem, unixFilterMenuItem);
 
-		var viewMenu = newMenu("View", KeyEvent.VK_V, //
+		var viewMenu = newMenu("View", KeyEvent.VK_V,
 				leftMenuItem, rightMenuItem, topMenuItem, bottomMenuItem);
 
-		var projectMenu = newMenu("Project", KeyEvent.VK_P, //
+		var projectMenu = newMenu("Project", KeyEvent.VK_P,
 				evalMenuItem, evalTypeMenuItem);
 
-		var windowMenu = newMenu("Window", KeyEvent.VK_W, //
+		var windowMenu = newMenu("Window", KeyEvent.VK_W,
 				newWindowMenuItem, newWindowMenuItem);
 
 		var menuBar = new JMenuBar();
@@ -252,8 +252,8 @@ public class EditorView {
 	}
 
 	private JScrollPane newScrollPane(Component component) {
-		return new JScrollPane(component //
-				, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED //
+		return new JScrollPane(component
+				, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED
 				, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 	}
 

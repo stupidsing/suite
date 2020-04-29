@@ -35,68 +35,68 @@ public class InstructionUtil {
 	}
 
 	public enum Insn {
-		ASSIGNCONST___("ASSIGN-CONSTANT"), //
-		ASSIGNFRAMEREG("ASSIGN-FRAME-REG"), //
-		ASSIGNINT_____("ASSIGN-INT"), //
-		ASSIGNRESULT__("ASSIGN-RESULT"), //
-		ASSIGNTHUNK___("ASSIGN-THUNK"), //
-		ASSIGNTHUNKRES("ASSIGN-THUNK-RESULT"), //
-		BACKUPCSP_____("BACKUP-CSP"), //
-		BACKUPDSP_____("BACKUP-DSP"), //
-		BIND__________("BIND"), //
-		BINDMARK______("BIND-MARK"), //
-		BINDUNDO______("BIND-UNDO"), //
-		CALL__________("CALL"), //
-		CALLINTRINSIC_("CALL-INTRINSIC"), //
-		CALLTHUNK_____("CALL-THUNK"), //
-		COMPARE_______("COMPARE"), //
-		CONSLIST______("CONS-LIST"), //
-		CONSPAIR______("CONS-PAIR"), //
-		DATACHARS_____("DATA-CHARS"), //
-		DECOMPOSETREE0("DECOMPOSE-TREE0"), //
-		DECOMPOSETREE1("DECOMPOSE-TREE1"), //
-		ENTER_________("ENTER"), //
-		ERROR_________("ERROR"), //
-		EVALADD_______("EVAL-ADD"), //
-		EVALDIV_______("EVAL-DIV"), //
-		EVALEQ________("EVAL-EQ"), //
-		EVALLE________("EVAL-LE"), //
-		EVALLT________("EVAL-LT"), //
-		EVALMOD_______("EVAL-MOD"), //
-		EVALMUL_______("EVAL-MUL"), //
-		EVALNE________("EVAL-NE"), //
-		EVALSUB_______("EVAL-SUB"), //
-		EXIT__________("EXIT"), //
-		FORMTREE0_____("FORM-TREE0"), //
-		FORMTREE1_____("FORM-TREE1"), //
-		FRAMEBEGIN____("FRAME-BEGIN"), //
-		FRAMEEND______("FRAME-END"), //
-		GETINTRINSIC__("GET-INTRINSIC"), //
-		HEAD__________("HEAD"), //
-		IFFALSE_______("IF-FALSE"), //
-		IFLE__________("IF-LE"), //
-		IFLT__________("IF-LT"), //
-		IFNOTCONS_____("IF-NOT-CONS"), //
-		IFNOTPAIR_____("IF-NOT-PAIR"), //
-		IFNOTEQUALS___("IF-NOT-EQ"), //
-		ISCONS________("IS-CONS"), //
-		JUMP__________("JUMP"), //
-		JUMPCLOSURE___("JUMP-CLOSURE"), //
-		LOGREG________("LOG-REG"), //
-		LEAVE_________("LEAVE"), //
-		NEWNODE_______("NEW-NODE"), //
-		POP___________("POP"), //
-		POPANY________("POP-ANY"), //
-		PROVEINTERPRET("PROVE-INTERPRET"), //
-		PROVESYS______("PROVE-SYS"), //
-		PUSH__________("PUSH"), //
-		REMARK________("REMARK"), //
-		RESTORECSP____("RESTORE-CSP"), //
-		RESTOREDSP____("RESTORE-DSP"), //
-		RETURN________("RETURN"), //
-		SETRESULT_____("SET-RESULT"), //
-		TAIL__________("TAIL"), //
-		TOP___________("TOP"), //
+		ASSIGNCONST___("ASSIGN-CONSTANT"),
+		ASSIGNFRAMEREG("ASSIGN-FRAME-REG"),
+		ASSIGNINT_____("ASSIGN-INT"),
+		ASSIGNRESULT__("ASSIGN-RESULT"),
+		ASSIGNTHUNK___("ASSIGN-THUNK"),
+		ASSIGNTHUNKRES("ASSIGN-THUNK-RESULT"),
+		BACKUPCSP_____("BACKUP-CSP"),
+		BACKUPDSP_____("BACKUP-DSP"),
+		BIND__________("BIND"),
+		BINDMARK______("BIND-MARK"),
+		BINDUNDO______("BIND-UNDO"),
+		CALL__________("CALL"),
+		CALLINTRINSIC_("CALL-INTRINSIC"),
+		CALLTHUNK_____("CALL-THUNK"),
+		COMPARE_______("COMPARE"),
+		CONSLIST______("CONS-LIST"),
+		CONSPAIR______("CONS-PAIR"),
+		DATACHARS_____("DATA-CHARS"),
+		DECOMPOSETREE0("DECOMPOSE-TREE0"),
+		DECOMPOSETREE1("DECOMPOSE-TREE1"),
+		ENTER_________("ENTER"),
+		ERROR_________("ERROR"),
+		EVALADD_______("EVAL-ADD"),
+		EVALDIV_______("EVAL-DIV"),
+		EVALEQ________("EVAL-EQ"),
+		EVALLE________("EVAL-LE"),
+		EVALLT________("EVAL-LT"),
+		EVALMOD_______("EVAL-MOD"),
+		EVALMUL_______("EVAL-MUL"),
+		EVALNE________("EVAL-NE"),
+		EVALSUB_______("EVAL-SUB"),
+		EXIT__________("EXIT"),
+		FORMTREE0_____("FORM-TREE0"),
+		FORMTREE1_____("FORM-TREE1"),
+		FRAMEBEGIN____("FRAME-BEGIN"),
+		FRAMEEND______("FRAME-END"),
+		GETINTRINSIC__("GET-INTRINSIC"),
+		HEAD__________("HEAD"),
+		IFFALSE_______("IF-FALSE"),
+		IFLE__________("IF-LE"),
+		IFLT__________("IF-LT"),
+		IFNOTCONS_____("IF-NOT-CONS"),
+		IFNOTPAIR_____("IF-NOT-PAIR"),
+		IFNOTEQUALS___("IF-NOT-EQ"),
+		ISCONS________("IS-CONS"),
+		JUMP__________("JUMP"),
+		JUMPCLOSURE___("JUMP-CLOSURE"),
+		LOGREG________("LOG-REG"),
+		LEAVE_________("LEAVE"),
+		NEWNODE_______("NEW-NODE"),
+		POP___________("POP"),
+		POPANY________("POP-ANY"),
+		PROVEINTERPRET("PROVE-INTERPRET"),
+		PROVESYS______("PROVE-SYS"),
+		PUSH__________("PUSH"),
+		REMARK________("REMARK"),
+		RESTORECSP____("RESTORE-CSP"),
+		RESTOREDSP____("RESTORE-DSP"),
+		RETURN________("RETURN"),
+		SETRESULT_____("SET-RESULT"),
+		TAIL__________("TAIL"),
+		TOP___________("TOP"),
 		;
 
 		String name;

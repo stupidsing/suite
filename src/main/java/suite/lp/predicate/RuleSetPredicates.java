@@ -77,7 +77,7 @@ public class RuleSetPredicates {
 		var targets = new ArrayList<Rule>();
 
 		for (var rule : ruleSet.getRules()) {
-			if (Binder.bind(rule0.head, rule.head, trail) //
+			if (Binder.bind(rule0.head, rule.head, trail)
 					&& Binder.bind(rule0.tail, rule.tail, trail))
 				targets.add(rule);
 

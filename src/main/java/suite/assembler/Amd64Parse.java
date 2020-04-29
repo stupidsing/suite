@@ -38,9 +38,9 @@ public class Amd64Parse {
 		var ops = tree.getRight();
 		var operands = scan(ops, ".0, .1").map(this::parseOperand).toList();
 
-		return amd64.instruction(insn, //
-				0 < operands.size() ? operands.get(0) : amd64.none, //
-				1 < operands.size() ? operands.get(1) : amd64.none, //
+		return amd64.instruction(insn,
+				0 < operands.size() ? operands.get(0) : amd64.none,
+				1 < operands.size() ? operands.get(1) : amd64.none,
 				2 < operands.size() ? operands.get(2) : amd64.none);
 	}
 
@@ -53,12 +53,12 @@ public class Amd64Parse {
 		else if (node instanceof Atom && (operand = amd64.registerByName.get(node)) != null)
 			return operand;
 		else
-			return new SwitchNode<Operand>(node) //
-					.match("BYTE .0", n -> parseOperandCast(n, 1)) //
-					.match("WORD .0", n -> parseOperandCast(n, 2)) //
-					.match("DWORD .0", n -> parseOperandCast(n, 4)) //
-					.match("QWORD .0", n -> parseOperandCast(n, 8)) //
-					.match("`.0`", n -> parseOpMem(n, 4)) //
+			return new SwitchNode<Operand>(node)
+					.match("BYTE .0", n -> parseOperandCast(n, 1))
+					.match("WORD .0", n -> parseOperandCast(n, 2))
+					.match("DWORD .0", n -> parseOperandCast(n, 4))
+					.match("QWORD .0", n -> parseOperandCast(n, 8))
+					.match("`.0`", n -> parseOpMem(n, 4))
 					.nonNullResult();
 	}
 

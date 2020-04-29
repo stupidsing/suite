@@ -20,41 +20,41 @@ import primal.MoreVerbs.Read;
  */
 public class ParseDate {
 
-	private Map<String, Integer> monthValueByName = Map.ofEntries( //
-			entry("JAN", 1), //
-			entry("FEB", 2), //
-			entry("MAR", 3), //
-			entry("APR", 4), //
-			entry("MAY", 5), //
-			entry("JUN", 6), //
-			entry("JUL", 7), //
-			entry("AUG", 8), //
-			entry("SEP", 9), //
-			entry("OCT", 10), //
-			entry("NOV", 11), //
+	private Map<String, Integer> monthValueByName = Map.ofEntries(
+			entry("JAN", 1),
+			entry("FEB", 2),
+			entry("MAR", 3),
+			entry("APR", 4),
+			entry("MAY", 5),
+			entry("JUN", 6),
+			entry("JUL", 7),
+			entry("AUG", 8),
+			entry("SEP", 9),
+			entry("OCT", 10),
+			entry("NOV", 11),
 			entry("DEC", 12));
 
-	private Map<String, Integer> weekDayByName = Map.ofEntries( //
-			entry("MON", 1), //
-			entry("TUE", 2), //
-			entry("WED", 3), //
-			entry("THU", 4), //
-			entry("FRI", 5), //
-			entry("SAT", 6), //
+	private Map<String, Integer> weekDayByName = Map.ofEntries(
+			entry("MON", 1),
+			entry("TUE", 2),
+			entry("WED", 3),
+			entry("THU", 4),
+			entry("FRI", 5),
+			entry("SAT", 6),
 			entry("SUN", 7));
 
 	public Instant parse(String s) {
 		var zdt = ZonedDateTime.ofInstant(Instant.now(), ZoneOffset.UTC.normalized());
 
-		return parse(s.toUpperCase(), new Object[] { //
-				zdt.getYear(), //
+		return parse(s.toUpperCase(), new Object[] {
+				zdt.getYear(),
 				zdt.getMonthValue(), // 1 to 12
 				zdt.getDayOfMonth(), // 1 to 31
-				0, // zdt.getHour(), //
-				0, // zdt.getMinute(), //
-				0, // zdt.getSecond(), //
-				0, // zdt.getNano(), //
-				zdt.getOffset(), }, //
+				0, // zdt.getHour(),
+				0, // zdt.getMinute(),
+				0, // zdt.getSecond(),
+				0, // zdt.getNano(),
+				zdt.getOffset(), },
 				-1);
 	}
 
@@ -62,10 +62,10 @@ public class ParseDate {
 		char ch0;
 
 		if (s.isEmpty())
-			return ZonedDateTime.of( //
-					(Integer) ymdhmsnt[0], (Integer) ymdhmsnt[1], (Integer) ymdhmsnt[2], //
-					(Integer) ymdhmsnt[3], (Integer) ymdhmsnt[4], (Integer) ymdhmsnt[5], //
-					(Integer) ymdhmsnt[6], //
+			return ZonedDateTime.of(
+					(Integer) ymdhmsnt[0], (Integer) ymdhmsnt[1], (Integer) ymdhmsnt[2],
+					(Integer) ymdhmsnt[3], (Integer) ymdhmsnt[4], (Integer) ymdhmsnt[5],
+					(Integer) ymdhmsnt[6],
 					(ZoneOffset) ymdhmsnt[7]).toInstant();
 		else
 			ch0 = s.charAt(0);
@@ -95,8 +95,8 @@ public class ParseDate {
 			ymdhmsnt[5] = Integer.parseInt(m.m[2]);
 			ymdhmsnt[lf = 6] = 0;
 			return parse(m.tail, ymdhmsnt, lf);
-		} else if (((m = match("#:##$$", s)) != null || (m = match("#:## $$", s)) != null //
-				|| (m = match("##:##$$", s)) != null || (m = match("##:## $$", s)) != null) //
+		} else if (((m = match("#:##$$", s)) != null || (m = match("#:## $$", s)) != null
+				|| (m = match("##:##$$", s)) != null || (m = match("##:## $$", s)) != null)
 				&& Set.of("AM", "NN", "PM").contains(m.m[2])) {
 			var h = Integer.parseInt(m.m[0]);
 			if (m.m[2].equals("AM"))

@@ -32,8 +32,8 @@ public class Subst {
 		int pos1, pos2;
 		String value;
 
-		while (0 <= (pos1 = s.indexOf(openSubst, pos0)) //
-				&& 0 <= (pos2 = s.indexOf(closeSubst, pos1)) //
+		while (0 <= (pos1 = s.indexOf(openSubst, pos0))
+				&& 0 <= (pos2 = s.indexOf(closeSubst, pos1))
 				&& (value = fun.apply(s.substring(pos1 + 2, pos2))) != null) {
 			sb.append(s.substring(pos0, pos1));
 			subst(value, fun, sb);

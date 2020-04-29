@@ -44,12 +44,12 @@ public class JdkUtil {
 		var jc = ToolProvider.getSystemJavaCompiler();
 
 		try (var sjfm = jc.getStandardFileManager(null, null, null)) {
-			if (jc.getTask( //
-					null, //
-					null, //
-					null, //
-					List.of("-d", binDir.toString()), //
-					null, //
+			if (jc.getTask(
+					null,
+					null,
+					null,
+					List.of("-d", binDir.toString()),
+					null,
 					sjfm.getJavaFileObjects(srcFilePath.toFile())).call())
 				return binFilePath;
 			else

@@ -61,7 +61,7 @@ public class CheckType {
 	}
 
 	private Node getType(Node data) {
-		return new SwitchNode<Node>(data //
+		return new SwitchNode<Node>(data
 		).match(Atom.NIL, () -> {
 			return Suite.substitute("_;");
 		}).applyIf(Atom.class, n -> {

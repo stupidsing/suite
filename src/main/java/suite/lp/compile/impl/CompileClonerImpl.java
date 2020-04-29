@@ -44,13 +44,13 @@ public class CompileClonerImpl implements ClonerFactory {
 			}
 
 			private FunExpr compile_(Node node_) {
-				return new SwitchNode<FunExpr>(node_ //
+				return new SwitchNode<FunExpr>(node_
 				).applyIf(Atom.class, n -> {
 					return f.object(node_);
 				}).applyIf(Dict.class, n -> {
-					var exprs = Read //
-							.from2(n.getMap()) //
-							.map((key, value) -> f.invokeStatic(Pair.class, "of", compile_(key), compile_(value))) //
+					var exprs = Read
+							.from2(n.getMap())
+							.map((key, value) -> f.invokeStatic(Pair.class, "of", compile_(key), compile_(value)))
 							.toArray(FunExpr.class);
 					return f.invokeStatic(Dict.class, "of", f.array(Pair.class, exprs));
 				}).applyIf(Int.class, n -> {

@@ -42,13 +42,13 @@ public class BasicIntrinsics {
 	public Intrinsic typeOf = (callback, inputs) -> {
 		var node = inputs.get(0);
 
-		return new SwitchNode<Atom>(node) //
-				.applyIf(Atom.class, n -> ATOM) //
-				.applyIf(Int.class, n -> NUMBER) //
-				.applyIf(Str.class, n -> STRING) //
-				.applyIf(Tree.class, n -> TREE) //
-				.applyIf(Tuple.class, n -> TUPLE) //
-				.applyIf(Node.class, n -> UNKNOWN) //
+		return new SwitchNode<Atom>(node)
+				.applyIf(Atom.class, n -> ATOM)
+				.applyIf(Int.class, n -> NUMBER)
+				.applyIf(Str.class, n -> STRING)
+				.applyIf(Tree.class, n -> TREE)
+				.applyIf(Tuple.class, n -> TUPLE)
+				.applyIf(Node.class, n -> UNKNOWN)
 				.nonNullResult();
 	};
 

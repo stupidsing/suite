@@ -92,7 +92,7 @@ public class Nodify {
 
 	@SuppressWarnings("unchecked")
 	private Nodifier newNodifier(Type type) {
-		return new Switch<Nodifier>(type //
+		return new Switch<Nodifier>(type
 		).applyIf(Class.class, clazz -> {
 			if (clazz == boolean.class)
 				return new Nodifier(o -> Atom.of(o.toString()), n -> n == Atom.TRUE);
@@ -115,9 +115,9 @@ public class Nodify {
 					return node;
 				};
 				return new Nodifier(forward, n -> {
-					var list = Tree //
-							.read(n, TermOp.OR____) //
-							.map(n_ -> apply_(n_, nodifier1)) //
+					var list = Tree
+							.read(n, TermOp.OR____)
+							.map(n_ -> apply_(n_, nodifier1))
 							.toList();
 					return To.array_(list.size(), componentType, list::get);
 				});
@@ -136,10 +136,10 @@ public class Nodify {
 						return fail("cannot instantiate enum from interfaces");
 				});
 			else {
-				var pairs = inspect //
-						.fields(clazz) //
-						.map(field -> new FieldInfo(field, field.getName(), getNodifier(field.getGenericType()))) //
-						.map(f -> Pair.of(Atom.of(f.name), f)) //
+				var pairs = inspect
+						.fields(clazz)
+						.map(field -> new FieldInfo(field, field.getName(), getNodifier(field.getGenericType())))
+						.map(f -> Pair.of(Atom.of(f.name), f))
 						.toList();
 
 				return new Nodifier(o -> ex(() -> {

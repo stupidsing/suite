@@ -30,7 +30,7 @@ public interface TradeCfg {
 	public double transactionFee(double transactionAmount);
 
 	public default AlignKeyDataSource<String> dataSources(TimeRange period, Streamlet<String> symbols) {
-		return symbols //
+		return symbols
 				.map2(symbol -> {
 					try {
 						return dataSource(symbol, period).validate();
@@ -38,9 +38,9 @@ public interface TradeCfg {
 						Log_.warn("for " + symbol + " " + ex);
 						return null;
 					}
-				}) //
-				.filterValue(ds -> ds != null) //
-				.collect() //
+				})
+				.filterValue(ds -> ds != null)
+				.collect()
 				.apply(DataSource::alignAll);
 	}
 

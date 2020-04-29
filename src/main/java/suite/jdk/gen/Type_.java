@@ -25,15 +25,15 @@ public class Type_ {
 			return fail();
 
 		return ex(() -> {
-			for (var clazz : Arrays.asList( //
-					byte.class, //
-					boolean.class, //
-					char.class, //
-					double.class, //
-					float.class, //
-					int.class, //
-					long.class, //
-					short.class, //
+			for (var clazz : Arrays.asList(
+					byte.class,
+					boolean.class,
+					char.class,
+					double.class,
+					float.class,
+					int.class,
+					long.class,
+					short.class,
 					void.class))
 				if (Equals.string(className, clazz.getSimpleName()))
 					return clazz;

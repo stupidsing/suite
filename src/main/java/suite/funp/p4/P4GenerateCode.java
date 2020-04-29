@@ -112,30 +112,30 @@ public class P4GenerateCode {
 	private OpReg p2_eax = pointerRegs[axReg];
 	private OpReg p2_edx = pointerRegs[dxReg];
 
-	private Map<Object, Insn> insnByOp = Map.ofEntries( //
-			entry(TermOp.BIGOR_, Insn.OR), //
-			entry(TermOp.BIGAND, Insn.AND), //
-			entry(TermOp.PLUS__, Insn.ADD), //
-			entry(TermOp.MINUS_, Insn.SUB), //
-			entry(TermOp.MULT__, Insn.IMUL), //
-			entry(TreeUtil.AND, Insn.AND), //
-			entry(TreeUtil.OR_, Insn.OR), //
+	private Map<Object, Insn> insnByOp = Map.ofEntries(
+			entry(TermOp.BIGOR_, Insn.OR),
+			entry(TermOp.BIGAND, Insn.AND),
+			entry(TermOp.PLUS__, Insn.ADD),
+			entry(TermOp.MINUS_, Insn.SUB),
+			entry(TermOp.MULT__, Insn.IMUL),
+			entry(TreeUtil.AND, Insn.AND),
+			entry(TreeUtil.OR_, Insn.OR),
 			entry(TreeUtil.XOR, Insn.XOR));
 
-	private Map<TermOp, Insn> setInsnByOp = Map.ofEntries( //
-			entry(TermOp.EQUAL_, Insn.SETE), //
-			entry(TermOp.LE____, Insn.SETLE), //
-			entry(TermOp.LT____, Insn.SETL), //
+	private Map<TermOp, Insn> setInsnByOp = Map.ofEntries(
+			entry(TermOp.EQUAL_, Insn.SETE),
+			entry(TermOp.LE____, Insn.SETLE),
+			entry(TermOp.LT____, Insn.SETL),
 			entry(TermOp.NOTEQ_, Insn.SETNE));
 
-	private Map<TermOp, Insn> setRevInsnByOp = Map.ofEntries( //
-			entry(TermOp.EQUAL_, Insn.SETE), //
-			entry(TermOp.LE____, Insn.SETGE), //
-			entry(TermOp.LT____, Insn.SETG), //
+	private Map<TermOp, Insn> setRevInsnByOp = Map.ofEntries(
+			entry(TermOp.EQUAL_, Insn.SETE),
+			entry(TermOp.LE____, Insn.SETGE),
+			entry(TermOp.LT____, Insn.SETG),
 			entry(TermOp.NOTEQ_, Insn.SETNE));
 
-	private Map<Atom, Insn> shInsnByOp = Map.ofEntries( //
-			entry(TreeUtil.SHL, Insn.SHL), //
+	private Map<Atom, Insn> shInsnByOp = Map.ofEntries(
+			entry(TreeUtil.SHL, Insn.SHL),
 			entry(TreeUtil.SHR, Insn.SHR));
 
 	private P4Alloc p4alloc = new P4Alloc();
@@ -157,28 +157,28 @@ public class P4GenerateCode {
 		var p = new Amd64Parse(Funp_.mode);
 
 		return p4emit.generate(p4emit.label(), em -> {
-			var prolog_amd64 = List.of( //
-					"MOV (RAX, DWORD +x00000009)", //
-					"XOR (RDI, RDI)", //
-					"MOV (RSI, DWORD +x00010000)", //
-					"MOV (RDX, DWORD +x00000003)", //
-					"MOV (R10, DWORD +x00000022)", //
-					"XOR (R8, R8)", //
-					"XOR (R9, R9)", //
-					"NOT (R8)", //
+			var prolog_amd64 = List.of(
+					"MOV (RAX, DWORD +x00000009)",
+					"XOR (RDI, RDI)",
+					"MOV (RSI, DWORD +x00010000)",
+					"MOV (RDX, DWORD +x00000003)",
+					"MOV (R10, DWORD +x00000022)",
+					"XOR (R8, R8)",
+					"XOR (R9, R9)",
+					"NOT (R8)",
 					"SYSCALL ()");
 
-			var prolog_i686 = List.of( //
-					"SUB (ESP, +x18)", //
-					"MOV (`ESP + +x00`, 0)", //
-					"MOV (`ESP + +x04`, +x00010000)", //
-					"MOV (`ESP + +x08`, +x00000003)", //
-					"MOV (`ESP + +x0C`, +x00000022)", //
-					"MOV (`ESP + +x10`, +xFFFFFFFF)", //
-					"MOV (`ESP + +x14`, +x00000000)", //
-					"MOV (EAX, +x0000005A)", //
-					"MOV (EBX, ESP)", //
-					"INT (+x80)", //
+			var prolog_i686 = List.of(
+					"SUB (ESP, +x18)",
+					"MOV (`ESP + +x00`, 0)",
+					"MOV (`ESP + +x04`, +x00010000)",
+					"MOV (`ESP + +x08`, +x00000003)",
+					"MOV (`ESP + +x0C`, +x00000022)",
+					"MOV (`ESP + +x10`, +xFFFFFFFF)",
+					"MOV (`ESP + +x14`, +x00000000)",
+					"MOV (EAX, +x0000005A)",
+					"MOV (EBX, ESP)",
+					"INT (+x80)",
 					"ADD (ESP, +x18)");
 
 			for (var i : isAmd64 ? prolog_amd64 : prolog_i686)
@@ -233,7 +233,7 @@ public class P4GenerateCode {
 		private CompileOut compile(Funp n) {
 			n = compileSideEffects(n);
 
-			return n.<CompileOut> switch_( //
+			return n.<CompileOut> switch_(
 			).applyIf(FunpAllocReg.class, f -> f.apply((size, value, expr, reg) -> {
 				OpReg reg_;
 				if (!reg.isEmpty())
@@ -281,8 +281,8 @@ public class P4GenerateCode {
 				} else
 					return compile(expr);
 			})).applyIf(FunpData.class, f -> f.apply(pairs -> {
-				return returnAssign((c1, t) -> Read //
-						.from2(pairs) //
+				return returnAssign((c1, t) -> Read
+						.from2(pairs)
 						.sink((n_, ofs) -> c1.compileAssign(n_,
 								FunpMemory.of(t.pointer, t.start + ofs.s, t.start + ofs.e))));
 			})).applyIf(FunpDoAsm.class, f -> f.apply((assigns, asm, opResult) -> {
@@ -403,14 +403,14 @@ public class P4GenerateCode {
 				default -> switch (result.nRegs) {
 					case 1 -> {
 						op0 = p4deOp.decompose(fd, pointer, start, size);
-						yield op0 != null //
-								? returnOp(op0) //
+						yield op0 != null
+								? returnOp(op0)
 								: mfp.g().map((start_, r) -> returnOp(amd64.mem(r, start_, size)));
 					}
 					case 2 -> {
 						op0 = p4deOp.decompose(fd, pointer, start, ps);
 						op1 = p4deOp.decompose(fd, pointer, start + ps, ps);
-						yield op0 != null && op1 != null //
+						yield op0 != null && op1 != null
 								? return2Op(op0, op1)//
 								: mfp.g().map((p, r) -> return2Op(amd64.mem(r, p, ps), amd64.mem(r, p + ps, ps)));
 					}
@@ -508,7 +508,7 @@ public class P4GenerateCode {
 		}
 
 		private Funp compileSideEffects_(Funp n) {
-			return n.<Funp> switch_( //
+			return n.<Funp> switch_(
 			).applyIf(FunpAllocGlobal.class, f -> f.apply((size, value, expr, address) -> {
 				if (!compileGlobal(size, address, value))
 					compileAssign(value, FunpMemory.of(FunpOperand.of(address), 0, size));
@@ -600,8 +600,8 @@ public class P4GenerateCode {
 		public CompileOut returnOp(Operand op) {
 			if (result.t == Rt.ASSIGN) {
 				var opt0 = p4deOp.decomposeFunpMemory(fd, target);
-				var opt1 = opt0 != null //
-						? opt0 //
+				var opt1 = opt0 != null
+						? opt0
 						: amd64.mem(mask(op).compilePsReg(target.pointer), target.start, target.size());
 				if (op instanceof OpMem)
 					op = em.mov(rs.mask(opt1).get(op.size), op);
@@ -660,10 +660,10 @@ public class P4GenerateCode {
 			return new CompileOut();
 		}
 
-		private CompileOut compileAllocStack( //
-				int size, //
-				Funp pushValue, //
-				List<Operand> opPops, //
+		private CompileOut compileAllocStack(
+				int size,
+				Funp pushValue,
+				List<Operand> opPops,
 				Fun2<Compile0, FunpMemory, CompileOut> f) {
 			var alignedSize = getAlignedSize(size);
 			var fd1 = fd - alignedSize;
@@ -706,9 +706,9 @@ public class P4GenerateCode {
 			IntObj_Obj<OpMem, OpMem> shift = (disp, op) -> {
 				var br = op.baseReg;
 				var ir = op.indexReg;
-				return amd64.mem( //
-						0 <= br ? pointerRegs[br] : null, //
-						0 <= ir ? pointerRegs[ir] : null, //
+				return amd64.mem(
+						0 <= br ? pointerRegs[br] : null,
+						0 <= ir ? pointerRegs[ir] : null,
 						op.scale, op.disp.imm + disp, op.size);
 			};
 
@@ -911,7 +911,7 @@ public class P4GenerateCode {
 				private int blanks = 0;
 
 				private boolean fill(int size, Funp node) {
-					return new Switch<Boolean>(node //
+					return new Switch<Boolean>(node
 					).applyIf(FunpCoerce.class, f -> f.apply((from, to, expr) -> {
 						return fill(Funp_.getCoerceSize(to), expr);
 					})).applyIf(FunpData.class, f -> f.apply(pairs -> {

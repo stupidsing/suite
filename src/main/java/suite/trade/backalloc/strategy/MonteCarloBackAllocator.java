@@ -31,17 +31,17 @@ public class MonteCarloBackAllocator implements BackAllocator {
 			var returnsBySymbol = dsBySymbol.mapValue(DataSource::returns).toMap();
 			var symbols = returnsBySymbol.keySet().toArray(new String[0]);
 
-			var portfolios = forInt(99) //
-					.map(i -> randomPortfolio(symbols)) //
+			var portfolios = forInt(99)
+					.map(i -> randomPortfolio(symbols))
 					.toList();
 
 			for (var i = 0; i < 128; i++) {
-				var portfolios1 = Read //
-						.from(portfolios) //
-						.map2(portfolio -> evaluate(symbols, portfolio, returnsBySymbol, index)) //
-						.sortByValue((o0, o1) -> Compare.objects(o1, o0)) //
-						.take(128) //
-						.keys() //
+				var portfolios1 = Read
+						.from(portfolios)
+						.map2(portfolio -> evaluate(symbols, portfolio, returnsBySymbol, index))
+						.sortByValue((o0, o1) -> Compare.objects(o1, o0))
+						.take(128)
+						.keys()
 						.toList();
 
 				var size = portfolios.size();
@@ -62,8 +62,8 @@ public class MonteCarloBackAllocator implements BackAllocator {
 
 			var portfolio = portfolios.get(0);
 
-			return forInt(symbols.length) //
-					.map2(i -> symbols[i], i -> (double) portfolio[i]) //
+			return forInt(symbols.length)
+					.map2(i -> symbols[i], i -> (double) portfolio[i])
 					.toList();
 		};
 	}

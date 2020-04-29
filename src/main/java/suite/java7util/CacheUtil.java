@@ -36,8 +36,8 @@ public class CacheUtil {
 		public boolean equals(Object object) {
 			if (Get.clazz(object) == Key.class) {
 				var other = (Key) object;
-				return bean == other.bean //
-						&& Equals.ab(method, other.method) //
+				return bean == other.bean
+						&& Equals.ab(method, other.method)
 						&& Arrays.deepEquals(arguments, other.arguments);
 			} else
 				return false;

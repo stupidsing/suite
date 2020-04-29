@@ -111,7 +111,7 @@ public class Funp_ {
 
 		new Object() {
 			private Funp associate(PerMap<String, Funp> vars, Funp node_) {
-				return inspect.rewrite(node_, Funp.class, n_ -> n_.sw( //
+				return inspect.rewrite(node_, Funp.class, n_ -> n_.sw(
 				).applyIf(FunpDefine.class, f -> f.apply((vn, value, expr, fdt) -> {
 					associate(vars, value);
 					associate(vars.replace(vn, f), expr);

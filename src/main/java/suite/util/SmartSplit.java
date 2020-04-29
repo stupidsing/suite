@@ -20,9 +20,9 @@ public class SmartSplit {
 	private ChrPred isQuote = c -> c == '\'' || c == '"' || c == '`';
 
 	public SmartSplit() {
-		this( //
-				c -> c == '(' || c == '[' || c == '{', //
-				c -> c == ')' || c == ']' || c == '}', //
+		this(
+				c -> c == '(' || c == '[' || c == '{',
+				c -> c == ')' || c == ']' || c == '}',
 				c -> c == '\'' || c == '"' || c == '`');
 	}
 

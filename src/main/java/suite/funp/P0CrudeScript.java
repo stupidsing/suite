@@ -58,14 +58,14 @@ public class P0CrudeScript {
 
 		return new Object() {
 			private Funp crudeScript(Node node) {
-				return new SwitchNode<Funp>(node //
+				return new SwitchNode<Funp>(node
 				).match("crude-script (.0,)", a -> {
 					return stmt(a);
 				}).nonNullResult();
 			}
 
 			private Funp stmt(Node node) {
-				return new SwitchNode<Funp>(node //
+				return new SwitchNode<Funp>(node
 				).match("statement (expression (.0,),)", a -> {
 					return expr(a);
 				}).match("statement (statement-return (.0,),)", a -> {
@@ -86,7 +86,7 @@ public class P0CrudeScript {
 			}
 
 			private Funp expr(Node node) {
-				return new SwitchNode<Funp>(node //
+				return new SwitchNode<Funp>(node
 				).match("<IDENTIFIER> .0", s -> {
 					return FunpVariable.of(Str.str(s));
 				}).match("<INTEGER_LITERAL> .0", s -> {
@@ -116,18 +116,18 @@ public class P0CrudeScript {
 				}).match("expression-compare (.0,)", a -> {
 					return expr(a);
 				}).match("expression-dict .0", a -> {
-					var list = Tree //
-							.read(a) //
-							.chunk(2) //
-							.map(o -> o.toFixie().map((k, v) -> Pair.of(Str.str(k), expr(v)))) //
+					var list = Tree
+							.read(a)
+							.chunk(2)
+							.map(o -> o.toFixie().map((k, v) -> Pair.of(Str.str(k), expr(v))))
 							.toList();
 					return FunpStruct.of(list);
 				}).match("expression-div (.0, .1)", (a, b) -> {
-					return Tree //
-							.read(b) //
-							.chunk(2) //
+					return Tree
+							.read(b)
+							.chunk(2)
 							.fold(expr(a), (f, o) -> o.toFixie().map((op, d) -> {
-								return new SwitchNode<Funp>(op //
+								return new SwitchNode<Funp>(op
 								).matchArray("'/'", m_ -> {
 									return FunpTree.of(TermOp.DIVIDE, f, expr(d));
 								}).matchArray("'%'", m_ -> {
@@ -175,11 +175,11 @@ public class P0CrudeScript {
 					var e2 = post == 0 ? e1 : Fail.<Funp> fail();
 					return s == e ? e2 : fail();
 				}).match("expression-prop (.0, .1)", (a, b) -> {
-					return Tree //
-							.read(b) //
-							.chunk(2) //
+					return Tree
+							.read(b)
+							.chunk(2)
 							.fold(expr(a), (f, o) -> o.toFixie().map((k, v) -> {
-								return new SwitchNode<Funp>(k //
+								return new SwitchNode<Funp>(k
 								).matchArray("'.'", m_ -> {
 									return FunpField.of(FunpReference.of(f), Str.str(v));
 								}).matchArray("'['", m_ -> {

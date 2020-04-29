@@ -99,7 +99,7 @@ public class P0Parse {
 		}
 
 		private Funp p(Node node) {
-			return new SwitchNode<Funp>(node //
+			return new SwitchNode<Funp>(node
 			).match("!! .0", a -> {
 				return checkDo(() -> FunpDoEvalIo.of(p(a)));
 			}).match("!! .0 ~ .1", (a, b) -> {
@@ -304,10 +304,10 @@ public class P0Parse {
 			}).applyIf(Str.class, str -> {
 				var vn = "s$" + Get.temp();
 				var s = str.value;
-				var fa = FunpArray.of(ReadChars //
-						.from(s) //
-						.<Funp> map(ch -> FunpCoerce.of(Coerce.NUMBER, Coerce.BYTE, FunpNumber.ofNumber(ch))) //
-						.snoc(FunpCoerce.of(Coerce.NUMBER, Coerce.BYTE, FunpNumber.ofNumber(0))) //
+				var fa = FunpArray.of(ReadChars
+						.from(s)
+						.<Funp> map(ch -> FunpCoerce.of(Coerce.NUMBER, Coerce.BYTE, FunpNumber.ofNumber(ch)))
+						.snoc(FunpCoerce.of(Coerce.NUMBER, Coerce.BYTE, FunpNumber.ofNumber(0)))
 						.toList());
 				var fr = s.length() < 80 ? FunpRemark.of(s, fa) : fa;
 				return FunpDefine.of(vn, fr, FunpReference.of(FunpVariable.of(vn)), Fdt.G_MONO);
@@ -360,10 +360,10 @@ public class P0Parse {
 			var var = FunpVariable.of(vn);
 			var while_ = lc.expr;
 			var do_ = FunpDoAssignVar.of(var, ld.expr, FunpDontCare.of());
-			return FunpDefine.of( //
-					vn, //
-					p(b), //
-					FunpDoWhile.of(while_, do_, le.expr), //
+			return FunpDefine.of(
+					vn,
+					p(b),
+					FunpDoWhile.of(while_, do_, le.expr),
 					Fdt.L_IOAP);
 		}
 
@@ -380,8 +380,8 @@ public class P0Parse {
 		}
 
 		private Streamlet2<String, Node> kvs(Node node) {
-			return Tree //
-					.read(node, Tree::decompose) //
+			return Tree
+					.read(node, Tree::decompose)
 					.map(n -> {
 						Node[] m;
 						if ((m = Suite.pattern(".0 .1 := .2").match(n)) != null)
@@ -391,7 +391,7 @@ public class P0Parse {
 							return Pair.of(Atom.name(m[0]), m[1]);
 						else
 							return Pair.of(Atom.name(n), n);
-					}) //
+					})
 					.map2(Pair::fst, Pair::snd);
 		}
 

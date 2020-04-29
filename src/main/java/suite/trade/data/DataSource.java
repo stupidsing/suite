@@ -42,9 +42,9 @@ public class DataSource {
 	public static <K> AlignKeyDataSource<K> alignAll(Streamlet2<K, DataSource> dsByKey0) {
 		var ts = alignAll(dsByKey0.values());
 
-		return dsByKey0 //
-				.mapValue(ds -> ds.alignBeforePrices(ts)) //
-				.collect() //
+		return dsByKey0
+				.mapValue(ds -> ds.alignBeforePrices(ts))
+				.collect()
 				.apply(st -> new AlignKeyDataSource<>(ts, st));
 	}
 
@@ -66,11 +66,11 @@ public class DataSource {
 		Streamlet<Long> tradeTimes;
 		if (Boolean.TRUE)
 			tradeTimes = dataSources // union
-					.concatMap(ds -> ReadLng.from(ds.ts).map(t -> t)) //
+					.concatMap(ds -> ReadLng.from(ds.ts).map(t -> t))
 					.distinct();
 		else
 			tradeTimes = Read.from(Intersect.of(dataSources // intersect
-					.<Collection<Long>> map(ds -> ReadLng.from(ds.ts).map(t -> t).toList()) //
+					.<Collection<Long>> map(ds -> ReadLng.from(ds.ts).map(t -> t).toList())
 					.toList()));
 		return tradeTimes.sort(Compare::objects).collect(LiftLng.of(t -> t)).toArray();
 	}
@@ -80,12 +80,12 @@ public class DataSource {
 	}
 
 	private static DataSource of(long[] ts, Streamlet<Datum> data) {
-		return ofOhlcv( //
-				ts, //
-				data.collect(LiftFlt.of(datum -> datum.open)).toArray(), //
-				data.collect(LiftFlt.of(datum -> datum.close)).toArray(), //
-				data.collect(LiftFlt.of(datum -> datum.low)).toArray(), //
-				data.collect(LiftFlt.of(datum -> datum.high)).toArray(), //
+		return ofOhlcv(
+				ts,
+				data.collect(LiftFlt.of(datum -> datum.open)).toArray(),
+				data.collect(LiftFlt.of(datum -> datum.close)).toArray(),
+				data.collect(LiftFlt.of(datum -> datum.low)).toArray(),
+				data.collect(LiftFlt.of(datum -> datum.high)).toArray(),
 				data.collect(LiftFlt.of(datum -> datum.volume)).toArray());
 	}
 
@@ -108,9 +108,9 @@ public class DataSource {
 		this.lows = lows;
 		this.highs = highs;
 		this.volumes = volumes;
-		if (ts.length != prices.length //
-				|| ts.length != opens.length || ts.length != closes.length //
-				|| ts.length != lows.length || ts.length != highs.length //
+		if (ts.length != prices.length
+				|| ts.length != opens.length || ts.length != closes.length
+				|| ts.length != lows.length || ts.length != highs.length
 				|| ts.length != volumes.length)
 			fail("mismatched dates and prices");
 	}
@@ -207,10 +207,10 @@ public class DataSource {
 	public String recent(String prefix, int size) {
 		return Build.string(sb -> {
 			for (var i = ts.length - size; i < ts.length; i++)
-				sb.append(prefix + "[" + Time.ofEpochSec(ts[i]) + "]" //
-						+ " o/c:" + To.string(opens[i]) + "/" + To.string(closes[i]) //
-						+ " l/h:" + To.string(lows[i]) + "/" + To.string(highs[i]) //
-						+ " v:" + To.string(volumes[i]) //
+				sb.append(prefix + "[" + Time.ofEpochSec(ts[i]) + "]"
+						+ " o/c:" + To.string(opens[i]) + "/" + To.string(closes[i])
+						+ " l/h:" + To.string(lows[i]) + "/" + To.string(highs[i])
+						+ " v:" + To.string(volumes[i])
 						+ "\n");
 		});
 	}
@@ -220,12 +220,12 @@ public class DataSource {
 	}
 
 	public DataSource trim(int end) {
-		return ofOhlcv( //
-				Arrays.copyOf(ts, end), //
-				Arrays.copyOf(opens, end), //
-				Arrays.copyOf(closes, end), //
-				Arrays.copyOf(lows, end), //
-				Arrays.copyOf(highs, end), //
+		return ofOhlcv(
+				Arrays.copyOf(ts, end),
+				Arrays.copyOf(opens, end),
+				Arrays.copyOf(closes, end),
+				Arrays.copyOf(lows, end),
+				Arrays.copyOf(highs, end),
 				Arrays.copyOf(volumes, end));
 	}
 

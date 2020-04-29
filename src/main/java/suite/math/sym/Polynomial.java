@@ -34,12 +34,12 @@ public class Polynomial<N> {
 	private Fun<Node, Opt<N>> parse_;
 	private Fun<N, Node> format_;
 
-	public Polynomial( //
-			Node x, //
-			Predicate<Node> is_x, //
-			Ring<N> ring0, //
-			Obj_Int<N> sgn_, //
-			Fun<Node, Opt<N>> parse_, //
+	public Polynomial(
+			Node x,
+			Predicate<Node> is_x,
+			Ring<N> ring0,
+			Obj_Int<N> sgn_,
+			Fun<Node, Opt<N>> parse_,
 			Fun<N, Node> format_) {
 		this.n0 = ring0.n0;
 		this.n1 = ring0.n1;
@@ -63,7 +63,7 @@ public class Polynomial<N> {
 
 		return new Object() {
 			private Opt<Poly<N>> poly(Node node) {
-				return new SwitchNode<Opt<Poly<N>>>(node //
+				return new SwitchNode<Opt<Poly<N>>>(node
 				).match(patAdd, (a, b) -> {
 					return poly(a).join(poly(b), py::add);
 				}).match(patNeg, a -> {
@@ -181,9 +181,9 @@ public class Polynomial<N> {
 		}
 
 		public String toString() {
-			return streamlet() //
-					.sortByKey((p0, p1) -> p1 - p0) //
-					.map((p, t) -> t + " * " + py.x + "^" + p) //
+			return streamlet()
+					.sortByKey((p0, p1) -> p1 - p0)
+					.map((p, t) -> t + " * " + py.x + "^" + p)
 					.toJoinedString(" + ");
 		}
 

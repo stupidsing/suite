@@ -32,10 +32,10 @@ public class HongKongGovernment {
 	public List<Time> queryPublicHolidays() {
 		var yyyymmdd = DateTimeFormatter.ofPattern("yyyyMMdd", Locale.ENGLISH);
 
-		var lines = Singleton.me.storeCache //
-				.http("http://www.1823.gov.hk/common/ical/gc/en.ics") //
-				.collect(As::lines) //
-				.map(line -> line.split(":")) //
+		var lines = Singleton.me.storeCache
+				.http("http://www.1823.gov.hk/common/ical/gc/en.ics")
+				.collect(As::lines)
+				.map(line -> line.split(":"))
 				.filter(array -> 2 <= array.length);
 
 		var maps = new ArrayDeque<Map<String, String>>();
@@ -67,12 +67,12 @@ public class HongKongGovernment {
 		for (var t = t0; t < tx; t += 86400l) {
 			var time = Time.ofEpochSec(t);
 
-			var html = Singleton.me.storeCache //
-					.http("http://www.hko.gov.hk/cgi-bin/hko/yes.pl" //
-							+ "?year=" + time.year() //
-							+ "&month=" + time.month() //
-							+ "&day=" + time.dayOfMonth() //
-							+ "&language=english&B1=Confirm#") //
+			var html = Singleton.me.storeCache
+					.http("http://www.hko.gov.hk/cgi-bin/hko/yes.pl"
+							+ "?year=" + time.year()
+							+ "&month=" + time.month()
+							+ "&day=" + time.dayOfMonth()
+							+ "&language=english&B1=Confirm#")
 					.collect(As::string);
 
 			var data = Fit.parts(html, "<pre>", "</pre>").t1;
@@ -84,8 +84,8 @@ public class HongKongGovernment {
 
 		var ts_ = ts.toLongs().toArray();
 
-		return Map.ofEntries( //
-				entry("hko.TEMP", DataSource.of(ts_, fs0.toFloats().toArray())), //
+		return Map.ofEntries(
+				entry("hko.TEMP", DataSource.of(ts_, fs0.toFloats().toArray())),
 				entry("hko.RAIN", DataSource.of(ts_, fs1.toFloats().toArray())));
 	}
 

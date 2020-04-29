@@ -41,9 +41,9 @@ public class Bfgs {
 			var ps = mtx.mul(ib, vec.neg(gs)); // direction
 			Dbl_Obj<float[]> line = alpha -> vec.add(xs_, vec.scale(ps, alpha));
 
-			var alpha = lineSearch( //
-					alpha_ -> fun.apply(line.apply(alpha_)), //
-					alpha_ -> vec.dot(gradientFun.apply(line.apply(alpha_)), ps), //
+			var alpha = lineSearch(
+					alpha_ -> fun.apply(line.apply(alpha_)),
+					alpha_ -> vec.dot(gradientFun.apply(line.apply(alpha_)), ps),
 					1d);
 
 			var ss = vec.scale(ps, alpha);

@@ -62,8 +62,8 @@ public class Binder {
 		else if (Tree.class.isAssignableFrom(clazz0) && Tree.class.isAssignableFrom(clazz1)) {
 			var t0 = (Tree) n0;
 			var t1 = (Tree) n1;
-			return t0.getOperator() == t1.getOperator() //
-					&& bind(t0.getLeft(), t1.getLeft(), trail) //
+			return t0.getOperator() == t1.getOperator()
+					&& bind(t0.getLeft(), t1.getLeft(), trail)
 					&& bind(t0.getRight(), t1.getRight(), trail);
 		} else if (clazz0 == Tuple.class && clazz1 == Tuple.class) {
 			var nodes0 = Tuple.t(n0);

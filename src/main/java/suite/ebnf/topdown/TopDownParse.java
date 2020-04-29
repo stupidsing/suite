@@ -234,8 +234,8 @@ public class TopDownParse {
 
 		return (parse, st0) -> {
 			var frame = new Frame(eg.content);
-			return st0.deepen(frame, 1) //
-					.p(parse, gb) //
+			return st0.deepen(frame, 1)
+					.p(parse, gb)
 					.concatMap(st1 -> Puller.of(new Source<State>() {
 						private State state_ = st1;
 						private Deque<Puller<State>> pullers = new ArrayDeque<>();
@@ -309,7 +309,7 @@ public class TopDownParse {
 			e = expect.unicodeClass(entity.substring(4, entity.length() - 1));
 		else if (entity.length() == 5 && entity.charAt(0) == '[' && entity.charAt(2) == '-' && entity.charAt(4) == ']')
 			e = expect.charRange(entity.charAt(1), entity.charAt(3));
-		else if (entity.length() == 11 //
+		else if (entity.length() == 11
 				&& entity.charAt(0) == '[' && entity.charAt(5) == '-' && entity.charAt(10) == ']')
 			e = expect.charRange((char) Integer.parseInt(entity.substring(1, 5), 16),
 					(char) Integer.parseInt(entity.substring(6, 10), 16));
@@ -329,8 +329,8 @@ public class TopDownParse {
 	private Parser deepen(Parser parser, String entity) {
 		return (parse, st0) -> {
 			var frame = new Frame(entity);
-			return st0.deepen(frame, 1) //
-					.p(parse, parser) //
+			return st0.deepen(frame, 1)
+					.p(parse, parser)
 					.map(st2 -> st2.deepen(frame, -1));
 		};
 	}

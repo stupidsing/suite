@@ -45,10 +45,10 @@ public class Suite {
 	public static TraceLevel traceLevel = TraceLevel.SIMPLE;
 
 	public static Set<String> tracePredicates = null;
-	public static Set<String> noTracePredicates = new HashSet<>(List.of( //
-			"member", //
-			"rbt-compare", //
-			"rbt-get", //
+	public static Set<String> noTracePredicates = new HashSet<>(List.of(
+			"member",
+			"rbt-compare",
+			"rbt-get",
 			"replace"));
 
 	private static BindArrayUtil bindArrayUtil = new BindArrayUtil();
@@ -104,10 +104,10 @@ public class Suite {
 	 * May specify a prototype to limit the rules listed.
 	 */
 	public static Node listRules(RuleSet rs, Prototype proto) {
-		var nodes = Read //
-				.from(rs.getRules()) //
-				.filter(rule -> proto == null || proto.equals(Prototype.of(rule))) //
-				.map(Rule::clause) //
+		var nodes = Read
+				.from(rs.getRules())
+				.filter(rule -> proto == null || proto.equals(Prototype.of(rule)))
+				.map(Rule::clause)
 				.toList();
 		return TreeUtil.buildUp(TermOp.NEXT__, nodes);
 	}

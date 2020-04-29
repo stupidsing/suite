@@ -32,10 +32,10 @@ public class FunExpand extends FunFactory {
 	}
 
 	private FunExpr expand_(FunExpr e0, int depth) {
-		return e0.sw( //
+		return e0.sw(
 		).applyIf(ApplyFunExpr.class, e1 -> e1.apply((object0, parameters) -> {
 			var object1 = object0 instanceof CastFunExpr ? ((CastFunExpr) object0).expr : object0;
-			return new Switch<FunExpr>(object1 //
+			return new Switch<FunExpr>(object1
 			).applyIf(Declare0ParameterFunExpr.class, e2 -> e2.apply(do_ -> {
 				return expand(do_, depth);
 			})).applyIf(Declare1ParameterFunExpr.class, e2 -> e2.apply((p0, do_) -> {
@@ -82,8 +82,8 @@ public class FunExpand extends FunFactory {
 		if (cast != null)
 			return weight(cast.expr);
 		else
-			return inspect //
-					.fields(e0.getClass()) //
+			return inspect
+					.fields(e0.getClass())
 					.toInt(AsInt.sum(field -> {
 						var e1 = ex(() -> field.get(e0));
 						if (e1 instanceof FunExpr)

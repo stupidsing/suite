@@ -26,25 +26,25 @@ public class ScrapeHtml {
 
 	private HtmlUtil htmlUtil = new HtmlUtil();
 
-	private SmartSplit ss = new SmartSplit( //
-			c -> false, //
-			c -> false, //
+	private SmartSplit ss = new SmartSplit(
+			c -> false,
+			c -> false,
 			c -> c == '\'' || c == '"' || c == '`');
 
-	private Set<String> voidElementTagNames = Set.of( //
-			"area", //
-			"base", //
-			"br", //
-			"col", //
-			"embed", //
-			"hr", //
-			"img", //
-			"input", //
-			"link", //
-			"meta", //
-			"param", //
-			"source", //
-			"track", //
+	private Set<String> voidElementTagNames = Set.of(
+			"area",
+			"base",
+			"br",
+			"col",
+			"embed",
+			"hr",
+			"img",
+			"input",
+			"link",
+			"meta",
+			"param",
+			"source",
+			"track",
 			"wbr");
 
 	public class HtmlNode {
@@ -59,16 +59,16 @@ public class ScrapeHtml {
 			this.name = name;
 			this.tag = tag;
 			if (name != null)
-				attrs = ss //
-						.splitn(Substring.of(tag, 1, -1), " ", Assoc.RIGHT) //
-						.skip(1) //
-						.map(kv -> Split.strl(kv, "=")) //
-						.filter(kv -> !kv.v.isEmpty()) //
+				attrs = ss
+						.splitn(Substring.of(tag, 1, -1), " ", Assoc.RIGHT)
+						.skip(1)
+						.map(kv -> Split.strl(kv, "="))
+						.filter(kv -> !kv.v.isEmpty())
 						.map(Pair.mapSnd(v -> {
 							var isQuoted = v.startsWith("'") && v.endsWith("'")
 									|| v.startsWith("\"") && v.endsWith("\"");
 							return !isQuoted ? v : Substring.of(v, 1, -1);
-						})) //
+						}))
 						.toList();
 			else
 				attrs = Collections.emptyList();
@@ -99,9 +99,9 @@ public class ScrapeHtml {
 		}
 
 		public boolean isClass(String c) {
-			return attrByName //
-					.getOpt("class") //
-					.map(cs -> Read.from(cs.split(" ")).filter(c_ -> Equals.string(c, c_)).first() != null) //
+			return attrByName
+					.getOpt("class")
+					.map(cs -> Read.from(cs.split(" ")).filter(c_ -> Equals.string(c, c_)).first() != null)
 					.or(false);
 		}
 

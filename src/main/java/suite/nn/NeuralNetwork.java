@@ -87,13 +87,13 @@ public class NeuralNetwork {
 		var outputSize = 1;
 
 		// input 19x19
-		return nil2dLayer() //
-				.append(spawn2dLayer(nKernels, i -> nil2dLayer() //
-						.append(conv2dLayer(kernelSize, kernelSize)) //
-						.append(Boolean.TRUE ? maxPoolLayer(maxPoolSize, maxPoolSize) : averagePoolLayer(maxPoolSize, maxPoolSize)) //
-						.append(flattenLayer(flattenSize)) //
-						.append(Boolean.TRUE ? reluLayer() : softmaxLayer()))) //
-				.append(flattenLayer(flattenSize)) //
+		return nil2dLayer()
+				.append(spawn2dLayer(nKernels, i -> nil2dLayer()
+						.append(conv2dLayer(kernelSize, kernelSize))
+						.append(Boolean.TRUE ? maxPoolLayer(maxPoolSize, maxPoolSize) : averagePoolLayer(maxPoolSize, maxPoolSize))
+						.append(flattenLayer(flattenSize))
+						.append(Boolean.TRUE ? reluLayer() : softmaxLayer())))
+				.append(flattenLayer(flattenSize))
 				.append(feedForwardLayer(nKernels * flattenSize, outputSize));
 	}
 
@@ -104,10 +104,10 @@ public class NeuralNetwork {
 				return nilLayer();
 			}
 
-			private Layer<float[][][], float[][][]> convVgg16Block( //
-					Layer<float[][][], float[][][]> layer, //
-					int n, //
-					int nInputChannels, //
+			private Layer<float[][][], float[][][]> convVgg16Block(
+					Layer<float[][][], float[][][]> layer,
+					int n,
+					int nInputChannels,
 					int nOutputChannels) {
 				var nChannels = nInputChannels;
 				for (var i = 0; i < n; i++) {
@@ -128,12 +128,12 @@ public class NeuralNetwork {
 		var layer4 = b.convVgg16Block(layer3, 4, 256, 512);
 		var layer5 = b.convVgg16Block(layer4, 4, 512, 512);
 
-		return layer5 //
-				.append(flattenLayer(float[][].class, imageSize - 16)) //
-				.append(flattenLayer(float[].class, imageSize - 16)) //
-				.append(feedForwardLayer((imageSize - 16) * (imageSize - 16) * 512, 4096)) //
-				.append(feedForwardLayer(4096, 4096)) //
-				.append(feedForwardLayer(4096, 1000)) //
+		return layer5
+				.append(flattenLayer(float[][].class, imageSize - 16))
+				.append(flattenLayer(float[].class, imageSize - 16))
+				.append(feedForwardLayer((imageSize - 16) * (imageSize - 16) * 512, 4096))
+				.append(feedForwardLayer(4096, 4096))
+				.append(feedForwardLayer(4096, 1000))
 				.append(softmaxLayer());
 	}
 
@@ -214,7 +214,7 @@ public class NeuralNetwork {
 					for (var j = 0; j < nOutputs; j++)
 						derivatives[i][j] *= (float) Tanh.tanhGradient(outputs[i][j]);
 
-				var deltas = To.matrix(nInputs, nOutputs, (i, o) -> forInt(nPoints) //
+				var deltas = To.matrix(nInputs, nOutputs, (i, o) -> forInt(nPoints)
 						.toDouble(As.sum(p -> inputs[p][i] * derivatives[p][o])));
 
 				var deltaSqs = mtx.map(deltas, delta -> delta * delta);
@@ -231,10 +231,10 @@ public class NeuralNetwork {
 	}
 
 	private Layer<float[][][], float[][][]> convChannelLayer(int nInputChannels, int nOutputChannels, int sx, int sy) {
-		var cls = forInt(nOutputChannels) //
-				.map(oc -> forInt(nInputChannels) //
-						.map(ic -> conv2dLayer(sx, sy)) //
-						.toList()) //
+		var cls = forInt(nOutputChannels)
+				.map(oc -> forInt(nInputChannels)
+						.map(ic -> conv2dLayer(sx, sy))
+						.toList())
 				.toList();
 
 		return inputs -> {
@@ -244,10 +244,10 @@ public class NeuralNetwork {
 			var hsx = ix - sx + 1;
 			var hsy = iy - sy + 1;
 
-			var outs = forInt(nOutputChannels) //
-					.map(oc -> forInt(nInputChannels) //
-							.map(ic -> cls.get(oc).get(ic).feed(inputs[ic])) //
-							.toList()) //
+			var outs = forInt(nOutputChannels)
+					.map(oc -> forInt(nInputChannels)
+							.map(ic -> cls.get(oc).get(ic).feed(inputs[ic]))
+							.toList())
 					.toList();
 
 			var outputs = To.array(nOutputChannels, float[][].class, oc -> {
@@ -419,27 +419,27 @@ public class NeuralNetwork {
 		};
 	}
 
-	private <I, O> Layer<I, O[]> spawnLayer( //
-			Class<O> clazz, //
-			int n, //
-			Int_Obj<Layer<I, O>> fun, //
+	private <I, O> Layer<I, O[]> spawnLayer(
+			Class<O> clazz,
+			int n,
+			Int_Obj<Layer<I, O>> fun,
 			Fun<Puller<I>, I> combineErrors) {
 		var layers = forInt(n).map(fun::apply);
 		return spawnLayer(clazz, layers, inputs -> inputs, combineErrors);
 	}
 
-	private <I, O> Layer<I, O[]> spawnLayer( //
-			Class<O> clazz, //
-			Streamlet<Layer<I, O>> layers, //
-			Iterate<I> cloneInputs, //
+	private <I, O> Layer<I, O[]> spawnLayer(
+			Class<O> clazz,
+			Streamlet<Layer<I, O>> layers,
+			Iterate<I> cloneInputs,
 			Fun<Puller<I>, I> combineErrors) {
 		return inputs -> {
 			var outs = layers.map(layer -> layer.feed(cloneInputs.apply(inputs))).collect();
 			var outputs = outs.map(out -> out.output).toArray(clazz);
 
-			return new Out<>(outputs, errors -> Read //
-					.from(errors) //
-					.zip(outs, (error, out) -> out.backprop.apply(error)) //
+			return new Out<>(outputs, errors -> Read
+					.from(errors)
+					.zip(outs, (error, out) -> out.backprop.apply(error))
 					.collect(combineErrors));
 		};
 	}
@@ -451,9 +451,9 @@ public class NeuralNetwork {
 			var outs = layers.zip(Read.from(inputs), Layer::feed).collect();
 			var outputs = outs.map(out -> out.output).toArray(clazz);
 
-			return new Out<>(outputs, errors -> Read //
-					.from(errors) //
-					.zip(outs, (error, out) -> out.backprop.apply(error)) //
+			return new Out<>(outputs, errors -> Read
+					.from(errors)
+					.zip(outs, (error, out) -> out.backprop.apply(error))
 					.toArray(clazz));
 		};
 	}

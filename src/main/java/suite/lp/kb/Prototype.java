@@ -68,8 +68,8 @@ public class Prototype implements Comparable<Prototype> {
 			return tree;
 		else if (node instanceof Tuple) {
 			var nodes = Tuple.t(node);
-			return 0 < nodes.length //
-					? TreeTuple.of(nodes[0], Tuple.of(Arrays.copyOfRange(nodes, 1, nodes.length, Node[].class))) //
+			return 0 < nodes.length
+					? TreeTuple.of(nodes[0], Tuple.of(Arrays.copyOfRange(nodes, 1, nodes.length, Node[].class)))
 					: null;
 		} else
 			return null;

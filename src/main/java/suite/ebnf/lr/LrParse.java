@@ -88,11 +88,11 @@ public class LrParse {
 	}
 
 	private <K, V> String list(Map<K, V> map) {
-		return Read //
-				.from2(map) //
-				.map2((k, v) -> k.toString(), (k, v) -> v) //
-				.sortByKey(Compare::objects) //
-				.map((k, v) -> k + " = " + v + "\n") //
+		return Read
+				.from2(map)
+				.map2((k, v) -> k.toString(), (k, v) -> v)
+				.sortByKey(Compare::objects)
+				.map((k, v) -> k + " = " + v + "\n")
 				.toJoinedString("{\n", "", "}\n");
 	}
 

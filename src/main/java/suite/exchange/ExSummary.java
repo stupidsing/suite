@@ -8,9 +8,9 @@ public class ExSummary {
 	public double marginUsed;
 
 	public String toString() {
-		return "VWAP entry price = " + vwapEntryPrice //
-				+ ", unrealized PNL = " + unrealizedPnl //
-				+ ", invested amount = " + investedAmount //
+		return "VWAP entry price = " + vwapEntryPrice
+				+ ", unrealized PNL = " + unrealizedPnl
+				+ ", invested amount = " + investedAmount
 				+ ", margin used = " + marginUsed;
 	}
 

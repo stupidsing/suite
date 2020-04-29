@@ -62,8 +62,8 @@ public class LcsBfs<T> {
 			}
 
 			private Node jump(Node node) {
-				while (node.pos0 < size0 //
-						&& node.pos1 < size1 //
+				while (node.pos0 < size0
+						&& node.pos1 < size1
 						&& Equals.ab(l0.get(node.pos0), l1.get(node.pos1))) {
 					node.pos0++;
 					node.pos1++;

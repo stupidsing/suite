@@ -28,10 +28,10 @@ public class Pool<T> {
 
 	public T get() {
 		var mut = Mutable.<T> nil();
-		return condition.waitTill( //
-				() -> mut.value() != null, //
-				() -> mut.update(availables.pop()), //
-				mut::value, //
+		return condition.waitTill(
+				() -> mut.value() != null,
+				() -> mut.update(availables.pop()),
+				mut::value,
 				Long.MAX_VALUE);
 	}
 

@@ -108,8 +108,8 @@ public class BackAllocatorOld {
 	}
 
 	public BackAllocator pairs(TradeCfg cfg, String symbol0, String symbol1) {
-		return BackAllocatorGeneral.me.rsi //
-				.relativeToIndex(cfg, symbol0) //
+		return BackAllocatorGeneral.me.rsi
+				.relativeToIndex(cfg, symbol0)
 				.filterBySymbol(symbol -> Equals.string(symbol, symbol1));
 	}
 
@@ -132,8 +132,8 @@ public class BackAllocatorOld {
 				var qdiff = Quant.return_(q0, qx);
 
 				if (threshold < abs(pdiff - qdiff))
-					return List.of( //
-							Pair.of(pdiff < qdiff ? symbol0 : symbol1, 1d), //
+					return List.of(
+							Pair.of(pdiff < qdiff ? symbol0 : symbol1, 1d),
 							Pair.of(pdiff < qdiff ? symbol1 : symbol0, -1d));
 				else
 					return List.of();

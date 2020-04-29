@@ -9,9 +9,9 @@ package suite.assembler;
  */
 public enum Amd64Mode {
 
-	REAL16(2, 2, 2, 2, 8), //
-	PROT32(4, 4, 4, 4, 8), //
-	LONG64(4, 8, 8, 4, 16), //
+	REAL16(2, 2, 2, 2, 8),
+	PROT32(4, 4, 4, 4, 8),
+	LONG64(4, 8, 8, 4, 16),
 	;
 
 	public final int opSize;

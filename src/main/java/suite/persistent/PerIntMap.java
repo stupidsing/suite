@@ -55,11 +55,11 @@ public class PerIntMap<V> {
 	}
 
 	public Streamlet<V> streamlet() {
-		return Bl.stream(bl0) //
-				.concatMap(Bl::stream) //
-				.concatMap(Bl::stream) //
-				.concatMap(Bl::stream) //
-				.concatMap(Bl::stream) //
+		return Bl.stream(bl0)
+				.concatMap(Bl::stream)
+				.concatMap(Bl::stream)
+				.concatMap(Bl::stream)
+				.concatMap(Bl::stream)
 				.concatMap(Bl::stream);
 	}
 

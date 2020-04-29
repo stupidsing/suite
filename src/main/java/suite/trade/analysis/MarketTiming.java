@@ -59,41 +59,41 @@ public class MarketTiming {
 			var ma50abovema20 = past_i.filter(j -> ma20[j] < ma50[j]).size();
 			var r = ma50abovema20 / (double) ma20abovema50;
 
-			var isStrglyBullish = true //
-					&& lookback <= ma20abovema50 //
-					&& past1_i.isAll(j -> ma20[j - 1] <= ma20[j]) //
-					&& past1_i.isAll(j -> ma50[j - 1] <= ma50[j]) //
-					&& (1.02d * ma50[i] <= ma20[i] || ma20[past] - ma50[past] < ma20[i] - ma50[i]) //
+			var isStrglyBullish = true
+					&& lookback <= ma20abovema50
+					&& past1_i.isAll(j -> ma20[j - 1] <= ma20[j])
+					&& past1_i.isAll(j -> ma50[j - 1] <= ma50[j])
+					&& (1.02d * ma50[i] <= ma20[i] || ma20[past] - ma50[past] < ma20[i] - ma50[i])
 					&& past_i.isAll(j -> ma20[j] <= prices[j]);
 
-			var isWeaklyBullish = true //
-					&& lookback80 <= ma20abovema50 //
-					&& past1_i.isAll(j -> ma50[j - 1] <= ma50[j]) //
+			var isWeaklyBullish = true
+					&& lookback80 <= ma20abovema50
+					&& past1_i.isAll(j -> ma50[j - 1] <= ma50[j])
 					&& past_i.isAll(j -> ma50[j] <= prices[j]);
 
-			var isStrglyBearish = true //
-					&& lookback <= ma50abovema20 //
-					&& past1_i.isAll(j -> ma20[j] <= ma20[j - 1]) //
-					&& past1_i.isAll(j -> ma50[j] <= ma50[j - 1]) //
-					&& (1.02d * ma20[i] <= ma50[i] || ma50[past] - ma20[past] < ma50[i] - ma20[i]) //
+			var isStrglyBearish = true
+					&& lookback <= ma50abovema20
+					&& past1_i.isAll(j -> ma20[j] <= ma20[j - 1])
+					&& past1_i.isAll(j -> ma50[j] <= ma50[j - 1])
+					&& (1.02d * ma20[i] <= ma50[i] || ma50[past] - ma20[past] < ma50[i] - ma20[i])
 					&& past_i.isAll(j -> prices[j] <= ma20[j]);
 
-			var isWeaklyBearish = true //
-					&& lookback80 <= ma50abovema20 //
-					&& past1_i.isAll(j -> ma50[j] <= ma50[j - 1]) //
+			var isWeaklyBearish = true
+					&& lookback80 <= ma50abovema20
+					&& past1_i.isAll(j -> ma50[j] <= ma50[j - 1])
 					&& past_i.isAll(j -> prices[j] <= ma50[j]);
 
 			var isRangeBound___ = true // non-trending
-					&& 2d / 3d <= r && r <= 3d / 2d //
-					&& stat.meanVariance(past_i.collect(As.floats(j -> ma50[j])).toArray()).volatility() < .02d //
-					&& .02d < stat.meanVariance(past_i.collect(As.floats(j -> ma20[j])).toArray()).volatility() //
+					&& 2d / 3d <= r && r <= 3d / 2d
+					&& stat.meanVariance(past_i.collect(As.floats(j -> ma50[j])).toArray()).volatility() < .02d
+					&& .02d < stat.meanVariance(past_i.collect(As.floats(j -> ma20[j])).toArray()).volatility()
 					&& (ma20[i] + ma50[i]) * .02d <= abs(ma20[i] - ma50[i]);
 
-			var flag = 0 //
-					+ (isStrglyBearish ? strgBear : 0) //
-					+ (isWeaklyBearish ? weakBear : 0) //
-					+ (isRangeBound___ ? rngBound : 0) //
-					+ (isWeaklyBullish ? weakBull : 0) //
+			var flag = 0
+					+ (isStrglyBearish ? strgBear : 0)
+					+ (isWeaklyBearish ? weakBear : 0)
+					+ (isRangeBound___ ? rngBound : 0)
+					+ (isWeaklyBullish ? weakBull : 0)
 					+ (isStrglyBullish ? strgBull : 0);
 
 			flags[i] = flag;

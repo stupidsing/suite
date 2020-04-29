@@ -164,8 +164,8 @@ public class P2InferType {
 		var checks = new ArrayList<Source<Boolean>>();
 
 		if (unify(t, new Infer(PerMap.empty(), checks, null).infer(n2))) {
-			var b = true //
-					&& (Read.from(checks).isAll(Source<Boolean>::g) || failBool("fail type-checks")) //
+			var b = true
+					&& (Read.from(checks).isAll(Source<Boolean>::g) || failBool("fail type-checks"))
 					&& (getTypeSize(t) == is || failBool("invalid return type"));
 
 			if (b) {
@@ -202,7 +202,7 @@ public class P2InferType {
 		}
 
 		private Node infer_(Funp n) {
-			return new Switch<Node>(n //
+			return new Switch<Node>(n
 			).applyIf(FunpAdjustArrayPointer.class, f -> f.apply((pointer, adjust) -> {
 				var tp = typeRefOf(typeArrayOf(null, new Reference()));
 				unify(n, tp, infer(pointer));
@@ -239,12 +239,12 @@ public class P2InferType {
 				var pairs_ = Read.from(pairs);
 				var vns = pairs_.map(Pair::fst);
 				var env1 = vns.fold(env, (e, vn) -> e.put(vn, Pair.of(fdt, new Reference())));
-				var map = vns //
-						.<Node, Reference> map2(Atom::of, vn -> Reference.of(env1.getOrFail(vn).v)) //
+				var map = vns
+						.<Node, Reference> map2(Atom::of, vn -> Reference.of(env1.getOrFail(vn).v))
 						.toMap();
-				var ts = typeStructOf( //
-						Reference.of(Atom.TRUE), //
-						Dict.of(map), //
+				var ts = typeStructOf(
+						Reference.of(Atom.TRUE),
+						Dict.of(map),
 						TreeUtil.buildUp(TermOp.AND___, Read.from(vns).<Node> map(Atom::of).toList()));
 				var infer1 = new Infer(env1, checks, ts);
 
@@ -315,9 +315,9 @@ public class P2InferType {
 				if (fct != Fct.NOSCOP)
 					env1 = env;
 				else // lambda without scope can access global variables outside only
-					env1 = env //
-							.streamlet() //
-							.filter(pair -> Fdt.isGlobal(pair.v.k) || Fdt.isSubs(pair.v.k) || pair.v.k == Fdt.VIRT) //
+					env1 = env
+							.streamlet()
+							.filter(pair -> Fdt.isGlobal(pair.v.k) || Fdt.isSubs(pair.v.k) || pair.v.k == Fdt.VIRT)
 							.fold(PerMap.empty(), (e, p) -> e.put(p.k, p.v));
 				var env2 = env1.replace(vn, Pair.of(Fdt.L_MONO, tv));
 				return typeLambdaOf(tv, new Infer(env2, checks, me).infer(expr));
@@ -326,9 +326,9 @@ public class P2InferType {
 				var tf = infer(frame);
 				var tr = typeRefOf(tf);
 				unify(n, tr, infer(fpIn));
-				var env1 = PerMap //
-						.<String, Pair<Fdt, Node>> empty() //
-						.replace(frameVar.vn, Pair.of(Fdt.L_MONO, tf)) //
+				var env1 = PerMap
+						.<String, Pair<Fdt, Node>> empty()
+						.replace(frameVar.vn, Pair.of(Fdt.L_MONO, tf))
 						.replace(vn, Pair.of(Fdt.L_MONO, tv));
 				return typeLambdaOf(tv, new Infer(env1, checks, null).infer(expr));
 			})).applyIf(FunpLambdaFree.class, f -> f.apply((lambda, expr) -> {
@@ -357,8 +357,8 @@ public class P2InferType {
 				for (var pair : pairs)
 					pos.put(pair.k, i++);
 
-				var types0 = Read //
-						.from2(pairs) //
+				var types0 = Read
+						.from2(pairs)
 						.<Node, Reference> map2((n_, v) -> Atom.of(n_), (n_, v) -> Reference.of(infer(v, n_)));
 
 				var types1 = isGcStruct_ ? types0.cons(gcclazzField, Reference.of(typeNumberp)) : types0;
@@ -376,8 +376,8 @@ public class P2InferType {
 						Streamlet<Node> list;
 
 						if (isGcStruct_)
-							list = Read //
-									.from2(types2) //
+							list = Read
+									.from2(types2)
 									.sort((p0, p1) -> {
 										var b0 = isReference(p0.v);
 										var b1 = isReference(p1.v);
@@ -392,7 +392,7 @@ public class P2InferType {
 										c = c == 0 ? -Integer.compare(typeSize0, typeSize1) : c;
 										c = c == 0 ? Integer.compare(o0, o1) : c;
 										return c;
-									}) //
+									})
 									.keys();
 						else {
 							var fs0 = Read.from(pairs).<Node> map(pair -> Atom.of(pair.k));
@@ -462,10 +462,10 @@ public class P2InferType {
 
 			// if not found, it is because the code is trying to access a outer variable
 			// from a global (scope-less) closure
-			return env //
-					.getOpt(var.vn) //
-					.map(pair -> pair.map((type, tv) -> isCloneType && Fdt.isPoly(type) ? cloneType(tv) : tv)) //
-					.ifNone(() -> Funp_.fail(var, "cannot access " + var.vn + " due to limited scoping")) //
+			return env
+					.getOpt(var.vn)
+					.map(pair -> pair.map((type, tv) -> isCloneType && Fdt.isPoly(type) ? cloneType(tv) : tv))
+					.ifNone(() -> Funp_.fail(var, "cannot access " + var.vn + " due to limited scoping"))
 					.g();
 		}
 	}
@@ -492,7 +492,7 @@ public class P2InferType {
 		private Funp erase_(Funp n) {
 			var type0 = typeOf(n);
 
-			return n.sw( //
+			return n.sw(
 			).applyIf(FunpAdjustArrayPointer.class, f -> f.apply((pointer, adjust) -> {
 				var type = new Reference();
 				unify(n, typeRefOf(typeArrayOf(null, type)), typeOf(pointer));
@@ -544,8 +544,8 @@ public class P2InferType {
 				Fun<Erase, Funp> addAssigns = e1 -> {
 					var expr1 = e1.erase(expr);
 
-					return Read //
-							.from(assigns) //
+					return Read
+							.from(assigns)
 							.fold(expr1, (e, x) -> x.map((vn, v, n_) -> assign(v.get(scope), e1.erase(n_, vn), e)));
 				};
 
@@ -592,9 +592,9 @@ public class P2InferType {
 					return FunpMemory.of(pointer1, 0, getTypeSize(type0));
 			})).applyIf(FunpDoAsm.class, f -> f.apply((assigns, asm, opResult) -> {
 				env // disable register locals
-						.streamlet2() //
-						.values() //
-						.filter(var -> var.scope != null && var.scope == scope) //
+						.streamlet2()
+						.values()
+						.filter(var -> var.scope != null && var.scope == scope)
 						.sink(var -> var.setReg(false));
 
 				var saves = Mutable.of(new ArrayList<Pair<OpReg, Integer>>());
@@ -646,9 +646,9 @@ public class P2InferType {
 				if (isScoped)
 					env1 = env;
 				else // lambda without scope can access global variables outside only
-					env1 = env //
-							.streamlet() //
-							.filter(pair -> pair.v.scope == null) //
+					env1 = env
+							.streamlet()
+							.filter(pair -> pair.v.scope == null)
 							.fold(PerMap.empty(), (e, p) -> e.put(p.k, p.v));
 
 				var env2 = env1.replace(vn, av);
@@ -669,9 +669,9 @@ public class P2InferType {
 				var opArg = lt.p0reg();
 				var av = isPassReg ? register(opArg, lt.is) : localStack(1, IntMutable.of(0), b, b + lt.is);
 
-				var env1 = PerMap //
-						.<String, Var> empty() //
-						.replace(frameVar.vn, localStack(0, IntMutable.of(0), 0, size)) //
+				var env1 = PerMap
+						.<String, Var> empty()
+						.replace(frameVar.vn, localStack(0, IntMutable.of(0), 0, size))
 						.replace(vn, av);
 
 				var fp1 = erase(fp0);
@@ -825,10 +825,10 @@ public class P2InferType {
 		}
 
 		private Funp assign(Funp var, Funp value, Funp expr) {
-			return var //
-					.sw() //
-					.applyIf(FunpMemory.class, f -> FunpAssignMem.of(f, value, expr)) //
-					.applyIf(FunpOperand.class, f -> FunpAssignOp.of(f, value, expr)) //
+			return var
+					.sw()
+					.applyIf(FunpMemory.class, f -> FunpAssignMem.of(f, value, expr))
+					.applyIf(FunpOperand.class, f -> FunpAssignOp.of(f, value, expr))
 					.nonNullResult();
 		}
 
@@ -846,7 +846,7 @@ public class P2InferType {
 			var depth = new Object() {
 				private int c(Funp node) {
 					var depth = IntMutable.of(0);
-					inspect.rewrite(node, Funp.class, n -> new Switch<Funp>(n //
+					inspect.rewrite(node, Funp.class, n -> new Switch<Funp>(n
 					).doIf(FunpAllocReg.class, f -> {
 						depth.update(1 + c(((FunpAllocReg) n).expr));
 					}).applyIf(FunpLambda.class, f -> {
@@ -862,8 +862,8 @@ public class P2InferType {
 			// pass 1: check for any reference accesses to locals, set
 			// isRegByNode;
 			// pass 2: put locals to registers according to isRegByNode.
-			return var.isReg() //
-					? FunpAllocReg.of(size, value, expr1, operand) //
+			return var.isReg()
+					? FunpAllocReg.of(size, value, expr1, operand)
 					: FunpAllocStack.of(size, value, expr1, offset);
 		}
 
@@ -880,7 +880,7 @@ public class P2InferType {
 		private Funp getAddress(Funp expr) {
 			return new Object() {
 				private Funp getAddress(Funp n) {
-					return n.sw( //
+					return n.sw(
 					).applyIf(FunpDoAssignRef.class, f -> f.apply((reference, value, expr) -> {
 						return FunpAssignMem.of(memory(reference, f), erase(value), getAddress(expr));
 					})).applyIf(FunpDoAssignVar.class, f -> f.apply((var, value, expr) -> {
@@ -974,14 +974,14 @@ public class P2InferType {
 		private Mutable<Operand> offsetOperand; // offset operand
 		private int start, end;
 
-		private Var( //
-				Funp definition, //
-				Funp value, //
-				Mutable<Operand> operand, //
-				Integer scope, //
-				IntMutable offset, //
-				Mutable<Operand> offsetOperand, //
-				int start, //
+		private Var(
+				Funp definition,
+				Funp value,
+				Mutable<Operand> operand,
+				Integer scope,
+				IntMutable offset,
+				Mutable<Operand> offsetOperand,
+				int start,
 				int end) {
 			this.definition = definition;
 			this.value = value;
@@ -1019,8 +1019,8 @@ public class P2InferType {
 		}
 
 		private FunpMemory getMemory_(int scope0) {
-			var frame = scope != null //
-					? forInt(scope, scope0).<Funp> fold(Funp_.framePointer, (i, n) -> FunpMemory.of(n, 0, ps)) //
+			var frame = scope != null
+					? forInt(scope, scope0).<Funp> fold(Funp_.framePointer, (i, n) -> FunpMemory.of(n, 0, ps))
 					: null;
 
 			var nfp0 = FunpNumber.of(offset);
@@ -1070,7 +1070,7 @@ public class P2InferType {
 				if (tx == null) {
 					cloned.put(t0, tx = new Reference());
 
-					var tc = new SwitchNode<Node>(t0.finalNode() //
+					var tc = new SwitchNode<Node>(t0.finalNode()
 					).match(typePatDecor, (a, b) -> {
 						return typePatDecor.subst(cloner.clone(a), cloneType(b));
 					}).match(typePatLambda, (a, b) -> {
@@ -1099,10 +1099,10 @@ public class P2InferType {
 	}
 
 	private boolean unify(Funp n, Node type0, Node type1) {
-		return unify(type0, type1) || Funp_.<Boolean> fail(n, "" //
-				+ "cannot unify types between:" //
-				+ "\n:: " + toString(type0) //
-				+ "\n:: " + toString(type1) //
+		return unify(type0, type1) || Funp_.<Boolean> fail(n, ""
+				+ "cannot unify types between:"
+				+ "\n:: " + toString(type0)
+				+ "\n:: " + toString(type1)
 				+ "\nin " + n.getClass().getSimpleName());
 	}
 

@@ -10,11 +10,11 @@ public class Integral {
 
 	private Express ex = new Express();
 
-	public Ring<Integer> ring = new Ring<>( //
-			0, //
-			1, //
-			(a, b) -> a + b, //
-			a -> -a, //
+	public Ring<Integer> ring = new Ring<>(
+			0,
+			1,
+			(a, b) -> a + b,
+			a -> -a,
 			(a, b) -> a * b);
 
 	public Opt<Integer> parse(Node node) {

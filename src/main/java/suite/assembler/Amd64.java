@@ -13,136 +13,136 @@ public class Amd64 {
 	public static final Amd64 me = new Amd64();
 
 	public enum Insn {
-		AAA, //
-		ADC, //
-		ADD, //
-		ADDPS, //
-		ADVANCE, //
-		ALIGN, //
-		AND, //
-		AOP, //
-		CALL, //
-		CLD, //
-		CLI, //
-		CMP, //
-		CMPSB, //
-		CMPSD, //
-		CMPSQ, //
-		CMPSW, //
-		CMPXCHG, //
-		CPUID, //
-		D, //
-		DEC, //
-		DIV, //
+		AAA,
+		ADC,
+		ADD,
+		ADDPS,
+		ADVANCE,
+		ALIGN,
+		AND,
+		AOP,
+		CALL,
+		CLD,
+		CLI,
+		CMP,
+		CMPSB,
+		CMPSD,
+		CMPSQ,
+		CMPSW,
+		CMPXCHG,
+		CPUID,
+		D,
+		DEC,
+		DIV,
 		DS, // define space
-		HLT, //
-		IDIV, //
-		IMM, //
-		IMUL, //
-		IN, //
-		INC, //
-		INT, //
-		INTO, //
-		INVLPG, //
-		IRET, //
-		JA, //
-		JAE, //
-		JB, //
-		JBE, //
-		JE, //
-		JG, //
-		JGE, //
-		JL, //
-		JLE, //
-		JMP, //
-		JNE, //
-		JNO, //
-		JNP, //
-		JNS, //
-		JNZ, //
-		JO, //
-		JP, //
-		JS, //
-		JZ, //
-		LABEL, //
-		LEA, //
-		LOCK, //
-		LOG, //
-		LOOP, //
-		LOOPE, //
-		LOOPNE, //
-		LOOPNZ, //
-		LOOPZ, //
-		LGDT, //
-		LIDT, //
-		LTR, //
-		MOV, //
-		MOVAPS, //
-		MOVD, //
-		MOVQ, //
-		MOVSB, //
-		MOVSD, //
-		MOVSQ, //
-		MOVSW, //
-		MOVSX, //
-		MOVSXD, //
-		MOVZX, //
-		MUL, //
-		MULPS, //
-		NEG, //
-		NOP, //
-		NOT, //
-		OR, //
-		OUT, //
-		POP, //
-		POPA, //
-		POPF, //
-		PUSH, //
-		PUSHA, //
-		PUSHF, //
-		RDMSR, //
-		RDTSC, //
-		RDTSCP, //
-		REMARK, //
-		REP, //
-		REPE, //
-		REPNE, //
-		RET, //
-		SAL, //
-		SAR, //
-		SBB, //
-		SETA, //
-		SETAE, //
-		SETB, //
-		SETBE, //
-		SETE, //
-		SETG, //
-		SETGE, //
-		SETL, //
-		SETLE, //
-		SETNE, //
-		SHL, //
-		SHR, //
-		STI, //
-		STOSB, //
-		STOSD, //
-		STOSQ, //
-		STOSW, //
-		SUB, //
-		SUBPS, //
-		SYSCALL, //
-		SYSENTER, //
-		SYSEXIT, //
-		WRMSR, //
-		TEST, //
-		VADDPS, //
-		VMOVAPS, //
-		VMOVD, //
-		VMOVQ, //
-		VMULPS, //
-		VSUBPS, //
-		XCHG, //
-		XOR, //
+		HLT,
+		IDIV,
+		IMM,
+		IMUL,
+		IN,
+		INC,
+		INT,
+		INTO,
+		INVLPG,
+		IRET,
+		JA,
+		JAE,
+		JB,
+		JBE,
+		JE,
+		JG,
+		JGE,
+		JL,
+		JLE,
+		JMP,
+		JNE,
+		JNO,
+		JNP,
+		JNS,
+		JNZ,
+		JO,
+		JP,
+		JS,
+		JZ,
+		LABEL,
+		LEA,
+		LOCK,
+		LOG,
+		LOOP,
+		LOOPE,
+		LOOPNE,
+		LOOPNZ,
+		LOOPZ,
+		LGDT,
+		LIDT,
+		LTR,
+		MOV,
+		MOVAPS,
+		MOVD,
+		MOVQ,
+		MOVSB,
+		MOVSD,
+		MOVSQ,
+		MOVSW,
+		MOVSX,
+		MOVSXD,
+		MOVZX,
+		MUL,
+		MULPS,
+		NEG,
+		NOP,
+		NOT,
+		OR,
+		OUT,
+		POP,
+		POPA,
+		POPF,
+		PUSH,
+		PUSHA,
+		PUSHF,
+		RDMSR,
+		RDTSC,
+		RDTSCP,
+		REMARK,
+		REP,
+		REPE,
+		REPNE,
+		RET,
+		SAL,
+		SAR,
+		SBB,
+		SETA,
+		SETAE,
+		SETB,
+		SETBE,
+		SETE,
+		SETG,
+		SETGE,
+		SETL,
+		SETLE,
+		SETNE,
+		SHL,
+		SHR,
+		STI,
+		STOSB,
+		STOSD,
+		STOSQ,
+		STOSW,
+		SUB,
+		SUBPS,
+		SYSCALL,
+		SYSENTER,
+		SYSEXIT,
+		WRMSR,
+		TEST,
+		VADDPS,
+		VMOVAPS,
+		VMOVD,
+		VMOVQ,
+		VMULPS,
+		VSUBPS,
+		XCHG,
+		XOR,
 	};
 
 	public class Operand extends ToStringObject<Operand> {

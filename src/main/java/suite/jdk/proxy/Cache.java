@@ -33,8 +33,8 @@ public class Cache {
 		public boolean equals(Object object) {
 			if (Get.clazz(object) == Key.class) {
 				var other = (Key) object;
-				return bean == other.bean //
-						&& Equals.ab(method, other.method) //
+				return bean == other.bean
+						&& Equals.ab(method, other.method)
 						&& Arrays.deepEquals(arguments, other.arguments);
 			} else
 				return false;
@@ -54,9 +54,9 @@ public class Cache {
 	}
 
 	public <I> I proxyByMethodNames(Class<I> interface_, I object, Set<String> methodNames) {
-		var methods = Read //
-				.from(interface_.getMethods()) //
-				.filter(m -> methodNames.contains(m.getName())) //
+		var methods = Read
+				.from(interface_.getMethods())
+				.filter(m -> methodNames.contains(m.getName()))
 				.toSet();
 		return proxy(interface_, object, methods);
 	}

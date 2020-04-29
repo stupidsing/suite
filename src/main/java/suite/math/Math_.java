@@ -80,9 +80,9 @@ public class Math_ {
 	public static void verifyEquals(double f0, double f1, double epsilon) {
 		var diff = abs(f0 - f1);
 		if (!Double.isFinite(diff) || epsilon < diff)
-			fail("values differ" //
-					+ ": f0 = " + To.string(f0) //
-					+ ", f1 = " + To.string(f1) //
+			fail("values differ"
+					+ ": f0 = " + To.string(f0)
+					+ ", f1 = " + To.string(f1)
 					+ ", diff = " + diff);
 	}
 

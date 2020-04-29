@@ -64,7 +64,7 @@ public class Symbolic {
 	}
 
 	private FunExpr m(Node n, Fun<Node, FunExpr> fun) {
-		return new SwitchNode<FunExpr>(n //
+		return new SwitchNode<FunExpr>(n
 		).match(patAdd, (a, b) -> {
 			return f.bi("+", fun.apply(a), fun.apply(b));
 		}).match(patNeg, a -> {
@@ -155,16 +155,16 @@ public class Symbolic {
 	}
 
 	public Opt<Node> polyize(Node node, Atom... vars) {
-		return Read //
-				.from(vars) //
-				.<Ringo<?>> fold(Ringo.ofFractional(Fractional.ofIntegral()), (r, var) -> r.poly(new Rewrite(var))) //
+		return Read
+				.from(vars)
+				.<Ringo<?>> fold(Ringo.ofFractional(Fractional.ofIntegral()), (r, var) -> r.poly(new Rewrite(var)))
 				.pf(node);
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked", "unused", })
 	private Opt<Node> polyize0(Node node, Atom... vars) {
-		var fractional_ = Read //
-				.from(vars) //
+		var fractional_ = Read
+				.from(vars)
 				.<Fractional<?>> fold(Fractional.ofIntegral(), (fr, var) -> divPoly(new Rewrite(var), fr).fractional());
 
 		return fractional_.parse(node).map(o -> fractional_.format((Fract) o));
@@ -177,12 +177,12 @@ public class Symbolic {
 	}
 
 	private static <I> DivisiblePolynomial<Fract<I>> divPoly(Rewrite rewrite, Fractional<I> fractional) {
-		return new DivisiblePolynomial<>( //
-				rewrite.x, //
-				rewrite::is_x, //
-				fractional.field, //
-				fractional::sign, //
-				fractional::parse, //
+		return new DivisiblePolynomial<>(
+				rewrite.x,
+				rewrite::is_x,
+				fractional.field,
+				fractional::sign,
+				fractional::parse,
 				fractional::format);
 	}
 
@@ -218,7 +218,7 @@ public class Symbolic {
 		// sin a
 		// i
 		private Node rewrite(Node node) {
-			return new SwitchNode<Node>(node //
+			return new SwitchNode<Node>(node
 			).match(".0 - .1", (a, b) -> {
 				return a != n0 ? add(rewrite(a), neg(rewrite(b))) : null;
 			}).match(".0 / .1", (a, b) -> {
@@ -237,7 +237,7 @@ public class Symbolic {
 		}
 
 		private Node d(Node node) { // differentiation
-			return new SwitchNode<Node>(node //
+			return new SwitchNode<Node>(node
 			).match(patAdd, (u, v) -> {
 				return add(d(u), d(v));
 			}).match(patNeg, u -> {
@@ -262,7 +262,7 @@ public class Symbolic {
 		}
 
 		private Opt<Node> i(Node node) { // integration
-			return new SwitchNode<Opt<Node>>(node //
+			return new SwitchNode<Opt<Node>>(node
 			).match(patAdd, (u, v) -> {
 				var iudxs = i(u);
 				var ivdxs = i(v);
@@ -295,7 +295,7 @@ public class Symbolic {
 		private Node sumOfProducts(Node node) {
 			var recurse = new Object() {
 				private Streamlet<Node> pos(Node node_) {
-					return new SwitchNode<Streamlet<Node>>(node_ //
+					return new SwitchNode<Streamlet<Node>>(node_
 					).match(patMul, (a, b) -> {
 						return Streamlet.concat(pos(a), pos(b));
 					}).match(patInv, a -> {
@@ -328,7 +328,7 @@ public class Symbolic {
 				}
 
 				private Streamlet<Node> sop(Node node_) {
-					return new SwitchNode<Streamlet<Node>>(node_ //
+					return new SwitchNode<Streamlet<Node>>(node_
 					).match(patAdd, (a, b) -> {
 						return Streamlet.concat(sop(a), sop(b));
 					}).match(patNeg, a -> {
@@ -340,12 +340,12 @@ public class Symbolic {
 					}).match(patLn_, a -> {
 						return pos(a).map(patLn_::subst);
 					}).match("sin (.0 + .1)", (a, b) -> {
-						return Read.each( //
-								mul.recompose(x, Read.each(patSin.subst(a), patCos.subst(b))), //
+						return Read.each(
+								mul.recompose(x, Read.each(patSin.subst(a), patCos.subst(b))),
 								mul.recompose(x, Read.each(patCos.subst(a), patSin.subst(b))));
 					}).match("cos (.0 + .1)", (a, b) -> {
-						return Read.each( //
-								mul.recompose(x, Read.each(patCos.subst(a), patCos.subst(b))), //
+						return Read.each(
+								mul.recompose(x, Read.each(patCos.subst(a), patCos.subst(b))),
 								mul.recompose(x, Read.each(neg(patSin.subst(a)), patSin.subst(b))));
 					}).applyIf(Node.class, n -> {
 						return node_ == n0 ? Read.empty() : Read.each(node_);
@@ -395,7 +395,7 @@ public class Symbolic {
 
 			return new Object() {
 				private Opt<Poly<Node>> poly(Node node) {
-					return new SwitchNode<Opt<Poly<Node>>>(node //
+					return new SwitchNode<Opt<Poly<Node>>>(node
 					).match(patAdd, (a, b) -> {
 						return poly(a).join(poly(b), pr.add);
 					}).match(patNeg, a -> {
@@ -440,8 +440,8 @@ public class Symbolic {
 
 		private boolean isContains_x(Node node) {
 			var tree = Tree.decompose(node);
-			return tree != null //
-					? isContains_x(tree.getLeft()) || isContains_x(tree.getRight()) //
+			return tree != null
+					? isContains_x(tree.getLeft()) || isContains_x(tree.getRight())
 					: is_x(node);
 		}
 

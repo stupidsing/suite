@@ -26,11 +26,11 @@ public class SoundEx {
 			while (p < len) {
 				var p1 = p;
 				while (p1 < len)
-					if (p1 + 1 < len //
+					if (p1 + 1 < len
 							&& index(a[p]) == index(a[p1 + 1]))
 						p1++;
-					else if (p1 + 2 < len //
-							&& 0 <= "HW".indexOf(a[p1 + 1]) //
+					else if (p1 + 2 < len
+							&& 0 <= "HW".indexOf(a[p1 + 1])
 							&& index(a[p]) == index(a[p1 + 2]))
 						p1 += 2;
 					else

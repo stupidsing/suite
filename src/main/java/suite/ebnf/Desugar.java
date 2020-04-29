@@ -42,8 +42,8 @@ public class Desugar {
 			else {
 				var name = "$" + counter++;
 				var ege = new Grammar(GrammarType.ENTITY, name);
-				egx = new Grammar(GrammarType.NAMED_, name //
-						, new Grammar(GrammarType.OR____, //
+				egx = new Grammar(GrammarType.NAMED_, name
+						, new Grammar(GrammarType.OR____,
 								List.of(bs, new Grammar(GrammarType.AND___, List.of(ege, cs)))));
 				grammarByEntity.put(name, egx);
 			}

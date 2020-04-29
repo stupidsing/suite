@@ -36,7 +36,7 @@ public class P03Bind {
 
 	public Funp bind(Funp be, Funp value, Funp then, Funp else_) {
 		IntObj_Obj<Int_Obj<Funp>, Funp> bindArray = (size0, fun0) -> {
-			var fun1 = new Switch<Int_Obj<Funp>>(value //
+			var fun1 = new Switch<Int_Obj<Funp>>(value
 			).applyIf(FunpArray.class, g -> {
 				var elements = g.elements;
 				return size0 == elements.size() ? elements::get : null;
@@ -55,7 +55,7 @@ public class P03Bind {
 		else if (be instanceof FunpNumber && value instanceof FunpNumber)
 			return ((FunpNumber) be).i == ((FunpNumber) value).i ? then : else_;
 		else {
-			var result = be.sw( //
+			var result = be.sw(
 			).applyIf(FunpArray.class, f -> f.apply(elements0 -> {
 				return bindArray.apply(elements0.size(), elements0::get);
 			})).applyIf(FunpDontCare.class, f -> {
@@ -68,13 +68,13 @@ public class P03Bind {
 				var pairs1 = value.cast(FunpStruct.class, g -> g.pairs);
 				var size0 = pairs0.size();
 
-				Int_Obj<Funp> fun = pairs1 != null && size0 == pairs1.size() //
-						? i -> pairs1.get(i).v //
+				Int_Obj<Funp> fun = pairs1 != null && size0 == pairs1.size()
+						? i -> pairs1.get(i).v
 						: i -> FunpField.of(FunpReference.of(value), pairs0.get(i).k);
 
 				return forInt(size0).fold(then, (i, then_) -> bind(pairs0.get(i).v, fun.apply(i), then_, else_));
 			})).applyIf(FunpTag.class, f -> f.apply((id, tag, value_) -> {
-				return new Switch<Funp>(value //
+				return new Switch<Funp>(value
 				).applyIf(FunpTag.class, g -> g.apply((id1, tag1, value1) -> {
 					return id.value() == id1.value() ? bind(value_, value1, then, else_) : else_;
 				})).applyIf(Funp.class, g -> {

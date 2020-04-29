@@ -16,8 +16,8 @@ public class Hkd {
 	private Vector vec = new Vector();
 
 	public DataSource dataSource(String symbol, TimeRange period) {
-		return Equals.string(symbol, Instrument.cashSymbol) //
-				? DataSource.of(new long[] { period.to.epochSec(), }, vec.of(1f)) //
+		return Equals.string(symbol, Instrument.cashSymbol)
+				? DataSource.of(new long[] { period.to.epochSec(), }, vec.of(1f))
 				: fail();
 	}
 
@@ -31,9 +31,9 @@ public class Hkd {
 	}
 
 	public Map<String, Float> quote(Set<String> symbols) {
-		return Read //
-				.from(symbols) //
-				.map2(symbol -> Equals.string(symbol, Instrument.cashSymbol) ? 1f : fail()) //
+		return Read
+				.from(symbols)
+				.map2(symbol -> Equals.string(symbol, Instrument.cashSymbol) ? 1f : fail())
 				.toMap();
 	}
 

@@ -40,14 +40,14 @@ public class BackAllocator_ {
 
 	public static BackAllocator sum(BackAllocator... bas) {
 		return (akds, indices) -> {
-			var odts = Read //
-					.from(bas) //
-					.map(ba -> ba.allocate(akds, indices)) //
+			var odts = Read
+					.from(bas)
+					.map(ba -> ba.allocate(akds, indices))
 					.collect();
 
-			return index -> odts //
-					.flatMap(odt -> odt.onDateTime(index)) //
-					.groupBy(Pair::fst, st -> st.toDouble(AsDbl.sum(Pair::snd))) //
+			return index -> odts
+					.flatMap(odt -> odt.onDateTime(index))
+					.groupBy(Pair::fst, st -> st.toDouble(AsDbl.sum(Pair::snd)))
 					.toList();
 		};
 	}

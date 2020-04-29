@@ -65,12 +65,12 @@ public interface BackAllocator {
 			var returnsByKey = akds.dsByKey.mapValue(DataSource::returns).toMap();
 			var ba0 = allocate(akds, indices);
 
-			return index -> Read //
-					.from2(ba0.onDateTime(index)) //
+			return index -> Read
+					.from2(ba0.onDateTime(index))
 					.map2((symbol, potential) -> {
 						var returns = Arrays.copyOfRange(returnsByKey.get(symbol), index - nDays, index);
 						return potential / stat.variance(returns);
-					}) //
+					})
 					.toList();
 		};
 	}
@@ -79,8 +79,8 @@ public interface BackAllocator {
 		return (akds, indices) -> {
 			var onDateTime = allocate(akds, indices);
 
-			return index -> monthPred.test(Time.ofEpochSec(akds.ts[index - 1]).month()) //
-					? onDateTime.onDateTime(index) //
+			return index -> monthPred.test(Time.ofEpochSec(akds.ts[index - 1]).month())
+					? onDateTime.onDateTime(index)
 					: List.of();
 		};
 	}
@@ -112,8 +112,8 @@ public interface BackAllocator {
 			var onDateTime = ba1.allocate(akds, indices);
 
 			return index -> {
-				var potentialBySymbol = Read //
-						.from2(onDateTime.onDateTime(index)) //
+				var potentialBySymbol = Read
+						.from2(onDateTime.onDateTime(index))
 						.collect();
 
 				var size = potentialBySymbol.size();
@@ -121,9 +121,9 @@ public interface BackAllocator {
 				if (0 < size) {
 					var each = 1d / size;
 
-					return potentialBySymbol //
-							.filterKey(symbol -> !Equals.string(symbol, Instrument.cashSymbol)) //
-							.mapValue(potential -> 1d / each) //
+					return potentialBySymbol
+							.filterKey(symbol -> !Equals.string(symbol, Instrument.cashSymbol))
+							.mapValue(potential -> 1d / each)
 							.toList();
 				} else
 					return List.of();
@@ -159,8 +159,8 @@ public interface BackAllocator {
 				var indexPricex = ids.get(-2).t1;
 				var indexReturn = Quant.return_(indexPrice0, indexPricex);
 
-				return -.03f < indexReturn //
-						? onDateTime.onDateTime(index) //
+				return -.03f < indexReturn
+						? onDateTime.onDateTime(index)
 						: List.of();
 			};
 		};
@@ -203,8 +203,8 @@ public interface BackAllocator {
 			var onDateTime = allocate(akds, indices);
 
 			return index -> {
-				queue.addLast(Read //
-						.from2(onDateTime.onDateTime(index)) //
+				queue.addLast(Read
+						.from2(onDateTime.onDateTime(index))
 						.toMap());
 
 				while (period < queue.size())
@@ -229,12 +229,12 @@ public interface BackAllocator {
 		return (akds, indices) -> {
 			var onDateTime = allocate(akds, indices);
 
-			return index -> Read //
-					.from2(onDateTime.onDateTime(index)) //
+			return index -> Read
+					.from2(onDateTime.onDateTime(index))
 					.map2((symbol, potential) -> {
 						return Double.isFinite(potential) ? potential : fail("potential is " + potential);
-					}) //
-					.filterValue(potential -> 0d < potential) //
+					})
+					.filterValue(potential -> 0d < potential)
 					.toList();
 		};
 	}
@@ -243,10 +243,10 @@ public interface BackAllocator {
 		return (akds, indices) -> {
 			var onDateTime = allocate(akds, indices);
 
-			return index -> Read //
-					.from2(onDateTime.onDateTime(index)) //
-					.sortByValue((r0, r1) -> Compare.objects(r1, r0)) //
-					.take(top) //
+			return index -> Read
+					.from2(onDateTime.onDateTime(index))
+					.sortByValue((r0, r1) -> Compare.objects(r1, r0))
+					.take(top)
 					.toList();
 		};
 	}
@@ -264,7 +264,7 @@ public interface BackAllocator {
 
 	public default BackAllocator relative(DataSource indexDataSource) {
 		return (akds0, times_) -> {
-			var dsBySymbol1 = akds0.dsByKey //
+			var dsBySymbol1 = akds0.dsByKey
 					.mapValue(ds0 -> {
 						var indexPrices = indexDataSource.alignBeforePrices(ds0.ts).prices;
 						var length = ds0.ts.length;
@@ -273,18 +273,18 @@ public interface BackAllocator {
 						for (var i = 0; i < length; i++) {
 							var r = 1d / indexPrices[i];
 							var t = ds0.ts[i];
-							data1[i] = new Datum( //
-									t, //
-									t + DataSource.tickDuration, //
-									(float) (ds0.opens[i] * r), //
-									(float) (ds0.closes[i] * r), //
-									(float) (ds0.lows[i] * r), //
-									(float) (ds0.highs[i] * r), //
+							data1[i] = new Datum(
+									t,
+									t + DataSource.tickDuration,
+									(float) (ds0.opens[i] * r),
+									(float) (ds0.closes[i] * r),
+									(float) (ds0.lows[i] * r),
+									(float) (ds0.highs[i] * r),
 									ds0.volumes[i]);
 						}
 
 						return DataSource.of(Read.from(data1));
-					}) //
+					})
 					.collect();
 
 			return allocate(new AlignKeyDataSource<>(akds0.ts, dsBySymbol1), times_)::onDateTime;
@@ -321,13 +321,13 @@ public interface BackAllocator {
 				var potentialBySymbol1 = Read.from2(potentialBySymbol).toMap();
 
 				// find out the transactions
-				var diffBySymbol = Read //
-						.from(Union.of(potentialBySymbol0.keySet(), potentialBySymbol1.keySet())) //
+				var diffBySymbol = Read
+						.from(Union.of(potentialBySymbol0.keySet(), potentialBySymbol1.keySet()))
 						.map2(symbol -> {
 							var potential0 = potentialBySymbol0.getOrDefault(symbol, 0d);
 							var potential1 = potentialBySymbol1.getOrDefault(symbol, 0d);
 							return potential1 - potential0;
-						}) //
+						})
 						.toMap();
 
 				// check on each stock symbol
@@ -376,9 +376,9 @@ public interface BackAllocator {
 				mutable.update(potentialBySymbol1);
 
 				// re-assemble the entries into current profile
-				return Read //
-						.fromListMap(entriesBySymbol) //
-						.groupBy(entries -> entries.toDouble(AsDbl.sum(pair -> pair.t0))) //
+				return Read
+						.fromListMap(entriesBySymbol)
+						.groupBy(entries -> entries.toDouble(AsDbl.sum(pair -> pair.t0)))
 						.toList();
 			};
 		};
@@ -417,10 +417,10 @@ public interface BackAllocator {
 class BackAllocatorUtil {
 
 	static List<Pair<String, Double>> scale(List<Pair<String, Double>> potentialBySymbol, double scale) {
-		return Read //
-				.from2(potentialBySymbol) //
-				.filterValue(potential -> potential != 0d) //
-				.mapValue(potential -> potential * scale) //
+		return Read
+				.from2(potentialBySymbol)
+				.filterValue(potential -> potential != 0d)
+				.mapValue(potential -> potential * scale)
 				.toList();
 	}
 

@@ -46,25 +46,25 @@ public class CommandDispatcher {
 	private Builder builderLevel2 = null;
 
 	private enum InputType {
-		EVALUATE("\\"), //
-		EVALUATEDO("\\d"), //
-		EVALUATEDOCHARS("\\dc"), //
-		EVALUATEDOSTR("\\ds"), //
-		EVALUATEEFI("\\i"), //
-		EVALUATELFI0("\\j"), //
-		EVALUATELFI("\\k"), //
-		EVALUATESTR("\\s"), //
-		EVALUATETYPE("\\t"), //
-		FACT(""), //
-		OPTION("-"), //
-		PRETTYPRINT("\\p"), //
-		QUERY("?"), //
-		QUERYCOMPILED("/l"), //
-		QUERYCOMPILED2("/ll"), //
-		QUERYELABORATE("/"), //
-		QUERYSEWING("?s"), //
-		QUERYSEWINGELAB("/s"), //
-		RESET("\\reset"), //
+		EVALUATE("\\"),
+		EVALUATEDO("\\d"),
+		EVALUATEDOCHARS("\\dc"),
+		EVALUATEDOSTR("\\ds"),
+		EVALUATEEFI("\\i"),
+		EVALUATELFI0("\\j"),
+		EVALUATELFI("\\k"),
+		EVALUATESTR("\\s"),
+		EVALUATETYPE("\\t"),
+		FACT(""),
+		OPTION("-"),
+		PRETTYPRINT("\\p"),
+		QUERY("?"),
+		QUERYCOMPILED("/l"),
+		QUERYCOMPILED2("/ll"),
+		QUERYELABORATE("/"),
+		QUERYSEWING("?s"),
+		QUERYSEWINGELAB("/s"),
+		RESET("\\reset"),
 		;
 
 		private String prefix;

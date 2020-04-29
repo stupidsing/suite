@@ -38,8 +38,8 @@ public class SimpleCgiServerMain {
 		new Listen().io(4000, (is, os) -> {
 			var headers = readHeaders(is);
 
-			os.write(("Status: 200 OK\r\n" //
-					+ "Content-Type: text/html\r\n" //
+			os.write(("Status: 200 OK\r\n"
+					+ "Content-Type: text/html\r\n"
 					+ "\r\n").getBytes(Utf8.charset));
 
 			handler.handle(headers, os);

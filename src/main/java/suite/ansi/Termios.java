@@ -14,14 +14,14 @@ public class Termios implements Closeable {
 	private Thread hook = new Thread(this::close);
 
 	public enum AnsiColor {
-		BLACK_(0), //
-		RED___(1), //
-		GREEN_(2), //
-		YELLOW(3), //
-		BLUE__(4), //
-		MAGENT(5), //
-		CYAN__(6), //
-		WHITE_(7), //
+		BLACK_(0),
+		RED___(1),
+		GREEN_(2),
+		YELLOW(3),
+		BLUE__(4),
+		MAGENT(5),
+		CYAN__(6),
+		WHITE_(7),
 		;
 
 		public int value;

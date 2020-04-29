@@ -39,8 +39,8 @@ public class Listen {
 	}
 
 	public static Pusher<ActionEvent> actionPerformed(JComponent component, Object key) {
-		return pusher(push -> component //
-				.getActionMap() //
+		return pusher(push -> component
+				.getActionMap()
 				.put(key, new AbstractAction() {
 					private static final long serialVersionUID = 1l;
 

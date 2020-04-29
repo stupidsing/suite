@@ -49,22 +49,22 @@ public class ReverseCorrelateBackAllocator implements BackAllocator {
 		});
 
 		return index -> {
-			var reverseCorrelationBySymbol = dsBySymbol //
+			var reverseCorrelationBySymbol = dsBySymbol
 					.map2((symbol, ds) -> {
 						Double reverseCorrelation = dsv.get(symbol, index);
 						return reverseCorrelation != null ? reverseCorrelation : Double.NaN;
-					}) //
-					.filterValue(Double::isFinite) //
-					.filterValue(reverseCorrelation -> reverseCorrelationThreshold < abs(reverseCorrelation)) //
+					})
+					.filterValue(Double::isFinite)
+					.filterValue(reverseCorrelation -> reverseCorrelationThreshold < abs(reverseCorrelation))
 					.toMap();
 
-			var reversePricesBySymbol = dsBySymbol //
-					.filterKey(reverseCorrelationBySymbol::containsKey) //
+			var reversePricesBySymbol = dsBySymbol
+					.filterKey(reverseCorrelationBySymbol::containsKey)
 					.mapValue(ds -> {
 						var prices = ds.prices;
 						var last = index - 1;
 						return To.vector(tor, i -> prices[last - i]);
-					}) //
+					})
 					.collect();
 
 			return new KellyCriterion().allocate(reversePricesBySymbol, reduction);

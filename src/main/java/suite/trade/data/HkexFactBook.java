@@ -20,15 +20,15 @@ public class HkexFactBook {
 		// "https://www.hkexnews.hk/reports/prolongedsusp/Documents/psuspenrep_mb.doc";
 		var url = "https://www2.hkexnews.hk/-/media/HKEXnews/Homepage/Exchange-Reports/Prolonged-Suspension-Status-Report/psuspenrep_mb.pdf";
 
-		return Singleton.me.storeCache //
-				.pipe(url) //
-				.pipe("xargs -I {} curl '{}'") //
-				.pipe("pdftotext -nopgbrk -raw - -") //
-				.pipe("sed -n 's/.*(\\(.*\\)).*/\\1/p'") //
-				.pipe("egrep -v '^[A-Za-z]'") //
-				.pipe("sort -rn") //
-				.read() //
-				.map(HkexUtil::toSymbol) //
+		return Singleton.me.storeCache
+				.pipe(url)
+				.pipe("xargs -I {} curl '{}'")
+				.pipe("pdftotext -nopgbrk -raw - -")
+				.pipe("sed -n 's/.*(\\(.*\\)).*/\\1/p'")
+				.pipe("egrep -v '^[A-Za-z]'")
+				.pipe("sort -rn")
+				.read()
+				.map(HkexUtil::toSymbol)
 				.collect();
 	}
 
@@ -36,21 +36,21 @@ public class HkexFactBook {
 
 		// we do not use the 4th quarter data since data might not be yet available from
 		// HKEX website
-		return year <= 2017 //
-				? queryYearlyLeadingCompaniesByMarketCap(year) //
+		return year <= 2017
+				? queryYearlyLeadingCompaniesByMarketCap(year)
 				: queryQuarterlyLeadingCompaniesByMarketCap(year, "3rd-Quarter");
 	}
 
 	public Streamlet<String> queryYearlyLeadingCompaniesByMarketCap(int year) {
-		var list0 = Singleton.me.storeCache //
-				.pipe(getUrl(year)) //
-				.pipe("xargs -I {} curl '{}'") //
-				.pipe("pdftotext -nopgbrk -raw - -") //
-				.pipe("sed -e '1,/leading companies in market capitalisation/ d'") //
-				.pipe("grep '^[1-9]'") //
-				.pipe("cut -d\\, -f1") //
-				.pipe("sed 's/\\(.*\\) [0-9]*$/\\1/g'") //
-				.read() //
+		var list0 = Singleton.me.storeCache
+				.pipe(getUrl(year))
+				.pipe("xargs -I {} curl '{}'")
+				.pipe("pdftotext -nopgbrk -raw - -")
+				.pipe("sed -e '1,/leading companies in market capitalisation/ d'")
+				.pipe("grep '^[1-9]'")
+				.pipe("cut -d\\, -f1")
+				.pipe("sed 's/\\(.*\\) [0-9]*$/\\1/g'")
+				.read()
 				.concatMap(line -> {
 					var p0 = line.indexOf(" ", 0);
 					var p1 = 0 <= p0 ? line.indexOf(" ", p0 + 1) : -1;
@@ -66,7 +66,7 @@ public class HkexFactBook {
 						return Read.each(list);
 					} else
 						return Read.empty();
-				}) //
+				})
 				.toList();
 
 		var list1 = new ArrayList<List<String>>();
@@ -78,48 +78,48 @@ public class HkexFactBook {
 			else
 				break;
 
-		return Read //
-				.from(list1) //
+		return Read
+				.from(list1)
 				.map(list -> {
 					// var instrument = new
 					// Instrument(HkexUtil.toSymbol(list.get(1).replace("*",
 					// "")), list.get(2));
 					return HkexUtil.toSymbol(list.get(1).replace("*", ""));
-				}) //
+				})
 				.collect();
 	}
 
 	public Streamlet<String> queryQuarterlyLeadingCompaniesByMarketCap(int year, String quarter) {
-		String url = "https://www.hkex.com.hk" //
-				+ "/-/media/HKEX-Market/Market-Data/Statistics/Consolidated-Reports" //
-				+ "/HKEX-Securities-and-Derivatives-Markets-Quarterly-Report" //
+		String url = "https://www.hkex.com.hk"
+				+ "/-/media/HKEX-Market/Market-Data/Statistics/Consolidated-Reports"
+				+ "/HKEX-Securities-and-Derivatives-Markets-Quarterly-Report"
 				+ "/" + quarter + "-" + year + "/Full_e.pdf?la=en";
 
-		return Singleton.me.storeCache //
-				.pipe(url) //
-				.pipe("xargs -I {} wget -O - '{}'") //
-				.pipe("pdftotext -nopgbrk -raw - -") //
-				.pipe("sed -e '1,/50 Leading Companies by Market Capitalisation/ d'") //
-				.pipe("sed -n '1,/Market Total/ p'") //
-				.pipe("cut -d' ' -f2-") //
-				.pipe("egrep '^0'") //
-				.read() //
-				.map(line -> HkexUtil.toSymbol(line.substring(0, 5))) //
-				.sort(Compare::objects) //
+		return Singleton.me.storeCache
+				.pipe(url)
+				.pipe("xargs -I {} wget -O - '{}'")
+				.pipe("pdftotext -nopgbrk -raw - -")
+				.pipe("sed -e '1,/50 Leading Companies by Market Capitalisation/ d'")
+				.pipe("sed -n '1,/Market Total/ p'")
+				.pipe("cut -d' ' -f2-")
+				.pipe("egrep '^0'")
+				.read()
+				.map(line -> HkexUtil.toSymbol(line.substring(0, 5)))
+				.sort(Compare::objects)
 				.collect();
 	}
 
 	public Streamlet<String> queryMainBoardCompanies(int year) {
-		return Singleton.me.storeCache //
-				.pipe(getUrl(year)) //
-				.pipe("xargs -I {} curl '{}'") //
-				.pipe("pdftotext -nopgbrk -raw - -") //
-				.pipe("sed -e '1,/List of listed companies on Main Board/ d'") //
-				.pipe("sed -n '1,/List of listed companies on GEM/ p'") //
-				.pipe("egrep '^0'") //
-				.read() //
-				.map(line -> HkexUtil.toSymbol(line.substring(0, 5))) //
-				.sort(Compare::objects) //
+		return Singleton.me.storeCache
+				.pipe(getUrl(year))
+				.pipe("xargs -I {} curl '{}'")
+				.pipe("pdftotext -nopgbrk -raw - -")
+				.pipe("sed -e '1,/List of listed companies on Main Board/ d'")
+				.pipe("sed -n '1,/List of listed companies on GEM/ p'")
+				.pipe("egrep '^0'")
+				.read()
+				.map(line -> HkexUtil.toSymbol(line.substring(0, 5)))
+				.sort(Compare::objects)
 				.collect();
 	}
 

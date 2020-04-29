@@ -71,12 +71,12 @@ public class PopupMain {
 
 		var lay = new LayoutCalculator(frame.getContentPane());
 
-		var layout = lay.boxv( //
-				lay.fx(32, lay.boxh( //
-						lay.ex(32, lay.c(inTextField)), //
-						lay.fx(64, lay.c(volLabel)), //
-						lay.fx(48, lay.c(volUpButton)), //
-						lay.fx(48, lay.c(volDnButton)))), //
+		var layout = lay.boxv(
+				lay.fx(32, lay.boxh(
+						lay.ex(32, lay.c(inTextField)),
+						lay.fx(64, lay.c(volLabel)),
+						lay.fx(48, lay.c(volUpButton)),
+						lay.fx(48, lay.c(volDnButton)))),
 				lay.ex(32, lay.c(outLabel)));
 
 		Runnable refresh = () -> {

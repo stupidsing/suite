@@ -56,9 +56,9 @@ public class FunRewrite extends FunFactory {
 	}
 
 	private FunExpr rewriteFun(FunExpr e0) {
-		return e0.sw( //
-		).applyIf(CastFunExpr.class, //
-				e1 -> e1.expr.sw( //
+		return e0.sw(
+		).applyIf(CastFunExpr.class,
+				e1 -> e1.expr.sw(
 				).applyIf(Declare0ParameterFunExpr.class, e2 -> e2.apply(do_ -> {
 					return rewrite(e2.do_);
 				})).applyIf(Declare1ParameterFunExpr.class, e2 -> e2.apply((parameter, do_) -> {
@@ -68,7 +68,7 @@ public class FunRewrite extends FunFactory {
 					placeholders.put(p0, local(1));
 					placeholders.put(p1, local(2));
 					return rewrite(do_);
-				})).nonNullResult() //
+				})).nonNullResult()
 		).nonNullResult();
 	}
 
@@ -77,7 +77,7 @@ public class FunRewrite extends FunFactory {
 	}
 
 	private FunExpr rewrite_(FunExpr e0) {
-		return e0.sw( //
+		return e0.sw(
 		).applyIf(ApplyFunExpr.class, e1 -> e1.apply((object, parameters) -> {
 			var object1 = rewrite(object);
 			var parameters1 = Read.from(parameters).map(this::rewrite).toArray(FunExpr.class);
@@ -90,7 +90,7 @@ public class FunRewrite extends FunFactory {
 				var fieldValues = new HashMap<String, FunExpr>();
 
 				var e3 = rewrite(e -> {
-					return new Switch<FunExpr>(e //
+					return new Switch<FunExpr>(e
 					).applyIf(FieldStaticFunExpr.class, e4 -> e4.apply((fieldName, ft) -> {
 						var fieldType = fieldTypes.get(fieldName);
 						fieldTypes.put(fieldName, fieldType);

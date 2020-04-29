@@ -68,11 +68,11 @@ public class Sina {
 	}
 
 	private Streamlet<Factor> queryFactor_(Streamlet<String> symbols, boolean isCache) {
-		var url = "http://hq.sinajs.cn/?list=" + symbols //
-				.map(this::toSina) //
+		var url = "http://hq.sinajs.cn/?list=" + symbols
+				.map(this::toSina)
 				.toJoinedString(",");
 
-		return getLines(url, isCache) //
+		return getLines(url, isCache)
 				.map(line -> Fit.parts(line, "var hq_str_", "=\"", "\"").map((t0, t1, t2) -> {
 
 					// var hq_str_rt_hk00005="xxx";
@@ -112,16 +112,16 @@ public class Sina {
 					factor.lastCloseDate = vs[17]; // 2017/07/07
 					factor.lastCloseTime = vs[18]; // 16:08:44
 					return factor;
-				})) //
+				}))
 				.collect();
 	}
 
 	private Map<String, Integer> queryLotSizes_(Streamlet<String> symbols, boolean isCache) {
-		var url = "http://hq.sinajs.cn/?list=" + symbols //
-				.map(this::toSinaI) //
+		var url = "http://hq.sinajs.cn/?list=" + symbols
+				.map(this::toSinaI)
 				.toJoinedString(",");
 
-		return getLines(url, isCache) //
+		return getLines(url, isCache)
 				.map(line -> Fit.parts(line, "var hq_str_", "=\"", "\"").map((t0, t1, t2) -> {
 
 					// var hq_str_hk00005_i="xxx";
@@ -132,12 +132,12 @@ public class Sina {
 					var vs = t2.split(",");
 
 					return Pair.of(toYahooI(t1), Integer.parseInt(vs[18]));
-				})) //
+				}))
 				.toMap(Pair::fst, Pair::snd);
 	}
 
 	private Streamlet<String> getLines(String url, boolean isCache) {
-		return Read //
+		return Read
 				.from(ex(() -> {
 					Puller<Bytes> in;
 
@@ -146,12 +146,12 @@ public class Sina {
 					else
 						in = HttpClient.get(url).out();
 
-					return in //
+					return in
 							.map(bytes -> Build.string(sb -> {
 								for (var i = 0; i < bytes.size(); i++)
 									sb.append((char) bytes.get(i));
-							})) //
-							.toJoinedString() //
+							}))
+							.toJoinedString()
 							.split("\n");
 				}));
 	}

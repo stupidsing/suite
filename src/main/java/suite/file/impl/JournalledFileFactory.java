@@ -24,20 +24,20 @@ public class JournalledFileFactory {
 	}
 
 	public static JournalledPageFile open(Path path, int pageSize, boolean isCreate) {
-		return open( //
-				FileFactory.pageFile(path, isCreate, pageSize), //
-				FileFactory.pageFile(FileUtil.ext(path, ".journal"), isCreate, pageSize + 4), //
-				FileFactory.pageFile(FileUtil.ext(path, ".pointer"), isCreate, 4), //
+		return open(
+				FileFactory.pageFile(path, isCreate, pageSize),
+				FileFactory.pageFile(FileUtil.ext(path, ".journal"), isCreate, pageSize + 4),
+				FileFactory.pageFile(FileUtil.ext(path, ".pointer"), isCreate, 4),
 				pageSize);
 	}
 
 	/**
 	 * Journalling based on redo logs.
 	 */
-	private static JournalledPageFile open( //
-			PageFile df, //
-			PageFile jpf, //
-			PageFile ppf, //
+	private static JournalledPageFile open(
+			PageFile df,
+			PageFile jpf,
+			PageFile ppf,
 			int pageSize) {
 		var bytesSerializer = ser.bytes(pageSize);
 

@@ -29,16 +29,16 @@ public class Keeper {
 	}
 
 	public PackageMemento loadPackageMemento(String packageName) {
-		return ReadFile //
-				.from(keeperDir.resolve(packageName)) //
+		return ReadFile
+				.from(keeperDir.resolve(packageName))
 				.doRead(is -> mapify.unmapify(PackageMemento.class, om.readValue(is, Map.class)));
 	}
 
 	public void savePackageMemento(PackageMemento packageMemento) {
 		var packageName = packageMemento.getPackageManifest().getName();
 
-		WriteFile //
-				.to(keeperDir.resolve(packageName)) //
+		WriteFile
+				.to(keeperDir.resolve(packageName))
 				.doWrite(os -> om.writeValue(os, mapify.mapify(PackageMemento.class, packageMemento)));
 	}
 

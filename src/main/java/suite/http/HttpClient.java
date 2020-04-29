@@ -193,19 +193,19 @@ public class HttpClient {
 		var inputStream = response.getEntity().getContent();
 		var headers1 = Read.from(response.getAllHeaders()).map2(Header::getName, Header::getValue).toMultimap();
 
-		var out = Pull //
-				.from(inputStream) //
-				.closeAtEnd(inputStream) //
-				.closeAtEnd(response) //
-				.closeAtEnd(client) //
+		var out = Pull
+				.from(inputStream)
+				.closeAtEnd(inputStream)
+				.closeAtEnd(response)
+				.closeAtEnd(client)
 				.closeAtEnd(() -> Log_.info("END__ " + method + " " + url));
 
 		if (statusCode == HttpURLConnection.HTTP_OK)
 			return new Response_(statusCode, headers1, out);
 		else
-			throw new IOException("HTTP returned " + statusCode //
-					+ ": " + url //
-					+ ": " + statusLine.getReasonPhrase() //
+			throw new IOException("HTTP returned " + statusCode
+					+ ": " + url
+					+ ": " + statusLine.getReasonPhrase()
 					+ ": " + out.collect(As::string));
 	}
 
@@ -223,8 +223,8 @@ public class HttpClient {
 		var responseCode = conn.getResponseCode();
 		var out = Pull.from(conn.getInputStream());
 
-		if (responseCode == HttpURLConnection.HTTP_MOVED_PERM //
-				|| responseCode == HttpURLConnection.HTTP_MOVED_TEMP //
+		if (responseCode == HttpURLConnection.HTTP_MOVED_PERM
+				|| responseCode == HttpURLConnection.HTTP_MOVED_TEMP
 				|| responseCode == HttpURLConnection.HTTP_SEE_OTHER) {
 			var cookies1 = conn.getHeaderField("Set-Cookie");
 			var url1 = To.url(conn.getHeaderField("Location"));
@@ -237,9 +237,9 @@ public class HttpClient {
 		} else if (responseCode == HttpURLConnection.HTTP_OK)
 			return new Response_(responseCode, new ListMultimap<>(), out);
 		else
-			throw new IOException("HTTP returned " + responseCode //
-					+ ": " + url //
-					+ ": " + conn.getResponseMessage() //
+			throw new IOException("HTTP returned " + responseCode
+					+ ": " + url
+					+ ": " + conn.getResponseMessage()
 					+ ": " + out.collect(As::string));
 	}
 

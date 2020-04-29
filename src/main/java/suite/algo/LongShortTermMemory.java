@@ -74,12 +74,12 @@ public class LongShortTermMemory {
 
 		@Override
 		public String toString() {
-			return "" //
-					+ "wf = " + mtx.toString(wf) //
-					+ "wi = " + mtx.toString(wi) //
-					+ "wm = " + mtx.toString(wm) //
-					+ "wo = " + mtx.toString(wo) //
-					+ "memory = " + mtx.toString(memory) + "\n" //
+			return ""
+					+ "wf = " + mtx.toString(wf)
+					+ "wi = " + mtx.toString(wi)
+					+ "wm = " + mtx.toString(wm)
+					+ "wo = " + mtx.toString(wo)
+					+ "memory = " + mtx.toString(memory) + "\n"
 					+ "output = " + mtx.toString(output) + "\n";
 		}
 

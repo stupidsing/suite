@@ -57,9 +57,9 @@ public class TermKey implements Comparable<TermKey> {
 		private int h = 7;
 
 		public TermHasher(Node node) {
-			new TermVisitor( //
-					i -> h = h * 31 + i //
-					, nr -> h = h * 31 + Objects.hash(nr.type, nr.terminal, nr.op) //
+			new TermVisitor(
+					i -> h = h * 31 + i
+					, nr -> h = h * 31 + Objects.hash(nr.type, nr.terminal, nr.op)
 			).visit(node);
 		}
 	}
@@ -92,8 +92,8 @@ public class TermKey implements Comparable<TermKey> {
 						var b1 = nh1 != null;
 						b &= b0 == b1;
 						if (b0 && b1)
-							b &= Equals.ab(nh0.type, nh1.type) //
-									&& Equals.ab(nh0.terminal, nh1.terminal) //
+							b &= Equals.ab(nh0.type, nh1.type)
+									&& Equals.ab(nh0.terminal, nh1.terminal)
 									&& Equals.ab(nh0.op, nh1.op);
 					}
 			}

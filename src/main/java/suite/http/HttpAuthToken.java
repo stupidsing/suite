@@ -39,17 +39,17 @@ public class HttpAuthToken {
 	private Crypt<String> aes = crypts.aes(Defaults.salt);
 
 	public Handler handleLogin(String authenticatePath) {
-		return request -> Response.of(Pull.from("<html>" //
-				+ "<head><title>Login</title></head>" //
-				+ "<body>" //
-				+ "<font face=\"Monospac821 BT,Monaco,Consolas\">" //
-				+ "<form name=\"login\" action=\"login\" method=\"post\">" //
-				+ "Username <input type=\"text\" name=\"username\" autofocus /><br/>" //
-				+ "Password <input type=\"password\" name=\"password\" /><br/>" //
-				+ "<input type=\"submit\" value=\"Login\">" //
-				+ "</form>" //
-				+ "</font>" //
-				+ "</body>" //
+		return request -> Response.of(Pull.from("<html>"
+				+ "<head><title>Login</title></head>"
+				+ "<body>"
+				+ "<font face=\"Monospac821 BT,Monaco,Consolas\">"
+				+ "<form name=\"login\" action=\"login\" method=\"post\">"
+				+ "Username <input type=\"text\" name=\"username\" autofocus /><br/>"
+				+ "Password <input type=\"password\" name=\"password\" /><br/>"
+				+ "<input type=\"submit\" value=\"Login\">"
+				+ "</form>"
+				+ "</font>"
+				+ "</body>"
 				+ "</html>"));
 	}
 
@@ -82,8 +82,8 @@ public class HttpAuthToken {
 		return Response.of(Puller.<Bytes> of(Bytes.of(bs)));
 	}
 
-	private Handler verifyToken( //
-			List<String> requiredRoles, //
+	private Handler verifyToken(
+			List<String> requiredRoles,
 			FixieFun3<String, List<String>, Request, Response> handler1) {
 		return request -> {
 			var a = request.headers.getOrFail("Authorization");

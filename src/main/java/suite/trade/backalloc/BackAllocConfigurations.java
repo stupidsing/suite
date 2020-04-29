@@ -51,27 +51,27 @@ public class BackAllocConfigurations {
 		private Streamlet2<String, BackAllocator> bas_ = baGen.baByName;
 		private Streamlet2<String, BackAllocator> bas_mech = baMech.baByName.map2((n, ba) -> "me." + n, (n, ba) -> ba);
 
-		private Streamlet2<String, BackAllocConfiguration> bacs_ = Streamlet2 //
-				.concat(bas_, bas_mech) //
+		private Streamlet2<String, BackAllocConfiguration> bacs_ = Streamlet2
+				.concat(bas_, bas_mech)
 				.mapValue(ba -> ba.cfgUnl(fun));
 
-		private Streamlet2<String, BackAllocConfiguration> bacByName0 = Read //
-				.<String, BackAllocConfiguration> empty2() //
-				.cons("hsi", BackAllocConfiguration.ofSingle(Instrument.hsi)) //
-				.cons("hsi.ppr", baGen.pprHsi.cfgUnl(fun_hsi)) //
-				.cons(pair_bb) //
-				.cons("bbslope", baOld.bbSlope().cfgUnl(fun)) //
-				.cons("facoil", ba_facoil.cfgUnl(fun)) //
-				.cons("january", BackAllocator_.ofSingle(Instrument.hsiSymbol).january().cfgUnl(fun_hsi)) //
-				.cons("mix", BackAllocator_.sum(ba_bbHold, ba_donHold).cfgUnl(fun)) //
-				.cons(pair_pmamr) //
-				.cons(pair_pmamr2) //
-				.cons(pair_pmmmr) //
-				.cons(pair_revco) //
-				.cons("revdd", baOld.revDrawdown().holdExtend(40).cfgUnl(fun)) //
+		private Streamlet2<String, BackAllocConfiguration> bacByName0 = Read
+				.<String, BackAllocConfiguration> empty2()
+				.cons("hsi", BackAllocConfiguration.ofSingle(Instrument.hsi))
+				.cons("hsi.ppr", baGen.pprHsi.cfgUnl(fun_hsi))
+				.cons(pair_bb)
+				.cons("bbslope", baOld.bbSlope().cfgUnl(fun))
+				.cons("facoil", ba_facoil.cfgUnl(fun))
+				.cons("january", BackAllocator_.ofSingle(Instrument.hsiSymbol).january().cfgUnl(fun_hsi))
+				.cons("mix", BackAllocator_.sum(ba_bbHold, ba_donHold).cfgUnl(fun))
+				.cons(pair_pmamr)
+				.cons(pair_pmamr2)
+				.cons(pair_pmmmr)
+				.cons(pair_revco)
+				.cons("revdd", baOld.revDrawdown().holdExtend(40).cfgUnl(fun))
 				.cons("sellInMay", BackAllocator_.ofSingle(Instrument.hsiSymbol).sellInMay().cfgUnl(fun_hsi));
 
-		public final Streamlet2<String, BackAllocConfiguration> bacByName = Streamlet2 //
+		public final Streamlet2<String, BackAllocConfiguration> bacByName = Streamlet2
 				.concat(bacs_, bacByName0);
 
 		private Pair<String, BackAllocConfiguration> pair(String tag, BackAllocator ba) {

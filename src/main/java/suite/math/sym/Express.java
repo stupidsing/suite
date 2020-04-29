@@ -33,12 +33,12 @@ public class Express {
 	public OpGroup add = new OpGroup(null, TermOp.PLUS__, n0, patNeg);
 	public OpGroup mul = new OpGroup(add, TermOp.MULT__, n1, patInv);
 
-	public Field<Node> field = new Field<>( //
-			n0, //
-			n1, //
-			add::apply, //
-			add::inverse, //
-			mul::apply, //
+	public Field<Node> field = new Field<>(
+			n0,
+			n1,
+			add::apply,
+			add::inverse,
+			mul::apply,
 			mul::inverse);
 
 	public class OpGroup implements Fun2<Node, Node, Node> {

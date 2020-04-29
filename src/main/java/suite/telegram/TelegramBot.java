@@ -33,11 +33,11 @@ public class TelegramBot {
 
 	private Deque<String> alerts = new ArrayDeque<>();
 
-	public TelegramBot( //
-			String botUsername, //
-			Path tokenPath, //
-			Predicate<String> login, //
-			Source<String> alert, //
+	public TelegramBot(
+			String botUsername,
+			Path tokenPath,
+			Predicate<String> login,
+			Source<String> alert,
 			FoldOp<Long, String> do_) {
 		this.botUsername = botUsername;
 		this.tokenPath = tokenPath;

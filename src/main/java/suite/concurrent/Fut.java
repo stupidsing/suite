@@ -105,11 +105,11 @@ public class Fut<T> {
 	}
 
 	public <U> Fut<U> concatMap(Fun<T, Fut<U>> fun) {
-		return of(fut0 -> handle(t -> Fut //
-				.applyOr( //
-						() -> fun.apply(t), //
-						fut1 -> fut1.handle(fut0::complete, fut0::error), //
-						fut0::error), //
+		return of(fut0 -> handle(t -> Fut
+				.applyOr(
+						() -> fun.apply(t),
+						fut1 -> fut1.handle(fut0::complete, fut0::error),
+						fut0::error),
 				fut0::error));
 	}
 
@@ -181,8 +181,8 @@ public class Fut<T> {
 	}
 
 	public <U> Fut<U> map(Fun<T, U> fun) {
-		return of(fut -> handle( //
-				t -> applyOr(() -> fun.apply(t), fut::complete, fut::error), //
+		return of(fut -> handle(
+				t -> applyOr(() -> fun.apply(t), fut::complete, fut::error),
 				fut::error));
 	}
 

@@ -46,8 +46,8 @@ public class LayoutCalculator {
 		}
 
 		public boolean isVisible() {
-			return portions.stream() //
-					.filter(portion -> !(portion.node instanceof Space)) //
+			return portions.stream()
+					.filter(portion -> !(portion.node instanceof Space))
 					.anyMatch(portion -> portion.node.isVisible());
 		}
 	}
@@ -174,9 +174,9 @@ public class LayoutCalculator {
 	private void arrange(Group group, int startPos, int endPos, AssignToPortion assignToPortion) {
 		var totalAssigned = endPos - startPos;
 
-		var portions = Read //
-				.from(group.portions) //
-				.filter(portion -> portion.node.isVisible()) //
+		var portions = Read
+				.from(group.portions)
+				.filter(portion -> portion.node.isVisible())
 				.toList();
 
 		var totalMin = portions.stream().mapToInt(p -> p.minUnit).sum();

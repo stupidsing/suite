@@ -37,8 +37,8 @@ public class Factor {
 
 		var akds = cfg.dataSources(TimeRange.of(Time.MIN, now), indexSymbols_);
 
-		var indexPrices = akds.dsByKey //
-				.map((symbol, ds) -> ds.prices) //
+		var indexPrices = akds.dsByKey
+				.map((symbol, ds) -> ds.prices)
 				.fold(new float[akds.ts.length], vec::add);
 
 		ids = DataSource.of(akds.ts, indexPrices);
@@ -47,9 +47,9 @@ public class Factor {
 	public List<Pair<Instrument, Double>> query(Streamlet<Instrument> instruments) {
 		var period = TimeRange.daysBefore(HkexUtil.getOpenTimeBefore(now), 250 * 3);
 
-		return instruments //
-				.map2(instrument -> project(ids, cfg.dataSource(instrument.symbol), period)) //
-				.sortByValue(Compare::objects) //
+		return instruments
+				.map2(instrument -> project(ids, cfg.dataSource(instrument.symbol), period))
+				.sortByValue(Compare::objects)
 				.toList();
 	}
 
@@ -65,8 +65,8 @@ public class Factor {
 				var indexPrices = ids.prices;
 				var indexReturn = Quant.return_(indexPrices[index - 2], indexPrices[index - 1]);
 
-				return dsBySymbol //
-						.map2((symbol, ds) -> indexReturn * dsv.get(symbol, index)) //
+				return dsBySymbol
+						.map2((symbol, ds) -> indexReturn * dsv.get(symbol, index))
 						.toList();
 			};
 		};

@@ -89,8 +89,8 @@ public class FunGenerateBytecode {
 			var ihs = new ArrayList<InstructionHandle>();
 
 			for (var instruction : list)
-				ihs.add(instruction instanceof BranchInstruction //
-						? il.append((BranchInstruction) instruction) //
+				ihs.add(instruction instanceof BranchInstruction
+						? il.append((BranchInstruction) instruction)
 						: il.append(instruction));
 
 			jumps.forEach((src, tgt) -> ((BranchInstruction) ihs.get(src).getInstruction()).setTarget(ihs.get(tgt)));
@@ -99,7 +99,7 @@ public class FunGenerateBytecode {
 		}
 
 		public void visit_(FunExpr e0) {
-			e0.sw( //
+			e0.sw(
 			).doIf(ArrayFunExpr.class, e1 -> {
 				var elements = e1.elements;
 				list.add(factory.createConstant(elements.length));
@@ -194,11 +194,11 @@ public class FunGenerateBytecode {
 				for (var parameter : e1.parameters)
 					visit_(parameter);
 
-				list.add(factory.createInvoke( //
-						className, //
-						e1.methodName, //
-						fti.typeOf(e1), //
-						array, //
+				list.add(factory.createInvoke(
+						className,
+						e1.methodName,
+						fti.typeOf(e1),
+						array,
 						opcode));
 			}).doIf(LocalFunExpr.class, e1 -> {
 				list.add(InstructionFactory.createLoad(fti.typeOf(e1), e1.index));

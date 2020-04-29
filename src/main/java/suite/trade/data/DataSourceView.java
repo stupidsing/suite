@@ -21,10 +21,10 @@ public class DataSourceView<K, V> {
 	private AlignKeyDataSource<K> akds;
 	private Map<K, Map<TimeRange, V>> viewByKey;
 
-	public static <K, V> DataSourceView<K, V> of( //
-			int tor, //
-			int nLookbackDays, //
-			AlignKeyDataSource<K> akds, //
+	public static <K, V> DataSourceView<K, V> of(
+			int tor,
+			int nLookbackDays,
+			AlignKeyDataSource<K> akds,
 			DataSourceViewFun<K, V> fun) {
 		int alignment;
 		if (nLookbackDays <= 1)
@@ -42,11 +42,11 @@ public class DataSourceView<K, V> {
 		return new DataSourceView<>(tor, nLookbackDays, alignment, akds, fun);
 	}
 
-	private DataSourceView( //
-			int tor, //
-			int nLookbackDays, //
-			int alignment, //
-			AlignKeyDataSource<K> akds, //
+	private DataSourceView(
+			int tor,
+			int nLookbackDays,
+			int alignment,
+			AlignKeyDataSource<K> akds,
 			DataSourceViewFun<K, V> fun) {
 		var fr = TimeRange.min.epochSec();
 		var to = TimeRange.max.epochSec();
@@ -62,12 +62,12 @@ public class DataSourceView<K, V> {
 		this.nLookbackDays = nLookbackDays;
 		this.alignment = alignment;
 		this.akds = akds;
-		this.viewByKey = akds.dsByKey //
-				.map2((key, ds) -> period //
-						.addDays(-tor) //
-						.backTestDaysBefore(nLookbackDays, alignment) //
-						.map2(period_ -> fun.apply(key, ds, period_)) //
-						.toMap()) //
+		this.viewByKey = akds.dsByKey
+				.map2((key, ds) -> period
+						.addDays(-tor)
+						.backTestDaysBefore(nLookbackDays, alignment)
+						.map2(period_ -> fun.apply(key, ds, period_))
+						.toMap())
 				.toMap();
 	}
 

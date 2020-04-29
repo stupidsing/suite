@@ -38,25 +38,25 @@ public class BackTester {
 	}
 
 	public <T> String conclude(Streamlet2<T, Simulate> simulationsByKey) {
-		var results0 = simulationsByKey //
+		var results0 = simulationsByKey
 				.map((key, simulate) -> "TEST = " + key + ", " + simulate.conclusion());
 
-		var results1 = simulationsByKey //
-				.filterValue(sim -> sim.exception == null) //
+		var results1 = simulationsByKey
+				.filterValue(sim -> sim.exception == null)
 				.groupBy(sims -> {
 					var txFee = sims.toDouble(AsDbl.sum(sim -> cfg.transactionFee(sim.account.transactionAmount())));
 
-					var returns = sims //
-							.collect(LiftFlt.of(sim -> (float) sim.annualReturn)) //
+					var returns = sims
+							.collect(LiftFlt.of(sim -> (float) sim.annualReturn))
 							.toArray();
 
 					var mv = stat.meanVariance(returns);
 					var logCagr = ReadFlt.from(returns).mapFlt(return_ -> (float) log1p(return_)).average();
 
-					return ">> cagr = " + To.string(expm1(logCagr)) //
-							+ ", sharpe = " + To.string(mv.mean / mv.standardDeviation()) //
+					return ">> cagr = " + To.string(expm1(logCagr))
+							+ ", sharpe = " + To.string(mv.mean / mv.standardDeviation())
 							+ ", txFee = " + To.string(txFee / sims.size());
-				}) //
+				})
 				.map((key, summary) -> "TEST = " + key + " " + summary);
 
 		return Streamlet.concat(results0, results1).sort(Compare::objects).toString();

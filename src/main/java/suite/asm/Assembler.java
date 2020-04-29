@@ -72,11 +72,11 @@ public class Assembler {
 			start++;
 		}
 
-		var lnis = Read //
-				.from(Right.of(lines, start)) //
+		var lnis = Read
+				.from(Right.of(lines, start))
 				.map(line -> Split.strl(line, "\t").map((label, command) -> {
-					var reference = Is.notBlank(label) //
-							? generalizer.getVariable(Atom.of(label)) //
+					var reference = Is.notBlank(label)
+							? generalizer.getVariable(Atom.of(label))
 							: new Reference();
 					var instruction = generalizer.generalize(Suite.parse(command));
 					return Pair.of(reference, instruction);
@@ -90,7 +90,7 @@ public class Assembler {
 		var generalizer = new Generalizer();
 
 		for (var node : Tree.read(input))
-			new SwitchNode<Boolean>(generalizer.generalize(node) //
+			new SwitchNode<Boolean>(generalizer.generalize(node)
 			).match(".0 = .1", (l, r) -> {
 				return Binder.bind(l, r) || failBool("bind failed");
 			}).match(".0 .1", (l, r) -> {
@@ -169,11 +169,11 @@ class AsmSl implements Asm {
 		if (isLongMode)
 			Suite.addRule(ruleSet, "as-long-mode");
 
-		finder = new SewingProverBuilder2() //
-				.build(ruleSet) //
-				.apply(Suite.parse("" //
-						+ "source (.bits, .address, .instruction,)" //
-						+ ", asi:.bits:.address .instruction .code" //
+		finder = new SewingProverBuilder2()
+				.build(ruleSet)
+				.apply(Suite.parse(""
+						+ "source (.bits, .address, .instruction,)"
+						+ ", asi:.bits:.address .instruction .code"
 						+ ", sink .code"));
 
 		this.bits = bits;

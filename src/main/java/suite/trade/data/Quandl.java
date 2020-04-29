@@ -26,9 +26,9 @@ public class Quandl {
 		// Date, Open, High, Low, Last, Change, Settle, Volume, Previous Day
 		// Open Interest
 		return csv(urlString).map((headers, csv) -> {
-			var arrays = csv(urlString).v //
-					.skip(1) //
-					.sort((a0, a1) -> Compare.string(a0[0], a1[0])) //
+			var arrays = csv(urlString).v
+					.skip(1)
+					.sort((a0, a1) -> Compare.string(a0[0], a1[0]))
 					.collect();
 
 			var ts = arrays.collect(LiftLng.of(array -> Time.of(array[0] + " 18:00:00").epochSec(-4))).toArray();
@@ -43,9 +43,9 @@ public class Quandl {
 	}
 
 	public Pair<String[], List<String[]>> dataSourceCsvV3(String qn, TimeRange period) {
-		var urlString = "https://www.quandl.com/api/v3/datasets/" + qn + ".csv" //
-				+ "?start_date=" + period.fr.ymd() //
-				+ "&end_date=" + period.to.ymd() //
+		var urlString = "https://www.quandl.com/api/v3/datasets/" + qn + ".csv"
+				+ "?start_date=" + period.fr.ymd()
+				+ "&end_date=" + period.to.ymd()
 				+ "&order=asc";
 		// + "&collapse=annual"
 

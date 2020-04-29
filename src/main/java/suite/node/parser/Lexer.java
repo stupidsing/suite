@@ -43,9 +43,9 @@ public class Lexer {
 	public Lexer(Operator[] operators, String in) {
 		this.in = in;
 
-		var operatorByName = Read //
-				.from(operators) //
-				.filter(operator -> operator != TermOp.TUPLE_) //
+		var operatorByName = Read
+				.from(operators)
+				.filter(operator -> operator != TermOp.TUPLE_)
 				.toMap(Operator::name_);
 
 		commandUtil = new CommandUtil<>(operatorByName);
@@ -122,8 +122,8 @@ public class Lexer {
 				type = LexType.SPACE;
 			else if (ch == '\'' || ch == '"')
 				type = LexType.STR__;
-			else if (ch == '(' || ch == '[' || ch == '{' //
-					|| ch == ')' || ch == ']' || ch == '}' //
+			else if (ch == '(' || ch == '[' || ch == '{'
+					|| ch == ')' || ch == ']' || ch == '}'
 					|| ch == '`')
 				type = LexType.SYM__;
 			else

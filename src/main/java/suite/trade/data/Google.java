@@ -15,19 +15,19 @@ import suite.streamlet.As;
 public class Google {
 
 	public Fixie3<Map<String, String>, String, List<String[]>> historical(String symbol) {
-		var url = "" //
-				+ "http://finance.google.com/finance/getprices" //
-				+ "?q=" + fromSymbol(symbol) //
-				+ "&x=HKG" //
-				+ "&i=86400" //
-				+ "&p=1Y" //
-				+ "&f=d,c,h,l,o,v" //
-		// + "&ts=" //
+		var url = ""
+				+ "http://finance.google.com/finance/getprices"
+				+ "?q=" + fromSymbol(symbol)
+				+ "&x=HKG"
+				+ "&i=86400"
+				+ "&p=1Y"
+				+ "&f=d,c,h,l,o,v"
+		// + "&ts="
 		;
 
-		var lines = Singleton.me.storeCache //
-				.http(url) //
-				.collect(As::lines) //
+		var lines = Singleton.me.storeCache
+				.http(url)
+				.collect(As::lines)
 				.toArray(String.class);
 
 		var properties = new HashMap<String, String>();

@@ -58,11 +58,11 @@ public class Trade {
 	}
 
 	public String record() {
-		return date //
-				+ (!Equals.string(remark, "-") ? remark : "") //
-				+ "\t" + buySell //
-				+ "\t" + symbol //
-				+ "\t" + price //
+		return date
+				+ (!Equals.string(remark, "-") ? remark : "")
+				+ "\t" + buySell
+				+ "\t" + symbol
+				+ "\t" + price
 				+ "\t" + strategy;
 	}
 
@@ -72,9 +72,9 @@ public class Trade {
 
 	@Override
 	public String toString() {
-		return (!Equals.string(date, NA) ? date + " " : "") //
-				+ Math_.posNeg(buySell) //
-				+ symbol //
+		return (!Equals.string(date, NA) ? date + " " : "")
+				+ Math_.posNeg(buySell)
+				+ symbol
 				+ ":" + To.string(price) + "*" + abs(buySell);
 	}
 

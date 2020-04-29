@@ -33,10 +33,10 @@ public class KmeansCluster {
 	}
 
 	public <K> String result(Map<K, float[]> points, int k, int nIterations) {
-		return ReadInt //
-				.from2(kMeansCluster(points, k, nIterations)) //
-				.groupBy() //
-				.map((symbol, groups) -> Read.from(groups).map(Object::toString).toJoinedString(",")) //
+		return ReadInt
+				.from2(kMeansCluster(points, k, nIterations))
+				.groupBy()
+				.map((symbol, groups) -> Read.from(groups).map(Object::toString).toJoinedString(","))
 				.toLines();
 	}
 
@@ -76,12 +76,12 @@ public class KmeansCluster {
 	public int kNearestNeighbor(List<float[]> points, float[] point0) {
 		var map = new IntObjMap<AtomicInteger>();
 
-		Read //
-				.from(points) //
-				.index() //
-				.map((i, point) -> IntDblPair.of(i, sqdist(point0, point))) //
-				.sortBy(pair -> pair.t1) //
-				.take(points.size()) //
+		Read
+				.from(points)
+				.index()
+				.map((i, point) -> IntDblPair.of(i, sqdist(point0, point)))
+				.sortBy(pair -> pair.t1)
+				.take(points.size())
 				.forEach(bin -> map.computeIfAbsent(bin.t0, c -> new AtomicInteger()).incrementAndGet());
 
 		return ReadInt.from2(map).min((k, v) -> -v.v.get()).k;

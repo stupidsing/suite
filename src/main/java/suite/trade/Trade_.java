@@ -82,14 +82,14 @@ public class Trade_ {
 			acquireBySymbol.put(symbol, acquires1);
 		}
 
-		return Read //
-				.from2(acquireBySymbol) //
+		return Read
+				.from2(acquireBySymbol)
 				.mapValue(acquires -> {
 					var sum = IntFltPair.of(0, 0f);
 					for (var acquire : acquires)
 						sum.update(sum.t0 + acquire.t0, sum.t1 + acquire.t0 * acquire.t1);
 					return sum.t1 / sum.t0;
-				}) //
+				})
 				.toMap();
 	}
 
@@ -111,9 +111,9 @@ public class Trade_ {
 		for (var i = 1; i < length0; i++) {
 			var trade0 = trades0[i0];
 			var trade1 = trades0[i];
-			var isGroup = true //
-					&& Equals.string(trade0.date, trade1.date) //
-					&& Equals.string(trade0.symbol, trade1.symbol) //
+			var isGroup = true
+					&& Equals.string(trade0.date, trade1.date)
+					&& Equals.string(trade0.symbol, trade1.symbol)
 					&& trade0.price == trade1.price;
 			if (!isGroup) {
 				tx.sink2(i0, i);
@@ -125,10 +125,10 @@ public class Trade_ {
 		return Read.from(trades1);
 	}
 
-	public static Streamlet<Trade> diff( //
-			String time, //
-			Map<String, Integer> instruments0, //
-			Map<String, Integer> instruments1, //
+	public static Streamlet<Trade> diff(
+			String time,
+			Map<String, Integer> instruments0,
+			Map<String, Integer> instruments1,
 			Obj_Flt<String> priceFun) {
 		return diff_(time, instruments0, instruments1, priceFun);
 	}
@@ -164,42 +164,42 @@ public class Trade_ {
 	}
 
 	public static String format(Map<String, Integer> portfolio) {
-		return Read //
-				.from2(portfolio) //
-				.sortBy((code, i) -> !Equals.string(code, Instrument.cashSymbol) ? code : "") //
-				.map((code, i) -> Math_.posNeg(i) + code + "*" + abs(i)) //
+		return Read
+				.from2(portfolio)
+				.sortBy((code, i) -> !Equals.string(code, Instrument.cashSymbol) ? code : "")
+				.map((code, i) -> Math_.posNeg(i) + code + "*" + abs(i))
 				.toJoinedString();
 	}
 
 	public static String format(List<Trade> trades) {
-		return Read //
-				.from(trades) //
-				.filter(trade -> trade.buySell != 0) //
+		return Read
+				.from(trades)
+				.filter(trade -> trade.buySell != 0)
 				.toJoinedString();
 	}
 
 	public static Map<String, Integer> portfolio(Iterable<Trade> trades) {
-		return Read //
-				.from(trades) //
-				.map2(r -> r.symbol, r -> r.buySell) //
-				.groupBy(sizes -> sizes.toInt(AsInt.sum(size -> size))) //
-				.filterValue(size -> size != 0) //
+		return Read
+				.from(trades)
+				.map2(r -> r.symbol, r -> r.buySell)
+				.groupBy(sizes -> sizes.toInt(AsInt.sum(size -> size)))
+				.filterValue(size -> size != 0)
 				.toMap();
 	}
 
 	public static Streamlet<Trade> sellAll(String time, Streamlet<Trade> trades, Obj_Flt<String> priceFun) {
-		return trades //
-				.groupBy(trade -> trade.strategy, Trade_::portfolio) //
-				.concatMap((strategy, nSharesBySymbol) -> Read //
-						.from2(nSharesBySymbol) //
+		return trades
+				.groupBy(trade -> trade.strategy, Trade_::portfolio)
+				.concatMap((strategy, nSharesBySymbol) -> Read
+						.from2(nSharesBySymbol)
 						.map((symbol, size) -> Trade.of(time, -size, symbol, priceFun.apply(symbol), strategy)));
 	}
 
-	public static UpdatePortfolio updatePortfolio( //
-			String time, //
-			Account account, //
-			List<Pair<String, Double>> ratioBySymbol, //
-			Map<String, Instrument> instrumentBySymbol, //
+	public static UpdatePortfolio updatePortfolio(
+			String time,
+			Account account,
+			List<Pair<String, Double>> ratioBySymbol,
+			Map<String, Instrument> instrumentBySymbol,
 			Map<String, Eod> eodBySymbol) {
 		return new UpdatePortfolio(time, account, ratioBySymbol, instrumentBySymbol, eodBySymbol);
 	}
@@ -209,23 +209,23 @@ public class Trade_ {
 		public final float valuation0;
 		public final List<Trade> trades;
 
-		private UpdatePortfolio( //
-				String time, //
-				Account account, //
-				List<Pair<String, Double>> ratioBySymbol, //
-				Map<String, Instrument> instrumentBySymbol, //
+		private UpdatePortfolio(
+				String time,
+				Account account,
+				List<Pair<String, Double>> ratioBySymbol,
+				Map<String, Instrument> instrumentBySymbol,
 				Map<String, Eod> eodBySymbol) {
 			var val = account.valuation(symbol -> eodBySymbol.get(symbol).price);
 			var valuation = val.sum();
 
-			var portfolio = Read //
-					.from2(ratioBySymbol) //
-					.filterKey(symbol -> !Equals.string(symbol, Instrument.cashSymbol)) //
+			var portfolio = Read
+					.from2(ratioBySymbol)
+					.filterKey(symbol -> !Equals.string(symbol, Instrument.cashSymbol))
 					.map2((symbol, potential) -> {
 						var price = eodBySymbol.get(symbol).price;
 						var lotSize = instrumentBySymbol.get(symbol).lotSize;
 						return lotSize * (int) floor(valuation * potential / (price * lotSize));
-					}) //
+					})
 					.toMap();
 
 			Obj_Flt<String> priceFun;
@@ -234,8 +234,8 @@ public class Trade_ {
 			else
 				priceFun = symbol -> eodBySymbol.get(symbol).price;
 
-			var trades_ = Trade_ //
-					.diff(time, account.assets(), portfolio, priceFun) //
+			var trades_ = Trade_
+					.diff(time, account.assets(), portfolio, priceFun)
 					.partition(trade -> { // can be executed in next open price?
 						var eod = eodBySymbol.get(trade.symbol);
 						var price = trade.price;
@@ -247,12 +247,12 @@ public class Trade_ {
 						var isTradeable = negligible < price;
 
 						// only if trade is within price range of next tick
-						var isMatch = isFreePlay //
-								|| 0 < buySell && eod.nextLow <= priceBuy //
+						var isMatch = isFreePlay
+								|| 0 < buySell && eod.nextLow <= priceBuy
 								|| buySell < 0 && priceSell <= eod.nextHigh;
 
 						return isTradeable && isMatch;
-					}).k //
+					}).k
 							.sortBy(trade -> trade.buySell) // sell first
 							.toList();
 
@@ -270,24 +270,24 @@ public class Trade_ {
 		return Trade_.isShortSell || Equals.string(symbol, Instrument.cashSymbol) || 0 <= nShares;
 	}
 
-	private static Streamlet<Trade> diff_( //
-			String time, //
-			Map<String, Integer> instruments0, //
-			Map<String, Integer> instruments1, //
+	private static Streamlet<Trade> diff_(
+			String time,
+			Map<String, Integer> instruments0,
+			Map<String, Integer> instruments1,
 			Obj_Flt<String> priceFun) {
 		Set<String> symbols = Union.of(instruments0.keySet(), instruments1.keySet());
 
-		return Read //
-				.from(symbols) //
+		return Read
+				.from(symbols)
 				.map2(symbol -> {
 					int n0 = instruments0.getOrDefault(symbol, 0);
 					int n1 = instruments1.getOrDefault(symbol, 0);
 					return n1 - n0;
-				}) //
-				.filter((symbol, buySell) -> true //
-						&& !Equals.string(symbol, Instrument.cashSymbol) //
-						&& buySell != 0) //
-				.map((symbol, buySell) -> Trade.of(time, buySell, symbol, priceFun.apply(symbol), "-")) //
+				})
+				.filter((symbol, buySell) -> true
+						&& !Equals.string(symbol, Instrument.cashSymbol)
+						&& buySell != 0)
+				.map((symbol, buySell) -> Trade.of(time, buySell, symbol, priceFun.apply(symbol), "-"))
 				.collect();
 	}
 

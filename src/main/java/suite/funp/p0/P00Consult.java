@@ -24,7 +24,7 @@ import static primal.statics.Rethrow.ex;
 public class P00Consult {
 
 	public Node c(Node node) {
-		return new SwitchNode<Node>(node //
+		return new SwitchNode<Node>(node
 		).match("consult .0 ~ .1", (a, b) -> {
 			return c(consult(Formatter.display(a).replace("${platform}", Funp_.isAmd64 ? "amd64" : "i686"), b));
 		}).match("consult .0", a -> {
@@ -48,9 +48,9 @@ public class P00Consult {
 	private Node consult(String url, Node program) {
 		FunIo<ReadStream, Node> r0 = is -> {
 			var node = Suite.parse(ReadString.from(is) + "$APP");
-			return Tree //
-					.read(node, TermOp.CONTD_) //
-					.reverse() //
+			return Tree
+					.read(node, TermOp.CONTD_)
+					.reverse()
 					.fold(program, (n, left) -> Tree.of(TermOp.CONTD_, left, n));
 		};
 

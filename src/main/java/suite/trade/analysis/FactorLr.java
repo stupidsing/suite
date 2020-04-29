@@ -46,8 +46,8 @@ public class FactorLr {
 	public Map<Instrument, String> query(Streamlet<Instrument> instruments) {
 		var period = TimeRange.daysBefore(HkexUtil.getOpenTimeBefore(now), 250 * 3);
 
-		return instruments //
-				.map2(instrument -> ols(cfg.dataSource(instrument.symbol), period).toString()) //
+		return instruments
+				.map2(instrument -> ols(cfg.dataSource(instrument.symbol), period).toString())
 				.toMap();
 	}
 
@@ -59,15 +59,15 @@ public class FactorLr {
 			var dsv = DataSourceView.of(0, 64, akds, (symbol, ds, period) -> ols(dsBySymbol_.get(symbol), period));
 
 			return index -> {
-				var xs = forInt(indexSymbols.size()) //
+				var xs = forInt(indexSymbols.size())
 						.collect(As.floats(i -> {
 							var indexPrices_ = indexPrices.get(i);
 							return (float) Quant.return_(indexPrices_[index - 2], indexPrices_[index - 1]);
-						})) //
+						}))
 						.toArray();
 
-				return dsBySymbol //
-						.map2((symbol, ds) -> (double) dsv.get(symbol, index).predict(xs)) //
+				return dsBySymbol
+						.map2((symbol, ds) -> (double) dsv.get(symbol, index).predict(xs))
 						.toList();
 			};
 		};
@@ -76,9 +76,9 @@ public class FactorLr {
 	private LinearRegression ols(DataSource rds0, TimeRange period) {
 		var ys = rds0.range(period);
 
-		var returns_ = Read //
-				.from(indexPrices) //
-				.map(prices -> DataSource.of(timestamps, prices).range(period).alignBeforePrices(ys.ts).returns()) //
+		var returns_ = Read
+				.from(indexPrices)
+				.map(prices -> DataSource.of(timestamps, prices).range(period).alignBeforePrices(ys.ts).returns())
 				.toArray(float[].class);
 
 		var xs = mtx.transpose(returns_);

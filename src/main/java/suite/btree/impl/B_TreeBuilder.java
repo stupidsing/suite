@@ -36,12 +36,12 @@ public class B_TreeBuilder<Key, Value> {
 	private Serializer<Key> keySerializer;
 	private Serializer<Value> valueSerializer;
 
-	public static <Key> Pair<B_Tree<Key, Integer>, KeyDataStore<Key>> build( //
-			boolean isNew, //
-			Path path, //
-			int pageSize, //
-			int nPages, //
-			Serializer<Key> ks, //
+	public static <Key> Pair<B_Tree<Key, Integer>, KeyDataStore<Key>> build(
+			boolean isNew,
+			Path path,
+			int pageSize,
+			int nPages,
+			Serializer<Key> ks,
 			Comparator<Key> cmp) {
 		if (isNew)
 			DeleteFile.ifExists(path);

@@ -25,13 +25,13 @@ public class Util {
 	}
 
 	public static boolean isSimple(Class<?> clazz) {
-		return clazz.isEnum() //
-				|| clazz.isPrimitive() //
-				|| clazz == Boolean.class //
-				|| clazz == Class.class //
-				|| clazz == Date.class //
-				|| clazz == String.class //
-				|| clazz == Timestamp.class //
+		return clazz.isEnum()
+				|| clazz.isPrimitive()
+				|| clazz == Boolean.class
+				|| clazz == Class.class
+				|| clazz == Date.class
+				|| clazz == String.class
+				|| clazz == Timestamp.class
 				|| Number.class.isAssignableFrom(clazz);
 	}
 
@@ -50,9 +50,9 @@ public class Util {
 			return ex(() -> clazz.getMethod("g"));
 		else
 			try {
-				return Read //
-						.from(clazz.getDeclaredMethods()) //
-						.filter(m -> !m.isDefault() && !m.isSynthetic() && !Modifier.isStatic(m.getModifiers())) //
+				return Read
+						.from(clazz.getDeclaredMethods())
+						.filter(m -> !m.isDefault() && !m.isSynthetic() && !Modifier.isStatic(m.getModifiers()))
 						.uniqueResult();
 			} catch (Exception ex) {
 				return fail("for " + clazz, ex);

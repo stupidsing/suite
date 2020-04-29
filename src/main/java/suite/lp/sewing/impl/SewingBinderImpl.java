@@ -25,7 +25,7 @@ public class SewingBinderImpl extends SewingClonerImpl implements BinderFactory 
 	}
 
 	public Bind_ binder(Node node) {
-		return new SwitchNode<Bind_>(node //
+		return new SwitchNode<Bind_>(node
 		).applyIf(Atom.class, n -> {
 			return compileBindAtom(n);
 		}).applyIf(Int.class, n -> {
@@ -47,8 +47,8 @@ public class SewingBinderImpl extends SewingClonerImpl implements BinderFactory 
 						be.trail.addBind((Reference) n_, f.apply(be.env));
 					return isBindTrees;
 				} else
-					return (t = Tree.decompose(n_, op)) != null //
-							&& c0.test(be, t.getLeft()) //
+					return (t = Tree.decompose(n_, op)) != null
+							&& c0.test(be, t.getLeft())
 							&& c1.test(be, t.getRight());
 			};
 		}).applyIf(Tuple.class, tuple -> {

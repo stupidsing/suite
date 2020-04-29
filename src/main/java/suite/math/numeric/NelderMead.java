@@ -57,8 +57,8 @@ public class NelderMead {
 			DblObjPair<float[]> expandPair;
 			DblObjPair<float[]> contractPair;
 
-			if ((reflectPair = pairFun.apply(reflectFactor)) != null //
-					&& first.k <= reflectPair.k //
+			if ((reflectPair = pairFun.apply(reflectFactor)) != null
+					&& first.k <= reflectPair.k
 					&& reflectPair.k < last1.k) // reflection
 				pairs.set(ps_1, reflectPair);
 			else if (reflectPair.k < first.k) // expansion

@@ -26,25 +26,25 @@ public class P4Alloc {
 	private OpImm labelPointer;
 	private OpImm freeChainTablePointer;
 
-	private int[] allocSizes = { //
-			4, //
-			8, 12, //
-			16, 20, 24, //
-			32, 40, 48, 56, //
-			64, 80, 96, 112, //
-			128, 160, 192, 224, //
-			256, 320, 384, 448, //
-			512, 640, 768, 896, //
-			1024, 1280, 1536, 1792, //
+	private int[] allocSizes = {
+			4,
+			8, 12,
+			16, 20, 24,
+			32, 40, 48, 56,
+			64, 80, 96, 112,
+			128, 160, 192, 224,
+			256, 320, 384, 448,
+			512, 640, 768, 896,
+			1024, 1280, 1536, 1792,
 			16777216, };
 
 	public void init(Emit em, OpReg bufferStart) {
 		countPointer = em.spawn(em1 -> em1.emit(Insn.D, amd64.imm(0l, is))).in;
 		labelPointer = em.spawn(em1 -> em1.emit(Insn.D, amd64.imm(0l, is))).in;
 
-		freeChainTablePointer = em.spawn(em1 -> em1.emit( //
-				Insn.DS, //
-				amd64.imm32(allocSizes.length * ps), //
+		freeChainTablePointer = em.spawn(em1 -> em1.emit(
+				Insn.DS,
+				amd64.imm32(allocSizes.length * ps),
 				amd64.imm8(0l))).in;
 
 		em.mov(amd64.mem(labelPointer, ps), bufferStart);

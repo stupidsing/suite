@@ -13,17 +13,17 @@ import suite.streamlet.As;
 public class Grammar {
 
 	public enum GrammarType {
-		AND___, //
-		ENTITY, //
-		EXCEPT, //
-		NAMED_, //
-		ONCE__, //
-		OPTION, //
-		OR____, //
-		REPT0_, //
-		REPT0H, //
-		REPT1_, //
-		STRING, //
+		AND___,
+		ENTITY,
+		EXCEPT,
+		NAMED_,
+		ONCE__,
+		OPTION,
+		OR____,
+		REPT0_,
+		REPT0H,
+		REPT1_,
+		STRING,
 	}
 
 	public final GrammarType type;
@@ -33,16 +33,16 @@ public class Grammar {
 	public static Map<String, Grammar> parse(Reader reader) {
 		var breakdown = new Breakdown();
 
-		return ReadLines //
-				.from(reader) //
-				.filter(line -> !line.isEmpty() && !line.startsWith("#")) //
-				.map(line -> line.replace('\t', ' ')) //
-				.split(line -> !line.startsWith(" ")) //
-				.map(o -> o.fold("", String::concat)) //
-				.map(line -> Split.string(line, " ::= ")) //
-				.filter(lr -> lr != null) //
-				.collect(As::streamlet) //
-				.map2(lr -> lr.k, lr -> lr.map(breakdown::breakdown)) //
+		return ReadLines
+				.from(reader)
+				.filter(line -> !line.isEmpty() && !line.startsWith("#"))
+				.map(line -> line.replace('\t', ' '))
+				.split(line -> !line.startsWith(" "))
+				.map(o -> o.fold("", String::concat))
+				.map(line -> Split.string(line, " ::= "))
+				.filter(lr -> lr != null)
+				.collect(As::streamlet)
+				.map2(lr -> lr.k, lr -> lr.map(breakdown::breakdown))
 				.toMap();
 	}
 
@@ -73,9 +73,9 @@ public class Grammar {
 	}
 
 	public String describe() {
-		return type + (content != null ? "." + content : "") //
-				+ (type != GrammarType.NAMED_ //
-						? Read.from(children).map(Grammar::describe).toJoinedString("(", ",", ")") //
+		return type + (content != null ? "." + content : "")
+				+ (type != GrammarType.NAMED_
+						? Read.from(children).map(Grammar::describe).toJoinedString("(", ",", ")")
 						: "");
 	}
 

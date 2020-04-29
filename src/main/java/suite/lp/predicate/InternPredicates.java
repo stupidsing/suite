@@ -26,8 +26,8 @@ public class InternPredicates {
 		return internMap.get().containsKey(key);
 	});
 
-	public BuiltinPredicate internMapPut = PredicateUtil.fun(n -> internMap //
-			.get() //
+	public BuiltinPredicate internMapPut = PredicateUtil.fun(n -> internMap
+			.get()
 			.computeIfAbsent(IdentityKey.of(n), any -> new Reference()));
 
 	public BuiltinPredicate internTree = PredicateUtil.p4((prover, t, l, op, r) -> {

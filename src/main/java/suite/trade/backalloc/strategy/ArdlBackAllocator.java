@@ -19,9 +19,9 @@ public class ArdlBackAllocator implements BackAllocator {
 		var dsBySymbol1 = dsBySymbol0.toMap();
 		var symbols = dsBySymbol0.keys().toArray(String.class);
 
-		var fs = Read //
-				.from(symbols) //
-				.map(symbol -> dsBySymbol1.get(symbol).prices) //
+		var fs = Read
+				.from(symbols)
+				.map(symbol -> dsBySymbol1.get(symbol).prices)
 				.toArray(float[].class);
 
 		var lrs = ardl.ardl(fs);

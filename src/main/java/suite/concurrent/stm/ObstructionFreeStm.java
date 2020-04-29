@@ -86,8 +86,8 @@ public class ObstructionFreeStm {
 			var snapshot1 = snapshot;
 
 			// read committed, repeatable read
-			while (snapshot1 != null //
-					&& snapshot1.owner != transaction //
+			while (snapshot1 != null
+					&& snapshot1.owner != transaction
 					&& (snapshot1.owner.status != TransactionStatus.DONE____ || transaction.time <= snapshot1.owner.time))
 				snapshot1 = snapshot1.previous;
 

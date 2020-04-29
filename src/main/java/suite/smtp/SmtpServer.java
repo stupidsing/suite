@@ -88,8 +88,8 @@ public class SmtpServer {
 						var tos = Read.from(mail.tos).toJoinedString(",");
 						var dt = dtf.format(LocalDateTime.now());
 
-						var contents = "SMTP: " + mail.from + " -> " + tos + "\n" //
-								+ "Ts: " + dt + "\n" //
+						var contents = "SMTP: " + mail.from + " -> " + tos + "\n"
+								+ "Ts: " + dt + "\n"
 								+ mail.data;
 
 						for (var to : mail.tos)

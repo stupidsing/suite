@@ -41,9 +41,9 @@ public class Rule {
 		env.refs[cutIndex].bound(cut);
 
 		return Tree.ofAnd(//
-				Tree.of(TermOp.EQUAL_, //
-						query, //
-						headFun.apply(env)), //
+				Tree.of(TermOp.EQUAL_,
+						query,
+						headFun.apply(env)),
 				tailFun.apply(env));
 
 	}

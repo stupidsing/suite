@@ -41,34 +41,34 @@ public class BackAllocatorGeneral {
 	public BackAllocator pprHsi = priceProRata(Instrument.hsiSymbol);
 	public BackAllocator tma = tripleExpGeometricMovingAvgs(2, 6, 18);
 
-	public final Streamlet2<String, BackAllocator> baByName = Read //
-			.<String, BackAllocator> empty2() //
-			.cons("bb0", bb_) //
-			.cons("bb1", bb1(32)) //
-			.cons("bballoc", bbAllocate(32)) //
-			.cons("bbtrend", bbTrend(32, .05d)) //
-			.cons("don9", donchian(9)) //
-			.cons("donalloc", donchianAllocate(9)) //
-			.cons("donhold", donHold) //
-			.cons("dontrend", donchianTrend(9, .05d)) //
-			.cons("ema", ema) //
-			.cons("half", fixed(.5d)) //
-			.cons("hold", fixed(1d)) //
-			.cons("lr03", lastReturn(0, 3)) //
-			.cons("lr30", lastReturn(3, 0)) //
-			.cons("ma1", mamr(64, 8, .15f)) //
-			.cons("ma200", ma(200)) //
-			.cons("mom", momentum(8)) //
-			.cons("momacc", momentumAcceleration(8, 24)) //
-			.cons("opcl8", openClose(8)) //
-			.cons("ppr", pprHsi) //
-			.cons("rsi", rsi) //
-			.cons("sar", sar()) //
-			.cons("trend2", trend2(.02d)) //
-			.cons("turtles", turtles(20, 10, 55, 20)) //
-			.cons("tma", tma) //
-			.cons("varratio", varianceRatio(96)) //
-			.cons("volatile", volatile_(32)) //
+	public final Streamlet2<String, BackAllocator> baByName = Read
+			.<String, BackAllocator> empty2()
+			.cons("bb0", bb_)
+			.cons("bb1", bb1(32))
+			.cons("bballoc", bbAllocate(32))
+			.cons("bbtrend", bbTrend(32, .05d))
+			.cons("don9", donchian(9))
+			.cons("donalloc", donchianAllocate(9))
+			.cons("donhold", donHold)
+			.cons("dontrend", donchianTrend(9, .05d))
+			.cons("ema", ema)
+			.cons("half", fixed(.5d))
+			.cons("hold", fixed(1d))
+			.cons("lr03", lastReturn(0, 3))
+			.cons("lr30", lastReturn(3, 0))
+			.cons("ma1", mamr(64, 8, .15f))
+			.cons("ma200", ma(200))
+			.cons("mom", momentum(8))
+			.cons("momacc", momentumAcceleration(8, 24))
+			.cons("opcl8", openClose(8))
+			.cons("ppr", pprHsi)
+			.cons("rsi", rsi)
+			.cons("sar", sar())
+			.cons("trend2", trend2(.02d))
+			.cons("turtles", turtles(20, 10, 55, 20))
+			.cons("tma", tma)
+			.cons("varratio", varianceRatio(96))
+			.cons("volatile", volatile_(32))
 			.cons("xma", xma(2, 8));
 
 	private BollingerBands bb = new BollingerBands();
@@ -93,10 +93,10 @@ public class BackAllocatorGeneral {
 		return BackAllocator_.byPrices(prices -> {
 			var sds = bb.bb(prices, tor, 0, 2f).sds;
 
-			return Quant.enterKeep(0, sds.length, //
-					i -> entry < sds[i], //
-					i -> sds[i] < -entry, //
-					i -> exit < sds[i], //
+			return Quant.enterKeep(0, sds.length,
+					i -> entry < sds[i],
+					i -> sds[i] < -entry,
+					i -> exit < sds[i],
 					i -> sds[i] < -exit);
 		});
 	}
@@ -111,8 +111,8 @@ public class BackAllocatorGeneral {
 	private BackAllocator bbTrend(int tor, double exitThreshold) {
 		return BackAllocator_.byPrices(prices -> {
 			var sds = bb.bb(prices, tor, 0, 2f).sds;
-			return Quant.enterUntilDrawDown(prices, exitThreshold, //
-					(i, price) -> .5d <= sds[i], //
+			return Quant.enterUntilDrawDown(prices, exitThreshold,
+					(i, price) -> .5d <= sds[i],
 					(i, price) -> sds[i] <= -.5d);
 		});
 	}
@@ -150,8 +150,8 @@ public class BackAllocatorGeneral {
 	private BackAllocator donchianTrend(int window, double exitThreshold) {
 		return BackAllocator_.byPrices(prices -> {
 			var movingRanges = ma.movingRange(prices, window);
-			return Quant.enterUntilDrawDown(prices, exitThreshold, //
-					(i, price) -> movingRanges[i].max <= price, //
+			return Quant.enterUntilDrawDown(prices, exitThreshold,
+					(i, price) -> movingRanges[i].max <= price,
 					(i, price) -> price <= movingRanges[i].min);
 		});
 	}
@@ -173,8 +173,8 @@ public class BackAllocatorGeneral {
 
 	private BackAllocator fixed(double r) {
 		return (akds, indices) -> {
-			var potentialBySymbol = akds.dsByKey //
-					.map((symbol, ds) -> Pair.of(symbol, r)) //
+			var potentialBySymbol = akds.dsByKey
+					.map((symbol, ds) -> Pair.of(symbol, r))
 					.toList();
 
 			return index -> potentialBySymbol;
@@ -183,17 +183,17 @@ public class BackAllocatorGeneral {
 
 	private BackAllocator lastReturn(int nWorsts, int nBests) {
 		return (akds, indices) -> index -> {
-			var list = akds.dsByKey //
-					.mapValue(ds -> ds.lastReturn(index)) //
-					.sortBy((symbol, return_) -> return_) //
-					.keys() //
+			var list = akds.dsByKey
+					.mapValue(ds -> ds.lastReturn(index))
+					.sortBy((symbol, return_) -> return_)
+					.keys()
 					.toList();
 
 			var size = list.size();
 
-			return Streamlet //
-					.concat(Read.from(list.subList(0, nWorsts)), Read.from(list.subList(size - nBests, size))) //
-					.map2(symbol -> 1d / (nWorsts + nBests)) //
+			return Streamlet
+					.concat(Read.from(list.subList(0, nWorsts)), Read.from(list.subList(size - nBests, size)))
+					.map2(symbol -> 1d / (nWorsts + nBests))
 					.toList();
 		};
 	}
@@ -254,8 +254,8 @@ public class BackAllocatorGeneral {
 		var scale = 320d;
 
 		return (akds, indices) -> {
-			var prices = akds.dsByKey //
-					.filter((symbol_, ds) -> Equals.string(symbol, symbol_)) //
+			var prices = akds.dsByKey
+					.filter((symbol_, ds) -> Equals.string(symbol, symbol_))
 					.uniqueResult().v.prices;
 
 			var price0 = prices[indices[0]];
@@ -350,7 +350,7 @@ public class BackAllocatorGeneral {
 			var dsByKey = akds.dsByKey;
 			var atrBySymbol = dsByKey.mapValue(osc::atr).toMap();
 
-			var fixieBySymbol = dsByKey //
+			var fixieBySymbol = dsByKey
 					.map2((symbol, ds) -> {
 						var atrs = atrBySymbol.get(symbol);
 						var prices = ds.prices;
@@ -431,19 +431,19 @@ public class BackAllocatorGeneral {
 						var wasWons2 = getWons.apply(nHolds2);
 
 						return Fixie.of(nHolds1, nHolds2, wasWons1, wasWons2);
-					}) //
+					})
 					.toMap();
 
 			return index -> {
-				var m0 = dsByKey //
-						.keys() //
-						.map2(symbol -> fixieBySymbol //
-								.get(symbol) //
+				var m0 = dsByKey
+						.keys()
+						.map2(symbol -> fixieBySymbol
+								.get(symbol)
 								.map((nHolds1, nHolds2, wasWons1) -> {
 									var last = index - 1;
 									return (!wasWons1[last] ? nHolds1[last] : 0) + nHolds2[last];
-								})) //
-						.sortByValue((nHold0, nHold1) -> Integer.compare(abs(nHold1), abs(nHold0))) //
+								}))
+						.sortByValue((nHold0, nHold1) -> Integer.compare(abs(nHold1), abs(nHold0)))
 						.toList();
 
 				var m1 = new ArrayList<Pair<String, Integer>>();
@@ -457,13 +457,13 @@ public class BackAllocatorGeneral {
 					m1.add(Pair.of(pair.k, (sums[sign] = sum1) - sum0));
 				}
 
-				return Read //
-						.from2(m1) //
+				return Read
+						.from2(m1)
 						.map2((symbol, nHold) -> {
 							var atrs = atrBySymbol.get(symbol);
 							var unit = .01d / atrs[index - 1];
 							return max(-maxUnits, min(maxUnits, nHold)) * unit;
-						}) //
+						})
 						.toList();
 			};
 		};
@@ -477,7 +477,7 @@ public class BackAllocatorGeneral {
 		return (akds, indices) -> {
 			var dsv = DataSourceView.of(0, 256, akds, (symbol, ds, period) -> ts.varianceRatio(ds.prices, tor));
 
-			var holdsBySymbol = akds.dsByKey //
+			var holdsBySymbol = akds.dsByKey
 					.map2((symbol, ds) -> {
 						var prices = ds.prices;
 						var length = prices.length;
@@ -492,21 +492,21 @@ public class BackAllocatorGeneral {
 							holds[index] = hold;
 						}
 						return holds;
-					}) //
+					})
 					.toMap();
 
-			return index -> akds.dsByKey //
-					.map2((symbol, ds) -> (double) holdsBySymbol.get(symbol)[index - 1]) //
+			return index -> akds.dsByKey
+					.map2((symbol, ds) -> (double) holdsBySymbol.get(symbol)[index - 1])
 					.toList();
 		};
 	}
 
 	private BackAllocator volatile_(int nDays) {
-		return BackAllocator_ //
+		return BackAllocator_
 				.byPrices(prices -> {
 					var bandwidths = bb.bb(prices, nDays, 0, .5f).bandwidths;
 					return index -> bandwidths[index - 1];
-				}) //
+				})
 				.pick(3);
 	}
 

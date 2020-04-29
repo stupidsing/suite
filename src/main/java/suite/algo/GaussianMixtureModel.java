@@ -52,9 +52,9 @@ public class GaussianMixtureModel {
 		var nObs = obs.length;
 		var dim = obs[0].length;
 
-		var comps = forInt(n).map(i -> new GaussComponent( //
-				1d / n, //
-				To.vector(dim, j -> random.nextGaussian()), //
+		var comps = forInt(n).map(i -> new GaussComponent(
+				1d / n,
+				To.vector(dim, j -> random.nextGaussian()),
 				mtx.identity(dim))).toList();
 
 		for (var iter = 0; iter < 32; iter++) {

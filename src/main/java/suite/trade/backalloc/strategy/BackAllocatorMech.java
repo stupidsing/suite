@@ -20,23 +20,23 @@ public class BackAllocatorMech {
 
 	public static BackAllocatorMech me = new BackAllocatorMech();
 
-	public final Streamlet2<String, BackAllocator> baByName = Read //
-			.<String, BackAllocator> empty2() //
-			.cons("bb", bollingerBands(20)) //
-			.cons("chanbrk", channelBreakout(20)) //
-			.cons("dmi", dmi(10)) //
-			.cons("dmiadx", dmiAdx(10, 9)) //
-			.cons("ma2", ma2(9, 26)) //
-			.cons("ma2i", ma2Ichimoku(9, 26)) //
-			.cons("ma3", ma3(9, 26, 52)) //
-			.cons("ma3i", ma3ichimoku(9, 26, 52)) //
-			.cons("macd", macd(9, 12, 26)) //
-			.cons("bbadx", mrBbAdx(20, 9)) //
-			.cons("bbma200", mrBbMa200(20)) //
-			.cons("rsima200", mrRsiMa200(9, 14)) //
-			.cons("ssecci", mrSseCci()) //
-			.cons("sseccitx", mrSseCciTimedExit()) //
-			.cons("p7rev", period7reversal()) //
+	public final Streamlet2<String, BackAllocator> baByName = Read
+			.<String, BackAllocator> empty2()
+			.cons("bb", bollingerBands(20))
+			.cons("chanbrk", channelBreakout(20))
+			.cons("dmi", dmi(10))
+			.cons("dmiadx", dmiAdx(10, 9))
+			.cons("ma2", ma2(9, 26))
+			.cons("ma2i", ma2Ichimoku(9, 26))
+			.cons("ma3", ma3(9, 26, 52))
+			.cons("ma3i", ma3ichimoku(9, 26, 52))
+			.cons("macd", macd(9, 12, 26))
+			.cons("bbadx", mrBbAdx(20, 9))
+			.cons("bbma200", mrBbMa200(20))
+			.cons("rsima200", mrRsiMa200(9, 14))
+			.cons("ssecci", mrSseCci())
+			.cons("sseccitx", mrSseCciTimedExit())
+			.cons("p7rev", period7reversal())
 			.cons("rsix", rsiCrossover(14));
 
 	private BollingerBands bb = new BollingerBands();
@@ -165,23 +165,23 @@ public class BackAllocatorMech {
 	}
 
 	private BackAllocator mrBbAdx(int d20, int d9) {
-		return BackAllocator_ //
+		return BackAllocator_
 				.byDataSource(ds -> {
 					var prices = ds.prices;
 					var bb_ = bb.bb(prices, d20, 0, 2f);
 					var adxs = osc.dmi(ds).adx(d9);
 
-					return Quant.enterKeep(1, prices.length, //
-							i -> adxs[i] < .2f && cross(i, bb_.uppers, prices), //
-							i -> adxs[i] < .2f && cross(i, prices, bb_.lowers), //
-							i -> true, //
+					return Quant.enterKeep(1, prices.length,
+							i -> adxs[i] < .2f && cross(i, bb_.uppers, prices),
+							i -> adxs[i] < .2f && cross(i, prices, bb_.lowers),
+							i -> true,
 							i -> true);
-				}) //
+				})
 				.stop(.9875d, .9875d);
 	}
 
 	private BackAllocator mrBbMa200(int d20) {
-		return BackAllocator_ //
+		return BackAllocator_
 				.byPrices(prices -> {
 					var movingAvgs = ma.movingAvg(prices, 200);
 					var bb_ = bb.bb(prices, d20, 0, 2f);
@@ -189,29 +189,29 @@ public class BackAllocatorMech {
 					var uppers = bb_.uppers;
 					var sds = bb_.sds;
 
-					return Quant.enterKeep(1, prices.length, //
-							i -> cross(i, uppers, prices) && prices[i] < movingAvgs[i], //
-							i -> cross(i, prices, lowers) && movingAvgs[i] < prices[i], //
-							i -> 0f <= sds[i], //
+					return Quant.enterKeep(1, prices.length,
+							i -> cross(i, uppers, prices) && prices[i] < movingAvgs[i],
+							i -> cross(i, prices, lowers) && movingAvgs[i] < prices[i],
+							i -> 0f <= sds[i],
 							i -> sds[i] <= 0f);
-				}) //
+				})
 				.stopLoss(.975d);
 	}
 
 	private BackAllocator mrRsiMa200(int d9, int d14) {
-		return BackAllocator_ //
+		return BackAllocator_
 				.byPrices(prices -> {
 					var movingAvgs = ma.movingAvg(prices, 200);
 					var rsi0 = osc.rsi(prices, d14);
 					var rsi1 = osc.rsi(prices, d9);
 
-					return Quant.enterExit(1, prices.length, //
-							Integer.MAX_VALUE, //
-							i -> prices[i] < movingAvgs[i] && .65f < rsi1[i], //
-							i -> movingAvgs[i] < prices[i] && rsi1[i] < .35f, //
-							i -> cross(i, i_ -> rsi0[i_] < .4f), //
+					return Quant.enterExit(1, prices.length,
+							Integer.MAX_VALUE,
+							i -> prices[i] < movingAvgs[i] && .65f < rsi1[i],
+							i -> movingAvgs[i] < prices[i] && rsi1[i] < .35f,
+							i -> cross(i, i_ -> rsi0[i_] < .4f),
 							i -> cross(i, i_ -> .6f < rsi0[i_]));
-				}) //
+				})
 				.stopLoss(.975d);
 	}
 
@@ -226,7 +226,7 @@ public class BackAllocatorMech {
 
 	// seven-period reversal
 	private BackAllocator period7reversal() {
-		return BackAllocator_ //
+		return BackAllocator_
 				.byPrices(prices -> {
 					IntInt_Int signs = (s, e) -> {
 						var n = 0;
@@ -250,38 +250,38 @@ public class BackAllocatorMech {
 								return hold;
 						}
 					});
-				}) //
+				})
 				.stop(.99f, 1.01f);
 	}
 
 	private BackAllocator rsiCrossover(int d14) {
-		return BackAllocator_ //
+		return BackAllocator_
 				.byPrices(prices -> {
 					var rsi = osc.rsi(prices, d14);
 
-					return Quant.enterKeep(1, prices.length, //
-							i -> .75f < rsi[i - 1] && cross(i, i_ -> rsi[i_] < .75f), //
-							i -> rsi[i - 1] < .25f && cross(i, i_ -> .25f < rsi[i_]), //
-							i -> true, //
+					return Quant.enterKeep(1, prices.length,
+							i -> .75f < rsi[i - 1] && cross(i, i_ -> rsi[i_] < .75f),
+							i -> rsi[i - 1] < .25f && cross(i, i_ -> .25f < rsi[i_]),
+							i -> true,
 							i -> true);
-				}) //
+				})
 				.stop(.99f, 1.03f);
 	}
 
 	private BackAllocator mrSseCciTimedExit(int timedExit) {
-		return BackAllocator_ //
+		return BackAllocator_
 				.byDataSource(ds -> {
 					var prices = ds.prices;
 					var stos = osc.stochastic(ds, 14);
 					var stoSlows = ma.movingAvg(stos, 3);
 					var ccis = osc.cci(ds, 10);
 
-					return Quant.enterExit(1, prices.length, timedExit, //
-							i -> cross(i, i_ -> .85f < stoSlows[i_]) && 1f < ccis[i], //
-							i -> cross(i, i_ -> stoSlows[i_] < .15f) && ccis[i] < -1f, //
-							i -> cross(i, i_ -> stoSlows[i_] < .7f), //
+					return Quant.enterExit(1, prices.length, timedExit,
+							i -> cross(i, i_ -> .85f < stoSlows[i_]) && 1f < ccis[i],
+							i -> cross(i, i_ -> stoSlows[i_] < .15f) && ccis[i] < -1f,
+							i -> cross(i, i_ -> stoSlows[i_] < .7f),
 							i -> cross(i, i_ -> .3f < stoSlows[i_]));
-				}) //
+				})
 				.stopLoss(.985d);
 	}
 

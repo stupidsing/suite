@@ -32,10 +32,10 @@ public class Database implements Closeable {
 	private Database(Path path, boolean isCreate) {
 		journalledPageFile = JournalledFileFactory.open(path, PageFile.defaultPageSize, isCreate);
 
-		transactionManager = new TransactionManager<>(() -> LazyPbTreeStore.ofExtent( //
-				journalledPageFile, //
-				Compare::objects, //
-				ser.int_, //
+		transactionManager = new TransactionManager<>(() -> LazyPbTreeStore.ofExtent(
+				journalledPageFile,
+				Compare::objects,
+				ser.int_,
 				ser.variableLengthString));
 	}
 

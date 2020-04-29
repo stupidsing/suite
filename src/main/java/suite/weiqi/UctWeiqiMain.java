@@ -58,9 +58,9 @@ public class UctWeiqiMain<Move> {
 				var coord = sw.result;
 
 				if (coord != null) {
-					status = gameSet.getNextPlayer() //
-							+ " " + coord //
-							+ " " + df.format(search.getWinningChance()) //
+					status = gameSet.getNextPlayer()
+							+ " " + coord
+							+ " " + df.format(search.getWinningChance())
 							+ " " + sw.duration + "ms";
 
 					gameSet.play(coord);
@@ -94,8 +94,8 @@ public class UctWeiqiMain<Move> {
 							break;
 						default:
 							if (!Is.blank(line))
-								gameSet.play(Split //
-										.strl(line, ",") //
+								gameSet.play(Split
+										.strl(line, ",")
 										.map((xs, ys) -> Coordinate.c(Integer.parseInt(xs), Integer.parseInt(ys))));
 						}
 					else

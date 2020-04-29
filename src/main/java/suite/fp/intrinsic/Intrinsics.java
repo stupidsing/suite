@@ -96,12 +96,12 @@ public class Intrinsics {
 	}
 
 	static {
-		for (var clazz : List.of( //
-				ArrayIntrinsics.class //
-				, BasicIntrinsics.class //
-				, CharsIntrinsics.class //
-				, MonadIntrinsics.class //
-				, SeqIntrinsics.class //
+		for (var clazz : List.of(
+				ArrayIntrinsics.class
+				, BasicIntrinsics.class
+				, CharsIntrinsics.class
+				, MonadIntrinsics.class
+				, SeqIntrinsics.class
 				, SuiteIntrinsics.class)) {
 			var instance = New.clazz(clazz);
 

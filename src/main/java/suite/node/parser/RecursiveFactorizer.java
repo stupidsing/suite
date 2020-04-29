@@ -95,8 +95,8 @@ public class RecursiveFactorizer {
 				return FactorizeResult.merge(operator.toString(), list);
 			}
 
-			if (first == '(' && last == ')' //
-					|| first == '[' && last == ']' //
+			if (first == '(' && last == ')'
+					|| first == '[' && last == ']'
 					|| first == '`' && last == '`') {
 				var left = Chars.of(chars.cs, chars.start, chars1.start + 1);
 				var middle = Chars.of(chars.cs, chars1.start + 1, chars1.end - 1);

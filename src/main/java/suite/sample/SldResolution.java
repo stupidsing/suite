@@ -27,14 +27,14 @@ public class SldResolution {
 	public List<Node> resolve(Node node) {
 		var ruleSet = Suite.newRuleSet(List.of("auto.sl", "pt.sl"));
 		var builder = CompiledProverBuilder.level1(new ProverCfg());
-		var finder = builder.build(ruleSet).apply(Suite.parse("" //
-				+ "source .n0" //
-				+ ", pt-prove0 .n0 .n1" //
-				+ ", pt-prove1 .n1 .n2" //
-				+ ", pt-prove2 .n2 .n3" //
-				+ ", pt-prove3 .n3 .n4" //
-				+ ", pt-prove4 .n4 .n5" //
-				+ ", pt-prove5 .n5 ()/.n6" //
+		var finder = builder.build(ruleSet).apply(Suite.parse(""
+				+ "source .n0"
+				+ ", pt-prove0 .n0 .n1"
+				+ ", pt-prove1 .n1 .n2"
+				+ ", pt-prove2 .n2 .n3"
+				+ ", pt-prove3 .n3 .n4"
+				+ ", pt-prove4 .n4 .n5"
+				+ ", pt-prove5 .n5 ()/.n6"
 				+ ", sink .n6"));
 
 		var n0 = finder.collectSingle(node);

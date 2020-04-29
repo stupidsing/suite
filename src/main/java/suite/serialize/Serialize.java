@@ -130,9 +130,9 @@ public class Serialize {
 	}
 
 	public <T> Serializer<T> autoFields(Class<T> clazz) {
-		var pairs = inspect //
-				.fields(clazz) //
-				.map2(field -> auto_(field.getGenericType())) //
+		var pairs = inspect
+				.fields(clazz)
+				.map2(field -> auto_(field.getGenericType()))
 				.toArray();
 
 		var ctors = Read.from(clazz.getDeclaredConstructors()).filter(ctor -> ctor.trySetAccessible());

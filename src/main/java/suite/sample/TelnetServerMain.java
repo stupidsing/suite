@@ -38,16 +38,16 @@ public class TelnetServerMain {
 			var pos = process.getOutputStream();
 
 			try {
-				var threads = Read //
-						.<Thread> each( //
-								Copy.streamByThread(pis, sos), //
-								Copy.streamByThread(pes, sos), //
-								Copy.streamByThread(sis, pos)) //
+				var threads = Read
+						.<Thread> each(
+								Copy.streamByThread(pis, sos),
+								Copy.streamByThread(pes, sos),
+								Copy.streamByThread(sis, pos))
 						.cons(new InterruptibleThread() {
 							protected void run_() throws InterruptedException {
 								process.waitFor();
 							}
-						}) //
+						})
 						.collect();
 
 				for (var thread : threads)

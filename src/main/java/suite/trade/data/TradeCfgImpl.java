@@ -46,9 +46,9 @@ public class TradeCfgImpl implements TradeCfg {
 		private Fun<Set<String>, Map<String, Float>> quoteFun;
 		private Fun2<String, TimeRange, DataSource> dataSourceFun;
 
-		private Src( //
-				Fun<String, Instrument> queryFun, //
-				Fun<Set<String>, Map<String, Float>> quoteFun, //
+		private Src(
+				Fun<String, Instrument> queryFun,
+				Fun<Set<String>, Map<String, Float>> quoteFun,
 				Fun2<String, TimeRange, DataSource> dataSourceFun) {
 			this.queryFun = queryFun;
 			this.quoteFun = quoteFun;
@@ -75,9 +75,9 @@ public class TradeCfgImpl implements TradeCfg {
 	public Streamlet<Instrument> queryCompaniesByMarketCap(Time time) {
 		var year = time.year() - 1;
 
-		return hkexFactBook //
-				.queryCompaniesByMarketCap(year) //
-				.map(this::queryCompany) //
+		return hkexFactBook
+				.queryCompaniesByMarketCap(year)
+				.map(this::queryCompany)
 				.filter(this::filter);
 	}
 
@@ -100,9 +100,9 @@ public class TradeCfgImpl implements TradeCfg {
 			if (filter(symbol))
 				map.computeIfAbsent(src(symbol).quoteFun, s -> new HashSet<>()).add(symbol);
 
-		return Read //
-				.from2(map) //
-				.concatMap2((quoteFun, symbols_) -> Read.from2(quoteFun.apply(symbols_))) //
+		return Read
+				.from2(map)
+				.concatMap2((quoteFun, symbols_) -> Read.from2(quoteFun.apply(symbols_)))
 				.toMap();
 	}
 

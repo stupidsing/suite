@@ -26,27 +26,27 @@ public class TreeUtil {
 	public static Atom SHR = Atom.of("shr");
 	public static Atom XOR = Atom.of("xor");
 
-	public static Map<Operator, IntInt_Bool> boolOperations = Map.ofEntries( //
-			entry(TermOp.EQUAL_, (a, b) -> a == b), //
-			entry(TermOp.NOTEQ_, (a, b) -> a != b), //
-			entry(TermOp.LE____, (a, b) -> a <= b), //
+	public static Map<Operator, IntInt_Bool> boolOperations = Map.ofEntries(
+			entry(TermOp.EQUAL_, (a, b) -> a == b),
+			entry(TermOp.NOTEQ_, (a, b) -> a != b),
+			entry(TermOp.LE____, (a, b) -> a <= b),
 			entry(TermOp.LT____, (a, b) -> a < b));
 
-	public static Map<Operator, IntInt_Int> intOperations = Map.ofEntries( //
-			entry(TermOp.BIGAND, (a, b) -> a & b), //
-			entry(TermOp.BIGOR_, (a, b) -> a | b), //
-			entry(TermOp.PLUS__, (a, b) -> a + b), //
-			entry(TermOp.MINUS_, (a, b) -> a - b), //
-			entry(TermOp.MULT__, (a, b) -> a * b), //
-			entry(TermOp.DIVIDE, (a, b) -> a / b), //
-			entry(TermOp.MODULO, (a, b) -> a % b), //
+	public static Map<Operator, IntInt_Int> intOperations = Map.ofEntries(
+			entry(TermOp.BIGAND, (a, b) -> a & b),
+			entry(TermOp.BIGOR_, (a, b) -> a | b),
+			entry(TermOp.PLUS__, (a, b) -> a + b),
+			entry(TermOp.MINUS_, (a, b) -> a - b),
+			entry(TermOp.MULT__, (a, b) -> a * b),
+			entry(TermOp.DIVIDE, (a, b) -> a / b),
+			entry(TermOp.MODULO, (a, b) -> a % b),
 			entry(TermOp.POWER_, TreeUtil::intPow));
 
-	public static Map<Node, IntInt_Int> tupleOperations = Map.ofEntries( //
-			entry(AND, (a, b) -> a & b), //
-			entry(OR_, (a, b) -> a | b), //
-			entry(SHL, (a, b) -> a << b), //
-			entry(SHR, (a, b) -> a >> b), //
+	public static Map<Node, IntInt_Int> tupleOperations = Map.ofEntries(
+			entry(AND, (a, b) -> a & b),
+			entry(OR_, (a, b) -> a | b),
+			entry(SHL, (a, b) -> a << b),
+			entry(SHR, (a, b) -> a >> b),
 			entry(XOR, (a, b) -> a ^ b));
 
 	public static Streamlet<Node> breakdown(Operator operator, Node node) {

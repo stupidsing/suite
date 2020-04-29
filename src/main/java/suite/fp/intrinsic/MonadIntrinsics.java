@@ -32,8 +32,8 @@ public class MonadIntrinsics {
 
 	public Intrinsic popen = (callback, inputs) -> {
 		Iterate<Node> yawn = callback::yawn;
-		var array = ThunkUtil.yawnList(yawn, inputs.get(0), false) //
-				.map(node -> ThunkUtil.yawnString(yawn, node)) //
+		var array = ThunkUtil.yawnList(yawn, inputs.get(0), false)
+				.map(node -> ThunkUtil.yawnString(yawn, node))
 				.toArray(String.class);
 
 		var in = inputs.get(1);
@@ -59,7 +59,7 @@ public class MonadIntrinsics {
 			});
 
 			return Tree.ofAnd(//
-					n0, //
+					n0,
 					Intrinsics.enclose(callback, Tree.ofAnd(n1, n2)));
 		});
 	};

@@ -46,13 +46,13 @@ public class WalkForwardRecorderMain {
 			var ts = Time.now().ymdHms().replace("-", "").replace(" ", "-").replace(":", "");
 			var filename = "wfa." + ts + ".csv";
 
-			var schedule = Schedule //
+			var schedule = Schedule
 					.ofRepeat(5, () -> {
 						var ymdHms = Time.now().ymdHms();
 						var priceBySymbol = cfg.quote(instruments.map(instrument -> instrument.symbol).toSet());
 
-						try (var os = Files.newOutputStream(HomeDir.resolve(filename), //
-								StandardOpenOption.APPEND, StandardOpenOption.CREATE, StandardOpenOption.WRITE); //
+						try (var os = Files.newOutputStream(HomeDir.resolve(filename),
+								StandardOpenOption.APPEND, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
 								var bw = new PrintWriter(os)) {
 							for (var e : priceBySymbol.entrySet())
 								bw.println(ymdHms + ", " + e.getKey() + ", " + e.getValue());
@@ -78,8 +78,8 @@ public class WalkForwardRecorderMain {
 				return data_;
 			});
 
-			var wfac = new WalkForwardAllocConfiguration( //
-					cfg.queryCompaniesByMarketCap(Time.now()), //
+			var wfac = new WalkForwardAllocConfiguration(
+					cfg.queryCompaniesByMarketCap(Time.now()),
 					bag.rsi.unleverage().walkForwardAllocator());
 
 			var tester = new WalkForwardAllocTester(cfg, wfac.instruments, fund0, wfac.walkForwardAllocator);

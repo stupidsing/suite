@@ -86,10 +86,10 @@ public class FileSystemKeyUtil {
 			while (pos < size) {
 				var pathLength = sizeOffset - pathOffset;
 				var pos1 = min(pos + pathLength, size);
-				keys.add(toNameKey( //
-						hash(name.range(0, pos)), //
-						0, //
-						name.range(pos, pos1).pad(pathLength), //
+				keys.add(toNameKey(
+						hash(name.range(0, pos)),
+						0,
+						name.range(pos, pos1).pad(pathLength),
 						pos1 == size ? pos1 - pos : 0));
 				pos = pos1;
 			}
@@ -100,10 +100,10 @@ public class FileSystemKeyUtil {
 	}
 
 	public NameKey toNameKey(Bytes bytes) {
-		return new NameKey( //
-				bytes.range(hashOffset, idOffset), //
-				bytes.get(idOffset), //
-				bytes.range(pathOffset, sizeOffset), //
+		return new NameKey(
+				bytes.range(hashOffset, idOffset),
+				bytes.get(idOffset),
+				bytes.range(pathOffset, sizeOffset),
 				bytes.get(sizeOffset));
 	}
 

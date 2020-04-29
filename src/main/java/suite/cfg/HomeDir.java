@@ -25,11 +25,11 @@ public class HomeDir {
 	}
 
 	private static Path getHomePath() {
-		return Opt //
-				.<String> none() //
-				.ifNone(Opt.of(Env.HOME)) //
-				.ifNone(Opt.of(System.getenv("USERPROFILE"))) //
-				.map(Paths::get) //
+		return Opt
+				.<String> none()
+				.ifNone(Opt.of(Env.HOME))
+				.ifNone(Opt.of(System.getenv("USERPROFILE")))
+				.map(Paths::get)
 				.or(Tmp.root);
 	}
 

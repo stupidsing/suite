@@ -41,11 +41,11 @@ public class Arima {
 		var mean2 = mean * mean;
 		var length = ys.length;
 
-		var r = forInt(p + 1) //
+		var r = forInt(p + 1)
 				.collect(As.floats(i -> {
 					var sum = forInt(i, length).toDouble(As.sum(j -> ys[j - i] * ys[j]));
 					return (float) (sum - mean2);
-				})) //
+				}))
 				.toArray();
 
 		var d = (double) r[0];
@@ -118,7 +118,7 @@ public class Arima {
 			// = ars[0] * xs[t - 1] + ... + ars[p - 1] * xs[t - p]
 			// + mas[0] * ep[t - 1] + ... + mas[q - 1] * ep[t - q]
 			// + ep[t]
-			var lr = stat.linearRegression(forInt(length) //
+			var lr = stat.linearRegression(forInt(length)
 					.map(t -> {
 						int tp = t + p, tpm1 = tp - 1;
 						int tq = t + q, tqm1 = tq - 1;
@@ -167,12 +167,12 @@ public class Arima {
 			// = ars[0] * xs[t - 1] + ... + ars[p - 1] * xs[t - p]
 			// + mas[0] * ep[t - 1] + ... + mas[q - 1] * ep[t - q]
 			{
-				var coeffs = stat.linearRegression(forInt(length) //
+				var coeffs = stat.linearRegression(forInt(length)
 						.map(t -> {
 							var tp = t + p;
 							var tq = t + q;
-							var lrxs = ConcatFlt //
-									.of(Floats_.reverse(xsp, t, tp), Floats_.reverse(epq, t, tq)) //
+							var lrxs = ConcatFlt
+									.of(Floats_.reverse(xsp, t, tp), Floats_.reverse(epq, t, tq))
 									.toArray();
 							var lry = xsp[tp] - epq[tq];
 							return FltObjPair.of(lry, lrxs);
@@ -185,7 +185,7 @@ public class Arima {
 			{
 				// xs[t] - ars[0] * xs[t - 1] - ... - ars[p - 1] * xs[t - p]
 				// = ep[t] + ep[t - 1] * mas[0] + ... + ep[t - q] * mas[q - 1]
-				var epq1 = stat.linearRegression(forInt(length) //
+				var epq1 = stat.linearRegression(forInt(length)
 						.map(t -> {
 							var lrxs = new float[lengthq];
 							var tp = t + p;
@@ -240,13 +240,13 @@ public class Arima {
 		while (true) {
 			var iter_ = iter;
 
-			var lr = stat.linearRegression(forInt(length) //
+			var lr = stat.linearRegression(forInt(length)
 					.map(t -> {
 						var tp = t + p;
 						int tq = t + q, tqm1 = tq - 1;
-						var lrxs = ConcatFlt //
+						var lrxs = ConcatFlt
 								.of(Floats_.reverse(xsp, t, tp),
-										forInt(iter_).collect(As.floats(i -> epqByIter[i][tqm1 - i]))) //
+										forInt(iter_).collect(As.floats(i -> epqByIter[i][tqm1 - i])))
 								.toArray();
 						return FltObjPair.of(xsp[tp], lrxs);
 					}));
@@ -259,8 +259,8 @@ public class Arima {
 				var ars = Floats.of(coeffs, 0, p).toArray();
 				var mas = Floats.of(coeffs, p).toArray();
 
-				var x1 = 0d //
-						+ forInt(p).toDouble(As.sum(i -> ars[i] * xsp[lengthpm1 - i])) //
+				var x1 = 0d
+						+ forInt(p).toDouble(As.sum(i -> ars[i] * xsp[lengthpm1 - i]))
 						+ forInt(q).toDouble(As.sum(i -> mas[i] * epqByIter[i][lengthqm1 - i]));
 
 				return new Arima_(ars, mas, x1);
@@ -322,11 +322,11 @@ public class Arima {
 		while (true) {
 			var iter_ = iter;
 
-			var lr = stat.linearRegression(forInt(length) //
+			var lr = stat.linearRegression(forInt(length)
 					.map(t -> {
 						var tqm1 = t + qm1;
-						var lrxs = ConcatFlt //
-								.of(ReadFlt.from(1f), forInt(iter_).collect(As.floats(i -> epqByIter[i][tqm1 - i]))) //
+						var lrxs = ConcatFlt
+								.of(ReadFlt.from(1f), forInt(iter_).collect(As.floats(i -> epqByIter[i][tqm1 - i])))
 								.toArray();
 						return FltObjPair.of(xs[t], lrxs);
 					}));

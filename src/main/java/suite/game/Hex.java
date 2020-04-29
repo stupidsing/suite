@@ -19,9 +19,9 @@ public class Hex {
 		}
 	}
 
-	public List<XY> directions = List.of( //
-			XY.of(0, -1), XY.of(0, 1) //
-			, XY.of(-1, 0), XY.of(1, 0) //
+	public List<XY> directions = List.of(
+			XY.of(0, -1), XY.of(0, 1)
+			, XY.of(-1, 0), XY.of(1, 0)
 			, XY.of(-1, 1), XY.of(1, -1));
 
 	public XY diff(XY from, XY to) {

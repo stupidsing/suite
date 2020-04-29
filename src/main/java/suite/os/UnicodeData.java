@@ -16,10 +16,10 @@ public class UnicodeData {
 
 	public UnicodeData() {
 		try (var is = getClass().getResourceAsStream("UnicodeData.txt")) {
-			classByChars = ReadLines //
-					.from(is) //
-					.map(line -> line.split(";")) //
-					.map(a -> Pair.of(a[2], (char) Integer.parseInt(a[0], 16))) //
+			classByChars = ReadLines
+					.from(is)
+					.map(line -> line.split(";"))
+					.map(a -> Pair.of(a[2], (char) Integer.parseInt(a[0], 16)))
 					.collect(As::setMap);
 		} catch (IOException ex) {
 			fail(ex);

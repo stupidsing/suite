@@ -34,12 +34,12 @@ public class DivisiblePolynomial<N> {
 	private Fun<Node, Opt<N>> parse_;
 	private Fun<N, Node> format_;
 
-	public DivisiblePolynomial( //
-			Node x, //
-			Predicate<Node> is_x, //
-			Field<N> field0, //
-			Obj_Int<N> sgn_, //
-			Fun<Node, Opt<N>> parse_, //
+	public DivisiblePolynomial(
+			Node x,
+			Predicate<Node> is_x,
+			Field<N> field0,
+			Obj_Int<N> sgn_,
+			Fun<Node, Opt<N>> parse_,
 			Fun<N, Node> format_) {
 		this.py = new Polynomial<>(x, is_x, field0, sgn_, parse_, format_);
 		this.n0 = field0.n0;
@@ -59,11 +59,11 @@ public class DivisiblePolynomial<N> {
 	}
 
 	public Fractional<Poly<N>> fractional() {
-		return new Fractional<>( //
-				this.ring, //
-				this::sign, //
-				this::divMod, //
-				this::parse, //
+		return new Fractional<>(
+				this.ring,
+				this::sign,
+				this::divMod,
+				this::parse,
 				this::format);
 	}
 
@@ -72,7 +72,7 @@ public class DivisiblePolynomial<N> {
 
 		return new Object() {
 			private Opt<Poly<N>> poly(Node node) {
-				return new SwitchNode<Opt<Poly<N>>>(node //
+				return new SwitchNode<Opt<Poly<N>>>(node
 				).match(patAdd, (a, b) -> {
 					return poly(a).join(poly(b), dpy::add);
 				}).match(patNeg, a -> {

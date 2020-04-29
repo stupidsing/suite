@@ -35,7 +35,7 @@ public class CompileExpressionImpl implements EvaluatorFactory {
 			}
 
 			private FunExpr compile_(Node node) {
-				return new SwitchNode<FunExpr>(node //
+				return new SwitchNode<FunExpr>(node
 				).match(".0 + .1", (a, b) -> {
 					return compileOperator(a, b, "+");
 				}).match(".0 - .1", (a, b) -> {
