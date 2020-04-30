@@ -411,7 +411,7 @@ public class P4GenerateCode {
 						op0 = p4deOp.decompose(fd, pointer, start, ps);
 						op1 = p4deOp.decompose(fd, pointer, start + ps, ps);
 						yield op0 != null && op1 != null
-								? return2Op(op0, op1)//
+								? return2Op(op0, op1)
 								: mfp.g().map((p, r) -> return2Op(amd64.mem(r, p, ps), amd64.mem(r, p + ps, ps)));
 					}
 					default -> fail();
