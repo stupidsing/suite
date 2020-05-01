@@ -1,6 +1,8 @@
 package suite.file.impl;
 
-import static primal.statics.Rethrow.ex;
+import primal.Verbs.Close;
+import primal.Verbs.Mk;
+import primal.primitive.adt.Bytes;
 
 import java.io.Closeable;
 import java.io.RandomAccessFile;
@@ -8,9 +10,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.file.Path;
 
-import primal.Verbs.Close;
-import primal.Verbs.Mk;
-import primal.primitive.adt.Bytes;
+import static primal.statics.Rethrow.ex;
 
 public class RandomAccessibleFile implements Closeable {
 

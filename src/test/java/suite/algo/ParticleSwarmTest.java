@@ -1,23 +1,18 @@
 package suite.algo;
 
-import static java.lang.Math.abs;
-import static java.lang.Math.max;
-import static java.lang.Math.min;
-import static java.lang.Math.sin;
-import static java.lang.Math.sqrt;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static suite.util.Streamlet_.forInt;
-
-import java.util.Arrays;
-import java.util.Random;
-
 import org.junit.jupiter.api.Test;
-
 import primal.MoreVerbs.Read;
 import primal.primitive.adt.pair.DblObjPair;
 import primal.primitive.fp.AsDbl;
 import suite.math.Math_;
 import suite.math.linalg.Vector;
+
+import java.util.Arrays;
+import java.util.Random;
+
+import static java.lang.Math.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static suite.util.Streamlet_.forInt;
 
 // https://medium.com/@deepulse/a-practical-guide-to-particle-swarm-optimization-c6a615113a71
 public class ParticleSwarmTest {

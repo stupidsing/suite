@@ -1,15 +1,5 @@
 package suite.persistent;
 
-import static java.lang.Math.max;
-import static primal.statics.Rethrow.ex;
-
-import java.io.IOException;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-
 import primal.MoreVerbs.Read;
 import primal.adt.IdentityKey;
 import primal.adt.Pair;
@@ -30,6 +20,12 @@ import suite.serialize.Serialize;
 import suite.serialize.Serialize.Serializer;
 import suite.streamlet.As;
 import suite.util.To;
+
+import java.io.IOException;
+import java.util.*;
+
+import static java.lang.Math.max;
+import static primal.statics.Rethrow.ex;
 
 public class LazyPbTreeExtentFilePersister<T> implements LazyPbTreePersister<Extent, T> {
 

@@ -1,13 +1,5 @@
 package suite.os;
 
-import static primal.statics.Fail.fail;
-import static primal.statics.Rethrow.ex;
-
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-
 import primal.MoreVerbs.Read;
 import primal.Nouns.Utf8;
 import primal.Verbs.Th;
@@ -15,6 +7,14 @@ import primal.os.Log_;
 import primal.statics.Fail.InterruptedRuntimeException;
 import suite.util.Copy;
 import suite.util.To;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
+import static primal.statics.Fail.fail;
+import static primal.statics.Rethrow.ex;
 
 public class Execute {
 

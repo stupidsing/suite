@@ -1,12 +1,5 @@
 package suite.assembler;
 
-import static java.lang.Math.min;
-import static primal.statics.Fail.fail;
-
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.util.List;
-
 import primal.Verbs.Build;
 import primal.Verbs.Format;
 import primal.adt.Pair;
@@ -21,15 +14,15 @@ import primal.primitive.adt.Bytes.BytesBuilder;
 import primal.primitive.adt.IntRange;
 import primal.primitive.adt.LngRange;
 import primal.primitive.adt.map.LngIntMap;
-import suite.assembler.Amd64.Insn;
-import suite.assembler.Amd64.Instruction;
-import suite.assembler.Amd64.OpImm;
-import suite.assembler.Amd64.OpMem;
-import suite.assembler.Amd64.OpNone;
-import suite.assembler.Amd64.OpReg;
-import suite.assembler.Amd64.OpRemark;
-import suite.assembler.Amd64.Operand;
+import suite.assembler.Amd64.*;
 import suite.funp.Funp_;
+
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.util.List;
+
+import static java.lang.Math.min;
+import static primal.statics.Fail.fail;
 
 public class Amd64Interpret {
 

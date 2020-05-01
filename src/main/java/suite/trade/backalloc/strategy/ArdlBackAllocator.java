@@ -1,13 +1,13 @@
 package suite.trade.backalloc.strategy;
 
-import java.util.List;
-
 import primal.MoreVerbs.Read;
 import primal.adt.Pair;
 import suite.trade.backalloc.BackAllocator;
 import suite.trade.data.DataSource.AlignKeyDataSource;
 import suite.ts.Ardl;
 import suite.util.To;
+
+import java.util.List;
 
 public class ArdlBackAllocator implements BackAllocator {
 

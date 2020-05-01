@@ -1,13 +1,12 @@
 package suite.parser;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import org.junit.jupiter.api.Test;
+import primal.Nouns.Buffer;
 
 import java.io.FileReader;
 import java.io.IOException;
 
-import org.junit.jupiter.api.Test;
-
-import primal.Nouns.Buffer;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class LexerTest {
 

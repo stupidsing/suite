@@ -1,22 +1,17 @@
 package suite.os;
 
-import java.io.PrintWriter;
-import java.lang.reflect.InvocationTargetException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.DailyRollingFileAppender;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
-
+import org.apache.log4j.*;
 import primal.Nouns.Tmp;
 import primal.Verbs.Build;
 import primal.Verbs.Copy;
 import primal.fp.Funs.Source;
 import suite.inspect.Dump;
 import suite.jdk.proxy.Intercept;
+
+import java.io.PrintWriter;
+import java.lang.reflect.InvocationTargetException;
 
 public class Log4j_ {
 

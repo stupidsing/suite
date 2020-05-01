@@ -1,14 +1,7 @@
 package suite.jdk.gen;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.util.Map;
-import java.util.function.BiPredicate;
-
 import org.apache.bcel.generic.Type;
 import org.junit.jupiter.api.Test;
-
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Iterate;
 import primal.fp.Funs.Source;
@@ -27,6 +20,12 @@ import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Tree;
 import suite.node.io.TermOp;
+
+import java.util.Map;
+import java.util.function.BiPredicate;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class FunCreatorTest {
 

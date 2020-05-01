@@ -1,10 +1,5 @@
 package suite.trade.analysis;
 
-import static suite.util.Streamlet_.forInt;
-
-import java.util.List;
-import java.util.Map;
-
 import primal.MoreVerbs.Read;
 import primal.streamlet.Streamlet;
 import suite.math.linalg.Matrix;
@@ -20,6 +15,11 @@ import suite.trade.data.DataSourceView;
 import suite.trade.data.HkexUtil;
 import suite.trade.data.TradeCfg;
 import suite.ts.Quant;
+
+import java.util.List;
+import java.util.Map;
+
+import static suite.util.Streamlet_.forInt;
 
 public class FactorLr {
 

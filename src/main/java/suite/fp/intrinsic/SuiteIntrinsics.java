@@ -1,7 +1,5 @@
 package suite.fp.intrinsic;
 
-import java.util.List;
-
 import suite.Suite;
 import suite.fp.intrinsic.Intrinsics.Intrinsic;
 import suite.instructionexecutor.thunk.ThunkUtil;
@@ -10,6 +8,8 @@ import suite.node.Data;
 import suite.node.Node;
 import suite.node.io.Formatter;
 import suite.util.To;
+
+import java.util.List;
 
 public class SuiteIntrinsics {
 

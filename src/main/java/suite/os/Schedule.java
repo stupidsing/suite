@@ -1,12 +1,12 @@
 package suite.os;
 
+import primal.MoreVerbs.Read;
+import primal.fp.Funs.Source;
+
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.function.Predicate;
-
-import primal.MoreVerbs.Read;
-import primal.fp.Funs.Source;
 
 public class Schedule {
 

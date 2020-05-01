@@ -1,11 +1,10 @@
 package suite.sample;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import org.junit.jupiter.api.Test;
-
 import suite.Suite;
 import suite.node.Atom;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class SldResolutionTest {
 

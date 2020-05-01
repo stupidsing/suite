@@ -1,8 +1,8 @@
 package suite.adt;
 
-import java.util.Comparator;
-
 import primal.Verbs.New;
+
+import java.util.Comparator;
 
 /**
  * Priority queue implementation from Programming Pearls.

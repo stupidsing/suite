@@ -1,10 +1,10 @@
 package suite.math.linalg;
 
-import static java.lang.Math.sqrt;
-
 import primal.adt.Pair;
 import primal.fp.Funs.Iterate;
 import suite.util.To;
+
+import static java.lang.Math.sqrt;
 
 public class CholeskyDecomposition {
 

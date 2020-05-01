@@ -1,14 +1,13 @@
 package suite.ebnf;
 
-import java.io.IOException;
-import java.io.StringReader;
-
 import org.junit.jupiter.api.Test;
-
 import primal.Verbs.Build;
 import suite.ebnf.lr.LrParse;
 import suite.node.io.Operator.Assoc;
 import suite.node.io.TermOp;
+
+import java.io.IOException;
+import java.io.StringReader;
 
 public class EbnfOperatorTest {
 

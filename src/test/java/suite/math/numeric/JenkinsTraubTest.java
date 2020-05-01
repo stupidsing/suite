@@ -1,11 +1,10 @@
 package suite.math.numeric;
 
+import org.junit.jupiter.api.Test;
+import suite.math.Complex;
+
 import static java.lang.Math.max;
 import static primal.statics.Fail.fail;
-
-import org.junit.jupiter.api.Test;
-
-import suite.math.Complex;
 
 public class JenkinsTraubTest {
 

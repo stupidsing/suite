@@ -1,15 +1,15 @@
 package suite.ebnf;
 
-import java.io.IOException;
-import java.io.Reader;
-import java.util.ArrayList;
-import java.util.List;
-
 import primal.primitive.adt.Chars;
 import suite.ebnf.topdown.ReduceHeadRecursion;
 import suite.ebnf.topdown.TopDownParse;
 import suite.node.parser.FactorizeResult;
 import suite.node.parser.FactorizeResult.FTerminal;
+
+import java.io.IOException;
+import java.io.Reader;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Parser for Backus-Naur form grammars.

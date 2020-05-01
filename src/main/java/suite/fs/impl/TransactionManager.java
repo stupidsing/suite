@@ -1,10 +1,5 @@
 package suite.fs.impl;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Source;
 import primal.streamlet.Streamlet;
@@ -14,6 +9,11 @@ import suite.concurrent.stm.Stm;
 import suite.concurrent.stm.Stm.TransactionStatus;
 import suite.fs.KeyValueMutator;
 import suite.fs.KeyValueStore;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Implements software transaction memory in a key-value storage.

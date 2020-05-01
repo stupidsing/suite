@@ -1,13 +1,5 @@
 package suite.ebnf.lr;
 
-import static primal.statics.Fail.fail;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
 import primal.MoreVerbs.Read;
 import primal.Verbs.Equals;
 import primal.Verbs.Right;
@@ -17,6 +9,10 @@ import primal.persistent.PerList;
 import primal.streamlet.Streamlet2;
 import suite.ebnf.Grammar;
 import suite.ebnf.Grammar.GrammarType;
+
+import java.util.*;
+
+import static primal.statics.Fail.fail;
 
 public class BuildLr {
 

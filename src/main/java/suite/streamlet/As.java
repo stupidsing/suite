@@ -1,16 +1,5 @@
 package suite.streamlet;
 
-import static primal.statics.Fail.failBool;
-
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import primal.MoreVerbs.Read;
 import primal.Verbs.Build;
 import primal.Verbs.New;
@@ -40,6 +29,12 @@ import primal.puller.Puller2;
 import primal.streamlet.Streamlet;
 import suite.primitive.Bytes_;
 import suite.util.To;
+
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.util.*;
+
+import static primal.statics.Fail.failBool;
 
 public class As {
 

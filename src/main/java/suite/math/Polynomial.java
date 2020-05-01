@@ -1,15 +1,15 @@
 package suite.math;
 
-import static java.lang.Math.max;
-import static java.lang.Math.min;
-import static suite.util.Streamlet_.forInt;
-
-import java.util.Arrays;
-
 import primal.adt.Pair;
 import suite.math.linalg.Vector;
 import suite.streamlet.As;
 import suite.util.To;
+
+import java.util.Arrays;
+
+import static java.lang.Math.max;
+import static java.lang.Math.min;
+import static suite.util.Streamlet_.forInt;
 
 public class Polynomial {
 

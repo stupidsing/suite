@@ -1,16 +1,15 @@
 package suite.jdk.gen;
 
-import static primal.statics.Fail.fail;
-import static primal.statics.Rethrow.ex;
-
-import java.util.Arrays;
-
 import org.apache.bcel.Const;
 import org.apache.bcel.generic.BasicType;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.Type;
-
 import primal.Verbs.Equals;
+
+import java.util.Arrays;
+
+import static primal.statics.Fail.fail;
+import static primal.statics.Rethrow.ex;
 
 public class Type_ {
 

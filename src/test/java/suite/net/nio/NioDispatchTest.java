@@ -1,19 +1,6 @@
 package suite.net.nio;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import java.io.BufferedReader;
-import java.io.Closeable;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.Socket;
-import java.nio.charset.Charset;
-
 import org.junit.jupiter.api.Test;
-
 import primal.Nouns.Utf8;
 import primal.Verbs.Start;
 import primal.fp.Funs.Sink;
@@ -21,6 +8,14 @@ import primal.os.Log_;
 import primal.primitive.adt.Bytes;
 import primal.statics.Rethrow;
 import suite.net.nio.NioDispatch.AsyncRw;
+
+import java.io.*;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.nio.charset.Charset;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class NioDispatchTest {
 

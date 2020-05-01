@@ -1,14 +1,14 @@
 package suite.node.parser;
 
-import java.util.List;
-import java.util.Set;
-
 import primal.fp.Funs.Fun;
 import suite.node.io.Operator;
 import suite.parser.CommentPreprocessor;
 import suite.parser.IndentationPreprocessor;
 import suite.parser.WhitespacePreprocessor;
 import suite.text.Preprocess.Run;
+
+import java.util.List;
+import java.util.Set;
 
 public class PreprocessorFactory {
 

@@ -1,14 +1,14 @@
 package suite.math.numeric;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-
 import primal.MoreVerbs.Read;
 import primal.primitive.DblPrim.Dbl_Obj;
 import primal.primitive.DblPrim.Obj_Dbl;
 import primal.primitive.adt.pair.DblObjPair;
 import suite.math.linalg.Vector;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
 // https://github.com/fchollet/nelder-mead/blob/master/nelder_mead.py#L83
 public class NelderMead {

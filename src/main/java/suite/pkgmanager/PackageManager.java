@@ -1,23 +1,21 @@
 package suite.pkgmanager;
 
-import static primal.statics.Fail.fail;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.zip.ZipFile;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import primal.MoreVerbs.Read;
 import primal.parser.Wildcard;
 import suite.os.FileUtil;
 import suite.pkgmanager.action.ExecCommandAction;
 import suite.pkgmanager.action.ExtractFileAction;
 import suite.pkgmanager.action.InstallAction;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.zip.ZipFile;
+
+import static primal.statics.Fail.fail;
 
 public class PackageManager {
 

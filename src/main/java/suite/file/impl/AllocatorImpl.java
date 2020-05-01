@@ -1,9 +1,5 @@
 package suite.file.impl;
 
-import static java.lang.Math.min;
-
-import java.io.IOException;
-
 import primal.primitive.IntPrim.Int_Obj;
 import primal.primitive.adt.Bytes;
 import primal.primitive.adt.Bytes.BytesBuilder;
@@ -11,6 +7,10 @@ import suite.file.ExtentAllocator;
 import suite.file.PageAllocator;
 import suite.file.PageFile;
 import suite.file.SerializedPageFile;
+
+import java.io.IOException;
+
+import static java.lang.Math.min;
 
 /**
  * Manage B-tree pages on disk.

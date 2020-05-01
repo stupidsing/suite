@@ -1,15 +1,14 @@
 package suite.parser;
 
-import java.util.List;
-
 import org.junit.jupiter.api.Test;
-
 import primal.MoreVerbs.Read;
 import primal.adt.Pair;
 import suite.node.Node;
 import suite.node.Str;
 import suite.node.io.TermOp;
 import suite.node.util.TreeUtil;
+
+import java.util.List;
 
 public class RenderFunctionalTemplateTest {
 

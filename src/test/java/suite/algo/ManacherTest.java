@@ -1,12 +1,12 @@
 package suite.algo;
 
-import static java.lang.Math.min;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.jupiter.api.Test;
+import static java.lang.Math.min;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 // Find the longest palindromic substring.
 // https://www.akalin.com/longest-palindrome-linear-time

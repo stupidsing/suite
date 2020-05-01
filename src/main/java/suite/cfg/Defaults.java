@@ -1,9 +1,5 @@
 package suite.cfg;
 
-import static primal.statics.Fail.fail;
-
-import java.util.ArrayList;
-
 import primal.Verbs.ReadString;
 import primal.adt.FixieArray;
 import primal.fp.Funs.Source;
@@ -16,6 +12,10 @@ import suite.node.Node;
 import suite.node.Reference;
 import suite.node.io.Formatter;
 import suite.util.Memoize;
+
+import java.util.ArrayList;
+
+import static primal.statics.Fail.fail;
 
 public class Defaults {
 

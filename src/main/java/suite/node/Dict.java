@@ -1,10 +1,10 @@
 package suite.node;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import primal.Verbs.Get;
 import primal.adt.Pair;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class Dict extends Node {
 

@@ -1,12 +1,11 @@
 package suite.jdk.lambda;
 
-import java.util.Map;
-
 import org.apache.bcel.generic.Type;
-
 import primal.fp.Funs.Fun;
 import suite.jdk.gen.FunCreator;
 import suite.jdk.gen.FunExpression.FunExpr;
+
+import java.util.Map;
 
 public class LambdaImplementation<I> {
 

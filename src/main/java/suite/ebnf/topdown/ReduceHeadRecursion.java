@@ -1,15 +1,15 @@
 package suite.ebnf.topdown;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 import primal.MoreVerbs.Read;
 import primal.Verbs.Equals;
 import primal.Verbs.Right;
 import primal.fp.Funs.Iterate;
 import suite.ebnf.Grammar;
 import suite.ebnf.Grammar.GrammarType;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Transform head-recursion rule as follows:

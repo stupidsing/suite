@@ -1,17 +1,11 @@
 package suite.sample;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
+import suite.util.RunUtil;
+
+import javax.swing.*;
+import java.awt.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.WindowConstants;
-
-import suite.util.RunUtil;
 
 public class AnimationMain {
 

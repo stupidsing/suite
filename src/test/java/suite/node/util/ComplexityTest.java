@@ -1,10 +1,9 @@
 package suite.node.util;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import org.junit.jupiter.api.Test;
-
 import suite.Suite;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ComplexityTest {
 

@@ -1,13 +1,8 @@
 package suite.weiqi;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
-
 import suite.weiqi.Weiqi.Occupation;
+
+import java.util.*;
 
 public class GroupAnalysis {
 

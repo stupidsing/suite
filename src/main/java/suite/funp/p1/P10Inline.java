@@ -1,9 +1,5 @@
 package suite.funp.p1;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-
 import primal.MoreVerbs.Read;
 import primal.Verbs.Equals;
 import primal.Verbs.Reverse;
@@ -13,25 +9,14 @@ import primal.persistent.PerMap;
 import primal.primitive.adt.IntMutable;
 import suite.funp.Funp_;
 import suite.funp.Funp_.Funp;
-import suite.funp.P0.Fdt;
-import suite.funp.P0.FunpApply;
-import suite.funp.P0.FunpDefine;
-import suite.funp.P0.FunpDefineRec;
-import suite.funp.P0.FunpDoAssignVar;
-import suite.funp.P0.FunpDontCare;
-import suite.funp.P0.FunpField;
-import suite.funp.P0.FunpLambda;
-import suite.funp.P0.FunpNumber;
-import suite.funp.P0.FunpReference;
-import suite.funp.P0.FunpStruct;
-import suite.funp.P0.FunpTag;
-import suite.funp.P0.FunpTagId;
-import suite.funp.P0.FunpTagValue;
-import suite.funp.P0.FunpTypeCheck;
-import suite.funp.P0.FunpVariable;
+import suite.funp.P0.*;
 import suite.inspect.Dump;
 import suite.inspect.Inspect;
 import suite.node.util.Singleton;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 
 public class P10Inline {
 

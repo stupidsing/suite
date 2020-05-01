@@ -1,6 +1,12 @@
 package suite.debian;
 
-import static primal.statics.Rethrow.ex;
+import primal.MoreVerbs.Read;
+import primal.Verbs.Compare;
+import primal.Verbs.Equals;
+import primal.Verbs.Union;
+import suite.debian.AptUtil.Repo;
+import suite.os.FileUtil;
+import suite.util.RunUtil;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -10,13 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import primal.MoreVerbs.Read;
-import primal.Verbs.Compare;
-import primal.Verbs.Equals;
-import primal.Verbs.Union;
-import suite.debian.AptUtil.Repo;
-import suite.os.FileUtil;
-import suite.util.RunUtil;
+import static primal.statics.Rethrow.ex;
 
 public class DependencyMain {
 

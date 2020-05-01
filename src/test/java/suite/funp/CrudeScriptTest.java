@@ -1,15 +1,14 @@
 package suite.funp;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import org.junit.jupiter.api.Test;
-
 import primal.primitive.adt.Bytes;
 import suite.assembler.Amd64Interpret;
 import suite.funp.p1.P10Inline;
 import suite.funp.p2.P2InferType;
 import suite.funp.p3.P3Optimize;
 import suite.funp.p4.P4GenerateCode;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class CrudeScriptTest {
 

@@ -1,8 +1,5 @@
 package suite.persistent;
 
-import java.util.Comparator;
-import java.util.List;
-
 import primal.Verbs.Close;
 import primal.adt.Pair;
 import suite.file.ExtentAllocator.Extent;
@@ -15,6 +12,9 @@ import suite.fs.KeyValueStore;
 import suite.node.util.Singleton;
 import suite.serialize.Serialize;
 import suite.serialize.Serialize.Serializer;
+
+import java.util.Comparator;
+import java.util.List;
 
 public class LazyPbTreeStore<Pointer, Key, Value> implements KeyValueStore<Key, Value> {
 

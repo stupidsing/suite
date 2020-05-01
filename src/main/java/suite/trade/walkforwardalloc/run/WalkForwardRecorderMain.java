@@ -1,15 +1,5 @@
 package suite.trade.walkforwardalloc.run;
 
-import static primal.statics.Fail.fail;
-
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.nio.file.Files;
-import java.nio.file.StandardOpenOption;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TreeMap;
-
 import primal.Verbs.ReadFile;
 import suite.cfg.HomeDir;
 import suite.os.Schedule;
@@ -23,6 +13,16 @@ import suite.trade.data.TradeCfgImpl;
 import suite.trade.walkforwardalloc.WalkForwardAllocConfiguration;
 import suite.trade.walkforwardalloc.WalkForwardAllocTester;
 import suite.util.RunUtil;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeMap;
+
+import static primal.statics.Fail.fail;
 
 // mvn compile exec:java -Dexec.mainClass=suite.trade.analysis.WalkForwardRecorderMain
 public class WalkForwardRecorderMain {

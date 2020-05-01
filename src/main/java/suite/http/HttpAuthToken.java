@@ -1,11 +1,6 @@
 package suite.http;
 
-import static primal.statics.Rethrow.ex;
-
-import java.util.List;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import primal.MoreVerbs.Pull;
 import primal.MoreVerbs.Read;
 import primal.Nouns.Utf8;
@@ -22,6 +17,10 @@ import suite.http.Http.Request;
 import suite.http.Http.Response;
 import suite.math.Sha2;
 import suite.trade.Time;
+
+import java.util.List;
+
+import static primal.statics.Rethrow.ex;
 
 /**
  * Token-based HTTP authentication.

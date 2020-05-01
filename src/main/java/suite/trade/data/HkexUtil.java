@@ -1,15 +1,15 @@
 package suite.trade.data;
 
+import primal.Verbs.Right;
+import primal.fp.Funs.Source;
+import suite.trade.Time;
+import suite.util.Memoize;
+
 import java.time.DayOfWeek;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
-
-import primal.Verbs.Right;
-import primal.fp.Funs.Source;
-import suite.trade.Time;
-import suite.util.Memoize;
 
 public class HkexUtil {
 

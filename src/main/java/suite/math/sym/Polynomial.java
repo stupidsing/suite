@@ -1,7 +1,5 @@
 package suite.math.sym;
 
-import java.util.function.Predicate;
-
 import primal.adt.Fixie;
 import primal.adt.Fixie_.Fixie3;
 import primal.adt.Opt;
@@ -18,6 +16,8 @@ import suite.math.sym.Sym.Ring;
 import suite.node.Int;
 import suite.node.Node;
 import suite.node.io.SwitchNode;
+
+import java.util.function.Predicate;
 
 public class Polynomial<N> {
 

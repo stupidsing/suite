@@ -1,16 +1,15 @@
 package suite.math.ts;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.util.Arrays;
-
 import org.junit.jupiter.api.Test;
-
 import suite.trade.Time;
 import suite.trade.TimeRange;
 import suite.trade.data.TradeCfg;
 import suite.trade.data.TradeCfgImpl;
 import suite.ts.TimeSeries;
+
+import java.util.Arrays;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class TimeSeriesTest {
 

@@ -1,7 +1,5 @@
 package suite.instructionexecutor;
 
-import java.util.List;
-
 import suite.fp.intrinsic.Intrinsics.Intrinsic;
 import suite.fp.intrinsic.Intrinsics.IntrinsicCallback;
 import suite.instructionexecutor.InstructionUtil.Frame;
@@ -10,6 +8,8 @@ import suite.instructionexecutor.InstructionUtil.Instruction;
 import suite.instructionexecutor.InstructionUtil.Thunk;
 import suite.node.Data;
 import suite.node.Node;
+
+import java.util.List;
 
 public class LazyFunInstructionExecutor extends FunInstructionExecutor {
 

@@ -1,42 +1,22 @@
 package suite.jdk.gen.pass;
 
-import static primal.statics.Fail.fail;
-import static primal.statics.Rethrow.ex;
-
-import java.lang.reflect.Method;
-import java.util.List;
-
 import org.apache.bcel.generic.ArrayType;
 import org.apache.bcel.generic.Type;
-
 import primal.MoreVerbs.Read;
 import primal.fp.Funs.Fun;
 import suite.jdk.gen.FunExprK.PlaceholderFunExpr;
 import suite.jdk.gen.FunExprL.ApplyFunExpr;
 import suite.jdk.gen.FunExprL.DeclareLocalFunExpr;
-import suite.jdk.gen.FunExprM.ArrayFunExpr;
-import suite.jdk.gen.FunExprM.ArrayLengthFunExpr;
-import suite.jdk.gen.FunExprM.AssignLocalFunExpr;
-import suite.jdk.gen.FunExprM.BinaryFunExpr;
-import suite.jdk.gen.FunExprM.CastFunExpr;
-import suite.jdk.gen.FunExprM.CheckCastFunExpr;
-import suite.jdk.gen.FunExprM.ConstantFunExpr;
-import suite.jdk.gen.FunExprM.FieldStaticFunExpr;
-import suite.jdk.gen.FunExprM.FieldTypeFunExpr;
-import suite.jdk.gen.FunExprM.FieldTypeSetFunExpr;
-import suite.jdk.gen.FunExprM.IfFunExpr;
-import suite.jdk.gen.FunExprM.IndexFunExpr;
-import suite.jdk.gen.FunExprM.InstanceOfFunExpr;
-import suite.jdk.gen.FunExprM.InvokeMethodFunExpr;
-import suite.jdk.gen.FunExprM.LocalFunExpr;
-import suite.jdk.gen.FunExprM.NewFunExpr;
-import suite.jdk.gen.FunExprM.PrintlnFunExpr;
-import suite.jdk.gen.FunExprM.ProfileFunExpr;
-import suite.jdk.gen.FunExprM.SeqFunExpr;
-import suite.jdk.gen.FunExprM.VoidFunExpr;
+import suite.jdk.gen.FunExprM.*;
 import suite.jdk.gen.FunExpression.FunExpr;
 import suite.jdk.gen.Type_;
 import suite.util.Util;
+
+import java.lang.reflect.Method;
+import java.util.List;
+
+import static primal.statics.Fail.fail;
+import static primal.statics.Rethrow.ex;
 
 public class FunTypeInformation {
 

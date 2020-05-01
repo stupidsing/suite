@@ -1,8 +1,8 @@
 package suite.math;
 
-import static java.lang.Math.sqrt;
-
 import primal.Verbs.Get;
+
+import static java.lang.Math.sqrt;
 
 public class R3 {
 

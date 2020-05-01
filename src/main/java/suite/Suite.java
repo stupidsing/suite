@@ -1,17 +1,5 @@
 package suite;
 
-import static primal.statics.Fail.fail;
-import static primal.statics.Rethrow.ex;
-
-import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import primal.MoreVerbs.Read;
 import primal.fp.Funs.Source;
 import suite.BindArrayUtil.Pattern;
@@ -33,6 +21,14 @@ import suite.node.io.TermOp;
 import suite.node.parser.IterativeParser;
 import suite.node.util.TreeUtil;
 import suite.primitive.IoSink;
+
+import java.io.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import static primal.statics.Fail.fail;
+import static primal.statics.Rethrow.ex;
 
 public class Suite {
 

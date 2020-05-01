@@ -1,13 +1,13 @@
 package suite.fp;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import primal.MoreVerbs.Read;
 import primal.streamlet.Streamlet;
 import suite.Suite;
 import suite.lp.Configuration.ProverCfg;
 import suite.node.Node;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class FunCompilerCfg {
 

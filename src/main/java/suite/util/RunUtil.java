@@ -1,13 +1,12 @@
 package suite.util;
 
-import java.util.concurrent.Callable;
-
 import org.apache.log4j.Level;
-
 import primal.MoreVerbs.Read;
 import primal.os.Log_;
 import suite.os.Execute;
 import suite.os.LogUtil;
+
+import java.util.concurrent.Callable;
 
 public class RunUtil {
 

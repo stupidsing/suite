@@ -1,11 +1,5 @@
 package suite.cli;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.Reader;
-import java.io.Writer;
-import java.util.List;
-
 import primal.MoreVerbs.Read;
 import primal.Verbs.Is;
 import primal.Verbs.Substring;
@@ -33,6 +27,12 @@ import suite.node.Tree;
 import suite.node.io.Formatter;
 import suite.node.pp.PrettyPrinter;
 import suite.util.CommandUtil;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.Reader;
+import java.io.Writer;
+import java.util.List;
 
 /**
  * Command line interface dispatcher.

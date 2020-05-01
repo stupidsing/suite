@@ -1,26 +1,21 @@
 package suite.trade.data;
 
-import static java.lang.Math.min;
-import static primal.statics.Fail.fail;
-
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
 import primal.MoreVerbs.Read;
 import primal.Verbs.Equals;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs2.Fun2;
 import primal.os.Log_;
 import primal.streamlet.Streamlet;
-import suite.trade.Instrument;
-import suite.trade.Time;
-import suite.trade.TimeRange;
-import suite.trade.Trade;
-import suite.trade.Trade_;
-import suite.trade.Usex;
+import suite.trade.*;
 import suite.trade.data.Broker.Hsbc;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+import static java.lang.Math.min;
+import static primal.statics.Fail.fail;
 
 public class TradeCfgImpl implements TradeCfg {
 

@@ -1,26 +1,20 @@
 package suite.jdk;
 
-import static primal.statics.Fail.fail;
+import org.junit.jupiter.api.Test;
+import primal.Nouns.Tmp;
+import primal.Verbs.Mk;
+import primal.Verbs.New;
+import primal.jdk.UnsafeUtil;
 
+import javax.tools.*;
+import javax.tools.JavaFileObject.Kind;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
 import java.util.List;
 
-import javax.tools.FileObject;
-import javax.tools.ForwardingJavaFileManager;
-import javax.tools.JavaFileObject;
-import javax.tools.JavaFileObject.Kind;
-import javax.tools.SimpleJavaFileObject;
-import javax.tools.ToolProvider;
-
-import org.junit.jupiter.api.Test;
-
-import primal.Nouns.Tmp;
-import primal.Verbs.Mk;
-import primal.Verbs.New;
-import primal.jdk.UnsafeUtil;
+import static primal.statics.Fail.fail;
 
 public class JdkUtilTest {
 

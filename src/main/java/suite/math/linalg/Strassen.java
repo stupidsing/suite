@@ -1,8 +1,8 @@
 package suite.math.linalg;
 
-import static primal.statics.Fail.fail;
-
 import primal.primitive.IntInt_Flt;
+
+import static primal.statics.Fail.fail;
 
 public class Strassen {
 

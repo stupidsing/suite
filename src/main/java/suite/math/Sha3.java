@@ -1,12 +1,12 @@
 package suite.math;
 
-import static java.lang.Math.min;
-import static java.util.Map.entry;
+import primal.primitive.adt.Bytes.BytesBuilder;
 
 import java.util.Arrays;
 import java.util.Map;
 
-import primal.primitive.adt.Bytes.BytesBuilder;
+import static java.lang.Math.min;
+import static java.util.Map.entry;
 
 /**
  * https://en.wikipedia.org/wiki/SHA-3

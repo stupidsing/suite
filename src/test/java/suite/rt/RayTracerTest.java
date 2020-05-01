@@ -1,14 +1,6 @@
 package suite.rt;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
-
-import javax.imageio.ImageIO;
-
 import org.junit.jupiter.api.Test;
-
 import primal.Nouns.Tmp;
 import primal.Verbs.Get;
 import primal.Verbs.WriteFile;
@@ -21,6 +13,12 @@ import suite.rt.composite.Minus;
 import suite.rt.composite.Union;
 import suite.rt.planar.Plane;
 import suite.rt.planar.Triangle;
+
+import javax.imageio.ImageIO;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
 
 public class RayTracerTest {
 

@@ -1,12 +1,6 @@
 package suite.trade.backalloc;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static suite.util.Streamlet_.forInt;
-
-import java.util.List;
-
 import org.junit.jupiter.api.Test;
-
 import primal.MoreVerbs.Read;
 import primal.adt.Pair;
 import primal.primitive.fp.AsDbl;
@@ -14,6 +8,11 @@ import primal.primitive.fp.AsInt;
 import primal.primitive.fp.AsLng;
 import suite.trade.Time;
 import suite.trade.data.DataSource;
+
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static suite.util.Streamlet_.forInt;
 
 public class BackAllocatorTest {
 

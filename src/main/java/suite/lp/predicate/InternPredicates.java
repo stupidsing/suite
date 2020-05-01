@@ -1,8 +1,5 @@
 package suite.lp.predicate;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import primal.adt.IdentityKey;
 import suite.lp.predicate.PredicateUtil.BuiltinPredicate;
 import suite.node.Atom;
@@ -10,6 +7,9 @@ import suite.node.Node;
 import suite.node.Reference;
 import suite.node.TreeIntern;
 import suite.node.io.TermOp;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class InternPredicates {
 

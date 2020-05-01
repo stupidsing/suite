@@ -1,12 +1,5 @@
 package suite.net.cluster.impl;
 
-import java.io.Closeable;
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-
 import primal.Verbs.Close;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Sink;
@@ -16,6 +9,13 @@ import suite.net.cluster.ClusterProbe;
 import suite.net.nio.NioDispatch;
 import suite.net.nio.NioDispatch.AsyncRw;
 import suite.streamlet.Pusher;
+
+import java.io.Closeable;
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 public class NioCluster implements Closeable {
 

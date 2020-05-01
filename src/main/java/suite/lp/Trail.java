@@ -1,10 +1,10 @@
 package suite.lp;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import suite.node.Node;
 import suite.node.Reference;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Trail {
 

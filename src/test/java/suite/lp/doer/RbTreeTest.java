@@ -1,15 +1,14 @@
 package suite.lp.doer;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Test;
+import suite.Suite;
+import suite.lp.search.InterpretedProverBuilder;
+import suite.lp.search.SewingProverBuilder2;
 
 import java.io.IOException;
 import java.util.List;
 
-import org.junit.jupiter.api.Test;
-
-import suite.Suite;
-import suite.lp.search.InterpretedProverBuilder;
-import suite.lp.search.SewingProverBuilder2;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class RbTreeTest {
 

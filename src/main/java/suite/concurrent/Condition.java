@@ -1,8 +1,8 @@
 package suite.concurrent;
 
-import static primal.statics.Fail.fail;
-
 import primal.fp.Funs.Source;
+
+import static primal.statics.Fail.fail;
 
 public class Condition {
 

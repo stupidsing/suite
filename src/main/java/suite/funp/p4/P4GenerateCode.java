@@ -1,13 +1,5 @@
 package suite.funp.p4;
 
-import static java.util.Map.entry;
-import static primal.statics.Fail.fail;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import primal.MoreVerbs.Read;
 import primal.adt.Fixie_.FixieFun5;
 import primal.adt.Mutable;
@@ -23,51 +15,13 @@ import primal.primitive.adt.Bytes;
 import primal.primitive.adt.pair.IntObjPair;
 import suite.Suite;
 import suite.assembler.Amd64;
-import suite.assembler.Amd64.Insn;
-import suite.assembler.Amd64.Instruction;
-import suite.assembler.Amd64.OpIgnore;
-import suite.assembler.Amd64.OpImm;
-import suite.assembler.Amd64.OpImmLabel;
-import suite.assembler.Amd64.OpMem;
-import suite.assembler.Amd64.OpReg;
-import suite.assembler.Amd64.Operand;
+import suite.assembler.Amd64.*;
 import suite.assembler.Amd64Assemble;
 import suite.assembler.Amd64Parse;
 import suite.funp.Funp_;
 import suite.funp.Funp_.Funp;
-import suite.funp.P0.Coerce;
-import suite.funp.P0.FunpBoolean;
-import suite.funp.P0.FunpCoerce;
-import suite.funp.P0.FunpDoAsm;
-import suite.funp.P0.FunpDoWhile;
-import suite.funp.P0.FunpDontCare;
-import suite.funp.P0.FunpError;
-import suite.funp.P0.FunpIf;
-import suite.funp.P0.FunpNumber;
-import suite.funp.P0.FunpRemark;
-import suite.funp.P2.FunpAllocGlobal;
-import suite.funp.P2.FunpAllocReg;
-import suite.funp.P2.FunpAllocStack;
-import suite.funp.P2.FunpAssignMem;
-import suite.funp.P2.FunpAssignOp;
-import suite.funp.P2.FunpAssignOp2;
-import suite.funp.P2.FunpCmp;
-import suite.funp.P2.FunpData;
-import suite.funp.P2.FunpFramePointer;
-import suite.funp.P2.FunpHeapAlloc;
-import suite.funp.P2.FunpHeapDealloc;
-import suite.funp.P2.FunpInvoke1;
-import suite.funp.P2.FunpInvoke2;
-import suite.funp.P2.FunpInvokeIo;
-import suite.funp.P2.FunpMemory;
-import suite.funp.P2.FunpOp;
-import suite.funp.P2.FunpOperand;
-import suite.funp.P2.FunpOperand2;
-import suite.funp.P2.FunpRoutine1;
-import suite.funp.P2.FunpRoutine2;
-import suite.funp.P2.FunpRoutineIo;
-import suite.funp.P2.FunpSaveRegisters0;
-import suite.funp.P2.FunpSaveRegisters1;
+import suite.funp.P0.*;
+import suite.funp.P2.*;
 import suite.funp.RegisterSet;
 import suite.funp.p4.P4Emit.Emit;
 import suite.node.Atom;
@@ -76,6 +30,14 @@ import suite.node.io.Operator.Assoc;
 import suite.node.io.TermOp;
 import suite.node.util.TreeUtil;
 import suite.util.Switch;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import static java.util.Map.entry;
+import static primal.statics.Fail.fail;
 
 public class P4GenerateCode {
 

@@ -1,11 +1,11 @@
 package suite.node.util;
 
+import primal.fp.Funs.Fun;
+import suite.node.Atom;
+
 import java.lang.ref.WeakReference;
 import java.util.Map;
 import java.util.WeakHashMap;
-
-import primal.fp.Funs.Fun;
-import suite.node.Atom;
 
 public class AtomContext {
 

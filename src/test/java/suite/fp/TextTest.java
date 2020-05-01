@@ -1,16 +1,15 @@
 package suite.fp;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import org.junit.jupiter.api.Test;
+import suite.Suite;
+import suite.node.Atom;
+import suite.node.Node;
 
 import java.io.IOException;
 import java.io.StringWriter;
 
-import org.junit.jupiter.api.Test;
-
-import suite.Suite;
-import suite.node.Atom;
-import suite.node.Node;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class TextTest {
 

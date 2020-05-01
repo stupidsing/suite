@@ -1,13 +1,13 @@
 package suite.trade.data;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-
 import primal.MoreVerbs.Read;
 import primal.fp.Funs2.Fun2;
 import primal.streamlet.Streamlet;
 import suite.trade.Trade_;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 public class QuoteCache<K> {
 

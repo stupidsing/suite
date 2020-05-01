@@ -1,13 +1,5 @@
 package suite.jdk;
 
-import static primal.statics.Fail.fail;
-
-import java.io.IOException;
-import java.nio.file.Path;
-import java.util.List;
-
-import javax.tools.ToolProvider;
-
 import primal.Nouns.Utf8;
 import primal.Verbs.Mk;
 import primal.Verbs.New;
@@ -15,6 +7,13 @@ import primal.Verbs.ReadFile;
 import primal.Verbs.WriteFile;
 import primal.jdk.UnsafeUtil;
 import primal.os.Log_;
+
+import javax.tools.ToolProvider;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.List;
+
+import static primal.statics.Fail.fail;
 
 public class JdkUtil {
 

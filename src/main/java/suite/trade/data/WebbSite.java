@@ -1,14 +1,14 @@
 package suite.trade.data;
 
-import static java.util.Map.entry;
-
-import java.util.Map;
-
 import primal.Verbs.Equals;
 import suite.node.util.Singleton;
 import suite.streamlet.As;
 import suite.trade.Time;
 import suite.trade.data.DataSource.Datum;
+
+import java.util.Map;
+
+import static java.util.Map.entry;
 
 // https://www.facebook.com/notes/yuen-cheng/%E5%88%86%E4%BA%AB%E6%8B%BF%E5%8F%96webb-site%E6%B8%AF%E8%82%A1%E8%82%A1%E5%83%B9%E7%A8%8B%E5%BC%8F/1642684929197453/
 public class WebbSite {

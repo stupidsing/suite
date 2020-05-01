@@ -1,17 +1,17 @@
 package suite.util;
 
-import static primal.statics.Fail.fail;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 import primal.Verbs.Wait;
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Source;
 import primal.fp.Funs2.Fun2;
 import suite.adt.PriorityQueue;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+import static primal.statics.Fail.fail;
 
 public class Memoize {
 

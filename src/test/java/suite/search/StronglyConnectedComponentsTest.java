@@ -1,14 +1,13 @@
 package suite.search;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Test;
+import primal.MoreVerbs.Read;
+import primal.adt.Pair;
 
 import java.util.Set;
 
-import org.junit.jupiter.api.Test;
-
-import primal.MoreVerbs.Read;
-import primal.adt.Pair;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class StronglyConnectedComponentsTest {
 

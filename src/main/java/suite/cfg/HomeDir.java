@@ -1,12 +1,12 @@
 package suite.cfg;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
 import primal.Nouns.Tmp;
 import primal.Verbs.Mk;
 import primal.adt.Opt;
 import primal.os.Env;
+
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class HomeDir {
 

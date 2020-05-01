@@ -1,21 +1,5 @@
 package suite.net.cluster.impl;
 
-import static primal.statics.Rethrow.ex;
-
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.UnknownHostException;
-import java.nio.ByteBuffer;
-import java.nio.channels.DatagramChannel;
-import java.nio.channels.SelectionKey;
-import java.nio.channels.Selector;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-
 import primal.MoreVerbs.Read;
 import primal.Nouns.Utf8;
 import primal.Verbs.Equals;
@@ -28,6 +12,18 @@ import suite.net.cluster.ClusterProbe;
 import suite.streamlet.As;
 import suite.streamlet.Pusher;
 import suite.util.To;
+
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.UnknownHostException;
+import java.nio.ByteBuffer;
+import java.nio.channels.DatagramChannel;
+import java.nio.channels.SelectionKey;
+import java.nio.channels.Selector;
+import java.util.*;
+
+import static primal.statics.Rethrow.ex;
 
 /**
  * Probes existence of other nodes in a cluster, using the un-reliable UDP

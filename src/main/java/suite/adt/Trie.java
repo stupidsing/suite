@@ -1,10 +1,10 @@
 package suite.adt;
 
+import primal.Verbs.Right;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import primal.Verbs.Right;
 
 public class Trie<K, V> {
 

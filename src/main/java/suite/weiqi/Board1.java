@@ -1,11 +1,11 @@
 package suite.weiqi;
 
+import primal.fp.Funs.Fun;
+import suite.weiqi.Weiqi.Occupation;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
-
-import primal.fp.Funs.Fun;
-import suite.weiqi.Weiqi.Occupation;
 
 /**
  * A (better) Weiqi board implementation using groups and union-find algorithm.

@@ -1,8 +1,5 @@
 package suite.lp.doer;
 
-import java.time.LocalDateTime;
-import java.util.List;
-
 import primal.Verbs.Right;
 import primal.fp.Funs.Source;
 import primal.os.Log_;
@@ -13,12 +10,11 @@ import suite.lp.kb.Prototype;
 import suite.lp.kb.Rule;
 import suite.lp.kb.RuleSet;
 import suite.lp.predicate.SystemPredicates;
-import suite.node.Atom;
-import suite.node.Data;
-import suite.node.Node;
-import suite.node.Suspend;
-import suite.node.Tree;
+import suite.node.*;
 import suite.node.io.TermOp;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 public class Prover {
 

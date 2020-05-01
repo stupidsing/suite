@@ -1,18 +1,13 @@
 package suite.net.cluster.impl;
 
-import java.io.IOException;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Sink;
 import suite.net.cluster.impl.ClusterMapUtil.GetQuery;
 import suite.net.cluster.impl.ClusterMapUtil.PutQuery;
+
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.*;
 
 public class NioClusterMap<K, V> {
 

@@ -1,11 +1,11 @@
 package suite.util;
 
-import static suite.util.Streamlet_.forInt;
-
 import primal.MoreVerbs.Read;
 import primal.Verbs.Build;
 import primal.primitive.IntMoreVerbs.LiftInt;
 import suite.streamlet.As;
+
+import static suite.util.Streamlet_.forInt;
 
 public class FormatUtil {
 

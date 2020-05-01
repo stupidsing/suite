@@ -1,15 +1,15 @@
 package suite.trade.data;
 
-import static primal.statics.Fail.fail;
-
-import java.util.Map;
-import java.util.Set;
-
 import primal.MoreVerbs.Read;
 import primal.Verbs.Equals;
 import suite.math.linalg.Vector;
 import suite.trade.Instrument;
 import suite.trade.TimeRange;
+
+import java.util.Map;
+import java.util.Set;
+
+import static primal.statics.Fail.fail;
 
 public class Hkd {
 

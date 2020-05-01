@@ -1,13 +1,13 @@
 package suite.lcs;
 
+import primal.Verbs.Equals;
+import primal.persistent.PerList;
+
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-
-import primal.Verbs.Equals;
-import primal.persistent.PerList;
 
 /**
  * Longest common subsequence using dynamic programming.

@@ -1,8 +1,8 @@
 package suite.uct;
 
-import java.util.List;
-
 import suite.math.XorShiftRandom;
+
+import java.util.List;
 
 public class ShuffleUtil {
 

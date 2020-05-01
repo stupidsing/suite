@@ -1,16 +1,10 @@
 package suite.search;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.PriorityQueue;
-import java.util.Set;
-
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Source;
 import primal.primitive.IntPrim.Obj_Int;
+
+import java.util.*;
 
 public class Astar<Node> {
 

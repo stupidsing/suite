@@ -1,12 +1,5 @@
 package suite.inspect;
 
-import java.lang.reflect.Array;
-import java.util.Collection;
-import java.util.IdentityHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Callable;
-
 import primal.MoreVerbs.Read;
 import primal.Verbs.Build;
 import primal.Verbs.Get;
@@ -24,6 +17,13 @@ import suite.object.MapObject_;
 import suite.util.SmartSplit;
 import suite.util.Switch;
 import suite.util.Util;
+
+import java.lang.reflect.Array;
+import java.util.Collection;
+import java.util.IdentityHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Callable;
 
 public class Dump {
 

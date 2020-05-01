@@ -1,22 +1,17 @@
 package suite.concurrent;
 
-import static primal.statics.Fail.fail;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Random;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 import suite.concurrent.stm.ObstructionFreeStm;
 import suite.concurrent.stm.ObstructionFreeStm.Memory;
 import suite.concurrent.stm.Stm.Transaction;
 import suite.concurrent.stm.Stm.TransactionStatus;
+
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+import static primal.statics.Fail.fail;
 
 public class ObstructionFreeStmTest {
 

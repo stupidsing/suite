@@ -1,14 +1,14 @@
 package suite.ebnf;
 
-import static primal.statics.Rethrow.ex;
+import primal.Verbs.Equals;
+import suite.ebnf.Ebnf.Ast;
 
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.List;
 
-import primal.Verbs.Equals;
-import suite.ebnf.Ebnf.Ast;
+import static primal.statics.Rethrow.ex;
 
 public class Dump {
 

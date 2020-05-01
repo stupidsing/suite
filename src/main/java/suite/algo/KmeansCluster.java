@@ -1,10 +1,5 @@
 package suite.algo;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import primal.MoreVerbs.Read;
 import primal.Verbs.Left;
 import primal.primitive.IntMoreVerbs.LiftInt;
@@ -16,6 +11,11 @@ import primal.primitive.adt.pair.DblObjPair;
 import primal.primitive.adt.pair.IntDblPair;
 import suite.math.linalg.Vector;
 import suite.util.To;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class KmeansCluster {
 

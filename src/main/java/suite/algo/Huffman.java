@@ -1,14 +1,5 @@
 package suite.algo;
 
-import static primal.statics.Fail.fail;
-
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import primal.MoreVerbs.Read;
 import primal.Verbs.Take;
 import primal.adt.Pair;
@@ -20,6 +11,10 @@ import primal.primitive.adt.pair.IntObjPair;
 import primal.primitive.streamlet.IntObjStreamlet;
 import primal.puller.Puller;
 import suite.adt.PriorityQueue;
+
+import java.util.*;
+
+import static primal.statics.Fail.fail;
 
 /**
  * Huffman compression.

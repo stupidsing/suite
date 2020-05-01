@@ -1,24 +1,5 @@
 package suite.net.nio;
 
-import static java.lang.Math.max;
-import static java.lang.Math.min;
-import static primal.statics.Rethrow.ex;
-import static suite.util.Streamlet_.forInt;
-
-import java.io.Closeable;
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.nio.ByteBuffer;
-import java.nio.channels.ClosedChannelException;
-import java.nio.channels.NotYetConnectedException;
-import java.nio.channels.SelectableChannel;
-import java.nio.channels.SelectionKey;
-import java.nio.channels.Selector;
-import java.nio.channels.ServerSocketChannel;
-import java.nio.channels.SocketChannel;
-import java.util.HashMap;
-import java.util.Map;
-
 import primal.Nouns.Buffer;
 import primal.Verbs.Close;
 import primal.Verbs.Get;
@@ -32,6 +13,19 @@ import suite.adt.PriorityQueue;
 import suite.concurrent.Backoff;
 import suite.concurrent.Pool;
 import suite.net.NetUtil;
+
+import java.io.Closeable;
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.nio.ByteBuffer;
+import java.nio.channels.*;
+import java.util.HashMap;
+import java.util.Map;
+
+import static java.lang.Math.max;
+import static java.lang.Math.min;
+import static primal.statics.Rethrow.ex;
+import static suite.util.Streamlet_.forInt;
 
 public class NioDispatch implements Closeable {
 

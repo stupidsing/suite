@@ -1,14 +1,13 @@
 package suite.math.sym;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import org.junit.jupiter.api.Test;
-
 import suite.Suite;
 import suite.node.Atom;
 import suite.node.Node;
 import suite.node.util.Rewrite;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class SymbolicTest {
 

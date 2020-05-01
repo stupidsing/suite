@@ -1,7 +1,5 @@
 package suite.lcs;
 
-import static java.lang.Math.min;
-
 import primal.Verbs.Equals;
 import primal.adt.Pair;
 import primal.primitive.IntMoreVerbs.IntersectInt;
@@ -11,6 +9,8 @@ import primal.primitive.adt.map.IntObjMap;
 import primal.primitive.adt.pair.IntObjPair;
 import suite.text.RollingHash;
 import suite.text.Segment;
+
+import static java.lang.Math.min;
 
 /**
  * Longest common continuous subsequence, using a simple rolling hash method.

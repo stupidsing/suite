@@ -1,13 +1,5 @@
 package suite.math.numeric;
 
-import static java.lang.Math.PI;
-import static java.lang.Math.exp;
-import static java.lang.Math.log;
-import static java.lang.Math.sqrt;
-import static primal.statics.Fail.fail;
-
-import java.util.List;
-
 import primal.Verbs.Build;
 import primal.fp.Funs.Fun;
 import primal.primitive.IntPrim.Obj_Int;
@@ -22,6 +14,11 @@ import suite.math.linalg.CholeskyDecomposition;
 import suite.math.linalg.Matrix;
 import suite.math.linalg.Vector;
 import suite.util.To;
+
+import java.util.List;
+
+import static java.lang.Math.*;
+import static primal.statics.Fail.fail;
 
 public class Statistic {
 

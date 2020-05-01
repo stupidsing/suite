@@ -1,6 +1,15 @@
 package suite.streamlet;
 
-import static primal.statics.Rethrow.ex;
+import primal.NullableSyncQueue;
+import primal.Verbs.Equals;
+import primal.adt.Mutable;
+import primal.adt.Pair;
+import primal.fp.Funs.Fun;
+import primal.fp.Funs.Sink;
+import primal.fp.Funs.Source;
+import primal.fp.Funs2.Fun2;
+import primal.puller.Puller;
+import suite.concurrent.CasReference;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -12,16 +21,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Predicate;
 
-import primal.NullableSyncQueue;
-import primal.Verbs.Equals;
-import primal.adt.Mutable;
-import primal.adt.Pair;
-import primal.fp.Funs.Fun;
-import primal.fp.Funs.Sink;
-import primal.fp.Funs.Source;
-import primal.fp.Funs2.Fun2;
-import primal.puller.Puller;
-import suite.concurrent.CasReference;
+import static primal.statics.Rethrow.ex;
 
 /**
  * A push-based functional reactive programming class.

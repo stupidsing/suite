@@ -1,9 +1,5 @@
 package suite.http;
 
-import static primal.statics.Rethrow.ex;
-
-import java.io.IOException;
-
 import primal.Nouns.Buffer;
 import primal.os.Log_;
 import primal.primitive.adt.Bytes;
@@ -13,6 +9,10 @@ import suite.http.Http.HandlerAsync;
 import suite.http.Http.Response;
 import suite.os.Listen;
 import suite.primitive.IoSink;
+
+import java.io.IOException;
+
+import static primal.statics.Rethrow.ex;
 
 /**
  * A very crude HTTP server.

@@ -1,14 +1,12 @@
 package suite.math.transform;
 
-import static java.lang.Math.PI;
-import static java.lang.Math.cos;
-import static java.lang.Math.sin;
-import static primal.statics.Fail.fail;
+import suite.math.Complex;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import suite.math.Complex;
+import static java.lang.Math.*;
+import static primal.statics.Fail.fail;
 
 public class FastFourierTransform0 {
 

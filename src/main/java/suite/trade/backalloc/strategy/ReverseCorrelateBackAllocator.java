@@ -1,13 +1,13 @@
 package suite.trade.backalloc.strategy;
 
-import static java.lang.Math.abs;
-
 import suite.math.numeric.Statistic;
 import suite.trade.backalloc.BackAllocator;
 import suite.trade.data.DataSource.AlignKeyDataSource;
 import suite.trade.data.DataSourceView;
 import suite.ts.TimeSeries;
 import suite.util.To;
+
+import static java.lang.Math.abs;
 
 public class ReverseCorrelateBackAllocator implements BackAllocator {
 

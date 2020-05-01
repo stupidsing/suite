@@ -1,13 +1,13 @@
 package suite.concurrent;
 
+import primal.fp.Funs.Fun;
+import primal.fp.Funs.Sink;
+
 import java.io.Closeable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-
-import primal.fp.Funs.Fun;
-import primal.fp.Funs.Sink;
 
 public class EventBus {
 

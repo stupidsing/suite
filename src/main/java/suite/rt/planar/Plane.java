@@ -1,17 +1,13 @@
 package suite.rt.planar;
 
-import static java.lang.Math.abs;
-
-import java.util.List;
-
 import suite.math.Math_;
 import suite.math.R3;
 import suite.rt.RayTracer;
-import suite.rt.RayTracer.Material;
-import suite.rt.RayTracer.Ray;
-import suite.rt.RayTracer.RayHit;
-import suite.rt.RayTracer.RayIntersection;
-import suite.rt.RayTracer.RtObject;
+import suite.rt.RayTracer.*;
+
+import java.util.List;
+
+import static java.lang.Math.abs;
 
 public class Plane implements RtObject {
 

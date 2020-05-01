@@ -1,14 +1,14 @@
 package suite.concurrent;
 
-import static primal.statics.Fail.fail;
+import primal.Verbs.Wait;
+import suite.concurrent.stm.Concurrent.DeadlockException;
 
 import java.io.Closeable;
 import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.concurrent.atomic.AtomicReference;
 
-import primal.Verbs.Wait;
-import suite.concurrent.stm.Concurrent.DeadlockException;
+import static primal.statics.Fail.fail;
 
 /**
  * Mutual exclusion lock with deadlock detection.

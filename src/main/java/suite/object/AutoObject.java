@@ -1,6 +1,11 @@
 package suite.object;
 
-import static primal.statics.Rethrow.ex;
+import primal.Verbs.New;
+import primal.adt.IdentityKey;
+import primal.adt.Pair;
+import primal.streamlet.Streamlet;
+import suite.inspect.Inspect;
+import suite.node.util.Singleton;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -8,12 +13,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import primal.Verbs.New;
-import primal.adt.IdentityKey;
-import primal.adt.Pair;
-import primal.streamlet.Streamlet;
-import suite.inspect.Inspect;
-import suite.node.util.Singleton;
+import static primal.statics.Rethrow.ex;
 
 public class AutoObject<T extends AutoObject<T>> extends BaseObject<T> implements Cloneable, CastDefaults<T> {
 

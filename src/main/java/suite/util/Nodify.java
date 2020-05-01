@@ -1,21 +1,5 @@
 package suite.util;
 
-import static primal.statics.Fail.fail;
-import static primal.statics.Rethrow.ex;
-
-import java.lang.reflect.Array;
-import java.lang.reflect.Field;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-
 import primal.MoreVerbs.Read;
 import primal.Verbs.Instantiate;
 import primal.Verbs.New;
@@ -23,14 +7,18 @@ import primal.adt.Pair;
 import primal.fp.Funs.Fun;
 import primal.primitive.adt.Chars;
 import suite.inspect.Inspect;
-import suite.node.Atom;
-import suite.node.Dict;
-import suite.node.Int;
-import suite.node.Node;
-import suite.node.Reference;
-import suite.node.Str;
-import suite.node.Tree;
+import suite.node.*;
 import suite.node.io.TermOp;
+
+import java.lang.reflect.Array;
+import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+
+import static primal.statics.Fail.fail;
+import static primal.statics.Rethrow.ex;
 
 /**
  * Convert (supposedly) any Java structures to nodes.

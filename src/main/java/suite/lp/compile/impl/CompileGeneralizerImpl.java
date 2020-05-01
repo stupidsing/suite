@@ -1,13 +1,13 @@
 package suite.lp.compile.impl;
 
-import java.util.IdentityHashMap;
-
 import suite.lp.doer.Generalizer;
 import suite.lp.doer.GeneralizerFactory;
 import suite.lp.sewing.VariableMapper;
 import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Reference;
+
+import java.util.IdentityHashMap;
 
 public class CompileGeneralizerImpl implements GeneralizerFactory {
 

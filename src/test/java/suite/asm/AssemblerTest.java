@@ -1,13 +1,12 @@
 package suite.asm;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Test;
+import suite.Suite;
+import suite.assembler.Amd64Mode;
 
 import java.io.IOException;
 
-import org.junit.jupiter.api.Test;
-
-import suite.Suite;
-import suite.assembler.Amd64Mode;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class AssemblerTest {
 

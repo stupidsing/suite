@@ -1,15 +1,12 @@
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.io.IOException;
-
 import org.junit.jupiter.api.Test;
-
 import suite.Suite;
 import suite.fp.FunRbTreeTest;
 import suite.funp.Funp_;
 import suite.ip.ImperativeCompiler;
+
+import java.io.IOException;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class FailedTests {
 

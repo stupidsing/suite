@@ -1,9 +1,5 @@
 package suite.file.impl;
 
-import java.io.Closeable;
-import java.io.IOException;
-import java.nio.file.Path;
-
 import primal.Verbs.Compare;
 import primal.fp.Funs.Fun;
 import suite.file.JournalledPageFile;
@@ -13,6 +9,10 @@ import suite.fs.impl.TransactionManager;
 import suite.node.util.Singleton;
 import suite.persistent.LazyPbTreeStore;
 import suite.serialize.Serialize;
+
+import java.io.Closeable;
+import java.io.IOException;
+import java.nio.file.Path;
 
 public class Database implements Closeable {
 

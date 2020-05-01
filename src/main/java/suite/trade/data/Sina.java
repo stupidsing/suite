@@ -1,11 +1,5 @@
 package suite.trade.data;
 
-import static primal.statics.Fail.fail;
-import static primal.statics.Rethrow.ex;
-
-import java.util.Map;
-import java.util.Set;
-
 import primal.MoreVerbs.Fit;
 import primal.MoreVerbs.Read;
 import primal.Verbs.Build;
@@ -15,6 +9,12 @@ import primal.puller.Puller;
 import primal.streamlet.Streamlet;
 import suite.http.HttpClient;
 import suite.node.util.Singleton;
+
+import java.util.Map;
+import java.util.Set;
+
+import static primal.statics.Fail.fail;
+import static primal.statics.Rethrow.ex;
 
 public class Sina {
 

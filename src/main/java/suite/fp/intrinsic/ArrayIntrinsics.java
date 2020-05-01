@@ -1,13 +1,13 @@
 package suite.fp.intrinsic;
 
-import java.util.Arrays;
-
 import primal.Verbs.Copy;
 import suite.fp.intrinsic.Intrinsics.Intrinsic;
 import suite.instructionexecutor.thunk.ThunkUtil;
 import suite.node.Int;
 import suite.node.Node;
 import suite.node.Tuple;
+
+import java.util.Arrays;
 
 public class ArrayIntrinsics {
 

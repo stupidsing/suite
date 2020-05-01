@@ -1,14 +1,14 @@
 package suite.os;
 
-import static primal.statics.Fail.fail;
+import primal.MoreVerbs.ReadLines;
+import primal.adt.Pair;
+import suite.streamlet.As;
 
 import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
 
-import primal.MoreVerbs.ReadLines;
-import primal.adt.Pair;
-import suite.streamlet.As;
+import static primal.statics.Fail.fail;
 
 public class UnicodeData {
 

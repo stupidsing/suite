@@ -1,12 +1,12 @@
 package suite;
 
-import java.util.List;
-
 import primal.fp.Funs.Fun;
 import suite.lp.Configuration.ProverCfg;
 import suite.lp.kb.RuleSet;
 import suite.lp.search.SewingProverBuilder;
 import suite.util.Memoize;
+
+import java.util.List;
 
 public class CompileUtil {
 

@@ -1,8 +1,5 @@
 package suite.lp.predicate;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import suite.lp.doer.Prover;
 import suite.lp.predicate.PredicateUtil.BuiltinPredicate;
 import suite.node.Atom;
@@ -10,6 +7,9 @@ import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class SystemPredicates {
 

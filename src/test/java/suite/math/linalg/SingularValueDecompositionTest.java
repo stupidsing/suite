@@ -1,7 +1,6 @@
 package suite.math.linalg;
 
 import org.junit.jupiter.api.Test;
-
 import suite.util.To;
 
 public class SingularValueDecompositionTest {

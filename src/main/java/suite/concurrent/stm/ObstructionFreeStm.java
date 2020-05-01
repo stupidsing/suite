@@ -1,12 +1,12 @@
 package suite.concurrent.stm;
 
-import java.util.concurrent.atomic.AtomicStampedReference;
-
 import primal.fp.Funs.Fun;
 import suite.concurrent.stm.Concurrent.AbortException;
 import suite.concurrent.stm.Concurrent.LostSnapshotException;
 import suite.concurrent.stm.Stm.Transaction;
 import suite.concurrent.stm.Stm.TransactionStatus;
+
+import java.util.concurrent.atomic.AtomicStampedReference;
 
 /**
  * Implements software transactional memory by compare-and-swap operations.

@@ -1,10 +1,5 @@
 package suite.lp.doer;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import primal.Verbs.Build;
 import primal.fp.Funs.Iterate;
 import primal.fp.Funs.Source;
@@ -14,6 +9,11 @@ import suite.node.Data;
 import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.Formatter;
+
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class ProveTracer {
 

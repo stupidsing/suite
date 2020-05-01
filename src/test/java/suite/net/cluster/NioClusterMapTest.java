@@ -1,19 +1,6 @@
 package suite.net.cluster;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static primal.statics.Fail.fail;
-import static primal.statics.Rethrow.ex;
-import static suite.util.Streamlet_.forInt;
-
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Random;
-
 import org.junit.jupiter.api.Test;
-
 import primal.MoreVerbs.Read;
 import primal.Verbs.New;
 import primal.Verbs.Sleep;
@@ -27,6 +14,18 @@ import primal.statics.Rethrow;
 import primal.streamlet.Streamlet;
 import suite.net.cluster.impl.NioCluster;
 import suite.net.cluster.impl.NioClusterMap;
+
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Random;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static primal.statics.Fail.fail;
+import static primal.statics.Rethrow.ex;
+import static suite.util.Streamlet_.forInt;
 
 public class NioClusterMapTest {
 

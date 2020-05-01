@@ -1,7 +1,11 @@
 package suite.util;
 
-import static primal.statics.Fail.fail;
-import static primal.statics.Rethrow.ex;
+import javassist.Modifier;
+import primal.MoreVerbs.Read;
+import primal.fp.Funs.Fun;
+import primal.fp.Funs.Sink;
+import primal.fp.Funs.Source;
+import primal.fp.Funs2.Fun2;
 
 import java.lang.reflect.Method;
 import java.sql.Timestamp;
@@ -10,12 +14,8 @@ import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import javassist.Modifier;
-import primal.MoreVerbs.Read;
-import primal.fp.Funs.Fun;
-import primal.fp.Funs.Sink;
-import primal.fp.Funs.Source;
-import primal.fp.Funs2.Fun2;
+import static primal.statics.Fail.fail;
+import static primal.statics.Rethrow.ex;
 
 public class Util {
 

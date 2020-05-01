@@ -1,13 +1,12 @@
 package suite.trade.data;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import org.junit.jupiter.api.Test;
-
 import primal.os.Log_;
 import suite.inspect.Dump;
 import suite.trade.Time;
 import suite.trade.TimeRange;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class YahooTest {
 

@@ -1,21 +1,16 @@
 package suite.jdk.gen;
 
-import java.util.List;
-import java.util.Map;
-
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
-
 import primal.Verbs.Get;
-import primal.adt.Fixie_.FixieFun0;
-import primal.adt.Fixie_.FixieFun1;
-import primal.adt.Fixie_.FixieFun2;
-import primal.adt.Fixie_.FixieFun3;
-import primal.adt.Fixie_.FixieFun4;
+import primal.adt.Fixie_.*;
 import primal.adt.Mutable;
 import primal.primitive.IntPrim.Obj_Int;
 import primal.primitive.adt.Ints.IntsBuilder;
 import suite.jdk.gen.FunExpression.FunExpr;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * Functional expressions that can be handled by FunGenerateBytecode.java.

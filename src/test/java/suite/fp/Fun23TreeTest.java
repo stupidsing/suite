@@ -1,14 +1,13 @@
 package suite.fp;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.io.IOException;
-
 import org.junit.jupiter.api.Test;
-
 import suite.Suite;
 import suite.node.io.Formatter;
 import suite.streamlet.ReadChars;
+
+import java.io.IOException;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class Fun23TreeTest {
 

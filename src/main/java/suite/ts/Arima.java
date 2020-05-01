@@ -1,13 +1,5 @@
 package suite.ts;
 
-import static java.lang.Math.max;
-import static java.lang.Math.min;
-import static java.lang.Math.scalb;
-import static suite.util.Streamlet_.forInt;
-
-import java.util.Arrays;
-import java.util.Random;
-
 import primal.primitive.DblPrim.DblSource;
 import primal.primitive.FltMoreVerbs.ConcatFlt;
 import primal.primitive.FltMoreVerbs.ReadFlt;
@@ -22,6 +14,12 @@ import suite.math.numeric.Statistic.LinearRegression;
 import suite.primitive.Floats_;
 import suite.streamlet.As;
 import suite.util.To;
+
+import java.util.Arrays;
+import java.util.Random;
+
+import static java.lang.Math.*;
+import static suite.util.Streamlet_.forInt;
 
 public class Arima {
 

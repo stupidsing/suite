@@ -1,11 +1,10 @@
 package suite.http;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import org.junit.jupiter.api.Test;
-
 import primal.Nouns.Utf8;
 import suite.http.Crypts.Crypt;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class CryptsTest {
 

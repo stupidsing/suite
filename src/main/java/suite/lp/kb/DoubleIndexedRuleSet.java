@@ -1,11 +1,11 @@
 package suite.lp.kb;
 
+import primal.adt.map.ListMultimap;
+import suite.node.Node;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import primal.adt.map.ListMultimap;
-import suite.node.Node;
 
 /**
  * Index rules by two layers of prototype, which is the leftest element and the

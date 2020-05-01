@@ -1,9 +1,9 @@
 package suite.ansi;
 
-import java.io.Closeable;
-
 import primal.Nouns.Buffer;
 import suite.streamlet.ReadChars;
+
+import java.io.Closeable;
 
 public class Termios implements Closeable {
 

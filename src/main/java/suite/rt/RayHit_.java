@@ -1,9 +1,5 @@
 package suite.rt;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 import primal.MoreVerbs.Read;
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
@@ -11,6 +7,10 @@ import primal.streamlet.Streamlet;
 import suite.rt.RayTracer.Ray;
 import suite.rt.RayTracer.RayHit;
 import suite.rt.RayTracer.RtObject;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public class RayHit_ {
 

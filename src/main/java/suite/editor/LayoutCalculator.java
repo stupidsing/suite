@@ -1,12 +1,10 @@
 package suite.editor;
 
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Rectangle;
+import primal.MoreVerbs.Read;
+
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
-
-import primal.MoreVerbs.Read;
 
 public class LayoutCalculator {
 

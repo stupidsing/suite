@@ -1,14 +1,14 @@
 package suite.lp.doer;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import primal.adt.IdentityKey;
 import suite.lp.kb.Rule;
 import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Tree;
 import suite.node.io.Rewrite_;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class Cloner {
 

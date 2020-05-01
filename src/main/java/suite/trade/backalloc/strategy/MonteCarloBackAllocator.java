@@ -1,10 +1,5 @@
 package suite.trade.backalloc.strategy;
 
-import static suite.util.Streamlet_.forInt;
-
-import java.util.Map;
-import java.util.Random;
-
 import primal.MoreVerbs.Read;
 import primal.Verbs.Compare;
 import suite.trade.Time;
@@ -12,6 +7,11 @@ import suite.trade.backalloc.BackAllocator;
 import suite.trade.data.DataSource;
 import suite.trade.data.DataSource.AlignKeyDataSource;
 import suite.util.To;
+
+import java.util.Map;
+import java.util.Random;
+
+import static suite.util.Streamlet_.forInt;
 
 /**
  * Genetic programming on asset allocation, and use Monte-carlo simulation to

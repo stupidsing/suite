@@ -1,11 +1,5 @@
 package suite.node.parser;
 
-import static primal.statics.Fail.fail;
-
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.List;
-
 import primal.Verbs.Is;
 import primal.fp.Funs.Sink;
 import suite.node.Atom;
@@ -17,6 +11,12 @@ import suite.node.io.TermOp;
 import suite.node.parser.Lexer.Token;
 import suite.node.tree.TreeTuple;
 import suite.text.Preprocess;
+
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.List;
+
+import static primal.statics.Fail.fail;
 
 /**
  * Non-recursive, near O(length) parser for operator-based languages.

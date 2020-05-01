@@ -1,9 +1,9 @@
 package suite.os;
 
+import primal.fp.Funs.Source;
+
 import java.lang.management.GarbageCollectorMXBean;
 import java.lang.management.ManagementFactory;
-
-import primal.fp.Funs.Source;
 
 public class Stopwatch<T> {
 

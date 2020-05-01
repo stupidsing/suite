@@ -1,9 +1,9 @@
 package suite.algo;
 
-import static primal.statics.Fail.fail;
-
 import primal.Verbs.Build;
 import suite.streamlet.ReadChars;
+
+import static primal.statics.Fail.fail;
 
 public class SoundEx {
 

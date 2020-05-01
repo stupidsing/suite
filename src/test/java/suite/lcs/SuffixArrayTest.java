@@ -1,13 +1,12 @@
 package suite.lcs;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Test;
+import primal.primitive.IntMoreVerbs.ReadInt;
 
 import java.util.ArrayList;
 import java.util.Collections;
 
-import org.junit.jupiter.api.Test;
-
-import primal.primitive.IntMoreVerbs.ReadInt;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class SuffixArrayTest {
 

@@ -1,19 +1,17 @@
 package suite.math.linalg;
 
-import static java.lang.Math.cos;
-import static java.lang.Math.min;
-import static java.lang.Math.sin;
-import static primal.statics.Fail.fail;
-import static suite.util.Streamlet_.forInt;
-
-import java.util.Arrays;
-
 import primal.Verbs.Build;
 import primal.primitive.Dbl_Dbl;
 import suite.math.Math_;
 import suite.math.R3;
 import suite.streamlet.As;
 import suite.util.To;
+
+import java.util.Arrays;
+
+import static java.lang.Math.*;
+import static primal.statics.Fail.fail;
+import static suite.util.Streamlet_.forInt;
 
 public class Matrix {
 

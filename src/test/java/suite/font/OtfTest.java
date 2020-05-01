@@ -1,16 +1,15 @@
 package suite.font;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.List;
-
 import org.junit.jupiter.api.Test;
-
 import primal.MoreVerbs.Read;
 import primal.Verbs.Compare;
 import primal.Verbs.Mk;
 import suite.os.Execute;
 import suite.os.FileUtil;
+
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
 
 /**
  * I've got like hundreds of TrueType fonts in my computer, which should reside

@@ -1,16 +1,15 @@
 package suite.pkgmanager;
 
-import java.nio.file.Path;
-import java.util.Map;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import primal.Nouns.Tmp;
 import primal.Verbs.DeleteFile;
 import primal.Verbs.ReadFile;
 import primal.Verbs.WriteFile;
 import suite.inspect.Mapify;
 import suite.node.util.Singleton;
+
+import java.nio.file.Path;
+import java.util.Map;
 
 /**
  * Keeps track of the package installed in local machine.

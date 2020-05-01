@@ -1,14 +1,5 @@
 package suite.instructionexecutor;
 
-import static primal.statics.Fail.fail;
-
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import primal.MoreVerbs.Read;
 import primal.Verbs.Equals;
 import primal.Verbs.Right;
@@ -18,12 +9,12 @@ import suite.instructionexecutor.InstructionUtil.Insn;
 import suite.instructionexecutor.InstructionUtil.Instruction;
 import suite.lp.Trail;
 import suite.lp.doer.Binder;
-import suite.node.Atom;
-import suite.node.Int;
-import suite.node.Node;
-import suite.node.Reference;
-import suite.node.Tree;
+import suite.node.*;
 import suite.node.io.TermOp;
+
+import java.util.*;
+
+import static primal.statics.Fail.fail;
 
 public class InstructionExtractor implements AutoCloseable {
 

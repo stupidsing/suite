@@ -1,16 +1,15 @@
 package suite.sample;
 
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import primal.Verbs.Is;
+import suite.util.RunUtil;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
-
-import primal.Verbs.Is;
-import suite.util.RunUtil;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Starts program using a JavaScript script. Perhaps you can avoid using Spring

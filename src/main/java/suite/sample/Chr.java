@@ -1,12 +1,5 @@
 package suite.sample;
 
-import static primal.statics.Fail.fail;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.function.Predicate;
-
 import primal.MoreVerbs.Read;
 import primal.fp.Funs.Fun;
 import primal.persistent.PerMap;
@@ -23,6 +16,13 @@ import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.TermOp;
 import suite.node.util.Rewrite;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.function.Predicate;
+
+import static primal.statics.Fail.fail;
 
 /**
  * Constraint handling rules implementation.

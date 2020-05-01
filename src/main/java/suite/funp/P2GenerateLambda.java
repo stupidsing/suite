@@ -1,40 +1,18 @@
 package suite.funp;
 
-import static primal.statics.Fail.fail;
-
-import java.util.Map;
-
 import primal.MoreVerbs.Read;
 import primal.Verbs.Get;
 import primal.fp.Funs.Fun;
 import primal.persistent.PerMap;
 import suite.funp.Funp_.Funp;
-import suite.funp.P0.Fdt;
-import suite.funp.P0.FunpApply;
-import suite.funp.P0.FunpArray;
-import suite.funp.P0.FunpBoolean;
-import suite.funp.P0.FunpCoerce;
-import suite.funp.P0.FunpDefine;
-import suite.funp.P0.FunpDeref;
-import suite.funp.P0.FunpDoFold;
-import suite.funp.P0.FunpDontCare;
-import suite.funp.P0.FunpError;
-import suite.funp.P0.FunpField;
-import suite.funp.P0.FunpIf;
-import suite.funp.P0.FunpIndex;
-import suite.funp.P0.FunpIo;
-import suite.funp.P0.FunpLambda;
-import suite.funp.P0.FunpNumber;
-import suite.funp.P0.FunpPredefine;
-import suite.funp.P0.FunpReference;
-import suite.funp.P0.FunpRepeat;
-import suite.funp.P0.FunpStruct;
-import suite.funp.P0.FunpTree;
-import suite.funp.P0.FunpTree2;
-import suite.funp.P0.FunpVariable;
+import suite.funp.P0.*;
 import suite.node.io.TermOp;
 import suite.node.util.TreeUtil;
 import suite.util.To;
+
+import java.util.Map;
+
+import static primal.statics.Fail.fail;
 
 public class P2GenerateLambda {
 

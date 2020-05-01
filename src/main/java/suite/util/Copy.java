@@ -1,23 +1,14 @@
 package suite.util;
 
-import static primal.statics.Fail.fail;
-
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InterruptedIOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
-import java.io.Reader;
-import java.io.Writer;
-import java.net.SocketException;
-
 import primal.Nouns.Buffer;
 import primal.Verbs.Equals;
 import primal.Verbs.New;
 import primal.Verbs.Th;
+
+import java.io.*;
+import java.net.SocketException;
+
+import static primal.statics.Fail.fail;
 
 public class Copy {
 

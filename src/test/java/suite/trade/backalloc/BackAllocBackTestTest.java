@@ -1,9 +1,6 @@
 package suite.trade.backalloc;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import org.junit.jupiter.api.Test;
-
 import primal.MoreVerbs.Read;
 import suite.trade.TimeRange;
 import suite.trade.Trade_;
@@ -14,6 +11,8 @@ import suite.trade.backalloc.strategy.MovingAvgMeanReversionBackAllocator;
 import suite.trade.backalloc.strategy.PmamrBackAllocator;
 import suite.trade.data.TradeCfg;
 import suite.trade.data.TradeCfgImpl;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class BackAllocBackTestTest {
 

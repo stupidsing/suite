@@ -1,16 +1,15 @@
 package suite.fp;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static primal.statics.Fail.fail;
-
 import org.junit.jupiter.api.Test;
-
 import suite.Suite;
 import suite.node.Atom;
 import suite.node.Int;
 import suite.node.Node;
 import suite.node.Tree;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static primal.statics.Fail.fail;
 
 public class EagerFunTest {
 

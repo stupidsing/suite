@@ -1,16 +1,16 @@
 package suite.persistent;
 
-import static primal.statics.Fail.fail;
-
-import java.util.ArrayDeque;
-import java.util.Comparator;
-import java.util.Deque;
-
 import primal.MoreVerbs.Read;
 import primal.adt.Opt;
 import primal.fp.Funs.Source;
 import primal.persistent.PerTree;
 import primal.streamlet.Streamlet;
+
+import java.util.ArrayDeque;
+import java.util.Comparator;
+import java.util.Deque;
+
+import static primal.statics.Fail.fail;
 
 /**
  * Persistent Red-Black tree implementation. However, node deletion is not

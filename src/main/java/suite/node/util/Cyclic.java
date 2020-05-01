@@ -1,11 +1,11 @@
 package suite.node.util;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import primal.adt.IdentityKey;
 import suite.node.Node;
 import suite.node.Tree;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class Cyclic {
 

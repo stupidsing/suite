@@ -1,18 +1,16 @@
 package suite.trade.analysis;
 
-import static java.lang.Math.abs;
-import static java.lang.Math.max;
-import static java.lang.Math.min;
-import static suite.util.Streamlet_.forInt;
-
-import java.util.Arrays;
-
 import primal.adt.Pair;
 import primal.primitive.FltMoreVerbs.ReadFlt;
 import suite.streamlet.As;
 import suite.trade.data.DataSource;
 import suite.ts.Quant;
 import suite.util.To;
+
+import java.util.Arrays;
+
+import static java.lang.Math.*;
+import static suite.util.Streamlet_.forInt;
 
 public class Oscillator {
 

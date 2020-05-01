@@ -1,9 +1,9 @@
 package suite.node;
 
-import java.util.Objects;
-
 import primal.Verbs.Equals;
 import primal.Verbs.Get;
+
+import java.util.Objects;
 
 public class Data<T> extends Node {
 

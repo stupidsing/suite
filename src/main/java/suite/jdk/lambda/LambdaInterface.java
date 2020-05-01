@@ -1,13 +1,13 @@
 package suite.jdk.lambda;
 
-import static primal.statics.Rethrow.ex;
-
-import java.lang.reflect.Method;
-
 import primal.MoreVerbs.Read;
 import primal.Verbs.Equals;
 import primal.adt.Fixie_.FixieFun2;
 import suite.util.Util;
+
+import java.lang.reflect.Method;
+
+import static primal.statics.Rethrow.ex;
 
 public class LambdaInterface<I> {
 

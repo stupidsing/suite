@@ -1,7 +1,5 @@
 package suite.math.numeric;
 
-import static java.lang.Math.abs;
-
 import primal.fp.Funs.Fun;
 import primal.primitive.DblDbl_Dbl;
 import primal.primitive.DblPrim.Dbl_Obj;
@@ -10,6 +8,8 @@ import primal.primitive.Dbl_Dbl;
 import suite.math.FiniteDifference;
 import suite.math.linalg.Matrix;
 import suite.math.linalg.Vector;
+
+import static java.lang.Math.abs;
 
 /**
  * https://en.wikipedia.org/wiki/Broyden%E2%80%93Fletcher%E2%80%93Goldfarb%E2%80%93Shanno_algorithm

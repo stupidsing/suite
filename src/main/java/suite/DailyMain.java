@@ -1,11 +1,5 @@
 package suite;
 
-import static java.lang.Math.round;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
 import primal.MoreVerbs.Read;
 import primal.Verbs.Equals;
 import primal.Verbs.Union;
@@ -20,12 +14,7 @@ import suite.node.util.Singleton;
 import suite.os.SerializedStoreCache;
 import suite.serialize.Serialize;
 import suite.smtp.SmtpSsl;
-import suite.trade.Account;
-import suite.trade.Instrument;
-import suite.trade.Time;
-import suite.trade.TimeRange;
-import suite.trade.Trade;
-import suite.trade.Trade_;
+import suite.trade.*;
 import suite.trade.analysis.Summarize;
 import suite.trade.backalloc.BackAllocConfiguration;
 import suite.trade.backalloc.BackAllocConfigurations;
@@ -40,6 +29,12 @@ import suite.trade.singlealloc.SingleAllocBackTest;
 import suite.trade.singlealloc.Strategos;
 import suite.util.RunUtil;
 import suite.util.To;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
+import static java.lang.Math.round;
 
 // mvn compile exec:java -Dexec.mainClass=suite.DailyMain
 public class DailyMain {

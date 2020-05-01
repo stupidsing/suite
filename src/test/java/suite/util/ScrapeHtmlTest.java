@@ -1,13 +1,12 @@
 package suite.util;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import org.junit.jupiter.api.Test;
-
 import primal.Verbs.ReadFile;
 import primal.Verbs.Substring;
 import suite.inspect.Dump;
 import suite.util.ScrapeHtml.HtmlNode;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ScrapeHtmlTest {
 

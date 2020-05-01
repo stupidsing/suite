@@ -1,6 +1,12 @@
 package suite.jdk;
 
-import static primal.statics.Rethrow.ex;
+import org.junit.jupiter.api.Test;
+import primal.MoreVerbs.Read;
+import primal.Verbs.Compare;
+import primal.persistent.PerSet;
+import suite.os.FileUtil;
+import suite.search.DirectedGraph;
+import suite.search.StronglyConnectedComponents;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -8,14 +14,7 @@ import java.util.ArrayDeque;
 import java.util.HashMap;
 import java.util.List;
 
-import org.junit.jupiter.api.Test;
-
-import primal.MoreVerbs.Read;
-import primal.Verbs.Compare;
-import primal.persistent.PerSet;
-import suite.os.FileUtil;
-import suite.search.DirectedGraph;
-import suite.search.StronglyConnectedComponents;
+import static primal.statics.Rethrow.ex;
 
 public class DependencyTest {
 

@@ -1,9 +1,9 @@
 package suite.math;
 
+import primal.Verbs.Get;
+
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
-
-import primal.Verbs.Get;
 
 public class Complex {
 

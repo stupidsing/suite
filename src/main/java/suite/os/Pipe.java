@@ -1,18 +1,18 @@
 package suite.os;
 
-import static primal.statics.Fail.fail;
-import static primal.statics.Rethrow.ex;
-
-import java.io.ByteArrayInputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-
 import primal.MoreVerbs.Read;
 import primal.MoreVerbs.ReadLines;
 import primal.Nouns.Utf8;
 import primal.os.Log_;
 import primal.streamlet.Streamlet;
 import suite.util.Copy;
+
+import java.io.ByteArrayInputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
+import static primal.statics.Fail.fail;
+import static primal.statics.Rethrow.ex;
 
 public class Pipe {
 

@@ -1,11 +1,11 @@
 package suite.parser;
 
+import suite.text.Preprocess.Run;
+import suite.util.SmartSplit;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-
-import suite.text.Preprocess.Run;
-import suite.util.SmartSplit;
 
 /**
  * Unify all whitespaces to the space bar space (ASCII code 32).

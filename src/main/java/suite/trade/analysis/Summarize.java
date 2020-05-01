@@ -1,11 +1,5 @@
 package suite.trade.analysis;
 
-import static java.lang.Math.expm1;
-import static java.lang.Math.log;
-
-import java.time.LocalDate;
-import java.util.Map;
-
 import primal.MoreVerbs.Read;
 import primal.Verbs.Build;
 import primal.Verbs.Compare;
@@ -29,6 +23,12 @@ import suite.trade.data.Yahoo;
 import suite.ts.Quant;
 import suite.util.FormatUtil;
 import suite.util.To;
+
+import java.time.LocalDate;
+import java.util.Map;
+
+import static java.lang.Math.expm1;
+import static java.lang.Math.log;
 
 public class Summarize {
 

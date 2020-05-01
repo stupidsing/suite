@@ -1,11 +1,5 @@
 package suite.net;
 
-import java.net.Socket;
-import java.net.SocketException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import primal.MoreVerbs.Read;
 import primal.Verbs.Start;
 import primal.adt.BooMutable;
@@ -13,6 +7,12 @@ import primal.os.Log_;
 import suite.os.Listen;
 import suite.os.Listen.Io;
 import suite.util.Copy;
+
+import java.net.Socket;
+import java.net.SocketException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class LoadBalancer {
 

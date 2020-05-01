@@ -1,8 +1,8 @@
 package suite.lp.check;
 
-import java.util.List;
-
 import suite.lp.kb.Rule;
+
+import java.util.List;
 
 /**
  * Check logic rules for typical errors.

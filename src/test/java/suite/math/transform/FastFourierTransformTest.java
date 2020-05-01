@@ -1,7 +1,6 @@
 package suite.math.transform;
 
 import org.junit.jupiter.api.Test;
-
 import suite.math.Complex;
 import suite.math.Math_;
 

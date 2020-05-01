@@ -1,14 +1,14 @@
 package suite.rt;
 
-import static java.lang.Math.sqrt;
+import suite.game.Render;
+import suite.math.R3;
 
 import java.awt.image.BufferedImage;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 
-import suite.game.Render;
-import suite.math.R3;
+import static java.lang.Math.sqrt;
 
 /**
  * TODO fix RayTracerTest.testLight() etc cases black-out issues

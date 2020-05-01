@@ -1,18 +1,11 @@
 package suite.sample;
 
-import java.awt.Font;
-import java.awt.event.KeyEvent;
-
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTable;
-import javax.swing.JTextPane;
-import javax.swing.table.AbstractTableModel;
-
 import suite.util.RunUtil;
+
+import javax.swing.*;
+import javax.swing.table.AbstractTableModel;
+import java.awt.*;
+import java.awt.event.KeyEvent;
 
 /**
  * A boring demonstration of various Swing components.

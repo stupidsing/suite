@@ -1,9 +1,5 @@
 package suite.http;
 
-import static primal.statics.Rethrow.ex;
-
-import java.net.Socket;
-
 import primal.MoreVerbs.Read;
 import primal.MoreVerbs.Split;
 import primal.Nouns.Utf8;
@@ -15,6 +11,10 @@ import primal.primitive.adt.pair.IntObjPair;
 import suite.http.Http.Request;
 import suite.os.Listen;
 import suite.util.Copy;
+
+import java.net.Socket;
+
+import static primal.statics.Rethrow.ex;
 
 /**
  * A very crude HTTP proxy.

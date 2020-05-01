@@ -1,16 +1,8 @@
 package suite.trade.data;
 
-import static primal.statics.Rethrow.ex;
-
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import primal.MoreVerbs.Read;
 import primal.Verbs.Equals;
 import primal.fp.Funs.Fun;
@@ -23,6 +15,13 @@ import suite.os.SerializedStoreCache;
 import suite.serialize.Serialize;
 import suite.trade.Instrument;
 import suite.util.To;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import static primal.statics.Rethrow.ex;
 
 public class Hkex {
 

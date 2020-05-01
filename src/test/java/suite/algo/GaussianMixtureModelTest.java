@@ -1,16 +1,15 @@
 package suite.algo;
 
-import static java.lang.Math.abs;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.util.Random;
-
 import org.junit.jupiter.api.Test;
-
 import primal.adt.FixieArray;
 import primal.primitive.FltPrim.FltSource;
 import suite.inspect.Dump;
 import suite.math.linalg.Matrix;
+
+import java.util.Random;
+
+import static java.lang.Math.abs;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class GaussianMixtureModelTest {
 

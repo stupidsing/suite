@@ -1,14 +1,14 @@
 package suite.math.linalg;
 
-import static suite.util.Streamlet_.forInt;
+import primal.primitive.IntPrim.IntSink;
+import primal.primitive.adt.pair.IntIntPair;
+import suite.adt.PriorityQueue;
 
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
-import primal.primitive.IntPrim.IntSink;
-import primal.primitive.adt.pair.IntIntPair;
-import suite.adt.PriorityQueue;
+import static suite.util.Streamlet_.forInt;
 
 public class SparseMatrix {
 

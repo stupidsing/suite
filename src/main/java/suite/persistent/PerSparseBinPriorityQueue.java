@@ -1,8 +1,8 @@
 package suite.persistent;
 
-import java.util.Comparator;
-
 import primal.persistent.PerList;
+
+import java.util.Comparator;
 
 /**
  * Persistent binomial priority queue, implemented using sparse-list of trees.

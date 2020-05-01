@@ -1,19 +1,5 @@
 package suite.trade.backalloc;
 
-import static java.lang.Math.max;
-import static java.lang.Math.min;
-import static primal.statics.Fail.fail;
-
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.IntPredicate;
-import java.util.function.Predicate;
-
 import primal.MoreVerbs.Read;
 import primal.Verbs.Compare;
 import primal.Verbs.Equals;
@@ -36,6 +22,14 @@ import suite.trade.data.DataSource.Datum;
 import suite.trade.data.TradeCfg;
 import suite.trade.walkforwardalloc.WalkForwardAllocator;
 import suite.ts.Quant;
+
+import java.util.*;
+import java.util.function.IntPredicate;
+import java.util.function.Predicate;
+
+import static java.lang.Math.max;
+import static java.lang.Math.min;
+import static primal.statics.Fail.fail;
 
 /**
  * Strategy that advise you how to divide your money into different investments,

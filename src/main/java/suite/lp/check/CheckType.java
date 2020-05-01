@@ -1,11 +1,5 @@
 package suite.lp.check;
 
-import static primal.statics.Fail.fail;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import primal.MoreVerbs.Read;
 import primal.adt.IdentityKey;
 import primal.adt.Pair;
@@ -23,6 +17,12 @@ import suite.node.io.SwitchNode;
 import suite.node.io.TermOp;
 import suite.node.tree.TreeTuple;
 import suite.node.util.TreeUtil;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static primal.statics.Fail.fail;
 
 public class CheckType {
 

@@ -1,14 +1,14 @@
 package suite.exchange;
 
-import static java.lang.Math.max;
-import static java.lang.Math.min;
+import primal.MoreVerbs.Read;
+import primal.primitive.fp.AsDbl;
+import suite.trade.Trade;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
 
-import primal.MoreVerbs.Read;
-import primal.primitive.fp.AsDbl;
-import suite.trade.Trade;
+import static java.lang.Math.max;
+import static java.lang.Math.min;
 
 public class ExPosition {
 

@@ -1,11 +1,10 @@
 package suite.algo;
 
+import org.junit.jupiter.api.Test;
+import primal.primitive.adt.set.IntSet;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import org.junit.jupiter.api.Test;
-
-import primal.primitive.adt.set.IntSet;
 
 public class UnionFindTest {
 

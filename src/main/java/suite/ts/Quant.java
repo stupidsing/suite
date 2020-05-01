@@ -1,15 +1,13 @@
 package suite.ts;
 
-import static java.lang.Math.log1p;
-import static java.lang.Math.max;
-import static java.lang.Math.min;
-
-import java.util.function.IntPredicate;
-
 import primal.primitive.IntFltPredicate;
 import primal.primitive.IntFlt_Flt;
 import primal.primitive.Int_Dbl;
 import suite.trade.Trade_;
+
+import java.util.function.IntPredicate;
+
+import static java.lang.Math.*;
 
 public class Quant {
 

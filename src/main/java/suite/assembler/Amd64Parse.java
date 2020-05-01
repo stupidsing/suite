@@ -1,11 +1,5 @@
 package suite.assembler;
 
-import static primal.statics.Fail.fail;
-
-import java.util.ArrayList;
-import java.util.IdentityHashMap;
-import java.util.Map;
-
 import primal.MoreVerbs.Read;
 import primal.streamlet.Streamlet;
 import suite.Suite;
@@ -13,13 +7,15 @@ import suite.assembler.Amd64.Insn;
 import suite.assembler.Amd64.Instruction;
 import suite.assembler.Amd64.OpReg;
 import suite.assembler.Amd64.Operand;
-import suite.node.Atom;
-import suite.node.Int;
-import suite.node.Node;
-import suite.node.Reference;
-import suite.node.Tree;
+import suite.node.*;
 import suite.node.io.SwitchNode;
 import suite.node.io.TermOp;
+
+import java.util.ArrayList;
+import java.util.IdentityHashMap;
+import java.util.Map;
+
+import static primal.statics.Fail.fail;
 
 public class Amd64Parse {
 

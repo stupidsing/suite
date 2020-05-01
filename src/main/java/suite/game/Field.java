@@ -1,8 +1,8 @@
 package suite.game;
 
-import java.util.List;
-
 import suite.game.Hex.XY;
+
+import java.util.List;
 
 public class Field<O> {
 

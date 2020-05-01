@@ -1,19 +1,18 @@
 package suite.algo;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static primal.statics.Fail.fail;
+import org.junit.jupiter.api.Test;
+import primal.Verbs.Equals;
+import primal.primitive.adt.pair.IntDblPair;
+import suite.primitive.Coord;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
-import org.junit.jupiter.api.Test;
-
-import primal.Verbs.Equals;
-import primal.primitive.adt.pair.IntDblPair;
-import suite.primitive.Coord;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static primal.statics.Fail.fail;
 
 // https://towardsdatascience.com/reinforcement-learning-with-python-8ef0242a2fa2
 public class Q_LearningTest {

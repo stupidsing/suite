@@ -1,11 +1,10 @@
 package suite.trade.analysis;
 
-import static suite.util.Streamlet_.forInt;
-
 import org.junit.jupiter.api.Test;
-
 import suite.algo.KmeansCluster;
 import suite.trade.data.TradeCfgImpl;
+
+import static suite.util.Streamlet_.forInt;
 
 public class CandlestickPatternTest {
 

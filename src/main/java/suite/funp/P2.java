@@ -1,15 +1,6 @@
 package suite.funp;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import primal.adt.Fixie_.FixieFun0;
-import primal.adt.Fixie_.FixieFun1;
-import primal.adt.Fixie_.FixieFun2;
-import primal.adt.Fixie_.FixieFun3;
-import primal.adt.Fixie_.FixieFun4;
-import primal.adt.Fixie_.FixieFun5;
-import primal.adt.Fixie_.FixieFun6;
+import primal.adt.Fixie_.*;
 import primal.adt.Mutable;
 import primal.adt.Pair;
 import primal.primitive.adt.IntMutable;
@@ -21,6 +12,9 @@ import suite.funp.P0.Fct;
 import suite.funp.P0.FunpStruct;
 import suite.funp.P0.FunpVariable;
 import suite.node.io.Operator;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class P2 {
 

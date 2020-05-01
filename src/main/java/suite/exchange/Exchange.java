@@ -1,12 +1,12 @@
 package suite.exchange;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 import primal.Verbs.Get;
 import primal.adt.FixieArray;
 import primal.adt.Mutable;
 import suite.exchange.LimitOrderBook.LobListener;
+
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Exchange {
 

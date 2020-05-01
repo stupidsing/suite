@@ -1,10 +1,5 @@
 package suite.http;
 
-import static primal.statics.Rethrow.ex;
-
-import java.net.URLDecoder;
-import java.util.Map;
-
 import primal.MoreVerbs.Read;
 import primal.MoreVerbs.Split;
 import primal.Nouns.Utf8;
@@ -12,6 +7,11 @@ import primal.Verbs.Equals;
 import primal.persistent.PerList;
 import primal.primitive.adt.Bytes;
 import primal.puller.Puller;
+
+import java.net.URLDecoder;
+import java.util.Map;
+
+import static primal.statics.Rethrow.ex;
 
 public class HttpHeaderUtil {
 

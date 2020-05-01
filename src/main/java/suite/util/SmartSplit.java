@@ -1,9 +1,5 @@
 package suite.util;
 
-import static primal.statics.Fail.fail;
-
-import java.util.ArrayList;
-
 import primal.MoreVerbs.Read;
 import primal.adt.Pair;
 import primal.primitive.ChrPrim.ChrPred;
@@ -12,6 +8,10 @@ import suite.node.io.Operator;
 import suite.node.io.Operator.Assoc;
 import suite.streamlet.ReadChars;
 import suite.text.Segment;
+
+import java.util.ArrayList;
+
+import static primal.statics.Fail.fail;
 
 public class SmartSplit {
 

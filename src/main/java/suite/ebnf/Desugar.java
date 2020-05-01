@@ -1,10 +1,10 @@
 package suite.ebnf;
 
+import suite.ebnf.Grammar.GrammarType;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import suite.ebnf.Grammar.GrammarType;
 
 public class Desugar {
 

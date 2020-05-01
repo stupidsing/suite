@@ -1,15 +1,5 @@
 package suite.http;
 
-import static java.lang.Math.max;
-import static java.lang.Math.min;
-import static primal.statics.Fail.fail;
-import static primal.statics.Rethrow.ex;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URLDecoder;
-
 import primal.MoreVerbs.Pull;
 import primal.MoreVerbs.Split;
 import primal.Nouns.Utf8;
@@ -25,6 +15,16 @@ import suite.http.Http.Request;
 import suite.http.Http.Response;
 import suite.util.Copy;
 import suite.util.To;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URLDecoder;
+
+import static java.lang.Math.max;
+import static java.lang.Math.min;
+import static primal.statics.Fail.fail;
+import static primal.statics.Rethrow.ex;
 
 public class HttpIo {
 

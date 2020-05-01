@@ -1,15 +1,14 @@
 package suite.math.linalg;
 
+import org.junit.jupiter.api.Test;
+import primal.primitive.adt.map.IntObjMap;
+import suite.node.util.Singleton;
+import suite.streamlet.As;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import org.junit.jupiter.api.Test;
-
-import primal.primitive.adt.map.IntObjMap;
-import suite.node.util.Singleton;
-import suite.streamlet.As;
 
 public class LinearDiscriminantAnalysisTest {
 

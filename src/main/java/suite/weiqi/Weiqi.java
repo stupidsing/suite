@@ -1,9 +1,9 @@
 package suite.weiqi;
 
-import java.util.Arrays;
-
 import primal.Verbs.Copy;
 import primal.Verbs.Get;
+
+import java.util.Arrays;
 
 public class Weiqi {
 

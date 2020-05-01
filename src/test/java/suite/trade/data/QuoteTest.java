@@ -1,14 +1,13 @@
 package suite.trade.data;
 
-import java.util.Map;
-
 import org.junit.jupiter.api.Test;
-
 import primal.MoreVerbs.Read;
 import primal.fp.Funs.Fun;
 import suite.trade.Trade;
 import suite.trade.analysis.Summarize;
 import suite.util.To;
+
+import java.util.Map;
 
 public class QuoteTest {
 

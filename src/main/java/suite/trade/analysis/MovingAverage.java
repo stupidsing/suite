@@ -1,15 +1,13 @@
 package suite.trade.analysis;
 
-import static java.lang.Math.exp;
-import static java.lang.Math.log;
-import static java.lang.Math.max;
-
-import java.util.Arrays;
-
 import primal.primitive.fp.AsDbl;
 import suite.math.linalg.Vector;
 import suite.ts.TimeSeries;
 import suite.util.To;
+
+import java.util.Arrays;
+
+import static java.lang.Math.*;
 
 public class MovingAverage {
 

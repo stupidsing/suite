@@ -1,11 +1,11 @@
 package suite.persistent;
 
+import primal.Verbs.New;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
-
-import primal.Verbs.New;
 
 /**
  * Persistent binomial priority queue, implemented using dense-list of trees.

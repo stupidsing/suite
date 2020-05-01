@@ -1,12 +1,6 @@
 package suite.math.ts;
 
-import static suite.util.Streamlet_.forInt;
-
-import java.util.Arrays;
-import java.util.Random;
-
 import org.junit.jupiter.api.Test;
-
 import primal.primitive.adt.pair.DblObjPair;
 import primal.primitive.fp.AsFlt;
 import suite.math.linalg.Vector;
@@ -14,6 +8,11 @@ import suite.streamlet.As;
 import suite.ts.Arima;
 import suite.ts.Arima.Arima_;
 import suite.util.To;
+
+import java.util.Arrays;
+import java.util.Random;
+
+import static suite.util.Streamlet_.forInt;
 
 public class ArimaTest {
 

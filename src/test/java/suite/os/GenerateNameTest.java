@@ -1,11 +1,10 @@
 package suite.os;
 
-import java.util.Random;
-
 import org.junit.jupiter.api.Test;
-
 import suite.node.util.Ioc;
 import suite.streamlet.As;
+
+import java.util.Random;
 
 public class GenerateNameTest {
 

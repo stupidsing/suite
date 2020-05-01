@@ -1,12 +1,12 @@
 package suite.assembler;
 
-import java.util.Set;
-
 import primal.adt.map.BiHashMap;
 import primal.adt.map.BiMap;
 import suite.node.Atom;
 import suite.object.ToStringObject;
 import suite.util.To;
+
+import java.util.Set;
 
 public class Amd64 {
 

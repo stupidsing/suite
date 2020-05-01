@@ -1,7 +1,5 @@
 package suite.primitive;
 
-import static primal.statics.Rethrow.ex;
-
 import primal.fp.Funs.Iterate;
 import primal.fp.Funs.Source;
 import primal.primitive.adt.Floats;
@@ -10,6 +8,8 @@ import primal.primitive.adt.Floats.WriteChar;
 import primal.primitive.puller.FltPuller;
 import primal.primitive.streamlet.FltStreamlet;
 import primal.puller.Puller;
+
+import static primal.statics.Rethrow.ex;
 
 public class Floats_ {
 

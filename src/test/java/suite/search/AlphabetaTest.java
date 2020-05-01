@@ -1,10 +1,10 @@
 package suite.search;
 
+import org.junit.jupiter.api.Test;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import org.junit.jupiter.api.Test;
 
 public class AlphabetaTest {
 

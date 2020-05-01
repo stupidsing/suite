@@ -1,9 +1,5 @@
 package suite.trade.backalloc.run;
 
-import static suite.util.Streamlet_.forInt;
-
-import java.nio.file.Paths;
-
 import primal.MoreVerbs.Decode;
 import primal.MoreVerbs.Fit;
 import primal.MoreVerbs.Read;
@@ -23,6 +19,10 @@ import suite.trade.data.TradeCfg;
 import suite.trade.data.TradeCfgImpl;
 import suite.util.RunUtil;
 import suite.util.SmartSplit;
+
+import java.nio.file.Paths;
+
+import static suite.util.Streamlet_.forInt;
 
 // mvn compile exec:java -Dexec.mainClass=suite.trade.bcakalloc.run.BackTestMain
 public class BackTestMain {

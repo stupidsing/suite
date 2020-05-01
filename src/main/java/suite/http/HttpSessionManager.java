@@ -1,11 +1,11 @@
 package suite.http;
 
+import suite.http.Http.Session;
+import suite.http.Http.SessionManager;
+
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
-
-import suite.http.Http.Session;
-import suite.http.Http.SessionManager;
 
 public class HttpSessionManager implements SessionManager {
 

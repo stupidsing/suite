@@ -1,11 +1,11 @@
 package suite.node.pp;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.Formatter;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class EstimateLength {
 

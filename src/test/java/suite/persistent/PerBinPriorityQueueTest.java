@@ -1,13 +1,12 @@
 package suite.persistent;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Test;
+import primal.Verbs.Compare;
 
 import java.util.ArrayList;
 import java.util.Collections;
 
-import org.junit.jupiter.api.Test;
-
-import primal.Verbs.Compare;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class PerBinPriorityQueueTest {
 

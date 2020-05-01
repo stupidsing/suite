@@ -1,19 +1,15 @@
 package suite.concurrent;
 
-import static suite.util.Streamlet_.forInt;
-
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.Map;
-
 import primal.Verbs.RunnableEx;
 import primal.Verbs.Sleep;
 import primal.Verbs.Start;
 import primal.fp.Funs.Sink;
 import primal.os.Log_;
 import suite.concurrent.Condition.Cond;
+
+import java.util.*;
+
+import static suite.util.Streamlet_.forInt;
 
 public class Threads implements AutoCloseable {
 

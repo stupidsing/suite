@@ -1,6 +1,12 @@
 package suite.nntp;
 
-import static primal.statics.Fail.fail;
+import primal.MoreVerbs.Split;
+import primal.Verbs.Equals;
+import primal.Verbs.ReadLine;
+import primal.io.WriteStream;
+import suite.os.Listen;
+import suite.util.CommandUtil;
+import suite.util.RunUtil;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,13 +16,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import primal.MoreVerbs.Split;
-import primal.Verbs.Equals;
-import primal.Verbs.ReadLine;
-import primal.io.WriteStream;
-import suite.os.Listen;
-import suite.util.CommandUtil;
-import suite.util.RunUtil;
+import static primal.statics.Fail.fail;
 
 public class NntpServerMain {
 

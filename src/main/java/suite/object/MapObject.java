@@ -1,11 +1,11 @@
 package suite.object;
 
-import static primal.statics.Rethrow.ex;
+import primal.MoreVerbs.Read;
+import primal.adt.IdentityKey;
 
 import java.util.HashMap;
 
-import primal.MoreVerbs.Read;
-import primal.adt.IdentityKey;
+import static primal.statics.Rethrow.ex;
 
 /**
  * An object having the following methods:

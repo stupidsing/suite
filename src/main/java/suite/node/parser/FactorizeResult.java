@@ -1,8 +1,5 @@
 package suite.node.parser;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import primal.Verbs.First;
 import primal.Verbs.Last;
 import primal.fp.Funs.Fun;
@@ -22,6 +19,9 @@ import suite.node.util.Rewrite;
 import suite.node.util.Singleton;
 import suite.util.Nodify;
 import suite.util.To;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class FactorizeResult {
 

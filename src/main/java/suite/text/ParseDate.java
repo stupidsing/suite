@@ -1,7 +1,6 @@
 package suite.text;
 
-import static java.util.Map.entry;
-import static primal.statics.Fail.fail;
+import primal.MoreVerbs.Read;
 
 import java.time.Instant;
 import java.time.ZoneId;
@@ -11,7 +10,8 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.Set;
 
-import primal.MoreVerbs.Read;
+import static java.util.Map.entry;
+import static primal.statics.Fail.fail;
 
 /**
  * A smart, generic date and time parser.

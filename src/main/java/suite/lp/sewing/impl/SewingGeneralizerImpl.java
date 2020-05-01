@@ -1,21 +1,15 @@
 package suite.lp.sewing.impl;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
 import primal.MoreVerbs.Read;
 import suite.lp.doer.GeneralizerFactory;
 import suite.lp.doer.ProverConstant;
 import suite.lp.sewing.VariableMapper;
-import suite.node.Atom;
-import suite.node.Dict;
-import suite.node.Node;
-import suite.node.Reference;
-import suite.node.Suspend;
-import suite.node.Tree;
-import suite.node.Tuple;
+import suite.node.*;
 import suite.node.io.TermOp;
 import suite.util.To;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class SewingGeneralizerImpl implements GeneralizerFactory {
 

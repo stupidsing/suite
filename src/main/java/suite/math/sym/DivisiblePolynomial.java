@@ -1,7 +1,5 @@
 package suite.math.sym;
 
-import java.util.function.Predicate;
-
 import primal.adt.Opt;
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
@@ -17,6 +15,8 @@ import suite.math.sym.Sym.Ring;
 import suite.node.Int;
 import suite.node.Node;
 import suite.node.io.SwitchNode;
+
+import java.util.function.Predicate;
 
 public class DivisiblePolynomial<N> {
 

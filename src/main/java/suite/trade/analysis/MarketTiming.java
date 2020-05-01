@@ -1,11 +1,11 @@
 package suite.trade.analysis;
 
+import suite.math.numeric.Statistic;
+import suite.streamlet.As;
+
 import static java.lang.Math.abs;
 import static java.lang.Math.max;
 import static suite.util.Streamlet_.forInt;
-
-import suite.math.numeric.Statistic;
-import suite.streamlet.As;
 
 public class MarketTiming {
 

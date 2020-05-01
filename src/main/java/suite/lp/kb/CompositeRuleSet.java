@@ -1,10 +1,10 @@
 package suite.lp.kb;
 
-import java.util.List;
-
 import primal.Verbs.Concat;
 import suite.node.Node;
 import suite.node.util.Singleton;
+
+import java.util.List;
 
 public class CompositeRuleSet implements RuleSet {
 

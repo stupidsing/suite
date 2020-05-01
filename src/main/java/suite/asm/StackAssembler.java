@@ -1,11 +1,5 @@
 package suite.asm;
 
-import static primal.statics.Fail.fail;
-
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.List;
-
 import primal.adt.Pair;
 import suite.BindArrayUtil.Pattern;
 import suite.Suite;
@@ -18,6 +12,12 @@ import suite.node.Node;
 import suite.node.Reference;
 import suite.node.util.Rewrite;
 import suite.node.util.TreeUtil;
+
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.List;
+
+import static primal.statics.Fail.fail;
 
 public class StackAssembler {
 

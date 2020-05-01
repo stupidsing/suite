@@ -1,7 +1,5 @@
 package suite.node.io;
 
-import java.util.List;
-
 import primal.MoreVerbs.Read;
 import primal.persistent.PerList;
 import primal.streamlet.Streamlet;
@@ -11,6 +9,8 @@ import suite.node.Node;
 import suite.node.io.Rewrite_.NodeRead;
 import suite.node.io.Rewrite_.ReadType;
 import suite.streamlet.As;
+
+import java.util.List;
 
 /**
  * Lists node contents line-by-line for human-readable purpose.

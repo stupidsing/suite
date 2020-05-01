@@ -1,14 +1,5 @@
 package suite.trade.data;
 
-import static java.lang.Math.max;
-import static java.lang.Math.min;
-import static primal.statics.Fail.fail;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-
 import primal.MoreVerbs.Read;
 import primal.Verbs.Build;
 import primal.Verbs.Compare;
@@ -24,6 +15,15 @@ import suite.trade.TimeRange;
 import suite.trade.Trade_;
 import suite.ts.TimeSeries;
 import suite.util.To;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+
+import static java.lang.Math.max;
+import static java.lang.Math.min;
+import static primal.statics.Fail.fail;
 
 // all prices should be already adjusted according to corporate service actions
 public class DataSource {

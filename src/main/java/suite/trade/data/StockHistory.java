@@ -1,12 +1,5 @@
 package suite.trade.data;
 
-import static primal.statics.Fail.fail;
-import static suite.util.Streamlet_.forInt;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-
 import primal.MoreVerbs.Read;
 import primal.Verbs.Compare;
 import primal.Verbs.Equals;
@@ -20,6 +13,13 @@ import suite.streamlet.As;
 import suite.trade.Time;
 import suite.trade.TimeRange;
 import suite.trade.data.DataSource.Datum;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
+import static primal.statics.Fail.fail;
+import static suite.util.Streamlet_.forInt;
 
 public class StockHistory {
 

@@ -1,19 +1,5 @@
 package suite.cli;
 
-import static primal.statics.Fail.fail;
-import static primal.statics.Rethrow.ex;
-
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.Reader;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.util.ArrayList;
-import java.util.List;
-
 import primal.Nouns.Utf8;
 import primal.Verbs.Close;
 import primal.Verbs.Equals;
@@ -24,6 +10,13 @@ import suite.Suite;
 import suite.net.ServeSocket;
 import suite.util.RunUtil;
 import suite.util.SmartSplit;
+
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import static primal.statics.Fail.fail;
+import static primal.statics.Rethrow.ex;
 
 /**
  * Logic interpreter and functional interpreter. Likes Prolog and Haskell.

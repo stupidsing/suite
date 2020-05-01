@@ -1,10 +1,10 @@
 package suite.trade.analysis;
 
-import static java.lang.Math.log;
-import static java.lang.Math.max;
-
 import suite.trade.data.DataSource;
 import suite.util.To;
+
+import static java.lang.Math.log;
+import static java.lang.Math.max;
 
 // "High Frequency Trading: A Practical Guide to Algorithmic Strategies and Trading Systems", Irene Alridge, page 107
 public class Volatility {

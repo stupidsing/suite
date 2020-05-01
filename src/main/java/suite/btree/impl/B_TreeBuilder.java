@@ -1,11 +1,5 @@
 package suite.btree.impl;
 
-import static primal.statics.Fail.fail;
-
-import java.io.IOException;
-import java.nio.file.Path;
-import java.util.Comparator;
-
 import primal.Verbs.DeleteFile;
 import primal.adt.FixieArray;
 import primal.adt.Pair;
@@ -21,6 +15,12 @@ import suite.serialize.SerInput;
 import suite.serialize.SerOutput;
 import suite.serialize.Serialize;
 import suite.serialize.Serialize.Serializer;
+
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.Comparator;
+
+import static primal.statics.Fail.fail;
 
 public class B_TreeBuilder<Key, Value> {
 

@@ -1,9 +1,9 @@
 package suite.algo;
 
+import primal.Verbs.Build;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import primal.Verbs.Build;
 
 // https://stackoverflow.com/questions/9452701/ukkonens-suffix-tree-algorithm-in-plain-english/9513423#9513423
 public class SuffixTree {

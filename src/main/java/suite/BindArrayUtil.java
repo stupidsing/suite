@@ -1,7 +1,5 @@
 package suite;
 
-import java.util.ArrayList;
-
 import primal.fp.Funs.Fun;
 import primal.primitive.fp.AsInt;
 import suite.lp.compile.impl.CompileBinderImpl;
@@ -11,6 +9,8 @@ import suite.node.Atom;
 import suite.node.Node;
 import suite.util.Memoize;
 import suite.util.To;
+
+import java.util.ArrayList;
 
 public class BindArrayUtil {
 

@@ -1,6 +1,14 @@
 package suite.telegram;
 
-import static primal.statics.Rethrow.ex;
+import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import org.telegram.telegrambots.meta.TelegramBotsApi;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.generics.BotSession;
+import primal.Verbs.Sleep;
+import primal.fp.Funs.Source;
+import primal.fp.Funs2.FoldOp;
+import primal.os.Log_;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -10,16 +18,7 @@ import java.util.Deque;
 import java.util.HashSet;
 import java.util.function.Predicate;
 
-import org.telegram.telegrambots.bots.TelegramLongPollingBot;
-import org.telegram.telegrambots.meta.TelegramBotsApi;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.generics.BotSession;
-
-import primal.Verbs.Sleep;
-import primal.fp.Funs.Source;
-import primal.fp.Funs2.FoldOp;
-import primal.os.Log_;
+import static primal.statics.Rethrow.ex;
 
 public class TelegramBot {
 

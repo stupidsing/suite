@@ -1,9 +1,5 @@
 package suite.sample;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
 import primal.Verbs.Concat;
 import primal.fp.Funs.Source;
 import suite.Suite;
@@ -14,6 +10,10 @@ import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.TermOp;
 import suite.node.util.TreeUtil;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * Selective linear definite clause resolution.

@@ -1,16 +1,16 @@
 package suite.jdk;
 
-import static primal.statics.Rethrow.ex;
+import primal.Verbs.Close;
+import primal.Verbs.New;
+import primal.os.Log_;
+import suite.util.To;
 
 import java.io.Closeable;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Path;
 
-import primal.Verbs.Close;
-import primal.Verbs.New;
-import primal.os.Log_;
-import suite.util.To;
+import static primal.statics.Rethrow.ex;
 
 public class JdkLoadClassUtil extends JdkUtil implements Closeable {
 

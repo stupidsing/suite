@@ -1,14 +1,11 @@
 package suite.gpu;
 
-import static java.lang.Math.cos;
-import static java.lang.Math.min;
-import static java.lang.Math.sin;
-
+import com.nativelibs4java.opencl.CLMem.Usage;
+import com.nativelibs4java.opencl.JavaCL;
 import org.bridj.Pointer;
 import org.junit.jupiter.api.Test;
 
-import com.nativelibs4java.opencl.CLMem.Usage;
-import com.nativelibs4java.opencl.JavaCL;
+import static java.lang.Math.*;
 
 public class GpuTest {
 

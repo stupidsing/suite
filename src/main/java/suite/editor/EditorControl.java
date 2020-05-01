@@ -1,15 +1,5 @@
 package suite.editor;
 
-import static primal.statics.Rethrow.ex;
-
-import java.io.File;
-import java.io.OutputStreamWriter;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
-import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
-
 import primal.Nouns.Utf8;
 import primal.Verbs.ReadString;
 import primal.Verbs.Start;
@@ -20,6 +10,14 @@ import suite.node.io.Formatter;
 import suite.node.pp.PrettyPrinter;
 import suite.os.FileUtil;
 import suite.util.To;
+
+import javax.swing.*;
+import java.io.File;
+import java.io.OutputStreamWriter;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+import static primal.statics.Rethrow.ex;
 
 public class EditorControl {
 

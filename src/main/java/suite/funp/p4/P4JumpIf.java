@@ -1,9 +1,5 @@
 package suite.funp.p4;
 
-import static java.util.Map.entry;
-
-import java.util.Map;
-
 import primal.adt.Fixie_.FixieFun5;
 import primal.fp.Funs.Source;
 import suite.assembler.Amd64.Insn;
@@ -11,6 +7,10 @@ import suite.funp.Funp_.Funp;
 import suite.funp.P0.FunpBoolean;
 import suite.funp.P2.FunpOp;
 import suite.node.io.TermOp;
+
+import java.util.Map;
+
+import static java.util.Map.entry;
 
 public class P4JumpIf {
 

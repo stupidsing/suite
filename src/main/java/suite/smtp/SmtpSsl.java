@@ -1,21 +1,16 @@
 package suite.smtp;
 
-import static primal.statics.Rethrow.ex;
-
-import java.util.Properties;
-
-import javax.mail.Authenticator;
-import javax.mail.Message;
-import javax.mail.PasswordAuthentication;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
-import javax.net.ssl.SSLSocketFactory;
-
 import primal.primitive.ChrChr_Int;
 import primal.primitive.fp.AsChr;
 import suite.cfg.Defaults;
+
+import javax.mail.*;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+import javax.net.ssl.SSLSocketFactory;
+import java.util.Properties;
+
+import static primal.statics.Rethrow.ex;
 
 public class SmtpSsl {
 

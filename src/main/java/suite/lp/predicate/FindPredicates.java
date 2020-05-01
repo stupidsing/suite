@@ -1,23 +1,18 @@
 package suite.lp.predicate;
 
-import java.util.Map;
-import java.util.Stack;
-import java.util.concurrent.ConcurrentHashMap;
-
 import primal.MoreVerbs.Read;
 import primal.fp.Funs.Source;
 import suite.lp.doer.Cloner;
 import suite.lp.doer.Prover;
 import suite.lp.predicate.PredicateUtil.BuiltinPredicate;
-import suite.node.Atom;
-import suite.node.Data;
-import suite.node.Node;
-import suite.node.Reference;
-import suite.node.Suspend;
-import suite.node.Tree;
+import suite.node.*;
 import suite.node.io.TermOp;
 import suite.node.util.TermKey;
 import suite.util.Memoize;
+
+import java.util.Map;
+import java.util.Stack;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class FindPredicates {
 

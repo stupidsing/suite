@@ -1,13 +1,7 @@
 package suite.weiqi;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.text.DecimalFormat;
-import java.util.Random;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 import primal.Verbs.Compare;
 import suite.cfg.Defaults;
 import suite.os.Stopwatch;
@@ -16,6 +10,11 @@ import suite.uct.ShuffleUtil;
 import suite.uct.UctSearch;
 import suite.uct.UctWeiqi;
 import suite.weiqi.Weiqi.Occupation;
+
+import java.text.DecimalFormat;
+import java.util.Random;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class UctTest {
 

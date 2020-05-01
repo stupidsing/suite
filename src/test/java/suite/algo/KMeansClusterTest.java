@@ -1,17 +1,16 @@
 package suite.algo;
 
-import static java.util.Map.entry;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static suite.util.Streamlet_.forInt;
+import org.junit.jupiter.api.Test;
+import primal.MoreVerbs.Read;
+import primal.fp.Funs.Source;
+import suite.math.linalg.Vector;
 
 import java.util.Map;
 import java.util.Random;
 
-import org.junit.jupiter.api.Test;
-
-import primal.MoreVerbs.Read;
-import primal.fp.Funs.Source;
-import suite.math.linalg.Vector;
+import static java.util.Map.entry;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static suite.util.Streamlet_.forInt;
 
 public class KMeansClusterTest {
 

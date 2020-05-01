@@ -1,9 +1,5 @@
 package suite.file.impl;
 
-import java.io.IOException;
-import java.nio.file.Path;
-import java.util.ArrayList;
-
 import primal.primitive.adt.Bytes;
 import primal.primitive.adt.pair.IntObjPair;
 import suite.file.JournalledPageFile;
@@ -14,6 +10,10 @@ import suite.serialize.SerInput;
 import suite.serialize.SerOutput;
 import suite.serialize.Serialize;
 import suite.serialize.Serialize.Serializer;
+
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.ArrayList;
 
 public class JournalledFileFactory {
 

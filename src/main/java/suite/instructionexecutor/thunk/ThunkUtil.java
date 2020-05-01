@@ -1,10 +1,5 @@
 package suite.instructionexecutor.thunk;
 
-import static primal.statics.Fail.fail;
-
-import java.io.IOException;
-import java.io.Writer;
-
 import primal.Verbs.Build;
 import primal.fp.Funs.Iterate;
 import primal.fp.Funs.Source;
@@ -14,6 +9,11 @@ import suite.node.Int;
 import suite.node.Node;
 import suite.node.Tree;
 import suite.primitive.IoSink;
+
+import java.io.IOException;
+import java.io.Writer;
+
+import static primal.statics.Fail.fail;
 
 public class ThunkUtil {
 

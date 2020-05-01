@@ -1,18 +1,17 @@
 package suite.lp.doer;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static primal.statics.Fail.fail;
-
-import java.io.IOException;
-
 import org.junit.jupiter.api.Test;
-
 import suite.Suite;
 import suite.lp.Configuration.ProverCfg;
 import suite.lp.kb.RuleSet;
 import suite.lp.search.InterpretedProverBuilder;
 import suite.lp.search.SewingProverBuilder2;
+
+import java.io.IOException;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static primal.statics.Fail.fail;
 
 public class ProverTest {
 

@@ -1,9 +1,5 @@
 package suite.node.util;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-
 import primal.Verbs.Equals;
 import primal.Verbs.Get;
 import primal.adt.Pair;
@@ -15,6 +11,10 @@ import suite.node.Node;
 import suite.node.Reference;
 import suite.node.io.Rewrite_.NodeHead;
 import suite.node.io.Rewrite_.NodeRead;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * The Node.hashCode() method would not permit taking hash code of terms with

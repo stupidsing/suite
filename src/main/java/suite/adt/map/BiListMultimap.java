@@ -1,12 +1,12 @@
 package suite.adt.map;
 
-import java.util.List;
-import java.util.Map;
-
 import primal.MoreVerbs.Read;
 import primal.Verbs.Get;
 import primal.adt.map.ListMultimap;
 import primal.streamlet.Streamlet2;
+
+import java.util.List;
+import java.util.Map;
 
 public class BiListMultimap<K, V> {
 

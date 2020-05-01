@@ -1,15 +1,6 @@
 package suite.trade.analysis;
 
-import static java.lang.Math.abs;
-import static suite.util.Streamlet_.forInt;
-
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
-
 import org.junit.jupiter.api.Test;
-
 import primal.MoreVerbs.Read;
 import primal.Verbs.Equals;
 import primal.Verbs.Right;
@@ -37,6 +28,14 @@ import suite.ts.BollingerBands;
 import suite.ts.Quant;
 import suite.ts.TimeSeries;
 import suite.util.To;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
+
+import static java.lang.Math.abs;
+import static suite.util.Streamlet_.forInt;
 
 public class StatisticalArbitrageTest {
 

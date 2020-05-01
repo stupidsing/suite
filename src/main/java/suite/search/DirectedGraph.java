@@ -1,16 +1,16 @@
 package suite.search;
 
-import static primal.statics.Fail.fail;
+import primal.MoreVerbs.Read;
+import primal.adt.Pair;
+import primal.adt.map.ListMultimap;
+import primal.streamlet.Streamlet;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import primal.MoreVerbs.Read;
-import primal.adt.Pair;
-import primal.adt.map.ListMultimap;
-import primal.streamlet.Streamlet;
+import static primal.statics.Fail.fail;
 
 public class DirectedGraph<V> {
 

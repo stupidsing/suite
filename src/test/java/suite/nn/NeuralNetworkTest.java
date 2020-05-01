@@ -1,16 +1,15 @@
 package suite.nn;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.util.Random;
-
 import org.junit.jupiter.api.Test;
-
 import primal.MoreVerbs.Read;
 import primal.adt.Pair;
 import primal.fp.Funs2.BinOp;
 import suite.math.linalg.Vector;
 import suite.nn.NeuralNetwork.Layer;
+
+import java.util.Random;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class NeuralNetworkTest {
 

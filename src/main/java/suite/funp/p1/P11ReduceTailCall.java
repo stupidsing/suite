@@ -1,28 +1,15 @@
 package suite.funp.p1;
 
-import java.util.List;
-
 import primal.Verbs.Equals;
 import primal.Verbs.Get;
 import primal.adt.Pair;
 import suite.funp.Funp_.Funp;
-import suite.funp.P0.Fdt;
-import suite.funp.P0.FunpApply;
-import suite.funp.P0.FunpBoolean;
-import suite.funp.P0.FunpDefine;
-import suite.funp.P0.FunpDefineRec;
-import suite.funp.P0.FunpDoAssignVar;
-import suite.funp.P0.FunpDoWhile;
-import suite.funp.P0.FunpDontCare;
-import suite.funp.P0.FunpField;
-import suite.funp.P0.FunpIf;
-import suite.funp.P0.FunpLambda;
-import suite.funp.P0.FunpReference;
-import suite.funp.P0.FunpStruct;
-import suite.funp.P0.FunpVariable;
+import suite.funp.P0.*;
 import suite.inspect.Inspect;
 import suite.node.util.Singleton;
 import suite.util.Switch;
+
+import java.util.List;
 
 public class P11ReduceTailCall {
 

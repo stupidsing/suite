@@ -1,12 +1,5 @@
 package suite.file.impl;
 
-import static primal.statics.Fail.fail;
-
-import java.io.IOException;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-
 import primal.Verbs.DeleteFile;
 import primal.Verbs.Equals;
 import primal.os.Log_;
@@ -20,6 +13,13 @@ import suite.serialize.SerInput;
 import suite.serialize.SerOutput;
 import suite.serialize.Serialize.Serializer;
 import suite.util.Util;
+
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+
+import static primal.statics.Fail.fail;
 
 public class FileFactory {
 

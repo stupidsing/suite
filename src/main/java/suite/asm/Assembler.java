@@ -1,12 +1,5 @@
 package suite.asm;
 
-import static primal.statics.Fail.fail;
-import static primal.statics.Fail.failBool;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import primal.MoreVerbs.Read;
 import primal.MoreVerbs.Split;
 import primal.Nouns.Utf8;
@@ -27,16 +20,18 @@ import suite.lp.doer.Generalizer;
 import suite.lp.kb.RuleSet;
 import suite.lp.search.ProverBuilder.Finder;
 import suite.lp.search.SewingProverBuilder2;
-import suite.node.Atom;
-import suite.node.Int;
-import suite.node.Node;
-import suite.node.Reference;
-import suite.node.Str;
-import suite.node.Tree;
+import suite.node.*;
 import suite.node.io.SwitchNode;
 import suite.parser.CommentPreprocessor;
 import suite.text.Preprocess;
 import suite.text.Preprocess.Run;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import static primal.statics.Fail.fail;
+import static primal.statics.Fail.failBool;
 
 public class Assembler {
 

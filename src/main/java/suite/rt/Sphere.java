@@ -1,15 +1,11 @@
 package suite.rt;
 
-import static java.lang.Math.sqrt;
+import suite.math.R3;
+import suite.rt.RayTracer.*;
 
 import java.util.List;
 
-import suite.math.R3;
-import suite.rt.RayTracer.Material;
-import suite.rt.RayTracer.Ray;
-import suite.rt.RayTracer.RayHit;
-import suite.rt.RayTracer.RayIntersection;
-import suite.rt.RayTracer.RtObject;
+import static java.lang.Math.sqrt;
 
 public class Sphere implements RtObject {
 

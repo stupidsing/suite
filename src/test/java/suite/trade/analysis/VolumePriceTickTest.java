@@ -1,7 +1,6 @@
 package suite.trade.analysis;
 
 import org.junit.jupiter.api.Test;
-
 import suite.math.linalg.Vector;
 import suite.trade.Time;
 import suite.trade.TimeRange;

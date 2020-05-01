@@ -1,26 +1,18 @@
 package suite.instructionexecutor;
 
-import static primal.statics.Fail.fail;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import primal.adt.map.BiHashMap;
 import primal.adt.map.BiMap;
 import primal.os.Log_;
 import suite.Suite;
-import suite.instructionexecutor.InstructionUtil.Activation;
-import suite.instructionexecutor.InstructionUtil.Frame;
-import suite.instructionexecutor.InstructionUtil.Insn;
-import suite.instructionexecutor.InstructionUtil.Instruction;
-import suite.instructionexecutor.InstructionUtil.Thunk;
-import suite.node.Atom;
-import suite.node.Int;
-import suite.node.Node;
-import suite.node.Reference;
-import suite.node.Tree;
+import suite.instructionexecutor.InstructionUtil.*;
+import suite.node.*;
 import suite.node.io.TermOp;
 import suite.node.util.Comparer;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static primal.statics.Fail.fail;
 
 public class InstructionExecutor implements AutoCloseable {
 

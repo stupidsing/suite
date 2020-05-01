@@ -1,14 +1,13 @@
 package suite.fp;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import org.junit.jupiter.api.Test;
+import suite.Suite;
+import suite.node.io.Formatter;
 
 import java.io.IOException;
 
-import org.junit.jupiter.api.Test;
-
-import suite.Suite;
-import suite.node.io.Formatter;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class CircularProgrammingTest {
 

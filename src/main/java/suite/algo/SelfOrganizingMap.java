@@ -1,16 +1,16 @@
 package suite.algo;
 
-import static java.lang.Math.exp;
-import static java.lang.Math.log;
-
-import java.util.List;
-import java.util.Random;
-
 import primal.fp.Funs.Sink;
 import primal.primitive.IntVerbs.CopyInt;
 import primal.primitive.adt.DblMutable;
 import suite.math.linalg.Vector;
 import suite.util.To;
+
+import java.util.List;
+import java.util.Random;
+
+import static java.lang.Math.exp;
+import static java.lang.Math.log;
 
 public class SelfOrganizingMap {
 

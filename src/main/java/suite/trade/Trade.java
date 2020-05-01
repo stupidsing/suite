@@ -1,11 +1,11 @@
 package suite.trade;
 
-import static java.lang.Math.abs;
-
 import primal.Verbs.Compare;
 import primal.Verbs.Equals;
 import suite.math.Math_;
 import suite.util.To;
+
+import static java.lang.Math.abs;
 
 public class Trade {
 

@@ -1,14 +1,5 @@
 package suite.btree.impl;
 
-import static primal.statics.Fail.fail;
-
-import java.io.IOException;
-import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Stack;
-
 import primal.MoreVerbs.Read;
 import primal.Verbs.Equals;
 import primal.adt.Pair;
@@ -17,6 +8,15 @@ import primal.streamlet.Streamlet;
 import suite.btree.B_Tree;
 import suite.file.PageAllocator;
 import suite.file.SerializedPageFile;
+
+import java.io.IOException;
+import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Stack;
+
+import static primal.statics.Fail.fail;
 
 /**
  * B+ tree implementation.

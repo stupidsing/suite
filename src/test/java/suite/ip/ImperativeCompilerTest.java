@@ -1,10 +1,9 @@
 package suite.ip;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
 import org.junit.jupiter.api.Test;
-
 import primal.primitive.adt.Bytes;
+
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class ImperativeCompilerTest {
 

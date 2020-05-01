@@ -1,9 +1,8 @@
 package suite.editor;
 
-import java.awt.Font;
-import java.awt.Toolkit;
-
 import suite.util.RunUtil;
+
+import java.awt.*;
 
 public class FontUtil {
 

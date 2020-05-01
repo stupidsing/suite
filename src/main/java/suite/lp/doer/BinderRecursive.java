@@ -1,20 +1,14 @@
 package suite.lp.doer;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import primal.Verbs.Equals;
 import primal.Verbs.Union;
 import primal.adt.IdentityKey;
 import primal.adt.Pair;
 import suite.lp.Trail;
-import suite.node.Dict;
-import suite.node.Int;
-import suite.node.Node;
-import suite.node.Reference;
-import suite.node.Str;
-import suite.node.Tree;
-import suite.node.Tuple;
+import suite.node.*;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class BinderRecursive {
 

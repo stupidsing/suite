@@ -1,8 +1,8 @@
 package suite.pkgmanager.action;
 
-import static primal.statics.Fail.fail;
-
 import suite.os.Execute;
+
+import static primal.statics.Fail.fail;
 
 public class ExecCommandAction implements InstallAction {
 

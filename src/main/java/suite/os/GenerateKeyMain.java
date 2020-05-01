@@ -1,8 +1,8 @@
 package suite.os;
 
-import static primal.statics.Rethrow.ex;
-
 import suite.util.RunUtil;
+
+import static primal.statics.Rethrow.ex;
 
 /*
 gcc -std=c99 -g src/main/c/encb.c -o target/encb &&

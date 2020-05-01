@@ -1,42 +1,27 @@
 package suite.jdk.gen.pass;
 
-import static primal.statics.Fail.fail;
-import static primal.statics.Rethrow.ex;
+import org.apache.bcel.generic.Type;
+import primal.MoreVerbs.Read;
+import primal.Verbs.Get;
+import primal.adt.Pair;
+import primal.streamlet.Streamlet2;
+import suite.jdk.gen.FunCreator;
+import suite.jdk.gen.FunExprK.*;
+import suite.jdk.gen.FunExprL.*;
+import suite.jdk.gen.FunExprM.*;
+import suite.jdk.gen.FunExpression.FunExpr;
+import suite.jdk.gen.FunFactory;
+import suite.jdk.gen.Type_;
+import suite.jdk.lambda.LambdaInterface;
+import suite.util.Switch;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.bcel.generic.Type;
-
-import primal.MoreVerbs.Read;
-import primal.Verbs.Get;
-import primal.adt.Pair;
-import primal.streamlet.Streamlet2;
-import suite.jdk.gen.FunCreator;
-import suite.jdk.gen.FunExprK.Declare0ParameterFunExpr;
-import suite.jdk.gen.FunExprK.Declare1ParameterFunExpr;
-import suite.jdk.gen.FunExprK.Declare2ParameterFunExpr;
-import suite.jdk.gen.FunExprK.DeclareParameterFunExpr;
-import suite.jdk.gen.FunExprK.PlaceholderFunExpr;
-import suite.jdk.gen.FunExprL.ApplyFunExpr;
-import suite.jdk.gen.FunExprL.DeclareLocalFunExpr;
-import suite.jdk.gen.FunExprL.FieldFunExpr_;
-import suite.jdk.gen.FunExprL.FieldInjectFunExpr;
-import suite.jdk.gen.FunExprL.FieldSetFunExpr;
-import suite.jdk.gen.FunExprL.InvokeLambdaFunExpr;
-import suite.jdk.gen.FunExprL.ObjectFunExpr;
-import suite.jdk.gen.FunExprM.AssignLocalFunExpr;
-import suite.jdk.gen.FunExprM.CastFunExpr;
-import suite.jdk.gen.FunExprM.FieldStaticFunExpr;
-import suite.jdk.gen.FunExprM.NewFunExpr;
-import suite.jdk.gen.FunExprM.ProfileFunExpr;
-import suite.jdk.gen.FunExpression.FunExpr;
-import suite.jdk.gen.FunFactory;
-import suite.jdk.gen.Type_;
-import suite.jdk.lambda.LambdaInterface;
-import suite.util.Switch;
+import static primal.statics.Fail.fail;
+import static primal.statics.Rethrow.ex;
 
 public class FunRewrite extends FunFactory {
 

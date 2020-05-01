@@ -1,20 +1,8 @@
 package suite.http;
 
-import static java.lang.Math.max;
-import static primal.statics.Rethrow.ex;
-
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URI;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicLong;
-
 import org.apache.http.Header;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.HttpClients;
-
 import primal.MoreVerbs.Decode;
 import primal.MoreVerbs.Fit;
 import primal.MoreVerbs.Pull;
@@ -33,6 +21,17 @@ import suite.primitive.Bytes_;
 import suite.streamlet.As;
 import suite.util.Memoize;
 import suite.util.To;
+
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
+
+import static java.lang.Math.max;
+import static primal.statics.Rethrow.ex;
 
 public class HttpClient {
 

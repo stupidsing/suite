@@ -1,10 +1,10 @@
 package suite.weiqi;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import primal.Verbs.Get;
 import suite.primitive.Coord;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Coordinate implements Comparable<Coordinate> {
 

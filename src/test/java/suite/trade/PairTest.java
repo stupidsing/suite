@@ -1,10 +1,6 @@
 package suite.trade;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static suite.util.Streamlet_.forInt;
-
 import org.junit.jupiter.api.Test;
-
 import primal.primitive.LngMoreVerbs.ConcatLng;
 import primal.primitive.LngMoreVerbs.ReadLng;
 import primal.primitive.adt.pair.FltObjPair;
@@ -12,6 +8,9 @@ import suite.math.linalg.Vector;
 import suite.math.numeric.Statistic;
 import suite.trade.data.TradeCfg;
 import suite.trade.data.TradeCfgImpl;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static suite.util.Streamlet_.forInt;
 
 /**
  * Finds the period of various stocks using FFT.

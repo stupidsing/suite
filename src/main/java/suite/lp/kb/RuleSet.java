@@ -1,10 +1,5 @@
 package suite.lp.kb;
 
-import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-
 import primal.Verbs.ReadString;
 import primal.persistent.PerList;
 import suite.Suite;
@@ -18,6 +13,11 @@ import suite.node.Tree;
 import suite.node.io.TermOp;
 import suite.os.FileUtil;
 import suite.util.To;
+
+import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 public interface RuleSet {
 

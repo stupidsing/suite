@@ -1,16 +1,16 @@
 package suite.math.linalg;
 
-import static java.lang.Math.abs;
-import static suite.util.Streamlet_.forInt;
+import primal.adt.Pair;
+import primal.primitive.adt.pair.DblObjPair;
+import suite.streamlet.As;
+import suite.util.To;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import primal.adt.Pair;
-import primal.primitive.adt.pair.DblObjPair;
-import suite.streamlet.As;
-import suite.util.To;
+import static java.lang.Math.abs;
+import static suite.util.Streamlet_.forInt;
 
 public class Eigen {
 

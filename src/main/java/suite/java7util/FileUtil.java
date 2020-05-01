@@ -1,6 +1,7 @@
 package suite.java7util;
 
-import static primal.statics.Fail.fail;
+import primal.fp.Funs.Source;
+import suite.util.Copy;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -8,8 +9,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayDeque;
 
-import primal.fp.Funs.Source;
-import suite.util.Copy;
+import static primal.statics.Fail.fail;
 
 public class FileUtil {
 

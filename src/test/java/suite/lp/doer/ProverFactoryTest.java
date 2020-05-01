@@ -1,15 +1,14 @@
 package suite.lp.doer;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import java.util.List;
-
 import org.junit.jupiter.api.Test;
-
 import suite.Suite;
 import suite.lp.Configuration.ProverCfg;
 import suite.lp.compile.impl.CompileProverImpl;
 import suite.lp.sewing.impl.SewingProverImpl;
+
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ProverFactoryTest {
 

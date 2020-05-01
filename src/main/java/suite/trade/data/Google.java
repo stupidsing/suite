@@ -1,16 +1,16 @@
 package suite.trade.data;
 
-import static primal.statics.Fail.fail;
+import primal.adt.Fixie;
+import primal.adt.Fixie_.Fixie3;
+import suite.node.util.Singleton;
+import suite.streamlet.As;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import primal.adt.Fixie;
-import primal.adt.Fixie_.Fixie3;
-import suite.node.util.Singleton;
-import suite.streamlet.As;
+import static primal.statics.Fail.fail;
 
 public class Google {
 

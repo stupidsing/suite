@@ -1,14 +1,14 @@
 package suite.lp.check;
 
-import java.util.List;
-import java.util.Map;
-
 import primal.MoreVerbs.Read;
 import primal.os.Log_;
 import suite.lp.kb.Prototype;
 import suite.lp.kb.Rule;
 import suite.node.Node;
 import suite.node.util.TreeUtil;
+
+import java.util.List;
+import java.util.Map;
 
 public class CheckPredicateCall {
 

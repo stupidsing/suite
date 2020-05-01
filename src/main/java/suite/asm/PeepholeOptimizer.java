@@ -1,8 +1,5 @@
 package suite.asm;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import primal.adt.Pair;
 import suite.Suite;
 import suite.node.Atom;
@@ -11,6 +8,9 @@ import suite.node.Node;
 import suite.node.Reference;
 import suite.node.io.SwitchNode;
 import suite.node.util.TreeUtil;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class PeepholeOptimizer {
 

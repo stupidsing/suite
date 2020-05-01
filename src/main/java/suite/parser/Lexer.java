@@ -1,6 +1,7 @@
 package suite.parser;
 
-import static primal.statics.Fail.fail;
+import primal.Verbs.Is;
+import primal.puller.Puller;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -9,8 +10,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import primal.Verbs.Is;
-import primal.puller.Puller;
+import static primal.statics.Fail.fail;
 
 /**
  * Lexical analyzer.

@@ -1,19 +1,7 @@
 package suite.trade.data;
 
-import static primal.statics.Fail.fail;
-import static primal.statics.Rethrow.ex;
-
-import java.net.URLEncoder;
-import java.nio.file.Files;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Predicate;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import primal.MoreVerbs.Read;
 import primal.Nouns.Utf8;
 import primal.Verbs.Compare;
@@ -33,6 +21,17 @@ import suite.streamlet.As;
 import suite.trade.Time;
 import suite.trade.TimeRange;
 import suite.util.To;
+
+import java.net.URLEncoder;
+import java.nio.file.Files;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Predicate;
+
+import static primal.statics.Fail.fail;
+import static primal.statics.Rethrow.ex;
 
 public class Yahoo {
 

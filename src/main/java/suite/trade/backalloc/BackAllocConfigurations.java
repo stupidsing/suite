@@ -8,13 +8,7 @@ import primal.streamlet.Streamlet2;
 import suite.trade.Instrument;
 import suite.trade.Time;
 import suite.trade.analysis.Factor;
-import suite.trade.backalloc.strategy.BackAllocatorGeneral;
-import suite.trade.backalloc.strategy.BackAllocatorMech;
-import suite.trade.backalloc.strategy.BackAllocatorOld;
-import suite.trade.backalloc.strategy.BackAllocator_;
-import suite.trade.backalloc.strategy.Pmamr2BackAllocator;
-import suite.trade.backalloc.strategy.PmamrBackAllocator;
-import suite.trade.backalloc.strategy.ReverseCorrelateBackAllocator;
+import suite.trade.backalloc.strategy.*;
 import suite.trade.data.TradeCfg;
 
 public class BackAllocConfigurations {

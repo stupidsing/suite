@@ -1,7 +1,11 @@
 package suite.sample;
 
-import static primal.statics.Rethrow.ex;
-import static suite.util.Streamlet_.forInt;
+import org.apache.commons.codec.digest.Md5Crypt;
+import primal.Verbs.*;
+import primal.adt.Pair;
+import primal.streamlet.Streamlet;
+import suite.os.FileUtil;
+import suite.util.RunUtil;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -9,18 +13,8 @@ import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.List;
 
-import org.apache.commons.codec.digest.Md5Crypt;
-
-import primal.Verbs.DeleteFile;
-import primal.Verbs.Format;
-import primal.Verbs.Get;
-import primal.Verbs.Mk;
-import primal.Verbs.ReadFile;
-import primal.Verbs.WriteFile;
-import primal.adt.Pair;
-import primal.streamlet.Streamlet;
-import suite.os.FileUtil;
-import suite.util.RunUtil;
+import static primal.statics.Rethrow.ex;
+import static suite.util.Streamlet_.forInt;
 
 /**
  * Maintains library of files, probably images or documents.

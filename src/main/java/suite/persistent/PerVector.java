@@ -1,12 +1,12 @@
 package suite.persistent;
 
-import static java.lang.Math.min;
-
-import java.util.Objects;
-
 import primal.Verbs.Copy;
 import primal.Verbs.Equals;
 import primal.Verbs.Get;
+
+import java.util.Objects;
+
+import static java.lang.Math.min;
 
 /**
  * A list of nodes that can be easily expanded in left or right direction.

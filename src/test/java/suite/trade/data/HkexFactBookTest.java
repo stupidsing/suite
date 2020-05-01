@@ -1,14 +1,13 @@
 package suite.trade.data;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static suite.util.Streamlet_.forInt;
+import org.junit.jupiter.api.Test;
+import primal.Verbs.Equals;
+import suite.trade.Trade_;
 
 import java.util.HashSet;
 
-import org.junit.jupiter.api.Test;
-
-import primal.Verbs.Equals;
-import suite.trade.Trade_;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static suite.util.Streamlet_.forInt;
 
 public class HkexFactBookTest {
 

@@ -1,11 +1,11 @@
 package suite.serialize;
 
+import primal.io.ReadStream;
+
 import java.io.DataInput;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-
-import primal.io.ReadStream;
 
 public class SerInput extends ReadStream implements DataInput {
 

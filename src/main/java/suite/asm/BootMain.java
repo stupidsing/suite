@@ -1,9 +1,5 @@
 package suite.asm;
 
-import static primal.statics.Fail.fail;
-
-import java.nio.file.Paths;
-
 import primal.MoreVerbs.Read;
 import primal.Verbs.ReadString;
 import primal.primitive.adt.Bytes;
@@ -11,6 +7,10 @@ import suite.assembler.Amd64Mode;
 import suite.ip.ImperativeCompiler;
 import suite.util.RunUtil;
 import suite.util.To;
+
+import java.nio.file.Paths;
+
+import static primal.statics.Fail.fail;
 
 // mvn compile exec:java -Dexec.mainClass=suite.asm.BootMain && qemu-system-x86_64 target/boot.bin
 public class BootMain {

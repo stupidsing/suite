@@ -1,7 +1,6 @@
 package suite.trade.analysis;
 
 import org.junit.jupiter.api.Test;
-
 import primal.MoreVerbs.Read;
 import primal.streamlet.Streamlet;
 import suite.trade.Instrument;

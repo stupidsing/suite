@@ -1,13 +1,12 @@
 package suite.lp;
 
-import java.io.IOException;
-import java.util.List;
-
 import org.junit.jupiter.api.Test;
-
 import suite.Suite;
 import suite.lp.Configuration.ProverCfg;
 import suite.lp.search.CompiledProverBuilder;
+
+import java.io.IOException;
+import java.util.List;
 
 public class LogicCompilerLevel2Test {
 

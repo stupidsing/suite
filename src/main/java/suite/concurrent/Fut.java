@@ -1,11 +1,5 @@
 package suite.concurrent;
 
-import static primal.statics.Fail.fail;
-
-import java.util.Collection;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import primal.Verbs.Wait;
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
@@ -14,6 +8,12 @@ import primal.fp.Funs.Sink;
 import primal.fp.Funs.Source;
 import primal.os.Log_;
 import primal.persistent.PerList;
+
+import java.util.Collection;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import static primal.statics.Fail.fail;
 
 /**
  * Future that can be listened to many times, but can only be completed once.

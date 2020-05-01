@@ -1,10 +1,10 @@
 package suite.net;
 
-import java.io.Closeable;
-
 import primal.Verbs.RunnableEx;
 import primal.Verbs.Start;
 import primal.Verbs.Wait;
+
+import java.io.Closeable;
 
 public class ThreadService {
 

@@ -1,17 +1,5 @@
 package suite.game;
 
-import static java.lang.Math.max;
-import static java.lang.Math.min;
-import static suite.util.Streamlet_.forInt;
-
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.image.BufferedImage;
-
-import javax.swing.ImageIcon;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-
 import primal.fp.Funs2.BiFun;
 import primal.os.Log_;
 import primal.primitive.IntInt_Obj;
@@ -20,6 +8,14 @@ import suite.cfg.Defaults;
 import suite.math.R3;
 import suite.streamlet.As;
 import suite.util.To;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+
+import static java.lang.Math.max;
+import static java.lang.Math.min;
+import static suite.util.Streamlet_.forInt;
 
 public class Render {
 

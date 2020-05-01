@@ -1,6 +1,8 @@
 package suite.parser;
 
-import static primal.statics.Rethrow.ex;
+import primal.Verbs.ReadString;
+import suite.text.Preprocess.Run;
+import suite.util.SmartSplit;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -8,9 +10,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import primal.Verbs.ReadString;
-import suite.text.Preprocess.Run;
-import suite.util.SmartSplit;
+import static primal.statics.Rethrow.ex;
 
 /**
  * Process #include tags.

@@ -1,8 +1,5 @@
 package suite.ip;
 
-import java.nio.file.Path;
-import java.util.List;
-
 import primal.Verbs.ReadString;
 import primal.primitive.adt.Bytes;
 import suite.Suite;
@@ -13,6 +10,9 @@ import suite.lp.search.ProverBuilder.Finder;
 import suite.lp.search.SewingProverBuilder2;
 import suite.parser.IncludePreprocessor;
 import suite.text.Preprocess;
+
+import java.nio.file.Path;
+import java.util.List;
 
 public class ImperativeCompiler {
 

@@ -1,13 +1,13 @@
 package suite.rt.planar;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import suite.math.R3;
 import suite.rt.RayTracer.Material;
 import suite.rt.RayTracer.Ray;
 import suite.rt.RayTracer.RayHit;
 import suite.rt.RayTracer.RtObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class Planar implements RtObject {
 

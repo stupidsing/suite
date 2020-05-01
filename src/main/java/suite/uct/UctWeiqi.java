@@ -1,19 +1,15 @@
 package suite.uct;
 
+import primal.Verbs.Last;
+import suite.weiqi.*;
+import suite.weiqi.Board.MoveType;
+import suite.weiqi.GameSet.Move;
+import suite.weiqi.Weiqi.Occupation;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-
-import primal.Verbs.Last;
-import suite.weiqi.Board;
-import suite.weiqi.Board.MoveType;
-import suite.weiqi.Coordinate;
-import suite.weiqi.Evaluator;
-import suite.weiqi.GameSet;
-import suite.weiqi.GameSet.Move;
-import suite.weiqi.Weiqi;
-import suite.weiqi.Weiqi.Occupation;
 
 public class UctWeiqi {
 

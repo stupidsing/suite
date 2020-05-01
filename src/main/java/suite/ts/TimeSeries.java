@@ -1,16 +1,5 @@
 package suite.ts;
 
-import static java.lang.Math.abs;
-import static java.lang.Math.expm1;
-import static java.lang.Math.log;
-import static java.lang.Math.max;
-import static java.lang.Math.min;
-import static java.lang.Math.sqrt;
-import static suite.util.Streamlet_.forInt;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-
 import primal.MoreVerbs.Read;
 import primal.primitive.adt.Floats;
 import primal.primitive.adt.pair.FltObjPair;
@@ -23,6 +12,12 @@ import suite.math.numeric.Statistic.LinearRegression;
 import suite.streamlet.As;
 import suite.trade.Trade_;
 import suite.util.To;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+
+import static java.lang.Math.*;
+import static suite.util.Streamlet_.forInt;
 
 public class TimeSeries {
 

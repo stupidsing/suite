@@ -1,16 +1,5 @@
 package suite.http;
 
-import static java.lang.Math.max;
-import static java.lang.Math.min;
-import static primal.statics.Rethrow.ex;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.RandomAccessFile;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.function.BiPredicate;
-
 import primal.MoreVerbs.Pull;
 import primal.Verbs.Equals;
 import primal.fp.Funs.Sink;
@@ -21,6 +10,17 @@ import primal.primitive.adt.LngMutable;
 import suite.http.Http.Handler;
 import suite.http.Http.Header;
 import suite.http.Http.Response;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.RandomAccessFile;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.function.BiPredicate;
+
+import static java.lang.Math.max;
+import static java.lang.Math.min;
+import static primal.statics.Rethrow.ex;
 
 public class HttpHandle {
 

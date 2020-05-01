@@ -1,14 +1,6 @@
 package suite.sample;
 
-import static java.lang.Math.max;
-import static java.lang.Math.min;
-import static primal.statics.Fail.fail;
-import static suite.util.Streamlet_.forInt;
-
-import java.util.function.Predicate;
-
 import com.sun.jna.Native;
-
 import primal.Verbs.ReadString;
 import primal.adt.Fixie_.FixieFun3;
 import primal.adt.Fixie_.FixieFun6;
@@ -23,6 +15,13 @@ import suite.ansi.LibcJna;
 import suite.ansi.Termios;
 import suite.persistent.PerRope.IRopeList;
 import suite.primitive.Coord;
+
+import java.util.function.Predicate;
+
+import static java.lang.Math.max;
+import static java.lang.Math.min;
+import static primal.statics.Fail.fail;
+import static suite.util.Streamlet_.forInt;
 
 // mvn compile exec:java -Dexec.mainClass=suite.sample.DevMain -Dexec.args="${COLUMNS} ${LINES}"
 public class DevMain {

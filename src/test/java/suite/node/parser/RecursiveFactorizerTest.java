@@ -1,26 +1,13 @@
 package suite.node.parser;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.util.HashMap;
-import java.util.List;
-
 import org.junit.jupiter.api.Test;
-
 import primal.MoreVerbs.Read;
 import primal.Verbs.ReadString;
 import primal.Verbs.Take;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Iterate;
 import primal.fp.Funs.Source;
-import suite.node.Atom;
-import suite.node.Dict;
-import suite.node.Node;
-import suite.node.Reference;
-import suite.node.Str;
-import suite.node.Tree;
+import suite.node.*;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
 import suite.node.parser.FactorizeResult.FNode;
@@ -32,6 +19,11 @@ import suite.node.util.Singleton;
 import suite.node.util.TreeUtil;
 import suite.util.Nodify;
 import suite.util.To;
+
+import java.util.HashMap;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class RecursiveFactorizerTest {
 

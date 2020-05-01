@@ -1,9 +1,5 @@
 package suite.funp;
 
-import java.util.IdentityHashMap;
-import java.util.List;
-import java.util.Map;
-
 import primal.MoreVerbs.Read;
 import primal.adt.Pair;
 import primal.fp.Funs.Source;
@@ -14,11 +10,7 @@ import suite.assembler.Amd64;
 import suite.assembler.Amd64.Instruction;
 import suite.assembler.Amd64.OpReg;
 import suite.assembler.Amd64Mode;
-import suite.funp.P0.Coerce;
-import suite.funp.P0.FunpDefine;
-import suite.funp.P0.FunpDefineRec;
-import suite.funp.P0.FunpLambda;
-import suite.funp.P0.FunpVariable;
+import suite.funp.P0.*;
 import suite.funp.P2.FunpFramePointer;
 import suite.funp.p0.P0Parse;
 import suite.funp.p1.P10Inline;
@@ -31,6 +23,10 @@ import suite.node.Node;
 import suite.node.util.Singleton;
 import suite.object.CastDefaults;
 import suite.util.RunUtil;
+
+import java.util.IdentityHashMap;
+import java.util.List;
+import java.util.Map;
 
 public class Funp_ {
 

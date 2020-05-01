@@ -1,13 +1,5 @@
 package suite.lp.predicate;
 
-import static java.lang.Math.min;
-import static primal.statics.Fail.fail;
-
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
-
 import primal.Verbs.Build;
 import primal.Verbs.ReadFile;
 import primal.Verbs.WriteFile;
@@ -22,6 +14,14 @@ import suite.node.io.Grapher;
 import suite.node.io.ReversePolish;
 import suite.node.pp.NewPrettyPrinter;
 import suite.node.pp.PrettyPrinter;
+
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
+
+import static java.lang.Math.min;
+import static primal.statics.Fail.fail;
 
 public class FormatPredicates {
 

@@ -1,23 +1,15 @@
 package suite.node.io;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import primal.Verbs.Equals;
 import primal.Verbs.Is;
 import primal.primitive.adt.Chars;
 import suite.lp.doer.ProverConstant;
-import suite.node.Atom;
-import suite.node.Data;
-import suite.node.Dict;
-import suite.node.Int;
-import suite.node.Node;
-import suite.node.Reference;
-import suite.node.Str;
-import suite.node.Tree;
-import suite.node.Tuple;
+import suite.node.*;
 import suite.parser.CommentPreprocessor;
 import suite.streamlet.ReadChars;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Formats a node for human-readable purpose (display), or for

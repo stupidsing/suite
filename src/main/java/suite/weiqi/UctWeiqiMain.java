@@ -1,10 +1,5 @@
 package suite.weiqi;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.text.DecimalFormat;
-
 import primal.MoreVerbs.Split;
 import primal.Nouns.Utf8;
 import primal.Verbs.Is;
@@ -15,6 +10,11 @@ import suite.uct.ShuffleUtil;
 import suite.uct.UctSearch;
 import suite.uct.UctWeiqi;
 import suite.weiqi.Weiqi.Occupation;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.text.DecimalFormat;
 
 /**
  * How I did profiling:

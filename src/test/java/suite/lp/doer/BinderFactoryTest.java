@@ -1,13 +1,12 @@
 package suite.lp.doer;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import org.junit.jupiter.api.Test;
-
 import suite.Suite;
 import suite.lp.compile.impl.CompileBinderImpl;
 import suite.lp.doer.BinderFactory.BindEnv;
 import suite.lp.sewing.impl.SewingBinderImpl;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class BinderFactoryTest {
 

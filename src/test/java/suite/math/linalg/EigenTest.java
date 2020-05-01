@@ -1,12 +1,11 @@
 package suite.math.linalg;
 
-import java.util.List;
-
 import org.junit.jupiter.api.Test;
-
 import primal.primitive.adt.pair.DblObjPair;
 import suite.math.Math_;
 import suite.util.To;
+
+import java.util.List;
 
 public class EigenTest {
 

@@ -1,11 +1,5 @@
 package suite.funp;
 
-import static primal.statics.Fail.fail;
-import static primal.statics.Rethrow.ex;
-
-import java.io.FileReader;
-import java.util.ArrayList;
-
 import primal.MoreVerbs.Read;
 import primal.adt.Pair;
 import primal.primitive.IntPrim.Obj_Int;
@@ -14,20 +8,7 @@ import suite.Suite;
 import suite.ebnf.Ebnf;
 import suite.ebnf.Ebnf.Ast;
 import suite.funp.Funp_.Funp;
-import suite.funp.P0.Fdt;
-import suite.funp.P0.FunpApply;
-import suite.funp.P0.FunpArray;
-import suite.funp.P0.FunpDefine;
-import suite.funp.P0.FunpDoAssignRef;
-import suite.funp.P0.FunpField;
-import suite.funp.P0.FunpIf;
-import suite.funp.P0.FunpIndex;
-import suite.funp.P0.FunpLambda;
-import suite.funp.P0.FunpNumber;
-import suite.funp.P0.FunpReference;
-import suite.funp.P0.FunpStruct;
-import suite.funp.P0.FunpTree;
-import suite.funp.P0.FunpVariable;
+import suite.funp.P0.*;
 import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Str;
@@ -35,6 +16,12 @@ import suite.node.Tree;
 import suite.node.io.SwitchNode;
 import suite.node.io.TermOp;
 import suite.node.tree.TreeTuple;
+
+import java.io.FileReader;
+import java.util.ArrayList;
+
+import static primal.statics.Fail.fail;
+import static primal.statics.Rethrow.ex;
 
 public class P0CrudeScript {
 

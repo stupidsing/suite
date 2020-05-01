@@ -1,16 +1,5 @@
 package suite.util;
 
-import static primal.statics.Fail.fail;
-import static primal.statics.Rethrow.ex;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.lang.reflect.Array;
-import java.net.URL;
-
 import primal.Nouns.Buffer;
 import primal.Nouns.Utf8;
 import primal.Verbs.Format;
@@ -30,6 +19,13 @@ import primal.puller.Puller;
 import suite.primitive.IoSink;
 import suite.serialize.SerOutput;
 import suite.streamlet.As;
+
+import java.io.*;
+import java.lang.reflect.Array;
+import java.net.URL;
+
+import static primal.statics.Fail.fail;
+import static primal.statics.Rethrow.ex;
 
 public class To {
 

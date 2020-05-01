@@ -1,15 +1,5 @@
 package suite.algo;
 
-import static java.lang.Math.PI;
-import static java.lang.Math.exp;
-import static java.lang.Math.max;
-import static java.lang.Math.min;
-import static java.lang.Math.sqrt;
-import static suite.util.Streamlet_.forInt;
-
-import java.util.List;
-import java.util.Random;
-
 import primal.MoreVerbs.Read;
 import primal.primitive.FltMoreVerbs.ReadFlt;
 import primal.primitive.fp.AsDbl;
@@ -17,6 +7,12 @@ import suite.math.linalg.GaussSeidel;
 import suite.math.linalg.Matrix;
 import suite.math.linalg.Vector;
 import suite.util.To;
+
+import java.util.List;
+import java.util.Random;
+
+import static java.lang.Math.*;
+import static suite.util.Streamlet_.forInt;
 
 /**
  * https://towardsdatascience.com/how-to-code-gaussian-mixture-models-from-scratch-in-python-9e7975df5252

@@ -1,13 +1,14 @@
 package suite.node.parser;
 
-import java.util.ArrayList;
-import java.util.Collections;
-
 import primal.MoreVerbs.Read;
 import primal.adt.Pair;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
 import suite.util.CommandUtil;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Non-recursive, performance-improved parser for operator-based languages.
@@ -88,7 +89,7 @@ public class Lexer {
 			if (type == LexType.SPACE) {
 				var precs = new ArrayList<Integer>();
 
-				for (var t : new Token[] { token0, detect(), })
+				for (var t : List.of(token0, detect()))
 					if (t != null && t.operator != null)
 						precs.add(t.operator.precedence());
 

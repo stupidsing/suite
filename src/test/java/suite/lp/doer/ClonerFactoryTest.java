@@ -1,12 +1,11 @@
 package suite.lp.doer;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import org.junit.jupiter.api.Test;
-
 import suite.Suite;
 import suite.lp.compile.impl.CompileClonerImpl;
 import suite.lp.sewing.impl.SewingClonerImpl;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ClonerFactoryTest {
 

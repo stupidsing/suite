@@ -1,15 +1,14 @@
 package suite.file;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static primal.statics.Fail.fail;
+import org.junit.jupiter.api.Test;
+import primal.Nouns.Tmp;
+import suite.file.impl.Database;
 
 import java.io.IOException;
 
-import org.junit.jupiter.api.Test;
-
-import primal.Nouns.Tmp;
-import suite.file.impl.Database;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static primal.statics.Fail.fail;
 
 public class DatabaseTest {
 

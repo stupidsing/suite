@@ -1,11 +1,11 @@
 package suite.weiqi;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
-
 import primal.Verbs.Get;
 import primal.primitive.adt.set.IntSet;
 import suite.weiqi.Weiqi.Occupation;
+
+import java.util.ArrayDeque;
+import java.util.Deque;
 
 public class GameSet1 {
 

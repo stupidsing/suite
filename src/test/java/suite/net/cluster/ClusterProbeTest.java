@@ -1,8 +1,10 @@
 package suite.net.cluster;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static primal.statics.Rethrow.ex;
-import static suite.util.Streamlet_.forInt;
+import org.junit.jupiter.api.Test;
+import primal.MoreVerbs.Read;
+import primal.Verbs.Sleep;
+import primal.statics.Rethrow;
+import suite.net.cluster.impl.ClusterProbeImpl;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -10,12 +12,9 @@ import java.net.InetSocketAddress;
 import java.time.LocalDateTime;
 import java.util.Map;
 
-import org.junit.jupiter.api.Test;
-
-import primal.MoreVerbs.Read;
-import primal.Verbs.Sleep;
-import primal.statics.Rethrow;
-import suite.net.cluster.impl.ClusterProbeImpl;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static primal.statics.Rethrow.ex;
+import static suite.util.Streamlet_.forInt;
 
 public class ClusterProbeTest {
 

@@ -1,9 +1,5 @@
 package suite.node.pp;
 
-import static java.lang.Math.min;
-
-import java.util.Set;
-
 import primal.Verbs.Is;
 import primal.Verbs.Trim;
 import suite.node.Atom;
@@ -14,6 +10,10 @@ import suite.node.io.Operator;
 import suite.node.io.Operator.Assoc;
 import suite.node.io.TermOp;
 import suite.streamlet.ReadChars;
+
+import java.util.Set;
+
+import static java.lang.Math.min;
 
 public class PrettyPrinter {
 

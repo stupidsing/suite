@@ -1,16 +1,5 @@
 package suite.trade.data;
 
-import static java.util.Map.entry;
-
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
 import primal.MoreVerbs.Fit;
 import primal.MoreVerbs.Read;
 import primal.Verbs.Equals;
@@ -20,6 +9,12 @@ import primal.primitive.adt.Longs.LongsBuilder;
 import suite.node.util.Singleton;
 import suite.streamlet.As;
 import suite.trade.Time;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+
+import static java.util.Map.entry;
 
 /*
 To import the Hong Kong Post root CA:

@@ -1,17 +1,12 @@
 package suite.algo;
 
-import java.util.ArrayDeque;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
 import org.junit.jupiter.api.Test;
-
 import primal.MoreVerbs.Read;
 import primal.adt.map.ListMultimap;
 import primal.fp.Funs.Fun;
 import primal.streamlet.Streamlet;
+
+import java.util.*;
 
 // https://www.geeksforgeeks.org/program-implement-nfa-epsilon-move-dfa-conversion/
 public class NfaToDfaTest {

@@ -1,27 +1,19 @@
 package suite.jdk.gen;
 
-import java.util.List;
-
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
-
 import primal.Verbs.Get;
 import suite.inspect.Dump;
 import suite.inspect.Inspect;
 import suite.jdk.gen.FunExprL.ApplyFunExpr;
 import suite.jdk.gen.FunExprL.FieldFunExpr;
 import suite.jdk.gen.FunExprL.FieldSetFunExpr;
-import suite.jdk.gen.FunExprM.ArrayLengthFunExpr;
-import suite.jdk.gen.FunExprM.CastFunExpr;
-import suite.jdk.gen.FunExprM.CheckCastFunExpr;
-import suite.jdk.gen.FunExprM.FieldTypeFunExpr;
-import suite.jdk.gen.FunExprM.FieldTypeSetFunExpr;
-import suite.jdk.gen.FunExprM.IndexFunExpr;
-import suite.jdk.gen.FunExprM.InstanceOfFunExpr;
-import suite.jdk.gen.FunExprM.InvokeMethodFunExpr;
+import suite.jdk.gen.FunExprM.*;
 import suite.node.util.Singleton;
 import suite.object.CastDefaults;
+
+import java.util.List;
 
 public class FunExpression {
 

@@ -1,11 +1,5 @@
 package suite.algo;
 
-import static java.lang.Math.exp;
-import static java.lang.Math.log;
-import static suite.util.Streamlet_.forInt;
-
-import java.util.List;
-
 import primal.MoreVerbs.Read;
 import primal.primitive.DblPrim.Obj_Dbl;
 import primal.primitive.adt.Floats;
@@ -13,6 +7,12 @@ import primal.primitive.adt.pair.DblIntPair;
 import primal.primitive.fp.AsDbl;
 import suite.math.linalg.Vector;
 import suite.util.To;
+
+import java.util.List;
+
+import static java.lang.Math.exp;
+import static java.lang.Math.log;
+import static suite.util.Streamlet_.forInt;
 
 /**
  * https://en.wikipedia.org/wiki/AdaBoost#Example_algorithm_(Discrete_AdaBoost)

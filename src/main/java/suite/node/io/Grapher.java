@@ -1,15 +1,5 @@
 package suite.node.io;
 
-import static primal.statics.Fail.fail;
-
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-
 import primal.MoreVerbs.Read;
 import primal.Verbs.Build;
 import primal.Verbs.Equals;
@@ -23,17 +13,20 @@ import primal.primitive.adt.pair.IntIntPair;
 import suite.lp.Trail;
 import suite.lp.doer.Binder;
 import suite.lp.doer.ProverConstant;
-import suite.node.Atom;
-import suite.node.Dict;
-import suite.node.Int;
-import suite.node.Node;
-import suite.node.Reference;
-import suite.node.Str;
-import suite.node.Tree;
-import suite.node.Tuple;
+import suite.node.*;
 import suite.node.io.Rewrite_.NodeHead;
 import suite.node.io.Rewrite_.NodeRead;
 import suite.node.io.Rewrite_.ReadType;
+
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+
+import static primal.statics.Fail.fail;
 
 /**
  * Converts a node into graph representation. The nodes link to other nodes via

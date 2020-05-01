@@ -1,8 +1,8 @@
 package suite.concurrent;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import primal.fp.Funs.Source;
+
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Run a calculation only once but allow many threads to wait for the result.

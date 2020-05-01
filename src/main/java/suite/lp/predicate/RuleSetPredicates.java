@@ -1,9 +1,5 @@
 package suite.lp.predicate;
 
-import static primal.statics.Fail.fail;
-
-import java.util.ArrayList;
-
 import suite.Suite;
 import suite.lp.doer.Binder;
 import suite.lp.doer.Prover;
@@ -17,6 +13,10 @@ import suite.node.io.Formatter;
 import suite.node.io.TermOp;
 import suite.node.pp.PrettyPrinter;
 import suite.node.util.TreeUtil;
+
+import java.util.ArrayList;
+
+import static primal.statics.Fail.fail;
 
 public class RuleSetPredicates {
 

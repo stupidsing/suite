@@ -1,10 +1,5 @@
 package suite.algo;
 
-import static java.lang.Math.log;
-import static suite.util.Streamlet_.forInt;
-
-import java.util.Random;
-
 import primal.adt.IntIntMap1;
 import primal.primitive.IntPrim;
 import primal.primitive.IntPrim.Obj_Int;
@@ -14,6 +9,11 @@ import primal.primitive.fp.AsDbl;
 import primal.primitive.fp.AsInt;
 import primal.streamlet.Streamlet;
 import suite.streamlet.As;
+
+import java.util.Random;
+
+import static java.lang.Math.log;
+import static suite.util.Streamlet_.forInt;
 
 public class DecisionTree {
 

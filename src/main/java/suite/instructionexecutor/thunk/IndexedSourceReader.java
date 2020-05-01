@@ -1,13 +1,13 @@
 package suite.instructionexecutor.thunk;
 
-import static primal.statics.Fail.fail;
+import primal.Verbs.Right;
+import primal.fp.Funs.Source;
+import suite.persistent.PerPointer;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import primal.Verbs.Right;
-import primal.fp.Funs.Source;
-import suite.persistent.PerPointer;
+import static primal.statics.Fail.fail;
 
 public class IndexedSourceReader<T> {
 

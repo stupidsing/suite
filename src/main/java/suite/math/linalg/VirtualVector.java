@@ -1,10 +1,10 @@
 package suite.math.linalg;
 
-import static primal.statics.Fail.fail;
-
 import primal.Verbs.Build;
 import primal.primitive.Int_Flt;
 import suite.util.To;
+
+import static primal.statics.Fail.fail;
 
 public class VirtualVector {
 

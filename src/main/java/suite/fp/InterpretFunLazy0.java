@@ -1,7 +1,5 @@
 package suite.fp;
 
-import static primal.statics.Fail.fail;
-
 import primal.MoreVerbs.Read;
 import primal.adt.Mutable;
 import primal.fp.Funs.Fun;
@@ -16,6 +14,8 @@ import suite.node.Reference;
 import suite.node.io.SwitchNode;
 import suite.node.io.TermOp;
 import suite.node.util.TreeUtil;
+
+import static primal.statics.Fail.fail;
 
 public class InterpretFunLazy0 {
 

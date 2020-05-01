@@ -1,7 +1,5 @@
 package suite.node.util;
 
-import java.util.function.Predicate;
-
 import primal.fp.Funs.Iterate;
 import primal.fp.Funs.Source;
 import suite.lp.Trail;
@@ -11,6 +9,8 @@ import suite.node.Node;
 import suite.node.Reference;
 import suite.node.io.Rewrite_;
 import suite.node.io.Rewrite_.NodeRead;
+
+import java.util.function.Predicate;
 
 public class Rewrite {
 

@@ -1,9 +1,5 @@
 package suite.lp.check;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import primal.MoreVerbs.Read;
 import primal.os.Log_;
 import suite.lp.doer.ProverConstant;
@@ -13,6 +9,10 @@ import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.Rewrite_.NodeRead;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class CheckSingletonVariable {
 

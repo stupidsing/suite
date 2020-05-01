@@ -1,11 +1,9 @@
 package suite.math.transform;
 
-import static java.lang.Math.PI;
-import static java.lang.Math.cos;
-import static java.lang.Math.sin;
-
 import suite.math.Complex;
 import suite.util.To;
+
+import static java.lang.Math.*;
 
 // https://rosettacode.org/wiki/Fast_Fourier_transform#Java
 public class FastFourierTransform {

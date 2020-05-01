@@ -1,15 +1,15 @@
 package suite.algo;
 
-import static java.lang.Math.sqrt;
-
-import java.util.Random;
-
 import primal.primitive.FltVerbs.CopyFlt;
 import suite.math.Forget;
 import suite.math.Sigmoid;
 import suite.math.Tanh;
 import suite.math.linalg.Matrix;
 import suite.math.linalg.Vector;
+
+import java.util.Random;
+
+import static java.lang.Math.sqrt;
 
 public class LongShortTermMemory {
 

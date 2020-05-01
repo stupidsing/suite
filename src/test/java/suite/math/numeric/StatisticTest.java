@@ -1,15 +1,14 @@
 package suite.math.numeric;
 
-import java.util.Random;
-
 import org.junit.jupiter.api.Test;
-
 import primal.MoreVerbs.Read;
 import primal.primitive.adt.pair.FltObjPair;
 import suite.inspect.Dump;
 import suite.math.Math_;
 import suite.math.linalg.Vector;
 import suite.util.To;
+
+import java.util.Random;
 
 public class StatisticTest {
 

@@ -1,13 +1,5 @@
 package suite.trade;
 
-import static java.lang.Math.abs;
-import static primal.statics.Fail.fail;
-import static primal.statics.Fail.failBool;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import primal.MoreVerbs.Read;
 import primal.Verbs.Equals;
 import primal.primitive.Dbl_Dbl;
@@ -15,6 +7,14 @@ import primal.primitive.FltPrim.Obj_Flt;
 import primal.primitive.fp.AsDbl;
 import primal.streamlet.Streamlet2;
 import suite.util.To;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static java.lang.Math.abs;
+import static primal.statics.Fail.fail;
+import static primal.statics.Fail.failBool;
 
 public class Account {
 

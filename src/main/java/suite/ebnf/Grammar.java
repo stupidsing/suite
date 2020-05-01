@@ -1,14 +1,14 @@
 package suite.ebnf;
 
-import java.io.Reader;
-import java.util.List;
-import java.util.Map;
-
 import primal.MoreVerbs.Read;
 import primal.MoreVerbs.ReadLines;
 import primal.MoreVerbs.Split;
 import primal.Verbs.Build;
 import suite.streamlet.As;
+
+import java.io.Reader;
+import java.util.List;
+import java.util.Map;
 
 public class Grammar {
 

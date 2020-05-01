@@ -1,14 +1,13 @@
 package suite.java7util;
 
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Proxy;
-
 import org.apache.commons.logging.LogFactory;
-
 import primal.Verbs.Build;
 import primal.Verbs.Copy;
 import suite.inspect.Dump;
+
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Proxy;
 
 @Deprecated
 public class LogUtil {

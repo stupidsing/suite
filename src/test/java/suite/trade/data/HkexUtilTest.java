@@ -1,10 +1,9 @@
 package suite.trade.data;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import org.junit.jupiter.api.Test;
-
 import suite.trade.Time;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class HkexUtilTest {
 

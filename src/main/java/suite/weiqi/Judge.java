@@ -1,11 +1,11 @@
 package suite.weiqi;
 
-import java.util.HashMap;
-import java.util.HashSet;
-
 import suite.weiqi.GroupAnalysis.Group;
 import suite.weiqi.Weiqi.Array;
 import suite.weiqi.Weiqi.Occupation;
+
+import java.util.HashMap;
+import java.util.HashSet;
 
 public class Judge {
 

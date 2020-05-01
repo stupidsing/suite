@@ -1,12 +1,11 @@
 package suite.fp;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
 import org.junit.jupiter.api.Test;
-
 import primal.Verbs.ReadString;
 import suite.Suite;
 import suite.node.io.Formatter;
+
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class FunRbTreeTest {
 

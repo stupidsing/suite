@@ -1,16 +1,15 @@
 package suite.fp;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static primal.statics.Fail.fail;
-
 import org.junit.jupiter.api.Test;
-
 import suite.Suite;
 import suite.lp.doer.Binder;
 import suite.lp.sewing.impl.SewingGeneralizerImpl;
 import suite.node.Node;
 import suite.node.util.Comparer;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static primal.statics.Fail.fail;
 
 public class FunTypeTest {
 

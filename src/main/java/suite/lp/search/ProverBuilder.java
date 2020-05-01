@@ -1,10 +1,5 @@
 package suite.lp.search;
 
-import static primal.statics.Fail.fail;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import primal.Verbs.Take;
 import primal.fp.FunUtil;
 import primal.fp.Funs.Fun;
@@ -13,6 +8,11 @@ import primal.fp.Funs.Source;
 import suite.lp.doer.Cloner;
 import suite.lp.kb.RuleSet;
 import suite.node.Node;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static primal.statics.Fail.fail;
 
 public class ProverBuilder {
 

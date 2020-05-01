@@ -1,9 +1,9 @@
 package suite.jdk;
 
-import static primal.statics.Rethrow.ex;
-
 import suite.http.HttpClient;
 import suite.util.XmlUtil;
+
+import static primal.statics.Rethrow.ex;
 
 public class Maven {
 

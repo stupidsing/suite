@@ -1,21 +1,5 @@
 package suite.text;
 
-import java.awt.Dimension;
-import java.awt.Toolkit;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowFocusListener;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.Map;
-
-import javax.swing.JFrame;
-import javax.swing.JTextField;
-import javax.swing.WindowConstants;
-
 import primal.MoreVerbs.Read;
 import primal.Verbs.Equals;
 import primal.Verbs.Left;
@@ -29,6 +13,18 @@ import suite.node.util.Singleton;
 import suite.streamlet.As;
 import suite.util.Memoize;
 import suite.util.RunUtil;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowFocusListener;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.Map;
 
 // urxvt -e sh -c 'BASE=~/suite/; java -cp $(cat ${BASE}/target/classpath):${BASE}/target/suite-1.0.jar suite.text.Chinese | xclip -selection c'
 public class Chinese {

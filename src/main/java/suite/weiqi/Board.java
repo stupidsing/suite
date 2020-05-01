@@ -1,14 +1,14 @@
 package suite.weiqi;
 
-import static primal.statics.Fail.fail;
+import primal.Verbs.Build;
+import suite.weiqi.Weiqi.Array;
+import suite.weiqi.Weiqi.Occupation;
 
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Stack;
 
-import primal.Verbs.Build;
-import suite.weiqi.Weiqi.Array;
-import suite.weiqi.Weiqi.Occupation;
+import static primal.statics.Fail.fail;
 
 public class Board extends Array<Occupation> {
 

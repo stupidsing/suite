@@ -1,14 +1,14 @@
 package suite.exchange;
 
-import static java.lang.Math.max;
-import static java.lang.Math.min;
+import suite.trade.data.DataSource;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import suite.trade.data.DataSource;
+import static java.lang.Math.max;
+import static java.lang.Math.min;
 
 class MarketData {
 

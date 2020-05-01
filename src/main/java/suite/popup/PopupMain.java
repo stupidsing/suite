@@ -1,15 +1,5 @@
 package suite.popup;
 
-import java.awt.Dimension;
-import java.awt.Toolkit;
-import java.awt.event.KeyEvent;
-
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JTextField;
-import javax.swing.WindowConstants;
-
 import primal.Verbs.Is;
 import primal.fp.Funs.Fun;
 import suite.Suite;
@@ -19,6 +9,10 @@ import suite.editor.LayoutCalculator;
 import suite.editor.Listen;
 import suite.os.Execute;
 import suite.util.RunUtil;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.KeyEvent;
 
 /**
  * Volume up: Alt-A

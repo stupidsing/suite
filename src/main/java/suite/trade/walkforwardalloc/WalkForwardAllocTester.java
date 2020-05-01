@@ -1,10 +1,5 @@
 package suite.trade.walkforwardalloc;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import primal.MoreVerbs.Read;
 import primal.Verbs.Build;
 import primal.fp.Funs.Sink;
@@ -13,17 +8,18 @@ import primal.primitive.LngVerbs.CopyLng;
 import primal.primitive.adt.Floats.FloatsBuilder;
 import primal.streamlet.Streamlet;
 import suite.math.numeric.Statistic;
-import suite.trade.Account;
-import suite.trade.Instrument;
-import suite.trade.Time;
-import suite.trade.Trade;
-import suite.trade.Trade_;
+import suite.trade.*;
 import suite.trade.data.DataSource;
 import suite.trade.data.DataSource.AlignKeyDataSource;
 import suite.trade.data.DataSource.Eod;
 import suite.trade.data.TradeCfg;
 import suite.ts.TimeSeries;
 import suite.util.To;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class WalkForwardAllocTester {
 

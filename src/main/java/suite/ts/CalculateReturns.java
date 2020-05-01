@@ -1,14 +1,12 @@
 package suite.ts;
 
-import static java.lang.Math.expm1;
-import static java.lang.Math.log1p;
-import static java.lang.Math.max;
-
 import primal.primitive.Int_Dbl;
 import suite.math.numeric.Statistic;
 import suite.math.numeric.Statistic.MeanVariance;
 import suite.trade.Trade_;
 import suite.util.To;
+
+import static java.lang.Math.*;
 
 public class CalculateReturns {
 

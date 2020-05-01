@@ -1,6 +1,7 @@
 package suite.os;
 
-import static primal.statics.Rethrow.ex;
+import primal.MoreVerbs.Read;
+import primal.streamlet.Streamlet;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -8,8 +9,7 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import primal.MoreVerbs.Read;
-import primal.streamlet.Streamlet;
+import static primal.statics.Rethrow.ex;
 
 public class FileUtil {
 

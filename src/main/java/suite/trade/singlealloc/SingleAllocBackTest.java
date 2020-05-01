@@ -1,7 +1,5 @@
 package suite.trade.singlealloc;
 
-import static java.lang.Math.sqrt;
-
 import primal.fp.Funs.Sink;
 import suite.math.numeric.Statistic;
 import suite.trade.Account;
@@ -10,6 +8,8 @@ import suite.trade.Trade;
 import suite.trade.Trade_;
 import suite.trade.data.DataSource;
 import suite.util.To;
+
+import static java.lang.Math.sqrt;
 
 public class SingleAllocBackTest {
 

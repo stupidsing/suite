@@ -1,12 +1,5 @@
 package suite.parser;
 
-import static java.lang.Math.max;
-import static java.lang.Math.min;
-import static primal.statics.Fail.fail;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import primal.Verbs.Equals;
 import primal.Verbs.Is;
 import suite.node.io.Operator;
@@ -14,6 +7,13 @@ import suite.node.io.Operator.Assoc;
 import suite.text.Preprocess.Run;
 import suite.text.Segment;
 import suite.util.SmartSplit;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static java.lang.Math.max;
+import static java.lang.Math.min;
+import static primal.statics.Fail.fail;
 
 /**
  * Turns indent patterns into parentheses, to provide Python-like parsing.

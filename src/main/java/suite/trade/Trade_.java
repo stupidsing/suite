@@ -1,19 +1,5 @@
 package suite.trade;
 
-import static java.lang.Math.abs;
-import static java.lang.Math.expm1;
-import static java.lang.Math.floor;
-import static java.lang.Math.log1p;
-import static java.lang.Math.max;
-import static java.lang.Math.min;
-import static suite.util.Streamlet_.forInt;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import primal.MoreVerbs.Read;
 import primal.Verbs.Equals;
 import primal.Verbs.Union;
@@ -32,6 +18,11 @@ import primal.streamlet.Streamlet;
 import suite.math.Math_;
 import suite.trade.Account.Valuation;
 import suite.trade.data.DataSource.Eod;
+
+import java.util.*;
+
+import static java.lang.Math.*;
+import static suite.util.Streamlet_.forInt;
 
 public class Trade_ {
 

@@ -1,7 +1,5 @@
 package suite.trade.analysis;
 
-import java.util.List;
-
 import primal.MoreVerbs.Read;
 import primal.Verbs.Compare;
 import primal.adt.Pair;
@@ -18,6 +16,8 @@ import suite.trade.data.DataSourceView;
 import suite.trade.data.HkexUtil;
 import suite.trade.data.TradeCfg;
 import suite.ts.Quant;
+
+import java.util.List;
 
 public class Factor {
 

@@ -1,9 +1,9 @@
 package suite.math;
 
+import suite.util.To;
+
 import static java.lang.Math.abs;
 import static primal.statics.Fail.fail;
-
-import suite.util.To;
 
 public class Math_ {
 

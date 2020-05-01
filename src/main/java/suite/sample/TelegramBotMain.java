@@ -1,12 +1,11 @@
 package suite.sample;
 
-import java.nio.file.Path;
-
 import org.telegram.telegrambots.ApiContextInitializer;
-
 import suite.os.Execute;
 import suite.telegram.TelegramBot;
 import suite.util.RunUtil;
+
+import java.nio.file.Path;
 
 // mvn compile exec:java -Dexec.mainClass=suite.sample.TelegramBotMain Kowloonbot kowloonbot.token
 public class TelegramBotMain {

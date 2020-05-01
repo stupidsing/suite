@@ -1,26 +1,19 @@
 package suite.funp.p4;
 
-import static primal.statics.Fail.fail;
+import primal.MoreVerbs.Read;
+import primal.fp.Funs.Sink;
+import primal.persistent.PerList;
+import suite.adt.map.BiListMultimap;
+import suite.assembler.Amd64;
+import suite.assembler.Amd64.*;
+import suite.funp.Funp_;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.function.Predicate;
 
-import primal.MoreVerbs.Read;
-import primal.fp.Funs.Sink;
-import primal.persistent.PerList;
-import suite.adt.map.BiListMultimap;
-import suite.assembler.Amd64;
-import suite.assembler.Amd64.Insn;
-import suite.assembler.Amd64.Instruction;
-import suite.assembler.Amd64.OpIgnore;
-import suite.assembler.Amd64.OpImm;
-import suite.assembler.Amd64.OpImmLabel;
-import suite.assembler.Amd64.OpMem;
-import suite.assembler.Amd64.OpReg;
-import suite.assembler.Amd64.Operand;
-import suite.funp.Funp_;
+import static primal.statics.Fail.fail;
 
 public class P4Emit {
 

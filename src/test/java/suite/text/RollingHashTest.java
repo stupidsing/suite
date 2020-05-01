@@ -1,11 +1,10 @@
 package suite.text;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import org.junit.jupiter.api.Test;
-
 import primal.primitive.adt.Bytes;
 import suite.util.To;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class RollingHashTest {
 

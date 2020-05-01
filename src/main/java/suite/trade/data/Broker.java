@@ -1,10 +1,5 @@
 package suite.trade.data;
 
-import static java.lang.Math.max;
-import static java.lang.Math.min;
-
-import java.nio.file.Files;
-
 import primal.fp.Funs.Source;
 import primal.streamlet.Streamlet;
 import suite.cfg.Defaults;
@@ -14,6 +9,11 @@ import suite.streamlet.As;
 import suite.streamlet.ReadBytes;
 import suite.trade.Trade;
 import suite.util.Memoize;
+
+import java.nio.file.Files;
+
+import static java.lang.Math.max;
+import static java.lang.Math.min;
 
 public interface Broker {
 

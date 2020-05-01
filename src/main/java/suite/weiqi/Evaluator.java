@@ -1,8 +1,8 @@
 package suite.weiqi;
 
-import java.util.HashSet;
-
 import suite.weiqi.Weiqi.Occupation;
+
+import java.util.HashSet;
 
 public class Evaluator {
 

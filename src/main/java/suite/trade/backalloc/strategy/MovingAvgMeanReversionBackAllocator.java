@@ -1,8 +1,5 @@
 package suite.trade.backalloc.strategy;
 
-import static java.lang.Math.log;
-import static java.lang.Math.log1p;
-
 import primal.MoreVerbs.Read;
 import suite.math.linalg.Vector;
 import suite.math.numeric.Statistic.LinearRegression;
@@ -15,6 +12,9 @@ import suite.trade.data.DataSource;
 import suite.trade.data.DataSourceView;
 import suite.ts.TimeSeries;
 import suite.util.To;
+
+import static java.lang.Math.log;
+import static java.lang.Math.log1p;
 
 /**
  * Find some mean-reverting stock, make sure they are below their past moving

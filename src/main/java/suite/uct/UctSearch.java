@@ -1,19 +1,16 @@
 package suite.uct;
 
-import static java.lang.Math.log1p;
-import static java.lang.Math.max;
-import static java.lang.Math.min;
-import static java.lang.Math.sqrt;
-import static suite.util.Streamlet_.forInt;
+import primal.Verbs.Build;
+import suite.streamlet.As;
+import suite.weiqi.Weiqi;
 
 import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import primal.Verbs.Build;
-import suite.streamlet.As;
-import suite.weiqi.Weiqi;
+import static java.lang.Math.*;
+import static suite.util.Streamlet_.forInt;
 
 /**
  * Based on http://senseis.xmp.net/?UCT

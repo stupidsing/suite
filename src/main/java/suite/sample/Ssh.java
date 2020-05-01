@@ -1,23 +1,16 @@
 package suite.sample;
 
-import static primal.statics.Rethrow.ex;
+import com.jcraft.jsch.*;
+import primal.Verbs.Sleep;
+import suite.cfg.Defaults;
+import suite.util.Copy;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
-import com.jcraft.jsch.ChannelExec;
-import com.jcraft.jsch.ChannelSftp;
-import com.jcraft.jsch.JSch;
-import com.jcraft.jsch.JSchException;
-import com.jcraft.jsch.Session;
-import com.jcraft.jsch.SftpException;
-import com.jcraft.jsch.UserInfo;
-
-import primal.Verbs.Sleep;
-import suite.cfg.Defaults;
-import suite.util.Copy;
+import static primal.statics.Rethrow.ex;
 
 public class Ssh {
 

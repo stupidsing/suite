@@ -1,8 +1,8 @@
 package suite.net.cluster;
 
-import java.util.Set;
-
 import suite.streamlet.Pusher;
+
+import java.util.Set;
 
 public interface ClusterProbe {
 

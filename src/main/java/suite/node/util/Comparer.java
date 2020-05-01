@@ -1,26 +1,19 @@
 package suite.node.util;
 
-import static java.lang.Math.min;
+import primal.MoreVerbs.Read;
+import primal.Verbs.Compare;
+import suite.node.*;
+import suite.node.tree.TreeAnd;
+import suite.node.tree.TreeOp;
+import suite.node.tree.TreeOr;
+import suite.node.tree.TreeTuple;
 
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
-import primal.MoreVerbs.Read;
-import primal.Verbs.Compare;
-import suite.node.Atom;
-import suite.node.Dict;
-import suite.node.Int;
-import suite.node.Node;
-import suite.node.Reference;
-import suite.node.Str;
-import suite.node.Tree;
-import suite.node.Tuple;
-import suite.node.tree.TreeAnd;
-import suite.node.tree.TreeOp;
-import suite.node.tree.TreeOr;
-import suite.node.tree.TreeTuple;
+import static java.lang.Math.min;
 
 public class Comparer implements Comparator<Node> {
 

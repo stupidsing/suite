@@ -1,10 +1,6 @@
 package suite.trade.singlealloc;
 
-import java.util.List;
-import java.util.Map;
-
 import org.junit.jupiter.api.Test;
-
 import primal.MoreVerbs.Read;
 import primal.os.Log_;
 import suite.trade.Forex;
@@ -13,6 +9,9 @@ import suite.trade.TimeRange;
 import suite.trade.data.DataSource;
 import suite.trade.data.TradeCfg;
 import suite.trade.data.TradeCfgImpl;
+
+import java.util.List;
+import java.util.Map;
 
 public class SingleAllocBackTestTest {
 

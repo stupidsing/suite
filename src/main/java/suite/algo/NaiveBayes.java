@@ -1,14 +1,14 @@
 package suite.algo;
 
-import static java.lang.Math.log;
-import static suite.util.Streamlet_.forInt;
-
-import java.util.List;
-
 import primal.adt.Pair;
 import primal.primitive.fp.AsInt;
 import suite.streamlet.As;
 import suite.util.To;
+
+import java.util.List;
+
+import static java.lang.Math.log;
+import static suite.util.Streamlet_.forInt;
 
 // Introduction to Machine Learning, page 24
 public class NaiveBayes {

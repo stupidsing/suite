@@ -1,7 +1,13 @@
 package suite.node.io;
 
-import static primal.statics.Fail.fail;
-import static primal.statics.Rethrow.ex;
+import primal.Verbs.Build;
+import primal.Verbs.Equals;
+import primal.adt.Pair;
+import suite.Suite;
+import suite.node.*;
+import suite.node.io.Rewrite_.NodeRead;
+import suite.node.io.Rewrite_.NodeWrite;
+import suite.node.io.Rewrite_.ReadType;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -11,18 +17,8 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import primal.Verbs.Build;
-import primal.Verbs.Equals;
-import primal.adt.Pair;
-import suite.Suite;
-import suite.node.Atom;
-import suite.node.Int;
-import suite.node.Node;
-import suite.node.Reference;
-import suite.node.Tree;
-import suite.node.io.Rewrite_.NodeRead;
-import suite.node.io.Rewrite_.NodeWrite;
-import suite.node.io.Rewrite_.ReadType;
+import static primal.statics.Fail.fail;
+import static primal.statics.Rethrow.ex;
 
 public class ReversePolish {
 

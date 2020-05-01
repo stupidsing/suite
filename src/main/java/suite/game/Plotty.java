@@ -1,7 +1,5 @@
 package suite.game;
 
-import java.io.File;
-
 import primal.MoreVerbs.Read;
 import primal.Nouns.Tmp;
 import primal.Verbs.Get;
@@ -11,6 +9,8 @@ import primal.primitive.adt.pair.FltFltPair;
 import primal.puller.Puller;
 import primal.streamlet.Streamlet;
 import suite.os.Execute;
+
+import java.io.File;
 
 public class Plotty {
 

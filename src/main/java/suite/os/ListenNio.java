@@ -1,7 +1,12 @@
 package suite.os;
 
-import static java.lang.Math.max;
-import static primal.statics.Rethrow.ex;
+import primal.Nouns.Buffer;
+import primal.fp.Funs.Sink;
+import primal.fp.Funs.Source;
+import primal.os.Log_;
+import primal.primitive.IntPrim.IntSink;
+import primal.primitive.adt.Bytes;
+import suite.adt.PriorityQueue;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -12,13 +17,8 @@ import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.Comparator;
 
-import primal.Nouns.Buffer;
-import primal.fp.Funs.Sink;
-import primal.fp.Funs.Source;
-import primal.os.Log_;
-import primal.primitive.IntPrim.IntSink;
-import primal.primitive.adt.Bytes;
-import suite.adt.PriorityQueue;
+import static java.lang.Math.max;
+import static primal.statics.Rethrow.ex;
 
 public class ListenNio {
 

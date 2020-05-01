@@ -1,9 +1,5 @@
 package suite;
 
-import static primal.statics.Fail.fail;
-
-import java.io.IOException;
-
 import primal.Verbs.Is;
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
@@ -26,6 +22,10 @@ import suite.node.Node;
 import suite.os.LogUtil;
 import suite.primitive.IoSink;
 import suite.util.Memoize;
+
+import java.io.IOException;
+
+import static primal.statics.Fail.fail;
 
 public class EvaluateUtil {
 

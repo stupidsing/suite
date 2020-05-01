@@ -1,7 +1,5 @@
 package suite.node;
 
-import java.util.Objects;
-
 import primal.Verbs.Equals;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Source;
@@ -13,6 +11,8 @@ import suite.node.tree.TreeAnd;
 import suite.node.tree.TreeOp;
 import suite.node.tree.TreeOr;
 import suite.node.tree.TreeTuple;
+
+import java.util.Objects;
 
 public abstract class Tree extends Node {
 

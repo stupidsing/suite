@@ -1,18 +1,12 @@
 package suite.search;
 
-import static java.lang.Math.min;
-
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Deque;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import primal.MoreVerbs.Read;
 import primal.adt.Pair;
 import primal.adt.map.ListMultimap;
+
+import java.util.*;
+
+import static java.lang.Math.min;
 
 /**
  * http://en.wikipedia.org/wiki/Tarjan%27s_strongly_connected_components_algorithm

@@ -1,14 +1,14 @@
 package suite.game;
 
-import static primal.statics.Fail.fail;
+import primal.Verbs.Is;
+import primal.Verbs.ReadString;
+import primal.adt.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.IntPredicate;
 
-import primal.Verbs.Is;
-import primal.Verbs.ReadString;
-import primal.adt.Pair;
+import static primal.statics.Fail.fail;
 
 // curl http://www.flygo.net/mjxj/WeiQiTianDi/dlxs_sdl.sgf | iconv -c -f CN-GB -t UTF-8
 public class Sgf {

@@ -1,8 +1,5 @@
 package suite.trade.data;
 
-import java.util.Map;
-import java.util.Set;
-
 import primal.os.Log_;
 import primal.streamlet.Streamlet;
 import suite.trade.Instrument;
@@ -10,6 +7,9 @@ import suite.trade.Time;
 import suite.trade.TimeRange;
 import suite.trade.Trade;
 import suite.trade.data.DataSource.AlignKeyDataSource;
+
+import java.util.Map;
+import java.util.Set;
 
 public interface TradeCfg {
 

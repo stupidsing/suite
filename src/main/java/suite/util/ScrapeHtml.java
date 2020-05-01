@@ -1,12 +1,5 @@
 package suite.util;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-import java.util.function.Predicate;
-
 import primal.MoreVerbs.Read;
 import primal.MoreVerbs.Split;
 import primal.Verbs.Build;
@@ -21,6 +14,9 @@ import primal.primitive.adt.IntRange;
 import primal.primitive.adt.pair.IntObjPair;
 import primal.streamlet.Streamlet;
 import suite.node.io.Operator.Assoc;
+
+import java.util.*;
+import java.util.function.Predicate;
 
 public class ScrapeHtml {
 

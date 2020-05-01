@@ -1,12 +1,12 @@
 package suite.search;
 
+import primal.fp.Funs.Fun;
+import primal.primitive.adt.pair.IntObjPair;
+
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
-
-import primal.fp.Funs.Fun;
-import primal.primitive.adt.pair.IntObjPair;
 
 public class Alphabeta<State> {
 

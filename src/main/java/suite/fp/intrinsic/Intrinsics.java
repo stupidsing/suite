@@ -1,13 +1,5 @@
 package suite.fp.intrinsic;
 
-import static primal.statics.Rethrow.ex;
-
-import java.io.Reader;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.IntFunction;
-
 import primal.Nouns.Buffer;
 import primal.Verbs.Close;
 import primal.Verbs.New;
@@ -19,6 +11,14 @@ import suite.node.Data;
 import suite.node.Node;
 import suite.node.Tree;
 import suite.persistent.PerPointer;
+
+import java.io.Reader;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.IntFunction;
+
+import static primal.statics.Rethrow.ex;
 
 public class Intrinsics {
 

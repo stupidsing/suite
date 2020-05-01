@@ -1,7 +1,6 @@
 package suite.node.pp;
 
 import org.junit.jupiter.api.Test;
-
 import primal.Verbs.ReadString;
 import suite.Suite;
 

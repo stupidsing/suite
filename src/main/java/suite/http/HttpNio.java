@@ -1,13 +1,5 @@
 package suite.http;
 
-import static primal.statics.Fail.fail;
-import static primal.statics.Rethrow.ex;
-
-import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ArrayBlockingQueue;
-
 import primal.MoreVerbs.Pull;
 import primal.MoreVerbs.Read;
 import primal.MoreVerbs.Split;
@@ -28,6 +20,14 @@ import suite.http.Http.Request;
 import suite.http.Http.Response;
 import suite.os.ListenNio;
 import suite.os.ListenNio.Reg;
+
+import java.net.URLDecoder;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ArrayBlockingQueue;
+
+import static primal.statics.Fail.fail;
+import static primal.statics.Rethrow.ex;
 
 // mvn compile exec:java -Dexec.mainClass=suite.http.HttpNio
 public class HttpNio {

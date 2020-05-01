@@ -1,12 +1,12 @@
 package suite.util;
 
-import static java.lang.Math.max;
-import static java.lang.Math.min;
+import primal.MoreVerbs.Read;
+import primal.adt.Pair;
 
 import java.util.Map;
 
-import primal.MoreVerbs.Read;
-import primal.adt.Pair;
+import static java.lang.Math.max;
+import static java.lang.Math.min;
 
 public class CommandUtil<Command> {
 
@@ -14,7 +14,7 @@ public class CommandUtil<Command> {
 	private int maxLength;
 
 	public CommandUtil(Command[] commands) {
-		this(getCommandByName(commands));
+		this(Read.from(commands).toMap(Command::toString));
 	}
 
 	public CommandUtil(Map<String, Command> commandByName) {
@@ -36,10 +36,6 @@ public class CommandUtil<Command> {
 				return Pair.of(command, input.substring(end));
 		}
 		return null;
-	}
-
-	private static <Command> Map<String, Command> getCommandByName(Command[] commands) {
-		return Read.from(commands).toMap(Command::toString);
 	}
 
 }

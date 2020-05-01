@@ -1,13 +1,13 @@
 package suite.trade.data;
 
-import static java.lang.Math.max;
-import static java.lang.Math.min;
-
-import java.util.Map;
-
 import suite.trade.Time;
 import suite.trade.TimeRange;
 import suite.trade.data.DataSource.AlignKeyDataSource;
+
+import java.util.Map;
+
+import static java.lang.Math.max;
+import static java.lang.Math.min;
 
 public class DataSourceView<K, V> {
 

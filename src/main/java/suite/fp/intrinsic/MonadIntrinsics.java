@@ -1,6 +1,12 @@
 package suite.fp.intrinsic;
 
-import static primal.statics.Rethrow.ex;
+import primal.Nouns.Utf8;
+import primal.Verbs.Start;
+import primal.fp.Funs.Iterate;
+import suite.fp.intrinsic.Intrinsics.Intrinsic;
+import suite.fp.intrinsic.Intrinsics.IntrinsicCallback;
+import suite.instructionexecutor.thunk.ThunkUtil;
+import suite.node.*;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -11,18 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 
-import primal.Nouns.Utf8;
-import primal.Verbs.Start;
-import primal.fp.Funs.Iterate;
-import suite.fp.intrinsic.Intrinsics.Intrinsic;
-import suite.fp.intrinsic.Intrinsics.IntrinsicCallback;
-import suite.instructionexecutor.thunk.ThunkUtil;
-import suite.node.Atom;
-import suite.node.Data;
-import suite.node.Int;
-import suite.node.Node;
-import suite.node.Suspend;
-import suite.node.Tree;
+import static primal.statics.Rethrow.ex;
 
 public class MonadIntrinsics {
 

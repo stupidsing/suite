@@ -1,10 +1,5 @@
 package suite.text;
 
-import static java.lang.Math.min;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import primal.MoreVerbs.Read;
 import primal.Verbs.Build;
 import primal.Verbs.Concat;
@@ -14,6 +9,11 @@ import primal.primitive.adt.Bytes;
 import primal.primitive.adt.Bytes.BytesBuilder;
 import suite.lcs.Lccs;
 import suite.util.To;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static java.lang.Math.min;
 
 public class TextUtil {
 

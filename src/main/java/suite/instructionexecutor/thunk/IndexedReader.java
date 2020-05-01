@@ -1,8 +1,8 @@
 package suite.instructionexecutor.thunk;
 
-import java.util.function.IntFunction;
-
 import suite.persistent.PerPointer;
+
+import java.util.function.IntFunction;
 
 public class IndexedReader<T> {
 

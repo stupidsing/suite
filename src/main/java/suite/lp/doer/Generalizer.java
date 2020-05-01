@@ -1,14 +1,14 @@
 package suite.lp.doer;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-
 import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Tree;
 import suite.node.io.Rewrite_;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 public class Generalizer {
 

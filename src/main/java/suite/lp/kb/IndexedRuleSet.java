@@ -1,9 +1,9 @@
 package suite.lp.kb;
 
-import java.util.List;
-
 import primal.adt.map.ListMultimap;
 import suite.node.Node;
+
+import java.util.List;
 
 /**
  * Index rules by default prototype, which is the leftest element in the rule

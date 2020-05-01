@@ -1,10 +1,10 @@
 package suite.exchange;
 
-import static java.lang.Math.min;
-
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
+
+import static java.lang.Math.min;
 
 public class LimitOrderBook<Key> {
 

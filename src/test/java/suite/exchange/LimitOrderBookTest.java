@@ -1,14 +1,13 @@
 package suite.exchange;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import java.util.List;
-
 import org.junit.jupiter.api.Test;
-
 import primal.Verbs.Get;
 import primal.os.Log_;
 import suite.exchange.LimitOrderBook.LobListener;
+
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class LimitOrderBookTest {
 

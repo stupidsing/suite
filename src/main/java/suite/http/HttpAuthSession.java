@@ -1,19 +1,15 @@
 package suite.http;
 
-import java.security.SecureRandom;
-import java.util.Random;
-import java.util.function.BiPredicate;
-
 import primal.MoreVerbs.Pull;
 import primal.Verbs.Build;
 import primal.Verbs.Equals;
 import primal.persistent.PerList;
-import suite.http.Http.Handler;
-import suite.http.Http.Request;
-import suite.http.Http.Response;
-import suite.http.Http.Session;
-import suite.http.Http.SessionManager;
+import suite.http.Http.*;
 import suite.util.HtmlUtil;
+
+import java.security.SecureRandom;
+import java.util.Random;
+import java.util.function.BiPredicate;
 
 /**
  * Cookie-based HTTP authentication.

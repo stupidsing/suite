@@ -1,9 +1,6 @@
 package suite.jdk.gen;
 
-import java.util.List;
-
 import org.apache.bcel.generic.Type;
-
 import primal.adt.Fixie_.FixieFun0;
 import primal.adt.Fixie_.FixieFun1;
 import primal.adt.Fixie_.FixieFun2;
@@ -11,6 +8,8 @@ import primal.adt.Fixie_.FixieFun3;
 import suite.jdk.gen.FunExprK.PlaceholderFunExpr;
 import suite.jdk.gen.FunExpression.FunExpr;
 import suite.jdk.lambda.LambdaInstance;
+
+import java.util.List;
 
 /**
  * Functional expressions that can be handled by FunRewrite.java.

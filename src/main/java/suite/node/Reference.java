@@ -1,9 +1,9 @@
 package suite.node;
 
-import static primal.statics.Fail.fail;
-
 import primal.Verbs.Get;
 import suite.lp.doer.ProverConstant;
+
+import static primal.statics.Fail.fail;
 
 public class Reference extends Node {
 

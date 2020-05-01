@@ -1,14 +1,14 @@
 package suite.math.linalg;
 
-import static java.lang.Math.sqrt;
-import static primal.statics.Fail.fail;
-
-import java.util.Random;
-
 import primal.adt.Fixie;
 import primal.adt.Fixie_.Fixie3;
 import primal.fp.Funs.Fun;
 import suite.util.To;
+
+import java.util.Random;
+
+import static java.lang.Math.sqrt;
+import static primal.statics.Fail.fail;
 
 public class SingularValueDecomposition {
 

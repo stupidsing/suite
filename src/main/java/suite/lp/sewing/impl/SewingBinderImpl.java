@@ -3,13 +3,7 @@ package suite.lp.sewing.impl;
 import primal.MoreVerbs.Read;
 import suite.lp.doer.Binder;
 import suite.lp.doer.BinderFactory;
-import suite.node.Atom;
-import suite.node.Int;
-import suite.node.Node;
-import suite.node.Reference;
-import suite.node.Str;
-import suite.node.Tree;
-import suite.node.Tuple;
+import suite.node.*;
 import suite.node.io.SwitchNode;
 
 public class SewingBinderImpl extends SewingClonerImpl implements BinderFactory {

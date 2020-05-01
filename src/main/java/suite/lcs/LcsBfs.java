@@ -1,13 +1,13 @@
 package suite.lcs;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.List;
-
 import primal.Verbs.Equals;
 import primal.Verbs.Get;
 import suite.search.Search;
 import suite.search.Search.Traverser;
+
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Longest common subsequence using breadth-first search.

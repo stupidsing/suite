@@ -1,11 +1,5 @@
 package suite.instructionexecutor;
 
-import static primal.statics.Fail.fail;
-
-import java.io.IOException;
-import java.io.Writer;
-import java.util.ArrayList;
-
 import primal.fp.Funs.Iterate;
 import primal.primitive.adt.Chars;
 import suite.fp.intrinsic.Intrinsics;
@@ -14,14 +8,15 @@ import suite.fp.intrinsic.Intrinsics.IntrinsicCallback;
 import suite.instructionexecutor.InstructionUtil.FunComparer;
 import suite.instructionexecutor.InstructionUtil.Instruction;
 import suite.instructionexecutor.thunk.ThunkUtil;
-import suite.node.Atom;
-import suite.node.Data;
-import suite.node.Int;
-import suite.node.Node;
-import suite.node.Str;
-import suite.node.Tree;
+import suite.node.*;
 import suite.node.util.Comparer;
 import suite.util.To;
+
+import java.io.IOException;
+import java.io.Writer;
+import java.util.ArrayList;
+
+import static primal.statics.Fail.fail;
 
 public class FunInstructionExecutor extends InstructionExecutor {
 

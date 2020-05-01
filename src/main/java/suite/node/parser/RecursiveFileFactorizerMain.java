@@ -1,10 +1,5 @@
 package suite.node.parser;
 
-import static primal.statics.Rethrow.ex;
-
-import java.nio.file.Files;
-import java.nio.file.Paths;
-
 import primal.MoreVerbs.Read;
 import primal.Nouns.Utf8;
 import primal.Verbs.ReadString;
@@ -13,6 +8,11 @@ import primal.parser.Wildcard;
 import suite.node.io.TermOp;
 import suite.os.FileUtil;
 import suite.util.RunUtil;
+
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
+import static primal.statics.Rethrow.ex;
 
 // mAIN=suite.node.parser.RecursiveFileFactorizerMain ./run.sh
 public class RecursiveFileFactorizerMain {

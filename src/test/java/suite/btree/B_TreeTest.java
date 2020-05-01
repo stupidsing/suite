@@ -1,15 +1,7 @@
 package suite.btree;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-
-import java.io.IOException;
-import java.util.Comparator;
-import java.util.Random;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 import primal.Nouns.Tmp;
 import primal.Verbs.Compare;
 import primal.Verbs.DeleteFile;
@@ -20,6 +12,13 @@ import suite.node.util.Singleton;
 import suite.sample.Profiler;
 import suite.serialize.Serialize;
 import suite.util.To;
+
+import java.io.IOException;
+import java.util.Comparator;
+import java.util.Random;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class B_TreeTest {
 

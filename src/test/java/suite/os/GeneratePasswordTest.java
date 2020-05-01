@@ -1,8 +1,8 @@
 package suite.os;
 
-import java.security.SecureRandom;
-
 import org.junit.jupiter.api.Test;
+
+import java.security.SecureRandom;
 
 public class GeneratePasswordTest {
 

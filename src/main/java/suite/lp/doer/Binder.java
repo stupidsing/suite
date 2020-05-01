@@ -3,13 +3,7 @@ package suite.lp.doer;
 import primal.Verbs.Equals;
 import primal.Verbs.Union;
 import suite.lp.Trail;
-import suite.node.Dict;
-import suite.node.Int;
-import suite.node.Node;
-import suite.node.Reference;
-import suite.node.Str;
-import suite.node.Tree;
-import suite.node.Tuple;
+import suite.node.*;
 
 public class Binder {
 

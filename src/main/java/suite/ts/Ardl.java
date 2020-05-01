@@ -1,14 +1,14 @@
 package suite.ts;
 
-import static primal.statics.Fail.fail;
-import static suite.util.Streamlet_.forInt;
-
 import primal.primitive.FltVerbs.CopyFlt;
 import primal.primitive.adt.pair.FltObjPair;
 import primal.primitive.fp.AsFlt;
 import suite.math.numeric.Statistic;
 import suite.math.numeric.Statistic.LinearRegression;
 import suite.util.To;
+
+import static primal.statics.Fail.fail;
+import static suite.util.Streamlet_.forInt;
 
 /**
  * Auto-regressive distributed lag.

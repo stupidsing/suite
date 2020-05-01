@@ -1,23 +1,13 @@
 package suite.object;
 
-import static primal.statics.Fail.fail;
-import static primal.statics.Rethrow.ex;
+import primal.MoreVerbs.Read;
+import primal.Verbs.Equals;
+import primal.adt.Fixie_.*;
 
 import java.util.List;
 
-import primal.MoreVerbs.Read;
-import primal.Verbs.Equals;
-import primal.adt.Fixie_.FixieFun0;
-import primal.adt.Fixie_.FixieFun1;
-import primal.adt.Fixie_.FixieFun2;
-import primal.adt.Fixie_.FixieFun3;
-import primal.adt.Fixie_.FixieFun4;
-import primal.adt.Fixie_.FixieFun5;
-import primal.adt.Fixie_.FixieFun6;
-import primal.adt.Fixie_.FixieFun7;
-import primal.adt.Fixie_.FixieFun8;
-import primal.adt.Fixie_.FixieFun9;
-import primal.adt.Fixie_.FixieFunA;
+import static primal.statics.Fail.fail;
+import static primal.statics.Rethrow.ex;
 
 public class MapObject_ {
 

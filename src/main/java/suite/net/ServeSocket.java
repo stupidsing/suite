@@ -1,17 +1,17 @@
 package suite.net;
 
-import static java.lang.Math.min;
-import static primal.statics.Fail.fail;
-
-import java.io.IOException;
-import java.io.InputStream;
-
 import primal.Nouns.Buffer;
 import primal.fp.Funs.Fun;
 import primal.primitive.adt.Bytes;
 import primal.primitive.adt.Bytes.BytesBuilder;
 import suite.cfg.Defaults;
 import suite.os.Listen;
+
+import java.io.IOException;
+import java.io.InputStream;
+
+import static java.lang.Math.min;
+import static primal.statics.Fail.fail;
 
 public class ServeSocket {
 

@@ -1,13 +1,12 @@
 package suite.lp.doer;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Test;
+import suite.Suite;
 
 import java.io.IOException;
 import java.util.List;
 
-import org.junit.jupiter.api.Test;
-
-import suite.Suite;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ImportTest {
 

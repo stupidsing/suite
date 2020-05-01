@@ -1,10 +1,10 @@
 package suite.fp;
 
-import static primal.statics.Rethrow.ex;
-
 import primal.fp.Funs.Source;
 import suite.BindMapUtil;
 import suite.node.Node;
+
+import static primal.statics.Rethrow.ex;
 
 public class Matcher<T> {
 

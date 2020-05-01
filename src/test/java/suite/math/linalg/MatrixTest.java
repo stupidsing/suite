@@ -1,13 +1,12 @@
 package suite.math.linalg;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Test;
+import suite.math.Math_;
+import suite.util.To;
 
 import java.util.Random;
 
-import org.junit.jupiter.api.Test;
-
-import suite.math.Math_;
-import suite.util.To;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class MatrixTest {
 

@@ -1,14 +1,5 @@
 package suite.os;
 
-import static primal.statics.Rethrow.ex;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.attribute.PosixFilePermission;
-import java.util.HashSet;
-import java.util.List;
-
 import primal.Nouns.Tmp;
 import primal.Nouns.Utf8;
 import primal.Verbs.Get;
@@ -17,6 +8,15 @@ import primal.primitive.IntPrim.Int_Obj;
 import primal.primitive.adt.Bytes;
 import primal.primitive.adt.Bytes.BytesBuilder;
 import suite.serialize.SerOutput;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.attribute.PosixFilePermission;
+import java.util.HashSet;
+import java.util.List;
+
+import static primal.statics.Rethrow.ex;
 
 // http://www.muppetlabs.com/~breadbox/software/tiny/teensy.html
 public class WriteElf {

@@ -1,15 +1,6 @@
 package suite.fs;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static primal.statics.Fail.fail;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
 import org.junit.jupiter.api.Test;
-
 import primal.Nouns.Tmp;
 import primal.Nouns.Utf8;
 import primal.Verbs.DeleteFile;
@@ -21,6 +12,14 @@ import suite.os.FileUtil;
 import suite.streamlet.As;
 import suite.util.Copy;
 import suite.util.To;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static primal.statics.Fail.fail;
 
 public class FileSystemTest {
 

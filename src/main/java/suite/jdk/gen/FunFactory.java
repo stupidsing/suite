@@ -1,12 +1,8 @@
 package suite.jdk.gen;
 
-import java.util.HashMap;
-import java.util.List;
-
 import org.apache.bcel.Const;
 import org.apache.bcel.generic.BasicType;
 import org.apache.bcel.generic.Type;
-
 import primal.MoreVerbs.Read;
 import primal.Verbs.Equals;
 import primal.adt.Mutable;
@@ -23,26 +19,13 @@ import suite.jdk.gen.FunExprL.DeclareLocalFunExpr;
 import suite.jdk.gen.FunExprL.FieldInjectFunExpr;
 import suite.jdk.gen.FunExprL.InvokeLambdaFunExpr;
 import suite.jdk.gen.FunExprL.ObjectFunExpr;
-import suite.jdk.gen.FunExprM.ArrayFunExpr;
-import suite.jdk.gen.FunExprM.AssignLocalFunExpr;
-import suite.jdk.gen.FunExprM.BinaryFunExpr;
-import suite.jdk.gen.FunExprM.BlockBreakFunExpr;
-import suite.jdk.gen.FunExprM.BlockContFunExpr;
-import suite.jdk.gen.FunExprM.BlockFunExpr;
-import suite.jdk.gen.FunExprM.ConstantFunExpr;
-import suite.jdk.gen.FunExprM.If1FunExpr;
-import suite.jdk.gen.FunExprM.If2FunExpr;
-import suite.jdk.gen.FunExprM.IfNonNullFunExpr;
-import suite.jdk.gen.FunExprM.InvokeMethodFunExpr;
-import suite.jdk.gen.FunExprM.LocalFunExpr;
-import suite.jdk.gen.FunExprM.NewFunExpr;
-import suite.jdk.gen.FunExprM.NullFunExpr;
-import suite.jdk.gen.FunExprM.ProfileFunExpr;
-import suite.jdk.gen.FunExprM.SeqFunExpr;
-import suite.jdk.gen.FunExprM.VoidFunExpr;
+import suite.jdk.gen.FunExprM.*;
 import suite.jdk.gen.FunExpression.FunExpr;
 import suite.jdk.lambda.LambdaInstance;
 import suite.node.util.Singleton;
+
+import java.util.HashMap;
+import java.util.List;
 
 public class FunFactory {
 

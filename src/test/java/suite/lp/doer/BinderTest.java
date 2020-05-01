@@ -1,18 +1,11 @@
 package suite.lp.doer;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Test;
+import suite.node.*;
 
 import java.util.HashMap;
 
-import org.junit.jupiter.api.Test;
-
-import suite.node.Atom;
-import suite.node.Dict;
-import suite.node.Int;
-import suite.node.Node;
-import suite.node.Reference;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class BinderTest {
 

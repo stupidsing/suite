@@ -1,15 +1,5 @@
 package suite.lp.predicate;
 
-import static primal.statics.Fail.fail;
-
-import java.util.HashMap;
-import java.util.Objects;
-import java.util.Random;
-
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
-
 import primal.adt.IdentityKey;
 import primal.fp.Funs.Fun;
 import primal.os.Log_;
@@ -18,22 +8,21 @@ import suite.lp.doer.Cloner;
 import suite.lp.doer.Specializer;
 import suite.lp.predicate.PredicateUtil.BuiltinPredicate;
 import suite.lp.sewing.impl.SewingGeneralizerImpl;
-import suite.node.Atom;
-import suite.node.Dict;
-import suite.node.Int;
-import suite.node.Node;
-import suite.node.Reference;
-import suite.node.Str;
-import suite.node.Tree;
+import suite.node.*;
 import suite.node.io.Formatter;
 import suite.node.io.Grapher;
 import suite.node.io.TermOp;
-import suite.node.util.Comparer;
-import suite.node.util.Complexity;
-import suite.node.util.Cyclic;
-import suite.node.util.Rewrite;
-import suite.node.util.TreeUtil;
+import suite.node.util.*;
 import suite.util.Memoize;
+
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
+import java.util.HashMap;
+import java.util.Objects;
+import java.util.Random;
+
+import static primal.statics.Fail.fail;
 
 public class EvalPredicates {
 

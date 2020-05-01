@@ -1,10 +1,10 @@
 package suite.trade.walkforwardalloc;
 
-import java.util.List;
-
 import primal.adt.Pair;
 import suite.trade.backalloc.BackAllocator;
 import suite.trade.data.DataSource.AlignKeyDataSource;
+
+import java.util.List;
 
 public interface WalkForwardAllocator {
 

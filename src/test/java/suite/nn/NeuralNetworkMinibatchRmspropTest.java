@@ -1,14 +1,13 @@
 package suite.nn;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import org.junit.jupiter.api.Test;
-
 import primal.MoreVerbs.Read;
 import primal.adt.Pair;
 import primal.fp.Funs2.BinOp;
 import suite.math.linalg.Matrix;
 import suite.math.linalg.Vector;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class NeuralNetworkMinibatchRmspropTest {
 

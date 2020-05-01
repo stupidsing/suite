@@ -1,55 +1,18 @@
 package suite.jdk.gen.pass;
 
-import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.bcel.Const;
-import org.apache.bcel.generic.ARRAYLENGTH;
-import org.apache.bcel.generic.BranchInstruction;
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.Instruction;
-import org.apache.bcel.generic.InstructionConst;
-import org.apache.bcel.generic.InstructionFactory;
-import org.apache.bcel.generic.InstructionHandle;
-import org.apache.bcel.generic.InstructionList;
-import org.apache.bcel.generic.NEW;
-import org.apache.bcel.generic.ObjectType;
-import org.apache.bcel.generic.Type;
-
+import org.apache.bcel.generic.*;
 import primal.MoreVerbs.Read;
 import primal.Verbs.Equals;
 import primal.primitive.adt.Ints.IntsBuilder;
 import primal.primitive.adt.map.IntIntMap;
 import primal.primitive.adt.map.IntObjMap;
-import suite.jdk.gen.FunExprM.ArrayFunExpr;
-import suite.jdk.gen.FunExprM.ArrayLengthFunExpr;
-import suite.jdk.gen.FunExprM.AssignLocalFunExpr;
-import suite.jdk.gen.FunExprM.BinaryFunExpr;
-import suite.jdk.gen.FunExprM.BlockBreakFunExpr;
-import suite.jdk.gen.FunExprM.BlockContFunExpr;
-import suite.jdk.gen.FunExprM.BlockFunExpr;
-import suite.jdk.gen.FunExprM.CastFunExpr;
-import suite.jdk.gen.FunExprM.CheckCastFunExpr;
-import suite.jdk.gen.FunExprM.ConstantFunExpr;
-import suite.jdk.gen.FunExprM.FieldStaticFunExpr;
-import suite.jdk.gen.FunExprM.FieldTypeFunExpr_;
-import suite.jdk.gen.FunExprM.FieldTypeSetFunExpr;
-import suite.jdk.gen.FunExprM.If1FunExpr;
-import suite.jdk.gen.FunExprM.If2FunExpr;
-import suite.jdk.gen.FunExprM.IfFunExpr;
-import suite.jdk.gen.FunExprM.IfNonNullFunExpr;
-import suite.jdk.gen.FunExprM.IndexFunExpr;
-import suite.jdk.gen.FunExprM.InstanceOfFunExpr;
-import suite.jdk.gen.FunExprM.InvokeMethodFunExpr;
-import suite.jdk.gen.FunExprM.LocalFunExpr;
-import suite.jdk.gen.FunExprM.NewFunExpr;
-import suite.jdk.gen.FunExprM.NullFunExpr;
-import suite.jdk.gen.FunExprM.PrintlnFunExpr;
-import suite.jdk.gen.FunExprM.ProfileFunExpr;
-import suite.jdk.gen.FunExprM.SeqFunExpr;
-import suite.jdk.gen.FunExprM.VoidFunExpr;
+import suite.jdk.gen.FunExprM.*;
 import suite.jdk.gen.FunExpression.FunExpr;
+
+import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.List;
 
 public class FunGenerateBytecode {
 

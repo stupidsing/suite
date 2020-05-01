@@ -1,14 +1,10 @@
 package suite.net;
 
-import static primal.statics.Fail.fail;
-
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-
 import primal.primitive.adt.Bytes;
+
+import java.io.*;
+
+import static primal.statics.Fail.fail;
 
 public class NetUtil {
 

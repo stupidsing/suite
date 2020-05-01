@@ -3,12 +3,7 @@ package suite.fp.intrinsic;
 import primal.os.Log_;
 import suite.fp.intrinsic.Intrinsics.Intrinsic;
 import suite.instructionexecutor.thunk.ThunkUtil;
-import suite.node.Atom;
-import suite.node.Int;
-import suite.node.Node;
-import suite.node.Str;
-import suite.node.Tree;
-import suite.node.Tuple;
+import suite.node.*;
 import suite.node.io.Formatter;
 import suite.node.io.SwitchNode;
 

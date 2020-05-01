@@ -1,12 +1,12 @@
 package suite.ts;
 
-import static java.lang.Math.max;
-
-import java.util.Arrays;
-
 import primal.adt.Pair;
 import suite.math.linalg.VirtualVector;
 import suite.math.numeric.Statistic;
+
+import java.util.Arrays;
+
+import static java.lang.Math.max;
 
 public class BollingerBands {
 

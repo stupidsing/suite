@@ -1,20 +1,16 @@
 package suite.lp.kb;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-
 import primal.MoreVerbs.Read;
 import primal.Verbs.Equals;
 import primal.Verbs.Get;
 import primal.adt.map.ListMultimap;
 import suite.lp.doer.ProverConstant;
-import suite.node.Atom;
-import suite.node.Node;
-import suite.node.Reference;
-import suite.node.Tree;
-import suite.node.Tuple;
+import suite.node.*;
 import suite.node.tree.TreeTuple;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * Index rules by the first atom in their heads.

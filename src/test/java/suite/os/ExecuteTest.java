@@ -1,11 +1,10 @@
 package suite.os;
 
+import org.junit.jupiter.api.Test;
+import primal.Verbs.Build;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import org.junit.jupiter.api.Test;
-
-import primal.Verbs.Build;
 
 public class ExecuteTest {
 

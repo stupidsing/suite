@@ -1,9 +1,9 @@
 package suite.weiqi;
 
+import suite.weiqi.Weiqi.Occupation;
+
 import java.util.ArrayDeque;
 import java.util.Deque;
-
-import suite.weiqi.Weiqi.Occupation;
 
 public class MovingGameSet extends GameSet {
 

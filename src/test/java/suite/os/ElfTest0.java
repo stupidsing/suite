@@ -1,11 +1,10 @@
 package suite.os;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import org.junit.jupiter.api.Test;
-
 import primal.Nouns.Utf8;
 import suite.ip.ImperativeCompiler;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 // http://www.muppetlabs.com/~breadbox/software/tiny/teensy.html
 public class ElfTest0 {

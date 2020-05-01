@@ -1,18 +1,14 @@
 package suite.debian;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import primal.MoreVerbs.Read;
 import primal.MoreVerbs.ReadLines;
 import primal.adt.Pair;
 import primal.adt.map.ListMultimap;
 import primal.streamlet.Streamlet;
 import suite.streamlet.As;
+
+import java.io.File;
+import java.util.*;
 
 public class DpkgUtil {
 

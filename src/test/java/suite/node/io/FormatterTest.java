@@ -1,14 +1,13 @@
 package suite.node.io;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import org.junit.jupiter.api.Test;
-
 import primal.Adjectives.Current;
 import suite.Suite;
 import suite.inspect.Dump;
 import suite.node.Int;
 import suite.node.Reference;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class FormatterTest {
 

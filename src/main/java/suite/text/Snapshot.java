@@ -1,6 +1,12 @@
 package suite.text;
 
-import static primal.statics.Rethrow.ex;
+import primal.MoreVerbs.Read;
+import primal.Nouns.Utf8;
+import primal.Verbs.*;
+import primal.adt.FixieArray;
+import primal.primitive.adt.Bytes;
+import suite.os.FileUtil;
+import suite.text.TextUtil.BytesPair;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,18 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import primal.MoreVerbs.Read;
-import primal.Nouns.Utf8;
-import primal.Verbs.DeleteFile;
-import primal.Verbs.Equals;
-import primal.Verbs.ReadFile;
-import primal.Verbs.ReadLine;
-import primal.Verbs.Union;
-import primal.Verbs.WriteFile;
-import primal.adt.FixieArray;
-import primal.primitive.adt.Bytes;
-import suite.os.FileUtil;
-import suite.text.TextUtil.BytesPair;
+import static primal.statics.Rethrow.ex;
 
 public interface Snapshot {
 

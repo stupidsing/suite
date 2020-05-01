@@ -1,15 +1,14 @@
 package suite.lp.doer;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import org.junit.jupiter.api.Test;
-
 import suite.Suite;
 import suite.lp.compile.impl.CompileClonerImpl;
 import suite.lp.compile.impl.CompileExpressionImpl;
 import suite.lp.sewing.Env;
 import suite.lp.sewing.impl.SewingClonerImpl;
 import suite.lp.sewing.impl.SewingExpressionImpl;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class EvaluatorFactoryTest {
 

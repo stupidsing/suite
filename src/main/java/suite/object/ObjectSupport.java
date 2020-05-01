@@ -1,13 +1,13 @@
 package suite.object;
 
-import java.util.List;
-import java.util.Objects;
-
 import primal.Verbs.Build;
 import primal.Verbs.Compare;
 import primal.Verbs.Equals;
 import primal.fp.Funs.Fun;
 import primal.persistent.PerList;
+
+import java.util.List;
+import java.util.Objects;
 
 public class ObjectSupport<T> {
 

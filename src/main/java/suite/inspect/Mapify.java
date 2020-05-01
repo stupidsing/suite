@@ -1,22 +1,5 @@
 package suite.inspect;
 
-import static primal.statics.Rethrow.ex;
-import static suite.util.Streamlet_.forInt;
-
-import java.lang.reflect.Array;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-
 import primal.MoreVerbs.Read;
 import primal.Verbs.Instantiate;
 import primal.Verbs.New;
@@ -24,6 +7,13 @@ import primal.fp.Funs.Iterate;
 import suite.util.Switch;
 import suite.util.To;
 import suite.util.Util;
+
+import java.lang.reflect.*;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+
+import static primal.statics.Rethrow.ex;
+import static suite.util.Streamlet_.forInt;
 
 /**
  * Convert (supposedly) any Java structures to recursive maps.

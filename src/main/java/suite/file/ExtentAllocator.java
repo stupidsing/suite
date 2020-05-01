@@ -1,8 +1,8 @@
 package suite.file;
 
-import java.io.Closeable;
-
 import primal.Verbs.Get;
+
+import java.io.Closeable;
 
 public interface ExtentAllocator extends Closeable {
 

@@ -1,8 +1,5 @@
 package suite.trade.backalloc.run;
 
-import static java.lang.Math.expm1;
-import static java.lang.Math.log1p;
-
 import primal.Verbs.Compare;
 import primal.fp.FunUtil;
 import primal.fp.Funs.Sink;
@@ -20,6 +17,9 @@ import suite.trade.backalloc.BackAllocator;
 import suite.trade.data.TradeCfg;
 import suite.trade.data.TradeCfgImpl;
 import suite.util.To;
+
+import static java.lang.Math.expm1;
+import static java.lang.Math.log1p;
 
 public class BackTester {
 

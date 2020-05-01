@@ -1,7 +1,5 @@
 package suite.lp.predicate;
 
-import java.util.function.Predicate;
-
 import primal.fp.Funs.Iterate;
 import primal.fp.Funs.Sink;
 import suite.lp.doer.Prover;
@@ -9,6 +7,8 @@ import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.TermOp;
 import suite.node.util.TreeUtil;
+
+import java.util.function.Predicate;
 
 public class PredicateUtil {
 

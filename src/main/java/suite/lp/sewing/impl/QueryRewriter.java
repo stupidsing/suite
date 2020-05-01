@@ -1,10 +1,5 @@
 package suite.lp.sewing.impl;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-
 import primal.MoreVerbs.Read;
 import primal.adt.map.ListMultimap;
 import suite.Suite;
@@ -17,6 +12,11 @@ import suite.node.Tuple;
 import suite.node.io.TermOp;
 import suite.node.util.TreeUtil;
 import suite.streamlet.As;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Converts query to tuple syntax for better performance.

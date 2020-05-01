@@ -1,21 +1,7 @@
 package suite.lp.sewing.impl;
 
-import static java.lang.Math.max;
-import static primal.statics.Fail.fail;
-import static primal.statics.Rethrow.ex;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import primal.MoreVerbs.Read;
-import primal.Verbs.Equals;
-import primal.Verbs.Last;
-import primal.Verbs.Left;
-import primal.Verbs.New;
-import primal.Verbs.Reverse;
-import primal.Verbs.Right;
+import primal.Verbs.*;
 import primal.adt.Mutable;
 import primal.adt.map.ListMultimap;
 import primal.fp.Funs.Sink;
@@ -26,14 +12,8 @@ import primal.streamlet.Streamlet;
 import suite.Suite;
 import suite.lp.Configuration.ProverCfg;
 import suite.lp.compile.impl.CompileExpressionImpl;
-import suite.lp.doer.Binder;
-import suite.lp.doer.BinderFactory;
+import suite.lp.doer.*;
 import suite.lp.doer.BinderFactory.BindEnv;
-import suite.lp.doer.Cloner;
-import suite.lp.doer.Generalizer;
-import suite.lp.doer.Prover;
-import suite.lp.doer.ProverConstant;
-import suite.lp.doer.ProverFactory;
 import suite.lp.kb.Prototype;
 import suite.lp.kb.Rule;
 import suite.lp.kb.RuleSet;
@@ -41,20 +21,22 @@ import suite.lp.predicate.PredicateUtil.BuiltinPredicate;
 import suite.lp.predicate.SystemPredicates;
 import suite.lp.sewing.Env;
 import suite.lp.sewing.VariableMapper;
-import suite.node.Atom;
-import suite.node.Data;
-import suite.node.Int;
-import suite.node.Node;
-import suite.node.Reference;
-import suite.node.Suspend;
-import suite.node.Tree;
-import suite.node.Tuple;
+import suite.node.*;
 import suite.node.io.Formatter;
 import suite.node.io.TermOp;
 import suite.node.util.Rewrite;
 import suite.node.util.SuiteException;
 import suite.node.util.TreeUtil;
 import suite.streamlet.As;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static java.lang.Math.max;
+import static primal.statics.Fail.fail;
+import static primal.statics.Rethrow.ex;
 
 /**
  * Compile logical rules into lambda-sews and run them. Supposed to be faster

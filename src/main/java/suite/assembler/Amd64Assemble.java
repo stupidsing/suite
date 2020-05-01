@@ -1,8 +1,12 @@
 package suite.assembler;
 
-import static java.lang.Math.min;
-import static java.util.Map.entry;
-import static primal.statics.Fail.fail;
+import primal.os.Log_;
+import primal.primitive.adt.Bytes;
+import primal.primitive.adt.Bytes.BytesBuilder;
+import primal.statics.Fail;
+import suite.assembler.Amd64.*;
+import suite.inspect.Dump;
+import suite.primitive.Bytes_;
 
 import java.util.Arrays;
 import java.util.List;
@@ -10,23 +14,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
 
-import primal.os.Log_;
-import primal.primitive.adt.Bytes;
-import primal.primitive.adt.Bytes.BytesBuilder;
-import primal.statics.Fail;
-import suite.assembler.Amd64.Instruction;
-import suite.assembler.Amd64.OpImm;
-import suite.assembler.Amd64.OpImmLabel;
-import suite.assembler.Amd64.OpMem;
-import suite.assembler.Amd64.OpNone;
-import suite.assembler.Amd64.OpReg;
-import suite.assembler.Amd64.OpRegControl;
-import suite.assembler.Amd64.OpRegSegment;
-import suite.assembler.Amd64.OpRegXmm;
-import suite.assembler.Amd64.OpRegYmm;
-import suite.assembler.Amd64.Operand;
-import suite.inspect.Dump;
-import suite.primitive.Bytes_;
+import static java.lang.Math.min;
+import static java.util.Map.entry;
+import static primal.statics.Fail.fail;
 
 // TODO validate number of operands
 // TODO validate size of operands

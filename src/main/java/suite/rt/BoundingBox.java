@@ -1,17 +1,15 @@
 package suite.rt;
 
-import static java.lang.Math.abs;
-import static java.lang.Math.max;
-import static java.lang.Math.min;
-
-import java.util.Collection;
-import java.util.List;
-
 import suite.math.Math_;
 import suite.math.R3;
 import suite.rt.RayTracer.Ray;
 import suite.rt.RayTracer.RayHit;
 import suite.rt.RayTracer.RtObject;
+
+import java.util.Collection;
+import java.util.List;
+
+import static java.lang.Math.*;
 
 public class BoundingBox implements RtObject {
 

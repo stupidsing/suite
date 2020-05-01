@@ -1,13 +1,13 @@
 package suite.node.pp;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import suite.Suite;
 import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.Formatter;
 import suite.node.io.TermOp;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Pretty printer with language context.

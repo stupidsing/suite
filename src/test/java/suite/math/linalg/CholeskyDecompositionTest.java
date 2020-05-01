@@ -1,10 +1,9 @@
 package suite.math.linalg;
 
-import java.util.Random;
-
 import org.junit.jupiter.api.Test;
-
 import suite.util.To;
+
+import java.util.Random;
 
 public class CholeskyDecompositionTest {
 

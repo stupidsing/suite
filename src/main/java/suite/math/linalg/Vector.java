@@ -1,13 +1,13 @@
 package suite.math.linalg;
 
-import static java.lang.Math.sqrt;
-import static primal.statics.Fail.fail;
-import static suite.util.Streamlet_.forInt;
+import suite.math.Math_;
+import suite.streamlet.As;
 
 import java.util.Arrays;
 
-import suite.math.Math_;
-import suite.streamlet.As;
+import static java.lang.Math.sqrt;
+import static primal.statics.Fail.fail;
+import static suite.util.Streamlet_.forInt;
 
 public class Vector {
 

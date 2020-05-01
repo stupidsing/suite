@@ -1,9 +1,9 @@
 package suite.node.util;
 
-import static java.lang.Math.max;
-
 import suite.node.Node;
 import suite.node.Tree;
+
+import static java.lang.Math.max;
 
 public class Complexity {
 

@@ -1,13 +1,13 @@
 package suite.jdk;
 
-import static primal.statics.Fail.fail;
+import primal.Verbs.Is;
 
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
 
-import primal.Verbs.Is;
+import static primal.statics.Fail.fail;
 
 public class Handler extends URLStreamHandler {
 

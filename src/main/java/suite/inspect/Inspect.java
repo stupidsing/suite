@@ -1,6 +1,12 @@
 package suite.inspect;
 
-import static primal.statics.Rethrow.ex;
+import primal.MoreVerbs.Read;
+import primal.adt.Pair;
+import primal.fp.Funs.Fun;
+import primal.fp.Funs.Iterate;
+import primal.streamlet.Streamlet;
+import suite.object.ObjectSupport;
+import suite.util.Memoize;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -9,13 +15,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
-import primal.MoreVerbs.Read;
-import primal.adt.Pair;
-import primal.fp.Funs.Fun;
-import primal.fp.Funs.Iterate;
-import primal.streamlet.Streamlet;
-import suite.object.ObjectSupport;
-import suite.util.Memoize;
+import static primal.statics.Rethrow.ex;
 
 /**
  * General manipulation on value objects with public fields.

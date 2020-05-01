@@ -1,7 +1,5 @@
 package suite.funp.p4;
 
-import static primal.statics.Fail.fail;
-
 import primal.adt.Fixie;
 import primal.adt.Fixie_.Fixie3;
 import primal.primitive.adt.pair.IntIntPair;
@@ -15,6 +13,8 @@ import suite.funp.Funp_.Funp;
 import suite.funp.p4.P4Emit.Emit;
 import suite.funp.p4.P4GenerateCode.Compile0;
 import suite.funp.p4.P4GenerateCode.CompileOut;
+
+import static primal.statics.Fail.fail;
 
 public class P4Alloc {
 

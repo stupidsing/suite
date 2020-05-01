@@ -1,32 +1,18 @@
 package suite.editor;
 
-import static primal.statics.Rethrow.ex;
+import primal.fp.Funs.Sink;
+import primal.statics.Rethrow.SinkEx;
+import suite.streamlet.Pusher;
 
-import java.awt.Component;
-import java.awt.Window;
-import java.awt.event.ActionEvent;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-
-import javax.swing.AbstractAction;
-import javax.swing.AbstractButton;
-import javax.swing.JComponent;
-import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.Document;
 import javax.swing.text.JTextComponent;
+import java.awt.*;
+import java.awt.event.*;
 
-import primal.fp.Funs.Sink;
-import primal.statics.Rethrow.SinkEx;
-import suite.streamlet.Pusher;
+import static primal.statics.Rethrow.ex;
 
 public class Listen {
 

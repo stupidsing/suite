@@ -1,7 +1,5 @@
 package suite.trade.singlealloc;
 
-import java.util.Arrays;
-
 import primal.primitive.FltVerbs.CopyFlt;
 import primal.primitive.fp.AsInt;
 import suite.math.linalg.Vector;
@@ -10,6 +8,8 @@ import suite.trade.analysis.MovingAverage;
 import suite.trade.singlealloc.BuySellStrategy.GetBuySell;
 import suite.ts.Quant;
 import suite.util.To;
+
+import java.util.Arrays;
 
 public class Strategos {
 

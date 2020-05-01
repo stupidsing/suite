@@ -1,10 +1,9 @@
 package suite.algo;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import org.junit.jupiter.api.Test;
-
 import primal.primitive.IntInt_Int;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class RangeMinQueryTest {
 

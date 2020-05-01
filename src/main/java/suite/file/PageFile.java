@@ -1,8 +1,8 @@
 package suite.file;
 
-import java.io.Closeable;
-
 import primal.primitive.adt.Bytes;
+
+import java.io.Closeable;
 
 public interface PageFile extends Closeable {
 

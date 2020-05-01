@@ -1,9 +1,6 @@
 package suite.jdk.gen.pass;
 
-import static primal.statics.Rethrow.ex;
-
 import org.apache.bcel.generic.Type;
-
 import primal.MoreVerbs.Read;
 import primal.Verbs.Equals;
 import primal.primitive.fp.AsInt;
@@ -22,6 +19,8 @@ import suite.jdk.gen.FunExpression.FunExpr;
 import suite.jdk.gen.FunFactory;
 import suite.node.util.Singleton;
 import suite.util.Switch;
+
+import static primal.statics.Rethrow.ex;
 
 public class FunExpand extends FunFactory {
 

@@ -1,8 +1,5 @@
 package suite.node.parser;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import primal.primitive.adt.Chars;
 import primal.primitive.fp.AsChr;
 import suite.node.io.Operator;
@@ -14,6 +11,9 @@ import suite.text.Preprocess.Reverser;
 import suite.text.Segment;
 import suite.util.SmartSplit;
 import suite.util.To;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class RecursiveFactorizer {
 

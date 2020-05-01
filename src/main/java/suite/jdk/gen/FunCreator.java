@@ -1,28 +1,7 @@
 package suite.jdk.gen;
 
-import static org.apache.bcel.Const.ACC_PUBLIC;
-import static org.apache.bcel.Const.ACC_STATIC;
-import static org.apache.bcel.Const.ACC_SUPER;
-import static primal.statics.Fail.fail;
-import static primal.statics.Rethrow.ex;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.bcel.Const;
-import org.apache.bcel.generic.BranchInstruction;
-import org.apache.bcel.generic.CPInstruction;
-import org.apache.bcel.generic.ClassGen;
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.FieldGen;
-import org.apache.bcel.generic.InstructionFactory;
-import org.apache.bcel.generic.InstructionList;
-import org.apache.bcel.generic.MethodGen;
-import org.apache.bcel.generic.ObjectType;
-import org.apache.bcel.generic.Type;
-
+import org.apache.bcel.generic.*;
 import primal.MoreVerbs.Read;
 import primal.Verbs.Get;
 import primal.Verbs.New;
@@ -40,6 +19,15 @@ import suite.jdk.gen.pass.FunExpand;
 import suite.jdk.gen.pass.FunGenerateBytecode;
 import suite.jdk.gen.pass.FunRewrite;
 import suite.jdk.lambda.LambdaInterface;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.apache.bcel.Const.*;
+import static primal.statics.Fail.fail;
+import static primal.statics.Rethrow.ex;
 
 public class FunCreator<I> extends FunFactory {
 

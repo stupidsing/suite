@@ -1,14 +1,5 @@
 package suite.nn;
 
-import static java.lang.Math.abs;
-import static java.lang.Math.max;
-import static java.lang.Math.min;
-import static java.lang.Math.sqrt;
-import static suite.util.Streamlet_.forInt;
-
-import java.lang.reflect.Array;
-import java.util.Random;
-
 import primal.MoreVerbs.Read;
 import primal.Verbs.New;
 import primal.fp.Funs.Fun;
@@ -24,6 +15,12 @@ import suite.math.Tanh;
 import suite.math.linalg.Matrix;
 import suite.streamlet.As;
 import suite.util.To;
+
+import java.lang.reflect.Array;
+import java.util.Random;
+
+import static java.lang.Math.*;
+import static suite.util.Streamlet_.forInt;
 
 public class NeuralNetwork {
 

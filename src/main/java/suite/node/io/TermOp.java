@@ -1,8 +1,8 @@
 package suite.node.io;
 
-import java.util.List;
-
 import primal.Verbs.Equals;
+
+import java.util.List;
 
 public enum TermOp implements Operator {
 

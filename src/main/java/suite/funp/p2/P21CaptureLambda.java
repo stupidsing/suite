@@ -1,34 +1,18 @@
 package suite.funp.p2;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.IdentityHashMap;
-import java.util.List;
-import java.util.Set;
-
 import primal.MoreVerbs.Read;
 import primal.Verbs.Get;
 import primal.adt.Pair;
 import primal.fp.Funs2.Fun2;
 import suite.funp.Funp_;
 import suite.funp.Funp_.Funp;
-import suite.funp.P0.Fct;
-import suite.funp.P0.Fdt;
-import suite.funp.P0.FunpDefine;
-import suite.funp.P0.FunpDefineRec;
-import suite.funp.P0.FunpDeref;
-import suite.funp.P0.FunpDoAssignRef;
-import suite.funp.P0.FunpDoAssignVar;
-import suite.funp.P0.FunpDoHeapNew;
-import suite.funp.P0.FunpField;
-import suite.funp.P0.FunpLambda;
-import suite.funp.P0.FunpReference;
-import suite.funp.P0.FunpStruct;
-import suite.funp.P0.FunpVariable;
+import suite.funp.P0.*;
 import suite.funp.P2.FunpLambdaCapture;
 import suite.funp.P2.FunpTypeAssign;
 import suite.inspect.Inspect;
 import suite.node.util.Singleton;
+
+import java.util.*;
 
 public class P21CaptureLambda {
 

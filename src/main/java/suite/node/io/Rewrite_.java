@@ -1,21 +1,16 @@
 package suite.node.io;
 
-import static primal.statics.Fail.fail;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import primal.MoreVerbs.Read;
 import primal.adt.Pair;
 import primal.fp.Funs.Iterate;
 import primal.streamlet.Streamlet2;
-import suite.node.Atom;
-import suite.node.Dict;
-import suite.node.Node;
-import suite.node.Reference;
-import suite.node.Tree;
-import suite.node.Tuple;
+import suite.node.*;
 import suite.node.util.Comparer;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static primal.statics.Fail.fail;
 
 public class Rewrite_ {
 

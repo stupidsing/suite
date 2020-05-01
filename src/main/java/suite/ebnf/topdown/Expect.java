@@ -1,11 +1,11 @@
 package suite.ebnf.topdown;
 
-import static java.lang.Math.min;
-
 import primal.Verbs.Equals;
 import primal.Verbs.Is;
 import primal.Verbs.Substring;
 import suite.os.UnicodeData;
+
+import static java.lang.Math.min;
 
 public class Expect {
 

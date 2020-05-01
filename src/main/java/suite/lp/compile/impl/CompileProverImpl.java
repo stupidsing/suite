@@ -1,7 +1,5 @@
 package suite.lp.compile.impl;
 
-import java.util.Map;
-
 import primal.fp.Funs.Fun;
 import suite.jdk.gen.FunCreator;
 import suite.jdk.gen.FunExpression.FunExpr;
@@ -10,6 +8,8 @@ import suite.lp.Configuration.ProverCfg;
 import suite.lp.doer.ProverFactory;
 import suite.node.Node;
 import suite.node.io.SwitchNode;
+
+import java.util.Map;
 
 public class CompileProverImpl implements ProverFactory {
 

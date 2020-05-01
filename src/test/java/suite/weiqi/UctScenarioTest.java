@@ -1,14 +1,13 @@
 package suite.weiqi;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 import suite.uct.ShuffleUtil;
 import suite.uct.UctSearch;
 import suite.uct.UctWeiqi;
 import suite.weiqi.Weiqi.Occupation;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class UctScenarioTest {
 

@@ -1,13 +1,12 @@
 package suite.text;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
 import org.junit.jupiter.api.Test;
-
 import primal.Verbs.ReadString;
 import primal.Verbs.Sort;
 import suite.os.FileUtil;
+
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class TwoPassIndexTest {
 

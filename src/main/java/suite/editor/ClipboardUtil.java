@@ -1,12 +1,12 @@
 package suite.editor;
 
-import java.awt.Toolkit;
+import primal.os.Log_;
+
+import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
-
-import primal.os.Log_;
 
 public class ClipboardUtil {
 

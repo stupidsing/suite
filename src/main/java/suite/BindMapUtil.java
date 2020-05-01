@@ -1,7 +1,5 @@
 package suite;
 
-import java.util.Map;
-
 import primal.MoreVerbs.Read;
 import primal.fp.Funs.Fun;
 import suite.lp.compile.impl.CompileBinderImpl;
@@ -10,6 +8,8 @@ import suite.lp.sewing.impl.SewingGeneralizerImpl;
 import suite.node.Node;
 import suite.node.io.Formatter;
 import suite.util.Memoize;
+
+import java.util.Map;
 
 public class BindMapUtil {
 

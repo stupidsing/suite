@@ -1,23 +1,19 @@
 package suite.object;
 
-import static primal.statics.Fail.fail;
-import static primal.statics.Rethrow.ex;
-
-import java.lang.reflect.Array;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import primal.Verbs.New;
 import primal.adt.Pair;
 import primal.fp.Funs.Iterate;
 import suite.node.util.Singleton;
 import suite.util.Util;
+
+import java.lang.reflect.Array;
+import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.*;
+
+import static primal.statics.Fail.fail;
+import static primal.statics.Rethrow.ex;
 
 public class Object_ {
 

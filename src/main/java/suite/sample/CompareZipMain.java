@@ -1,13 +1,13 @@
 package suite.sample;
 
-import java.util.zip.ZipFile;
-
 import primal.Verbs.Union;
 import primal.primitive.adt.Bytes;
 import suite.os.FileUtil;
 import suite.streamlet.ReadBytes;
 import suite.text.TextUtil;
 import suite.util.RunUtil;
+
+import java.util.zip.ZipFile;
 
 /**
  * Compare contents of two zip files.

@@ -1,7 +1,5 @@
 package suite.primitive;
 
-import static primal.statics.Rethrow.ex;
-
 import primal.fp.Funs.Iterate;
 import primal.fp.Funs.Source;
 import primal.primitive.adt.Doubles;
@@ -10,6 +8,8 @@ import primal.primitive.adt.Doubles.WriteChar;
 import primal.primitive.puller.DblPuller;
 import primal.primitive.streamlet.DblStreamlet;
 import primal.puller.Puller;
+
+import static primal.statics.Rethrow.ex;
 
 public class Doubles_ {
 

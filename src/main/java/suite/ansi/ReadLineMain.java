@@ -1,7 +1,6 @@
 package suite.ansi;
 
 import com.sun.jna.Native;
-
 import primal.Verbs.Equals;
 import primal.adt.Pair;
 import suite.ansi.Keyboard.VK;

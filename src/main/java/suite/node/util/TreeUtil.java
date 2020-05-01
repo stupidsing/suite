@@ -1,12 +1,5 @@
 package suite.node.util;
 
-import static java.util.Map.entry;
-import static primal.statics.Fail.fail;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 import primal.MoreVerbs.Read;
 import primal.primitive.IntInt_Int;
 import primal.streamlet.Streamlet;
@@ -17,6 +10,13 @@ import suite.node.Tree;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
 import suite.primitive.IntInt_Bool;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import static java.util.Map.entry;
+import static primal.statics.Fail.fail;
 
 public class TreeUtil {
 

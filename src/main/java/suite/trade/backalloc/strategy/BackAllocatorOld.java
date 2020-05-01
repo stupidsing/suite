@@ -1,11 +1,5 @@
 package suite.trade.backalloc.strategy;
 
-import static java.lang.Math.abs;
-import static java.lang.Math.max;
-
-import java.util.Arrays;
-import java.util.List;
-
 import primal.Verbs.Equals;
 import primal.adt.Pair;
 import suite.math.numeric.Statistic;
@@ -15,6 +9,12 @@ import suite.trade.data.TradeCfg;
 import suite.ts.BollingerBands;
 import suite.ts.Quant;
 import suite.ts.TimeSeries;
+
+import java.util.Arrays;
+import java.util.List;
+
+import static java.lang.Math.abs;
+import static java.lang.Math.max;
 
 public class BackAllocatorOld {
 

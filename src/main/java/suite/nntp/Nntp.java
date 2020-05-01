@@ -1,9 +1,9 @@
 package suite.nntp;
 
+import primal.adt.Pair;
+
 import java.util.List;
 import java.util.Map;
-
-import primal.adt.Pair;
 
 public interface Nntp {
 

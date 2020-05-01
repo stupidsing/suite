@@ -1,17 +1,13 @@
 package suite.sample;
 
-import java.lang.Thread.State;
-import java.lang.management.ManagementFactory;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import primal.MoreVerbs.Read;
 import primal.Verbs.Build;
 import primal.Verbs.Equals;
+
+import java.lang.Thread.State;
+import java.lang.management.ManagementFactory;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Profiler {
 

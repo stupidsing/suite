@@ -1,14 +1,14 @@
 package suite.exchange;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import primal.MoreVerbs.Read;
 import primal.primitive.FltPrim.Obj_Flt;
 import primal.primitive.fp.AsDbl;
 import suite.trade.Trade;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class ExParticipant {
 

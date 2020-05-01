@@ -1,13 +1,5 @@
 package suite.os;
 
-import static primal.statics.Rethrow.ex;
-
-import java.io.DataInputStream;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Arrays;
-
 import primal.Nouns.Buffer;
 import primal.Nouns.Utf8;
 import primal.Verbs.DeleteFile;
@@ -21,6 +13,14 @@ import primal.streamlet.Streamlet;
 import suite.cfg.HomeDir;
 import suite.http.HttpClient;
 import suite.serialize.SerOutput;
+
+import java.io.DataInputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Arrays;
+
+import static primal.statics.Rethrow.ex;
 
 public class StoreCache {
 

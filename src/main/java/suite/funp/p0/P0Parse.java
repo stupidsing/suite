@@ -1,9 +1,5 @@
 package suite.funp.p0;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import primal.MoreVerbs.Read;
 import primal.Verbs.Get;
 import primal.adt.Mutable;
@@ -19,58 +15,19 @@ import suite.Suite;
 import suite.assembler.Amd64;
 import suite.funp.Funp_;
 import suite.funp.Funp_.Funp;
-import suite.funp.P0.Coerce;
-import suite.funp.P0.Fct;
-import suite.funp.P0.Fdt;
-import suite.funp.P0.FunpAdjustArrayPointer;
-import suite.funp.P0.FunpApply;
-import suite.funp.P0.FunpArray;
-import suite.funp.P0.FunpBoolean;
-import suite.funp.P0.FunpCoerce;
-import suite.funp.P0.FunpDefine;
-import suite.funp.P0.FunpDefineRec;
-import suite.funp.P0.FunpDeref;
-import suite.funp.P0.FunpDoAsm;
-import suite.funp.P0.FunpDoAssignRef;
-import suite.funp.P0.FunpDoAssignVar;
-import suite.funp.P0.FunpDoEvalIo;
-import suite.funp.P0.FunpDoHeapDel;
-import suite.funp.P0.FunpDoHeapNew;
-import suite.funp.P0.FunpDoWhile;
-import suite.funp.P0.FunpDontCare;
-import suite.funp.P0.FunpError;
-import suite.funp.P0.FunpField;
-import suite.funp.P0.FunpIf;
-import suite.funp.P0.FunpIndex;
-import suite.funp.P0.FunpIo;
-import suite.funp.P0.FunpLambda;
-import suite.funp.P0.FunpLambdaFree;
-import suite.funp.P0.FunpMe;
-import suite.funp.P0.FunpNumber;
-import suite.funp.P0.FunpPredefine;
-import suite.funp.P0.FunpReference;
-import suite.funp.P0.FunpRemark;
-import suite.funp.P0.FunpRepeat;
-import suite.funp.P0.FunpSizeOf;
-import suite.funp.P0.FunpStruct;
-import suite.funp.P0.FunpTag;
-import suite.funp.P0.FunpTree;
-import suite.funp.P0.FunpTree2;
-import suite.funp.P0.FunpTypeCheck;
-import suite.funp.P0.FunpVariable;
-import suite.funp.P0.FunpVariableNew;
+import suite.funp.P0.*;
 import suite.inspect.Inspect;
 import suite.lp.kb.Prototype;
-import suite.node.Atom;
-import suite.node.Int;
-import suite.node.Node;
-import suite.node.Str;
-import suite.node.Tree;
+import suite.node.*;
 import suite.node.io.SwitchNode;
 import suite.node.io.TermOp;
 import suite.node.util.Singleton;
 import suite.node.util.TreeUtil;
 import suite.streamlet.ReadChars;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class P0Parse {
 

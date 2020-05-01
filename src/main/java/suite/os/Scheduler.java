@@ -1,13 +1,13 @@
 package suite.os;
 
+import primal.Verbs.Sleep;
+import primal.os.Log_;
+import suite.adt.PriorityQueue;
+
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
-
-import primal.Verbs.Sleep;
-import primal.os.Log_;
-import suite.adt.PriorityQueue;
 
 public class Scheduler {
 

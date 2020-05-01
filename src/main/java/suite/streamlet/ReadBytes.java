@@ -1,14 +1,14 @@
 package suite.streamlet;
 
-import static primal.statics.Rethrow.ex;
+import primal.MoreVerbs.Pull;
+import primal.primitive.adt.Bytes;
+import primal.streamlet.Streamlet;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.nio.file.Path;
 
-import primal.MoreVerbs.Pull;
-import primal.primitive.adt.Bytes;
-import primal.streamlet.Streamlet;
+import static primal.statics.Rethrow.ex;
 
 public class ReadBytes {
 

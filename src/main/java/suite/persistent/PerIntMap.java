@@ -1,12 +1,12 @@
 package suite.persistent;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import primal.fp.Funs.Iterate;
 import primal.fp.Funs2.BinOp;
 import primal.primitive.adt.pair.IntObjPair;
 import primal.streamlet.Streamlet;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class PerIntMap<V> {
 

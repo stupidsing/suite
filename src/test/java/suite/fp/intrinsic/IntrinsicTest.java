@@ -1,11 +1,10 @@
 package suite.fp.intrinsic;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import org.junit.jupiter.api.Test;
-
 import suite.Suite;
 import suite.node.util.Comparer;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class IntrinsicTest {
 

@@ -1,12 +1,5 @@
 package suite.fp;
 
-import static primal.statics.Fail.fail;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import primal.MoreVerbs.Read;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Iterate;
@@ -18,12 +11,7 @@ import suite.fp.intrinsic.Intrinsics;
 import suite.fp.intrinsic.Intrinsics.Intrinsic;
 import suite.fp.intrinsic.Intrinsics.IntrinsicCallback;
 import suite.lp.search.SewingProverBuilder2;
-import suite.node.Atom;
-import suite.node.Data;
-import suite.node.Int;
-import suite.node.Node;
-import suite.node.Str;
-import suite.node.Tree;
+import suite.node.*;
 import suite.node.io.Formatter;
 import suite.node.io.Operator;
 import suite.node.io.SwitchNode;
@@ -31,6 +19,13 @@ import suite.node.io.TermOp;
 import suite.node.util.Comparer;
 import suite.node.util.TreeUtil;
 import suite.util.To;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static primal.statics.Fail.fail;
 
 public class InterpretFunEager {
 

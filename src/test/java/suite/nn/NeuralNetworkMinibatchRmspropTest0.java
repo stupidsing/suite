@@ -1,19 +1,18 @@
 package suite.nn;
 
-import static java.lang.Math.abs;
-import static java.lang.Math.sqrt;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static suite.util.Streamlet_.forInt;
-
-import java.util.Random;
-
 import org.junit.jupiter.api.Test;
-
 import primal.MoreVerbs.Read;
 import suite.math.Tanh;
 import suite.math.linalg.Matrix;
 import suite.streamlet.As;
 import suite.util.To;
+
+import java.util.Random;
+
+import static java.lang.Math.abs;
+import static java.lang.Math.sqrt;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static suite.util.Streamlet_.forInt;
 
 // https://gist.github.com/k15z/d6e986c4760fddf47061e3e383f139a4
 public class NeuralNetworkMinibatchRmspropTest0 {

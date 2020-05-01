@@ -1,18 +1,18 @@
 package suite.trade.data;
 
-import static primal.statics.Fail.fail;
-import static primal.statics.Rethrow.ex;
-
-import java.io.ByteArrayInputStream;
-import java.util.Map;
-import java.util.Set;
-
 import primal.MoreVerbs.Read;
 import primal.Nouns.Utf8;
 import primal.streamlet.Streamlet;
 import suite.os.Execute;
 import suite.streamlet.As;
 import suite.util.XmlUtil;
+
+import java.io.ByteArrayInputStream;
+import java.util.Map;
+import java.util.Set;
+
+import static primal.statics.Fail.fail;
+import static primal.statics.Rethrow.ex;
 
 public class Hsbc {
 

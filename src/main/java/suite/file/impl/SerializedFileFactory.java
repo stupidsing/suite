@@ -1,15 +1,15 @@
 package suite.file.impl;
 
-import static primal.statics.Rethrow.ex;
-
-import java.io.IOException;
-
 import suite.file.PageFile;
 import suite.file.SerializedPageFile;
 import suite.serialize.SerInput;
 import suite.serialize.Serialize.Serializer;
 import suite.streamlet.As;
 import suite.util.To;
+
+import java.io.IOException;
+
+import static primal.statics.Rethrow.ex;
 
 public class SerializedFileFactory {
 

@@ -1,8 +1,5 @@
 package suite.funp.p4;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import primal.fp.Funs2.Fun2;
 import suite.assembler.Amd64;
 import suite.assembler.Amd64.OpMem;
@@ -20,6 +17,9 @@ import suite.funp.P2.FunpOperand;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
 import suite.node.util.TreeUtil;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class P4DecomposeOperand {
 

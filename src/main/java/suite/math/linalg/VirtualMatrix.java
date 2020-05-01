@@ -1,13 +1,13 @@
 package suite.math.linalg;
 
-import static java.lang.Math.min;
-import static primal.statics.Fail.fail;
-import static suite.util.Streamlet_.forInt;
-
 import primal.Verbs.Build;
 import primal.primitive.IntInt_Flt;
 import suite.streamlet.As;
 import suite.util.To;
+
+import static java.lang.Math.min;
+import static primal.statics.Fail.fail;
+import static suite.util.Streamlet_.forInt;
 
 public class VirtualMatrix {
 

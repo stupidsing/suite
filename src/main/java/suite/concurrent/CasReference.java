@@ -1,10 +1,10 @@
 package suite.concurrent;
 
-import static primal.statics.Fail.fail;
+import primal.fp.Funs.Iterate;
 
 import java.util.concurrent.atomic.AtomicStampedReference;
 
-import primal.fp.Funs.Iterate;
+import static primal.statics.Fail.fail;
 
 /**
  * A compare-and-set atomic reference that also uses stamp to resolve ABA

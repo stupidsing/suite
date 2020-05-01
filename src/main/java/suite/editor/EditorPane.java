@@ -1,24 +1,22 @@
 package suite.editor;
 
-import static java.lang.Math.max;
-
-import java.awt.event.ActionEvent;
-import java.awt.event.InputEvent;
-import java.awt.event.KeyEvent;
-
-import javax.swing.JEditorPane;
-import javax.swing.KeyStroke;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Document;
-import javax.swing.text.Segment;
-import javax.swing.undo.UndoManager;
-
 import primal.Verbs.Build;
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
 import primal.statics.Rethrow.SinkEx;
 import suite.streamlet.Pusher;
 import suite.streamlet.ReadChars;
+
+import javax.swing.*;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
+import javax.swing.text.Segment;
+import javax.swing.undo.UndoManager;
+import java.awt.event.ActionEvent;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
+
+import static java.lang.Math.max;
 
 public class EditorPane extends JEditorPane {
 

@@ -1,11 +1,11 @@
 package suite.rt.planar;
 
-import java.util.List;
-
 import suite.math.R3;
 import suite.rt.BoundingBox;
 import suite.rt.RayTracer.Material;
 import suite.rt.RayTracer.RtObject;
+
+import java.util.List;
 
 public class Triangle extends Planar implements RtObject {
 

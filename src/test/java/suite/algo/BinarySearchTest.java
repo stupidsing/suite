@@ -1,11 +1,10 @@
 package suite.algo;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import org.junit.jupiter.api.Test;
-
 import primal.primitive.Int_Int;
 import primal.primitive.fp.AsInt;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class BinarySearchTest {
 

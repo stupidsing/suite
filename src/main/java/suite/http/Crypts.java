@@ -1,25 +1,20 @@
 package suite.http;
 
-import static primal.statics.Rethrow.ex;
+import primal.Nouns.Utf8;
+import primal.os.Log_;
+import suite.cfg.HomeDir;
 
+import javax.crypto.Cipher;
+import javax.crypto.spec.SecretKeySpec;
 import java.nio.file.Files;
-import java.security.KeyFactory;
-import java.security.KeyPairGenerator;
-import java.security.MessageDigest;
-import java.security.PrivateKey;
-import java.security.PublicKey;
+import java.security.*;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.concurrent.Callable;
 
-import javax.crypto.Cipher;
-import javax.crypto.spec.SecretKeySpec;
-
-import primal.Nouns.Utf8;
-import primal.os.Log_;
-import suite.cfg.HomeDir;
+import static primal.statics.Rethrow.ex;
 
 public class Crypts {
 

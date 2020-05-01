@@ -1,12 +1,11 @@
 package suite.node.parser;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import org.junit.jupiter.api.Test;
-
 import primal.Verbs.ReadString;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ParserCompareTest {
 

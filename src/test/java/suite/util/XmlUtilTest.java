@@ -1,13 +1,12 @@
 package suite.util;
 
-import java.nio.file.Files;
-import java.nio.file.Paths;
-
 import org.junit.jupiter.api.Test;
 import org.xml.sax.SAXException;
-
 import primal.Verbs.ReadFile;
 import suite.util.XmlUtil.XmlNode;
+
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 public class XmlUtilTest {
 

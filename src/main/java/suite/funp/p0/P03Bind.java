@@ -1,30 +1,14 @@
 package suite.funp.p0;
 
-import static suite.util.Streamlet_.forInt;
-
 import primal.persistent.PerSet;
 import primal.primitive.IntPrim.IntObj_Obj;
 import primal.primitive.IntPrim.Int_Obj;
 import suite.funp.Funp_.Funp;
-import suite.funp.P0.FunpArray;
-import suite.funp.P0.FunpBoolean;
-import suite.funp.P0.FunpDeref;
-import suite.funp.P0.FunpDoAssignVar;
-import suite.funp.P0.FunpDontCare;
-import suite.funp.P0.FunpField;
-import suite.funp.P0.FunpIf;
-import suite.funp.P0.FunpIndex;
-import suite.funp.P0.FunpNumber;
-import suite.funp.P0.FunpReference;
-import suite.funp.P0.FunpRepeat;
-import suite.funp.P0.FunpStruct;
-import suite.funp.P0.FunpTag;
-import suite.funp.P0.FunpTagId;
-import suite.funp.P0.FunpTagValue;
-import suite.funp.P0.FunpTree;
-import suite.funp.P0.FunpVariable;
+import suite.funp.P0.*;
 import suite.node.io.TermOp;
 import suite.util.Switch;
+
+import static suite.util.Streamlet_.forInt;
 
 public class P03Bind {
 

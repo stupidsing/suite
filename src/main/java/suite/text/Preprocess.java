@@ -1,10 +1,10 @@
 package suite.text;
 
-import java.util.List;
-
 import primal.Verbs.Build;
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
+
+import java.util.List;
 
 public class Preprocess {
 

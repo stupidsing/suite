@@ -1,7 +1,5 @@
 package suite.lp.compile.impl;
 
-import java.util.Map;
-
 import primal.MoreVerbs.Read;
 import primal.adt.Pair;
 import primal.fp.Funs.Iterate;
@@ -10,15 +8,10 @@ import suite.jdk.gen.FunExpression.FunExpr;
 import suite.jdk.gen.FunFactory;
 import suite.lp.doer.ClonerFactory;
 import suite.lp.sewing.VariableMapper;
-import suite.node.Atom;
-import suite.node.Dict;
-import suite.node.Int;
-import suite.node.Node;
-import suite.node.Reference;
-import suite.node.Str;
-import suite.node.Tree;
-import suite.node.Tuple;
+import suite.node.*;
 import suite.node.io.SwitchNode;
+
+import java.util.Map;
 
 public class CompileClonerImpl implements ClonerFactory {
 

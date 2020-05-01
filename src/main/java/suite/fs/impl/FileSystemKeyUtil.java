@@ -1,18 +1,18 @@
 package suite.fs.impl;
 
-import static java.lang.Math.min;
-import static primal.statics.Rethrow.ex;
+import primal.primitive.adt.Bytes;
+import primal.primitive.adt.Bytes.BytesBuilder;
+import suite.node.util.Singleton;
+import suite.serialize.Serialize;
+import suite.serialize.Serialize.Serializer;
 
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.List;
 
-import primal.primitive.adt.Bytes;
-import primal.primitive.adt.Bytes.BytesBuilder;
-import suite.node.util.Singleton;
-import suite.serialize.Serialize;
-import suite.serialize.Serialize.Serializer;
+import static java.lang.Math.min;
+import static primal.statics.Rethrow.ex;
 
 public class FileSystemKeyUtil {
 

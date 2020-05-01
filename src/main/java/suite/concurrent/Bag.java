@@ -1,10 +1,10 @@
 package suite.concurrent;
 
-import java.util.ArrayDeque;
-import java.util.Iterator;
-
 import primal.Verbs.Equals;
 import primal.persistent.PerList;
+
+import java.util.ArrayDeque;
+import java.util.Iterator;
 
 public class Bag<S> implements Iterable<S> {
 

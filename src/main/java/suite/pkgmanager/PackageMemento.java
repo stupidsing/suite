@@ -1,8 +1,8 @@
 package suite.pkgmanager;
 
-import java.util.List;
-
 import suite.pkgmanager.action.InstallAction;
+
+import java.util.List;
 
 public class PackageMemento {
 

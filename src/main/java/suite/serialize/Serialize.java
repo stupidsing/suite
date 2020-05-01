@@ -1,20 +1,5 @@
 package suite.serialize;
 
-import static java.lang.Math.min;
-import static primal.statics.Fail.fail;
-import static primal.statics.Rethrow.ex;
-
-import java.io.IOException;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import primal.MoreVerbs.Read;
 import primal.Nouns.Buffer;
 import primal.Nouns.Utf8;
@@ -28,6 +13,16 @@ import suite.file.ExtentAllocator.Extent;
 import suite.inspect.Inspect;
 import suite.util.Memoize;
 import suite.util.To;
+
+import java.io.IOException;
+import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.*;
+
+import static java.lang.Math.min;
+import static primal.statics.Fail.fail;
+import static primal.statics.Rethrow.ex;
 
 /**
  * Defines interface for reading/writing byte buffer. The operation within the

@@ -1,7 +1,5 @@
 package suite.trade.data;
 
-import java.util.List;
-
 import primal.Verbs.Compare;
 import primal.adt.Pair;
 import primal.primitive.FltMoreVerbs.LiftFlt;
@@ -13,6 +11,8 @@ import suite.node.util.Singleton;
 import suite.streamlet.As;
 import suite.trade.Time;
 import suite.trade.TimeRange;
+
+import java.util.List;
 
 public class Quandl {
 

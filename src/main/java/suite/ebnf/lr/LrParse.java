@@ -1,10 +1,5 @@
 package suite.ebnf.lr;
 
-import java.io.StringReader;
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.Map;
-
 import primal.MoreVerbs.Read;
 import primal.Verbs.Compare;
 import primal.adt.Pair;
@@ -15,6 +10,11 @@ import suite.ebnf.Grammar;
 import suite.ebnf.lr.BuildLr.Reduce;
 import suite.ebnf.lr.BuildLr.State;
 import suite.parser.Lexer;
+
+import java.io.StringReader;
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.Map;
 
 public class LrParse {
 

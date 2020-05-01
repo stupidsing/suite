@@ -1,15 +1,10 @@
 package suite.assembler;
 
-import java.util.List;
-
 import primal.MoreVerbs.Read;
-import suite.assembler.Amd64.Instruction;
-import suite.assembler.Amd64.OpImm;
-import suite.assembler.Amd64.OpMem;
-import suite.assembler.Amd64.OpNone;
-import suite.assembler.Amd64.OpRemark;
-import suite.assembler.Amd64.Operand;
+import suite.assembler.Amd64.*;
 import suite.funp.Funp_;
+
+import java.util.List;
 
 public class Amd64Dump {
 

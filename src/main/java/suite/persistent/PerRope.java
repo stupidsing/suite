@@ -1,23 +1,19 @@
 package suite.persistent;
 
-import static java.lang.Math.max;
-import static java.lang.Math.min;
-import static primal.statics.Fail.fail;
-
-import java.util.ArrayDeque;
-import java.util.List;
-
 import primal.MoreVerbs.Read;
-import primal.Verbs.Concat;
-import primal.Verbs.First;
-import primal.Verbs.Last;
-import primal.Verbs.Left;
-import primal.Verbs.Right;
+import primal.Verbs.*;
 import primal.fp.Funs.Iterate;
 import primal.primitive.IntInt_Obj;
 import primal.primitive.IntPrim.Int_Obj;
 import primal.primitive.fp.AsInt;
 import primal.streamlet.Streamlet;
+
+import java.util.ArrayDeque;
+import java.util.List;
+
+import static java.lang.Math.max;
+import static java.lang.Math.min;
+import static primal.statics.Fail.fail;
 
 public class PerRope<T> {
 

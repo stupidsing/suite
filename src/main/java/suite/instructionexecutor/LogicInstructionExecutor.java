@@ -1,19 +1,15 @@
 package suite.instructionexecutor;
 
-import static primal.statics.Fail.fail;
-
 import suite.instructionexecutor.InstructionUtil.Activation;
 import suite.instructionexecutor.InstructionUtil.Instruction;
 import suite.lp.Configuration.ProverCfg;
 import suite.lp.doer.Binder;
 import suite.lp.doer.Prover;
 import suite.lp.predicate.SystemPredicates;
-import suite.node.Atom;
-import suite.node.Int;
-import suite.node.Node;
-import suite.node.Reference;
-import suite.node.Tree;
+import suite.node.*;
 import suite.node.io.TermOp;
+
+import static primal.statics.Fail.fail;
 
 public class LogicInstructionExecutor extends InstructionExecutor {
 

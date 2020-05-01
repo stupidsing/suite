@@ -1,9 +1,9 @@
 package suite.parser;
 
-import java.util.Map;
-
 import primal.Verbs.Build;
 import primal.fp.Funs.Iterate;
+
+import java.util.Map;
 
 public class Subst {
 

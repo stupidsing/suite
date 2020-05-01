@@ -1,12 +1,6 @@
 package suite.lp;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.util.List;
-
 import org.junit.jupiter.api.Test;
-
 import suite.Suite;
 import suite.lp.Configuration.ProverCfg;
 import suite.lp.doer.Specializer;
@@ -15,6 +9,11 @@ import suite.lp.search.CompiledProverBuilder;
 import suite.lp.search.ProverBuilder.Finder;
 import suite.node.Atom;
 import suite.node.Node;
+
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class LogicCompilerLevel1Test {
 

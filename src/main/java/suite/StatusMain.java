@@ -1,11 +1,11 @@
 package suite;
 
-import java.util.TreeMap;
-
 import suite.trade.analysis.Summarize;
 import suite.trade.data.TradeCfg;
 import suite.trade.data.TradeCfgImpl;
 import suite.util.RunUtil;
+
+import java.util.TreeMap;
 
 // mvn compile exec:java -Dexec.mainClass=suite.StatusMain
 public class StatusMain {

@@ -1,7 +1,9 @@
 package suite.http;
 
-import static primal.statics.Fail.fail;
-import static primal.statics.Rethrow.ex;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import primal.Nouns.Utf8;
+import primal.Verbs.Equals;
+import suite.math.Sha2;
 
 import java.nio.charset.Charset;
 import java.util.Arrays;
@@ -9,11 +11,8 @@ import java.util.Base64;
 import java.util.Base64.Decoder;
 import java.util.Base64.Encoder;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import primal.Nouns.Utf8;
-import primal.Verbs.Equals;
-import suite.math.Sha2;
+import static primal.statics.Fail.fail;
+import static primal.statics.Rethrow.ex;
 
 public class Jwt {
 

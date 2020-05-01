@@ -1,13 +1,12 @@
 package suite.funp;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static primal.statics.Fail.fail;
-
 import org.junit.jupiter.api.Test;
-
 import primal.os.Log_;
 import primal.primitive.adt.Bytes;
 import suite.assembler.Amd64Interpret;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static primal.statics.Fail.fail;
 
 public class FunpTest {
 

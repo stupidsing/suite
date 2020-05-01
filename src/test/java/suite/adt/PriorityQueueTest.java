@@ -1,14 +1,13 @@
 package suite.adt;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Test;
+import suite.util.To;
 
 import java.util.HashSet;
 import java.util.Random;
 
-import org.junit.jupiter.api.Test;
-
-import suite.util.To;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class PriorityQueueTest {
 

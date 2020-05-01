@@ -1,11 +1,11 @@
 package suite.lp.kb;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import primal.Verbs.Equals;
 import suite.lp.doer.Cloner;
 import suite.node.Node;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class LinearRuleSet implements RuleSet {
 

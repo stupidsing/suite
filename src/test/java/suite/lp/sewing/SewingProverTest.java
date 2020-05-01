@@ -1,10 +1,6 @@
 package suite.lp.sewing;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import org.junit.jupiter.api.Test;
-
 import primal.fp.Funs.Source;
 import suite.Suite;
 import suite.lp.Configuration.ProverCfg;
@@ -17,6 +13,9 @@ import suite.node.Tree;
 import suite.node.io.TermOp;
 import suite.node.tree.TreeTuple;
 import suite.os.Stopwatch;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class SewingProverTest {
 

@@ -1,12 +1,12 @@
 package suite.math;
 
-import java.nio.ByteBuffer;
-import java.util.Arrays;
-import java.util.Base64;
-
 import primal.primitive.IntLngSink;
 import primal.primitive.IntVerbs.CopyInt;
 import primal.primitive.adt.Bytes;
+
+import java.nio.ByteBuffer;
+import java.util.Arrays;
+import java.util.Base64;
 
 /**
  * https://en.wikipedia.org/wiki/SHA-2

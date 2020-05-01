@@ -1,12 +1,12 @@
 package suite.persistent;
 
-import java.util.List;
-
 import primal.MoreVerbs.Read;
 import primal.Verbs.Copy;
 import primal.fp.Funs2.BinOp;
 import primal.primitive.adt.pair.IntObjPair;
 import primal.streamlet.Streamlet;
+
+import java.util.List;
 
 /**
  * Bitmap list.

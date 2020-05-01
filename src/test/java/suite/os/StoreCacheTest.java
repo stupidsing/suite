@@ -1,7 +1,6 @@
 package suite.os;
 
 import org.junit.jupiter.api.Test;
-
 import suite.cfg.Defaults;
 import suite.node.util.Singleton;
 import suite.streamlet.As;

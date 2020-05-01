@@ -1,15 +1,5 @@
 package suite.trade.data;
 
-import static java.lang.Math.max;
-import static primal.statics.Fail.fail;
-import static primal.statics.Rethrow.ex;
-
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Objects;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
 import primal.MoreVerbs.Read;
 import primal.Verbs.Compare;
 import primal.Verbs.Equals;
@@ -22,6 +12,16 @@ import suite.primitive.Bytes_;
 import suite.streamlet.As;
 import suite.streamlet.ReadBytes;
 import suite.util.To;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Objects;
+import java.util.SortedSet;
+import java.util.TreeSet;
+
+import static java.lang.Math.max;
+import static primal.statics.Fail.fail;
+import static primal.statics.Rethrow.ex;
 
 public class TextDatabase {
 

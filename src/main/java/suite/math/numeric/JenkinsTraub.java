@@ -1,15 +1,13 @@
 package suite.math.numeric;
 
-import static java.lang.Math.PI;
-import static java.lang.Math.abs;
-import static java.lang.Math.sqrt;
-import static primal.statics.Fail.fail;
+import suite.math.Complex;
+import suite.util.To;
 
 import java.util.Arrays;
 import java.util.Random;
 
-import suite.math.Complex;
-import suite.util.To;
+import static java.lang.Math.*;
+import static primal.statics.Fail.fail;
 
 public class JenkinsTraub {
 

@@ -1,9 +1,9 @@
 package suite.trade.data;
 
-import static suite.util.Streamlet_.forInt;
-
 import primal.primitive.ChrMoreVerbs.ReadChr;
 import suite.http.HttpClient;
+
+import static suite.util.Streamlet_.forInt;
 
 public class Aastocks {
 

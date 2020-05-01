@@ -1,8 +1,8 @@
 package suite.concurrent;
 
-import java.util.Random;
-
 import primal.Verbs.Sleep;
+
+import java.util.Random;
 
 public class Backoff {
 

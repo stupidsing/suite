@@ -1,10 +1,6 @@
 package suite.concurrent;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import org.junit.jupiter.api.Test;
-
 import primal.MoreVerbs.Read;
 import primal.Verbs.Sleep;
 import primal.adt.BooMutable;
@@ -12,6 +8,9 @@ import primal.persistent.PerList;
 import suite.concurrent.Mutex.MutexLock;
 import suite.concurrent.stm.Concurrent.DeadlockException;
 import suite.streamlet.As;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class MutexTest {
 

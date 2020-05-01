@@ -1,16 +1,15 @@
 package suite.concurrent;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static primal.statics.Fail.fail;
-import static suite.util.Streamlet_.forInt;
-
-import java.util.concurrent.atomic.AtomicInteger;
-
 import org.junit.jupiter.api.Test;
-
 import primal.Verbs.New;
 import primal.Verbs.Sleep;
 import primal.Verbs.Start;
+
+import java.util.concurrent.atomic.AtomicInteger;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static primal.statics.Fail.fail;
+import static suite.util.Streamlet_.forInt;
 
 public class RunOnceTest {
 

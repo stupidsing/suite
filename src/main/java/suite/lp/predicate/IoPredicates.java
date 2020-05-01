@@ -1,14 +1,5 @@
 package suite.lp.predicate;
 
-import static primal.statics.Rethrow.ex;
-
-import java.io.IOException;
-import java.io.PrintStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.time.LocalDateTime;
-import java.util.concurrent.TimeUnit;
-
 import primal.Nouns.Utf8;
 import primal.Verbs.ReadString;
 import primal.Verbs.WriteFile;
@@ -23,6 +14,15 @@ import suite.node.io.Formatter;
 import suite.node.util.SuiteException;
 import suite.os.FileUtil;
 import suite.util.To;
+
+import java.io.IOException;
+import java.io.PrintStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.util.concurrent.TimeUnit;
+
+import static primal.statics.Rethrow.ex;
 
 public class IoPredicates {
 

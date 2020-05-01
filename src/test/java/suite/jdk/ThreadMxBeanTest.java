@@ -1,9 +1,9 @@
 package suite.jdk;
 
+import org.junit.jupiter.api.Test;
+
 import java.lang.Thread.State;
 import java.lang.management.ManagementFactory;
-
-import org.junit.jupiter.api.Test;
 
 public class ThreadMxBeanTest {
 

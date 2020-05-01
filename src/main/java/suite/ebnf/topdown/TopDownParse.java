@@ -1,12 +1,5 @@
 package suite.ebnf.topdown;
 
-import static primal.statics.Fail.fail;
-
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.List;
-import java.util.Map;
-
 import primal.MoreVerbs.Read;
 import primal.Verbs.Equals;
 import primal.fp.Funs.Source;
@@ -17,6 +10,13 @@ import suite.ebnf.Grammar;
 import suite.ebnf.Grammar.GrammarType;
 import suite.ebnf.topdown.Expect.ExpectFun;
 import suite.primitive.Coord;
+
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.List;
+import java.util.Map;
+
+import static primal.statics.Fail.fail;
 
 /**
  * Backtracking LL parser for Backus-Naur form grammars.

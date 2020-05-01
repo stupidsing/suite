@@ -1,21 +1,13 @@
 package suite.java7util;
 
+import com.jcraft.jsch.*;
+import primal.Verbs.Sleep;
+import suite.util.Copy;
+
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
-
-import com.jcraft.jsch.Channel;
-import com.jcraft.jsch.ChannelExec;
-import com.jcraft.jsch.ChannelSftp;
-import com.jcraft.jsch.JSch;
-import com.jcraft.jsch.JSchException;
-import com.jcraft.jsch.Session;
-import com.jcraft.jsch.SftpException;
-import com.jcraft.jsch.UserInfo;
-
-import primal.Verbs.Sleep;
-import suite.util.Copy;
 
 @Deprecated
 public class Ssh {

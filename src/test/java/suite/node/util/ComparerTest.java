@@ -1,12 +1,11 @@
 package suite.node.util;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import org.junit.jupiter.api.Test;
-
 import suite.Suite;
 import suite.node.Int;
 import suite.node.Reference;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ComparerTest {
 

@@ -1,7 +1,6 @@
 package suite.ansi;
 
 import com.sun.jna.Native;
-
 import primal.Verbs.Sleep;
 import suite.ansi.Termios.AnsiColor;
 

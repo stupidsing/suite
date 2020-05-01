@@ -1,13 +1,6 @@
 package suite.trade.analysis;
 
-import static java.lang.Math.abs;
-import static java.lang.Math.max;
-import static suite.util.Streamlet_.forInt;
-
-import java.util.Arrays;
-
 import org.junit.jupiter.api.Test;
-
 import primal.os.Log_;
 import primal.primitive.FltMoreVerbs.ReadFlt;
 import primal.primitive.IntMoreVerbs.ReadInt;
@@ -29,6 +22,12 @@ import suite.ts.CalculateReturns.BuySell;
 import suite.ts.Quant;
 import suite.ts.TimeSeries;
 import suite.util.To;
+
+import java.util.Arrays;
+
+import static java.lang.Math.abs;
+import static java.lang.Math.max;
+import static suite.util.Streamlet_.forInt;
 
 // mvn test -Dtest=AnalyzeTimeSeriesTest#test
 public class AnalyzeTimeSeriesTest {

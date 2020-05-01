@@ -1,10 +1,10 @@
 package suite.file;
 
-import java.io.Closeable;
-import java.util.List;
-
 import primal.primitive.adt.Bytes;
 import suite.file.ExtentAllocator.Extent;
+
+import java.io.Closeable;
+import java.util.List;
 
 public interface ExtentFile extends Closeable {
 

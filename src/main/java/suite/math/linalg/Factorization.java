@@ -1,11 +1,11 @@
 package suite.math.linalg;
 
-import static java.lang.Math.sqrt;
+import primal.adt.Pair;
+import suite.util.To;
 
 import java.util.Random;
 
-import primal.adt.Pair;
-import suite.util.To;
+import static java.lang.Math.sqrt;
 
 public class Factorization {
 

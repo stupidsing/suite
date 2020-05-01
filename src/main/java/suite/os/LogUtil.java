@@ -1,12 +1,12 @@
 package suite.os;
 
-import java.lang.reflect.InvocationTargetException;
-
 import primal.Verbs.Build;
 import primal.fp.Funs.Source;
 import primal.os.Log_;
 import suite.inspect.Dump;
 import suite.jdk.proxy.Intercept;
+
+import java.lang.reflect.InvocationTargetException;
 
 public class LogUtil {
 

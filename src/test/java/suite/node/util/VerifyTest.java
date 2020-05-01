@@ -1,9 +1,6 @@
 package suite.node.util;
 
-import static primal.statics.Fail.fail;
-
 import org.junit.jupiter.api.Test;
-
 import primal.fp.Funs.Fun;
 import primal.fp.Funs2.Fun2;
 import primal.os.Log_;
@@ -19,6 +16,8 @@ import suite.node.Tree;
 import suite.node.io.Formatter;
 import suite.node.io.SwitchNode;
 import suite.node.io.TermOp;
+
+import static primal.statics.Fail.fail;
 
 /**
  * TODO ZFC

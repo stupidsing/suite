@@ -1,12 +1,12 @@
 package suite.trade;
 
-import java.util.ArrayList;
-
 import primal.MoreVerbs.Read;
 import primal.Verbs.Equals;
 import primal.Verbs.Get;
 import primal.adt.Range;
 import primal.streamlet.Streamlet;
+
+import java.util.ArrayList;
 
 public class TimeRange extends Range<Time> {
 

@@ -1,6 +1,10 @@
 package suite.sample;
 
-import static primal.statics.Fail.fail;
+import primal.MoreVerbs.Read;
+import primal.os.Log_;
+import suite.os.Listen;
+import suite.util.Copy;
+import suite.util.RunUtil;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -9,11 +13,7 @@ import java.io.OutputStream;
 import java.util.HashSet;
 import java.util.Set;
 
-import primal.MoreVerbs.Read;
-import primal.os.Log_;
-import suite.os.Listen;
-import suite.util.Copy;
-import suite.util.RunUtil;
+import static primal.statics.Fail.fail;
 
 public class TelnetServerMain {
 

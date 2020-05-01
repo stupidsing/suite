@@ -1,15 +1,15 @@
 package suite.debian;
 
+import primal.MoreVerbs.Read;
+import primal.Verbs.Equals;
+import primal.streamlet.Streamlet;
+import suite.util.To;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.GZIPInputStream;
-
-import primal.MoreVerbs.Read;
-import primal.Verbs.Equals;
-import primal.streamlet.Streamlet;
-import suite.util.To;
 
 public class AptUtil {
 

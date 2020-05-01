@@ -1,6 +1,10 @@
 package suite.sample;
 
-import static primal.statics.Fail.fail;
+import primal.Nouns.Utf8;
+import suite.cfg.Defaults;
+import suite.os.Listen;
+import suite.util.RunUtil;
+import suite.util.To;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,11 +14,7 @@ import java.nio.IntBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
-import primal.Nouns.Utf8;
-import suite.cfg.Defaults;
-import suite.os.Listen;
-import suite.util.RunUtil;
-import suite.util.To;
+import static primal.statics.Fail.fail;
 
 public class SimpleCgiServerMain {
 
