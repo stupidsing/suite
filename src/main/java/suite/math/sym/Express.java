@@ -2,6 +2,7 @@ package suite.math.sym;
 
 import primal.MoreVerbs.Read;
 import primal.fp.Funs2.Fun2;
+import primal.parser.Operator;
 import primal.streamlet.Streamlet;
 import suite.BindArrayUtil.Pattern;
 import suite.Suite;
@@ -9,7 +10,6 @@ import suite.math.sym.Sym.Field;
 import suite.node.Int;
 import suite.node.Node;
 import suite.node.Tree;
-import suite.node.io.Operator;
 import suite.node.io.TermOp;
 import suite.node.util.TreeUtil;
 

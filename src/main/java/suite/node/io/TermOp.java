@@ -1,6 +1,7 @@
 package suite.node.io;
 
 import primal.Verbs.Equals;
+import primal.parser.Operator;
 
 import java.util.List;
 

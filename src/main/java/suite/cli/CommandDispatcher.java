@@ -6,6 +6,7 @@ import primal.Verbs.Substring;
 import primal.Verbs.Take;
 import primal.fp.Funs.Sink;
 import primal.fp.Funs.Source;
+import primal.parser.Commands;
 import suite.Suite;
 import suite.fp.InterpretFunEager;
 import suite.fp.InterpretFunLazy;
@@ -26,7 +27,6 @@ import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.Formatter;
 import suite.node.pp.PrettyPrinter;
-import suite.util.CommandUtil;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -99,7 +99,7 @@ public class CommandDispatcher {
 		var pw = new PrintWriter(writer);
 		var code = true;
 
-		var pair = new CommandUtil<>(InputType.values()).recognize(input);
+		var pair = new Commands<>(InputType.values()).recognize(input);
 		var type = pair.k;
 		input = pair.v.trim();
 

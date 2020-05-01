@@ -2,9 +2,9 @@ package suite.node.parser;
 
 import primal.MoreVerbs.Read;
 import primal.adt.Pair;
-import suite.node.io.Operator;
+import primal.parser.Commands;
+import primal.parser.Operator;
 import suite.node.io.TermOp;
-import suite.util.CommandUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -17,7 +17,7 @@ import java.util.List;
  */
 public class Lexer {
 
-	private CommandUtil<Operator> commandUtil;
+	private Commands<Operator> commands;
 	private String in;
 	private int pos = 0;
 	private Token token0;
@@ -49,7 +49,7 @@ public class Lexer {
 				.filter(operator -> operator != TermOp.TUPLE_)
 				.toMap(Operator::name_);
 
-		commandUtil = new CommandUtil<>(operatorByName);
+		commands = new Commands<>(operatorByName);
 	}
 
 	public Token lex() {
@@ -107,7 +107,7 @@ public class Lexer {
 	}
 
 	private Token detect() {
-		var operator = Pair.fst(commandUtil.recognize(in, pos));
+		var operator = Pair.fst(commands.recognize(in, pos));
 		LexType type;
 
 		if (pos < in.length()) {

@@ -4,8 +4,8 @@ import primal.MoreVerbs.Split;
 import primal.Verbs.Equals;
 import primal.Verbs.ReadLine;
 import primal.io.WriteStream;
+import primal.parser.Commands;
 import suite.os.Listen;
-import suite.util.CommandUtil;
 import suite.util.RunUtil;
 
 import java.io.IOException;
@@ -43,7 +43,7 @@ public class NntpServerMain {
 				String line;
 
 				while (!(line = ReadLine.from(sis)).isEmpty()) {
-					var pair = new CommandUtil<>(NntpCommand.values()).recognize(line.toUpperCase());
+					var pair = new Commands<>(NntpCommand.values()).recognize(line.toUpperCase());
 					var options = pair.v;
 
 					switch (pair.k) {

@@ -1,7 +1,7 @@
 package suite.util;
 
 import org.junit.jupiter.api.Test;
-import suite.node.io.Operator.Assoc;
+import primal.parser.Operator.Assoc;
 
 import java.util.List;
 

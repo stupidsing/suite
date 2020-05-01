@@ -2,8 +2,8 @@ package suite.parser;
 
 import primal.Verbs.Equals;
 import primal.Verbs.Is;
-import suite.node.io.Operator;
-import suite.node.io.Operator.Assoc;
+import primal.parser.Operator;
+import primal.parser.Operator.Assoc;
 import suite.text.Preprocess.Run;
 import suite.text.Segment;
 import suite.util.SmartSplit;

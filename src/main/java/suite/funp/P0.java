@@ -2,12 +2,12 @@ package suite.funp;
 
 import primal.adt.Fixie_.*;
 import primal.adt.Pair;
+import primal.parser.Operator;
 import primal.primitive.adt.IntMutable;
 import suite.assembler.Amd64.OpReg;
 import suite.funp.Funp_.Funp;
 import suite.node.Atom;
 import suite.node.Node;
-import suite.node.io.Operator;
 
 import java.util.ArrayList;
 import java.util.List;

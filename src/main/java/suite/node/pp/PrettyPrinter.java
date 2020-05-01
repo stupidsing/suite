@@ -2,12 +2,12 @@ package suite.node.pp;
 
 import primal.Verbs.Is;
 import primal.Verbs.Trim;
+import primal.parser.Operator;
+import primal.parser.Operator.Assoc;
 import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.Formatter;
-import suite.node.io.Operator;
-import suite.node.io.Operator.Assoc;
 import suite.node.io.TermOp;
 import suite.streamlet.ReadChars;
 

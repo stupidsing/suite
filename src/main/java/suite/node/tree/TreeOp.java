@@ -1,9 +1,9 @@
 package suite.node.tree;
 
 import primal.Verbs.Get;
+import primal.parser.Operator;
 import suite.node.Node;
 import suite.node.Tree;
-import suite.node.io.Operator;
 
 public class TreeOp extends Tree {
 

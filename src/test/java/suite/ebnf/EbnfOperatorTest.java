@@ -2,8 +2,8 @@ package suite.ebnf;
 
 import org.junit.jupiter.api.Test;
 import primal.Verbs.Build;
+import primal.parser.Operator.Assoc;
 import suite.ebnf.lr.LrParse;
-import suite.node.io.Operator.Assoc;
 import suite.node.io.TermOp;
 
 import java.io.IOException;

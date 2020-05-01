@@ -2,10 +2,10 @@ package suite.ebnf;
 
 import primal.Verbs.Substring;
 import primal.adt.Pair;
+import primal.parser.Operator.Assoc;
 import primal.streamlet.Streamlet;
 import suite.ebnf.Grammar.GrammarType;
 import suite.node.io.Escaper;
-import suite.node.io.Operator.Assoc;
 import suite.util.SmartSplit;
 
 import java.util.List;

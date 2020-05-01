@@ -8,12 +8,12 @@ import primal.Verbs.Is;
 import primal.Verbs.Substring;
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
+import primal.parser.Operator.Assoc;
 import primal.persistent.PerMap;
 import primal.primitive.IntIntSink;
 import primal.primitive.adt.IntRange;
 import primal.primitive.adt.pair.IntObjPair;
 import primal.streamlet.Streamlet;
-import suite.node.io.Operator.Assoc;
 
 import java.util.*;
 import java.util.function.Predicate;

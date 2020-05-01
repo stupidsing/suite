@@ -1,6 +1,7 @@
 package suite.funp.p4;
 
 import primal.fp.Funs2.Fun2;
+import primal.parser.Operator;
 import suite.assembler.Amd64;
 import suite.assembler.Amd64.OpMem;
 import suite.assembler.Amd64.OpReg;
@@ -14,7 +15,6 @@ import suite.funp.P2.FunpFramePointer;
 import suite.funp.P2.FunpMemory;
 import suite.funp.P2.FunpOp;
 import suite.funp.P2.FunpOperand;
-import suite.node.io.Operator;
 import suite.node.io.TermOp;
 import suite.node.util.TreeUtil;
 

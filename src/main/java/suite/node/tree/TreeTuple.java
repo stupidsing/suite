@@ -1,9 +1,9 @@
 package suite.node.tree;
 
 import primal.Verbs.Get;
+import primal.parser.Operator;
 import suite.node.Node;
 import suite.node.Tree;
-import suite.node.io.Operator;
 import suite.node.io.TermOp;
 
 public class TreeTuple extends Tree {

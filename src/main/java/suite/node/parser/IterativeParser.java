@@ -2,11 +2,11 @@ package suite.node.parser;
 
 import primal.Verbs.Is;
 import primal.fp.Funs.Sink;
+import primal.parser.Operator;
+import primal.parser.Operator.Assoc;
 import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Tree;
-import suite.node.io.Operator;
-import suite.node.io.Operator.Assoc;
 import suite.node.io.TermOp;
 import suite.node.parser.Lexer.Token;
 import suite.node.tree.TreeTuple;

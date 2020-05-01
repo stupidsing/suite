@@ -3,9 +3,9 @@ package suite.instructionexecutor;
 import primal.adt.map.BiHashMap;
 import primal.adt.map.BiMap;
 import primal.fp.Funs.Iterate;
+import primal.parser.Operator;
 import suite.Suite;
 import suite.node.Node;
-import suite.node.io.Operator;
 import suite.node.io.TermOp;
 import suite.node.util.Comparer;
 

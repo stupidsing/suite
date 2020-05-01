@@ -1,13 +1,13 @@
 package suite.node.util;
 
 import primal.MoreVerbs.Read;
+import primal.parser.Operator;
 import primal.primitive.IntInt_Int;
 import primal.streamlet.Streamlet;
 import suite.node.Atom;
 import suite.node.Int;
 import suite.node.Node;
 import suite.node.Tree;
-import suite.node.io.Operator;
 import suite.node.io.TermOp;
 import suite.primitive.IntInt_Bool;
 

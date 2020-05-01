@@ -3,6 +3,7 @@ package suite.node.io;
 import primal.MoreVerbs.Read;
 import primal.adt.Pair;
 import primal.fp.Funs.Iterate;
+import primal.parser.Operator;
 import primal.streamlet.Streamlet2;
 import suite.node.*;
 import suite.node.util.Comparer;

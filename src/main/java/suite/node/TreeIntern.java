@@ -1,7 +1,7 @@
 package suite.node;
 
 import primal.Verbs.Get;
-import suite.node.io.Operator;
+import primal.parser.Operator;
 import suite.node.io.SwitchNode;
 
 import java.util.Map;

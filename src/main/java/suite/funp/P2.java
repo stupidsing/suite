@@ -3,6 +3,7 @@ package suite.funp;
 import primal.adt.Fixie_.*;
 import primal.adt.Mutable;
 import primal.adt.Pair;
+import primal.parser.Operator;
 import primal.primitive.adt.IntMutable;
 import primal.primitive.adt.IntRange;
 import suite.assembler.Amd64.OpReg;
@@ -11,7 +12,6 @@ import suite.funp.Funp_.Funp;
 import suite.funp.P0.Fct;
 import suite.funp.P0.FunpStruct;
 import suite.funp.P0.FunpVariable;
-import suite.node.io.Operator;
 
 import java.util.ArrayList;
 import java.util.List;

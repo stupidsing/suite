@@ -1,9 +1,9 @@
 package suite.node.parser;
 
+import primal.parser.Operator;
+import primal.parser.Operator.Assoc;
 import primal.primitive.adt.Chars;
 import primal.primitive.fp.AsChr;
-import suite.node.io.Operator;
-import suite.node.io.Operator.Assoc;
 import suite.node.io.TermOp;
 import suite.node.parser.FactorizeResult.FTerminal;
 import suite.text.Preprocess;
