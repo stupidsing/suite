@@ -2,13 +2,14 @@ package suite.node.parser;
 
 import primal.Verbs.Is;
 import primal.fp.Funs.Sink;
+import primal.parser.Lexer;
+import primal.parser.Lexer.Token;
 import primal.parser.Operator;
 import primal.parser.Operator.Assoc;
 import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.TermOp;
-import suite.node.parser.Lexer.Token;
 import suite.node.tree.TreeTuple;
 import suite.text.Preprocess;
 
@@ -82,7 +83,7 @@ public class IterativeParser {
 			section.isDanglingRight = false;
 		};
 
-		var lex = new Lexer(operators, in);
+		var lex = new Lexer(operators, TermOp.TUPLE_, in);
 		stack.push(new Section(' '));
 		Token token;
 
