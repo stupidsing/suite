@@ -9,12 +9,12 @@ import primal.adt.Fixie_.FixieFun2;
 import primal.adt.Fixie_.FixieFun3;
 import primal.adt.Fixie_.FixieFun4;
 import primal.adt.Pair;
+import primal.parser.Operator;
 import primal.primitive.adt.IntMutable;
 import suite.assembler.Amd64.OpReg;
 import suite.funp.Funp_.Funp;
 import suite.node.Atom;
 import suite.node.Node;
-import suite.node.io.Operator;
 
 public class P0 {
 

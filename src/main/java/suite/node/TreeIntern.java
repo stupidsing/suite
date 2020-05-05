@@ -4,7 +4,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import primal.Verbs.Get;
-import suite.node.io.Operator;
+import primal.parser.Operator;
 import suite.node.io.SwitchNode;
 
 /**

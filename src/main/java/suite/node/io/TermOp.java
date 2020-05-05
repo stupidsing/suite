@@ -3,6 +3,7 @@ package suite.node.io;
 import java.util.List;
 
 import primal.Verbs.Equals;
+import primal.parser.Operator;
 
 public enum TermOp implements Operator {
 

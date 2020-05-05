@@ -6,10 +6,10 @@ import java.util.ArrayList;
 
 import primal.MoreVerbs.Read;
 import primal.adt.Pair;
+import primal.parser.Operator;
+import primal.parser.Operator.Assoc;
 import primal.primitive.ChrPrim.ChrPred;
 import primal.streamlet.Streamlet;
-import suite.node.io.Operator;
-import suite.node.io.Operator.Assoc;
 import suite.streamlet.ReadChars;
 import suite.text.Segment;
 

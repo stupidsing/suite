@@ -1,5 +1,9 @@
 package suite.funp.p0;
 
+import static primal.statics.Rethrow.ex;
+
+import java.io.IOException;
+
 import primal.Verbs.ReadFile;
 import primal.Verbs.ReadString;
 import primal.fp.Funs.Fun;
@@ -16,10 +20,6 @@ import suite.node.Tree;
 import suite.node.io.Formatter;
 import suite.node.io.SwitchNode;
 import suite.node.io.TermOp;
-
-import java.io.IOException;
-
-import static primal.statics.Rethrow.ex;
 
 public class P00Consult {
 

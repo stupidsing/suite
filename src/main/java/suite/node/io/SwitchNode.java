@@ -16,6 +16,7 @@ import primal.adt.Fixie_.FixieFun5;
 import primal.adt.Fixie_.FixieFun6;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Source;
+import primal.parser.Operator;
 import suite.BindArrayUtil.Pattern;
 import suite.Suite;
 import suite.fp.Matcher;

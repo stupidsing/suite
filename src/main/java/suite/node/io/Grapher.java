@@ -15,6 +15,7 @@ import primal.Verbs.Build;
 import primal.Verbs.Equals;
 import primal.adt.IdentityKey;
 import primal.adt.Pair;
+import primal.parser.Operator;
 import primal.primitive.IntMoreVerbs.ReadInt;
 import primal.primitive.IntPrim;
 import primal.primitive.adt.map.IntObjMap;

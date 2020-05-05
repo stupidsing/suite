@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Set;
 
 import primal.fp.Funs.Fun;
-import suite.node.io.Operator;
+import primal.parser.Operator;
 import suite.parser.CommentPreprocessor;
 import suite.parser.IndentationPreprocessor;
 import suite.parser.WhitespacePreprocessor;
