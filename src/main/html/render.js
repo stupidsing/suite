@@ -459,7 +459,7 @@ loadedmodule = globalThis.render = evalscript('fun.js').then(({ read, }) => {
 			);
 	};
 
-	let rd_parse = (env, s) => {
+	let rd_parse0 = (env, s) => {
 		let parseLambda = (v, s) => {
 			let e = s.startsWith('{') && s.endsWith('}') ? s : '(' + s + ')';
 			return eval(v + ' => ' + e);
@@ -544,6 +544,60 @@ loadedmodule = globalThis.render = evalscript('fun.js').then(({ read, }) => {
 		let parseDomNodes = nodes => rd_list(Array.from(nodes).map(parseDom));
 
 		return parseDom(new DOMParser().parseFromString(s, 'text/xml').childNodes[0]);
+	};
+
+	let rd_parse_eval = (env, s0) => {
+		let counter = 0;
+		let q = 0;
+		let p0 = -1, px = -1;
+		let s1 = '';
+
+		for (let i = 0; i < s0.length - 1; i++)
+			if (s0[i] === '{' && s0[i + 1] === '<') {
+				if (q === 0) {
+					p0 = i;
+					s1 += s0.substring(px + 1, p0);
+				}
+				q++;
+				i++;
+			} else if (s0[i] === '>' && s0[i + 1] === '}') {
+				q--;
+				i++;
+				if (q === 0 && 0 <= p0) {
+					px = i;
+					s1 += '`' + s0.substring(p0 + 1, px) + '`';
+				}
+			}
+
+		s1 += s0.substring(px + 1);
+
+		return eval(s1);
+	};
+
+	let rd_parse = (env, s0) => {
+		let counter = 0;
+		let q = 0;
+		let p0 = -1, px = -1;
+		let s1 = '';
+
+		for (let i = 0; i < s0.length; i++)
+			if (q === 0 && s0[i] === '#' && s0[i + 1] === '{') {
+				p0 = i;
+				i++;
+				s1 += s0.substring(px + 1, p0);
+			} else if (q === 0 && 0 <= p0 && s0[i] === '}') {
+				px = i;
+				let vn = 'v' + counter++;
+				env[vn] = rd_parse_eval(env, 'vm => ' + s0.substring(p0 + 1, i + 1));
+				s1 = s0.substring(0, p0) + `'env.${vn}'`;
+			} else if (s0[i] === '{')
+				q++;
+			else if (s0[i] === '}')
+				q--;
+
+		s1 += s0.substring(px + 1);
+
+		return rd_parse0(env, s1);
 	};
 
 	let rd = {
