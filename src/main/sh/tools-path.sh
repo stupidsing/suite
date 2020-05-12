@@ -59,7 +59,7 @@ tp_eksctl() {
 
 tp_gh() {
 	# https://github.com/cli/cli/releases/latest
-	$(cchs "echo https://github.com/cli/cli/releases/download/v0.5.7/gh_0.5.7_linux_amd64.tar.gz" @curl @tar-zxf @dir)/bin/gh $@
+	$(cchs "echo https://github.com/cli/cli/releases/download/v0.7.0/gh_0.7.0_linux_amd64.tar.gz" @curl @tar-zxf @dir)/bin/gh $@
 }
 
 tp_google_java_format() {
