@@ -26,7 +26,7 @@ public class LimitOrderBookTest {
 			}
 		};
 
-		var lob = new LimitOrderBook<String>(listener);
+		var lob = new LimitOrderBook<>(listener);
 
 		var o = new Object() {
 			private LimitOrderBook<String>.Order newOrder(float price, int buySell) {
