@@ -100,7 +100,7 @@ let defs = [
 		String vn
 		Funp expr
 		Fct fct
-	`],
+	`, `P2.End`],
 	['FunpMemory', `
 		Funp pointer
 		int start
@@ -155,8 +155,8 @@ let defs = [
 		FunpVariable left
 		Funp right
 		Funp expr
-	`],
-].map(([c, members]) => ({ c, members: toObjects(['type', 'name'], members) }));
+	`, `P2.End`],
+].map(([c, members, implements]) => ({ c, members: toObjects(['type', 'name'], members), implements: implements || 'P4.End' }));
 
 let java0 = `package suite.funp;
 
@@ -175,7 +175,7 @@ public class ${clazz} {
 	public interface End {
 	}
 
-	${defs.map(({c, members}) => `public static class ${c} implements Funp, ${[`FunpLambdaCapture`, `FunpTypeAssign`,].includes(c) ? `P2` : `P4`}.End {
+	${defs.map(({c, members, implements}) => `public static class ${c} implements Funp, ${implements} {
 		${members.map(e => `public ${e.type} ${e.name};`).join(`
 		`)}
 
