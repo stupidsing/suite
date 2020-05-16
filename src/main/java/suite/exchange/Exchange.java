@@ -61,7 +61,7 @@ public class Exchange {
 				var orderId = "O" + Get.temp();
 				var key = participantId + ":" + symbolPositionId + ":" + orderId;
 				var lob = lob(symbol);
-				var orderMutable = Mutable.<LimitOrderBook<String>.Order> nil();
+				var orderMutable = Mutable.<LimitOrderBook<String>.Order>nil();
 
 				var position = new Position() {
 					public Order close() {
@@ -134,14 +134,14 @@ public class Exchange {
 
 		return lobBySymbol.computeIfAbsent(symbol, s -> new LimitOrderBook<>(new LobListener<>() {
 			public void handleOrderFulfilled(LimitOrderBook<String>.Order order, float price, int buySell) {
-				pspo(order).map((participantId, symbolPositionId, orderId) -> participantById
-						.get(participantId)
+				pspo(order).map((participantId, symbolPositionId, orderId) -> participantById //
+						.get(participantId) //
 						.record(buySell, symbolPositionId, price, isLeveraged));
 			}
 
 			public void handleOrderDisposed(LimitOrderBook<String>.Order order) {
-				pspo(order).map((participantId, symbolPositionId, orderId) -> participantById
-						.get(participantId)
+				pspo(order).map((participantId, symbolPositionId, orderId) -> participantById //
+						.get(participantId) //
 						.removeOrder(orderId));
 			}
 
