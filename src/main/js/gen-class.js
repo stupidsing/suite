@@ -164,11 +164,11 @@ import java.util.*;
 
 import primal.adt.Fixie_.*;
 import primal.adt.*;
+import primal.parser.Operator;
 import primal.primitive.adt.*;
 import suite.assembler.Amd64.*;
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.*;
-import primal.parser.Operator;
 
 public class ${clazz} {
 
