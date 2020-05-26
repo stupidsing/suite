@@ -105,7 +105,11 @@ let defs = [
 		Funp pointer
 		int start
 		int end
-	`],
+	`, `P4.End`, `
+
+		public int size() {
+			return end - start;
+		}`],
 	['FunpOp', `
 		int opSize
 		Object operator
@@ -156,7 +160,12 @@ let defs = [
 		Funp right
 		Funp expr
 	`, `P2.End`],
-].map(([c, members, implements]) => ({ c, members: toObjects(['type', 'name'], members), implements: implements || 'P4.End' }));
+].map(([c, members, implements, extras]) => ({
+	c,
+	extras: extras || '',
+	implements: implements || 'P4.End',
+	members: toObjects(['type', 'name'], members),
+}));
 
 let java0 = `package suite.funp;
 
@@ -175,7 +184,7 @@ public class ${clazz} {
 	public interface End {
 	}
 
-	${defs.map(({c, members, implements}) => `public static class ${c} implements Funp, ${implements} {
+	${defs.map(({c, extras, implements, members}) => `public static class ${c} implements Funp, ${implements} {
 		${members.map(e => `public ${e.type} ${e.name};`).join(`
 		`)}
 
@@ -188,7 +197,7 @@ public class ${clazz} {
 
 		public <R> R apply(FixieFun${members.length}<${members.map(e => `${objectType(e.type)}, `).join(``)}R> fun) {
 			return fun.apply(${members.map(e => e.name).join(`, `)});
-		}
+		}${extras}
 	}`).join(`
 
 	`)}

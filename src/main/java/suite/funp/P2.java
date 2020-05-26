@@ -1,20 +1,14 @@
 package suite.funp;
 
-import primal.adt.Fixie_.*;
-import primal.adt.Mutable;
-import primal.adt.Pair;
-import primal.parser.Operator;
-import primal.primitive.adt.IntMutable;
-import primal.primitive.adt.IntRange;
-import suite.assembler.Amd64.OpReg;
-import suite.assembler.Amd64.Operand;
-import suite.funp.Funp_.Funp;
-import suite.funp.P0.Fct;
-import suite.funp.P0.FunpStruct;
-import suite.funp.P0.FunpVariable;
+import java.util.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import primal.adt.Fixie_.*;
+import primal.adt.*;
+import primal.parser.Operator;
+import primal.primitive.adt.*;
+import suite.assembler.Amd64.*;
+import suite.funp.Funp_.Funp;
+import suite.funp.P0.*;
 
 public class P2 {
 
@@ -168,8 +162,12 @@ public class P2 {
 	}
 
 	public static class FunpFramePointer implements Funp, P4.End {
+
+
 		public static FunpFramePointer of() {
-			return new FunpFramePointer();
+			var f = new FunpFramePointer();
+
+			return f;
 		}
 
 		public <R> R apply(FixieFun0<R> fun) {
@@ -287,13 +285,7 @@ public class P2 {
 		public Funp expr;
 		public Fct fct;
 
-		public static FunpLambdaCapture of(
-				FunpVariable fpIn,
-				FunpVariable frameVar,
-				FunpStruct struct,
-				String vn,
-				Funp expr,
-				Fct fct) {
+		public static FunpLambdaCapture of(FunpVariable fpIn, FunpVariable frameVar, FunpStruct struct, String vn, Funp expr, Fct fct) {
 			var f = new FunpLambdaCapture();
 			f.fpIn = fpIn;
 			f.frameVar = frameVar;
