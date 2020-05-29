@@ -2,6 +2,21 @@ define.global io := consult "io.fp" ~
 
 consult "linux.fp" ~
 
+define.function !list.build () := do!
+	let list := !new^ { elems: (array 32 * number), size: number, } ~
+	{
+		!append elem := do!
+			let size_ := list*/size ~
+			if (size_ < 32) then (
+				!assign list*/elems [size_] := elem ~
+				!assign list*/size := size_ + 1 ~
+				()
+			)
+			else error
+		~
+		!get () := list ~
+	}
+~
 
 define.function !list.iter list := do!
 	type list = { elems: (array 32 * number), size: number, } ~
