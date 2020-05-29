@@ -22,7 +22,7 @@ import primal.persistent.PerList;
  */
 public class Fut<T> {
 
-	private CasReference<Holder> ref = new CasReference<>(new H0Running(PerList.end()));
+	private CasReference<Holder> ref;
 
 	public interface Holder {
 	}
@@ -95,7 +95,23 @@ public class Fut<T> {
 		return new Fut<>();
 	}
 
+	public static <T> Fut<T> ofCompleted(T t) {
+		return new Fut<>(t, null);
+	}
+
+	public static <T> Fut<T> ofError(Exception ex) {
+		return new Fut<>(null, ex);
+	}
+
+	private Fut(T t, Exception ex) {
+		var h1 = new H1Completed();
+		h1.t = t;
+		h1.ex = ex;
+		ref = new CasReference<>(h1);
+	}
+
 	private Fut() {
+		ref = new CasReference<>(new H0Running(PerList.end()));
 	}
 
 	public void complete(T t) {

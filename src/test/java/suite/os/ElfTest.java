@@ -93,6 +93,13 @@ public class ElfTest {
 	}
 
 	@Test
+	public void testIter() {
+		var program = "do! (consult iter.fp)/!iter {}";
+		elf.write(offset -> Funp_.main(false).compile(offset, program).v, Tmp.path("iter"));
+		elf.write(offset -> Funp_.main(true).compile(offset, program).v, Tmp.path("iter"));
+	}
+
+	@Test
 	public void testNumbers() {
 		test(0, "" //
 				+ "let { !get.number, !put.number, } := consult io.fp ~ \n" //
