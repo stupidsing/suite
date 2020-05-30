@@ -87,7 +87,7 @@ public class Amd64Parse {
 		opMem.disp = opDisp;
 
 		Node[] m;
-		OpReg reg;
+		OpReg reg = null;
 
 		for (var component : scan(node, ".0 + .1"))
 			if ((m = Suite.pattern(".0 * .1").match(component)) != null)
