@@ -1,13 +1,12 @@
 package suite.funp;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static primal.statics.Fail.fail;
-
 import org.junit.jupiter.api.Test;
-
 import primal.os.Log_;
 import primal.primitive.adt.Bytes;
 import suite.assembler.Amd64Interpret;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static primal.statics.Fail.fail;
 
 public class FunpTest {
 
@@ -200,6 +199,28 @@ public class FunpTest {
 				+ "	let p := !new^ 456 ~ \n" //
 				+ "	let v := p* ~ \n" //
 				+ "	!delete^ p ~ v \n" //
+				+ ")");
+		test(1, "define.function !list.iter list := do! \n" //
+				+ "     type list = { elems: address.of (array 3 * number), size: number, } ~ \n" //
+				+ "     let { elems, size, } := list ~ \n" //
+				+ "     let i := !new^ 0 ~ \n" //
+				+ "     { \n" //
+				+ "             !free () := do! (!delete^ i ~ ()) ~ \n" //
+				+ "             has.next () := i* < size ~ \n" //
+				+ "             !next () := do! \n" //
+				+ "                     let i_ := i* ~ \n" //
+				+ "                     !assign i* := i_ + 1 ~ \n" //
+				+ "                     elems* [i_] \n" //
+				+ "             ~ \n" //
+				+ "     } \n" //
+				+ "~ \n" //
+				+ "do! ( \n" //
+				+ "     let elems := !new^ [1, 2, 3,] ~ \n" //
+				+ "     let iter := !list.iter { elems, size: 3, } ~ \n" //
+				+ "     let v := iter/!next () ~ \n" //
+				+ "     iter/!free () ~ \n" //
+				+ "     !delete^ elems ~ \n" //
+				+ "     v \n" //
 				+ ")");
 	}
 

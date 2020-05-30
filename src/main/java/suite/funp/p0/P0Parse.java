@@ -368,6 +368,9 @@ public class P0Parse {
 		}
 
 		private boolean isBang(Node n) {
+			Tree t;
+			while ((t = Tree.decompose(n, TermOp.ITEM__)) != null)
+				n = t.getRight();
 			return n instanceof Atom && Atom.name(n).startsWith("!");
 		}
 
