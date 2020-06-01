@@ -230,6 +230,11 @@ public class Amd64Interpret {
 				case OR -> assign.f(setFlags(source0 | source1));
 				case POP -> assign.f(pop());
 				case PUSH -> push(source0);
+				case RDTSC, RDTSCP -> {
+					var ts = System.currentTimeMillis();
+					regs[eax] = (int) ts;
+					regs[edx] = (int) (ts >> 32);
+				}
 				case REMARK -> jumpIf(false, 0);
 				case REP -> {
 					r = getNextRepeatInsn(instructions);

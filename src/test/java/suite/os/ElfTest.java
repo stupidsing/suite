@@ -94,9 +94,16 @@ public class ElfTest {
 
 	@Test
 	public void testIter() {
-		var program = "do! (consult iter.fp)/!iter {}";
-		elf.write(offset -> Funp_.main(false).compile(offset, program).v, Tmp.path("iter"));
-		elf.write(offset -> Funp_.main(true).compile(offset, program).v, Tmp.path("iter"));
+		// var program = "do! (consult iter.fp)/!list.iter []";
+		var program = "" //
+				+ "let { !list.iter, } := consult iter.fp ~ \n" //
+				+ "do! ( \n" //
+				+ "	let iter := !list.iter { elems: address.of predef (array 32 * 1), size: 3, } ~ \n" //
+				+ "	let v := iter/!next () ~ \n" //
+				+ "	iter/!free () ~ \n" //
+				+ "	v \n" //
+				+ ")";
+		test(1, program, "");
 	}
 
 	@Test
