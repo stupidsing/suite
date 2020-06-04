@@ -68,12 +68,18 @@ define.function list.map f := list => do!
 	fold (
 		b := true #
 		b #
-		if (in/has.next ()) then (out/!append (f (in/!next ())) ~ true) else false #
+		if (in/has.next ()) then (
+			let elem := in/!next () ~
+			out/!append (f elem) ~
+			true
+		) else false #
 		in/!free () ~
 		out/!get ()
 	)
 ~
 
 {
+	list.filter,
 	!list.iter,
+	list.map,
 }
