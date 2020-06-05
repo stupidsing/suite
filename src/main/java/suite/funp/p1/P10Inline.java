@@ -20,6 +20,7 @@ import suite.funp.P0.FunpDefineRec;
 import suite.funp.P0.FunpDoAssignVar;
 import suite.funp.P0.FunpDontCare;
 import suite.funp.P0.FunpField;
+import suite.funp.P0.FunpIo;
 import suite.funp.P0.FunpLambda;
 import suite.funp.P0.FunpNumber;
 import suite.funp.P0.FunpReference;
@@ -157,9 +158,20 @@ public class P10Inline {
 
 		new Object() {
 			public void count(Funp node_) {
+				count(node_, false);
+			}
+
+			public void count(Funp node_, boolean isWithinIo) {
 				inspect.rewrite(node_, Funp.class, n_ -> n_.sw( //
-				).applyIf(FunpDoAssignVar.class, f -> f.apply((var, value, expr) -> {
+				).applyIf(FunpDefine.class, f -> f.apply((vn, value, expr, fdt) -> {
+					if (isWithinIo) // too dangerous to inline imperative code
+						getCount(f).update(9999);
+					return null;
+				})).applyIf(FunpDoAssignVar.class, f -> f.apply((var, value, expr) -> {
 					getCount(var).update(9999);
+					return null;
+				})).applyIf(FunpIo.class, f -> f.apply(expr -> {
+					count(expr, true);
 					return null;
 				})).applyIf(FunpTypeCheck.class, f -> f.apply((left, right, expr) -> {
 					count(expr);
