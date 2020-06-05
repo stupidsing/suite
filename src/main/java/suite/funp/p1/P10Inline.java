@@ -157,10 +157,6 @@ public class P10Inline {
 		var countByDefs = new HashMap<Funp, IntMutable>();
 
 		new Object() {
-			public void count(Funp node_) {
-				count(node_, false);
-			}
-
 			public void count(Funp node_, boolean isWithinIo) {
 				inspect.rewrite(node_, Funp.class, n_ -> n_.sw( //
 				).applyIf(FunpDefine.class, f -> f.apply((vn, value, expr, fdt) -> {
@@ -174,7 +170,7 @@ public class P10Inline {
 					count(expr, true);
 					return null;
 				})).applyIf(FunpTypeCheck.class, f -> f.apply((left, right, expr) -> {
-					count(expr);
+					count(expr, false);
 					return n_;
 				})).applyIf(FunpReference.class, f -> f.apply(expr -> {
 					getCount(expr).update(9999);
@@ -188,7 +184,7 @@ public class P10Inline {
 			private IntMutable getCount(Funp var) {
 				return countByDefs.computeIfAbsent(defByVariables.get(var), v -> IntMutable.of(0));
 			}
-		}.count(node);
+		}.count(node, false);
 
 		var zero = IntMutable.of(0);
 
