@@ -164,25 +164,31 @@ public class P10Inline {
 						getCount(f).update(9999);
 					return null;
 				})).applyIf(FunpDoAssignVar.class, f -> f.apply((var, value, expr) -> {
-					getCount(var).update(9999);
+					getVariableCount(var).update(9999);
 					return null;
 				})).applyIf(FunpIo.class, f -> f.apply(expr -> {
 					count(expr, true);
-					return null;
+					return n_;
 				})).applyIf(FunpTypeCheck.class, f -> f.apply((left, right, expr) -> {
-					count(expr, false);
+					count(expr, isWithinIo);
 					return n_;
 				})).applyIf(FunpReference.class, f -> f.apply(expr -> {
-					getCount(expr).update(9999);
+					if (expr instanceof FunpVariable)
+						getVariableCount((FunpVariable) expr).update(9999);
 					return null;
 				})).applyIf(FunpVariable.class, f -> f.apply(vn -> {
-					getCount(f).increment();
+					getVariableCount(f).increment();
 					return null;
 				})).result());
 			}
 
-			private IntMutable getCount(Funp var) {
-				return countByDefs.computeIfAbsent(defByVariables.get(var), v -> IntMutable.of(0));
+			private IntMutable getVariableCount(FunpVariable var) {
+				var def = defByVariables.get(var);
+				return getCount(def);
+			}
+
+			private IntMutable getCount(Funp def) {
+				return countByDefs.computeIfAbsent(def, v -> IntMutable.of(0));
 			}
 		}.count(node, false);
 
