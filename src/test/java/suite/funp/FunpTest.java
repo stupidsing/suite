@@ -200,7 +200,7 @@ public class FunpTest {
 				+ "	let v := p* ~ \n" //
 				+ "	!delete^ p ~ v \n" //
 				+ ")");
-		test(1, "define.function !list.iter list := do! \n" //
+		test(2, "define.function !list.iter list := do! \n" //
 				+ "     type list = { elems: address.of (array 3 * number), size: number, } ~ \n" //
 				+ "     let { elems, size, } := list ~ \n" //
 				+ "     let i := !new^ 0 ~ \n" //
@@ -217,6 +217,7 @@ public class FunpTest {
 				+ "do! ( \n" //
 				+ "     let elems := !new^ [1, 2, 3,] ~ \n" //
 				+ "     let iter := !list.iter { elems, size: 3, } ~ \n" //
+				+ "     let u := iter/!next () ~ \n" //
 				+ "     let v := iter/!next () ~ \n" //
 				+ "     iter/!free () ~ \n" //
 				+ "     !delete^ elems ~ \n" //
