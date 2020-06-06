@@ -77,8 +77,9 @@ public class P4Alloc {
 	}
 
 	public void dealloc(Compile0 c0, int size, Funp reference) {
+		var pair = getAllocSize(size);
 		var ref = c0.compilePsReg(reference);
-		dealloc_(c0, ref, amd64.imm(size * ps, ps));
+		dealloc_(c0, ref, amd64.imm(pair.t0 * ps, ps));
 	}
 
 	private Fixie3<Compile0, IntIntPair, OpReg> alloc_(Compile0 c0, int size) {
@@ -119,10 +120,12 @@ public class P4Alloc {
 		c2.mov(fcp, ref);
 	}
 
-	private IntIntPair getAllocSize(int size) {
+	private IntIntPair getAllocSize(int size0) {
+		var size1 = Math.max(ps, size0);
+
 		for (var i = 0; i < allocSizes.length; i++) {
 			var allocSize = allocSizes[i];
-			if (size <= allocSize)
+			if (size1 <= allocSize)
 				return IntIntPair.of(i, allocSize);
 		}
 		return fail();
