@@ -26,7 +26,10 @@ public class RunUtil {
 
 	public static boolean isLinux() {
 		var os = System.getenv("OS");
-		return os == null || !os.startsWith("Windows");
+		if (!System.getenv("HOME").startsWith("/Users"))
+			return os == null || !os.startsWith("Windows");
+		else // mac
+			return false;
 	}
 
 	public static boolean isLinux64() {
