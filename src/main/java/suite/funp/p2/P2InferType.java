@@ -621,7 +621,9 @@ public class P2InferType {
 				unify(n, typeRefOf(t), typeOf(reference));
 				return FunpHeapDealloc.of(isDynamicSize, getTypeSize(t), erase(reference), erase(expr));
 			})).applyIf(FunpDoHeapNew.class, f -> f.apply(isDynamicSize -> {
-				return FunpHeapAlloc.of(isDynamicSize, getTypeSize(typeOf(f)));
+				var t = new Reference();
+				unify(n, typeRefOf(t), typeOf(f));
+				return FunpHeapAlloc.of(isDynamicSize, getTypeSize(t));
 			})).applyIf(FunpField.class, f -> {
 				return getField(f);
 			}).applyIf(FunpIo.class, f -> f.apply(expr -> {
