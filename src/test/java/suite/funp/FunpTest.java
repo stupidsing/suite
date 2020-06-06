@@ -1,12 +1,13 @@
 package suite.funp;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static primal.statics.Fail.fail;
+
 import org.junit.jupiter.api.Test;
+
 import primal.os.Log_;
 import primal.primitive.adt.Bytes;
 import suite.assembler.Amd64Interpret;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static primal.statics.Fail.fail;
 
 public class FunpTest {
 
@@ -112,8 +113,8 @@ public class FunpTest {
 		test(1, "define { a: 1, b: (() => me/a), c: 3, } ~ b ()");
 		test(4, "define (a, b) := (3, 4) ~ b");
 		test(4, "define [a, b,] := [3, 4,] ~ b");
+		test(4, "define { a, b, } := { a: 3, b: 4, } ~ b");
 		test(4, "define { a: av, b: bv, } := { a: 3, b: 4, } ~ bv");
-
 	}
 
 	@Test
