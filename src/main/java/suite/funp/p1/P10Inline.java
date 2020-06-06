@@ -169,6 +169,9 @@ public class P10Inline {
 				})).applyIf(FunpIo.class, f -> f.apply(expr -> {
 					count(expr, true);
 					return n_;
+				})).applyIf(FunpLambda.class, f -> f.apply((vn, expr, fct) -> {
+					count(expr, false);
+					return n_;
 				})).applyIf(FunpTypeCheck.class, f -> f.apply((left, right, expr) -> {
 					count(expr, isWithinIo);
 					return n_;

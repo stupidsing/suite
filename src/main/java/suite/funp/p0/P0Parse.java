@@ -352,7 +352,7 @@ public class P0Parse {
 		}
 
 		private Funp fold(Node a, Node b, Node c, Node d, Node e) {
-			var lf = nv(doToken).bind(Fdt.L_MONO).lambda(a, true);
+			var lf = bind(Fdt.L_MONO).lambda(a, true);
 			var lc = lf.apply(c);
 			var ld = lf.apply(d);
 			var le = lf.apply(e);
