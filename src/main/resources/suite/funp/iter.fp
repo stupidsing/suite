@@ -79,7 +79,9 @@ define.function list.map f := list => do!
 ~
 
 {
+	!list.build,
 	list.filter,
+	!list.free,
 	!list.iter,
 	list.map,
 }
