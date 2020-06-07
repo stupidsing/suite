@@ -15,6 +15,7 @@ import java.util.Set;
 import java.util.function.BiPredicate;
 
 import primal.MoreVerbs.Read;
+import primal.Verbs.Compare;
 import primal.Verbs.Equals;
 import primal.Verbs.Get;
 import primal.adt.Fixie;
@@ -165,7 +166,7 @@ public class P2InferType {
 
 		if (unify(t, new Infer(PerMap.empty(), checks, null).infer(n2))) {
 			var b = true //
-					&& (Read.from(checks).isAll(Source<Boolean>::g) || failBool("fail type-checks")) //
+					&& (Read.from(checks).isAll(Source::g) || failBool("fail type-checks")) //
 					&& (getTypeSize(t) == is || failBool("invalid return type"));
 
 			if (b) {
@@ -233,7 +234,7 @@ public class P2InferType {
 			})).applyIf(FunpDefine.class, f -> f.apply((vn, value, expr, fdt) -> {
 				var tvalue = infer(value, "definition of variable '" + vn + "'");
 				if (Fdt.isGlobal(fdt))
-					Log_.info(vn + " :: " + tvalue);
+					Log_.info(vn + " :: " + toTypeString(tvalue));
 				return new Infer(env.replace(vn, Pair.of(fdt, tvalue)), checks, me).infer(expr);
 			})).applyIf(FunpDefineRec.class, f -> f.apply((pairs, expr, fdt) -> {
 				var pairs_ = Read.from(pairs);
@@ -1112,8 +1113,8 @@ public class P2InferType {
 	private boolean unify(Funp n, Node type0, Node type1) {
 		return unify(type0, type1) || Funp_.<Boolean> fail(n, "" //
 				+ "cannot unify types between:" //
-				+ "\n:: " + toString(type0) //
-				+ "\n:: " + toString(type1));
+				+ "\n:: " + toTypeString(type0) //
+				+ "\n:: " + toTypeString(type1));
 	}
 
 	private boolean unify(Node type0, Node type1) {
@@ -1188,7 +1189,7 @@ public class P2InferType {
 				size = max(size, getTypeSize(t));
 			return size;
 		} else
-			return Funp_.fail(null, "cannot get size of type '" + toString(n) + "'");
+			return Funp_.fail(null, "cannot get size of type '" + toTypeString(n) + "'");
 	}
 
 	private Collection<Reference> isCompletedStructSet(Node n) {
@@ -1205,8 +1206,49 @@ public class P2InferType {
 			return null;
 	}
 
-	private String toString(Node type) {
-		return type.toString();
+	private String toTypeString(Node n0) {
+		Streamlet2<Node, Reference> pairs;
+		Node[] m, d;
+		var n = n0.finalNode();
+
+		if (n == typeBoolean)
+			return "boolean";
+		else if ((m = typePatDecor.match(n)) != null)
+			if ((d = typeDecorArray.match(m[0])) != null)
+				if (d[0] instanceof Int) {
+					int size = Int.num(d[0]);
+					return "[" + size + "] " + toTypeString(m[1]);
+				} else if (d[0] instanceof Reference)
+					return "[] " + toTypeString(m[1]);
+				else
+					return n.toString();
+			else if ((d = typeDecorIo.match(m[0])) != null)
+				return "io(" + toTypeString(m[1]) + ")";
+			else if ((d = typeDecorRef.match(m[0])) != null)
+				return "*" + toTypeString(m[1]);
+			else
+				return fail();
+		else if ((m = typePatInt.match(n)) != null)
+			return "int" + Int.num(m[0]);
+		else if ((m = typePatLambda.match(n)) != null)
+			return "(" + toTypeString(m[0]) + ") => " + toTypeString(m[1]);
+		else if ((pairs = isCompletedStructList(n)) != null)
+			return Read.from2(pairs).map((k, v) -> k + ":" + toTypeString(v) + ",").toJoinedString("{", "", "}");
+		else if ((m = typePatStruct.match(n)) != null)
+			return Read //
+					.from2(Dict.m(m[1])) //
+					.map((k, v) -> k + ":" + toTypeString(v) + ",") //
+					.sort(Compare::string) //
+					.toJoinedString("{", "", "...}");
+		else if ((m = typePatTag.match(n)) != null) {
+			var dict = Dict.m(m[0]);
+			return Read //
+					.from2(dict) //
+					.map((k, v) -> k + ":" + toTypeString(v) + ",") //
+					.sort(Compare::string) //
+					.toJoinedString("<", "", ">");
+		} else
+			return n.toString();
 	}
 
 }
