@@ -56,13 +56,12 @@ public class FunpTest {
 
 		// unreliable when optimized. the optimizer would substitute the variable
 		// definition that makes the capture1 time latter than the assignment to m.
-		if (Boolean.FALSE)
-			test(31, "" //
-					+ "do! (" //
-					+ "let m := 31 ~ " //
-					+ "let l := capture1 (n => m) ~ " //
-					+ "!assign m := 63 ~ " //
-					+ "15 | l)");
+		test(31, "" //
+				+ "do! (" //
+				+ "let m := 31 ~ " //
+				+ "let l := capture1 (n => m) ~ " //
+				+ "!assign m := 63 ~ " //
+				+ "15 | l)");
 
 		test(0, "define m j := (type j = number ~ 0) ~ 1 | capture1 (n => m 2)");
 
