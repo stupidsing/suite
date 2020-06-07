@@ -169,7 +169,7 @@ public class Funp_ {
 	}
 
 	public static <T> T fail(Funp n, String m0) {
-		var m1 = n != null ? m0 + "\nfor " + n.getClass().getSimpleName() : m0;
+		var m1 = n != null ? m0 + "\nfor construct '" + n.getClass().getSimpleName() + "'" : m0;
 		throw new CompileException(n, m1, null);
 	}
 

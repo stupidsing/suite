@@ -231,7 +231,7 @@ public class P2InferType {
 				unify(n, tf.apply(from), infer(expr));
 				return tf.apply(to);
 			})).applyIf(FunpDefine.class, f -> f.apply((vn, value, expr, fdt) -> {
-				var tvalue = infer(value, vn);
+				var tvalue = infer(value, "definition of variable '" + vn + "'");
 				if (Fdt.isGlobal(fdt))
 					Log_.info(vn + " :: " + tvalue);
 				return new Infer(env.replace(vn, Pair.of(fdt, tvalue)), checks, me).infer(expr);
@@ -249,7 +249,10 @@ public class P2InferType {
 				var infer1 = new Infer(env1, checks, ts);
 
 				for (var pair : pairs_)
-					pair.map((vn, v) -> unify(n, env1.getOrFail(vn).v, infer1.infer(v, vn)));
+					pair.map((vn, v) -> unify( //
+							n, //
+							env1.getOrFail(vn).v, //
+							infer1.infer(v, "definition of variable '" + vn + "'")));
 
 				return infer1.infer(expr);
 			})).applyIf(FunpDeref.class, f -> f.apply(pointer -> {
@@ -359,7 +362,9 @@ public class P2InferType {
 
 				var types0 = Read //
 						.from2(pairs) //
-						.<Node, Reference> map2((n_, v) -> Atom.of(n_), (n_, v) -> Reference.of(infer(v, n_)));
+						.<Node, Reference> map2( //
+								(n_, v) -> Atom.of(n_), //
+								(n_, v) -> Reference.of(infer(v, "definition of field '" + n_ + "'")));
 
 				var types1 = isGcStruct_ ? types0.cons(gcclazzField, Reference.of(typeNumberp)) : types0;
 				var types2 = types1.toMap();
@@ -523,10 +528,10 @@ public class P2InferType {
 					var address = Mutable.<Operand> nil();
 					var var = global(address, 0, size);
 					var e1 = new Erase(scope, env.replace(vn, var), me);
-					var value_ = erase(value, vn);
+					var value_ = erase(value, "definition of global variable '" + vn + "'");
 					return FunpAllocGlobal.of(size, value_, e1.erase(expr), address);
 				} else if (Fdt.isLocal(fdt))
-					return defineLocal(f, vn, erase(value, vn), expr, size);
+					return defineLocal(f, vn, erase(value, "definition of local variable '" + vn + "'"), expr, size);
 				else if (Fdt.isSubs(fdt)) {
 					var operands = FunpOperand2.of(Mutable.nil(), Mutable.nil());
 					var var = new Var(f, operands, null, null, IntMutable.of(0), null, 0, size);
@@ -546,7 +551,11 @@ public class P2InferType {
 
 					return Read //
 							.from(assigns) //
-							.fold(expr1, (e, x) -> x.map((vn, v, n_) -> assign(v.get(scope), e1.erase(n_, vn), e)));
+							.fold(expr1, (e, x) -> x //
+									.map((vn, v, n_) -> assign( //
+											v.get(scope), //
+											e1.erase(n_, "definition of record variable '" + vn + "'"), //
+											e)));
 				};
 
 				if (Fdt.isGlobal(fdt)) {
@@ -726,7 +735,7 @@ public class P2InferType {
 
 					if (field != gcclazzField) {
 						var name = Atom.name(field);
-						value = erase(values.get(name), name);
+						value = erase(values.get(name), "definition of field '" + name + "'");
 
 						if (isReference(type)) {
 							var shift = offset0 / ps - 1;
@@ -1104,8 +1113,7 @@ public class P2InferType {
 		return unify(type0, type1) || Funp_.<Boolean> fail(n, "" //
 				+ "cannot unify types between:" //
 				+ "\n:: " + toString(type0) //
-				+ "\n:: " + toString(type1) //
-				+ "\nin '" + n.getClass().getSimpleName() + "'");
+				+ "\n:: " + toString(type1));
 	}
 
 	private boolean unify(Node type0, Node type1) {
