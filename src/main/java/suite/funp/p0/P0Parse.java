@@ -401,11 +401,11 @@ public class P0Parse {
 		private int num(Node a) {
 			var s = a instanceof Atom ? Atom.name(a) : null;
 			if (s != null)
-				return s.length() == 1 ? s.charAt(0) : Funp_.fail(null, "not a number");
+				return s.length() == 1 ? s.charAt(0) : Funp_.fail(null, "'" + a + "' is not a number");
 			else if (a instanceof Int)
 				return Int.num(a);
 			else
-				return Funp_.fail(null, "not a number");
+				return Funp_.fail(null, "'" + a + "' is not a number");
 		}
 
 		private Bind bind(Fdt fdt) {

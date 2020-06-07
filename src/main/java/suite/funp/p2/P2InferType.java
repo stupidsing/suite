@@ -450,7 +450,7 @@ public class P2InferType {
 			})).applyIf(FunpVariable.class, f -> {
 				return getVariable(f);
 			}).applyIf(FunpVariableNew.class, f -> f.apply(vn -> {
-				return Funp_.fail(f, "Undefined variable " + vn);
+				return Funp_.fail(f, "Undefined variable '" + vn + "'");
 			})).nonNullResult();
 		}
 
@@ -465,7 +465,7 @@ public class P2InferType {
 			return env //
 					.getOpt(var.vn) //
 					.map(pair -> pair.map((type, tv) -> isCloneType && Fdt.isPoly(type) ? cloneType(tv) : tv)) //
-					.ifNone(() -> Funp_.fail(var, "cannot access " + var.vn + " due to limited scoping")) //
+					.ifNone(() -> Funp_.fail(var, "cannot access '" + var.vn + "' due to limited scoping")) //
 					.g();
 		}
 	}
@@ -924,7 +924,7 @@ public class P2InferType {
 					else
 						return IntRange.of(offset, offset1);
 				}
-			return Funp_.fail(n, "field " + n.field + "not found");
+			return Funp_.fail(n, "field '" + n.field + "' not found");
 		}
 
 		private Funp getVariable(FunpVariable var) {
@@ -1105,7 +1105,7 @@ public class P2InferType {
 				+ "cannot unify types between:" //
 				+ "\n:: " + toString(type0) //
 				+ "\n:: " + toString(type1) //
-				+ "\nin " + n.getClass().getSimpleName());
+				+ "\nin '" + n.getClass().getSimpleName() + "'");
 	}
 
 	private boolean unify(Node type0, Node type1) {
@@ -1115,7 +1115,7 @@ public class P2InferType {
 
 	private Node typeOf(Funp n) {
 		var type = typeByNode.get(n);
-		return type != null ? type.finalNode() : fail("no type information of " + n);
+		return type != null ? type.finalNode() : fail("no type information for '" + n + "'");
 	}
 
 	private Node typeArrayOf(Integer size, Node b) {
@@ -1180,7 +1180,7 @@ public class P2InferType {
 				size = max(size, getTypeSize(t));
 			return size;
 		} else
-			return Funp_.fail(null, "cannot get size of type " + toString(n));
+			return Funp_.fail(null, "cannot get size of type '" + toString(n) + "'");
 	}
 
 	private Collection<Reference> isCompletedStructSet(Node n) {
