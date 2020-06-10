@@ -142,8 +142,8 @@ public class P4GenerateCode {
 	private P4DecomposeOperand p4deOp;
 	private P4Emit p4emit = new P4Emit();
 
-	public P4GenerateCode(boolean isUseEbp) { // or use ESP directly
-		this.isUseEbp = isUseEbp;
+	public P4GenerateCode(Funp_ f) { // or use ESP directly
+		isUseEbp = !f.isOptimize;
 		registerSet = new RegisterSet().mask(isUseEbp ? _bp : null, _sp);
 		p4deOp = new P4DecomposeOperand(isUseEbp);
 	}

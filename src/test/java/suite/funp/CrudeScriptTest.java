@@ -17,13 +17,14 @@ public class CrudeScriptTest {
 
 	@Test
 	public void test() {
-		var p4 = new P4GenerateCode(true);
+		var f = new Funp_(false);
+		var p4 = new P4GenerateCode(f);
 		var isOptimize = false;
 
-		var f0 = new P0CrudeScript().parse("{ return 1 + 2 * 3; }");
-		var f1 = new P10Inline().inline(f0, isOptimize ? 3 : 0, 1, 1, 1, 1, 1);
-		var f2 = new P2InferType().infer(f1);
-		var f3 = new P3Optimize().optimize(f2);
+		var f0 = new P0CrudeScript(f).parse("{ return 1 + 2 * 3; }");
+		var f1 = new P10Inline(f).inline(f0, isOptimize ? 3 : 0, 1, 1, 1, 1, 1);
+		var f2 = new P2InferType(f).infer(f1);
+		var f3 = new P3Optimize(f).optimize(f2);
 		var pair = p4.compile(interpret.codeStart, f3);
 		assertEquals(7, interpret.interpret(pair, Bytes.of()));
 	}

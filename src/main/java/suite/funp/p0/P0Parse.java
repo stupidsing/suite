@@ -81,6 +81,9 @@ public class P0Parse {
 	private int tagId;
 	private Map<String, Integer> idByTag = new HashMap<>();
 
+	public P0Parse(Funp_ f) {
+	}
+
 	public Funp parse(Node node) {
 		return parse(node, PerMap.empty());
 	}

@@ -38,6 +38,9 @@ public class P10Inline {
 
 	private Inspect inspect = Singleton.me.inspect;
 
+	public P10Inline(Funp_ f) {
+	}
+
 	public Funp inline(Funp node, int rounds, int f0, int f1, int f2, int f3, int f4) {
 		node = renameVariables(node);
 

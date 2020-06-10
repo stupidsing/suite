@@ -38,6 +38,9 @@ import suite.node.tree.TreeTuple;
 
 public class P0CrudeScript {
 
+	public P0CrudeScript(Funp_ f) {
+	}
+
 	public Funp parse(String in) { // "{ return 1 + 2 * 3; }"
 		var ebnf = ex(() -> new Ebnf(new FileReader("src/main/ebnf/crude-script.ebnf")));
 		var ast = ebnf.parse("crude-script", in);

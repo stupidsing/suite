@@ -159,6 +159,9 @@ public class P2InferType {
 
 	private boolean isGcStruct = true;
 
+	public P2InferType(Funp_ f) {
+	}
+
 	public Funp infer(Funp n0) {
 		var t = new Reference();
 		var n1 = p2a.extractPredefine(n0);

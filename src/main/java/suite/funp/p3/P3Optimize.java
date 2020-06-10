@@ -30,6 +30,9 @@ public class P3Optimize {
 
 	private int ps = Funp_.pointerSize;
 
+	public P3Optimize(Funp_ f) {
+	}
+
 	public Funp optimize(Funp n) {
 		return inspect.rewrite(n, Funp.class, this::optimize_);
 	}

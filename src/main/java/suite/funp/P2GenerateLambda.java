@@ -97,6 +97,9 @@ public class P2GenerateLambda {
 	private interface Fun_ extends Fun<Value, Value>, Value {
 	}
 
+	public P2GenerateLambda(Funp_ f) {
+	}
+
 	public int eval(Funp f) {
 		var thunk = compile(0, PerMap.empty(), f);
 		var value = thunk.apply(new Rt(null, null));

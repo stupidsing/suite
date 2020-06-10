@@ -5,6 +5,7 @@ import java.util.List;
 import primal.Verbs.Equals;
 import primal.Verbs.Get;
 import primal.adt.Pair;
+import suite.funp.Funp_;
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.Fdt;
 import suite.funp.P0.FunpApply;
@@ -27,6 +28,9 @@ import suite.util.Switch;
 public class P11ReduceTailCall {
 
 	private Inspect inspect = Singleton.me.inspect;
+
+	public P11ReduceTailCall(Funp_ f) {
+	}
 
 	public Funp reduce(Funp node) {
 		return inspect.rewrite(node, Funp.class, node_ -> {

@@ -51,7 +51,7 @@ public class Funp_ {
 	public static int nRegisters = mode.nRegisters;
 	public static Funp framePointer = new FunpFramePointer();
 
-	private boolean isOptimize;
+	public boolean isOptimize;
 
 	public interface Funp extends CastDefaults<Funp> {
 	}
@@ -66,12 +66,12 @@ public class Funp_ {
 		}
 	}
 
-	private Funp_(boolean isOptimize) {
-		this.isOptimize = isOptimize;
-	}
-
 	public static Main main(boolean isOptimize) {
 		return new Funp_(isOptimize).new Main();
+	}
+
+	public Funp_(boolean isOptimize) {
+		this.isOptimize = isOptimize;
 	}
 
 	public class Main {
@@ -79,12 +79,13 @@ public class Funp_ {
 		}
 
 		public Pair<List<Instruction>, Bytes> compile(int offset, String fp) {
-			var p0 = new P0Parse();
-			var p1 = new P10Inline();
-			var p1r = new P11ReduceTailCall();
-			var p2 = new P2InferType();
-			var p3 = new P3Optimize();
-			var p4 = new P4GenerateCode(!isOptimize);
+			var f = Funp_.this;
+			var p0 = new P0Parse(f);
+			var p1 = new P10Inline(f);
+			var p1r = new P11ReduceTailCall(f);
+			var p2 = new P2InferType(f);
+			var p3 = new P3Optimize(f);
+			var p4 = new P4GenerateCode(f);
 
 			var node = Suite.parse(fp);
 			var n0 = p0.parse(node);
@@ -96,9 +97,10 @@ public class Funp_ {
 		}
 
 		public int interpret(Node node) {
-			var p0 = new P0Parse();
-			var p2 = new P2InferType();
-			var p2g = new P2GenerateLambda();
+			var f = Funp_.this;
+			var p0 = new P0Parse(f);
+			var p2 = new P2InferType(f);
+			var p2g = new P2GenerateLambda(f);
 
 			var f0 = p0.parse(node);
 			p2.infer(f0);
