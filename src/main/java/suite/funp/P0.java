@@ -692,9 +692,9 @@ public class P0 {
 	}
 
 	public enum Fct { // capture type
-		ONCE__, // to be freed after first call
 		MANUAL, // to be uncaptured (freed) manually
 		NOSCOP, // do not access variables of outer scope
+		ONCE__, // to be freed after first call
 	}
 
 	public enum Fdt {
