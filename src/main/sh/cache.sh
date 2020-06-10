@@ -56,7 +56,7 @@ cchs() {
 			D0=$(date +%s)
 			D1=$(stat -c %Y ${DF}.pulltime)
 			if (( 900 < ${D0} - ${D1} )); then
-				do-cmd "cd ${DF}/ && git pull --quiet"
+				do-cmd "cd ${DF}/ && git pull --force --quiet"
 				touch ${DF}.pulltime
 			fi
 			COMMIT=$(cd ${DF}/ && git rev-parse HEAD | cut -c1-8)
