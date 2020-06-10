@@ -10,6 +10,7 @@ import primal.fp.Funs.Source;
 import primal.persistent.PerMap;
 import primal.primitive.adt.Bytes;
 import suite.Suite;
+import suite.assembler.Amd64;
 import suite.assembler.Amd64.Instruction;
 import suite.assembler.Amd64Mode;
 import suite.funp.P0.Coerce;
@@ -60,6 +61,7 @@ public class Funp_ extends FunpCfg {
 	}
 
 	public Funp_(boolean isOptimize) {
+		super(Amd64.me, RunUtil.isLinux64());
 		this.isOptimize = isOptimize;
 	}
 
