@@ -26,6 +26,7 @@ import primal.fp.Funs.Fun;
 import primal.fp.Funs.Source;
 import primal.os.Log_;
 import primal.persistent.PerMap;
+import primal.persistent.PerSet;
 import primal.primitive.adt.IntMutable;
 import primal.primitive.adt.IntRange;
 import primal.primitive.adt.map.ObjIntMap;
@@ -1192,11 +1193,6 @@ public class P2InferType {
 			return Funp_.fail(null, "cannot get size of type '" + toTypeString(n) + "'");
 	}
 
-	private Collection<Reference> isCompletedStructSet(Node n) {
-		var m = typePatStruct.match(n);
-		return m != null && m[0] == Atom.TRUE ? Dict.m(m[1]).values() : null;
-	}
-
 	private Streamlet2<Node, Reference> isCompletedStructList(Node n) {
 		var m = typePatStruct.match(n);
 		if (m != null && m[0] == Atom.TRUE) {
@@ -1206,49 +1202,69 @@ public class P2InferType {
 			return null;
 	}
 
-	private String toTypeString(Node n0) {
+	private Collection<Reference> isCompletedStructSet(Node n) {
+		var m = typePatStruct.match(n);
+		return m != null && m[0] == Atom.TRUE ? Dict.m(m[1]).values() : null;
+	}
+
+	private String toTypeString(Node type) {
+		return toTypeString(PerSet.empty(), type);
+	}
+
+	private String toTypeString(PerSet<Integer> set0, Node n0) {
 		Streamlet2<Node, Reference> pairs;
 		Node[] m, d;
 		var n = n0.finalNode();
+		System.out.println(n.toString());
+		var hash = System.identityHashCode(n);
 
-		if (n == typeBoolean)
-			return "boolean";
-		else if ((m = typePatDecor.match(n)) != null)
-			if ((d = typeDecorArray.match(m[0])) != null)
-				if (d[0] instanceof Int) {
-					int size = Int.num(d[0]);
-					return "[" + size + "] " + toTypeString(m[1]);
-				} else if (d[0] instanceof Reference)
-					return "[] " + toTypeString(m[1]);
+		if (!set0.contains(hash)) {
+			var set = set0.add(hash);
+
+			if (n == typeBoolean)
+				return "boolean";
+			else if ((m = typePatDecor.match(n)) != null)
+				if ((d = typeDecorArray.match(m[0])) != null)
+					if (d[0] instanceof Int) {
+						int size = Int.num(d[0]);
+						return "[" + size + "] " + toTypeString(set, m[1]);
+					} else if (d[0] instanceof Reference)
+						return "[] " + toTypeString(set, m[1]);
+					else
+						return n.toString();
+				else if ((d = typeDecorIo.match(m[0])) != null)
+					return "io(" + toTypeString(set, m[1]) + ")";
+				else if ((d = typeDecorRef.match(m[0])) != null)
+					return "*" + toTypeString(set, m[1]);
 				else
-					return n.toString();
-			else if ((d = typeDecorIo.match(m[0])) != null)
-				return "io(" + toTypeString(m[1]) + ")";
-			else if ((d = typeDecorRef.match(m[0])) != null)
-				return "*" + toTypeString(m[1]);
-			else
-				return fail();
-		else if ((m = typePatInt.match(n)) != null)
-			return "int" + Int.num(m[0]);
-		else if ((m = typePatLambda.match(n)) != null)
-			return "(" + toTypeString(m[0]) + ") => " + toTypeString(m[1]);
-		else if ((pairs = isCompletedStructList(n)) != null)
-			return Read.from2(pairs).map((k, v) -> k + ":" + toTypeString(v) + ",").toJoinedString("{", "", "}");
-		else if ((m = typePatStruct.match(n)) != null)
-			return Read //
-					.from2(Dict.m(m[1])) //
-					.map((k, v) -> k + ":" + toTypeString(v) + ",") //
-					.sort(Compare::string) //
-					.toJoinedString("{", "", "...}");
-		else if ((m = typePatTag.match(n)) != null) {
-			var dict = Dict.m(m[0]);
-			return Read //
-					.from2(dict) //
-					.map((k, v) -> k + ":" + toTypeString(v) + ",") //
-					.sort(Compare::string) //
-					.toJoinedString("<", "", ">");
+					return fail();
+			else if ((m = typePatInt.match(n)) != null)
+				return "int" + Int.num(m[0]);
+			else if ((m = typePatLambda.match(n)) != null)
+				return "(" + toTypeString(set, m[0]) + ") => " + toTypeString(set, m[1]);
+			else if ((pairs = isCompletedStructList(n)) != null)
+				return Read //
+						.from2(pairs) //
+						.map((k, v) -> k + ":" + toTypeString(set, v) + ",") //
+						.sort(Compare::string) //
+						.toJoinedString("{", "", "}");
+			else if ((m = typePatStruct.match(n)) != null)
+				return Read //
+						.from2(Dict.m(m[1])) //
+						.map((k, v) -> k + ":" + toTypeString(set, v) + ",") //
+						.sort(Compare::string) //
+						.toJoinedString("{", "", "...}");
+			else if ((m = typePatTag.match(n)) != null) {
+				var dict = Dict.m(m[0]);
+				return Read //
+						.from2(dict) //
+						.map((k, v) -> k + ":" + toTypeString(set, v) + ",") //
+						.sort(Compare::string) //
+						.toJoinedString("<", "", ">");
+			} else
+				return n.toString();
 		} else
-			return n.toString();
+			return "<<recurse>>";
 	}
 
 }
