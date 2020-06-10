@@ -10,9 +10,7 @@ import primal.fp.Funs.Source;
 import primal.persistent.PerMap;
 import primal.primitive.adt.Bytes;
 import suite.Suite;
-import suite.assembler.Amd64;
 import suite.assembler.Amd64.Instruction;
-import suite.assembler.Amd64.OpReg;
 import suite.assembler.Amd64Mode;
 import suite.funp.P0.Coerce;
 import suite.funp.P0.FunpDefine;
@@ -33,20 +31,13 @@ import suite.util.RunUtil;
 
 public class Funp_ extends FunpCfg {
 
-	private static Amd64 amd64 = Amd64.me;
 	private static Inspect inspect = Singleton.me.inspect;
 
 	public static boolean isAmd64 = RunUtil.isLinux64();
 	public static Amd64Mode mode = isAmd64 ? Amd64Mode.LONG64 : Amd64Mode.PROT32;
-	public static int booleanSize = 1;
 	public static int integerSize = mode.opSize;
 	public static int pointerSize = mode.addrSize;
 	public static int pushSize = mode.pushSize;
-	public static OpReg[] integerRegs = amd64.regs(integerSize);
-	public static OpReg[] pointerRegs = amd64.regs(pointerSize);
-	public static OpReg[] pushRegs = amd64.regs(pushSize);
-	public static OpReg _bp = pointerRegs[amd64.bpReg];
-	public static OpReg _sp = pointerRegs[amd64.spReg];
 	public static int nRegisters = mode.nRegisters;
 
 	public boolean isOptimize;

@@ -20,9 +20,10 @@ import suite.assembler.Amd64.OpImmLabel;
 import suite.assembler.Amd64.OpMem;
 import suite.assembler.Amd64.OpReg;
 import suite.assembler.Amd64.Operand;
+import suite.funp.FunpCfg;
 import suite.funp.Funp_;
 
-public class P4Emit {
+public class P4Emit extends FunpCfg {
 
 	private Amd64 amd64 = Amd64.me;
 	private int ps = Funp_.pointerSize;
@@ -153,7 +154,7 @@ public class P4Emit {
 			if (op.baseReg < 0 && op.indexReg < 0)
 				return amd64.imm(op.disp.imm, ps);
 			else if (op.indexReg < 0 && op.disp.imm == 0)
-				return Funp_.pointerRegs[op.baseReg];
+				return pointerRegs[op.baseReg];
 			else
 				return null;
 		}
@@ -207,6 +208,10 @@ public class P4Emit {
 		public OpImmLabel label() {
 			return P4Emit.this.label();
 		}
+	}
+
+	public P4Emit(FunpCfg f) {
+		super(f);
 	}
 
 	public List<Instruction> generate(OpImmLabel in, Sink<Emit> sink, OpImmLabel out) {

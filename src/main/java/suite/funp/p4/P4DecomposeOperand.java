@@ -9,6 +9,7 @@ import suite.assembler.Amd64;
 import suite.assembler.Amd64.OpMem;
 import suite.assembler.Amd64.OpReg;
 import suite.assembler.Amd64.Operand;
+import suite.funp.FunpCfg;
 import suite.funp.Funp_;
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.FunpCoerce;
@@ -21,12 +22,13 @@ import suite.funp.P2.FunpOperand;
 import suite.node.io.TermOp;
 import suite.node.util.TreeUtil;
 
-public class P4DecomposeOperand {
+public class P4DecomposeOperand extends FunpCfg {
 
 	private Amd64 amd64 = Amd64.me;
 	private boolean isUseEbp;
 
-	public P4DecomposeOperand(boolean isUseEbp) {
+	public P4DecomposeOperand(FunpCfg f, boolean isUseEbp) {
+		super(f);
 		this.isUseEbp = isUseEbp;
 	}
 
@@ -88,7 +90,7 @@ public class P4DecomposeOperand {
 				FunpOp tree;
 				for (var n1 : decompose.apply(TermOp.MULT__, n0))
 					if (n1 instanceof FunpFramePointer && isUseEbp && reg == null)
-						reg = Funp_._bp;
+						reg = _bp;
 					else if ((number = isNumber(n1)) != null)
 						scale *= number;
 					else if ((tree = n1.cast(FunpOp.class)) != null //
@@ -109,7 +111,7 @@ public class P4DecomposeOperand {
 			private DecomposeAdd(Funp n0) {
 				for (var n1 : decompose.apply(TermOp.PLUS__, n0))
 					if (n1 instanceof FunpFramePointer && !isUseEbp) {
-						addReg(Funp_._sp, 1);
+						addReg(_sp, 1);
 						disp -= fd;
 					} else {
 						var dec = new DecomposeMult();

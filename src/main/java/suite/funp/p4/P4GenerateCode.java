@@ -83,12 +83,10 @@ public class P4GenerateCode extends FunpCfg {
 	private boolean isAmd64 = Funp_.isAmd64;
 	private Amd64 amd64 = Amd64.me;
 
-	private int bs = Funp_.booleanSize;
+	private int bs = booleanSize;
 	private int is = Funp_.integerSize;
 	private int ps = Funp_.pointerSize;
 	private int pushSize = Funp_.pushSize;
-	private OpReg[] pointerRegs = Funp_.pointerRegs;
-	private OpReg[] pushRegs = Funp_.pushRegs;
 
 	private Amd64Assemble asm = new Amd64Assemble(Funp_.mode);
 
@@ -104,8 +102,6 @@ public class P4GenerateCode extends FunpCfg {
 	private OpReg _cx = pointerRegs[cxReg];
 	private OpReg _si = pointerRegs[siReg];
 	private OpReg _di = pointerRegs[diReg];
-	private OpReg _bp = Funp_._bp;
-	private OpReg _sp = Funp_._sp;
 
 	private RegisterSet registerSet;
 	private boolean isUseEbp;
@@ -141,13 +137,13 @@ public class P4GenerateCode extends FunpCfg {
 
 	private P4Alloc p4alloc = new P4Alloc();
 	private P4DecomposeOperand p4deOp;
-	private P4Emit p4emit = new P4Emit();
+	private P4Emit p4emit = new P4Emit(this);
 
 	public P4GenerateCode(Funp_ f) { // or use ESP directly
 		super(f);
 		isUseEbp = !f.isOptimize;
 		registerSet = new RegisterSet().mask(isUseEbp ? _bp : null, _sp);
-		p4deOp = new P4DecomposeOperand(isUseEbp);
+		p4deOp = new P4DecomposeOperand(this, isUseEbp);
 	}
 
 	public Pair<List<Instruction>, Bytes> compile(int offset, Funp funp) {

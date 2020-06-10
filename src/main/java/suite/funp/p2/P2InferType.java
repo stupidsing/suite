@@ -1171,7 +1171,7 @@ public class P2InferType extends FunpCfg {
 		Node[] m, d;
 		var n = n0.finalNode();
 		if (n == typeBoolean)
-			return Funp_.booleanSize;
+			return booleanSize;
 		else if ((m = typePatDecor.match(n)) != null)
 			if ((d = typeDecorArray.match(m[0])) != null) {
 				int size = Int.num(d[0]);
