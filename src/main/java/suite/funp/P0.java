@@ -22,17 +22,10 @@ public class P0 {
 	}
 
 	public enum Coerce {
-		BYTE(1), // 8 bits
-		NUMBERP(Funp_.pointerSize), // a number with same size as a machine level pointer
-		NUMBER(Funp_.integerSize), // a number with same size as a machine level generic register, 32-bits
-		POINTER(Funp_.pointerSize), // a machine level pointer
-		;
-
-		public final int size;
-
-		Coerce(int size) {
-			this.size = size;
-		}
+		BYTE, // 8 bits
+		NUMBERP, // a number with same size as a machine level pointer
+		NUMBER, // a number with same size as a machine level generic register, 32-bits
+		POINTER, // a machine level pointer
 	};
 
 	public static class FunpAdjustArrayPointer implements Funp, P2.End {
