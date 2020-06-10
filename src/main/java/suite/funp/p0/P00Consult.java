@@ -11,6 +11,7 @@ import primal.io.ReadStream;
 import primal.statics.Rethrow.FunIo;
 import primal.statics.Rethrow.SourceEx;
 import suite.Suite;
+import suite.funp.FunpCfg;
 import suite.funp.Funp_;
 import suite.funp.Funp_.Funp;
 import suite.http.HttpClient;
@@ -21,7 +22,11 @@ import suite.node.io.Formatter;
 import suite.node.io.SwitchNode;
 import suite.node.io.TermOp;
 
-public class P00Consult {
+public class P00Consult extends FunpCfg {
+
+	public P00Consult(FunpCfg f) {
+		super(f);
+	}
 
 	public Node c(Node node) {
 		return new SwitchNode<Node>(node //

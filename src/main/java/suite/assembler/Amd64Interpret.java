@@ -29,7 +29,6 @@ import suite.assembler.Amd64.OpNone;
 import suite.assembler.Amd64.OpReg;
 import suite.assembler.Amd64.OpRemark;
 import suite.assembler.Amd64.Operand;
-import suite.funp.Funp_;
 
 public class Amd64Interpret {
 
@@ -343,13 +342,13 @@ public class Amd64Interpret {
 	}
 
 	private void push(long value) {
-		regs[esp] -= Funp_.pushSize;
-		assignMemory(regs[esp], Funp_.pushSize).f(value);
+		regs[esp] -= Amd64Cfg.pushSize;
+		assignMemory(regs[esp], Amd64Cfg.pushSize).f(value);
 	}
 
 	private long pop() {
-		var i = trim(mem.getLong(index(regs[esp])), Funp_.pushSize);
-		regs[esp] += Funp_.pushSize;
+		var i = trim(mem.getLong(index(regs[esp])), Amd64Cfg.pushSize);
+		regs[esp] += Amd64Cfg.pushSize;
 		return i;
 	}
 

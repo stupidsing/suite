@@ -12,6 +12,7 @@ import primal.primitive.adt.Bytes;
 import suite.Suite;
 import suite.assembler.Amd64;
 import suite.assembler.Amd64.Instruction;
+import suite.assembler.Amd64Cfg;
 import suite.assembler.Amd64Mode;
 import suite.funp.P0.Coerce;
 import suite.funp.P0.FunpDefine;
@@ -28,18 +29,13 @@ import suite.inspect.Inspect;
 import suite.node.Node;
 import suite.node.util.Singleton;
 import suite.object.CastDefaults;
-import suite.util.RunUtil;
 
 public class Funp_ extends FunpCfg {
 
 	private static Inspect inspect = Singleton.me.inspect;
 
-	public static boolean isAmd64 = RunUtil.isLinux64();
-	public static Amd64Mode mode = isAmd64 ? Amd64Mode.LONG64 : Amd64Mode.PROT32;
-	public static int integerSize = mode.opSize;
-	public static int pointerSize = mode.addrSize;
-	public static int pushSize = mode.pushSize;
-	public static int nRegisters = mode.nRegisters;
+	public static boolean isAmd64 = Amd64Cfg.isLongMode;
+	public static Amd64Mode mode = Amd64Cfg.mode;
 
 	public boolean isOptimize;
 
@@ -61,7 +57,7 @@ public class Funp_ extends FunpCfg {
 	}
 
 	public Funp_(boolean isOptimize) {
-		super(Amd64.me, RunUtil.isLinux64());
+		super(Amd64.me, isAmd64);
 		this.isOptimize = isOptimize;
 	}
 
@@ -128,13 +124,13 @@ public class Funp_ extends FunpCfg {
 		return defByVariables;
 	}
 
-	public static int getCoerceSize(Coerce coerce) {
+	public static int getCoerceSize(FunpCfg f, Coerce coerce) {
 		if (coerce == Coerce.BYTE)
 			return 1;
 		else if (coerce == Coerce.NUMBER)
-			return integerSize;
+			return f.integerSize;
 		else if (coerce == Coerce.NUMBERP || coerce == Coerce.POINTER)
-			return pointerSize;
+			return f.pointerSize;
 		else
 			return fail(null, "");
 	}

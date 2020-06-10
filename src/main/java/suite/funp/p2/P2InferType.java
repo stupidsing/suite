@@ -135,8 +135,8 @@ public class P2InferType extends FunpCfg {
 	private P20ExtractPredefine p2a = new P20ExtractPredefine();
 	private P21CaptureLambda p2b = new P21CaptureLambda();
 
-	private int is = Funp_.integerSize;
-	private int ps = Funp_.pointerSize;
+	private int is = integerSize;
+	private int ps = pointerSize;
 	private int maxRegAlloc = Funp_.isAmd64 ? 3 : 2;
 	private String gcclazz = "$clazz";
 	private Node gcclazzField = Atom.of(gcclazz);
@@ -229,7 +229,7 @@ public class P2InferType extends FunpCfg {
 			}).applyIf(FunpCoerce.class, f -> f.apply((from, to, expr) -> {
 				Fun<Coerce, Node> tf = coerce -> {
 					if (coerce == Coerce.BYTE || coerce == Coerce.NUMBER || coerce == Coerce.NUMBERP)
-						return typePatInt.subst(Int.of(Funp_.getCoerceSize(coerce)));
+						return typePatInt.subst(Int.of(Funp_.getCoerceSize(P2InferType.this, coerce)));
 					else if (coerce == Coerce.POINTER)
 						return typeRefOf(new Reference());
 					else
@@ -438,8 +438,10 @@ public class P2InferType extends FunpCfg {
 					ti = typeBoolean;
 				else if (Set.of(TermOp.EQUAL_, TermOp.NOTEQ_).contains(op))
 					ti = new Reference();
-				else
-					ti = typePatInt.subst(size != null ? Int.of(Funp_.getCoerceSize(size)) : new Reference());
+				else {
+					var t = size != null ? Int.of(Funp_.getCoerceSize(P2InferType.this, size)) : new Reference();
+					ti = typePatInt.subst(t);
+				}
 				unify(n, infer(lhs), ti);
 				unify(n, infer(rhs), ti);
 				var cmp = Set.of(TermOp.EQUAL_, TermOp.NOTEQ_, TermOp.LE____, TermOp.LT____).contains(op);

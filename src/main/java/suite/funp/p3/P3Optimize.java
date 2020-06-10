@@ -5,6 +5,7 @@ import primal.adt.Pair;
 import primal.fp.Funs2.Fun2;
 import primal.primitive.IntInt_Int;
 import primal.primitive.adt.IntRange;
+import suite.funp.FunpCfg;
 import suite.funp.Funp_;
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.FunpBoolean;
@@ -24,13 +25,14 @@ import suite.node.util.Singleton;
 import suite.node.util.TreeUtil;
 import suite.primitive.IntInt_Bool;
 
-public class P3Optimize {
+public class P3Optimize extends FunpCfg {
 
 	private Inspect inspect = Singleton.me.inspect;
 
-	private int ps = Funp_.pointerSize;
+	private int ps = pointerSize;
 
 	public P3Optimize(Funp_ f) {
+		super(f);
 	}
 
 	public Funp optimize(Funp n) {

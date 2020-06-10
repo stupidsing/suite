@@ -84,9 +84,8 @@ public class P4GenerateCode extends FunpCfg {
 	private Amd64 amd64 = Amd64.me;
 
 	private int bs = booleanSize;
-	private int is = Funp_.integerSize;
-	private int ps = Funp_.pointerSize;
-	private int pushSize = Funp_.pushSize;
+	private int is = integerSize;
+	private int ps = pointerSize;
 
 	private Amd64Assemble asm = new Amd64Assemble(Funp_.mode);
 
@@ -135,7 +134,7 @@ public class P4GenerateCode extends FunpCfg {
 			entry(TreeUtil.SHL, Insn.SHL), //
 			entry(TreeUtil.SHR, Insn.SHR));
 
-	private P4Alloc p4alloc = new P4Alloc();
+	private P4Alloc p4alloc = new P4Alloc(this);
 	private P4DecomposeOperand p4deOp;
 	private P4Emit p4emit = new P4Emit(this);
 
@@ -256,8 +255,8 @@ public class P4GenerateCode extends FunpCfg {
 				var size1 = r.size();
 				return size0 == size1 ? returnOp(compileCompare(r0, l.start, r1, r.start, size0, isEq)) : fail();
 			})).applyIf(FunpCoerce.class, f -> f.apply((fr, to, expr) -> {
-				var frSize = Funp_.getCoerceSize(fr);
-				var toSize = Funp_.getCoerceSize(to);
+				var frSize = Funp_.getCoerceSize(P4GenerateCode.this, fr);
+				var toSize = Funp_.getCoerceSize(P4GenerateCode.this, to);
 				FunpNumber number;
 
 				if ((number = expr.cast(FunpNumber.class)) != null)
@@ -723,10 +722,10 @@ public class P4GenerateCode extends FunpCfg {
 							em.lea(r, amd64.mem(r1, start1, is));
 							em.lea(_di, amd64.mem(r0, start0, is));
 							em.mov(_si, r);
-							em.mov(_cx, amd64.imm(size / Funp_.pointerSize, is));
+							em.mov(_cx, amd64.imm(size / ps, is));
 							em.emit(Insn.REP);
 							em.emit(isAmd64 ? Insn.MOVSQ : Insn.MOVSD);
-							for (var i = 0; i < size % Funp_.pointerSize; i++)
+							for (var i = 0; i < size % ps; i++)
 								em.emit(Insn.MOVSB);
 						}, _cx, _si, _di);
 					else if (0 < size) {
@@ -911,7 +910,7 @@ public class P4GenerateCode extends FunpCfg {
 				private boolean fill(int size, Funp node) {
 					return new Switch<Boolean>(node //
 					).applyIf(FunpCoerce.class, f -> f.apply((from, to, expr) -> {
-						return fill(Funp_.getCoerceSize(to), expr);
+						return fill(Funp_.getCoerceSize(P4GenerateCode.this, to), expr);
 					})).applyIf(FunpData.class, f -> f.apply(pairs -> {
 						var offset = 0;
 						var b = true;
@@ -977,7 +976,7 @@ public class P4GenerateCode extends FunpCfg {
 		}
 
 		private void compileJumpZero(Funp if_, Operand label) {
-			var op0 = rs.get(Funp_.pushSize);
+			var op0 = rs.get(pushSize);
 			compileByte(if_, op0);
 			em.emit(Insn.OR, op0, op0);
 			em.emit(Insn.JZ, label);
@@ -1081,11 +1080,11 @@ public class P4GenerateCode extends FunpCfg {
 				em.lea(r, amd64.mem(r1, start1, is));
 				em.lea(_di, amd64.mem(r0, start0, is));
 				em.mov(_si, r);
-				em.mov(_cx, amd64.imm(size / Funp_.pointerSize, is));
+				em.mov(_cx, amd64.imm(size / ps, is));
 				em.emit(Insn.REPE);
 				em.emit(isAmd64 ? Insn.CMPSQ : Insn.CMPSD);
 				em.emit(Insn.JNE, neqLabel);
-				for (var i = 0; i < size % Funp_.pointerSize; i++) {
+				for (var i = 0; i < size % ps; i++) {
 					em.emit(Insn.CMPSB);
 					em.emit(Insn.JNE, neqLabel);
 				}

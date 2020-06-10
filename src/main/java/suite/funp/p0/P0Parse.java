@@ -17,6 +17,7 @@ import primal.primitive.adt.IntMutable;
 import primal.streamlet.Streamlet2;
 import suite.Suite;
 import suite.assembler.Amd64;
+import suite.funp.FunpCfg;
 import suite.funp.Funp_;
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.Coerce;
@@ -72,7 +73,7 @@ import suite.node.util.Singleton;
 import suite.node.util.TreeUtil;
 import suite.streamlet.ReadChars;
 
-public class P0Parse {
+public class P0Parse extends FunpCfg {
 
 	private Atom dontCare = Atom.of("_");
 	private Inspect inspect = Singleton.me.inspect;
@@ -82,6 +83,7 @@ public class P0Parse {
 	private Map<String, Integer> idByTag = new HashMap<>();
 
 	public P0Parse(Funp_ f) {
+		super(f);
 	}
 
 	public Funp parse(Node node) {
@@ -89,7 +91,7 @@ public class P0Parse {
 	}
 
 	private Funp parse(Node node0, PerMap<Prototype, Node[]> macros) {
-		var node1 = new P00Consult().c(node0);
+		var node1 = new P00Consult(this).c(node0);
 		var node2 = new P01Expand(macros).e(node1);
 		return new Parse(PerSet.empty()).p(node2);
 	}

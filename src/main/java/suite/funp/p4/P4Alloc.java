@@ -10,17 +10,17 @@ import suite.assembler.Amd64.Insn;
 import suite.assembler.Amd64.OpImm;
 import suite.assembler.Amd64.OpReg;
 import suite.assembler.Amd64.Operand;
-import suite.funp.Funp_;
+import suite.funp.FunpCfg;
 import suite.funp.Funp_.Funp;
 import suite.funp.p4.P4Emit.Emit;
 import suite.funp.p4.P4GenerateCode.Compile0;
 import suite.funp.p4.P4GenerateCode.CompileOut;
 
-public class P4Alloc {
+public class P4Alloc extends FunpCfg {
 
 	private Amd64 amd64 = Amd64.me;
-	private int is = Funp_.integerSize;
-	private int ps = Funp_.pointerSize;
+	private int is = integerSize;
+	private int ps = pointerSize;
 
 	private OpImm countPointer;
 	private OpImm labelPointer;
@@ -37,6 +37,10 @@ public class P4Alloc {
 			512, 640, 768, 896, //
 			1024, 1280, 1536, 1792, //
 			16777216, };
+
+	public P4Alloc(FunpCfg f) {
+		super(f);
+	}
 
 	public void init(Emit em, OpReg bufferStart) {
 		countPointer = em.spawn(em1 -> em1.emit(Insn.D, amd64.imm(0l, is))).in;

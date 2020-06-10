@@ -3,6 +3,7 @@ package suite.funp;
 import primal.statics.Fail;
 import suite.assembler.Amd64;
 import suite.assembler.Amd64.OpReg;
+import suite.assembler.Amd64Cfg;
 import suite.assembler.Amd64Mode;
 import suite.funp.Funp_.Funp;
 import suite.funp.P2.FunpFramePointer;
@@ -11,9 +12,9 @@ public class FunpCfg {
 
 	private Amd64Mode mode;
 	public int booleanSize;
-	private int integerSize;
-	private int pointerSize;
-	private int pushSize;
+	public int integerSize;
+	public int pointerSize = Amd64Cfg.pointerSize;
+	public int pushSize = Amd64Cfg.pushSize;
 
 	public Funp framePointer;
 
@@ -23,8 +24,8 @@ public class FunpCfg {
 	public OpReg _bp;
 	public OpReg _sp;
 
-	public FunpCfg(Amd64 amd64, boolean isAmd64) {
-		mode = isAmd64 ? Amd64Mode.LONG64 : Amd64Mode.PROT32;
+	public FunpCfg(Amd64 amd64, boolean isLongMode) {
+		mode = isLongMode ? Amd64Mode.LONG64 : Amd64Mode.PROT32;
 		booleanSize = 1;
 		integerSize = mode.opSize;
 		pointerSize = mode.addrSize;

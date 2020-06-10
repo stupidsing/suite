@@ -21,12 +21,11 @@ import suite.assembler.Amd64.OpMem;
 import suite.assembler.Amd64.OpReg;
 import suite.assembler.Amd64.Operand;
 import suite.funp.FunpCfg;
-import suite.funp.Funp_;
 
 public class P4Emit extends FunpCfg {
 
 	private Amd64 amd64 = Amd64.me;
-	private int ps = Funp_.pointerSize;
+	private int ps = pointerSize;
 
 	private List<Block> blocks = new ArrayList<>();
 
@@ -52,7 +51,7 @@ public class P4Emit extends FunpCfg {
 		}
 
 		public void pop(Operand op) {
-			if (op.size == Funp_.pushSize)
+			if (op.size == pushSize)
 				emit(Insn.POP, op);
 			else
 				fail();
@@ -60,7 +59,7 @@ public class P4Emit extends FunpCfg {
 
 		public void push(Operand op) {
 			var opImm = op.cast(OpImm.class);
-			if (op.size == Funp_.pushSize)
+			if (op.size == pushSize)
 				// PUSH immediate is limited to 32-bit
 				if (op.size != 8 || opImm == null)
 					emit(Insn.PUSH, op);
@@ -187,7 +186,7 @@ public class P4Emit extends FunpCfg {
 
 		public Block spawn(Sink<Emit> sink) {
 			var block = spawn(label(), sink, null);
-			block.align = Funp_.pushSize;
+			block.align = pushSize;
 			return block;
 		}
 

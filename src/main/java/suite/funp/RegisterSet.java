@@ -9,11 +9,12 @@ import suite.assembler.Amd64;
 import suite.assembler.Amd64.OpMem;
 import suite.assembler.Amd64.OpReg;
 import suite.assembler.Amd64.Operand;
+import suite.assembler.Amd64Cfg;
 
 public class RegisterSet {
 
 	private static Amd64 amd64 = Amd64.me;
-	private static int nRegisters = Funp_.nRegisters;
+	private static int nRegisters = Amd64Cfg.nRegisters;
 	private static OpReg[] registers;
 
 	public final int flag;
@@ -22,7 +23,7 @@ public class RegisterSet {
 		var map = Read //
 				.from2(amd64.regByName) //
 				.values() //
-				.filter(opReg -> opReg.size == Funp_.pushSize) //
+				.filter(opReg -> opReg.size == Amd64Cfg.pushSize) //
 				.map2(opReg -> opReg.reg, opReg -> opReg) //
 				.toMap();
 
