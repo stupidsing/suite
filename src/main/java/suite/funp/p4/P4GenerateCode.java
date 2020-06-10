@@ -34,6 +34,7 @@ import suite.assembler.Amd64.OpReg;
 import suite.assembler.Amd64.Operand;
 import suite.assembler.Amd64Assemble;
 import suite.assembler.Amd64Parse;
+import suite.funp.FunpCfg;
 import suite.funp.Funp_;
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.Coerce;
@@ -77,7 +78,7 @@ import suite.node.io.TermOp;
 import suite.node.util.TreeUtil;
 import suite.util.Switch;
 
-public class P4GenerateCode {
+public class P4GenerateCode extends FunpCfg {
 
 	private boolean isAmd64 = Funp_.isAmd64;
 	private Amd64 amd64 = Amd64.me;
@@ -143,6 +144,7 @@ public class P4GenerateCode {
 	private P4Emit p4emit = new P4Emit();
 
 	public P4GenerateCode(Funp_ f) { // or use ESP directly
+		super(f);
 		isUseEbp = !f.isOptimize;
 		registerSet = new RegisterSet().mask(isUseEbp ? _bp : null, _sp);
 		p4deOp = new P4DecomposeOperand(isUseEbp);
@@ -1020,7 +1022,7 @@ public class P4GenerateCode {
 		}
 
 		private OpMem compileFrame(int start, int size) {
-			var op = p4deOp.decompose(fd, Funp_.framePointer, start, size);
+			var op = p4deOp.decompose(fd, framePointer, start, size);
 			return op != null ? op : fail();
 		}
 
@@ -1121,7 +1123,7 @@ public class P4GenerateCode {
 		}
 
 		private FunpMemory frame(int start, int end) {
-			return FunpMemory.of(Funp_.framePointer, start, end);
+			return FunpMemory.of(framePointer, start, end);
 		}
 
 		private void saveRegs(Sink<Compile0> sink, OpReg... opRegs) {

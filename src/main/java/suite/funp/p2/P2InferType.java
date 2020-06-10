@@ -38,6 +38,7 @@ import suite.Suite;
 import suite.assembler.Amd64;
 import suite.assembler.Amd64.OpReg;
 import suite.assembler.Amd64.Operand;
+import suite.funp.FunpCfg;
 import suite.funp.Funp_;
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.Coerce;
@@ -128,7 +129,7 @@ import suite.util.Switch;
  *
  * @author ywsing
  */
-public class P2InferType {
+public class P2InferType extends FunpCfg {
 
 	private Inspect inspect = Singleton.me.inspect;
 	private P20ExtractPredefine p2a = new P20ExtractPredefine();
@@ -160,6 +161,7 @@ public class P2InferType {
 	private boolean isGcStruct = true;
 
 	public P2InferType(Funp_ f) {
+		super(f);
 	}
 
 	public Funp infer(Funp n0) {
@@ -656,7 +658,7 @@ public class P2InferType {
 				var isPassReg = lt.isPassReg();
 				var opArg = lt.p0reg();
 				var av = isPassReg ? register(opArg, lt.is) : localStack(scope1, IntMutable.of(0), b, b + lt.is);
-				var frame = isScoped ? Funp_.framePointer : FunpDontCare.of();
+				var frame = isScoped ? framePointer : FunpDontCare.of();
 				PerMap<String, Var> env1;
 
 				if (isScoped)
@@ -1036,7 +1038,7 @@ public class P2InferType {
 
 		private FunpMemory getMemory_(int scope0) {
 			var frame = scope != null //
-					? forInt(scope, scope0).<Funp> fold(Funp_.framePointer, (i, n) -> FunpMemory.of(n, 0, ps)) //
+					? forInt(scope, scope0).<Funp> fold(framePointer, (i, n) -> FunpMemory.of(n, 0, ps)) //
 					: null;
 
 			var nfp0 = FunpNumber.of(offset);

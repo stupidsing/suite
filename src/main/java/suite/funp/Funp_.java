@@ -19,7 +19,6 @@ import suite.funp.P0.FunpDefine;
 import suite.funp.P0.FunpDefineRec;
 import suite.funp.P0.FunpLambda;
 import suite.funp.P0.FunpVariable;
-import suite.funp.P2.FunpFramePointer;
 import suite.funp.p0.P0Parse;
 import suite.funp.p1.P10Inline;
 import suite.funp.p1.P11ReduceTailCall;
@@ -32,7 +31,7 @@ import suite.node.util.Singleton;
 import suite.object.CastDefaults;
 import suite.util.RunUtil;
 
-public class Funp_ {
+public class Funp_ extends FunpCfg {
 
 	private static Amd64 amd64 = Amd64.me;
 	private static Inspect inspect = Singleton.me.inspect;
@@ -49,7 +48,6 @@ public class Funp_ {
 	public static OpReg _bp = pointerRegs[amd64.bpReg];
 	public static OpReg _sp = pointerRegs[amd64.spReg];
 	public static int nRegisters = mode.nRegisters;
-	public static Funp framePointer = new FunpFramePointer();
 
 	public boolean isOptimize;
 
