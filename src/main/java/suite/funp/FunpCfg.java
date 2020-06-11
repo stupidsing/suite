@@ -11,7 +11,8 @@ import suite.funp.P2.FunpFramePointer;
 
 public class FunpCfg {
 
-	private Amd64Mode mode;
+	public boolean isLongMode;
+	public Amd64Mode mode;
 	public int booleanSize;
 	public int integerSize;
 	public int pointerSize = Amd64Cfg.pointerSize;
@@ -26,6 +27,7 @@ public class FunpCfg {
 	public OpReg _sp;
 
 	public FunpCfg(Amd64 amd64, boolean isLongMode) {
+		this.isLongMode = isLongMode;
 		mode = isLongMode ? Amd64Mode.LONG64 : Amd64Mode.PROT32;
 		booleanSize = 1;
 		integerSize = mode.opSize;
@@ -59,6 +61,18 @@ public class FunpCfg {
 			return pointerSize;
 		else
 			return Funp_.fail(null, "");
+	}
+
+	public boolean isSigned(Coerce coerce) {
+		return coerce == Coerce.BYTE || coerce == Coerce.NUMBER || coerce == Coerce.NUMBERP;
+	}
+
+	public boolean isSizeOk(long scale) {
+		return scale == 1 || scale == 2 || scale == 4 || isLongMode && scale == 8;
+	}
+
+	public boolean is1248(long scale) {
+		return scale == 1 || scale == 2 || scale == 4 || scale == 8;
 	}
 
 }

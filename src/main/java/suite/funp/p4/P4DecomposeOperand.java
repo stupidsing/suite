@@ -10,7 +10,6 @@ import suite.assembler.Amd64.OpMem;
 import suite.assembler.Amd64.OpReg;
 import suite.assembler.Amd64.Operand;
 import suite.funp.FunpCfg;
-import suite.funp.Funp_;
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.FunpCoerce;
 import suite.funp.P0.FunpDontCare;
@@ -106,7 +105,7 @@ public class P4DecomposeOperand extends FunpCfg {
 		class DecomposeAdd {
 			private OpReg baseReg = null, indexReg = null;
 			private int scale = 1, disp = disp0;
-			private boolean ok = Funp_.isSizeOk(size);
+			private boolean ok = isSizeOk(size);
 
 			private DecomposeAdd(Funp n0) {
 				for (var n1 : decompose.apply(TermOp.PLUS__, n0))
@@ -131,7 +130,7 @@ public class P4DecomposeOperand extends FunpCfg {
 			private void addReg(OpReg reg_, long scale_) {
 				if (scale_ == 1 && baseReg == null)
 					baseReg = reg_;
-				else if (Funp_.is1248(scale_) && indexReg == null) {
+				else if (is1248(scale_) && indexReg == null) {
 					indexReg = reg_;
 					scale = (int) scale_;
 				} else

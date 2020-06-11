@@ -15,17 +15,18 @@ import suite.assembler.Amd64.Insn;
 import suite.assembler.Amd64.Instruction;
 import suite.assembler.Amd64Assemble;
 import suite.assembler.Amd64Interpret;
+import suite.assembler.Amd64Mode;
 import suite.funp.Funp_;
 import suite.util.RunUtil;
 
 // http://www.muppetlabs.com/~breadbox/software/tiny/teensy.html
 public class ElfTest {
 
-	private boolean isAmd64 = Funp_.isAmd64;
+	private boolean isLongMode = RunUtil.isLinux64();
 
 	private Amd64 amd64 = Amd64.me;
 	private Amd64Interpret interpret = new Amd64Interpret();
-	private WriteElf elf = new WriteElf(isAmd64);
+	private WriteElf elf = new WriteElf(isLongMode);
 
 	@Test
 	public void testAllocate() {
@@ -44,7 +45,7 @@ public class ElfTest {
 	public void testAssembler() {
 		List<Instruction> instructions;
 
-		if (isAmd64)
+		if (isLongMode)
 			instructions = List.of( //
 					amd64.instruction(Insn.MOV, amd64.rax, amd64.imm64(0x3C)), //
 					amd64.instruction(Insn.MOV, amd64.rdi, amd64.imm64(0x00)), //
@@ -54,7 +55,7 @@ public class ElfTest {
 					amd64.instruction(Insn.MOV, amd64.eax, amd64.imm32(0x01)), //
 					amd64.instruction(Insn.INT, amd64.imm8(0x80)));
 
-		var aa = new Amd64Assemble(Funp_.mode);
+		var aa = new Amd64Assemble(isLongMode ? Amd64Mode.LONG64 : Amd64Mode.PROT32);
 		var exec = elf.exec(new byte[0], offset -> aa.assemble(offset, instructions, true));
 		assertEquals(0, exec.code);
 		assertEquals("", exec.out);
@@ -79,8 +80,8 @@ public class ElfTest {
 	@Test
 	public void testGuess() {
 		var program = "do! (consult guess.fp)/!guess {}";
-		elf.write(offset -> Funp_.main(false).compile(offset, program).v, Tmp.path("guess"));
-		elf.write(offset -> Funp_.main(true).compile(offset, program).v, Tmp.path("guess"));
+		elf.write(offset -> Funp_.main(isLongMode, false).compile(offset, program).v, Tmp.path("guess"));
+		elf.write(offset -> Funp_.main(isLongMode, true).compile(offset, program).v, Tmp.path("guess"));
 	}
 
 	// io :: a -> io a
@@ -150,7 +151,7 @@ public class ElfTest {
 
 	private IntObjPair<String> execute(String program, String input) {
 		var ibs = Bytes.of(input.getBytes(Utf8.charset));
-		var main = Funp_.main(true);
+		var main = Funp_.main(isLongMode, true);
 		var result = IntObjPair.of(-1, "-");
 
 		if (Boolean.TRUE && RunUtil.isLinux()) { // not Windows => run ELF

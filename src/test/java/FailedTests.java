@@ -84,7 +84,7 @@ public class FailedTests {
 	// should we show "field not found" instead of "cannot get size of type xxx"?
 	@Test
 	public void testStruct() {
-		Funp_.main(false).compile(0, "define s := { a: 1, } ~ s/b");
+		Funp_.main(false, false).compile(0, "define s := { a: 1, } ~ s/b");
 	}
 
 	// takes 11 seconds to type check

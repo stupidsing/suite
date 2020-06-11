@@ -80,14 +80,13 @@ import suite.util.Switch;
 
 public class P4GenerateCode extends FunpCfg {
 
-	private boolean isAmd64 = Funp_.isAmd64;
 	private Amd64 amd64 = Amd64.me;
 
 	private int bs = booleanSize;
 	private int is = integerSize;
 	private int ps = pointerSize;
 
-	private Amd64Assemble asm = new Amd64Assemble(Funp_.mode);
+	private Amd64Assemble asm = new Amd64Assemble(mode);
 
 	private int axReg = amd64.axReg;
 	private int cxReg = amd64.cxReg;
@@ -151,7 +150,7 @@ public class P4GenerateCode extends FunpCfg {
 	}
 
 	private List<Instruction> compile0(Funp funp) {
-		var p = new Amd64Parse(Funp_.mode);
+		var p = new Amd64Parse(mode);
 
 		return p4emit.generate(p4emit.label(), em -> {
 			var prolog_amd64 = List.of( //
@@ -178,7 +177,7 @@ public class P4GenerateCode extends FunpCfg {
 					"INT (+x80)", //
 					"ADD (ESP, +x18)");
 
-			for (var i : isAmd64 ? prolog_amd64 : prolog_i686)
+			for (var i : isLongMode ? prolog_amd64 : prolog_i686)
 				em.emit(p.parse(Suite.parse(i)));
 
 			p4alloc.init(em, pointerRegs[axReg]);
@@ -191,7 +190,7 @@ public class P4GenerateCode extends FunpCfg {
 
 			p4alloc.deinit(em);
 
-			if (isAmd64) {
+			if (isLongMode) {
 				em.mov(edi, ebx);
 				em.mov(amd64.rax, amd64.imm64(0x3C));
 				em.emit(Insn.SYSCALL);
@@ -271,7 +270,7 @@ public class P4GenerateCode extends FunpCfg {
 					else
 						compileSpec(expr, frReg);
 
-					if (Funp_.isSigned(fr) && Funp_.isSigned(to) && frSize < toSize)
+					if (isSigned(fr) && isSigned(to) && frSize < toSize)
 						em.emit(frSize < 4 ? Insn.MOVSX : Insn.MOVSXD, toReg, frReg);
 
 					return returnOp(toReg);
@@ -283,7 +282,7 @@ public class P4GenerateCode extends FunpCfg {
 						.sink((n_, ofs) -> c1.compileAssign(n_,
 								FunpMemory.of(t.pointer, t.start + ofs.s, t.start + ofs.e))));
 			})).applyIf(FunpDoAsm.class, f -> f.apply((assigns, asm, opResult) -> {
-				var p = new Amd64Parse(Funp_.mode);
+				var p = new Amd64Parse(mode);
 				new Object() {
 					private Object assign(Compile0 c1, int i) {
 						return i < assigns.size() ? assigns.get(i).map((op, f) -> {
@@ -724,7 +723,7 @@ public class P4GenerateCode extends FunpCfg {
 							em.mov(_si, r);
 							em.mov(_cx, amd64.imm(size / ps, is));
 							em.emit(Insn.REP);
-							em.emit(isAmd64 ? Insn.MOVSQ : Insn.MOVSD);
+							em.emit(isLongMode ? Insn.MOVSQ : Insn.MOVSD);
 							for (var i = 0; i < size % ps; i++)
 								em.emit(Insn.MOVSB);
 						}, _cx, _si, _di);
@@ -1082,7 +1081,7 @@ public class P4GenerateCode extends FunpCfg {
 				em.mov(_si, r);
 				em.mov(_cx, amd64.imm(size / ps, is));
 				em.emit(Insn.REPE);
-				em.emit(isAmd64 ? Insn.CMPSQ : Insn.CMPSD);
+				em.emit(isLongMode ? Insn.CMPSQ : Insn.CMPSD);
 				em.emit(Insn.JNE, neqLabel);
 				for (var i = 0; i < size % ps; i++) {
 					em.emit(Insn.CMPSB);
@@ -1112,7 +1111,7 @@ public class P4GenerateCode extends FunpCfg {
 		public <T extends Operand> T mov(T op0, Operand op1) {
 			if (op0 instanceof OpMem && op1 instanceof OpMem) {
 				var oldOp1 = op1;
-				em.mov(op1 = rs.mask(op0, op1).get(op1.size, isAmd64), oldOp1);
+				em.mov(op1 = rs.mask(op0, op1).get(op1.size, isLongMode), oldOp1);
 			}
 			return em.mov(op0, op1);
 		}

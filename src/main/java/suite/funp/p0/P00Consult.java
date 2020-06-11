@@ -12,7 +12,6 @@ import primal.statics.Rethrow.FunIo;
 import primal.statics.Rethrow.SourceEx;
 import suite.Suite;
 import suite.funp.FunpCfg;
-import suite.funp.Funp_;
 import suite.funp.Funp_.Funp;
 import suite.http.HttpClient;
 import suite.node.Atom;
@@ -31,7 +30,7 @@ public class P00Consult extends FunpCfg {
 	public Node c(Node node) {
 		return new SwitchNode<Node>(node //
 		).match("consult .0 ~ .1", (a, b) -> {
-			return c(consult(Formatter.display(a).replace("${platform}", Funp_.isAmd64 ? "amd64" : "i686"), b));
+			return c(consult(Formatter.display(a).replace("${platform}", isLongMode ? "amd64" : "i686"), b));
 		}).match("consult .0", a -> {
 			return c(consult(Formatter.display(a)));
 		}).applyIf(Tree.class, tree -> {

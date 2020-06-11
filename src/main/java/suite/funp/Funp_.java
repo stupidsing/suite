@@ -13,8 +13,6 @@ import suite.Suite;
 import suite.assembler.Amd64;
 import suite.assembler.Amd64.Instruction;
 import suite.assembler.Amd64Cfg;
-import suite.assembler.Amd64Mode;
-import suite.funp.P0.Coerce;
 import suite.funp.P0.FunpDefine;
 import suite.funp.P0.FunpDefineRec;
 import suite.funp.P0.FunpLambda;
@@ -34,9 +32,6 @@ public class Funp_ extends FunpCfg {
 
 	private static Inspect inspect = Singleton.me.inspect;
 
-	public static boolean isAmd64 = Amd64Cfg.isLongMode;
-	public static Amd64Mode mode = Amd64Cfg.mode;
-
 	public boolean isOptimize;
 
 	public interface Funp extends CastDefaults<Funp> {
@@ -52,12 +47,16 @@ public class Funp_ extends FunpCfg {
 		}
 	}
 
-	public static Main main(boolean isOptimize) {
-		return new Funp_(isOptimize).new Main();
+	public static Main main(boolean isLongMode, boolean isOptimize) {
+		return new Funp_(isLongMode, isOptimize).new Main();
 	}
 
 	public Funp_(boolean isOptimize) {
-		super(Amd64.me, isAmd64);
+		this(Amd64Cfg.isLongMode, isOptimize);
+	}
+
+	public Funp_(boolean isLongMode, boolean isOptimize) {
+		super(Amd64.me, isLongMode);
 		this.isOptimize = isOptimize;
 	}
 
@@ -122,18 +121,6 @@ public class Funp_ extends FunpCfg {
 		}.associate(PerMap.empty(), node);
 
 		return defByVariables;
-	}
-
-	public static boolean isSigned(Coerce coerce) {
-		return coerce == Coerce.BYTE || coerce == Coerce.NUMBER || coerce == Coerce.NUMBERP;
-	}
-
-	public static boolean isSizeOk(long scale) {
-		return scale == 1 || scale == 2 || scale == 4 || isAmd64 && scale == 8;
-	}
-
-	public static boolean is1248(long scale) {
-		return scale == 1 || scale == 2 || scale == 4 || scale == 8;
 	}
 
 	public static <T> T rethrow(String in, Source<T> source) {

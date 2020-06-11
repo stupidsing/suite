@@ -137,7 +137,7 @@ public class P2InferType extends FunpCfg {
 
 	private int is = integerSize;
 	private int ps = pointerSize;
-	private int maxRegAlloc = Funp_.isAmd64 ? 3 : 2;
+	private int maxRegAlloc = isLongMode ? 3 : 2;
 	private String gcclazz = "$clazz";
 	private Node gcclazzField = Atom.of(gcclazz);
 
@@ -777,8 +777,7 @@ public class P2InferType extends FunpCfg {
 			})).applyIf(FunpTree.class, f -> f.apply((op, l, r, size) -> {
 				var size0 = getTypeSize(typeOf(l));
 				var size1 = getTypeSize(typeOf(r));
-				if (Set.of(TermOp.EQUAL_, TermOp.NOTEQ_).contains(op)
-						&& (!Funp_.is1248(size0) || !Funp_.is1248(size1))) {
+				if (Set.of(TermOp.EQUAL_, TermOp.NOTEQ_).contains(op) && (!is1248(size0) || !is1248(size1))) {
 					var offsetStack0 = IntMutable.nil();
 					var offsetStack1 = IntMutable.nil();
 					var ml = l.cast(FunpMemory.class);
