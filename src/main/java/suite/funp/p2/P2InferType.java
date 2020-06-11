@@ -1232,9 +1232,9 @@ public class P2InferType extends FunpCfg {
 				if ((d = typeDecorArray.match(m[0])) != null)
 					if (d[0] instanceof Int) {
 						int size = Int.num(d[0]);
-						return "[" + size + "] " + toTypeString(set, m[1]);
+						return "[" + size + "]" + toTypeString(set, m[1]);
 					} else if (d[0] instanceof Reference)
-						return "[] " + toTypeString(set, m[1]);
+						return "[]" + toTypeString(set, m[1]);
 					else
 						return n.toString();
 				else if ((d = typeDecorIo.match(m[0])) != null)
