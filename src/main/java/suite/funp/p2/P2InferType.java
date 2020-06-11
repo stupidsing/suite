@@ -229,7 +229,7 @@ public class P2InferType extends FunpCfg {
 			}).applyIf(FunpCoerce.class, f -> f.apply((from, to, expr) -> {
 				Fun<Coerce, Node> tf = coerce -> {
 					if (coerce == Coerce.BYTE || coerce == Coerce.NUMBER || coerce == Coerce.NUMBERP)
-						return typePatInt.subst(Int.of(Funp_.getCoerceSize(P2InferType.this, coerce)));
+						return typePatInt.subst(Int.of(getCoerceSize(coerce)));
 					else if (coerce == Coerce.POINTER)
 						return typeRefOf(new Reference());
 					else
@@ -439,7 +439,7 @@ public class P2InferType extends FunpCfg {
 				else if (Set.of(TermOp.EQUAL_, TermOp.NOTEQ_).contains(op))
 					ti = new Reference();
 				else {
-					var t = size != null ? Int.of(Funp_.getCoerceSize(P2InferType.this, size)) : new Reference();
+					var t = size != null ? Int.of(getCoerceSize(size)) : new Reference();
 					ti = typePatInt.subst(t);
 				}
 				unify(n, infer(lhs), ti);

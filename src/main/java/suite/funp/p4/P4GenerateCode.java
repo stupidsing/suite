@@ -255,8 +255,8 @@ public class P4GenerateCode extends FunpCfg {
 				var size1 = r.size();
 				return size0 == size1 ? returnOp(compileCompare(r0, l.start, r1, r.start, size0, isEq)) : fail();
 			})).applyIf(FunpCoerce.class, f -> f.apply((fr, to, expr) -> {
-				var frSize = Funp_.getCoerceSize(P4GenerateCode.this, fr);
-				var toSize = Funp_.getCoerceSize(P4GenerateCode.this, to);
+				var frSize = getCoerceSize(fr);
+				var toSize = getCoerceSize(to);
 				FunpNumber number;
 
 				if ((number = expr.cast(FunpNumber.class)) != null)
@@ -910,7 +910,7 @@ public class P4GenerateCode extends FunpCfg {
 				private boolean fill(int size, Funp node) {
 					return new Switch<Boolean>(node //
 					).applyIf(FunpCoerce.class, f -> f.apply((from, to, expr) -> {
-						return fill(Funp_.getCoerceSize(P4GenerateCode.this, to), expr);
+						return fill(getCoerceSize(to), expr);
 					})).applyIf(FunpData.class, f -> f.apply(pairs -> {
 						var offset = 0;
 						var b = true;

@@ -6,6 +6,7 @@ import suite.assembler.Amd64.OpReg;
 import suite.assembler.Amd64Cfg;
 import suite.assembler.Amd64Mode;
 import suite.funp.Funp_.Funp;
+import suite.funp.P0.Coerce;
 import suite.funp.P2.FunpFramePointer;
 
 public class FunpCfg {
@@ -47,6 +48,17 @@ public class FunpCfg {
 			} catch (Exception ex) {
 				Fail.fail(ex);
 			}
+	}
+
+	public int getCoerceSize(Coerce coerce) {
+		if (coerce == Coerce.BYTE)
+			return 1;
+		else if (coerce == Coerce.NUMBER)
+			return integerSize;
+		else if (coerce == Coerce.NUMBERP || coerce == Coerce.POINTER)
+			return pointerSize;
+		else
+			return Funp_.fail(null, "");
 	}
 
 }

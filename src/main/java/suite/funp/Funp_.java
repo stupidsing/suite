@@ -124,23 +124,12 @@ public class Funp_ extends FunpCfg {
 		return defByVariables;
 	}
 
-	public static int getCoerceSize(FunpCfg f, Coerce coerce) {
-		if (coerce == Coerce.BYTE)
-			return 1;
-		else if (coerce == Coerce.NUMBER)
-			return f.integerSize;
-		else if (coerce == Coerce.NUMBERP || coerce == Coerce.POINTER)
-			return f.pointerSize;
-		else
-			return fail(null, "");
-	}
-
 	public static boolean isSigned(Coerce coerce) {
 		return coerce == Coerce.BYTE || coerce == Coerce.NUMBER || coerce == Coerce.NUMBERP;
 	}
 
 	public static boolean isSizeOk(long scale) {
-		return scale == 1 || scale == 2 || scale == 4 || Funp_.isAmd64 && scale == 8;
+		return scale == 1 || scale == 2 || scale == 4 || isAmd64 && scale == 8;
 	}
 
 	public static boolean is1248(long scale) {
