@@ -23,7 +23,7 @@ define.function !list.build () := do!
 	}
 ~
 
-define.function !list.free list :=  do!
+define.function !list.free list := do!
 	type list = { elems: address.of (array 32 * number), size: number, } ~
 	!delete^ list/elems ~
 	()
