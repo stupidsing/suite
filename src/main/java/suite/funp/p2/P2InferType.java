@@ -168,15 +168,16 @@ public class P2InferType extends FunpCfg {
 		var t = new Reference();
 		var n1 = p2a.extractPredefine(n0);
 		var n2 = p2b.captureLambdas(n1);
-		var checks = new ArrayList<Source<Boolean>>();
+		var checks0 = new ArrayList<Source<Boolean>>();
+		var checks1 = new ArrayList<Source<Boolean>>();
 
-		if (unify(t, new Infer(PerMap.empty(), checks, null).infer(n2))) {
-			var b = true //
-					&& (Read.from(checks).isAll(Source::g) || failBool("fail type-checks")) //
+		if (unify(t, new Infer(PerMap.empty(), checks0, checks1, null).infer(n2))) {
+			var b = (Read.each(checks0, checks1).concatMap(Read::from).isAll(Source::g) || failBool("fail type-checks")) //
 					&& (getTypeSize(t) == is || failBool("invalid return type"));
 
 			if (b) {
-				// first pass to estimate variable usage; second pass to assign registers to variables
+				// first pass to estimate variable usage;
+				// second pass to assign registers to variables
 				var erase = new Erase(0, PerMap.empty(), null);
 				erase.erase(n2); // first pass
 				return erase.erase(n2); // second pass
@@ -188,12 +189,13 @@ public class P2InferType extends FunpCfg {
 
 	private class Infer {
 		private PerMap<String, Pair<Fdt, Node>> env;
-		private List<Source<Boolean>> checks;
+		private List<Source<Boolean>> checks0, checks1;
 		private Node me;
 
-		private Infer(PerMap<String, Pair<Fdt, Node>> env, List<Source<Boolean>> checks, Node me) {
+		private Infer(PerMap<String, Pair<Fdt, Node>> env, List<Source<Boolean>> checks0, List<Source<Boolean>> checks1, Node me) {
 			this.env = env;
-			this.checks = checks;
+			this.checks0 = checks0;
+			this.checks1 = checks1;
 			this.me = me;
 		}
 
@@ -241,7 +243,7 @@ public class P2InferType extends FunpCfg {
 				var tvalue = infer(value, "definition of variable '" + vn + "'");
 				if (Fdt.isGlobal(fdt))
 					Log_.info(vn + " :: " + toTypeString(tvalue));
-				return new Infer(env.replace(vn, Pair.of(fdt, tvalue)), checks, me).infer(expr);
+				return new Infer(env.replace(vn, Pair.of(fdt, tvalue)), checks0, checks1, me).infer(expr);
 			})).applyIf(FunpDefineRec.class, f -> f.apply((pairs, expr, fdt) -> {
 				var pairs_ = Read.from(pairs);
 				var vns = pairs_.map(Pair::fst);
@@ -253,7 +255,7 @@ public class P2InferType extends FunpCfg {
 						Reference.of(Atom.TRUE), //
 						Dict.of(map), //
 						TreeUtil.buildUp(TermOp.AND___, Read.from(vns).<Node> map(Atom::of).toList()));
-				var infer1 = new Infer(env1, checks, ts);
+				var infer1 = new Infer(env1, checks0, checks1, ts);
 
 				for (var pair : pairs_)
 					pair.map((vn, v) -> unify( //
@@ -330,7 +332,7 @@ public class P2InferType extends FunpCfg {
 							.filter(pair -> Fdt.isGlobal(pair.v.k) || Fdt.isSubs(pair.v.k) || pair.v.k == Fdt.VIRT) //
 							.fold(PerMap.empty(), (e, p) -> e.put(p.k, p.v));
 				var env2 = env1.replace(vn, Pair.of(Fdt.L_MONO, tv));
-				return typeLambdaOf(tv, new Infer(env2, checks, me).infer(expr));
+				return typeLambdaOf(tv, new Infer(env2, checks0, checks1, me).infer(expr));
 			})).applyIf(FunpLambdaCapture.class, f -> f.apply((fpIn, frameVar, frame, vn, expr, fct) -> {
 				var tv = new Reference();
 				var tf = infer(frame);
@@ -340,7 +342,7 @@ public class P2InferType extends FunpCfg {
 						.<String, Pair<Fdt, Node>> empty() //
 						.replace(frameVar.vn, Pair.of(Fdt.L_MONO, tf)) //
 						.replace(vn, Pair.of(Fdt.L_MONO, tv));
-				return typeLambdaOf(tv, new Infer(env1, checks, null).infer(expr));
+				return typeLambdaOf(tv, new Infer(env1, checks0, checks1, null).infer(expr));
 			})).applyIf(FunpLambdaFree.class, f -> f.apply((lambda, expr) -> {
 				unify(f, infer(lambda), typeLambdaOf(new Reference(), new Reference()));
 				return infer(expr);
@@ -381,10 +383,9 @@ public class P2InferType extends FunpCfg {
 				var ts = typeStructOf(isCompleted, typesDict, ref);
 
 				// complete the structure
-				checks.add(() -> {
-					var b = unify(isCompleted, Atom.TRUE);
-
-					if (b && ref.isFree()) {
+				checks0.add(() ->  unify(isCompleted, Atom.TRUE));
+				checks1.add(() -> {
+					if (ref.isFree()) {
 						Streamlet<Node> list;
 
 						if (isGcStruct_)
@@ -412,10 +413,9 @@ public class P2InferType extends FunpCfg {
 							list = Streamlet.concat(fs0, fs1).distinct();
 						}
 
-						b &= unify(ref, TreeUtil.buildUp(TermOp.AND___, list.toList()));
-					}
-
-					return b;
+						return unify(ref, TreeUtil.buildUp(TermOp.AND___, list.toList()));
+					} else
+						return true;
 				});
 
 				return ts;
@@ -1221,7 +1221,6 @@ public class P2InferType extends FunpCfg {
 		Streamlet2<Node, Reference> pairs;
 		Node[] m, d;
 		var n = n0.finalNode();
-		System.out.println(n.toString());
 		var hash = System.identityHashCode(n);
 
 		if (!set0.contains(hash)) {
@@ -1259,7 +1258,7 @@ public class P2InferType extends FunpCfg {
 						.from2(Dict.m(m[1])) //
 						.map((k, v) -> k + ":" + toTypeString(set, v) + ",") //
 						.sort(Compare::string) //
-						.toJoinedString("{", "", "...}");
+						.toJoinedString("{", "", m[0].finalNode() == Atom.TRUE ? "}" : "...}");
 			else if ((m = typePatTag.match(n)) != null) {
 				var dict = Dict.m(m[0]);
 				return Read //
