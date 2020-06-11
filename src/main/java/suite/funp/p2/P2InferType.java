@@ -359,7 +359,7 @@ public class P2InferType extends FunpCfg {
 			})).applyIf(FunpSizeOf.class, f -> f.apply(expr -> {
 				infer(expr);
 				return typeNumber;
-			})).applyIf(FunpStruct.class, f -> f.apply(pairs -> {
+			})).applyIf(FunpStruct.class, f -> f.apply((isCompleted, pairs) -> {
 				var isGcStruct_ = isGcStruct && !pairs.isEmpty();
 				var pos = new ObjIntMap<String>();
 				var i = 0;
@@ -378,12 +378,12 @@ public class P2InferType extends FunpCfg {
 				var types1 = isGcStruct_ ? types0.cons(gcclazzField, Reference.of(typeNumberp)) : types0;
 				var types2 = types1.toMap();
 				var typesDict = Dict.of(types2);
-				var isCompleted = new Reference();
+				var isCompleted_ = isCompleted ? Reference.of(Atom.TRUE) : new Reference();
 				var ref = new Reference();
-				var ts = typeStructOf(isCompleted, typesDict, ref);
+				var ts = typeStructOf(isCompleted_, typesDict, ref);
 
 				// complete the structure
-				checks0.add(() ->  unify(isCompleted, Atom.TRUE));
+				checks0.add(() -> unify(isCompleted_, Atom.TRUE));
 				checks1.add(() -> {
 					if (ref.isFree()) {
 						Streamlet<Node> list;
@@ -724,7 +724,7 @@ public class P2InferType extends FunpCfg {
 				return FunpData.of(list);
 			})).applyIf(FunpSizeOf.class, f -> f.apply(expr -> {
 				return FunpNumber.ofNumber(getTypeSize(typeOf(expr)));
-			})).applyIf(FunpStruct.class, f -> f.apply(pairs_ -> {
+			})).applyIf(FunpStruct.class, f -> f.apply((isCompleted, pairs_) -> {
 				var map = new HashMap<Node, Reference>();
 				var ts = typeStructOf(Dict.of(map));
 				unify(n, ts, type0);

@@ -296,7 +296,7 @@ public class P0Parse extends FunpCfg {
 			}).match(Atom.FALSE, () -> {
 				return FunpBoolean.of(false);
 			}).match(Atom.NIL, () -> {
-				return FunpStruct.of(List.of());
+				return FunpStruct.of(true, List.of());
 			}).match(Atom.TRUE, () -> {
 				return FunpBoolean.of(true);
 			}).match(dontCare, () -> {

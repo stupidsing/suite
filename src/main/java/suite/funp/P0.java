@@ -524,16 +524,22 @@ public class P0 {
 	}
 
 	public static class FunpStruct implements Funp, P2.End {
+		public boolean isCompleted;
 		public List<Pair<String, Funp>> pairs;
 
 		public static FunpStruct of(List<Pair<String, Funp>> pairs) {
+			return of(false, pairs);
+		}
+
+		public static FunpStruct of(boolean isCompleted, List<Pair<String, Funp>> pairs) {
 			var f = new FunpStruct();
+			f.isCompleted = isCompleted;
 			f.pairs = pairs;
 			return f;
 		}
 
-		public <R> R apply(FixieFun1<List<Pair<String, Funp>>, R> fun) {
-			return fun.apply(pairs);
+		public <R> R apply(FixieFun2<Boolean, List<Pair<String, Funp>>, R> fun) {
+			return fun.apply(isCompleted, pairs);
 		}
 	}
 

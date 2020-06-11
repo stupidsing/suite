@@ -186,7 +186,7 @@ public class P2GenerateLambda {
 			}).applyIf(FunpRepeat.class, f -> f.apply((count, expr) -> {
 				var expr_ = compile_(expr);
 				return rt -> new Vec(To.array(count, Value.class, i -> expr_.apply(rt)));
-			})).applyIf(FunpStruct.class, f -> f.apply(pairs -> {
+			})).applyIf(FunpStruct.class, f -> f.apply((isCompleted, pairs) -> {
 				var funs = Read.from2(pairs).mapValue(this::compile_).collect();
 				return rt -> new Struct(funs.mapValue(v -> v.apply(rt)).toMap());
 			})).applyIf(FunpTree.class, f -> f.apply((op, lhs, rhs, size) -> {

@@ -64,7 +64,7 @@ public class P03Bind {
 				return bind(expr, FunpDeref.of(value), then, else_);
 			})).applyIf(FunpRepeat.class, f -> f.apply((size0, expr0) -> {
 				return bindArray.apply(size0, i -> expr0);
-			})).applyIf(FunpStruct.class, f -> f.apply(pairs0 -> {
+			})).applyIf(FunpStruct.class, f -> f.apply((isCompleted, pairs0) -> {
 				var pairs1 = value.cast(FunpStruct.class, g -> g.pairs);
 				var size0 = pairs0.size();
 
