@@ -1244,26 +1244,26 @@ public class P2InferType extends FunpCfg {
 				else
 					return fail();
 			else if ((m = typePatInt.match(n)) != null)
-				return "int" + Int.num(m[0]);
+				return "n" + Int.num(m[0]);
 			else if ((m = typePatLambda.match(n)) != null)
 				return "(" + toTypeString(set, m[0]) + ") => " + toTypeString(set, m[1]);
 			else if ((pairs = isCompletedStructList(n)) != null)
 				return Read //
 						.from2(pairs) //
-						.map((k, v) -> k + ":" + toTypeString(set, v) + ",") //
+						.map((k, v) -> k + ":" + toTypeString(set, v) + ", ") //
 						.sort(Compare::string) //
 						.toJoinedString("{", "", "}");
 			else if ((m = typePatStruct.match(n)) != null)
 				return Read //
 						.from2(Dict.m(m[1])) //
-						.map((k, v) -> k + ":" + toTypeString(set, v) + ",") //
+						.map((k, v) -> k + ":" + toTypeString(set, v) + ", ") //
 						.sort(Compare::string) //
 						.toJoinedString("{", "", m[0].finalNode() == Atom.TRUE ? "}" : "...}");
 			else if ((m = typePatTag.match(n)) != null) {
 				var dict = Dict.m(m[0]);
 				return Read //
 						.from2(dict) //
-						.map((k, v) -> k + ":" + toTypeString(set, v) + ",") //
+						.map((k, v) -> k + ":" + toTypeString(set, v) + ", ") //
 						.sort(Compare::string) //
 						.toJoinedString("<", "", ">");
 			} else
