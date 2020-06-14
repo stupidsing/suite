@@ -383,41 +383,43 @@ public class P2InferType extends FunpCfg {
 				var ref = new Reference();
 				var ts = typeStructOf(isCompleted_, typesDict, ref);
 
-				// complete the structure
-				checks0.add(() -> unify(isCompleted_, Atom.TRUE));
-				checks1.add(() -> {
-					if (ref.isFree()) {
-						Streamlet<Node> list;
+				Source<Boolean> completion = () -> {
+					Streamlet<Node> list;
 
-						if (isGcStruct_)
-							list = Read //
-									.from2(types2) //
-									.sort((p0, p1) -> {
-										var b0 = isReference(p0.v);
-										var b1 = isReference(p1.v);
-										var typeSize0 = getTypeSize(p0.v);
-										var typeSize1 = getTypeSize(p1.v);
-										var a0 = typeSize0 % ps == 0;
-										var a1 = typeSize1 % ps == 0;
-										var o0 = pos.get(Atom.name(p0.k));
-										var o1 = pos.get(Atom.name(p1.k));
-										var c = -Boolean.compare(b0, b1);
-										c = c == 0 ? -Boolean.compare(a0, a1) : c;
-										c = c == 0 ? -Integer.compare(typeSize0, typeSize1) : c;
-										c = c == 0 ? Integer.compare(o0, o1) : c;
-										return c;
-									}) //
-									.keys();
-						else {
-							var fs0 = Read.from(pairs).<Node> map(pair -> Atom.of(pair.k));
-							var fs1 = Read.from2(types2).keys();
-							list = Streamlet.concat(fs0, fs1).distinct();
-						}
+					if (isGcStruct_)
+						list = Read //
+								.from2(types2) //
+								.sort((p0, p1) -> {
+									var b0 = isReference(p0.v);
+									var b1 = isReference(p1.v);
+									var typeSize0 = getTypeSize(p0.v);
+									var typeSize1 = getTypeSize(p1.v);
+									var a0 = typeSize0 % ps == 0;
+									var a1 = typeSize1 % ps == 0;
+									var o0 = pos.get(Atom.name(p0.k));
+									var o1 = pos.get(Atom.name(p1.k));
+									var c = -Boolean.compare(b0, b1);
+									c = c == 0 ? -Boolean.compare(a0, a1) : c;
+									c = c == 0 ? -Integer.compare(typeSize0, typeSize1) : c;
+									c = c == 0 ? Integer.compare(o0, o1) : c;
+									return c;
+								}) //
+								.keys();
+					else {
+						var fs0 = Read.from(pairs).<Node> map(pair -> Atom.of(pair.k));
+						var fs1 = Read.from2(types2).keys();
+						list = Streamlet.concat(fs0, fs1).distinct();
+					}
 
-						return unify(ref, TreeUtil.buildUp(TermOp.AND___, list.toList()));
-					} else
-						return true;
-				});
+					return unify(ref, TreeUtil.buildUp(TermOp.AND___, list.toList()));
+				};
+
+				if (!isCompleted) {
+					// complete the structure after all types are inferred
+					checks0.add(() -> unify(isCompleted_, Atom.TRUE));
+					checks1.add(() -> !ref.isFree() || completion.g());
+				} else if (!completion.g())
+					Funp_.fail(n, "cannot complete structure");
 
 				return ts;
 			})).applyIf(FunpTag.class, f -> f.apply((id, tag, value) -> {
