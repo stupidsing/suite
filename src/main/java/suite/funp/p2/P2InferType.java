@@ -40,6 +40,7 @@ import suite.assembler.Amd64.OpReg;
 import suite.assembler.Amd64.Operand;
 import suite.funp.FunpCfg;
 import suite.funp.Funp_;
+import suite.funp.Funp_.CompileException;
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.Coerce;
 import suite.funp.P0.Fct;
@@ -934,13 +935,16 @@ public class P2InferType extends FunpCfg {
 			var offset = 0;
 			var struct = isCompletedStructList(ts);
 			if (struct != null)
-				for (var pair : struct) {
-					var offset1 = offset + getTypeSize(pair.v);
-					if (!Equals.string(Atom.name(pair.k), n.field))
-						offset = offset1;
-					else
-						return IntRange.of(offset, offset1);
-				}
+				for (var pair : struct)
+					try {
+						var offset1 = offset + getTypeSize(pair.v);
+						if (!Equals.string(Atom.name(pair.k), n.field))
+							offset = offset1;
+						else
+							return IntRange.of(offset, offset1);
+					} catch (Exception ex) {
+						throw new CompileException(n, "for field '" + pair.k + "'", ex);
+					}
 			return Funp_.fail(n, "field '" + n.field + "' not found");
 		}
 
@@ -1251,7 +1255,6 @@ public class P2InferType extends FunpCfg {
 				return Read //
 						.from2(pairs) //
 						.map((k, v) -> k + ":" + toTypeString(set, v) + ", ") //
-						.sort(Compare::string) //
 						.toJoinedString("{", "", "}");
 			else if ((m = typePatStruct.match(n)) != null)
 				return Read //

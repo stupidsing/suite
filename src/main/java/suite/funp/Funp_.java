@@ -42,7 +42,7 @@ public class Funp_ extends FunpCfg {
 		public final Funp funp;
 
 		public CompileException(Funp funp, String m, Exception ex) {
-			super(m, ex);
+			super((ex != null ? ex.getMessage() + "\n" : "") + m, ex);
 			this.funp = funp;
 		}
 	}
@@ -127,7 +127,7 @@ public class Funp_ extends FunpCfg {
 		try {
 			return source.g();
 		} catch (CompileException ex) {
-			throw new CompileException(ex.funp, ex.getMessage() + "\nin " + in, ex);
+			throw new CompileException(ex.funp, "in " + in, ex);
 		} catch (Exception ex) {
 			throw new RuntimeException("in " + in, ex);
 		}
