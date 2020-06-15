@@ -146,7 +146,8 @@ public class P0Parse extends FunpCfg {
 			}).match("[.0]", a -> {
 				return isList(a) ? FunpArray.of(Tree.read(a).map(this::p).toList()) : null;
 			}).match("{ .0 }", a -> {
-				return FunpStruct.of(kvs(a).mapValue(this::p).toList());
+				var isCompleted = Tree.decompose(a, TermOp.AND___) == null;
+				return FunpStruct.of(isCompleted, kvs(a).mapValue(this::p).toList());
 			}).match("!asm .0 {.1}/.2", (a, b, c) -> {
 				return checkDo(() -> FunpDoAsm.of(Tree.read(a, TermOp.OR____).map(n -> {
 					var ma = Suite.pattern(".0 = .1").match(n);
