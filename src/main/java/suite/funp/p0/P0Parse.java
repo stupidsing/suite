@@ -390,7 +390,15 @@ public class P0Parse extends FunpCfg {
 
 		private Streamlet2<String, Node> kvs(Node node) {
 			return Tree //
-					.read(node, Tree::decompose) //
+					.read(node, t -> {
+						var tree = Tree.decompose(t);
+						if (tree != null) {
+							var operator = tree.getOperator();
+							var b = operator == TermOp.AND___ || operator == TermOp.CONTD_;
+							return b ? tree : Funp_.fail(null, "unknown operator " + operator);
+						} else
+							return null;
+					}) //
 					.map(n -> {
 						Node[] m;
 						if ((m = Suite.pattern(".0 .1 := .2").match(n)) != null)
