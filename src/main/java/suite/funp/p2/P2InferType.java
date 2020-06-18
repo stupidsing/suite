@@ -739,6 +739,8 @@ public class P2InferType extends FunpCfg {
 				var clazzMut = IntMutable.nil();
 				var clazz = 0;
 
+				// generate garbage-collection information for the structure:
+				// a bit-array to indicate if there are reference fields.
 				for (var pair : pairs) {
 					var field = pair.k;
 					var type = pair.v;
@@ -747,7 +749,11 @@ public class P2InferType extends FunpCfg {
 
 					if (field != gcclazzField) {
 						var name = Atom.name(field);
-						value = erase(values.get(name), "definition of field '" + name + "'");
+						var v = values.get(name);
+						if (v != null)
+							value = erase(v, "definition of field '" + name + "'");
+						else
+							value = Funp_.fail(f, "no definition for field '" + name + "'");
 
 						if (isReference(type)) {
 							var shift = offset0 / ps - 1;
