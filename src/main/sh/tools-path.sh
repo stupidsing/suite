@@ -46,11 +46,11 @@ tp_cordova() {
 }
 
 tp_eclipse() {
-	$(cchs "echo http://ftp.jaist.ac.jp/pub/eclipse/technology/epp/downloads/release/2020-03/R/eclipse-java-2020-03-R-linux-gtk-x86_64.tar.gz" @curl @tar-zxf @dir)/eclipse $@
+	$(cchs "echo http://ftp.jaist.ac.jp/pub/eclipse/technology/epp/downloads/release/2020-06/R/eclipse-java-2020-06-R-linux-gtk-x86_64.tar.gz" @curl @tar-zxf @dir)/eclipse $@
 }
 
 tp_eclipse_cpp() {
-	$(cchs "echo http://ftp.jaist.ac.jp/pub/eclipse/technology/epp/downloads/release/2020-03/R/eclipse-cpp-2020-03-R-linux-gtk-x86_64.tar.gz" @curl @tar-zxf @dir)/eclipse $@
+	$(cchs "echo http://ftp.jaist.ac.jp/pub/eclipse/technology/epp/downloads/release/2020-06/R/eclipse-cpp-2020-06-R-linux-gtk-x86_64.tar.gz" @curl @tar-zxf @dir)/eclipse $@
 }
 
 tp_eksctl() {
