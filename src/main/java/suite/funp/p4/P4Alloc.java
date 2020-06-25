@@ -56,7 +56,7 @@ public class P4Alloc extends FunpCfg {
 
 	public void deinit(Emit em) {
 		em.emit(Insn.CMP, amd64.mem(countPointer, is), amd64.imm(0l, is));
-		em.emit(Insn.JNZ, em.spawn(em1 -> em1.emit(Insn.HLT, amd64.remark("ALLOC MISMATCH"))).in);
+		//em.emit(Insn.JNZ, em.spawn(em1 -> em1.emit(Insn.HLT, amd64.remark("ALLOC MISMATCH"))).in);
 	}
 
 	// allocate with a fixed size, but allow de-allocation without specifying size

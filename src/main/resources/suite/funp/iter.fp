@@ -2,7 +2,7 @@ define.global io := consult "io.fp" ~
 
 consult "linux.fp" ~
 
-define.function !list.build () := do!
+let.global !list.build () := do!
 	let elems := !new^ (array 32 * number) ~
 	let size := !new^ 0 ~
 	{
@@ -23,13 +23,13 @@ define.function !list.build () := do!
 	}
 ~
 
-define.function !list.free list := do!
+let.global !list.free list := do!
 	type list = { elems: address.of (array 32 * number), size: number, } ~
 	!delete^ list/elems ~
 	()
 ~
 
-define.function !list.iter list := do!
+let.global !list.iter list := do!
 	type list = { elems: address.of (array 32 * number), size: number, } ~
 	let { elems, size, } := list ~
 	let i := !new^ 0 ~
@@ -44,38 +44,29 @@ define.function !list.iter list := do!
 	}
 ~
 
-define.function list.filter f := list => do!
-	let in := !list.iter list ~
-	let out := !list.build () ~
-	fold (
-		b := true #
-		b #
-		if (in/has.next ()) then (
-			let elem := in/!next () ~
-			if (f elem) then (
-				out/!append elem ~ true
-			) else true
-		) else false
-		#
-		in/!free () ~
+let.global list.filter f := capture1
+	list => do!
+		type f = (number => boolean) ~
+		let in := !list.iter list ~
+		let out := !list.build () ~
 		out/!get ()
-	)
 ~
 
-define.function list.map f := list => do!
-	let in := !list.iter list ~
-	let out := !list.build () ~
-	fold (
-		b := true #
-		b #
-		if (in/has.next ()) then (
-			let elem := in/!next () ~
-			out/!append (f elem) ~
-			true
-		) else false #
-		in/!free () ~
-		out/!get ()
-	)
+let.global list.map f := capture1
+	list => do!
+		let in := !list.iter list ~
+		let out := !list.build () ~
+		fold (
+			b := true #
+			b #
+			if (in/has.next ()) then (
+				let elem := in/!next () ~
+				out/!append (f elem) ~
+				true
+			) else false #
+			in/!free () ~
+			out/!get ()
+		)
 ~
 
 {

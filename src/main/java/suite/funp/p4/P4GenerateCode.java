@@ -1,13 +1,5 @@
 package suite.funp.p4;
 
-import static java.util.Map.entry;
-import static primal.statics.Fail.fail;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import primal.MoreVerbs.Read;
 import primal.adt.Fixie_.FixieFun5;
 import primal.adt.Mutable;
@@ -22,54 +14,17 @@ import primal.primitive.IntPrim;
 import primal.primitive.IntPrim.IntObj_Obj;
 import primal.primitive.adt.Bytes;
 import primal.primitive.adt.pair.IntObjPair;
+import primal.statics.Fail;
 import suite.Suite;
 import suite.assembler.Amd64;
-import suite.assembler.Amd64.Insn;
-import suite.assembler.Amd64.Instruction;
-import suite.assembler.Amd64.OpIgnore;
-import suite.assembler.Amd64.OpImm;
-import suite.assembler.Amd64.OpImmLabel;
-import suite.assembler.Amd64.OpMem;
-import suite.assembler.Amd64.OpReg;
-import suite.assembler.Amd64.Operand;
+import suite.assembler.Amd64.*;
 import suite.assembler.Amd64Assemble;
 import suite.assembler.Amd64Parse;
 import suite.funp.FunpCfg;
 import suite.funp.Funp_;
 import suite.funp.Funp_.Funp;
-import suite.funp.P0.Coerce;
-import suite.funp.P0.FunpBoolean;
-import suite.funp.P0.FunpCoerce;
-import suite.funp.P0.FunpDoAsm;
-import suite.funp.P0.FunpDoWhile;
-import suite.funp.P0.FunpDontCare;
-import suite.funp.P0.FunpError;
-import suite.funp.P0.FunpIf;
-import suite.funp.P0.FunpNumber;
-import suite.funp.P0.FunpRemark;
-import suite.funp.P2.FunpAllocGlobal;
-import suite.funp.P2.FunpAllocReg;
-import suite.funp.P2.FunpAllocStack;
-import suite.funp.P2.FunpAssignMem;
-import suite.funp.P2.FunpAssignOp;
-import suite.funp.P2.FunpAssignOp2;
-import suite.funp.P2.FunpCmp;
-import suite.funp.P2.FunpData;
-import suite.funp.P2.FunpFramePointer;
-import suite.funp.P2.FunpHeapAlloc;
-import suite.funp.P2.FunpHeapDealloc;
-import suite.funp.P2.FunpInvoke1;
-import suite.funp.P2.FunpInvoke2;
-import suite.funp.P2.FunpInvokeIo;
-import suite.funp.P2.FunpMemory;
-import suite.funp.P2.FunpOp;
-import suite.funp.P2.FunpOperand;
-import suite.funp.P2.FunpOperand2;
-import suite.funp.P2.FunpRoutine1;
-import suite.funp.P2.FunpRoutine2;
-import suite.funp.P2.FunpRoutineIo;
-import suite.funp.P2.FunpSaveRegisters0;
-import suite.funp.P2.FunpSaveRegisters1;
+import suite.funp.P0.*;
+import suite.funp.P2.*;
 import suite.funp.RegisterSet;
 import suite.funp.p4.P4Emit.Emit;
 import suite.node.Atom;
@@ -77,6 +32,13 @@ import suite.node.io.Escaper;
 import suite.node.io.TermOp;
 import suite.node.util.TreeUtil;
 import suite.util.Switch;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import static java.util.Map.entry;
 
 public class P4GenerateCode extends FunpCfg {
 
@@ -252,7 +214,7 @@ public class P4GenerateCode extends FunpCfg {
 				var r1 = mask(r0).compileIsReg(r.pointer);
 				var size0 = l.size();
 				var size1 = r.size();
-				return size0 == size1 ? returnOp(compileCompare(r0, l.start, r1, r.start, size0, isEq)) : fail();
+				return size0 == size1 ? returnOp(compileCompare(r0, l.start, r1, r.start, size0, isEq)) : Fail.<CompileOut>fail();
 			})).applyIf(FunpCoerce.class, f -> f.apply((fr, to, expr) -> {
 				var frSize = getCoerceSize(fr);
 				var toSize = getCoerceSize(to);
@@ -410,7 +372,7 @@ public class P4GenerateCode extends FunpCfg {
 								? return2Op(op0, op1)//
 								: mfp.g().map((p, r) -> return2Op(amd64.mem(r, p, ps), amd64.mem(r, p + ps, ps)));
 					}
-					default -> fail();
+					default -> Fail.<CompileOut>fail();
 					};
 				};
 			})).applyIf(FunpNumber.class, f -> {
@@ -578,7 +540,7 @@ public class P4GenerateCode extends FunpCfg {
 							});
 					yield return2Op(op0, op1);
 				}
-				default -> fail();
+				default -> Fail.<CompileOut>fail();
 				};
 		}
 
@@ -589,7 +551,7 @@ public class P4GenerateCode extends FunpCfg {
 				return switch (result.nRegs) {
 				case 1 -> new CompileOut(amd64.ign(result.regSize));
 				case 2 -> new CompileOut(amd64.ign(result.regSize), amd64.ign(result.regSize));
-				default -> fail();
+				default -> Fail.<CompileOut>fail();
 				};
 		}
 
@@ -609,7 +571,7 @@ public class P4GenerateCode extends FunpCfg {
 			} else if (result.t == Rt.SPEC)
 				em.mov(pop0, op);
 			else
-				fail();
+				Fail.<CompileOut>fail();
 			return new CompileOut();
 		}
 
@@ -651,7 +613,7 @@ public class P4GenerateCode extends FunpCfg {
 					em.mov(pop1, r);
 				}
 			}
-			default -> fail();
+			default -> Fail.<CompileOut>fail();
 			}
 			return new CompileOut();
 		}
@@ -736,7 +698,7 @@ public class P4GenerateCode extends FunpCfg {
 			};
 
 			if (size != target.size())
-				fail();
+				Fail.<CompileOut>fail();
 			else if (size % pushSize == 0 && Set.of(2, 3, 4).contains(size / pushSize)) {
 				var opt = p4deOp.decomposeFunpMemory(fd, target, pushSize);
 				var ops = p4deOp.decomposeFunpMemory(fd, source, pushSize);
@@ -1017,7 +979,7 @@ public class P4GenerateCode extends FunpCfg {
 
 		private OpMem compileFrame(int start, int size) {
 			var op = p4deOp.decompose(fd, framePointer, start, size);
-			return op != null ? op : fail();
+			return op != null ? op : Fail.<OpMem>fail();
 		}
 
 		private void compileAssign(Funp n, FunpMemory target) {
@@ -1066,7 +1028,7 @@ public class P4GenerateCode extends FunpCfg {
 				nc(new Result(Rt.SPEC, 2, op0.size), null, op0, op1).compile(n);
 				return new CompileOut(pop0, pop1);
 			} else
-				return fail();
+				return Fail.<CompileOut>fail();
 		}
 
 		private OpReg compileCompare(OpReg r0, int start0, OpReg r1, int start1, int size, boolean isEq) {

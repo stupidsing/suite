@@ -76,15 +76,14 @@ public class FunpTest {
 
 		// capture1 once and calling twice! the capture1 would be freed after the first
 		// call. the second call should cause problem...
-		if (Boolean.FALSE)
-			test(6, "" //
-					+ "define f j := capture1 (i => i + j) ~ " //
-					+ "define fs := f 2 ~ " //
-					+ "define a := 0 | fs | fs ~ " //
-					+ "define g j := capture1 (i => i + j) ~ " //
-					+ "define gs := g 3 ~ " //
-					+ "define b := 0 | gs | gs ~ " //
-					+ "b");
+		test(6, "" //
+				+ "define f j := capture1 (i => i + j) ~ " //
+				+ "define fs := f 2 ~ " //
+				+ "define a := 0 | fs | fs ~ " //
+				+ "define g j := capture1 (i => i + j) ~ " //
+				+ "define gs := g 3 ~ " //
+				+ "define b := 0 | gs | gs ~ " //
+				+ "b");
 	}
 
 	@Test
