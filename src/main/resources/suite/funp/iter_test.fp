@@ -2,15 +2,6 @@ let.global !list.build () := do!
 	let elems := !new^ (array 32 * number) ~
 	let size := !new^ 0 ~
 	{
-		!append elem := do!
-			let size_ := size* ~
-			if (size_ < 32) then (
-				!assign elems* [size_] := elem ~
-				!assign size* := size_ + 1 ~
-				()
-			)
-			else error
-		~
 		!get () := do!
 			let size_ := size* ~
 			!delete^ size ~
@@ -41,7 +32,7 @@ do! (
 	let elem0 := iter/!next () ~
 	let elem1 := iter/!next () ~
 	--iter/!free () ~
-	out/!append 2 ~
+	--out/!append 2 ~
 	--let dummy := true ~
 	let list1 := out/!get () ~
 	2
