@@ -129,7 +129,7 @@ public class Funp_ extends FunpCfg {
 		} catch (CompileException ex) {
 			throw new CompileException(ex.funp, "in " + in, ex);
 		} catch (Exception ex) {
-			throw new RuntimeException("in " + in, ex);
+			throw new RuntimeException(ex.getMessage() + "\nin " + in, ex);
 		}
 	}
 
