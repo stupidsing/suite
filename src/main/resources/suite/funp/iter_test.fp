@@ -2,11 +2,11 @@ let.global !list.build () := do!
 	let elems := !new^ (array 32 * number) ~
 	let size := !new^ 0 ~
 	{
-		!get () := do!
+		!get := capture1 (() => do!
 			let size_ := size* ~
 			!delete^ size ~
 			{ elems, size: size_, }
-		~
+		) ~
 	}
 ~
 

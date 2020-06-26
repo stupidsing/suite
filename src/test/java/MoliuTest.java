@@ -26,10 +26,6 @@ public class MoliuTest {
 		test(2, program, "", "");
 	}
 
-	private void test(int code, String program, String expected) {
-		test(code, program, expected, expected);
-	}
-
 	private void test(int code, String program, String input, String expected) {
 		var result = execute(program, input);
 		assertEquals(code, result.k);
