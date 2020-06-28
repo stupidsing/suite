@@ -1,4 +1,4 @@
-package suite.funp;
+package suite.funp.p2;
 
 import static primal.statics.Fail.fail;
 
@@ -8,6 +8,7 @@ import primal.MoreVerbs.Read;
 import primal.Verbs.Get;
 import primal.fp.Funs.Fun;
 import primal.persistent.PerMap;
+import suite.funp.Funp_;
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.Fdt;
 import suite.funp.P0.FunpApply;

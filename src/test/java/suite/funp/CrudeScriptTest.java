@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import primal.primitive.adt.Bytes;
 import suite.assembler.Amd64Interpret;
+import suite.funp.p0.P0CrudeScript;
 import suite.funp.p1.P10Inline;
 import suite.funp.p2.P2InferType;
 import suite.funp.p3.P3Optimize;

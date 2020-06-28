@@ -21,6 +21,7 @@ import suite.funp.p0.P0Parse;
 import suite.funp.p1.P10Inline;
 import suite.funp.p1.P11ReduceTailCall;
 import suite.funp.p2.P2InferType;
+import suite.funp.p2.P2GenerateLambda;
 import suite.funp.p3.P3Optimize;
 import suite.funp.p4.P4GenerateCode;
 import suite.inspect.Inspect;
