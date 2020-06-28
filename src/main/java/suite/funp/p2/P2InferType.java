@@ -1213,10 +1213,15 @@ public class P2InferType extends FunpCfg {
 
 	private Streamlet2<Node, Reference> isCompletedStructList(Node n) {
 		var m = typePatStruct.match(n);
-		if (m != null && m[0] == Atom.TRUE) {
-			var dict = Dict.m(m[1]);
-			return Tree.read(m[2]).map2(dict::get);
-		} else
+		if (m != null && m[0] == Atom.TRUE)
+			return Tree.read(m[2]).map2(key -> {
+				var reference = new Reference();
+				var map = new HashMap<Node, Reference>();
+				map.put(key, reference);
+				unify(m[1], Dict.of(map));
+				return reference;
+			});
+		else
 			return null;
 	}
 
