@@ -148,7 +148,7 @@ public class P21CaptureLambda {
 					var captures = li.captures;
 					if (fct == Fct.NOSCOP && !captures.isEmpty())
 						Funp_.fail(f, "scopeless lambda <" + vn + "> capturing variables " + li.captureSet);
-					if (fct == Fct.MANUAL || !captures.isEmpty()) {
+					if (fct == Fct.MANUAL || fct == Fct.ONCE__ || !captures.isEmpty()) {
 						var pcapn = "pcap$" + Get.temp();
 						var pcap = FunpVariable.of(pcapn);
 						var struct = FunpStruct.of(captures);
