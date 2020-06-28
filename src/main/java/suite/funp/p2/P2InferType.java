@@ -925,6 +925,10 @@ public class P2InferType extends FunpCfg {
 						return me.getAddress(scope);
 					}).applyIf(FunpVariable.class, f -> f.apply(vn -> {
 						return env.getOrFail(vn).getAddress(scope);
+					})).applyIf(FunpTypeAssign.class, f -> f.apply((left, right, expr) -> {
+						return getAddress(expr);
+					})).applyIf(FunpTypeCheck.class, f -> f.apply((left, right, expr) -> {
+						return getAddress(expr);
 					})).applyIf(Funp.class, f -> {
 						return Funp_.fail(f, "requires pre-definition of a " + f);
 					}).nonNullResult();
