@@ -387,7 +387,7 @@ public class P0 {
 		public String name; // optional
 
 		public static FunpLambda of(String vn, Funp expr) {
-			return of(vn, expr, null);
+			return of(vn, expr, Fct.NOCAP_);
 		}
 
 		public static FunpLambda of(String vn, Funp expr, Fct fct) {
@@ -691,9 +691,10 @@ public class P0 {
 	}
 
 	public enum Fct { // capture type
-		MANUAL, // to be uncaptured (freed) manually
-		NOSCOP, // do not access variables of outer scope
-		ONCE__, // to be freed after first call
+		MANUAL, // capture the variables and allocate a capture frame, to be uncaptured (freed) manually
+		NOCAP_, // pass the stack frame, no need to capture; lambda lifetime equals to stack frame lifetime
+		NOSCOP, // no access to variables of outer scope
+		ONCE__, // capture the variables and allocate a capture frame, which is to be freed after first call; lambda cannot be called twice
 	}
 
 	public enum Fdt {

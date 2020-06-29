@@ -1,14 +1,26 @@
 package suite.funp;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
-import primal.adt.Fixie_.*;
-import primal.adt.*;
+import primal.adt.Fixie_.FixieFun0;
+import primal.adt.Fixie_.FixieFun1;
+import primal.adt.Fixie_.FixieFun2;
+import primal.adt.Fixie_.FixieFun3;
+import primal.adt.Fixie_.FixieFun4;
+import primal.adt.Fixie_.FixieFun5;
+import primal.adt.Fixie_.FixieFun6;
+import primal.adt.Mutable;
+import primal.adt.Pair;
 import primal.parser.Operator;
-import primal.primitive.adt.*;
-import suite.assembler.Amd64.*;
+import primal.primitive.adt.IntMutable;
+import primal.primitive.adt.IntRange;
+import suite.assembler.Amd64.OpReg;
+import suite.assembler.Amd64.Operand;
 import suite.funp.Funp_.Funp;
-import suite.funp.P0.*;
+import suite.funp.P0.Fct;
+import suite.funp.P0.FunpStruct;
+import suite.funp.P0.FunpVariable;
 
 public class P2 {
 

@@ -1,5 +1,7 @@
 package suite.funp.p2;
 
+import static primal.statics.Fail.fail;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
@@ -9,6 +11,7 @@ import java.util.Set;
 import primal.MoreVerbs.Read;
 import primal.Verbs.Get;
 import primal.adt.Pair;
+import primal.fp.Funs.Fun;
 import primal.fp.Funs2.Fun2;
 import suite.funp.Funp_;
 import suite.funp.Funp_.Funp;
@@ -67,9 +70,9 @@ public class P21CaptureLambda {
 		}
 
 		class Vi {
-			private FunpLambda lambda; // variable defined here
-			private boolean isRef;
-			private FunpLambda varLambda; // variable read from here
+			private FunpLambda lambda; // the variable is defined here
+			private boolean isRef; // whether the variable needs to be stored by-reference
+			private FunpLambda varLambda; // the variable being read from here
 
 			private Vi(Funp def) {
 				lambda = def instanceof FunpLambda ? (FunpLambda) def : lambdaByFunp.get(def);
@@ -111,7 +114,7 @@ public class P21CaptureLambda {
 				private Funp access(FunpLambda lambda_) {
 					if (lambda_ == lambdaVar)
 						return isRef ? FunpReference.of(var) : var;
-					else if (lambda.fct == null)
+					else if (lambda.fct == Fct.NOCAP_)
 						return access(lambdaByFunp.get(lambda_));
 					else {
 						var li = infoByLambda.get(lambda_);
@@ -145,23 +148,30 @@ public class P21CaptureLambda {
 					} else
 						return null;
 				})).applyIf(FunpLambda.class, f -> f.apply((vn, expr, fct) -> {
-					var li = infoByLambda.get(f);
+					Li li = infoByLambda.get(f);
 					var captures = li.captures;
-					if (fct == Fct.NOSCOP && !captures.isEmpty())
-						Funp_.fail(f, "scopeless lambda <" + vn + "> capturing variables " + li.captureSet);
-					if (fct == Fct.MANUAL || fct == Fct.ONCE__ || !captures.isEmpty()) {
+
+					Fun<Boolean, Funp> capturef = isDynamicSize -> {
 						var pcapn = "pcap$" + Get.temp();
 						var pcap = FunpVariable.of(pcapn);
 						var struct = FunpStruct.of(captures);
 						var lc = FunpLambdaCapture.of(pcap, li.cap, struct, vn, c(expr), fct);
 						var assign = FunpDoAssignRef.of(FunpReference.of(FunpDeref.of(pcap)), struct, lc);
-						var isDynamicSize = fct == Fct.MANUAL;
 						return FunpDefine.of(pcapn, FunpDoHeapNew.of(isDynamicSize), assign, Fdt.L_MONO);
+					};
 
-						// FIXME now we free the capture immediately after first invocation; cannot
-						// invoke again
-					} else
-						return null;
+					return switch (fct) {
+					case MANUAL -> capturef.apply(true);
+					case NOCAP_ -> null;
+					case ONCE__ -> capturef.apply(false);
+					case NOSCOP -> {
+						if (captures.isEmpty())
+							yield null;
+						else
+							yield Funp_.fail(f, "scopeless lambda <" + vn + "> capturing variables " + li.captureSet);
+					}
+					default -> fail();
+					};
 				})).applyIf(FunpVariable.class, f -> f.apply(vn -> {
 					return accessors.get(f);
 				})).result();
