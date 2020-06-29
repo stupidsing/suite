@@ -126,6 +126,10 @@ public class P0Parse extends FunpCfg {
 					return checkDo(() -> FunpDefine.of(lambda.vn, apply, lambda.expr, Fdt.L_IOAP));
 				} else
 					return null;
+			}).match(".0 => capture .1", (a, b) -> {
+				return capture(bind(Fdt.L_MONO).lambdaSeparate(a, b), Fct.MANUAL);
+			}).match(".0 => capture1 .1", (a, b) -> {
+				return capture(bind(Fdt.L_MONO).lambdaSeparate(a, b), Fct.ONCE__);
 			}).match(".0 => .1", (a, b) -> {
 				return bind(Fdt.L_MONO).lambdaSeparate(a, b);
 			}).match(".0 | .1", (a, b) -> {
@@ -185,10 +189,6 @@ public class P0Parse extends FunpCfg {
 				return FunpCoerce.of(Coerce.NUMBER, Coerce.BYTE, FunpDontCare.of());
 			}).match("byte .0", a -> {
 				return FunpCoerce.of(Coerce.NUMBER, Coerce.BYTE, FunpNumber.ofNumber(num(a)));
-			}).match("capture (.0 => .1)", (a, b) -> {
-				return capture(bind(Fdt.L_MONO).lambdaSeparate(a, b), Fct.MANUAL);
-			}).match("capture1 (.0 => .1)", (a, b) -> {
-				return capture(bind(Fdt.L_MONO).lambdaSeparate(a, b), Fct.ONCE__);
 			}).match("case || .0", a -> {
 				return new Object() {
 					private Funp d(Node n) {

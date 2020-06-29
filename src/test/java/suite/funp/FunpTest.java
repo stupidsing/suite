@@ -43,9 +43,9 @@ public class FunpTest {
 
 	@Test
 	public void testCapture() {
-		test(46, "define m := 31 ~ let l := capture (n => n + m) ~ uncapture l ~ 15 | l");
+		test(46, "define m := 31 ~ let l := n => capture (n + m) ~ uncapture l ~ 15 | l");
 		try {
-			test(46, "define m := 31 ~ let l := capture (n => n + m) ~ 15 | l");
+			test(46, "define m := 31 ~ let l := n => capture (n + m) ~ 15 | l");
 			fail();
 		} catch (RuntimeException ex) {
 			assertEquals("ALLOC MISMATCH", ex.getMessage());
@@ -54,34 +54,34 @@ public class FunpTest {
 
 	@Test
 	public void testCapture1() {
-		test(46, "define m := 31 ~ let l := capture1 (n => n + m) ~ 15 | l");
+		test(46, "define m := 31 ~ let l := n => capture1 (n + m) ~ 15 | l");
 
 		// unreliable when optimized. the optimizer would substitute the variable
 		// definition that makes the capture1 time latter than the assignment to m.
 		test(31, "" //
 				+ "do! (" //
 				+ "let m := 31 ~ " //
-				+ "let l := capture1 (n => m) ~ " //
+				+ "let l := n => capture1 m ~ " //
 				+ "!assign m := 63 ~ " //
 				+ "15 | l)");
 
-		test(0, "define m j := (type j = number ~ 0) ~ 1 | capture1 (n => m 2)");
+		test(0, "define m j := (type j = number ~ 0) ~ 1 | (n => capture1 (m 2))");
 
 		// use capture1 to return a lambda expression
 		test(12, "" //
-				+ "define f j := capture1 (i => i + j) ~ " //
-				+ "define g j := capture1 (i => i + j) ~ " //
-				+ "define h j := capture1 (i => i + j) ~ " //
+				+ "define f j := i => capture1 (i + j) ~ " //
+				+ "define g j := i => capture1 (i + j) ~ " //
+				+ "define h j := i => capture1 (i + j) ~ " //
 				+ "0 | (i => 0 | f 1 | g 2 | h 3 | f 1 | g 2 | h 3)");
 
 		// capture1 once and calling twice! the capture1 would be freed after the first
 		// call. the second call should cause problem...
 		if (Boolean.FALSE)
 			test(6, "" //
-					+ "define f j := capture1 (i => i + j) ~ " //
+					+ "define f j := i => capture1 (i + j) ~ " //
 					+ "define fs := f 2 ~ " //
 					+ "define a := 0 | fs | fs ~ " //
-					+ "define g j := capture1 (i => i + j) ~ " //
+					+ "define g j := i => capture1 (i + j) ~ " //
 					+ "define gs := g 3 ~ " //
 					+ "define b := 0 | gs | gs ~ " //
 					+ "b");
