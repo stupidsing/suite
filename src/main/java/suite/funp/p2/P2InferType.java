@@ -244,7 +244,7 @@ public class P2InferType extends FunpCfg {
 				var tvalue = infer(value, "definition of variable '" + vn + "'");
 				if (Fdt.isGlobal(fdt))
 					Log_.info(vn + " :: " + toTypeString(tvalue));
-				return new Infer(env.replace(vn, Pair.of(fdt, tvalue)), checks0, checks1, me).infer(expr);
+				return new Infer(env.put(vn, Pair.of(fdt, tvalue)), checks0, checks1, me).infer(expr);
 			})).applyIf(FunpDefineRec.class, f -> f.apply((pairs, expr, fdt) -> {
 				var pairs_ = Read.from(pairs);
 				var vns = pairs_.map(Pair::fst);
