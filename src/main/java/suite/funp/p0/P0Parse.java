@@ -211,7 +211,7 @@ public class P0Parse extends FunpCfg {
 				return defineList(a, b, Fdt.L_POLY);
 			}).match("define.function .0 .1 := .2 ~ .3", (a, b, c, d) -> {
 				var lambda = bind(Fdt.L_MONO).lambdaSeparate(b, c);
-				lambda.fct = Fct.NOCAP_;
+				lambda.fct = Fct.STACKF;
 				return define(a, lambda, d, Fdt.S_POLY);
 			}).match("define.global .0 := .1 ~ .2", (a, b, c) -> {
 				var tree = Tree.decompose(a, TermOp.TUPLE_);

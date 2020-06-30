@@ -114,7 +114,7 @@ public class P21CaptureLambda {
 				private Funp access(FunpLambda lambda_) {
 					if (lambda_ == lambdaVar)
 						return isRef ? FunpReference.of(var) : var;
-					else if (lambda.fct == Fct.NOCAP_)
+					else if (lambda.fct == Fct.STACKF)
 						return access(lambdaByFunp.get(lambda_));
 					else {
 						var li = infoByLambda.get(lambda_);
@@ -162,14 +162,14 @@ public class P21CaptureLambda {
 
 					return switch (fct) {
 					case MANUAL -> capturef.apply(true);
-					case NOCAP_ -> null;
-					case ONCE__ -> capturef.apply(false);
 					case NOSCOP -> {
 						if (captures.isEmpty())
 							yield null;
 						else
 							yield Funp_.fail(f, "scopeless lambda <" + vn + "> capturing variables " + li.captureSet);
 					}
+					case ONCE__ -> capturef.apply(false);
+					case STACKF -> null;
 					default -> fail();
 					};
 				})).applyIf(FunpVariable.class, f -> f.apply(vn -> {
