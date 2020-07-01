@@ -70,12 +70,12 @@ public class P21CaptureLambda {
 		}
 
 		class Vi {
-			private FunpLambda lambda; // the variable is defined here
+			private FunpLambda defLambda; // the variable is defined in this scope
+			private FunpLambda varLambda; // the variable being read from this scope
 			private boolean isRef; // whether the variable needs to be stored by-reference
-			private FunpLambda varLambda; // the variable being read from here
 
 			private Vi(Funp def) {
-				lambda = def instanceof FunpLambda ? (FunpLambda) def : lambdaByFunp.get(def);
+				defLambda = def instanceof FunpLambda ? (FunpLambda) def : lambdaByFunp.get(def);
 			}
 
 			private FunpLambda setLambda(boolean isRef_, FunpLambda varLambda_) {
@@ -87,6 +87,7 @@ public class P21CaptureLambda {
 		var infoByLambda = Read.from2(lambdaByFunp).values().distinct().map2(lambda -> new Li()).toMap();
 		var infoByVar = Read.from2(defByVars).mapValue(Vi::new).toMap();
 
+		// capture-by-reference if necessary, e.g. assignments or references occurred
 		new Object() {
 			private Funp associate(Funp node) {
 				return inspect.rewrite(node, Funp.class, n -> {
@@ -106,22 +107,23 @@ public class P21CaptureLambda {
 		}.associate(node0);
 
 		Fun2<FunpVariable, Vi, Funp> accessFun = (var, vi) -> {
-			var lambda = vi.lambda;
-			var isRef = vi.isRef;
+			var defLambda = vi.defLambda;
 			var varLambda = vi.varLambda;
+			var isRef = vi.isRef;
 			var vn = var.vn;
 			var access = new Object() {
-				private Funp access(FunpLambda lambda_) {
-					if (lambda_ == lambda) // accessing from the same scope
+				private Funp access(FunpLambda lambda) {
+					if (lambda == defLambda) // accessing from the same scope
 						return isRef ? FunpReference.of(var) : var;
-					else if (varLambda.fct == Fct.STACKF) // accessible through stack frame
-						return access(lambdaByFunp.get(lambda_));
-					else { // access from captured frame
-						var li = infoByLambda.get(lambda_);
+					else if (lambda.fct == Fct.MANUAL || lambda.fct == Fct.ONCE__) { // access from captured frame
+						var li = infoByLambda.get(lambda);
 						if (li.captureSet.add(vn))
-							li.captures.add(Pair.of(vn, access(lambdaByFunp.get(lambda_))));
+							li.captures.add(Pair.of(vn, access(lambdaByFunp.get(lambda))));
 						return FunpField.of(FunpReference.of(li.cap), vn);
-					}
+					} else if (lambda.fct == Fct.STACKF) // accessible through stack frame
+						return access(lambdaByFunp.get(lambda));
+					else
+						return fail();
 				}
 			}.access(varLambda);
 			return isRef ? FunpDeref.of(access) : access;
