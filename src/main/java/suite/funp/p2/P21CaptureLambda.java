@@ -96,6 +96,8 @@ public class P21CaptureLambda {
 					return n.sw( //
 					).doIf(FunpDoAssignVar.class, f -> {
 						infoByVar.get(f.var).setLambda(true, lambda);
+						associate(f.value);
+						// associate(f.expr);
 					}).applyIf(FunpReference.class, f -> {
 						var r = f.expr.cast(FunpVariable.class, var -> infoByVar.get(var).setLambda(true, lambda));
 						return r != null ? f : null;
