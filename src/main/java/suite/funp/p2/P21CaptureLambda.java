@@ -105,30 +105,30 @@ public class P21CaptureLambda {
 			}
 		}.associate(node0);
 
-		Fun2<FunpVariable, FunpLambda, Funp> accessFun = (var, lambda) -> {
-			var vi = infoByVar.get(var);
-			var lambdaVar = vi.lambda;
+		Fun2<FunpVariable, Vi, Funp> accessFun = (var, vi) -> {
+			var lambda = vi.lambda;
 			var isRef = vi.isRef;
+			var varLambda = vi.varLambda;
 			var vn = var.vn;
 			var access = new Object() {
 				private Funp access(FunpLambda lambda_) {
-					if (lambda_ == lambdaVar)
+					if (lambda_ == lambda) // accessing from the same scope
 						return isRef ? FunpReference.of(var) : var;
-					else if (lambda.fct == Fct.STACKF)
+					else if (varLambda.fct == Fct.STACKF) // accessible through stack frame
 						return access(lambdaByFunp.get(lambda_));
-					else {
+					else { // access from captured frame
 						var li = infoByLambda.get(lambda_);
 						if (li.captureSet.add(vn))
 							li.captures.add(Pair.of(vn, access(lambdaByFunp.get(lambda_))));
 						return FunpField.of(FunpReference.of(li.cap), vn);
 					}
 				}
-			}.access(lambda);
+			}.access(varLambda);
 			return isRef ? FunpDeref.of(access) : access;
 		};
 
 		var accessors = Read.from2(infoByVar).concatMap2((var, vi) -> {
-			return vi.varLambda != null ? Read.each2(Pair.of(var, accessFun.apply(var, vi.varLambda))) : Read.empty2();
+			return vi.varLambda != null ? Read.each2(Pair.of(var, accessFun.apply(var, vi))) : Read.empty2();
 		}).toMap();
 
 		return new Object() {
