@@ -133,8 +133,6 @@ import suite.util.Switch;
 public class P2InferType extends FunpCfg {
 
 	private Inspect inspect = Singleton.me.inspect;
-	private P20ExtractPredefine p2a = new P20ExtractPredefine();
-	private P21CaptureLambda p2b = new P21CaptureLambda();
 
 	private int is = integerSize;
 	private int ps = pointerSize;
@@ -165,14 +163,12 @@ public class P2InferType extends FunpCfg {
 		super(f);
 	}
 
-	public Funp infer(Funp n0) {
+	public Funp infer(Funp n) {
 		var t = new Reference();
-		var n1 = p2a.extractPredefine(n0);
-		var n2 = p2b.captureLambdas(n1);
 		var checks0 = new ArrayList<Source<Boolean>>();
 		var checks1 = new ArrayList<Source<Boolean>>();
 
-		if (unify(t, new Infer(PerMap.empty(), checks0, checks1, null).infer(n2))) {
+		if (unify(t, new Infer(PerMap.empty(), checks0, checks1, null).infer(n))) {
 			var b = (Read.each(checks0, checks1).concatMap(Read::from).isAll(Source::g) || failBool("fail type-checks")) //
 					&& (getTypeSize(t) == is || failBool("invalid return type"));
 
@@ -180,12 +176,12 @@ public class P2InferType extends FunpCfg {
 				// first pass to estimate variable usage;
 				// second pass to assign registers to variables
 				var erase = new Erase(0, PerMap.empty(), null);
-				erase.erase(n2); // first pass
-				return erase.erase(n2); // second pass
+				erase.erase(n); // first pass
+				return erase.erase(n); // second pass
 			} else
 				return fail();
 		} else
-			return Funp_.fail(n0, "cannot infer type");
+			return Funp_.fail(n, "cannot infer type");
 	}
 
 	private class Infer {
