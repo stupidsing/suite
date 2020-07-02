@@ -34,11 +34,11 @@ import suite.inspect.Dump;
 import suite.inspect.Inspect;
 import suite.node.util.Singleton;
 
-public class P11Inline {
+public class P12Inline {
 
 	private Inspect inspect = Singleton.me.inspect;
 
-	public P11Inline(Funp_ f) {
+	public P12Inline(Funp_ f) {
 	}
 
 	public Funp inline(Funp node, int rounds, int f0, int f1, int f2, int f3, int f4) {

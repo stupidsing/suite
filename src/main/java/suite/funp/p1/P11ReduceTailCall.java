@@ -25,11 +25,11 @@ import suite.inspect.Inspect;
 import suite.node.util.Singleton;
 import suite.util.Switch;
 
-public class P12ReduceTailCall {
+public class P11ReduceTailCall {
 
 	private Inspect inspect = Singleton.me.inspect;
 
-	public P12ReduceTailCall(Funp_ f) {
+	public P11ReduceTailCall(Funp_ f) {
 	}
 
 	public Funp reduce(Funp node) {
