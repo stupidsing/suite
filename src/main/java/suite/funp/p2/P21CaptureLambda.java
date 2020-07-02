@@ -97,7 +97,7 @@ public class P21CaptureLambda {
 					).doIf(FunpDoAssignVar.class, f -> {
 						infoByVar.get(f.var).setLambda(true, lambda);
 						associate(f.value);
-						// associate(f.expr);
+						associate(f.expr);
 					}).applyIf(FunpReference.class, f -> {
 						var r = f.expr.cast(FunpVariable.class, var -> infoByVar.get(var).setLambda(true, lambda));
 						return r != null ? f : null;
@@ -128,7 +128,14 @@ public class P21CaptureLambda {
 						return fail();
 				}
 			}.access(varLambda);
-			return isRef ? FunpDeref.of(access) : access;
+
+			// if we are capturing the reference, dereference to get the actual value
+			if (!isRef)
+				return access;
+			else if (!(access instanceof FunpReference))
+				return FunpDeref.of(access);
+			else
+				return ((FunpReference) access).expr;
 		};
 
 		var accessors = Read.from2(infoByVar).concatMap2((var, vi) -> {
@@ -144,7 +151,9 @@ public class P21CaptureLambda {
 				return n.sw( //
 				).applyIf(FunpDoAssignVar.class, f -> f.apply((var, value, expr) -> {
 					var accessor = accessors.get(var);
-					if (accessor != null) {
+					if (accessor instanceof FunpVariable)
+						return FunpDoAssignVar.of(var, c(value), c(expr));
+					else if (accessor != null) {
 						var value_ = c(value);
 						var ref = FunpReference.of(accessor);
 						var assign = FunpDoAssignRef.of(ref, value_, c(expr));
