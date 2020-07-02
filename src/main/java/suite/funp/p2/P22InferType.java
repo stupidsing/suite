@@ -130,7 +130,7 @@ import suite.util.Switch;
  *
  * @author ywsing
  */
-public class P2InferType extends FunpCfg {
+public class P22InferType extends FunpCfg {
 
 	private Inspect inspect = Singleton.me.inspect;
 
@@ -159,7 +159,7 @@ public class P2InferType extends FunpCfg {
 
 	private boolean isGcStruct = true;
 
-	public P2InferType(Funp_ f) {
+	public P22InferType(Funp_ f) {
 		super(f);
 	}
 
@@ -1086,7 +1086,7 @@ public class P2InferType extends FunpCfg {
 		}
 
 		private boolean isPassReg() {
-			return is == P2InferType.this.is || is == P2InferType.this.ps;
+			return is == P22InferType.this.is || is == P22InferType.this.ps;
 		}
 	}
 

@@ -23,8 +23,8 @@ import suite.funp.p1.P11ReduceTailCall;
 import suite.funp.p1.P12Inline;
 import suite.funp.p2.P20ExtractPredefine;
 import suite.funp.p2.P21CaptureLambda;
+import suite.funp.p2.P22InferType;
 import suite.funp.p2.P2GenerateLambda;
-import suite.funp.p2.P2InferType;
 import suite.funp.p3.P3Optimize;
 import suite.funp.p4.P4GenerateCode;
 import suite.inspect.Inspect;
@@ -74,9 +74,9 @@ public class Funp_ extends FunpCfg {
 			var p10 = new P10Check(f);
 			var p11 = new P11ReduceTailCall(f);
 			var p12 = new P12Inline(f);
-			var p2 = new P2InferType(f);
 			var p20 = new P20ExtractPredefine();
 			var p21 = new P21CaptureLambda();
+			var p22 = new P22InferType(f);
 			var p3 = new P3Optimize(f);
 			var p4 = new P4GenerateCode(f);
 
@@ -87,7 +87,7 @@ public class Funp_ extends FunpCfg {
 			var n3 = p12.inline(n2, isOptimize ? 3 : 0, 1, 1, 1, 1, 1);
 			var n4 = p20.extractPredefine(n3);
 			var n5 = p21.captureLambdas(n4);
-			var n6 = p2.infer(n5);
+			var n6 = p22.infer(n5);
 			var n7 = p3.optimize(n6);
 			return p4.compile(offset, n7);
 		}
@@ -95,7 +95,7 @@ public class Funp_ extends FunpCfg {
 		public int interpret(Node node) {
 			var f = Funp_.this;
 			var p0 = new P0Parse(f);
-			var p2 = new P2InferType(f);
+			var p2 = new P22InferType(f);
 			var p2g = new P2GenerateLambda(f);
 
 			var f0 = p0.parse(node);
