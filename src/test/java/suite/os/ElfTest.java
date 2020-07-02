@@ -97,14 +97,24 @@ public class ElfTest {
 	public void testIter() {
 		// var program = "do! (consult iter.fp)/!list.iter []";
 		var program = "" //
-				+ "let { !list.iter, } := consult iter.fp ~ \n" //
+				+ "let { list.filter, !list.free, !list.iter, list.map, } := consult iter.fp ~ \n" //
 				+ "do! ( \n" //
-				+ "	let iter := !list.iter { elems: address.of predef (array 32 * 1), size: 3, } ~ \n" //
+				+ "	let !filter := list.filter (i => true) ~ \n" //
+				+ "	let !map := list.map (i => i + 1) ~ \n" //
+				+ "	let list0 := { elems: address.of predef (array 32 * 1), size: 3, } ~ \n" //
+				+ "	let list1 := !filter list0 ~ \n" //
+				+ "	let list2 := !map list1 ~ \n" //
+				+ "	let iter := !list.iter list2 ~ \n" //
 				+ "	let v := iter/!next () ~ \n" //
 				+ "	iter/!free () ~ \n" //
+				+ "	!list.free list2 ~ \n" //
+				+ "	!list.free list1 ~ \n" //
+				+ "	uncapture !filter ~ \n" //
+				+ "	uncapture !map ~ \n" //
 				+ "	v \n" //
 				+ ")";
-		test(1, program, "");
+		System.out.println(program);
+		test(2, program, "");
 	}
 
 	@Test
