@@ -15,8 +15,16 @@ import suite.assembler.Amd64.Instruction;
 import suite.assembler.Amd64Cfg;
 import suite.funp.P0.FunpDefine;
 import suite.funp.P0.FunpDefineRec;
+import suite.funp.P0.FunpDoAssignVar;
+import suite.funp.P0.FunpField;
 import suite.funp.P0.FunpLambda;
+import suite.funp.P0.FunpPredefine;
+import suite.funp.P0.FunpRemark;
+import suite.funp.P0.FunpTag;
+import suite.funp.P0.FunpTree;
+import suite.funp.P0.FunpTree2;
 import suite.funp.P0.FunpVariable;
+import suite.funp.P0.FunpVariableNew;
 import suite.funp.p0.P0Parse;
 import suite.funp.p1.P10Check;
 import suite.funp.p1.P11ReduceTailCall;
@@ -31,6 +39,7 @@ import suite.inspect.Inspect;
 import suite.node.Node;
 import suite.node.util.Singleton;
 import suite.object.CastDefaults;
+import suite.util.Switch;
 
 public class Funp_ extends FunpCfg {
 
@@ -144,8 +153,38 @@ public class Funp_ extends FunpCfg {
 	}
 
 	public static <T> T fail(Funp n, String m0) {
-		var m1 = n != null ? m0 + "\nfor construct '" + n.getClass().getSimpleName() + "'" : m0;
+		var m1 = n != null ? m0 + "\nin construct " + describe(n) : m0;
 		throw new CompileException(n, m1, null);
+	}
+
+	private static String describe(Funp n) {
+		var c = n.getClass().getSimpleName();
+		return new Switch<String>(n //
+		).applyIf(FunpDefine.class, f -> {
+			return c + " (" + f.vn + ")";
+		}).applyIf(FunpDoAssignVar.class, f -> {
+			return c + " (" + f.var.vn + ")";
+		}).applyIf(FunpField.class, f -> {
+			return c + " (" + f.field + ")";
+		}).applyIf(FunpLambda.class, f -> {
+			return c + " (" + f.vn + ")";
+		}).applyIf(FunpPredefine.class, f -> {
+			return c + " (" + f.vn + ")";
+		}).applyIf(FunpRemark.class, f -> {
+			return c + " (" + f.remark + ")";
+		}).applyIf(FunpTag.class, f -> {
+			return c + " (" + f.tag + ")";
+		}).applyIf(FunpTree.class, f -> {
+			return c + " (" + f.operator.name_().trim() + ")";
+		}).applyIf(FunpTree2.class, f -> {
+			return c + " (" + f.operator.name + ")";
+		}).applyIf(FunpVariable.class, f -> {
+			return c + " (" + f.vn + ")";
+		}).applyIf(FunpVariableNew.class, f -> {
+			return c + " (" + f.vn + ")";
+		}).applyIf(Funp.class, f -> {
+			return c;
+		}).nonNullResult();
 	}
 
 }
