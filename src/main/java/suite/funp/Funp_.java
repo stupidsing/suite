@@ -159,32 +159,21 @@ public class Funp_ extends FunpCfg {
 
 	private static String describe(Funp n) {
 		var c = n.getClass().getSimpleName();
-		return new Switch<String>(n //
-		).applyIf(FunpDefine.class, f -> {
-			return c + " (" + f.vn + ")";
-		}).applyIf(FunpDoAssignVar.class, f -> {
-			return c + " (" + f.var.vn + ")";
-		}).applyIf(FunpField.class, f -> {
-			return c + " (" + f.field + ")";
-		}).applyIf(FunpLambda.class, f -> {
-			return c + " (" + f.vn + ")";
-		}).applyIf(FunpPredefine.class, f -> {
-			return c + " (" + f.vn + ")";
-		}).applyIf(FunpRemark.class, f -> {
-			return c + " (" + f.remark + ")";
-		}).applyIf(FunpTag.class, f -> {
-			return c + " (" + f.tag + ")";
-		}).applyIf(FunpTree.class, f -> {
-			return c + " (" + f.operator.name_().trim() + ")";
-		}).applyIf(FunpTree2.class, f -> {
-			return c + " (" + f.operator.name + ")";
-		}).applyIf(FunpVariable.class, f -> {
-			return c + " (" + f.vn + ")";
-		}).applyIf(FunpVariableNew.class, f -> {
-			return c + " (" + f.vn + ")";
-		}).applyIf(Funp.class, f -> {
-			return c;
-		}).nonNullResult();
+
+		return new Switch<String>(n) //
+				.applyIf(FunpDefine.class, f -> c + " (" + f.vn + ")") //
+				.applyIf(FunpDoAssignVar.class, f -> c + " (" + f.var.vn + ")") //
+				.applyIf(FunpField.class, f -> c + " (" + f.field + ")") //
+				.applyIf(FunpLambda.class, f -> c + " (" + f.vn + ")") //
+				.applyIf(FunpPredefine.class, f -> c + " (" + f.vn + ")") //
+				.applyIf(FunpRemark.class, f -> c + " (" + f.remark + ")") //
+				.applyIf(FunpTag.class, f -> c + " (" + f.tag + ")") //
+				.applyIf(FunpTree.class, f -> c + " (" + f.operator.name_().trim() + ")") //
+				.applyIf(FunpTree2.class, f -> c + " (" + f.operator.name + ")") //
+				.applyIf(FunpVariable.class, f -> c + " (" + f.vn + ")") //
+				.applyIf(FunpVariableNew.class, f -> c + " (" + f.vn + ")") //
+				.applyIf(Funp.class, f -> c) //
+				.nonNullResult();
 	}
 
 }
