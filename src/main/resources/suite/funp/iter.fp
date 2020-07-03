@@ -1,7 +1,3 @@
-define.global io := consult "io.fp" ~
-
-consult "linux.fp" ~
-
 define.global !list.build () := do!
 	let elems := !new^ (array 32 * number) ~
 	let size := !new^ 0 ~
