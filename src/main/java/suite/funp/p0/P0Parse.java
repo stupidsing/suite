@@ -162,17 +162,7 @@ public class P0Parse extends FunpCfg {
 			}).match("!delete^ .0 ~ .1", (a, b) -> {
 				return checkDo(() -> FunpDoHeapDel.of(false, p(a), p(b)));
 			}).match("!new^ .0", a -> {
-				var n = FunpDoHeapNew.of(false);
-				return checkDo(() -> {
-					if (a == dontCare)
-						return n;
-					else {
-						var vn = "n$" + Get.temp();
-						var v = FunpVariable.of(vn);
-						var ref = FunpReference.of(FunpDeref.of(v));
-						return FunpDefine.of(vn, n, FunpDoAssignRef.of(ref, p(a), v), Fdt.L_MONO);
-					}
-				});
+				return new_(a, false);
 			}).match("address.of .0", a -> {
 				return FunpReference.of(p(a));
 			}).match("address.of.any", () -> {
@@ -410,6 +400,20 @@ public class P0Parse extends FunpCfg {
 							return Pair.of(Atom.name(n), n);
 					}) //
 					.map2(Pair::fst, Pair::snd);
+		}
+
+		private Funp new_(Node a, boolean isDynamicSize) {
+			var n = FunpDoHeapNew.of(isDynamicSize);
+			return checkDo(() -> {
+				if (a == dontCare)
+					return n;
+				else {
+					var vn = "n$" + Get.temp();
+					var v = FunpVariable.of(vn);
+					var ref = FunpReference.of(FunpDeref.of(v));
+					return FunpDefine.of(vn, n, FunpDoAssignRef.of(ref, p(a), v), Fdt.L_MONO);
+				}
+			});
 		}
 
 		private int num(Node a) {
