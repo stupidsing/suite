@@ -81,10 +81,7 @@ public class FunpTest {
 					+ "define f j := i => capture1 (i + j) ~ " //
 					+ "define fs := f 2 ~ " //
 					+ "define a := 0 | fs | fs ~ " //
-					+ "define g j := i => capture1 (i + j) ~ " //
-					+ "define gs := g 3 ~ " //
-					+ "define b := 0 | gs | gs ~ " //
-					+ "b");
+					+ "a");
 	}
 
 	@Test
