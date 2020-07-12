@@ -1,7 +1,5 @@
 package suite.funp.p4;
 
-import static primal.statics.Fail.fail;
-
 import primal.adt.Fixie;
 import primal.adt.Fixie_.Fixie3;
 import primal.primitive.adt.pair.IntIntPair;
@@ -15,6 +13,8 @@ import suite.funp.Funp_.Funp;
 import suite.funp.p4.P4Emit.Emit;
 import suite.funp.p4.P4GenerateCode.Compile0;
 import suite.funp.p4.P4GenerateCode.CompileOut;
+
+import static primal.statics.Fail.fail;
 
 public class P4Alloc extends FunpCfg {
 
@@ -63,17 +63,21 @@ public class P4Alloc extends FunpCfg {
 	// i.e. save the size information (free chain table index) into the allocated
 	// block
 	public CompileOut allocVs(Compile0 c0, int size) {
-		return alloc_(c0, size + ps).map((c1, r, index) -> {
-			c1.em.mov(amd64.mem(r, 0, ps), index);
-			c1.em.addImm(r, ps);
-			return c1.returnOp(r);
-		});
+		return allocVs_(alloc_(c0, size + ps));
 	}
 
 	public void deallocVs(Compile0 c0, Funp reference) {
 		var ref = c0.compilePsReg(reference);
 		c0.em.addImm(ref, -ps);
 		dealloc_(c0, ref, amd64.mem(ref, 0, ps));
+	}
+
+	private CompileOut allocVs_(Fixie3<Compile0, OpReg, Operand> f) {
+		return f.map((c1, r, index) -> {
+			c1.em.mov(amd64.mem(r, 0, ps), index);
+			c1.em.addImm(r, ps);
+			return c1.returnOp(r);
+		});
 	}
 
 	public CompileOut alloc(Compile0 c0, int size) {
