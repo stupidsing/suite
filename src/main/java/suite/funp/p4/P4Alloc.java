@@ -96,7 +96,7 @@ public class P4Alloc extends FunpCfg {
 		return alloc_(c0, amd64.imm(pair.t0 * ps, ps), amd64.imm(pair.t1, ps));
 	}
 
-	private Fixie3<Compile0, OpReg, Operand> alloc_(Compile0 c0, OpImm allocIndex, OpImm allocSize) {
+	private Fixie3<Compile0, OpReg, Operand> alloc_(Compile0 c0, Operand allocIndex, Operand allocSize) {
 		var rf = c0.em.mov(c0.rs.get(ps), freeChainTablePointer);
 		c0.em.emit(Insn.ADD, rf, allocIndex);
 		var fcp = amd64.mem(rf, 0, ps);
