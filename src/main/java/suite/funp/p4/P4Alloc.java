@@ -93,7 +93,7 @@ public class P4Alloc extends FunpCfg {
 	private Fixie3<Compile0, OpReg, Operand> alloc_(Compile0 c0, int size) {
 		var pair = getAllocSize(size);
 		var rf = c0.em.mov(c0.rs.get(ps), freeChainTablePointer);
-		c0.em.addImm(rf, pair.t0 * ps);
+		c0.em.emit(Insn.ADD, rf, amd64.imm(pair.t0 * ps, ps));
 		var fcp = amd64.mem(rf, 0, ps);
 
 		var c1 = c0.mask(fcp);
@@ -105,7 +105,7 @@ public class P4Alloc extends FunpCfg {
 		c1.em.emit(Insn.JZ, c1.spawn(c2 -> {
 			var pointer = amd64.mem(labelPointer, ps);
 			c2.em.mov(ra, pointer);
-			c2.em.addImm(pointer, pair.t1);
+			c2.em.emit(Insn.ADD, pointer, amd64.imm(pair.t1, ps));
 		}, labelEnd));
 
 		c1.mask(ra).mov(fcp, amd64.mem(ra, 0, ps));
