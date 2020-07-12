@@ -3,6 +3,7 @@ package suite.funp.p4;
 import primal.adt.Fixie;
 import primal.adt.Fixie_;
 import primal.adt.Fixie_.Fixie3;
+import primal.adt.Mutable;
 import primal.primitive.adt.pair.IntIntPair;
 import suite.assembler.Amd64;
 import suite.assembler.Amd64.Insn;
@@ -65,6 +66,30 @@ public class P4Alloc extends FunpCfg {
 	// block
 	public CompileOut allocVs(Compile0 c0, int size) {
 		return allocVs_(alloc_(c0, size + ps));
+	}
+
+	public CompileOut allocVs(Compile0 c0, OpReg size) {
+		var result = new Mutable<CompileOut>();
+		var regOffset = c0.rs.get(ps);
+		var regSize = c0.mask(regOffset).rs.get(ps);
+		var labelEnd = c0.em.label();
+
+		var alloc = c0 //
+			.mask(regOffset, regSize) //
+			.spawn(c1 -> result.set(allocVs_(alloc_(c1, regOffset, regSize))), labelEnd);
+
+		c0.em.addImm(size, ps);
+
+		for (var i = 0; i < allocSizes.length; i++) {
+			c0.em.mov(regOffset, amd64.imm(i * ps, ps));
+			c0.em.mov(regSize, amd64.imm(allocSizes[i], ps));
+			c0.em.emit(Insn.CMP, size, regSize);
+			c0.em.emit(Insn.JBE, alloc);
+		}
+
+		c0.em.emit(Insn.HLT, amd64.remark("ALLOC TOO LARGE"));
+		c0.em.label(labelEnd);
+		return result.value();
 	}
 
 	public void deallocVs(Compile0 c0, Funp reference) {

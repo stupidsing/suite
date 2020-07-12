@@ -161,8 +161,12 @@ public class P0Parse extends FunpCfg {
 				return checkDo(() -> FunpDoAssignRef.of(FunpReference.of(p(a)), p(b), p(c)));
 			}).match("!delete^ .0 ~ .1", (a, b) -> {
 				return checkDo(() -> FunpDoHeapDel.of(false, p(a), p(b)));
+			}).match("!deletes^ .0 ~ .1", (a, b) -> {
+				return checkDo(() -> FunpDoHeapDel.of(true, p(a), p(b)));
 			}).match("!new^ .0", a -> {
 				return new_(a, false);
+			}).match("!news^ .0", a -> {
+				return new_(a, true);
 			}).match("address.of .0", a -> {
 				return FunpReference.of(p(a));
 			}).match("address.of.any", () -> {
