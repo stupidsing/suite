@@ -1,7 +1,5 @@
 package suite.funp.p4;
 
-import static primal.statics.Fail.fail;
-
 import primal.adt.Fixie;
 import primal.adt.Fixie_.Fixie3;
 import primal.adt.Mutable;
@@ -16,6 +14,8 @@ import suite.funp.Funp_.Funp;
 import suite.funp.p4.P4Emit.Emit;
 import suite.funp.p4.P4GenerateCode.Compile0;
 import suite.funp.p4.P4GenerateCode.CompileOut;
+
+import static primal.statics.Fail.fail;
 
 public class P4Alloc extends FunpCfg {
 
@@ -74,8 +74,8 @@ public class P4Alloc extends FunpCfg {
 		var labelEnd = c0.em.label();
 
 		var alloc = c0 //
-			.mask(regOffset, regSize) //
-			.spawn(c1 -> result.set(allocVs_(alloc_(c1, regOffset, regSize))), labelEnd);
+				.mask(regOffset, regSize) //
+				.spawn(c1 -> result.set(allocVs_(alloc_(c1, regOffset, regSize))), labelEnd);
 
 		c0.em.addImm(size, ps);
 
