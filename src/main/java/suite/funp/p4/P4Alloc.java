@@ -26,6 +26,7 @@ public class P4Alloc extends FunpCfg {
 	private OpImm countPointer;
 	private OpImm labelPointer;
 	private OpImm freeChainTablePointer;
+	private OpImm allocVsRoutine;
 
 	private int[] allocSizes = { //
 			4, //
@@ -53,6 +54,54 @@ public class P4Alloc extends FunpCfg {
 				amd64.imm8(0l))).in;
 
 		em.mov(amd64.mem(labelPointer, ps), bufferStart);
+
+		var regsPs = amd64.regs(ps);
+		var ra = regsPs[amd64.axReg];
+		var regOffset = regsPs[amd64.bxReg];
+		var regSize = regsPs[amd64.cxReg];
+
+		var allocVsAdjust = em.spawn(em1 -> {
+			em1.emit(Insn.INC, amd64.mem(countPointer, is));
+			em1.mov(amd64.mem(ra, 0, ps), regOffset);
+			em1.addImm(ra, ps);
+			em1.emit(Insn.RET);
+		}).in;
+
+		var allocNew = em.spawn(em.label(), em1 -> {
+			var pointer = amd64.mem(labelPointer, ps);
+			em1.mov(ra, pointer);
+			em1.emit(Insn.ADD, pointer, regSize);
+		}, allocVsAdjust).in;
+
+		var allocSize = em.spawn(em.label(), em1 -> {
+			var rf = regsPs[amd64.dxReg];
+			em1.mov(rf, freeChainTablePointer);
+			em1.emit(Insn.ADD, rf, regOffset);
+			var fcp = amd64.mem(rf, 0, ps);
+
+			em1.mov(ra, fcp);
+			em1.emit(Insn.OR, ra, ra);
+			em1.emit(Insn.JZ, allocNew);
+
+			// reuse from buffer pool
+			var rt = regsPs[amd64.dxReg];
+			em1.mov(rt, amd64.mem(ra, 0, ps));
+			em1.mov(fcp, rt);
+		}, allocVsAdjust).in;
+
+		allocVsRoutine = em.spawn(em1 -> {
+			var size = regsPs[amd64.axReg];
+			em1.addImm(size, ps);
+
+			for (var i = 0; i < allocSizes.length; i++) {
+				em1.mov(regOffset, amd64.imm(i * ps, ps));
+				em1.mov(regSize, amd64.imm(allocSizes[i], ps));
+				em1.emit(Insn.CMP, size, regSize);
+				em1.emit(Insn.JBE, allocSize);
+			}
+
+			em1.emit(Insn.HLT, amd64.remark("ALLOC TOO LARGE"));
+		}).in;
 	}
 
 	public void deinit(Emit em) {
@@ -68,6 +117,26 @@ public class P4Alloc extends FunpCfg {
 	}
 
 	public CompileOut allocVs(Compile0 c0, OpReg size) {
+		var regsPs = amd64.regs(ps);
+		var ra = c0.rs.get(ps);
+		var _ax = regsPs[amd64.axReg];
+		if (ra != _ax)
+			c0.em.emit(Insn.PUSH, _ax);
+		c0.em.mov(_ax, size);
+		c0.em.emit(Insn.PUSH, regsPs[amd64.bxReg]);
+		c0.em.emit(Insn.PUSH, regsPs[amd64.cxReg]);
+		c0.em.emit(Insn.PUSH, regsPs[amd64.dxReg]);
+		c0.em.emit(Insn.CALL, allocVsRoutine);
+		c0.em.emit(Insn.POP, regsPs[amd64.dxReg]);
+		c0.em.emit(Insn.POP, regsPs[amd64.cxReg]);
+		c0.em.emit(Insn.POP, regsPs[amd64.bxReg]);
+		c0.em.mov(ra, _ax);
+		if (ra != _ax)
+			c0.em.emit(Insn.POP, _ax);
+		return c0.returnOp(ra);
+	}
+
+	public CompileOut allocVs0(Compile0 c0, OpReg size) {
 		var result = new Mutable<CompileOut>();
 		var regOffset = c0.rs.get(ps);
 		var regSize = c0.mask(regOffset).rs.get(ps);
