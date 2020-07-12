@@ -98,14 +98,6 @@ public class P4Alloc extends FunpCfg {
 		dealloc_(c0, ref, amd64.mem(ref, 0, ps));
 	}
 
-	private CompileOut allocVs_(Fixie3<Compile0, OpReg, Operand> f) {
-		return f.map((c1, r, index) -> {
-			c1.em.mov(amd64.mem(r, 0, ps), index);
-			c1.em.addImm(r, ps);
-			return c1.returnOp(r);
-		});
-	}
-
 	public CompileOut alloc(Compile0 c0, int size) {
 		return alloc_(c0, size).map((c1, r, index) -> c1.returnOp(r));
 	}
@@ -114,6 +106,14 @@ public class P4Alloc extends FunpCfg {
 		var pair = getAllocSize(size);
 		var ref = c0.compilePsReg(reference);
 		dealloc_(c0, ref, amd64.imm(pair.t0 * ps, ps));
+	}
+
+	private CompileOut allocVs_(Fixie3<Compile0, OpReg, Operand> f) {
+		return f.map((c1, r, index) -> {
+			c1.em.mov(amd64.mem(r, 0, ps), index);
+			c1.em.addImm(r, ps);
+			return c1.returnOp(r);
+		});
 	}
 
 	private Fixie3<Compile0, OpReg, Operand> alloc_(Compile0 c0, int size) {
