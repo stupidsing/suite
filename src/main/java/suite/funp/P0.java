@@ -266,15 +266,17 @@ public class P0 {
 
 		// if true, may deallocate with any sizes by using -1 in FunpHeapDealloc.size
 		public boolean isDynamicSize;
+		public Funp factor;
 
-		public static FunpDoHeapNew of(boolean isDynamicSize) {
+		public static FunpDoHeapNew of(boolean isDynamicSize, Funp factor) {
 			var f = new FunpDoHeapNew();
 			f.isDynamicSize = isDynamicSize;
+			f.factor = factor;
 			return f;
 		}
 
-		public <R> R apply(FixieFun1<Boolean, R> fun) {
-			return fun.apply(isDynamicSize);
+		public <R> R apply(FixieFun2<Boolean, Funp, R> fun) {
+			return fun.apply(isDynamicSize, factor);
 		}
 	}
 

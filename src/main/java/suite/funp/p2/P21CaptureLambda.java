@@ -170,7 +170,7 @@ public class P21CaptureLambda {
 						var struct = FunpStruct.of(captures);
 						var lc = FunpLambdaCapture.of(pcap, li.cap, struct, vn, c(expr), fct);
 						var assign = FunpDoAssignRef.of(FunpReference.of(FunpDeref.of(pcap)), struct, lc);
-						return FunpDefine.of(pcapn, FunpDoHeapNew.of(isDynamicSize), assign, Fdt.L_MONO);
+						return FunpDefine.of(pcapn, FunpDoHeapNew.of(isDynamicSize, null), assign, Fdt.L_MONO);
 					};
 
 					return switch (fct) {

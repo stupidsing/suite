@@ -407,7 +407,7 @@ public class P0Parse extends FunpCfg {
 		}
 
 		private Funp new_(Node a, boolean isDynamicSize) {
-			var n = FunpDoHeapNew.of(isDynamicSize);
+			var n = FunpDoHeapNew.of(isDynamicSize, null);
 			return checkDo(() -> {
 				if (a == dontCare)
 					return n;

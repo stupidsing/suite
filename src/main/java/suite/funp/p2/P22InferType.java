@@ -290,8 +290,11 @@ public class P22InferType extends FunpCfg {
 			})).applyIf(FunpDoHeapDel.class, f -> f.apply((isDynamicSize, reference, expr) -> {
 				unify(n, typeRefOf(new Reference()), infer(reference));
 				return infer(expr);
-			})).applyIf(FunpDoHeapNew.class, f -> f.apply(isDynamicSize -> {
-				return typeRefOf(new Reference());
+			})).applyIf(FunpDoHeapNew.class, f -> f.apply((isDynamicSize, factor) -> {
+				if (factor == null)
+					return typeRefOf(new Reference());
+				else
+					return typeRefOf(typeArrayOf(null, new Reference()));
 			})).applyIf(FunpDontCare.class, f -> {
 				return new Reference();
 			}).applyIf(FunpDoWhile.class, f -> f.apply((while_, do_, expr) -> {
@@ -637,10 +640,16 @@ public class P22InferType extends FunpCfg {
 				var t = new Reference();
 				unify(n, typeRefOf(t), typeOf(reference));
 				return FunpHeapDealloc.of(isDynamicSize, getTypeSize(t), erase(reference), erase(expr));
-			})).applyIf(FunpDoHeapNew.class, f -> f.apply(isDynamicSize -> {
+			})).applyIf(FunpDoHeapNew.class, f -> f.apply((isDynamicSize, factor) -> {
 				var t = new Reference();
 				unify(n, typeRefOf(t), typeOf(f));
-				return FunpHeapAlloc.of(isDynamicSize, getTypeSize(t));
+				if (factor == null)
+					unify(n, typeRefOf(t), typeOf(f));
+				else {
+					unify(n, typeRefOf(typeArrayOf(null, t)), typeOf(f));
+					unify(n, typeOf(factor), typeNumber);
+				}
+				return FunpHeapAlloc.of(isDynamicSize, getTypeSize(t), factor);
 			})).applyIf(FunpField.class, f -> {
 				return getField(f);
 			}).applyIf(FunpIo.class, f -> f.apply(expr -> {

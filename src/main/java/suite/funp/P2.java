@@ -190,16 +190,18 @@ public class P2 {
 	public static class FunpHeapAlloc implements Funp, P4.End {
 		public boolean isDynamicSize;
 		public int size;
+		public Funp factor;
 
-		public static FunpHeapAlloc of(boolean isDynamicSize, int size) {
+		public static FunpHeapAlloc of(boolean isDynamicSize, int size, Funp factor) {
 			var f = new FunpHeapAlloc();
 			f.isDynamicSize = isDynamicSize;
 			f.size = size;
+			f.factor = factor;
 			return f;
 		}
 
-		public <R> R apply(FixieFun2<Boolean, Integer, R> fun) {
-			return fun.apply(isDynamicSize, size);
+		public <R> R apply(FixieFun3<Boolean, Integer, Funp, R> fun) {
+			return fun.apply(isDynamicSize, size, factor);
 		}
 	}
 

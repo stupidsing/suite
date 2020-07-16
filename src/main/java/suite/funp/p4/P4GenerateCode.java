@@ -301,10 +301,14 @@ public class P4GenerateCode extends FunpCfg {
 				return returnDontCare();
 			}).applyIf(FunpFramePointer.class, t -> {
 				return returnOp(compileFramePointer());
-			}).applyIf(FunpHeapAlloc.class, f -> f.apply((isDynamicSize, size) -> {
+			}).applyIf(FunpHeapAlloc.class, f -> f.apply((isDynamicSize, size, factor) -> {
 				if (!isDynamicSize)
-					return p4alloc.alloc(this, size);
-				else
+					return factor == null ? p4alloc.alloc(this, size) : fail();
+				else if (factor != null) {
+					var ra = compileSpec(factor, rs.get(amd64.eax));
+					em.emit(Insn.IMUL, ra, ra, amd64.imm32(size));
+					return p4alloc.allocVs(this, ra);
+				} else
 					return p4alloc.allocVs(this, size);
 			})).applyIf(FunpHeapDealloc.class, f -> f.apply((isDynamicSize, size, reference, expr) -> {
 				var out = compile(expr);
