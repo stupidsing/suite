@@ -164,9 +164,11 @@ public class P0Parse extends FunpCfg {
 			}).match("!deletes^ .0 ~ .1", (a, b) -> {
 				return checkDo(() -> FunpDoHeapDel.of(true, p(a), p(b)));
 			}).match("!new^ .0", a -> {
-				return new_(a, false);
+				return new_(a, false, null);
+			}).match("!new-array^ (.0 * .1)", (a, b) -> {
+				return new_(b, true, p(a));
 			}).match("!news^ .0", a -> {
-				return new_(a, true);
+				return new_(a, true, null);
 			}).match("address.of .0", a -> {
 				return FunpReference.of(p(a));
 			}).match("address.of.any", () -> {
@@ -406,8 +408,8 @@ public class P0Parse extends FunpCfg {
 					.map2(Pair::fst, Pair::snd);
 		}
 
-		private Funp new_(Node a, boolean isDynamicSize) {
-			var n = FunpDoHeapNew.of(isDynamicSize, null);
+		private Funp new_(Node a, boolean isDynamicSize, Funp factor) {
+			var n = FunpDoHeapNew.of(isDynamicSize, factor);
 			return checkDo(() -> {
 				if (a == dontCare)
 					return n;
