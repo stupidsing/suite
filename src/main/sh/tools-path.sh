@@ -57,6 +57,10 @@ tp_eksctl() {
 	$(cchs "echo https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" @curl @tar-zxf)/eksctl $@
 }
 
+tp_geckodriver() {
+	cchs "echo https://github.com/mozilla/geckodriver/releases/download/v0.26.0/geckodriver-v0.26.0-linux64.tar.gz" @curl @tar-zxf @dir
+}
+
 tp_gh() {
 	# https://github.com/cli/cli/releases/latest
 	$(cchs "echo https://github.com/cli/cli/releases/download/v0.8.0/gh_0.8.0_linux_amd64.tar.gz" @curl @tar-zxf @dir)/bin/gh $@
