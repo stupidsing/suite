@@ -227,9 +227,9 @@ public class FunpTest {
 	@Test
 	public void testNewArray() {
 		test(456, "do! (\n" //
-				+ "	let p := !new-array^ (3 * number) ~ \n" //
-				+ "	!assign p* [1] := 456 ~ \n" //
-				+ "	let v := p* [1] ~ \n" //
+				+ "	let p := !new-array^ (99 * number) ~ \n" //
+				+ "	!assign p* [98] := 456 ~ \n" //
+				+ "	let v := p* [98] ~ \n" //
 				+ "	!delete-array^ p ~ v \n" //
 				+ ")");
 	}
