@@ -225,6 +225,16 @@ public class FunpTest {
 	}
 
 	@Test
+	public void testNewArray() {
+		test(456, "do! (\n" //
+				+ "	let p := !new-array^ (3 * number) ~ \n" //
+				+ "	!assign p* [1] := 456 ~ \n" //
+				+ "	let v := p* [1] ~ \n" //
+				+ "	!delete-array^ p ~ v \n" //
+				+ ")");
+	}
+
+	@Test
 	public void testRecurse() {
 		test(3, "define { dec n := if (3 < n) then (dec (n - 1)) else n ~ } ~ 3999 | dec");
 		test(89, "define { fib n := if (1 < n) then (fib (n - 1) + fib (n - 2)) else 1 ~ } ~ 10 | fib");

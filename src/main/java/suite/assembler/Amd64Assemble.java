@@ -284,16 +284,19 @@ public class Amd64Assemble {
 		case IMUL -> {
 			if (i_op1 instanceof OpNone)
 				yield assembleByteFlag(i_op0, 0xF6, 5);
-			else if (i_op2 instanceof OpNone)
-				yield assembleRegRm(i_op0, i_op1, 0xAF).pre(0x0F);
-			else if ((opImm = i_op2.cast(OpImm.class)) != null) {
-				if (opImm.size <= 1)
-					yield assembleRegRm(i_op0, i_op1, 0x6B).imm(opImm);
-				else if (opImm.size == i_op0.size)
-					yield assembleRegRm(i_op0, i_op1, 0x69).imm(opImm);
-				else
+			else if (i_op0.size == i_op1.size)
+				if (i_op2 instanceof OpNone)
+					yield assembleRegRm(i_op0, i_op1, 0xAF).pre(0x0F);
+				else if ((opImm = i_op2.cast(OpImm.class)) != null) {
+					if (opImm.size <= 1)
+						yield assembleRegRm(i_op0, i_op1, 0x6B).imm(opImm);
+					else if (opImm.size == Math.min(4, i_op0.size))
+						yield assembleRegRm(i_op0, i_op1, 0x69).imm(opImm);
+					else
+						yield invalid;
+				} else
 					yield invalid;
-			} else
+			else
 				yield invalid;
 		}
 		case IN -> assembleInOut(i_op1, i_op0, 0xE4);

@@ -161,6 +161,8 @@ public class P0Parse extends FunpCfg {
 				return checkDo(() -> FunpDoAssignRef.of(FunpReference.of(p(a)), p(b), p(c)));
 			}).match("!delete^ .0 ~ .1", (a, b) -> {
 				return checkDo(() -> FunpDoHeapDel.of(false, p(a), p(b)));
+			}).match("!delete-array^ .0 ~ .1", (a, b) -> {
+				return checkDo(() -> FunpDoHeapDel.of(true, p(a), p(b)));
 			}).match("!deletes^ .0 ~ .1", (a, b) -> {
 				return checkDo(() -> FunpDoHeapDel.of(true, p(a), p(b)));
 			}).match("!new^ .0", a -> {
@@ -413,6 +415,8 @@ public class P0Parse extends FunpCfg {
 			return checkDo(() -> {
 				if (a == dontCare)
 					return n;
+				else if (factor != null)
+					return FunpTypeCheck.of(FunpReference.of(FunpRepeat.of(null, p(a))), null, n);
 				else {
 					var vn = "n$" + Get.temp();
 					var v = FunpVariable.of(vn);

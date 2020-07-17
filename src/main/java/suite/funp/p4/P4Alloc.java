@@ -101,7 +101,7 @@ public class P4Alloc extends FunpCfg {
 				em1.mov(regOffset, amd64.imm(i * ps, ps));
 				em1.mov(regSize, amd64.imm(allocSizes[i], ps));
 				em1.emit(Insn.CMP, size, regSize);
-				em1.emit(Insn.JBE, allocSize);
+				em1.emit(Insn.JLE, allocSize);
 			}
 
 			em1.emit(Insn.HLT, amd64.remark("ALLOC TOO LARGE"));
@@ -136,30 +136,6 @@ public class P4Alloc extends FunpCfg {
 		if (ra != _ax)
 			c0.em.emit(Insn.POP, _ax);
 		return c0.returnOp(ra);
-	}
-
-	public CompileOut allocVs0(Compile0 c0, OpReg size) {
-		var result = new Mutable<CompileOut>();
-		var regOffset = c0.rs.get(ps);
-		var regSize = c0.mask(regOffset).rs.get(ps);
-		var labelEnd = c0.em.label();
-
-		var alloc = c0 //
-				.mask(regOffset, regSize) //
-				.spawn(c1 -> result.set(allocVs_(alloc_(c1, regOffset, regSize))), labelEnd);
-
-		c0.em.addImm(size, ps);
-
-		for (var i = 0; i < allocSizes.length; i++) {
-			c0.em.mov(regOffset, amd64.imm(i * ps, ps));
-			c0.em.mov(regSize, amd64.imm(allocSizes[i], ps));
-			c0.em.emit(Insn.CMP, size, regSize);
-			c0.em.emit(Insn.JBE, alloc);
-		}
-
-		c0.em.emit(Insn.HLT, amd64.remark("ALLOC TOO LARGE"));
-		c0.em.label(labelEnd);
-		return result.value();
 	}
 
 	public void deallocVs(Compile0 c0, Funp reference) {
