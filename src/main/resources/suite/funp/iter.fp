@@ -1,5 +1,11 @@
 define.global !list.build () := do!
-	let elems := !new^ (array 32 * number) ~
+	let elems := !new-array^ (32 * number) ~
+	let dummy := fold (
+	    i := 0 #
+	    i < 32 #
+	    !assign elems* [i] := 0 ~ i + 1 #
+	    ()
+	) ~
 	let size := !new^ 0 ~
 	let !append := elem => capture do!
 		let size_ := size* ~
@@ -23,7 +29,7 @@ define.global !list.build () := do!
 
 define.global !list.free list := do!
 	type list = { elems: address.of (array 32 * number) ~ size: number ~ } ~
-	!delete^ list/elems ~
+	!delete-array^ list/elems ~
 	()
 ~
 
