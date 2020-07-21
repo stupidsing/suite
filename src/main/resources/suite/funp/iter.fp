@@ -1,15 +1,19 @@
+expand max-size := 32 ~
+expand type-elem := number ~
+expand type-list := { elems: address.of (array max-size * type-elem) ~ size: number ~ } ~
+
 define.global !list.build () := do!
-	let elems := !new-array^ (32 * number) ~
+	let elems := !new-array^ (max-size * type-elem) ~
 	let dummy := fold (
 	    i := 0 #
-	    i < 32 #
+	    i < max-size #
 	    !assign elems* [i] := 0 ~ i + 1 #
 	    ()
 	) ~
 	let size := !new^ 0 ~
 	let !append := elem => capture do!
 		let size_ := size* ~
-		if (size_ < 32) then (
+		if (size_ < max-size) then (
 			!assign elems* [size_] := elem ~
 			!assign size* := size_ + 1 ~
 			()
@@ -28,13 +32,13 @@ define.global !list.build () := do!
 ~
 
 define.global !list.free list := do!
-	type list = { elems: address.of (array 32 * number) ~ size: number ~ } ~
+	type list = type-list ~
 	!delete-array^ list/elems ~
 	()
 ~
 
 define.global !list.iter list := do!
-	type list = { elems: address.of (array 32 * number) ~ size: number ~ } ~
+	type list = type-list ~
 	let { elems, size, } := list ~
 	let i := !new^ 0 ~
 	let has.next := () => capture (i* < size) ~
