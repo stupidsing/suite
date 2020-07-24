@@ -1,13 +1,14 @@
 expand max-size := 32 ~
 expand type-elem := number ~
 expand type-list := { elems: address.of (array max-size * type-elem) ~ size: number ~ } ~
+expand elem0 := 0 ~
 
 define.global !list.build () := do!
 	let elems := !new-array^ (max-size * type-elem) ~
 	let dummy := fold (
 	    i := 0 #
 	    i < max-size #
-	    !assign elems* [i] := 0 ~ i + 1 #
+	    !assign elems* [i] := elem0 ~ i + 1 #
 	    ()
 	) ~
 	let size := !new^ 0 ~
