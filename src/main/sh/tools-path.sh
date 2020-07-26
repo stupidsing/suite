@@ -5,7 +5,7 @@ curl -sL https://raw.githubusercontent.com/stupidsing/suite/master/src/main/sh/c
 echo '
 GIT_HD=$(cchs "echo git@github.com:stupidsing/home-data.git" @git-clone)
 GOROOT=$(cchs "echo https://dl.google.com/go/go1.13.8.linux-amd64.tar.gz" @curl @tar-zxf @dir)
-GRADLE_HOME=$(cchs "echo https://services.gradle.org/distributions/gradle-6.3-bin.zip" @curl @unzip @dir)
+GRADLE_HOME=$(cchs "echo https://services.gradle.org/distributions/gradle-6.4-bin.zip" @curl @unzip @dir)
 JAVA_HOME=$(cchs "curl -sL https://jdk.java.net/14/" "grep https://download.java.net/ | grep -v sha256 | grep linux | grep \\.tar\\.gz" "cut -d\\\" -f2" @curl @tar-zxf @dir)
 M2_HOME=$(cchs "echo http://ftp.cuhk.edu.hk/pub/packages/apache.org/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.tar.gz" @curl @tar-zxf @dir)
 NODE_HOME=$(cchs "echo https://nodejs.org/dist/v12.16.2/node-v12.16.2-linux-x64.tar.xz" @curl @tar-xf @dir)
