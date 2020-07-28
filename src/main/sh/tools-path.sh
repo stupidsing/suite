@@ -63,7 +63,7 @@ tp_geckodriver() {
 
 tp_gh() {
 	# https://github.com/cli/cli/releases/latest
-	$(cchs "echo https://github.com/cli/cli/releases/download/v0.8.0/gh_0.8.0_linux_amd64.tar.gz" @curl @tar-zxf @dir)/bin/gh $@
+	$(cchs "echo https://github.com/cli/cli/releases/download/v0.11.0/gh_0.11.0_linux_amd64.tar.gz" @curl @tar-zxf @dir)/bin/gh $@
 }
 
 tp_google_java_format() {
