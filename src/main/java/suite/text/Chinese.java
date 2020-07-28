@@ -45,11 +45,12 @@ public class Chinese {
 	private boolean runCli() throws IOException {
 		try (var isr = new InputStreamReader(System.in, StandardCharsets.UTF_8); var br = new BufferedReader(isr);) {
 			String line;
-			while ((line = br.readLine()) != null)
-				cb.setClipboardText(cjs(line));
+			while ((line = br.readLine()) != null) {
+				var chinese = cjs(line);
+				System.out.println(chinese);
+				cb.setClipboardText(chinese);
+			}
 		}
-		// System.out.println(cjs(new String(System.in.readAllBytes(),
-		// StandardCharsets.UTF_8)));
 		return true;
 	}
 
