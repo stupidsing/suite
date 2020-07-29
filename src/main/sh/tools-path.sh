@@ -67,7 +67,7 @@ tp_gh() {
 }
 
 tp_google_java_format() {
-	java -jar $(cchs "echo https://github.com/google/google-java-format/releases/download/google-java-format-1.7/google-java-format-1.7-all-deps.jar" @curl) $@
+	java -jar $(cchs "echo https://github.com/google/google-java-format/releases/download/google-java-format-1.8/google-java-format-1.8-all-deps.jar" @curl) $@
 }
 
 tp_gradle() {
@@ -107,7 +107,7 @@ tp_jdk10() {
 }
 
 tp_kubectl() {
-	VER=$(cchs "echo https://storage.googleapis.com/kubernetes-release/release/stable.txt" @curl)
+	VER=$(cchs "curl -sL https://storage.googleapis.com/kubernetes-release/release/stable.txt")
 	$(cchs "echo https://storage.googleapis.com/kubernetes-release/release/${VER}/bin/linux/amd64/kubectl" @curl "@do-chmod +x") $@
 }
 
