@@ -71,7 +71,7 @@ tp_google_java_format() {
 }
 
 tp_gradle() {
-	${D}/bin/gradle $@
+	${GRADLE_HOME}/bin/gradle $@
 }
 
 tp_gradle4() {
@@ -130,6 +130,10 @@ tp_slant() {
 
 tp_suite() {
 	$(cchs "echo git@github.com:stupidsing/suite.git" @git-clone "@do-git-cd ./build.sh" "@git-cd pwd")/run.sh $@
+}
+
+tp_leafpad() {
+	$(cchs "echo http://savannah.nongnu.org/download/leafpad/leafpad-0.8.17.tar.gz" @curl @tar-zxf @dir "@do-cd ./configure" "@do-cd make")/src/leafpad $@
 }
 
 tp_vms_empire() {

@@ -31,9 +31,9 @@ cchs() {
 		elif [ "${CMD:0:6}" == "@do-cd" ]; then
 			D=$(cat ${F})
 			F=$(cchf "cd ${D}/; ${CMD:7} 1>&2; echo ${D}")
-		elif [ "${CMD:0:6}" == "@do-chmod" ]; then
+		elif [ "${CMD:0:9}" == "@do-chmod" ]; then
 			FILE=$(cat ${F})
-			chmod ${CMD:6} ${FILE}
+			chmod ${CMD:10} ${FILE}
 			F=$(cchf "printf ${FILE}")
 		elif [ "${CMD:0:10}" == "@do-git-cd" ]; then
 			D=$(cat ${F})
