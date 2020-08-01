@@ -25,7 +25,7 @@ tp_android_emulator() {
 tp_android_sdk_tools() {
 	cchs "curl -sL https://developer.android.com/studio" "grep dl.google.com | grep sdk-tools-linux" "head -1" "cut -d\\\" -f2" @curl @unzip "@cd pwd" \
 	"@do-cd JAVA_HOME=$(tp_jdk10) JAVA_OPTS='\''-XX:+IgnoreUnrecognizedVMOptions --add-modules java.se.ee'\'' ./tools/bin/sdkmanager \
-	'\''build-tools;23.0.3'\'' emulator platform-tools '\''platforms;android-23'\'' '\''system-images;android-23;default;x86_64'\''"
+	'\''build-tools;29.0.3'\'' emulator platform-tools '\''platforms;android-28'\'' '\''system-images;android-28;default;x86_64'\''"
 }
 
 tp_android_studio() {
@@ -72,11 +72,6 @@ tp_google_java_format() {
 
 tp_gradle() {
 	${GRADLE_HOME}/bin/gradle $@
-}
-
-tp_gradle4() {
-	D=$(cchs "echo https://downloads.gradle-dn.com/distributions/gradle-4.10.3-bin.zip" @curl @unzip @dir)
-	GRADLE_HOME=${D} ${D}/bin/gradle $@
 }
 
 tp_group_add() {
