@@ -63,8 +63,9 @@ Promise
 			rd_on_dragstart='env.handle.dragstart(ev, vm)'
 			rd_on_drop='{}'
 			style='
+				align-items: center;
 				background: { vm.selected ? env.palette[2] : "#DDDDDD" };
-				display: inline-block;
+				display: grid;
 				filter___: { vm.selected ? "brightness(80%)" : "brightness(100%)" };
 				font-size: 25px;
 				height: 40px;
