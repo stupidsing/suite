@@ -110,6 +110,10 @@ tp_minikube() {
 	$(cchs "echo https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64" @curl "@do-chmod +x") $@
 }
 
+tp_minions() {
+	$(cchs "echo https://github.com/blahgeek/Minions.git" @git-clone "@do-git-cd cargo build --release" "@git-cd pwd")/target/release/minions
+}
+
 tp_mirrormagic() {
 	$(cchs "echo https://www.artsoft.org/RELEASES/unix/mirrormagic/mirrormagic-3.0.0.tar.gz" @curl @tar-zxf @dir "@do-cd make")/mirrormagic $@
 }
