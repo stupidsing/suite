@@ -1,0 +1,1248 @@
+<meta charset='utf-8'>
+<!--
+file:///home/ywsing/suite/src/main/html/five-in-a-row-cordova.html
+-->
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>0 - Five in a row</title>
+		<meta name='viewport' content='width=device-width, initial-scale=1.0'>
+		<link href='https://fonts.googleapis.com/css?family=Oswald:200&display=swap' rel='stylesheet'>
+	</head>
+	<body>
+		<div id='c' style='display: flex; justify-content: center;'></div>
+		<div id='target' style='display: flex; justify-content: center;'></div>
+	</body>
+
+	<script type='text/javascript'>
+'use strict';
+
+let eatdirs = [[0, -1], [-1, 0], [-1, +1], [+1, +1],];
+let movedirs = [[-1, 0], [+1, 0], [0, -1], [0, +1],];
+
+let sizep = 7;
+
+let nStoneTypes = 5;
+
+let fun = (() => {
+	let lens_ = gp => {
+		return {
+			apply: f => object0 => {
+				let { g: object1, p, } = gp(object0);
+				return p(f(object1));
+			},
+			index: index => lens_(object0 => {
+				let { g: object1, p, } = gp(object0);
+				return {
+					g: object1[index],
+					p: value => p([...object1.slice(0, index), value, ...object1.slice(index + 1, object1.length),]),
+				};
+			}),
+			key: key => lens_(object0 => {
+				let { g: object1, p, } = gp(object0);
+				return {
+					g: object1[key],
+					p: value => p({ ...object1, [key]: value, }),
+				};
+			}),
+		};
+	};
+
+	let lens = lens_(object => ({ g: object, p: value => value, }));
+
+	let range = (s, e) => read_(() => {
+		let i = s;
+		return () => i < e ? i++ : null;
+	});
+
+	let read_ = iter => {
+		return {
+			append: r => {
+				return read_(() => {
+					let its = [iter(), r.iter(),];
+					return () => {
+						let e;
+						while (0 < its.length && (e = its[0]()) == null) its.shift();
+						return e;
+					};
+				});
+			},
+			concat: () => read_(() => {
+				let it0 = iter();
+				let it1 = null;
+				return () => {
+					let e;
+					while (it1 == null || (e = it1()) == null) {
+						let iter1 = it0();
+						if (iter1 != null) it1 = iter1.iter(); else return null;
+					}
+					return e;
+				};
+			}),
+			cons: e => read_(() => {
+				let it = iter();
+				let i = 0;
+				return () => i++ == 0 ? e : it();
+			}),
+			filter: f => read_(() => {
+				let it = iter();
+				return () => {
+					let e;
+					while ((e = it()) != null && !f(e));
+					return e;
+				};
+			}),
+			fold: (value, f) => {
+				let it = iter(), e;
+				while ((e = it()) != null) value = f(value, e);
+				return value;
+			},
+			foreach: f => {
+				let it = iter(), e;
+				while ((e = it()) != null) f(e);
+			},
+			list: () => {
+				let list = [];
+				let it = iter(), e;
+				while ((e = it()) != null) list.push(e);
+				return list;
+			},
+			map: f => read_(() => {
+				let it = iter();
+				return () => {
+					let e = it();
+					return e != null ? f(e) : null;
+				};
+			}),
+			object: () => {
+				let ob = {};
+				let it = iter(), e;
+				while ((e = it()) != null) ob[e[0]] = e[1];
+				return ob;
+			},
+			range,
+			iter,
+		};
+	};
+
+	let rand = (s, e) => s + Math.floor(Math.random() * (e - s));
+
+	let read = object => read_(() => {
+		let list = typeof object == 'string' || Array.isArray(object) ? object : Object.entries(object);
+		let i = 0;
+		return () => i < list.length ? list[i++] : null;
+	});
+
+	// test
+	// read([read([0, 1,]), read([2, 3,])]).concat().append(read([4, 5, 6,])).cons(-1).foreach(s => console.log(s))
+
+	return { lens, rand, range, read, };
+})();
+
+let frp = (({ read, }) => {
+	let newPusher = () => { // FRP dispatcher
+		let pushees = [];
+		let push_ = data => { for (let pushee of pushees) pushee(data); };
+		let wire_ = pushee => pushees.push(pushee);
+
+		let redirect_ = tf => {
+			let pusher = newPusher();
+			wire_(data => tf(data, pusher.push));
+			return pusher;
+		};
+
+		return {
+			append: other => {
+				let pusher = newPusher();
+				wire_(pusher.push);
+				other.wire(pusher.push);
+				return pusher;
+			},
+			close: () => pushees = [], // for garbage collection
+			concatmap: f => redirect_((data, push) => f(data).wire(push)),
+			delay: time => redirect_((data, push) => setTimeout(() => push(data), time)),
+			edge: () => {
+				let data_;
+				return redirect_((data, push) => {
+					if (data != data_) push(data);
+					data_ = data;
+				});
+			},
+			filter: f => redirect_((data, push) => { if (f(data)) push(data); }),
+			fold: (f, value) => redirect_((data, push) => push(value = f(value, data))),
+			last: () => {
+				let data_;
+				wire_(data => data_ = data);
+				return () => data_;
+			},
+			map: f => redirect_((data, push) => push(f(data))),
+			merge: (other, f) => {
+				let v0, v1;
+				let pusher = newPusher();
+				let push1 = () => pusher.push(f(v0, v1));
+				wire_(data => { v0 = data; push1(); });
+				f.wire(data => { v1 = data; push1(); });
+				return pusher;
+			},
+			push: push_,
+			read: () => {
+				let list = [];
+				wire_(data => list.push(data));
+				return () => {
+					let r = read(list);
+					list = [];
+					return r;
+				};
+			},
+			redirect: redirect_,
+			resample: commander => {
+				let data_;
+				wire_(data => data_ = data);
+				return commander.redirect((data, push) => push(data_));
+			},
+			unique: () => {
+				let list = [];
+				return redirect_((data, push) => {
+					if (!read(list).fold(false, (b_, d) => b_ || e == data)) {
+						push(data);
+						list.push(data);
+					}
+				});
+			},
+			wire: wire_,
+		};
+	};
+
+	let kbkeypushers = {};
+	let mouseclickpusher = newPusher();
+	let mousemovepusher = newPusher();
+	let motionpusher = newPusher();
+	let orientationpusher = newPusher();
+
+	let kbpressed_ = (e, down) => {
+		let pusher = kbkeypushers[(!(e.which)) ? e.keyCode : (e.which ? e.which : 0)];
+		if (pusher) {
+			pusher.push(down);
+			e.preventDefault();
+		}
+	};
+
+	document.onkeydown = e => kbpressed_(e, true);
+	document.onkeyup = e => kbpressed_(e, false);
+	document.onmousedown = e => mouseclickpusher.push(true);
+	document.onmousemove = e => {
+		let e1 = (!e) ? window.event : e;
+		let x;
+		let y;
+		if (e1.pageX || e1.pageY) {
+			x = e1.pageX;
+			y = e1.pageY;
+		} else if (e1.clientX || e1.clientY) {
+			x = e1.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
+			y = e1.clientY + document.body.scrollTop + document.documentElement.scrollTop;
+		}
+		mousemovepusher.push({ x: x, y: y });
+	};
+	document.onmouseup = e => mouseclickpusher.push(false);
+
+	if (window.DeviceMotionEvent)
+		window.addEventListener('devicemotion', e => {
+			motionpusher.push({
+				a: e.acceleration,
+				aig: e.accelerationIncludingGravity,
+				rr: e.rotationRate,
+				interval: e.interval,
+			});
+		}, false);
+	else log('device motion not supported');
+
+	if (window.DeviceOrientationEvent)
+		window.addEventListener('deviceorientation', e => {
+			orientationpusher.push({
+				lr: e.gamma, // the left-to-right tilt in degrees, where right is positive
+				fb: e.beta, // the front-to-back tilt in degrees, where front is positive
+				dir: e.alpha, // the compass direction the device is facing in degrees
+			});
+		}, false);
+	else log('device orientation not supported');
+
+	let keypressed = keycode => {
+		let pusher;
+		if (!(pusher = kbkeypushers[keycode])) pusher = kbkeypushers[keycode] = newPusher();
+		return pusher;
+	};
+	let keydownpusher = keypressed(40).map(d => d ? 1 : 0);
+	let keyleftpusher = keypressed(37).map(d => d ? -1 : 0);
+	let keyrightpusher = keypressed(39).map(d => d ? 1 : 0);
+	let keyuppusher = keypressed(38).map(d => d ? -1 : 0);
+
+	return {
+		animframe: () => {
+			let pusher = newPusher();
+			let tick = () => {
+				pusher.push(true);
+				requestAnimationFrame(tick);
+			}
+			requestAnimationFrame(tick);
+			return pusher;
+		},
+		fetch: (input, init) => {
+			let pusher = newPusher();
+			fetch(input, init)
+				.then(response => pusher.push(response.json()))
+				.catch(error => console.error(error));
+		},
+		http: url => {
+			let pusher = newPusher();
+			let xhr = new XMLHttpRequest();
+			xhr.addEventListener('load', () => { pusher.push(this.responseText); });
+			xhr.open('GET', url);
+			xhr.send();
+		},
+		kb: {
+			arrowx: keyleftpusher.append(keyrightpusher), // .fold(0, (a, b) => a + b).last();
+			arrowy: keyuppusher.append(keydownpusher), // .fold(0, (a, b) => a + b).last();
+			keypressed: keypressed,
+		},
+		motion: motionpusher,
+		mouse: {
+			click: mouseclickpusher,
+			move: mousemovepusher,
+		},
+		orientation: orientationpusher,
+		tick: timeout => {
+			let pusher = newPusher();
+			let tick = () => {
+				pusher.push(true);
+				setTimeout(tick, timeout);
+			}
+			setTimeout(tick, timeout);
+			return pusher;
+		},
+	};
+})(fun);
+
+let render = (({ read, }) => {
+	let verifyList = (parent, nodes) => {
+		let e = parent.lastChild;
+		for (let i = nodes.length - 1; 0 <= i; i--)
+			while (e != nodes[i])
+				e = e.previousSibling;
+		return nodes;
+	}
+
+	let verifyCud = cud => {
+		verifyList(cud.parent.childRef, [null, cud.childRef0, cud.childRef,]);
+		return cud;
+	};
+
+	let r_cud = (parent, domc0, domcx) => {
+		let delete_ = cud => {
+			while (cud.childRef0 != cud.childRef) {
+				let prev = cud.childRef.previousSibling;
+				parent.childRef.removeChild(cud.childRef);
+				cud.setTail(prev);
+			}
+		};
+
+		let insert_ = (cud, c) => {
+			let parentRef = parent.childRef;
+			let childRef_ = cud.childRef;
+			cud.setTail(parentRef.insertBefore(c, childRef_ != null ? childRef_.nextSibling : parentRef.firstChild));
+		};
+
+		let cud = verifyCud({
+			childRef0: domc0, // exclusive
+			childRef: domcx, // inclusive
+			create: c => { insert_(cud, c); verifyCud(cud); },
+			delete: () => { delete_(cud); verifyCud(cud); },
+			get: domc => r_cud(cud, domc.previousSibling, domc),
+			parent,
+			setTail: c => { cud.childRef = c; verifyCud(cud); },
+			update: c => { delete_(cud); insert_(cud, c); verifyCud(cud); },
+		});
+
+		return cud;
+	};
+
+	let gwm = new WeakMap(); // global weak map
+
+	let getOrAdd = (map0, key) => {
+		let map1 = map0.get(key);
+		if (map1 == null) map0.set(key, map1 = new Map());
+		return map1;
+	};
+
+	let gwmget = (key0, key1) => getOrAdd(getOrAdd(gwm, key0), key1);
+
+	let isClear = (vm0, vm1) => vm0 == vm1;
+
+	/*
+		a typical "render-difference" function accept 3 parameters:
+		vm0 - old view model, null to append DOM elements
+		vm1 - new view model, null to remove DOM elements
+		cudf - DOM manipulator (create, update, delete)
+		The renderer should detect the differences and apply changes using cud.
+	*/
+
+	let rdt_attrs = attrs => (vm0, vm1, cudf) => {
+		if (vm0 == null)
+			for (let [key, value] of Object.entries(attrs))
+				cudf.childRef.setAttribute(key, value);
+		if (vm1 == null)
+			for (let [key, value] of Object.entries(attrs))
+				cudf.childRef.removeAttribute(key);
+	};
+
+	let rdt_attrsf = attrsf => (vm0, vm1, cudf) => {
+		if (isClear(vm0, vm1))
+			;
+		else if (vm1 != null)
+			for (let [key, value] of Object.entries(attrsf(vm1)))
+				if (key !== 'value')
+					cudf.childRef.setAttribute(key, value);
+				else
+					cudf.childRef[key] = value;
+		else
+			for (let [key, value] of Object.entries(attrsf(vm0)))
+				if (key !== 'value')
+					cudf.childRef.removeAttribute(key);
+				else
+					delete cudf.childRef[key];
+	};
+
+	let rdt_child = childf => (vm0, vm1, cudf) =>
+		isClear(vm0, vm1)
+		|| childf(vm0, vm1, r_cud(cudf, null, cudf.childRef.lastChild));
+
+	let rdt_forRange = (vmsf, rangef, rd_item) => (vm0, vm1, cudf) => {
+		let domc = cudf.childRef;
+		let children0 = domc != null ? Array.from(domc.childNodes) : null;
+
+		if (isClear(vm0, vm1))
+			;
+		else if (vm0 == null) {
+			let [s, e] = rangef(vm1), vms1 = vmsf(vm1);
+			for (let i1 = s; i1 < e; i1++)
+				rd_item(null, vms1[i1], r_cud(cudf, domc.lastChild, domc.lastChild));
+		} else if (vm1 == null) {
+			let [s, e] = rangef(vm0), vms0 = vmsf(vm0);
+			for (let i0 = s; i0 < e; i0++)
+				rd_item(vms0[i0], null, cudf.get(children0[i0 - s]));
+		} else {
+			let [si, ei] = rangef(vm0), vms0 = vmsf(vm0);
+			let [sx, ex] = rangef(vm1), vms1 = vmsf(vm1);
+			let s_ = si;
+			let e_ = ei;
+
+			// remove elements at start and end of range
+			while (s_ < e_ && s_ < sx)
+				rd_item(vms0[s_++], null, r_cud(cudf, null, domc.firstChild));
+			while (s_ < e_ && ex < e_)
+				rd_item(vms0[--e_], null, r_cud(cudf, domc.lastChild.previousSibling, domc.lastChild));
+
+			// relocate range if empty
+			if (s_ == e_) s_ = e_ = sx;
+
+			// insert elements at start and end of range
+			while (sx < s_)
+				rd_item(null, vms1[--s_], r_cud(cudf, null, null));
+			while (e_ < ex)
+				rd_item(null, vms1[e_++], r_cud(cudf, domc.lastChild, domc.lastChild));
+
+			// update elements at common range
+			for (let i = Math.max(si, sx); i < Math.min(ei, ex); i++)
+				rd_item(vms0[i], vms1[i], cudf.get(domc.childNodes[i - s_]));
+		}
+	};
+
+	let rdt_listen = (event, cb) => {
+		let els = {};
+		return (vm0, vm1, cudf) => {
+			let domc = cudf.childRef;
+			if (isClear(vm0, vm1))
+				;
+			else {
+				if (vm0 != null) {
+					domc.removeEventListener(event, els[domc]);
+					delete els[domc];
+				}
+				if (vm1 != null) {
+					domc.addEventListener(event, els[domc] = ev => cb(ev, vm1));
+				}
+			}
+		};
+	};
+
+	let rdt_style = style => (vm0, vm1, cudf) => {
+		if (vm0 == null)
+			for (let [key, value] of Object.entries(style))
+				cudf.childRef.style[key] = value;
+		if (vm1 == null)
+			for (let [key, value] of Object.entries(style))
+				cudf.childRef.style[key] = null;
+	};
+
+	let rdt_stylef = stylef => (vm0, vm1, cudf) => {
+		if (isClear(vm0, vm1))
+			;
+		else if (vm1 != null)
+			for (let [key, value] of Object.entries(stylef(vm1)))
+				cudf.childRef.style[key] = value;
+		else
+			for (let [key, value] of Object.entries(stylef(vm0)))
+				cudf.childRef.style[key] = null;
+	};
+
+	let rd_dom = elementf => (vm0, vm1, cudf) => {
+		if (isClear(vm0, vm1))
+			;
+		else {
+			vm0 != null && cudf.delete();
+			vm1 != null && cudf.create(elementf(vm1));
+		}
+	};
+
+	let rd_domDecors = (elementf, decorfs) => (vm0, vm1, cudf) => {
+		if (vm0 == null)
+			cudf.create(elementf());
+		if (isClear(vm0, vm1))
+			;
+		else
+			for (let decorf of decorfs)
+				decorf(vm0, vm1, cudf);
+		if (vm1 == null)
+			cudf.delete();
+	};
+
+	let rd_for = (keyf, rd_item) => {
+		let key = {};
+
+		return (vm0, vm3, cudf) => {
+			if (isClear(vm0, vm3))
+				;
+			else {
+				let parent = cudf.parent;
+				let domc = parent.childRef;
+				let cm = gwmget(domc, key);
+				let vm1 = [];
+				let list0;
+				let cud;
+
+				if (vm0 != null) {
+					list0 = cm.get(vm0);
+					list0[0] = cudf.childRef0;
+				} else {
+					vm0 = [];
+					list0 = [cudf.childRef0,];
+				}
+
+				vm3 = vm3 != null ? vm3 : [];
+
+				let map1 = new Map();
+				let map2 = new Map();
+				let map3 = new Map();
+				for (let i3 = 0; i3 < vm3.length; i3++)
+					map3.set(keyf(vm3[i3]), i3);
+
+				let list1 = [list0[0]];
+				let i1 = 0;
+
+				for (let i0 = 0; i0 < vm0.length; i0++) {
+					let vm = vm0[i0];
+					let key = keyf(vm);
+
+					if (list0[i0] == list0[i0 + 1])
+						cud = r_cud(parent, list1[i1], list1[i1]);
+					else
+						cud = r_cud(parent, list1[i1], list0[i0 + 1]);
+
+					if (!map1.has(key) && map3.has(key))
+						map1.set(key, i1);
+					else
+						rd_item(vm, null, cud);
+
+					vm1.push(vm);
+					list1[++i1] = cud.childRef;
+				}
+
+				let list2 = [list1[0]];
+				let vm2 = vm3;
+
+				for (let i2 = 0; i2 < vm2.length; i2++) {
+					let key = keyf(vm2[i2]);
+					let i1 = map1.get(key);
+
+					if (!map2.has(key) && i1 != null) { // transplant DOM children
+						map2.set(key, i2);
+						let child0 = list1[i1];
+						let childx = list1[i1 + 1];
+						let childRef = list2[i2];
+
+						if (child0 != list2[i2]) {
+							let list = [];
+							let c = child0;
+
+							while (c != childx)
+								list.push(c = c != null ? c.nextSibling : domc.firstChild);
+
+							for (let node of list)
+								domc.removeChild(node);
+
+							let before = childRef != null ? childRef.nextSibling : domc.firstChild;
+
+							for (let node of list)
+								domc.insertBefore(node, before);
+						}
+
+						rd_item(vm1[i1], vm2[i2], cud = r_cud(parent, list2[i2], childx));
+						list2[i2 + 1] = list1[i2 + 1] = cud.childRef;
+					} else
+						list2[i2 + 1] = list2[i2];
+				}
+
+				let list3 = [list2[0]];
+
+				for (let i3 = 0; i3 < vm3.length; i3++) {
+					let key = keyf(vm3[i3]);
+					let i2 = map2.get(key);
+
+					if (i2 != null)
+						if (list2[i2] == list2[i2 + 1])
+							cud = r_cud(parent, list3[i3], list3[i3]);
+						else
+							cud = r_cud(parent, list3[i3], list2[i2 + 1]);
+					else
+						rd_item(null, vm3[i3], cud = r_cud(parent, list3[i3], list3[i3]));
+					list3[i3 + 1] = cud.childRef;
+				}
+
+				cudf.setTail(list3[vm3.length]);
+				cm.delete(vm0);
+				cm.set(vm3, verifyList(domc, list3));
+			}
+		};
+	};
+
+	let rd_ifElse = (iff, thenf, elsef) => (vm0, vm1, cudf) => {
+		if (isClear(vm0, vm1))
+			;
+		else {
+			let f0 = vm0 != null ? (iff(vm0) ? thenf : elsef) : null;
+			let f1 = vm1 != null ? (iff(vm1) ? thenf : elsef) : null;
+
+			if (f0 == f1)
+				f0(vm0, vm1, cudf);
+			else {
+				f0 != null && f0(vm0, null, cudf);
+				f1 != null && f1(null, vm1, cudf);
+			}
+		}
+	};
+
+	let rd_list = childrenfs => {
+		let key = {};
+
+		if (childrenfs.length == 0)
+			return (vm0, vm1, cudf) => {};
+		else if (childrenfs.length == 1)
+			return childrenfs[0];
+		else
+			return (vm0, vm1, cudf) => {
+				if (isClear(vm0, vm1))
+					;
+				else {
+					let parent = cudf.parent;
+					let domc = parent.childRef;
+					let cm = gwmget(domc, key);
+					let list0 = cm.get(vm0);
+					let list1 = [cudf.childRef0,];
+					let cud;
+
+					for (let i = 0; i < childrenfs.length; i++) {
+						if (vm0 == null || list0[i] == list0[i + 1])
+							childrenfs[i](vm0, vm1, cud = r_cud(parent, list1[i], list1[i]));
+						else
+							childrenfs[i](vm0, vm1, cud = r_cud(parent, list1[i], list0[i + 1]));
+						list1[i + 1] = cud.childRef;
+					}
+
+					cudf.setTail(list1[childrenfs.length]);
+					cm.delete(vm0);
+					cm.set(vm1, verifyList(domc, list1));
+				}
+			};
+	};
+
+	let rd_map = (vmf, rdf) => {
+		let wm = new WeakMap();
+
+		let apply = vm => {
+			let result = wm.get(vm);
+			if (result == null) wm.set(vm, result = vmf(vm));
+			return result;
+		};
+
+		return (vm0, vm1, cudf) => isClear(vm0, vm1) || rdf(
+			vm0 != null ? apply(vm0) : null,
+			vm1 != null ? apply(vm1) : null,
+			cudf);
+	};
+
+	let rd_span_component = (initf, publicf, privatef, xhtml) => vm => {
+		let span = document.createElement('span');
+		let cudf_;
+		let vm_ = null;
+		let view;
+
+		let change = f => {
+			let pvm_ = vm_;
+			view(pvm_, vm_ = f(pvm_), cudf_);
+		};
+
+		let changeAsync = f => {
+			let vm0 = vm_;
+			f(vm0).then(vm1 => {
+				if (vm_ === vm0) {
+					view(vm_, vm1, cudf_);
+					vm_ = vm1;
+				} else
+					console.error('race condition in view updates');
+			});
+		};
+
+		let muts = { change, changeAsync, };
+
+		view = rd.parse(privatef(muts), xhtml);
+
+		return {
+			init: cudf => {
+				cudf.create(span);
+				cudf_ = r_cud({ childRef: span, }, null, span.lastChild);
+				change(vm_ => initf(vm));
+			},
+			deinit: cudf => {
+				change(vm_ => null);
+				cudf.delete();
+			},
+			...publicf(muts),
+		};
+	};
+
+	let rd_switch = routes => (vm0, vm1, cudf) => {
+		let key0 = vm0 != null ? vm0.k : null;
+		let key1 = vm1 != null ? vm1.k : null;
+		if (key0 != key1) {
+			if (key0 != null) routes[key0](vm0.v, null, cudf);
+			if (key1 != null) routes[key1](null, vm1.v, cudf);
+		} else if (key0 != null)
+			routes[key0](vm0.v, vm1.v, cudf);
+	};
+
+	let rdb_tagf = (elementf, decorfs) => {
+		let decor = decorf => rdb_tagf(elementf, [...decorfs, decorf,]);
+		let attrs = attrs => decor(rdt_attrs(attrs));
+		let child = childf => decor(rdt_child(childf));
+
+		return {
+			attr: (key, value) => attrs({ [key]: value, }),
+			attrs,
+			attrsf: attrsf => decor(rdt_attrsf(attrsf)),
+			child,
+			children: (...childrenfs) => child(rd_list(childrenfs)),
+			decor,
+			listen: (event, cb) => decor(rdt_listen(event, cb)),
+			rd: () => rd_domDecors(elementf, decorfs),
+			style: style => decor(rdt_style(style)),
+			stylef: stylef => decor(rdt_stylef(stylef)),
+			text: () => child(rd_dom(vm => document.createTextNode(vm))),
+		};
+	};
+
+	let rdb_tag = tag => rdb_tagf(() => document.createElement(tag), []);
+
+	let rdb_vscrollf = (height, rowHeight, rd_item, cbScroll) => {
+		let nItemsShown = Math.floor(height / rowHeight) + 1;
+
+		return rdb_tag('div')
+			.style({ height: height + 'px', overflow: 'auto', position: 'absolute', })
+			.listen('scroll', (ev, vm) => cbScroll(Math.floor(ev.target.scrollTop / rowHeight)))
+			.child(rdb_tag('div')
+				.stylef(vm => ({
+					height: (vm.vms.length - vm.start) * rowHeight + 'px',
+					position: 'relative',
+					top: vm.start * rowHeight + 'px',
+				}))
+				.decor(rdt_forRange(
+					vm => vm.vms,
+					vm => [vm.start, vm.start + nItemsShown],
+					rdb_tag('div').style({ height: rowHeight + 'px', }).child(rd_item).rd()))
+				.rd()
+			);
+	};
+
+	let rd_parse = (env, s) => {
+		let parseLambda = (v, s) => {
+			let e = s.startsWith('{') && s.endsWith('}') ? s : '(' + s + ')';
+			return eval(v + ' => ' + e);
+		};
+
+		let parseExpr = s =>  s != null ? parseLambda('vm', s) : vm => vm;
+		let parseListen = s => parseLambda('(ev, vm)', s);
+
+		let parseTemplate = s => {
+			let pos0 = 0, pos1, pos2;
+			let f = vm => '';
+			while (0 <= (pos1 = s.indexOf('{', pos0)) && 0 <= (pos2 = s.indexOf('}', pos1))) {
+				let s0 = s.substring(pos0, pos1);
+				let f0 = f;
+				let f1 = parseExpr(s.substring(pos1 + 1, pos2).trim());
+				f = vm => f0(vm) + s0 + f1(vm);
+				pos0 = pos2 + 1;
+			}
+			{
+				let f0 = f;
+				f = vm => f0(vm) + s.substring(pos0);
+			}
+			return f;
+		};
+
+		let parseDom = node0 => {
+			if (node0.nodeType == Node.COMMENT_NODE) {
+				let sf = parseTemplate(node0.nodeValue);
+				return rd_dom(vm => document.createComment(sf(vm)));
+			} else if (node0.nodeType == Node.ELEMENT_NODE)
+				if (node0.localName == 'rd_component') {
+					let icf = eval(node0.getAttribute('v'));
+					let ics = {};
+					return (vm0, vm1, cudf) => {
+						if (isClear(vm0, vm1))
+							;
+						else {
+							if (vm0 != null) {
+								ics[vm0].deinit(cudf);
+								delete ics[vm0];
+							}
+							if (vm1 != null) {
+								(ics[vm1] = icf(vm1)).init(cudf);
+							}
+						}
+					};
+				} else if (node0.localName == 'rd_for')
+					return rd_map(parseExpr(node0.getAttribute('v')), rd_for(vm => vm, parseDomNodes(node0.childNodes)));
+				else if (node0.localName == 'rd_if')
+					return rd_ifElse(parseExpr(node0.getAttribute('v')), parseDomNodes(node0.childNodes), (vm0, vm1, cudf) => {});
+				else if (node0.localName == 'rd_map')
+					return rd_map(parseExpr(node0.getAttribute('v')), parseDomNodes(node0.childNodes));
+				else if (node0.localName == 'rd_switch')
+					return rd_switch(Object.fromEntries(Array
+						.from(node0.childNodes)
+						.filter(n => n.nodeType == Node.ELEMENT_NODE)
+						.map(n => [n.getAttribute('k'), parseDom(n),])));
+				else if (node0.localName == 'rd_view')
+					return eval(node0.getAttribute('v'));
+				else {
+					let name = node0.localName;
+					let as = {}, cs = parseDomNodes(node0.childNodes);
+					let decors = [];
+
+					for (let attr of node0.attributes)
+						if (attr.name.startsWith('rd_on_'))
+							decors.push(rd => rd.listen(attr.name.substring(6), parseListen(attr.value)));
+						else
+							as[attr.name] = parseTemplate(attr.value);
+
+					let rd = rdb_tag(name).attrsf(vm => read(as).map(([k, vf]) => [k, vf(vm)]).object()).child(cs);
+					for (let decor of decors) rd = decor(rd);
+					return rd.rd();
+				}
+			else if (node0.nodeType == Node.TEXT_NODE) {
+				let sf = parseTemplate(node0.nodeValue);
+				return rd_dom(vm => document.createTextNode(sf(vm)));
+			} else
+				throw 'unknown node type';
+		};
+
+		let parseDomNodes = nodes => rd_list(Array.from(nodes).map(parseDom));
+
+		return parseDom(new DOMParser().parseFromString(s, 'text/xml').childNodes[0]);
+	};
+
+	let rd = {
+		div: () => rdb_tag('div'),
+		dom: rd_dom,
+		for: rd_for,
+		if_: (iff, thenf) => rd_ifElse(iff, thenf, rd_dom(vm => document.createComment('else'))),
+		ifElse: rd_ifElse,
+		li: () => rdb_tag('li'),
+		list: rd_list,
+		map: rd_map,
+		p: () => rdb_tag('p'),
+		parse: rd_parse,
+		span: () => rdb_tag('span'),
+		span_component: rd_span_component,
+		tag: rdb_tag,
+		ul: () => rdb_tag('ul'),
+		vscrollf: rdb_vscrollf,
+	};
+
+	let pvm = null;
+	let target = document.getElementById('target');
+	let cudf_ = r_cud({ childRef: target, }, null, target.lastChild);
+
+	let renderAgain = (renderer, f) => {
+		let ppvm = pvm;
+		renderer(ppvm, pvm = f(pvm), cudf_);
+	};
+
+	return { rd, renderAgain, };
+})(fun);
+
+// https://www.colourlovers.com/palette/373610/Melon_Ball_Surprise
+let palette = ['#D1F2A5', '#EFFAB4', '#FFC48C', '#FF9F80', '#F56991',];
+
+let icons = [ '🍋', '🌲', '💖', '🐬', '🐵', '🍊', '🍇', '💮', '✴️', ];
+icons[-1] = '💀';
+// 😂
+
+let { rand, range, } = fun;
+let { rd, renderAgain, } = render;
+
+let game = ((cc, view) => {
+	let freeze = false; // if we are accepting game inputs
+
+	let randomstones = n => {
+		let stones = [];
+		for (let i = 0; i < n; i++) stones.push({ d: rand(0, nStoneTypes), });
+		return stones;
+	};
+
+	let mutate = (() => {
+		let emptycount = vm => {
+			let n = 0;
+			cc.for_xy((x, y,) => n += vm.board[x][y].d != null ? 0 : 1);
+			return n;
+		};
+
+		let setcell = (vm, vmc1) => {
+			let vmt0 = vm.board;
+			vmt0 = vmt0 != null ? vmt0 : cc.arrayx();
+			let vmr0 = vmt0[vmc1.x];
+			vmr0 = vmr0 != null ? vmr0 : cc.arrayy(vmc1.x);
+			// let vmr1 = vmr0.map(vmc => vmc != vmc0 ? vmc : vmc1);
+			// let vmt1 = vmt0.map(vmr => vmr != vmr0 ? vmr : vmr1);
+			// return { ...vm, board: vmt1, };
+			return { ...vm, board: { ...vmt0, [vmc1.x]: { ...vmr0, [vmc1.y]: vmc1, }, }, };
+		};
+
+		return {
+			checkfiveinarow: vm => {
+				let eating = {};
+				if (!freeze)
+					for (let [dx, dy] of eatdirs)
+						(0 < dx * 1000 + dy ? cc.for_xy : cc.back_xy)((x, y,) => {
+							let step = 0;
+							let x1, y1;
+							while (true
+								&& (x1 = x + step * dx) != null
+								&& (y1 = y + step * dy) != null
+								&& cc.inbounds(x1, y1)
+								&& vm.board[x][y].d != null
+								&& vm.board[x][y].d == vm.board[x1][y1].d) step++;
+							if (5 <= step)
+								for (let i = 0; i < step; i++) {
+									let x_ = x + i * dx;
+									let y_ = y + i * dy;
+									eating[`${x_},${y_}`] = vm.board[x_][y_];
+								}
+						});
+				let list = Object.values(eating);
+				for (let eaten of list)
+					vm = setcell(vm, { ...eaten, d: null, });
+				vm = { ...vm, score: vm.score + list.length, };
+				document.title = `${vm.score} - Five in a row`;
+				return { isFiveInARow: 0 < list.length, vm, };
+			},
+			drop: (vm, stones) => {
+				if (stones.length < emptycount(vm))
+					for (let stone of stones)
+						while(true) {
+							let { x, y, } = cc.random_xy();
+							if (vm.board[x][y].d == null) {
+								vm = setcell(vm, { ...vm.board[x][y], d: stone.d, });
+								break;
+							}
+						}
+				else {
+					freeze = true;
+					cc.for_xy((x, y,) => {
+						if (vm.board[x][y].d == null)
+							vm = setcell(vm, { ...vm.board[x][y], d: -1, });
+					});
+					vm = { ...vm, notification: { c: 4, message: 'game over', }, };
+				}
+				return vm;
+			},
+			moveonestep: (vm, fr, to) => {
+				let vmc0 = vm.board[fr.x][fr.y];
+				let vmc1 = vm.board[to.x][to.y];
+				let d0 = vmc0.d;
+				let d1 = vmc1.d;
+				vm = setcell(vm, { ...vmc0, d: d1, });
+				vm = setcell(vm, { ...vmc1, d: d0, });
+				return vm;
+			},
+			setcell,
+		};
+	})();
+
+	let change = f => renderAgain(view, vm0 => {
+		let vm1 = f(vm0);
+		// console.log(vm1);
+		return vm1;
+	});
+
+	let movefromto = (vmc0, vmcx) => {
+		let board;
+		change(vm => { board = vm.board; return vm; });
+
+		let search = (xy0, xyx, isMovable) => {
+			let key = xy => `${xy.x},${xy.y}`;
+			let todos = [{ x: xy0.x, y: xy0.y, prev: null, },];
+			let dones = {};
+			let kx = key(xyx);
+			while (0 < todos.length) { // breadth-first search
+				let todo = todos.shift();
+				let { x, y, } = todo;
+				let k = key(todo);
+				if (!dones.hasOwnProperty(k)) {
+					let neighbours = movedirs
+						.map(([dx, dy]) => ({ x: x + dx, y: y + dy, prev: todo, }))
+						.filter(({ x, y, }) => cc.inbounds(x, y) && isMovable(x, y));
+					todos.push(...neighbours);
+					dones[k] = todo;
+					if (k == kx) return todo;
+				}
+			}
+			return null;
+		};
+
+		let node = search(vmc0, vmcx, (x, y,) => board[x][y].d == null);
+
+		let rec = (path, cb) => {
+			let prev = path.prev;
+			if (prev != null)
+				rec(prev, () => {
+					let timeout = setTimeout(() => {
+						change(vm => mutate.moveonestep(vm, prev, path));
+						cb();
+						clearTimeout(timeout);
+					}, 50);
+				});
+			else
+				cb();
+		};
+
+		if (node != null) {
+			freeze = true;
+			rec(node, () => {
+				freeze = false;
+				change(vm_ => {
+					let { isFiveInARow, vm, } = mutate.checkfiveinarow(vm_);
+					if (!isFiveInARow) {
+						vm = mutate.drop(vm, vm.nextstones);
+						vm = { ...vm, nextstones: randomstones(3), };
+						vm = mutate.checkfiveinarow(vm).vm;
+					}
+					return vm;
+				});
+			});
+		} else
+			console.log('no path between', vmc0, vmcx);
+	};
+
+	let vw = {
+		change,
+		init: () => change(vm_ => {
+			let vm = {
+				nextstones: randomstones(3),
+				notification: null, // { c: 1, message: 'welcome!', },
+				score: 0,
+				select_xy: null,
+			};
+			cc.for_xy((x, y,) => vm = mutate.setcell(vm, { x, y, d: null, }));
+			return mutate.drop(vm, randomstones(Math.ceil(cc.area * .3)));
+		}),
+		movefromto,
+		select: (x, y) => {
+			change(vm => {
+				let vmc = vm.board[x][y];
+				vm = mutate.setcell(vm, { ...vmc, selected: true, });
+				return { ...vm, select_xy: { x, y, }, };
+			});
+		},
+		unselect: () => {
+			let select_xy0;
+			change(vm => {
+				select_xy0 = vm.select_xy;
+				if (select_xy0 != null) {
+					let vmc = vm.board[select_xy0.x][select_xy0.y];
+					vm = mutate.setcell(vm, { ...vmc, selected: false, });
+				}
+				return { ...vm, select_xy: null };
+			});
+			return select_xy0;
+		},
+	}
+
+	let handle = (() => {
+		let dragsource = null;
+		let dragtarget = null;
+
+		return {
+			click: (ev, vmc) => {
+				if (!freeze) {
+					let select_xy0 = vw.unselect();
+
+					if (vmc.d != null)
+						vw.select(vmc.x, vmc.y);
+					else if (select_xy0 != null)
+						vw.movefromto(select_xy0, vmc);
+				}
+			},
+			close: () => vw.change(vm => null),
+			dragend: (ev, vm) => dragsource == dragtarget || vw.movefromto(dragsource, dragtarget),
+			dragenter: (ev, vm) => dragtarget = vm,
+			dragstart: (ev, vm) => {
+				dragsource = vm;
+
+				let dragIcon = document.createElement('span');
+				dragIcon.style.background = '#DDDDDD';
+				dragIcon.style.fontSize = '18px';
+				dragIcon.style.height = '40px';
+				dragIcon.style.width = '30px';
+				dragIcon.innerText = icons[vm.d];
+
+				// let dragIcon = document.createElement('img');
+				// dragIcon.src = 'http://img3.wikia.nocookie.net/__cb20140410195936/pokemon/images/archive/e/e1/20150101093317!025Pikachu_OS_anime_4.png';
+				// dragIcon.style.width = '500px';
+
+				let div = document.createElement('div');
+				div.style.left = '-500px';
+				div.style.position = 'absolute';
+				div.style.top = '-500px';
+				div.appendChild(dragIcon);
+
+				document.querySelector('body').appendChild(div);
+
+				ev.dataTransfer.setData('text/plain', '');
+				ev.dataTransfer.setDragImage(div, 15, 20);
+			},
+		};
+	})();
+
+	return { handle, vw, };
+});
+
+let cc = ((sizex, sizey) => ({
+	area: sizex * sizey,
+	arrayx: () => ({ indices: range(0, sizex).list(), length: sizex, }),
+	arrayy: x => ({ indices: range(0, sizey).list(), length: sizey, }),
+	back_xy: f => {
+		for (let x = sizex - 1; 0 <= x; x--)
+			for (let y = sizey - 1; 0 <= y; y--)
+				f(x, y);
+	},
+	for_xy: f => {
+		for (let x = 0; x < sizex; x++)
+			for (let y = 0; y < sizey; y++)
+				f(x, y);
+	},
+	inbounds: (x, y) => 0 <= x && x < sizex && 0 <= y && y < sizey,
+	random_xy: () => ({ x: rand(0, sizex), y: rand(0, sizey), }),
+}))(
+	7,
+	7);
+
+let handle = {};
+
+let fiveinarow = { game, icons, palette, };
+
+let viewCell = rd.parse({ ...fiveinarow, handle, }, `
+	<span draggable='true'
+		rd_on_click='env.handle.click(ev, vm)'
+		rd_on_dragend='env.handle.dragend(ev, vm)'
+		rd_on_dragenter='env.handle.dragenter(ev, vm)'
+		rd_on_dragexit='{}'
+		rd_on_dragleave='{}'
+		rd_on_dragover='{ ev.dataTransfer.dropEffect = "move"; }'
+		rd_on_dragstart='env.handle.dragstart(ev, vm)'
+		rd_on_drop='{}'
+		style='
+			align-items: center;
+			background: { vm.selected ? env.palette[2] : "#DDDDDD" };
+			display: grid;
+			filter___: { vm.selected ? "brightness(80%)" : "brightness(100%)" };
+			font-size: 25px;
+			height: 40px;
+			text-align: center;
+			vertical-align: middle;
+			width: 40px;'>
+		<rd_map v='vm.d'>
+			<rd_if v='vm != null'>{ env.icons[vm] }</rd_if>
+		</rd_map>
+	</span>
+`);
+
+let viewCells = rd.parse({ ...fiveinarow, viewCell, }, `
+	<tr>
+		<rd_for>
+			<td><rd_view v='env.viewCell' /></td>
+		</rd_for>
+	</tr>
+`);
+
+let view = rd.parse({ ...fiveinarow, handle, viewCells, }, `
+	<span style='display: flex; flex-direction: column;'>
+		<span style='align-items: center; display: flex; justify-content: space-between;'>
+			<span>
+				<rd_map v='vm.nextstones'>
+					<table style='border-spacing: 0;'>
+						<rd_view v='env.viewCells' />
+					</table>
+				</rd_map>
+			</span>
+			<span style='color: { env.palette[4] }; font-family: Oswald, monospace; margin-right: 16px;'>{ vm.score }</span>
+		</span>
+		<p/>
+		<rd_map v='vm.board'>
+			<table style='border-spacing: 0;'>
+				<rd_for>
+					<rd_map v='vm.indices.map(i => vm[i])'>
+						<rd_view v='env.viewCells' />
+					</rd_map>
+				</rd_for>
+			</table>
+		</rd_map>
+		<!-- button rd_on_click='env.handle.close()'>close</button -->
+		<rd_map v='vm.notification'>
+			<div style='
+				background: { env.palette[vm.c] };
+				bottom: 0;
+				font-family: Oswald, monospace;
+				left: 0;
+				position: fixed;
+				text-align: center;
+				width: 100%;'>
+				<p>{ vm.message }</p>
+			</div>
+		</rd_map>
+	</span>
+`);
+
+let gameInstance = fiveinarow.game(cc, view);
+for (let [k, v] of Object.entries(gameInstance.handle)) handle[k] = v;
+
+gameInstance.vw.init();
+	</script>
+</html>
