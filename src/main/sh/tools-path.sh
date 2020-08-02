@@ -30,7 +30,7 @@ tp_android_sdk_tools() {
 }
 
 tp_android_studio() {
-	$(cchs "curl -sL https://developer.android.com/studio" "grep dl.google.com | grep linux.tar.gz" "head -1" "cut -d\\\" -f2" @curl @tar-zxf @dir)/bin/studio.sh $@
+	$(cchs "curl -sL https://developer.android.com/studio" "grep redirector.gvt1.com | grep linux.tar.gz" "head -1" "cut -d\\\" -f2" @curl @tar-zxf @dir)/bin/studio.sh $@
 }
 
 tp_apt_i() {
