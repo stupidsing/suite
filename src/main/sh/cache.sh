@@ -86,11 +86,12 @@ cchs() {
 			TARDIRI=${TARDIR}.inprogress
 			[ -d ${TARDIR} ] || do-cmd "mkdir -p ${TARDIRI} && tar ${OPT} ${TARF} -C ${TARDIRI} && mv ${TARDIRI} ${TARDIR}"
 			F=$(cchf "printf ${TARDIR}")
-		elif [ "${CMD}" == "@unzip" ]; then
+		elif [ "${CMD:0:6}" == "@unzip" ]; then
 			ZIPF=$(cat ${F})
 			ZIPDIR=${ZIPF}.d
 			ZIPDIRI=${ZIPDIR}.inprogress
-			[ -d ${ZIPDIR} ] || do-cmd "mkdir -p ${ZIPDIRI} && unzip -d ${ZIPDIRI} -q ${ZIPF} && mv ${ZIPDIRI} ${ZIPDIR}"
+			TARGET=${ZIPDIRI}/${CMD:7}
+			[ -d ${ZIPDIR} ] || do-cmd "mkdir -p ${TARGET} && unzip -d ${TARGET} -q ${ZIPF} && mv ${ZIPDIRI} ${ZIPDIR}"
 			F=$(cchf "printf ${ZIPDIR}")
 		else
 			F=$(cchf "cat ${F} | ${CMD}")
