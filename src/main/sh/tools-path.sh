@@ -17,6 +17,10 @@ tp_android_avdmanager() {
 	$(tp_android_sdk_tools)/tools/bin/avdmanager $@
 }
 
+tp_android_bundletool() {
+	java -jar $(cchs "echo https://github.com/google/bundletool/releases/download/1.0.0/bundletool-all-1.0.0.jar" @curl) $@
+}
+
 tp_android_emulator() {
 	# sudo adduser ${USER} kvm
 	$(tp_android_sdk_tools)/tools/emulator $@
