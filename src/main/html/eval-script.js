@@ -22,10 +22,12 @@ let { addevalscript, addevalscripts, evalscript, evalscripts, loadsrcscript, } =
 		let r = cache[url];
 
 		if (r != null)
-			return r;
-		else if (document.location.protocol == 'file:')
-			return loadsrcscript(url);
+			return r; // already loaded
+		else if (document.location.protocol === 'file:')
+			return loadsrcscript(url); // local file to be loaded using script element
 		else {
+
+			// remote file to be loaded using fetch()
 			let response = await fetch(url, {
 				cache: 'default',
 				credentials: 'omit',
