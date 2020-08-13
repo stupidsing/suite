@@ -247,7 +247,7 @@ let fiveinarow = evalscripts(['fun', 'render',])
 
 	return { handle, vw, };
 })
-.then(game => ({ game, icons, palette, }))
+.then(gamef => ({ gamef, icons, palette, }))
 .catch(console.error);
 
 loadedmodule = fiveinarow;

@@ -907,7 +907,7 @@ icons[-1] = '💀';
 let { rand, range, } = fun;
 let { rd, renderAgain, } = render;
 
-let game = ((cc, view) => {
+let gamef = ((cc, view) => {
 	let freeze = false; // if we are accepting game inputs
 
 	let randomstones = n => {
@@ -1165,7 +1165,7 @@ let cc = ((sizex, sizey) => ({
 
 let handle = {};
 
-let fiveinarow = { game, icons, palette, };
+let fiveinarow = { gamef, icons, palette, };
 
 let viewCell = rd.parse({ ...fiveinarow, handle, }, `
 	<span draggable='true'
@@ -1239,7 +1239,7 @@ let view = rd.parse({ ...fiveinarow, handle, viewCells, }, `
 	</span>
 `);
 
-let gameInstance = fiveinarow.game(cc, view);
+let gameInstance = fiveinarow.gamef(cc, view);
 for (let [k, v] of Object.entries(gameInstance.handle)) handle[k] = v;
 
 gameInstance.vw.init();
