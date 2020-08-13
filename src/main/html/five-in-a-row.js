@@ -166,6 +166,7 @@ let fiveinarow = evalscripts(['fun', 'render',])
 	let vw = {
 		change,
 		init: () => change(vm_ => {
+			freeze = false;
 			let vm = {
 				nextstones: randomstones(3),
 				notification: null, // { c: 1, message: 'welcome!', },
@@ -212,6 +213,7 @@ let fiveinarow = evalscripts(['fun', 'render',])
 						vw.movefromto(select_xy0, vmc);
 				}
 			},
+			clicknotification: (ev, vm) => vw.init(),
 			close: () => vw.change(vm => null),
 			dragend: (ev, vm) => dragsource == dragtarget || vw.movefromto(dragsource, dragtarget),
 			dragenter: (ev, vm) => dragtarget = vm,

@@ -110,7 +110,8 @@ Promise
 			</rd_map>
 			<!-- button rd_on_click='env.handle.close()'>close</button -->
 			<rd_map v='vm.notification'>
-				<div style='
+				<div rd_on_click='env.handle.clicknotification(ev, vm)'
+					style='
 					background: { env.palette[vm.c] };
 					bottom: 0;
 					font-family: Oswald, monospace;
