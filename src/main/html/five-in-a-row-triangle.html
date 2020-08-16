@@ -19,8 +19,8 @@ file:///home/ywsing/suite/src/main/html/five-in-a-row-triangle.html
 'use strict';
 
 Promise
-.all(['frp.js', 'pq.js',].map(loadsrcscript))
-.then(addevalscripts(['five-in-a-row', 'fun', 'render',]))
+.all([].map(loadsrcscript))
+.then(addevalscripts(['five-in-a-row', 'frp', 'fun', 'pq', 'render',]))
 .then(({ ['five-in-a-row']: fiveinarow, fun: { rand, range, }, render: { rd, renderAgain, }, }) => {
     let view = rd.parse({ ...fiveinarow, }, `
         <span style='display: flex; flex-direction:column; font-size: 36px;'>
@@ -31,7 +31,7 @@ Promise
                             <rd_for v='vm.indices.map(i => ({ l: vm[i], r: vm[i + 1], }))'>
                                 <rd_map v='vm.l'>
                                     <span style='
-                                        border-bottom: 100px solid #DDDDDD;
+                                        border-bottom: 100px solid ${cellBackground};
                                         border-left: 50px solid transparent;
                                         border-right: 50px solid transparent;
                                         display: flex;
@@ -48,7 +48,7 @@ Promise
                                     <span style='
                                         border-left: 50px solid transparent;
                                         border-right: 50px solid transparent;
-                                        border-top: 100px solid #DDDDDD;
+                                        border-top: 100px solid ${cellBackground};
                                         display: flex;
                                         height: 0;
                                         justify-content: center;
@@ -71,7 +71,7 @@ Promise
                                     <span style='
                                         border-left: 50px solid transparent;
                                         border-right: 50px solid transparent;
-                                        border-top: 100px solid #DDDDDD;
+                                        border-top: 100px solid ${cellBackground};
                                         display: flex;
                                         height: 0;
                                         justify-content: center;
@@ -85,7 +85,7 @@ Promise
                                 </rd_map>
                                 <rd_map v='vm.r'>
                                     <span style='
-                                        border-bottom: 100px solid #DDDDDD;
+                                        border-bottom: 100px solid ${cellBackground};
                                         border-left: 50px solid transparent;
                                         border-right: 50px solid transparent;
                                         display: flex;

@@ -1,6 +1,7 @@
 'use strict';
 
 // https://www.colourlovers.com/palette/373610/Melon_Ball_Surprise
+let cellBackground = '#DDDDDD';
 let palette = ['#D1F2A5', '#EFFAB4', '#FFC48C', '#FF9F80', '#F56991',];
 
 let icons = [ '🍋', '🌲', '💖', '🐬', '🐵', '🍊', '🍇', '💮', '✴️', ];
@@ -221,7 +222,7 @@ let fiveinarow = evalscripts(['fun', 'render',])
 				dragsource = vm;
 
 				let dragIcon = document.createElement('span');
-				dragIcon.style.background = '#DDDDDD';
+				dragIcon.style.background = cellBackground;
 				dragIcon.style.fontSize = '18px';
 				dragIcon.style.height = '40px';
 				dragIcon.style.width = '30px';

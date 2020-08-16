@@ -898,6 +898,7 @@ let render = (({ read, }) => {
 })(fun);
 
 // https://www.colourlovers.com/palette/373610/Melon_Ball_Surprise
+let cellBackground = '#DDDDDD';
 let palette = ['#D1F2A5', '#EFFAB4', '#FFC48C', '#FF9F80', '#F56991',];
 
 let icons = [ '🍋', '🌲', '💖', '🐬', '🐵', '🍊', '🍇', '💮', '✴️', ];
@@ -1116,7 +1117,7 @@ let gamef = ((cc, view) => {
 				dragsource = vm;
 
 				let dragIcon = document.createElement('span');
-				dragIcon.style.background = '#DDDDDD';
+				dragIcon.style.background = cellBackground;
 				dragIcon.style.fontSize = '18px';
 				dragIcon.style.height = '40px';
 				dragIcon.style.width = '30px';
@@ -1144,9 +1145,9 @@ let gamef = ((cc, view) => {
 });
 
 let cc = ((sizex, sizey) => ({
-	area: sizex * sizey,
 	arrayx: () => ({ indices: range(0, sizex).list(), length: sizex, }),
 	arrayy: x => ({ indices: range(0, sizey).list(), length: sizey, }),
+	area: sizex * sizey,
 	back_xy: f => {
 		for (let x = sizex - 1; 0 <= x; x--)
 			for (let y = sizey - 1; 0 <= y; y--)
@@ -1179,7 +1180,7 @@ let viewCell = rd.parse({ ...fiveinarow, handle, }, `
 		rd_on_drop='{}'
 		style='
 			align-items: center;
-			background: { vm.selected ? env.palette[2] : "#DDDDDD" };
+			background: { vm.selected ? env.palette[2] : "${cellBackground}" };
 			display: grid;
 			filter___: { vm.selected ? "brightness(80%)" : "brightness(100%)" };
 			font-size: 25px;

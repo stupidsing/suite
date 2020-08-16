@@ -27,13 +27,13 @@ let sizep = usp.get('size');
 let nStoneTypes = +usp.get('colors') || 5;
 
 Promise
-.all(['frp.js', 'pq.js',].map(loadsrcscript))
-.then(addevalscripts(['five-in-a-row', 'fun', 'render',]))
+.all([].map(loadsrcscript))
+.then(addevalscripts(['five-in-a-row', 'frp', 'fun', 'pq', 'render',]))
 .then(({ ['five-in-a-row']: fiveinarow, fun: { rand, range, }, render: { rd, renderAgain, }, }) => {
 	let cc = ((sizex, sizey) => ({
-		area: sizex * sizey,
 		arrayx: () => ({ indices: range(0, sizex).list(), length: sizex, }),
 		arrayy: x => ({ indices: range(0, sizey).list(), length: sizey, }),
+		area: sizex * sizey,
 		back_xy: f => {
 			for (let x = sizex - 1; 0 <= x; x--)
 				for (let y = sizey - 1; 0 <= y; y--)
@@ -64,7 +64,7 @@ Promise
 			rd_on_drop='{}'
 			style='
 				align-items: center;
-				background: { vm.selected ? env.palette[2] : "#DDDDDD" };
+				background: { vm.selected ? env.palette[2] : "${cellBackground}" };
 				display: grid;
 				filter___: { vm.selected ? "brightness(80%)" : "brightness(100%)" };
 				font-size: 25px;

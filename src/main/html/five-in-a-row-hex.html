@@ -52,8 +52,8 @@ let size = +sizep || 7;
 let nStoneTypes = +colorsp || 5;
 
 Promise
-.all(['frp.js', 'pq.js',].map(loadsrcscript))
-.then(addevalscripts(['five-in-a-row', 'fun', 'render',]))
+.all([].map(loadsrcscript))
+.then(addevalscripts(['five-in-a-row', 'frp', 'fun', 'pq', 'render',]))
 .then(({ ['five-in-a-row']: fiveinarow, fun: { rand, range, }, render: { rd, renderAgain, }, }) => {
 	let cc = ((sizex, sizey) => {
 		let startx = 0, endx = startx + sizex;
@@ -64,7 +64,6 @@ Promise
 		};
 
 		return {
-			area: sizex * sizey,
 			arrayx: () => ({
 				indices: range(startx, endx).list(),
 				length: endx,
@@ -73,6 +72,7 @@ Promise
 				let { starty, endy, } = yrange(x);
 				return { indices: range(starty, endy).list(), length: endy, };
 			},
+			area: sizex * sizey,
 			back_xy: f => {
 				for (let x = endx - 1; startx <= x; x--) {
 					let { starty, endy, } = yrange(x);
@@ -111,15 +111,15 @@ Promise
 			rd_on_dragstart='env.handle.dragstart(ev, vm)'
 			rd_on_drop='{}'
 			style='filter___: { vm.selected ? "brightness(80%)" : "brightness(100%)" };'>
-			<div class='part' style='border-bottom: 15px solid { vm.selected ? env.palette[2] : "#DDDDDD" };'></div>
-			<div class='middle' style='background: { vm.selected ? env.palette[2] : "#DDDDDD" }'>
+			<div class='part' style='border-bottom: 15px solid { vm.selected ? env.palette[2] : "${cellBackground}" };'></div>
+			<div class='middle' style='background: { vm.selected ? env.palette[2] : "${cellBackground}" }'>
 				<span draggable='true' style='left: 50%; position: absolute; top: 50%; transform: translate(-50%, -50%);'>
 					<rd_map v='vm.d'>
 						<rd_if v='vm != null'>{ env.icons[vm] }</rd_if>
 					</rd_map>
 				</span>
 			</div>
-			<div class='part' style='border-top: 15px solid { vm.selected ? env.palette[2] : "#DDDDDD" };'></div>
+			<div class='part' style='border-top: 15px solid { vm.selected ? env.palette[2] : "${cellBackground}" };'></div>
 		</div>
 	`);
 
