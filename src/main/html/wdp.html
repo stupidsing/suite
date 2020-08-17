@@ -42,6 +42,7 @@ file:///home/ywsing/suite/src/main/html/wdp.html
 	<script type='text/javascript'>
 'use strict';
 
+let castle = 999;
 let eatdirs = [[0, -1], [-1, 0], [-1, +1],];
 let movedirs = [[-1, 0], [+1, 0], [0, -1], [0, +1], [-1, +1,], [+1, -1,],];
 
@@ -60,6 +61,7 @@ ownerColors[-1] = '#4444DD';
 
 let icons = [ '🐵', '💂', '🍋', '🌲', '💖', '🐬', '🍊', '🍇', '💮', '✴️', ];
 icons[-1] = '💀';
+icons[castle] = '🏰';
 // 😂
 
 Promise
@@ -170,13 +172,16 @@ Promise
 				b = owner0 !== ownerx && dx < d0;
 
 			let node = b ? search(vmc0, vmcx, (x, y) => {
-				return board[x][y].owner === owner0 || x === vmcx.x && y === vmcx.y;
+				let vmc = board[x][y];
+				if (0 <= vmc.owner)
+					return vmc.owner === owner0 || x === vmcx.x && y === vmcx.y;
+				else
+					return false;
 			}) : null;
 
 			if (node != null) {
 				change(vm => {
 					vm = mutate.moveonestep(vm, vmc0, vmcx);
-					vm = mutate.drop(vm, vm.nextstones);
 					vm = { ...vm, nextstones: randomstones(3), };
 					return vm;
 				});
