@@ -1,0 +1,403 @@
+<meta charset='utf-8'>
+<!--
+file:///home/ywsing/suite/src/main/html/wdp.html
+-->
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>0 - wdp</title>
+		<meta name='viewport' content='width=device-width, initial-scale=1.0'>
+		<link href='https://fonts.googleapis.com/css?family=Oswald:200&display=swap' rel='stylesheet'>
+	</head>
+	<body>
+		<style>
+			body {
+				font-family: monospace;
+			}
+			.hex {
+				float: left;
+				margin: 0px 0px -13px 2px;
+				text-shadow: 0px 0px 2px black;
+			}
+			.hex .middle {
+				font-size: 30px;
+				height: 30px;
+				position: relative;
+				width: 52px;
+			}
+			.hex .part {
+				border-left: 26px solid transparent;
+				border-right: 26px solid transparent;
+				width: 0;
+			}
+			.hex-row {
+				clear: left;
+			}
+		</style>
+		<div id='target' style='display: flex; justify-content: center;'></div>
+	</body>
+
+	<script src='eval-script.js'></script>
+
+	<script type='text/javascript'>
+'use strict';
+
+let eatdirs = [[0, -1], [-1, 0], [-1, +1],];
+let movedirs = [[-1, 0], [+1, 0], [0, -1], [0, +1], [-1, +1,], [+1, -1,],];
+
+let usp = new URLSearchParams(window.location.search);
+let sizep = usp.get('size');
+
+let size = +sizep || 15;
+let nStoneTypes = 2;
+
+// https://www.colourlovers.com/palette/373610/Melon_Ball_Surprise
+let cellBackground = '#DDDDDD';
+let cellSelected = '#555555';
+let palette = ['#D1F2A5', '#EFFAB4', '#FFC48C', '#FF9F80', '#F56991',];
+let ownerColors = ['#D1F2A5', '#EFFAB4', '#FFC48C', '#FF9F80', '#F56991',];
+ownerColors[-1] = '#4444DD';
+
+let icons = [ '🐵', '💂', '🍋', '🌲', '💖', '🐬', '🍊', '🍇', '💮', '✴️', ];
+icons[-1] = '💀';
+// 😂
+
+Promise
+.all([].map(loadsrcscript))
+.then(addevalscripts(['frp', 'fun', 'render',]))
+.then(ns => {
+	let { fun: { rand, }, render: { renderAgain, }, } = ns;
+
+	let gamef = (cc, view) => {
+		let freeze = false; // if we are accepting game inputs
+
+		let randomstones = n => {
+			let stones = [];
+			for (let i = 0; i < n; i++) stones.push({ d: rand(0, nStoneTypes), });
+			return stones;
+		};
+
+		let mutate = (() => {
+			let emptycount = vm => {
+				let n = 0;
+				cc.for_xy((x, y) => n += vm.board[x][y].d != null ? 0 : 1);
+				return n;
+			};
+
+			let setcell = (vm, vmc1) => {
+				let vmt0 = vm.board;
+				vmt0 = vmt0 != null ? vmt0 : cc.arrayx();
+				let vmr0 = vmt0[vmc1.x];
+				vmr0 = vmr0 != null ? vmr0 : cc.arrayy(vmc1.x);
+				// let vmr1 = vmr0.map(vmc => vmc != vmc0 ? vmc : vmc1);
+				// let vmt1 = vmt0.map(vmr => vmr != vmr0 ? vmr : vmr1);
+				// return { ...vm, board: vmt1, };
+				return { ...vm, board: { ...vmt0, [vmc1.x]: { ...vmr0, [vmc1.y]: vmc1, }, }, };
+			};
+
+			return {
+				drop: (vm, stones) => {
+					if (stones.length < emptycount(vm))
+						for (let stone of stones)
+							while(true) {
+								let { x, y, } = cc.random_xy();
+								let vmc = vm.board[x][y];
+								if (vmc.d == null && 0 <= vmc.owner) {
+									vm = setcell(vm, { ...vmc, d: stone.d, });
+									break;
+								}
+							}
+					else {
+						freeze = true;
+						cc.for_xy((x, y) => {
+							if (vm.board[x][y].d == null)
+								vm = setcell(vm, { ...vm.board[x][y], d: -1, });
+						});
+						vm = { ...vm, notification: { c: 4, message: 'game over', }, };
+					}
+					return vm;
+				},
+				moveonestep: (vm, fr, to) => {
+					let vmc0 = vm.board[fr.x][fr.y];
+					let vmc1 = vm.board[to.x][to.y];
+					let owner = vmc0.owner;
+					vm = setcell(vm, { ...vmc0, d: null, owner, });
+					vm = setcell(vm, { ...vmc1, d: vmc0.d, owner, });
+					return vm;
+				},
+				setcell,
+			};
+		})();
+
+		let change = f => renderAgain(view, vm0 => {
+			let vm1 = f(vm0);
+			// console.log(vm1);
+			return vm1;
+		});
+
+		let movefromto = (vmc0, vmcx) => {
+			let board;
+			change(vm => { board = vm.board; return vm; });
+
+			let search = (xy0, xyx, isMovable) => {
+				let key = xy => `${xy.x},${xy.y}`;
+				let todos = [{ x: xy0.x, y: xy0.y, prev: null, },];
+				let dones = {};
+				let kx = key(xyx);
+				while (0 < todos.length) { // breadth-first search
+					let todo = todos.shift();
+					let { x, y, owner, } = todo;
+					let k = key(todo);
+					if (!dones.hasOwnProperty(k)) {
+						let neighbours = movedirs
+							.map(([dx, dy]) => ({ x: x + dx, y: y + dy, prev: todo, }))
+							.filter(({ x, y, }) => cc.inbounds(x, y) && isMovable(x, y));
+						todos.push(...neighbours);
+						dones[k] = todo;
+						if (k == kx) return todo;
+					}
+				}
+				return null;
+			};
+
+			let { d: d0, owner: owner0, } = board[vmc0.x][vmc0.y];
+			let { d: dx, owner: ownerx, } = board[vmcx.x][vmcx.y];
+			let b;
+
+			if (dx == null) // target position is empty
+				b = true;
+			else // target position has a lesser rank object
+				b = owner0 !== ownerx && dx < d0;
+
+			let node = b ? search(vmc0, vmcx, (x, y) => {
+				return board[x][y].owner === owner0 || x === vmcx.x && y === vmcx.y;
+			}) : null;
+
+			if (node != null) {
+				change(vm => {
+					vm = mutate.moveonestep(vm, vmc0, vmcx);
+					vm = mutate.drop(vm, vm.nextstones);
+					vm = { ...vm, nextstones: randomstones(3), };
+					return vm;
+				});
+			} else
+				console.log('no path between', vmc0, vmcx);
+		};
+
+		let vw = {
+			change,
+			init: () => change(vm_ => {
+				freeze = false;
+				let vm = {
+					nextstones: randomstones(3),
+					notification: null, // { c: 1, message: 'welcome!', },
+					score: 0,
+					select_xy: null,
+				};
+				cc.for_xy((x, y) => vm = mutate.setcell(vm, { x, y, d: null, owner: rand(-1, ownerColors.length), }));
+				return mutate.drop(vm, randomstones(Math.ceil(cc.area * .3)));
+			}),
+			movefromto,
+			put: (x, y, vmc) => change(vm => mutate.setcell(vm, { ...vm.board[x][y], ...vmc, })),
+			select: (x, y) => {
+				change(vm => {
+					let vmc = vm.board[x][y];
+					vm = mutate.setcell(vm, { ...vmc, selected: true, });
+					return { ...vm, select_xy: { x, y, }, };
+				});
+			},
+			unselect: () => {
+				let select_xy0;
+				change(vm => {
+					select_xy0 = vm.select_xy;
+					if (select_xy0 != null) {
+						let vmc = vm.board[select_xy0.x][select_xy0.y];
+						vm = mutate.setcell(vm, { ...vmc, selected: false, });
+					}
+					return { ...vm, select_xy: null };
+				});
+				return select_xy0;
+			},
+		}
+
+		let handle = (() => {
+			let dragsource = null;
+			let dragtarget = null;
+
+			return {
+				click: (ev, vmc) => {
+					if (!freeze) {
+						let select_xy0 = vw.unselect();
+						let currentPlayer = vmc.owner;
+
+						if (select_xy0 == null)
+							vw.select(vmc.x, vmc.y);
+						else if (vmc.x === select_xy0.x && vmc.y === select_xy0.y)
+							if (vmc.owner === currentPlayer)
+								vw.put(vmc.x, vmc.y, { d: (vmc.d != null ? vmc.d : -1) + 1, owner: currentPlayer, });
+							else
+								;
+						else
+							vw.movefromto(select_xy0, vmc);
+					}
+				},
+				clicknotification: (ev, vm) => vw.init(),
+				close: () => vw.change(vm => null),
+				dragend: (ev, vm) => dragsource == dragtarget || vw.movefromto(dragsource, dragtarget),
+				dragenter: (ev, vm) => dragtarget = vm,
+				dragstart: (ev, vm) => {
+					dragsource = vm;
+
+					let dragIcon = document.createElement('span');
+					dragIcon.style.background = cellBackground;
+					dragIcon.style.fontSize = '18px';
+					dragIcon.style.height = '40px';
+					dragIcon.style.width = '30px';
+					dragIcon.innerText = icons[vm.d];
+
+					// let dragIcon = document.createElement('img');
+					// dragIcon.src = 'http://img3.wikia.nocookie.net/__cb20140410195936/pokemon/images/archive/e/e1/20150101093317!025Pikachu_OS_anime_4.png';
+					// dragIcon.style.width = '500px';
+
+					let div = document.createElement('div');
+					div.style.left = '-500px';
+					div.style.position = 'absolute';
+					div.style.top = '-500px';
+					div.appendChild(dragIcon);
+
+					document.querySelector('body').appendChild(div);
+
+					ev.dataTransfer.setData('text/plain', '');
+					ev.dataTransfer.setDragImage(div, 15, 20);
+				},
+			};
+		})();
+
+		return { handle, vw, };
+	};
+
+	return { ...ns, gamef, };
+})
+.then(({ fun: { rand, range, }, gamef, render: { rd, renderAgain, }, }) => {
+	let cc = ((sizex, sizey) => {
+		let startx = 0, endx = startx + sizex;
+
+		let yrange = x => {
+			let o = x >> 1;
+			return { starty: -o, endy: sizey - o, };
+		};
+
+		return {
+			arrayx: () => ({
+				indices: range(startx, endx).list(),
+				length: endx,
+			}),
+			arrayy: x => {
+				let { starty, endy, } = yrange(x);
+				return { indices: range(starty, endy).list(), length: endy, };
+			},
+			area: sizex * sizey,
+			back_xy: f => {
+				for (let x = endx - 1; startx <= x; x--) {
+					let { starty, endy, } = yrange(x);
+					for (let y = endy - 1; starty <= y; y--) f(x, y);
+				}
+			},
+			for_xy: f => {
+				for (let x = startx; x < endx; x++) {
+					let { starty, endy, } = yrange(x);
+					for (let y = starty; y < endy; y++) f(x, y);
+				}
+			},
+			inbounds: (x, y) => {
+				let { starty, endy, } = yrange(x);
+				return startx <= x && x < endx && starty <= y && y < endy;
+			},
+			random_xy: () => {
+				let x = rand(startx, endx);
+				let { starty, endy, } = yrange(x);
+				return { x, y: rand(starty, endy), };
+			},
+		};
+	})(size, size);
+
+	let handle = {};
+
+	let viewCell = rd.parse({ handle, icons, ownerColors, palette, }, `
+		<div
+			class='hex'
+			rd_on_click='env.handle.click(ev, vm)'
+			rd_on_dragend='env.handle.dragend(ev, vm)'
+			rd_on_dragenter='env.handle.dragenter(ev, vm)'
+			rd_on_dragexit='{}'
+			rd_on_dragleave='{}'
+			rd_on_dragover='{ ev.dataTransfer.dropEffect = "move"; }'
+			rd_on_dragstart='env.handle.dragstart(ev, vm)'
+			rd_on_drop='{}'
+			style='filter___: { vm.selected ? "brightness(80%)" : "brightness(100%)" };'>
+			<div class='part' style='border-bottom: 15px solid { vm.selected ? "${cellSelected}" : env.ownerColors[vm.owner] };'></div>
+			<div class='middle' style='background: { vm.selected ? "${cellSelected}" : env.ownerColors[vm.owner] }'>
+				<span draggable='true' style='left: 50%; position: absolute; top: 50%; transform: translate(-50%, -50%);'>
+					<rd_map v='vm.d'>
+						<rd_if v='vm != null'>{ env.icons[vm] }</rd_if>
+					</rd_map>
+				</span>
+			</div>
+			<div class='part' style='border-top: 15px solid { vm.selected ? "${cellSelected}" : env.ownerColors[vm.owner] };'></div>
+		</div>
+	`);
+
+	let viewCells = rd.parse({ handle, icons, palette, viewCell, }, `
+		<div class='hex-row' style='margin-left: { vm[0].x * 26.5 + vm[0].y * 53 }px'>
+			<rd_for>
+				<rd_view v='env.viewCell' />
+			</rd_for>
+		</div>
+	`);
+
+	let view = rd.parse({ handle, icons, palette, viewCells, }, `
+		<span style='display: flex; flex-direction: column;'>
+			<span style='align-items: center; display: flex; justify-content: space-between;'>
+				<span>
+					<rd_map v='vm.nextstones'>
+						<rd_view v='env.viewCells' />
+					</rd_map>
+				</span>
+				<span style='color: { env.palette[4] }; font-family: Oswald, monospace; margin-right: 16px;'>{ vm.score }</span>
+			</span>
+			<span>
+				<img height='64' />
+			</span>
+			<rd_map v='vm.board'>
+				<rd_for>
+					<rd_map v='vm.indices.map(i => vm[i])'>
+						<rd_view v='env.viewCells' />
+					</rd_map>
+				</rd_for>
+			</rd_map>
+			<!-- button rd_on_click='env.handle.close()'>close</button -->
+			<rd_map v='vm.notification'>
+				<rd_if v='vm'>
+					<div style='
+						background: { env.palette[vm.c] };
+						bottom: 0;
+						font-family: Oswald, monospace;
+						left: 0;
+						position: fixed;
+						text-align: center;
+						width: 100%;'>
+						<p>{ vm.message }</p>
+					</div>
+				</rd_if>
+			</rd_map>
+		</span>
+	`);
+
+	let gameInstance = gamef(cc, view);
+	for (let [k, v] of Object.entries(gameInstance.handle)) handle[k] = v;
+
+	gameInstance.vw.init();
+})
+.catch(console.error);
+	</script>
+</html>

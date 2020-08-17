@@ -23,7 +23,7 @@ let fiveinarow = evalscripts(['fun', 'render',])
 	let mutate = (() => {
 		let emptycount = vm => {
 			let n = 0;
-			cc.for_xy((x, y,) => n += vm.board[x][y].d != null ? 0 : 1);
+			cc.for_xy((x, y) => n += vm.board[x][y].d != null ? 0 : 1);
 			return n;
 		};
 
@@ -43,7 +43,7 @@ let fiveinarow = evalscripts(['fun', 'render',])
 				let eating = {};
 				if (!freeze)
 					for (let [dx, dy] of eatdirs)
-						(0 < dx * 1000 + dy ? cc.for_xy : cc.back_xy)((x, y,) => {
+						(0 < dx * 1000 + dy ? cc.for_xy : cc.back_xy)((x, y) => {
 							let step = 0;
 							let x1, y1;
 							while (true
@@ -78,7 +78,7 @@ let fiveinarow = evalscripts(['fun', 'render',])
 						}
 				else {
 					freeze = true;
-					cc.for_xy((x, y,) => {
+					cc.for_xy((x, y) => {
 						if (vm.board[x][y].d == null)
 							vm = setcell(vm, { ...vm.board[x][y], d: -1, });
 					});
@@ -130,7 +130,7 @@ let fiveinarow = evalscripts(['fun', 'render',])
 			return null;
 		};
 
-		let node = search(vmc0, vmcx, (x, y,) => board[x][y].d == null);
+		let node = search(vmc0, vmcx, (x, y) => board[x][y].d == null);
 
 		let rec = (path, cb) => {
 			let prev = path.prev;
@@ -174,7 +174,7 @@ let fiveinarow = evalscripts(['fun', 'render',])
 				score: 0,
 				select_xy: null,
 			};
-			cc.for_xy((x, y,) => vm = mutate.setcell(vm, { x, y, d: null, }));
+			cc.for_xy((x, y) => vm = mutate.setcell(vm, { x, y, d: null, }));
 			return mutate.drop(vm, randomstones(Math.ceil(cc.area * .3)));
 		}),
 		movefromto,
