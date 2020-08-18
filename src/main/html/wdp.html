@@ -86,15 +86,16 @@ Promise
 				return n;
 			};
 
-			let setcell = (vm, vmc1) => {
+			let setcell = (vm, x, y, vmc1) => {
 				let vmt0 = vm.board;
 				vmt0 = vmt0 != null ? vmt0 : cc.arrayx();
-				let vmr0 = vmt0[vmc1.x];
-				vmr0 = vmr0 != null ? vmr0 : cc.arrayy(vmc1.x);
+				let vmr0 = vmt0[x];
+				vmr0 = vmr0 != null ? vmr0 : cc.arrayy(x);
+				let vmc0 = vmr0[y];
 				// let vmr1 = vmr0.map(vmc => vmc != vmc0 ? vmc : vmc1);
 				// let vmt1 = vmt0.map(vmr => vmr != vmr0 ? vmr : vmr1);
 				// return { ...vm, board: vmt1, };
-				return { ...vm, board: { ...vmt0, [vmc1.x]: { ...vmr0, [vmc1.y]: vmc1, }, }, };
+				return { ...vm, board: { ...vmt0, [x]: { ...vmr0, [y]: { ...vmc0, ...vmc1, }, }, }, };
 			};
 
 			return {
@@ -105,7 +106,7 @@ Promise
 								let { x, y, } = cc.random_xy();
 								let vmc = vm.board[x][y];
 								if (vmc.d == null && 0 <= vmc.owner) {
-									vm = setcell(vm, { ...vmc, d: stone.d, });
+									vm = setcell(vm, x, y, { d: stone.d, });
 									break;
 								}
 							}
@@ -113,7 +114,7 @@ Promise
 						freeze = true;
 						cc.for_xy((x, y) => {
 							if (vm.board[x][y].d == null)
-								vm = setcell(vm, { ...vm.board[x][y], d: -1, });
+								vm = setcell(vm, x, y, { d: -1, });
 						});
 						vm = { ...vm, notification: { c: 4, message: 'game over', }, };
 					}
@@ -123,8 +124,8 @@ Promise
 					let vmc0 = vm.board[fr.x][fr.y];
 					let vmc1 = vm.board[to.x][to.y];
 					let owner = vmc0.owner;
-					vm = setcell(vm, { ...vmc0, d: null, owner, });
-					vm = setcell(vm, { ...vmc1, d: vmc0.d, owner, });
+					vm = setcell(vm, fr.x, fr.y, { d: null, owner, });
+					vm = setcell(vm, to.x, to.y, { d: vmc0.d, owner, });
 					return vm;
 				},
 				setcell,
@@ -199,15 +200,14 @@ Promise
 					score: 0,
 					select_xy: null,
 				};
-				cc.for_xy((x, y) => vm = mutate.setcell(vm, { x, y, d: null, owner: rand(-1, ownerColors.length), }));
+				cc.for_xy((x, y) => vm = mutate.setcell(vm, x, y, { x, y, d: null, owner: rand(-1, ownerColors.length), }));
 				return mutate.drop(vm, randomstones(Math.ceil(cc.area * .3)));
 			}),
 			movefromto,
-			put: (x, y, vmc) => change(vm => mutate.setcell(vm, { ...vm.board[x][y], ...vmc, })),
+			put: (x, y, vmc) => change(vm => mutate.setcell(vm, x, y, vmc)),
 			select: (x, y) => {
 				change(vm => {
-					let vmc = vm.board[x][y];
-					vm = mutate.setcell(vm, { ...vmc, selected: true, });
+					vm = mutate.setcell(vm, x, y, { selected: true, });
 					return { ...vm, select_xy: { x, y, }, };
 				});
 			},
@@ -215,10 +215,8 @@ Promise
 				let select_xy0;
 				change(vm => {
 					select_xy0 = vm.select_xy;
-					if (select_xy0 != null) {
-						let vmc = vm.board[select_xy0.x][select_xy0.y];
-						vm = mutate.setcell(vm, { ...vmc, selected: false, });
-					}
+					if (select_xy0 != null)
+						vm = mutate.setcell(vm, select_xy0.x, select_xy0.y, { selected: false, });
 					return { ...vm, select_xy: null };
 				});
 				return select_xy0;

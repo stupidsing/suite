@@ -27,15 +27,16 @@ let fiveinarow = evalscripts(['fun', 'render',])
 			return n;
 		};
 
-		let setcell = (vm, vmc1) => {
+		let setcell = (vm, x, y, vmc1) => {
 			let vmt0 = vm.board;
 			vmt0 = vmt0 != null ? vmt0 : cc.arrayx();
-			let vmr0 = vmt0[vmc1.x];
-			vmr0 = vmr0 != null ? vmr0 : cc.arrayy(vmc1.x);
+			let vmr0 = vmt0[x];
+			vmr0 = vmr0 != null ? vmr0 : cc.arrayy(x);
+			let vmc0 = vmr0[y];
 			// let vmr1 = vmr0.map(vmc => vmc != vmc0 ? vmc : vmc1);
 			// let vmt1 = vmt0.map(vmr => vmr != vmr0 ? vmr : vmr1);
 			// return { ...vm, board: vmt1, };
-			return { ...vm, board: { ...vmt0, [vmc1.x]: { ...vmr0, [vmc1.y]: vmc1, }, }, };
+			return { ...vm, board: { ...vmt0, [x]: { ...vmr0, [y]: { ...vmc0, ...vmc1, }, }, }, };
 		};
 
 		return {
@@ -61,7 +62,7 @@ let fiveinarow = evalscripts(['fun', 'render',])
 						});
 				let list = Object.values(eating);
 				for (let eaten of list)
-					vm = setcell(vm, { ...eaten, d: null, });
+					vm = setcell(vm, eaten.x, eaten.y, { d: null, });
 				vm = { ...vm, score: vm.score + list.length, };
 				document.title = `${vm.score} - Five in a row`;
 				return { isFiveInARow: 0 < list.length, vm, };
@@ -72,7 +73,7 @@ let fiveinarow = evalscripts(['fun', 'render',])
 						while(true) {
 							let { x, y, } = cc.random_xy();
 							if (vm.board[x][y].d == null) {
-								vm = setcell(vm, { ...vm.board[x][y], d: stone.d, });
+								vm = setcell(vm, x, y, { d: stone.d, });
 								break;
 							}
 						}
@@ -80,19 +81,17 @@ let fiveinarow = evalscripts(['fun', 'render',])
 					freeze = true;
 					cc.for_xy((x, y) => {
 						if (vm.board[x][y].d == null)
-							vm = setcell(vm, { ...vm.board[x][y], d: -1, });
+							vm = setcell(vm, x, y, { d: -1, });
 					});
 					vm = { ...vm, notification: { c: 4, message: 'game over', }, };
 				}
 				return vm;
 			},
 			moveonestep: (vm, fr, to) => {
-				let vmc0 = vm.board[fr.x][fr.y];
-				let vmc1 = vm.board[to.x][to.y];
-				let d0 = vmc0.d;
-				let d1 = vmc1.d;
-				vm = setcell(vm, { ...vmc0, d: d1, });
-				vm = setcell(vm, { ...vmc1, d: d0, });
+				let d0 = vm.board[fr.x][fr.y].d;
+				let d1 = vm.board[to.x][to.y].d;
+				vm = setcell(vm, fr.x, fr.y, { d: d1, });
+				vm = setcell(vm, to.x, to.y, { d: d0, });
 				return vm;
 			},
 			setcell,
@@ -174,14 +173,13 @@ let fiveinarow = evalscripts(['fun', 'render',])
 				score: 0,
 				select_xy: null,
 			};
-			cc.for_xy((x, y) => vm = mutate.setcell(vm, { x, y, d: null, }));
+			cc.for_xy((x, y) => vm = mutate.setcell(vm, x, y, { x, y, d: null, }));
 			return mutate.drop(vm, randomstones(Math.ceil(cc.area * .3)));
 		}),
 		movefromto,
 		select: (x, y) => {
 			change(vm => {
-				let vmc = vm.board[x][y];
-				vm = mutate.setcell(vm, { ...vmc, selected: true, });
+				vm = mutate.setcell(vm, x, y, { selected: true, });
 				return { ...vm, select_xy: { x, y, }, };
 			});
 		},
@@ -189,10 +187,8 @@ let fiveinarow = evalscripts(['fun', 'render',])
 			let select_xy0;
 			change(vm => {
 				select_xy0 = vm.select_xy;
-				if (select_xy0 != null) {
-					let vmc = vm.board[select_xy0.x][select_xy0.y];
-					vm = mutate.setcell(vm, { ...vmc, selected: false, });
-				}
+				if (select_xy0 != null)
+					vm = mutate.setcell(vm, select_xy0.x, select_xy0.y, { selected: false, });
 				return { ...vm, select_xy: null };
 			});
 			return select_xy0;
