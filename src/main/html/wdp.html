@@ -59,8 +59,7 @@ let palette = ['#D1F2A5', '#EFFAB4', '#FFC48C', '#FF9F80', '#F56991',];
 let ownerColors = ['#D1F2A5', '#EFFAB4', '#FFC48C', '#FF9F80', '#F56991',];
 ownerColors[-1] = '#4444DD';
 
-let icons = [ '🐵', '💂', '🍋', '🌲', '💖', '🐬', '🍊', '🍇', '💮', '✴️', ];
-icons[-1] = '💀';
+let icons = [ '', '🐵', '💂', '🍋', '🌲', '💖', '🐬', '🍊', '🍇', '💮', '✴️', ];
 icons[castle] = '🏰';
 // 😂
 
@@ -75,14 +74,14 @@ Promise
 
 		let randomstones = n => {
 			let stones = [];
-			for (let i = 0; i < n; i++) stones.push({ d: rand(0, nStoneTypes), });
+			for (let i = 0; i < n; i++) stones.push({ d: 1 + rand(0, nStoneTypes), });
 			return stones;
 		};
 
 		let mutate = (() => {
 			let emptycount = vm => {
 				let n = 0;
-				cc.for_xy((x, y) => n += vm.board[x][y].d != null ? 0 : 1);
+				cc.for_xy((x, y) => n += vm.board[x][y].d !== 0 ? 0 : 1);
 				return n;
 			};
 
@@ -105,7 +104,7 @@ Promise
 							while(true) {
 								let { x, y, } = cc.random_xy();
 								let vmc = vm.board[x][y];
-								if (vmc.d == null && 0 <= vmc.owner) {
+								if (vmc.d === 0 && 0 <= vmc.owner) {
 									vm = setcell(vm, x, y, { d: stone.d, });
 									break;
 								}
@@ -113,7 +112,7 @@ Promise
 					else {
 						freeze = true;
 						cc.for_xy((x, y) => {
-							if (vm.board[x][y].d == null)
+							if (vm.board[x][y].d === 0)
 								vm = setcell(vm, x, y, { d: -1, });
 						});
 						vm = { ...vm, notification: { c: 4, message: 'game over', }, };
@@ -124,7 +123,7 @@ Promise
 					let vmc0 = vm.board[fr.x][fr.y];
 					let vmc1 = vm.board[to.x][to.y];
 					let owner = vmc0.owner;
-					vm = setcell(vm, fr.x, fr.y, { d: null, owner, });
+					vm = setcell(vm, fr.x, fr.y, { d: 0, owner, });
 					vm = setcell(vm, to.x, to.y, { d: vmc0.d, owner, });
 					return vm;
 				},
@@ -169,8 +168,17 @@ Promise
 
 			if (dx == null) // target position is empty
 				b = true;
-			else // target position has a lesser rank object
-				b = owner0 !== ownerx && dx < d0;
+			else // target position has a lower-rank object, and not being protected by a neighbour
+				b = owner0 !== ownerx && dx < d0 && movedirs.reduce((b, [dx, dy]) => {
+					let xn = vmcx.x + dx;
+					let yn = vmcx.y + dy;
+					if (b && cc.inbounds(xn, yn)) {
+						let vmcn = board[xn][yn];
+						let isProtected = ownerx === vmcn.owner && d0 <= vmcn.d;
+						return !isProtected;
+					} else
+						return b;
+				}, true);
 
 			let node = b ? search(vmc0, vmcx, (x, y) => {
 				let vmc = board[x][y];
@@ -200,7 +208,7 @@ Promise
 					score: 0,
 					select_xy: null,
 				};
-				cc.for_xy((x, y) => vm = mutate.setcell(vm, x, y, { x, y, d: null, owner: rand(-1, ownerColors.length), }));
+				cc.for_xy((x, y) => vm = mutate.setcell(vm, x, y, { x, y, d: 0, owner: rand(-1, ownerColors.length), }));
 				return mutate.drop(vm, randomstones(Math.ceil(cc.area * .3)));
 			}),
 			movefromto,
