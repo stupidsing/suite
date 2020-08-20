@@ -9,9 +9,7 @@ icons[-1] = '💀';
 // 😂
 
 let fiveinarow = evalscripts(['fun', 'render',])
-.then(ns => (cc, view) => {
-	let { fun: { rand, }, render: { renderAgain, }, } = ns;
-
+.then(({ fun: { rand, }, render: { renderAgain, }, }) => (cc, view) => {
 	let freeze = false; // if we are accepting game inputs
 
 	let randomstones = n => {

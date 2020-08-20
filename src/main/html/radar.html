@@ -14,9 +14,7 @@
 'use strict';
 
 evalscripts(['frp', 'fun',])
-.then(ns => {
-	let { frp, fun: { rand, range, read, }, } = ns;
-
+.then(({ frp, fun: { rand, range, read, }, }) => {
 	let width = window.innerWidth;
 	let height = window.innerHeight;
 

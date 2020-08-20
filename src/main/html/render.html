@@ -26,9 +26,7 @@ file:///home/ywsing/suite/src/main/html/render.html
 'use strict';
 
 evalscripts(['fun', 'render',])
-.then(ns => {
-	let { fun: { lens, read, }, render: { rd, renderAgain, }, } = ns;
-
+.then(({ fun: { lens, read, }, render: { rd, renderAgain, }, }) => {
 	let view;
 
 	let component = (path, publicf, privatef, xhtml) => {
