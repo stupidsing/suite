@@ -34,9 +34,10 @@ public class LrParseTest {
 
 	@Test
 	public void testEntity() throws IOException {
-		var grammar = "" //
-				+ "<digit> ::= \"0\" | \"1\"\n" //
-				+ "<digit2> ::= <digit> <digit>\n";
+		var grammar = """
+				<digit> ::= \"0\" | \"1\"
+				<digit2> ::= <digit> <digit>
+				""";
 		var lrParse = LrParse.of(grammar, "<digit2>");
 
 		assertNotNull(lrParse.parse("0 1"));
@@ -50,10 +51,11 @@ public class LrParseTest {
 
 	@Test
 	public void testExpression0() throws IOException {
-		var grammar = "" //
-				+ "<expression> ::= <number> | <number> \"+\" <expression>\n" //
-				+ "<number> ::= <digit> | <digit> <number>\n" //
-				+ "<digit> ::= \"1\" | \"2\" | \"3\"\n";
+		var grammar = """
+				<expression> ::= <number> | <number> \"+\" <expression>
+				<number> ::= <digit> | <digit> <number>
+				<digit> ::= \"1\" | \"2\" | \"3\"
+				""";
 		var lrParse = LrParse.of(grammar, "<expression>");
 
 		System.out.println(lrParse.parse("1 + 2 + 3"));
@@ -61,9 +63,10 @@ public class LrParseTest {
 
 	@Test
 	public void testExpression1() throws IOException {
-		var grammar = "" //
-				+ "<e> ::= <e> \"*\" <b> | <e> \"+\" <b> | <b>\n" //
-				+ "<b> ::= \"0\" | \"1\"\n";
+		var grammar = """
+				<e> ::= <e> \"*\" <b> | <e> \"+\" <b> | <b>
+				<b> ::= \"0\" | \"1\"
+				""";
 		var lrParse = LrParse.of(grammar, "<e>");
 
 		System.out.println(lrParse.parse("0 * 0 + 1"));
