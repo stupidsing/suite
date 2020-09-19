@@ -30,22 +30,24 @@ public class MonadTest {
 
 	@Test
 	public void testMutable() {
-		var fp0 = "" //
-				+ "do ( \n" //
-				+ "    definem string v # \n" //
-				+ "    v := \"abc\" # \n" //
-				+ "    getm_{v} # \n" //
-				+ ") \n";
+		var fp0 = """
+				do (
+				    definem string v #
+				    v := \"abc\" #
+				    getm_{v} #
+				)
+				""";
 		assertEquals("abc", evalMonad(fp0));
 	}
 
 	@Test
 	public void testMutableFail() {
-		var fp0 = "" //
-				+ "do ( \n" //
-				+ "    definem int v # \n" //
-				+ "    v := \"abc\" # \n" //
-				+ ") \n";
+		var fp0 = """
+				do (
+				    definem int v #
+				    v := "abc" #
+				)
+				""";
 
 		try {
 			assertEquals("abc", evalMonad(fp0, "any"));
