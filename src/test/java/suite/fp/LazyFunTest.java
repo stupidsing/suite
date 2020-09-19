@@ -25,39 +25,45 @@ public class LazyFunTest {
 
 	@Test
 	public void testCorecursion() {
-		assertEquals(Atom.TRUE, eval("" //
-				+ "define seq := n => n; seq_{n} ~ \n" //
-				+ "head_{seq_{0}} = 0"));
+		assertEquals(Atom.TRUE, eval("""
+				define seq := n => n; seq_{n} ~
+				head_{seq_{0}} = 0
+				"""));
 
-		assertEquals(Int.of(89), eval("" // real co-recursion!
-				+ "define fib := i1 => i2 => i2; fib_{i2}_{i1 + i2} ~ \n" //
-				+ "fib_{0}_{1} | get_{10}"));
+		// real co-recursion!
+		assertEquals(Int.of(89), eval("""
+				define fib := i1 => i2 => i2; fib_{i2}_{i1 + i2} ~
+				fib_{0}_{1} | get_{10}
+				"""));
 	}
 
 	@Test
 	public void testDefines() {
-		assertEquals(Int.of(62), eval("" //
-				+ "lets ( \n" //
-				+ "    a := n => if (0 < n) then (b_{n - 1} * 2) else 0 # \n" //
-				+ "    b := n => if (0 < n) then (a_{n - 1} + 1) else 0 # \n" //
-				+ ") ~ a_{10}"));
+		assertEquals(Int.of(62), eval("""
+				lets (
+				    a := n => if (0 < n) then (b_{n - 1} * 2) else 0 #
+				    b := n => if (0 < n) then (a_{n - 1} + 1) else 0 #
+				) ~ a_{10}
+				"""));
 	}
 
 	@Test
 	public void testFibonacci() {
-		assertEquals(Int.of(89), eval("" //
-				+ "define fib := \n" //
-				+ "    1; 1; zip_{`+`}_{fib}_{tail_{fib}} \n" //
-				+ "~ fib | get_{10}"));
+		assertEquals(Int.of(89), eval("""
+				define fib :=
+				    1; 1; zip_{`+`}_{fib}_{tail_{fib}}
+				~ fib | get_{10}
+				"""));
 
-		assertEquals(Int.of(144), eval("" //
-				+ "define fib := x => \n" //
-				+ "    if (x = `$a; $y`) then \n" //
-				+ "        if (y = `$b; $z`) then \n" //
-				+ "            (fib_{y} + fib_{z}) \n" //
-				+ "        else 1 \n" //
-				+ "    else 0 \n" //
-				+ "~ fib_{0; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0; }"));
+		assertEquals(Int.of(144), eval("""
+				define fib := x =>
+				    if (x = `$a; $y`) then
+				        if (y = `$b; $z`) then
+				            (fib_{y} + fib_{z})
+				        else 1
+				    else 0
+				~ fib_{0; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0; }
+				"""));
 	}
 
 	@Test
@@ -67,9 +73,10 @@ public class LazyFunTest {
 
 	@Test
 	public void testFold() {
-		assertEquals(Suite.parse("0; 1; 2; 3; 4;"), eval("" //
-				+ "define inf-series := n => n; inf-series_{n + 1} ~ " //
-				+ "0 | inf-series | fold-right_{`;`}_{} | take_{5}"));
+		assertEquals(Suite.parse("0; 1; 2; 3; 4;"), eval("""
+				define inf-series := n => n; inf-series_{n + 1} ~
+				0 | inf-series | fold-right_{`;`}_{} | take_{5}
+				"""));
 
 		// on the other hand, same call using fold-left would result in infinite
 		// loop, like this:

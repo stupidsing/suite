@@ -23,20 +23,22 @@ public class FailedTests {
 	// shall we support this?
 	@Test
 	public void testClassOfClass() {
-		assertEquals(Suite.parse("C2 boolean"), Suite.evaluateFunType("" //
-				+ "data (C0 :t) over :t as A :t ~ \n" //
-				+ "data (C1 :t) over :t as (C0 :t) ~ \n" //
-				+ "data (C2 :t) over :t as (C1 :t) ~ \n" //
-				+ "(C2 boolean) of (A true)"));
+		assertEquals(Suite.parse("C2 boolean"), Suite.evaluateFunType("""
+				data (C0 :t) over :t as A :t ~ \n
+				data (C1 :t) over :t as (C0 :t) ~ \n
+				data (C2 :t) over :t as (C1 :t) ~ \n
+				(C2 boolean) of (A true)
+				"""));
 	}
 
 	// cannot capture reference to a structure
 	@Test
 	public void testDataStructure() {
-		var bytes = new ImperativeCompiler().compile(0, "" //
-				+ "constant p = fix :p struct (() | pointer::p +next);" //
-				+ "declare r = & new p (+next = null,);" //
-				+ "0");
+		var bytes = new ImperativeCompiler().compile(0, """
+				constant p = fix :p struct (() | pointer::p +next);
+				declare r = & new p (+next = null,);
+				0
+				""");
 
 		assertNotNull(bytes);
 		System.out.println(bytes);
