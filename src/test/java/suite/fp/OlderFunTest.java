@@ -9,26 +9,29 @@ import suite.node.Node;
 
 public class OlderFunTest {
 
-	private static String concatList0 = "" //
-			+ "define concat-list0 := split_{h => t => \n" //
-			+ "    if-list_{h}_{h1 => t1 => h1; concat-list0_{t1; t}}_{concat-list0_{t}} \n" //
-			+ "} ~ \n";
+	private static String concatList0 = """
+			define concat-list0 := split_{h => t =>
+			    if-list_{h}_{h1 => t1 => h1; concat-list0_{t1; t}}_{concat-list0_{t}}
+			} ~
+			""";
 
-	private static String filter0 = "" //
-			+ "define filter0 := fun => \n" //
-			+ "    split_{h => t => \n" //
-			+ "        define others := filter0_{fun}_{t} ~ \n" //
-			+ "        if (fun_{h}) then (h; others) else others \n" //
-			+ "    } \n" //
-			+ "~ \n";
+	private static String filter0 = """
+			define filter0 := fun =>
+			    split_{h => t =>
+			        define others := filter0_{fun}_{t} ~
+			        if (fun_{h}) then (h; others) else others
+			    }
+			~
+			""";
 
-	private static String ifTree = "" //
-			+ "define if-list := list => f1 => f2 => \n" //
-			+ "    if (is-list_{list}) then ( \n" //
-			+ "        f1_{head_{list}}_{tail_{list}} \n" //
-			+ "    ) \n" //
-			+ "    else f2 \n" //
-			+ "~ \n";
+	private static String ifTree = """
+			define if-list := list => f1 => f2 =>
+			    if (is-list_{list}) then (
+			        f1_{head_{list}}_{tail_{list}}
+			    )
+			    else f2
+			~
+			""";
 
 	private static String map0 = "define map0 := fun => split_{h => t => fun_{h}; map0_{fun}_{t}} ~ \n";
 
