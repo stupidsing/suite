@@ -58,30 +58,31 @@ public class FunpTest {
 
 		// unreliable when optimized. the optimizer would substitute the variable
 		// definition that makes the capture1 time latter than the assignment to m.
-		test(31, "" //
-				+ "do! (" //
-				+ "let m := 31 ~ " //
-				+ "let l := n => capture1 m ~ " //
-				+ "!assign m := 63 ~ " //
-				+ "15 | l)");
+		test(31, """
+				do! (
+				        let m := 31 ~
+				        let l := n => capture1 m ~
+				        !assign m := 63 ~
+				        15 | l
+				)""");
 
 		test(0, "define m j := (type j = number ~ 0) ~ 1 | (n => capture1 (m 2))");
 
 		// use capture1 to return a lambda expression
-		test(12, "" //
-				+ "define f j := i => capture1 (i + j) ~ " //
-				+ "define g j := i => capture1 (i + j) ~ " //
-				+ "define h j := i => capture1 (i + j) ~ " //
-				+ "0 | (i => 0 | f 1 | g 2 | h 3 | f 1 | g 2 | h 3)");
+		test(12, """
+				define f j := i => capture1 (i + j) ~
+				define g j := i => capture1 (i + j) ~
+				define h j := i => capture1 (i + j) ~
+				0 | (i => 0 | f 1 | g 2 | h 3 | f 1 | g 2 | h 3)""");
 
 		// capture1 once and calling twice! the capture1 would be freed after the first
 		// call. the second call should cause problem...
 		if (Boolean.FALSE)
-			test(6, "" //
-					+ "define f j := i => capture1 (i + j) ~ " //
-					+ "define fs := f 2 ~ " //
-					+ "define a := 0 | fs | fs ~ " //
-					+ "a");
+			test(6, """
+					define f j := i => capture1 (i + j) ~
+					define fs := f 2 ~
+					define a := 0 | fs | fs ~
+					a""");
 	}
 
 	@Test
@@ -137,13 +138,15 @@ public class FunpTest {
 
 	@Test
 	public void testGlobal() {
-		test(0, "" //
-				+ "let module := \n" //
-				+ "	let.global f () := 0 ~ \n" // global required
-				+ "	let g () := f () ~ \n" //
-				+ "	{ g, } \n" //
-				+ "~ \n" //
-				+ "() | module/g");
+
+		// global required
+		test(0, """
+				let module :=
+					let.global f () := 0 ~
+					let g () := f () ~
+					{ g, }
+				~
+				() | module/g""");
 
 		test(9, "define.global max (a, b) := if (a < b) then b else a ~ max (8, 9)");
 	}
@@ -184,54 +187,58 @@ public class FunpTest {
 
 	@Test
 	public void testNew() {
-		test(579, "do! (\n" //
-				+ "	let p := !new^ _ ~ \n" //
-				+ "	let q := !new^ _ ~ \n" //
-				+ "	!assign p* := 123 ~ \n" //
-				+ "	!assign q* := 456 ~ \n" //
-				+ "	let v := p* + q* ~ \n" //
-				+ "	!delete^ p ~ \n" //
-				+ "	!delete^ q ~ \n" //
-				+ "	v \n" //
-				+ ")");
-		test(456, "do! (\n" //
-				+ "	let p := !new^ 456 ~ \n" //
-				+ "	let v := p* ~ \n" //
-				+ "	!delete^ p ~ v \n" //
-				+ ")");
-		test(2, "define.function !list.iter list := do! \n" //
-				+ "     type list = { elems: address.of (array 3 * number), size: number, } ~ \n" //
-				+ "     let { elems, size, } := list ~ \n" //
-				+ "     let i := !new^ 0 ~ \n" //
-				+ "     { \n" //
-				+ "             !free () := do! (!delete^ i ~ ()) ~ \n" //
-				+ "             has.next () := i* < size ~ \n" //
-				+ "             !next () := do! \n" //
-				+ "                     let i_ := i* ~ \n" //
-				+ "                     !assign i* := i_ + 1 ~ \n" //
-				+ "                     elems* [i_] \n" //
-				+ "             ~ \n" //
-				+ "     } \n" //
-				+ "~ \n" //
-				+ "do! ( \n" //
-				+ "     let elems := !new^ [1, 2, 3,] ~ \n" //
-				+ "     let iter := !list.iter { elems, size: 3, } ~ \n" //
-				+ "     let u := iter/!next () ~ \n" //
-				+ "     let v := iter/!next () ~ \n" //
-				+ "     iter/!free () ~ \n" //
-				+ "     !delete^ elems ~ \n" //
-				+ "     v \n" //
-				+ ")");
+		test(579, """
+				do! (
+					let p := !new^ _ ~
+					let q := !new^ _ ~
+					!assign p* := 123 ~
+					!assign q* := 456 ~
+					let v := p* + q* ~
+					!delete^ p ~
+					!delete^ q ~
+					v
+				)""");
+		test(456, """
+				do! (
+					let p := !new^ 456 ~
+					let v := p* ~
+					!delete^ p ~ v
+				)""");
+		test(2, """
+				define.function !list.iter list := do!
+				     type list = { elems: address.of (array 3 * number), size: number, } ~
+				     let { elems, size, } := list ~
+				     let i := !new^ 0 ~
+				     {
+				             !free () := do! (!delete^ i ~ ()) ~
+				             has.next () := i* < size ~
+				             !next () := do!
+				                     let i_ := i* ~
+				                     !assign i* := i_ + 1 ~
+				                     elems* [i_]
+				             ~
+				     }
+				~
+				do! (
+				     let elems := !new^ [1, 2, 3,] ~
+				     let iter := !list.iter { elems, size: 3, } ~
+				     let u := iter/!next () ~
+				     let v := iter/!next () ~
+				     iter/!free () ~
+				     !delete^ elems ~
+				     v
+				)""");
 	}
 
 	@Test
 	public void testNewArray() {
-		test(456, "do! (\n" //
-				+ "	let p := !new-array^ (99 * number) ~ \n" //
-				+ "	!assign p* [98] := 456 ~ \n" //
-				+ "	let v := p* [98] ~ \n" //
-				+ "	!delete-array^ p ~ v \n" //
-				+ ")");
+		test(456, """
+				do! (
+					let p := !new-array^ (99 * number) ~
+					!assign p* [98] := 456 ~
+					let v := p* [98] ~
+					!delete-array^ p ~ v
+				)""");
 	}
 
 	@Test
