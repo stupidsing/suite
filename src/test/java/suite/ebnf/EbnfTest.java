@@ -17,11 +17,11 @@ public class EbnfTest {
 
 	@Test
 	public void testExcept() throws IOException {
-		var ebnf = new Ebnf(new StringReader("" //
-				+ "non-alphas ::= (non-alpha)* \n" //
-				+ "non-alpha ::= <CHARACTER> /except/ ([a-z] | [A-Z]) \n" //
-				+ "non-boolean ::= <IDENTIFIER> /except/ (\"true\" | \"false\") \n" //
-		));
+		var ebnf = new Ebnf(new StringReader("""
+				non-alphas ::= (non-alpha)*
+				non-alpha ::= <CHARACTER> /except/ ([a-z] | [A-Z])
+				non-boolean ::= <IDENTIFIER> /except/ ("true" | "false")
+				"""));
 		assertNotNull(ebnf.check("non-alphas", "123!@#"));
 		assertNotNull(ebnf.check("non-boolean", "beatles"));
 		assertNull(ebnf.check("non-alphas", "456q$%^"));
@@ -31,10 +31,12 @@ public class EbnfTest {
 	@Test
 	public void testCrudeScript() throws IOException {
 		var ebnf = new Ebnf(new FileReader("src/main/ebnf/crude-script.ebnf"));
-		System.out.println(ebnf.parse("crude-script", "{ \n" //
-				+ "	let f = p => p; \n" //
-				+ "	return 1 + 2 * 3; \n" //
-				+ "}"));
+		System.out.println(ebnf.parse("crude-script", """
+				{
+					let f = p => p;
+					return 1 + 2 * 3;
+				}
+				"""));
 	}
 
 	@Test
@@ -45,10 +47,10 @@ public class EbnfTest {
 
 	@Test
 	public void testHeadRecursion() throws IOException {
-		var ebnf = new Ebnf(new StringReader("" //
-				+ "number ::= number \"x\" digit | digit \n" //
-				+ "digit ::= [0-9] \n" //
-		));
+		var ebnf = new Ebnf(new StringReader("""
+				number ::= number \"x\" digit | digit
+				digit ::= [0-9]
+				"""));
 		System.out.println(ebnf.parse("number", "1"));
 		System.out.println(ebnf.parse("number", "1x2"));
 		System.out.println(ebnf.parse("number", "1x2x3x4"));
@@ -63,7 +65,7 @@ public class EbnfTest {
 	@Test
 	public void testJava() throws IOException {
 		var ebnf = new Ebnf(new FileReader("src/main/ebnf/java.ebnf"));
-		var s = ReadString.from("src/test/java/suite/ebnf/EbnfTest.java");
+		var s = ReadString.from("src/test/java/suite/fp/SieveTest.java");
 		System.out.println(new Dump(ebnf.parse("CompilationUnit", s), s));
 	}
 

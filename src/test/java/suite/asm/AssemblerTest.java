@@ -45,14 +45,14 @@ public class AssemblerTest {
 
 	@Test
 	public void testAssembler() {
-		var bytes = new Assembler(Amd64Mode.PROT32).assemble("" //
-				+ ".org = 0 \n" //
-				+ "	JMP (.end) \n" //
-				+ "	MOV (AX, WORD 16) \n" //
-				+ "	MOV (EAX, 16) \n" //
-				+ ".end	() \n" //
-				+ "	ADVANCE (16) \n" //
-		);
+		var bytes = new Assembler(Amd64Mode.PROT32).assemble("""
+				.org = 0
+					JMP (.end)
+					MOV (AX, WORD 16)
+					MOV (EAX, 16)
+				.end ()
+					ADVANCE (16)
+				""");
 		assertEquals(16, bytes.size());
 		System.out.println(bytes);
 	}
