@@ -19,16 +19,17 @@ import suite.node.Node;
 public class LogicCompilerLevel1Test {
 
 	/**
-	 * Compiles the functional compiler and use it to compile a simple
-	 * functional program.
+	 * Compiles the functional compiler and use it to compile a simple functional
+	 * program.
 	 */
 	@Test
 	public void testCompileFunProgram() {
 		var rs = Suite.newRuleSet(List.of("auto.sl", "fc/fc.sl"));
-		var gs = "" //
-				+ "source .in" //
-				+ ", compile-function .0 .in .out" //
-				+ ", sink .out";
+		var gs = """
+				source .in
+				, compile-function .0 .in .out
+				, sink .out
+				""";
 
 		var goal = new Specializer().specialize(Suite.substitute(gs, Atom.of("LAZY")));
 		var input = Suite.parse("1 + 2");

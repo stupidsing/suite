@@ -14,13 +14,13 @@ public class LogicCompilerLevel2Test {
 	// require tail recursion to work
 	@Test
 	public void test0() {
-		var rs = Suite.getRuleSet(Suite.parse("" //
-				+ "member (.e, _) .e #" //
-				+ "member (_, .tail) .e :- member .tail .e #" //
-				+ "sum .a .b .c :- bound .a, bound .b, let .c (.a - .b) #" //
-				+ "sum .a .b .c :- bound .a, bound .c, let .b (.a - .c) #" //
-				+ "sum .a .b .c :- bound .b, bound .c, let .a (.b + .c) #" //
-		));
+		var rs = Suite.getRuleSet(Suite.parse("""
+				member (.e, _) .e #
+				member (_, .tail) .e :- member .tail .e #
+				sum .a .b .c :- bound .a, bound .b, let .c (.a - .b) #
+				sum .a .b .c :- bound .a, bound .c, let .b (.a - .c) #
+				sum .a .b .c :- bound .b, bound .c, let .a (.b + .c) #
+				"""));
 
 		var builder = CompiledProverBuilder.level2(new ProverCfg());
 		Suite.evaluateLogic(builder, rs, "(), sink ()");
