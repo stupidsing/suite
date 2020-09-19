@@ -30,15 +30,15 @@ public class ElfTest {
 
 	@Test
 	public void testAllocate() {
-		test(0, "" //
-				+ "let { !alloc, !dealloc, } := consult allocate.fp ~ do! ( \n" //
-				+ "let p := !alloc 12 ~ \n" //
-				+ "let q := !alloc 24 ~ \n" //
-				+ "!dealloc (12, p) ~ \n" //
-				+ "!dealloc (24, q) ~ \n" //
-				+ "0 \n" //
-				+ ") \n" //
-				, "");
+		test(0, """
+				let { !alloc, !dealloc, } := consult allocate.fp ~ do! (
+					let p := !alloc 12 ~
+					let q := !alloc 24 ~
+					!dealloc (12, p) ~
+					!dealloc (24, q) ~
+					0
+				)
+				""", "");
 	}
 
 	@Test
@@ -96,36 +96,38 @@ public class ElfTest {
 	@Test
 	public void testIter() {
 		// var program = "do! (consult iter.fp)/!list.iter []";
-		var program = "" //
-				+ "let { list.filter, !list.free, !list.iter, list.map, } := consult iter.fp ~ \n" //
-				+ "do! ( \n" //
-				+ "	let !filter := list.filter (i => true) ~ \n" //
-				+ "	let !map := list.map (i => i + 1) ~ \n" //
-				+ "	let list0 := { elems: address.of predef (array 32 * 1), size: 3, } ~ \n" //
-				+ "	let list1 := !filter list0 ~ \n" //
-				+ "	let list2 := !map list1 ~ \n" //
-				+ "	let iter := !list.iter list2 ~ \n" //
-				+ "	let v := iter/!next () ~ \n" //
-				+ "	iter/!free () ~ \n" //
-				+ "	!list.free list2 ~ \n" //
-				+ "	!list.free list1 ~ \n" //
-				+ "	uncapture !filter ~ \n" //
-				+ "	uncapture !map ~ \n" //
-				+ "	v \n" //
-				+ ")";
+		var program = """
+				let { list.filter, !list.free, !list.iter, list.map, } := consult iter.fp ~
+				do! (
+					let !filter := list.filter (i => true) ~
+					let !map := list.map (i => i + 1) ~
+					let list0 := { elems: address.of predef (array 32 * 1), size: 3, } ~
+					let list1 := !filter list0 ~
+					let list2 := !map list1 ~
+					let iter := !list.iter list2 ~
+					let v := iter/!next () ~
+					iter/!free () ~
+					!list.free list2 ~
+					!list.free list1 ~
+					uncapture !filter ~
+					uncapture !map ~
+					v
+				)
+				""";
 		System.out.println(program);
 		test(2, program, "");
 	}
 
 	@Test
 	public void testNumbers() {
-		test(0, "" //
-				+ "let { !get.number, !put.number, } := consult io.fp ~ \n" //
-				+ "do! ( \n" //
-				+ "let m := type number !get.number {} ~ \n" //
-				+ "let n := type number !get.number {} ~ \n" //
-				+ "!put.number (m + n) ~ 0 \n" //
-				+ ")", //
+		test(0, """
+				let { !get.number, !put.number, } := consult io.fp ~
+				do! (
+				let m := type number !get.number {} ~
+				let n := type number !get.number {} ~
+				!put.number (m + n) ~ 0
+				)
+				""", //
 				"25\n57\n", //
 				"82");
 	}

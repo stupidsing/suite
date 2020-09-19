@@ -197,13 +197,15 @@ public class FunpTest {
 					!delete^ p ~
 					!delete^ q ~
 					v
-				)""");
+				)
+				""");
 		test(456, """
 				do! (
 					let p := !new^ 456 ~
 					let v := p* ~
 					!delete^ p ~ v
-				)""");
+				)
+				""");
 		test(2, """
 				define.function !list.iter list := do!
 				     type list = { elems: address.of (array 3 * number), size: number, } ~
@@ -227,7 +229,8 @@ public class FunpTest {
 				     iter/!free () ~
 				     !delete^ elems ~
 				     v
-				)""");
+				)
+				""");
 	}
 
 	@Test
@@ -238,7 +241,8 @@ public class FunpTest {
 					!assign p* [98] := 456 ~
 					let v := p* [98] ~
 					!delete-array^ p ~ v
-				)""");
+				)
+				""");
 	}
 
 	@Test
