@@ -64,7 +64,8 @@ public class FunpTest {
 				        let l := n => capture1 m ~
 				        !assign m := 63 ~
 				        15 | l
-				)""");
+				)
+				""");
 
 		test(0, "define m j := (type j = number ~ 0) ~ 1 | (n => capture1 (m 2))");
 
@@ -73,7 +74,8 @@ public class FunpTest {
 				define f j := i => capture1 (i + j) ~
 				define g j := i => capture1 (i + j) ~
 				define h j := i => capture1 (i + j) ~
-				0 | (i => 0 | f 1 | g 2 | h 3 | f 1 | g 2 | h 3)""");
+				0 | (i => 0 | f 1 | g 2 | h 3 | f 1 | g 2 | h 3)
+				""");
 
 		// capture1 once and calling twice! the capture1 would be freed after the first
 		// call. the second call should cause problem...
@@ -82,7 +84,8 @@ public class FunpTest {
 					define f j := i => capture1 (i + j) ~
 					define fs := f 2 ~
 					define a := 0 | fs | fs ~
-					a""");
+					a
+					""");
 	}
 
 	@Test

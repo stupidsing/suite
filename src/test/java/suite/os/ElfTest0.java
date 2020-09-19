@@ -16,10 +16,10 @@ public class ElfTest0 {
 	@Test
 	public void test() {
 		var program = """
-						declare inc = function [i0, out ix,] ( {ix} = i0 + 1; );
-						signature j = int;
-						inc [41, out j,];
-						j;
+				declare inc = function [i0, out ix,] ( {ix} = i0 + 1; );
+				signature j = int;
+				inc [41, out j,];
+				j;
 				""";
 
 		var exec = test(program, "");
