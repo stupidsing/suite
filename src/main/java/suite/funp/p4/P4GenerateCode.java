@@ -555,6 +555,9 @@ public class P4GenerateCode extends FunpCfg {
 			})).result();
 		}
 
+		/**
+		 * generate code giving back a memory to invoker according to its protocol.
+		 */
 		private CompileOut returnAssign(Sink2<Compile0, FunpMemory> assign) {
 			if (result.t == Rt.ASSIGN) {
 				if (0 < target.size())
@@ -587,6 +590,9 @@ public class P4GenerateCode extends FunpCfg {
 				};
 		}
 
+		/**
+		 * generate code giving back nothing but fake the invoker's protocol.
+		 */
 		public CompileOut returnDontCare() {
 			if (result.t == Rt.ASSIGN || result.t == Rt.SPEC)
 				return new CompileOut();
@@ -598,6 +604,9 @@ public class P4GenerateCode extends FunpCfg {
 				};
 		}
 
+		/**
+		 * generate code giving back one operand to invoker according to its protocol.
+		 */
 		public CompileOut returnOp(Operand op) {
 			if (result.t == Rt.ASSIGN) {
 				var opt0 = p4deOp.decomposeFunpMemory(fd, target);
@@ -618,6 +627,9 @@ public class P4GenerateCode extends FunpCfg {
 			return new CompileOut();
 		}
 
+		/**
+		 * generate code giving back a pair of operands to invoker according to its protocol.
+		 */
 		public CompileOut return2Op(Operand op0, Operand op1) {
 			var size0 = op0.size;
 			var size1 = op1.size;
@@ -661,6 +673,9 @@ public class P4GenerateCode extends FunpCfg {
 			return new CompileOut();
 		}
 
+		/**
+		 * wrap stack push-pops for a code section.
+		 */
 		private CompileOut compileAllocStack( //
 				int size, //
 				Funp pushValue, //
@@ -701,6 +716,9 @@ public class P4GenerateCode extends FunpCfg {
 			return new CompileOut(op0, op1);
 		}
 
+		/**
+		 * generates memcpy code.
+		 */
 		private void compileAssign(FunpMemory source, FunpMemory target) {
 			var size = source.size();
 
