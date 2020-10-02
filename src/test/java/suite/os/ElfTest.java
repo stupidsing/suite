@@ -80,8 +80,8 @@ public class ElfTest {
 	@Test
 	public void testGuess() {
 		var program = "do! (consult guess.fp)/!guess {}";
-		elf.write(offset -> Funp_.main(isLongMode, false).compile(offset, program).v, Tmp.path("guess"));
-		elf.write(offset -> Funp_.main(isLongMode, true).compile(offset, program).v, Tmp.path("guess"));
+		for (var isOptimize : new boolean[] { false, true, })
+			elf.write(offset -> Funp_.main(isLongMode, isOptimize).compile(offset, program).v, Tmp.path("guess"));
 	}
 
 	// io :: a -> io a
