@@ -5,8 +5,8 @@ compileJava.options.encoding = "UTF-8"
 mainClassName = "suite.cli.Main"
 
 allprojects {
-	sourceCompatibility = JavaVersion.VERSION_14
-	targetCompatibility = JavaVersion.VERSION_14
+	sourceCompatibility = JavaVersion.VERSION_15
+	targetCompatibility = JavaVersion.VERSION_15
 }
 
 dependencies {
