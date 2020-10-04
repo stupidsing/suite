@@ -18,7 +18,7 @@ public class SslTest {
 	@Test
 	public void test() throws IOException {
 		var factory = (SSLSocketFactory) SSLSocketFactory.getDefault();
-		var socket = (SSLSocket) factory.createSocket("www.verisign.com", 443);
+		var socket = (SSLSocket) factory.createSocket("pointless.online", 443);
 
 		/*
 		 * Send HTTP Request
@@ -43,7 +43,7 @@ public class SslTest {
 				var osw = new OutputStreamWriter(os);
 				var bw = new BufferedWriter(osw);
 				var pw = new PrintWriter(bw);) {
-			pw.print("GET / HTTP/1.0\n\n");
+			pw.print("GET / HTTP/1.1\r\nHost: pointless.online\r\n\r\n");
 			pw.flush();
 
 			if (!pw.checkError())
