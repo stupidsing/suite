@@ -43,9 +43,19 @@ public class FunpTest {
 
 	@Test
 	public void testCapture() {
-		test(46, "define m := 31 ~ let l := n => capture (n + m) ~ uncapture l ~ 15 | l");
+		test(46, """
+				define m := 31 ~
+				let l := n => capture (n + m) ~
+				uncapture l ~
+				15 | l
+				""");
+
 		try {
-			test(46, "define m := 31 ~ let l := n => capture (n + m) ~ 15 | l");
+			test(46, """
+					define m := 31 ~
+					let l := n => capture (n + m) ~
+					15 | l
+					""");
 			fail();
 		} catch (RuntimeException ex) {
 			assertEquals("ALLOC MISMATCH", ex.getMessage());

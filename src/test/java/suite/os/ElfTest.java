@@ -101,6 +101,8 @@ public class ElfTest {
 				do! (
 					let !filter := list.filter (i => true) ~
 					let !map := list.map (i => i + 1) ~
+					uncapture !filter ~
+					uncapture !map ~
 					let list0 := { elems: address.of predef (array 32 * 1), size: 3, } ~
 					let list1 := !filter list0 ~
 					let list2 := !map list1 ~
@@ -109,8 +111,6 @@ public class ElfTest {
 					iter/!free () ~
 					!list.free list2 ~
 					!list.free list1 ~
-					uncapture !filter ~
-					uncapture !map ~
 					v
 				)
 				""";
