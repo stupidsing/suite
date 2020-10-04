@@ -69,7 +69,7 @@ public class ElfTest {
 	@Test
 	public void testCapture() {
 		test(46, "define m := 31 ~ let l := n => capture1 (n + m) ~ 15 | l", "");
-		test(46, "define m := 31 ~ let l := n => capture (n + m) ~ uncapture l ~ 15 | l", "");
+		test(46, "define m := 31 ~ let.uncapture l := n => capture (n + m) ~ 15 | l", "");
 	}
 
 	@Test
@@ -99,10 +99,8 @@ public class ElfTest {
 		var program = """
 				let { list.filter, !list.free, !list.iter, list.map, } := consult iter.fp ~
 				do! (
-					let !filter := list.filter (i => true) ~
-					let !map := list.map (i => i + 1) ~
-					uncapture !filter ~
-					uncapture !map ~
+					let.uncapture !filter := list.filter (i => true) ~
+					let.uncapture !map := list.map (i => i + 1) ~
 					let list0 := { elems: address.of predef (array 32 * 1), size: 3, } ~
 					let list1 := !filter list0 ~
 					let list2 := !map list1 ~

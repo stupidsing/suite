@@ -266,6 +266,9 @@ public class P0Parse extends FunpCfg {
 				return define(a, bind(Fdt.L_MONO).lambdaSeparate(b, c), d, Fdt.G_MONO);
 			}).match("let.global { .0 } ~ .1", (a, b) -> {
 				return defineList(a, b, Fdt.G_MONO);
+			}).match("let.uncapture .0 := .1 ~ .2", (a, b, c) -> {
+				var vn = Atom.name(a);
+				return FunpDefine.of(vn, p(b), FunpLambdaFree.of(FunpVariable.of(vn), nv(vn).p(c)), Fdt.L_MONO);
 			}).match("me", () -> {
 				return FunpMe.of();
 			}).match("null", () -> {
