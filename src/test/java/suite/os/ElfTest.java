@@ -69,7 +69,9 @@ public class ElfTest {
 	@Test
 	public void testCapture() {
 		test(46, "define m := 31 ~ let l := n => capture1 (n + m) ~ 15 | l", "");
+		test(46, "define m := 31 ~ let l := n => capture (n + m) ~ uncapture l ~ 15 | l", "");
 		test(46, "define m := 31 ~ let.uncapture l := n => capture (n + m) ~ 15 | l", "");
+		test(46, "define m := 31 ~ 15 | precapture (n => capture (n + m))", "");
 	}
 
 	@Test

@@ -281,10 +281,12 @@ public class P0Parse extends FunpCfg {
 				return FunpCoerce.of(Coerce.NUMBER, Coerce.NUMBERP, FunpDontCare.of());
 			}).match("numberp .0", a -> {
 				return FunpCoerce.of(Coerce.NUMBER, Coerce.NUMBERP, FunpNumber.ofNumber(num(a)));
+			}).match("precapture .0", a -> {
+				return FunpPredefine.of("precapture$" + Get.temp(), p(a), true);
 			}).match("predef .0", a -> {
-				return FunpPredefine.of("predefine$" + Get.temp(), p(a));
+				return FunpPredefine.of("predefine$" + Get.temp(), p(a), false);
 			}).match("predef/.0 .1", (a, b) -> {
-				return FunpPredefine.of(Atom.name(a), p(b));
+				return FunpPredefine.of(Atom.name(a), p(b), false);
 			}).match("size.of .0", a -> {
 				return FunpSizeOf.of(p(a));
 			}).match("sum .0 .1", (a, b) -> {

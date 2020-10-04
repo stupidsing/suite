@@ -9,6 +9,7 @@ import suite.funp.P0.FunpDefine;
 import suite.funp.P0.FunpDoAssignVar;
 import suite.funp.P0.FunpDontCare;
 import suite.funp.P0.FunpLambda;
+import suite.funp.P0.FunpLambdaFree;
 import suite.funp.P0.FunpPredefine;
 import suite.funp.P0.FunpVariable;
 import suite.inspect.Inspect;
@@ -27,13 +28,14 @@ public class P20ExtractPredefine {
 					return n_.sw( //
 					).applyIf(FunpLambda.class, f -> f.apply((vn, expr, fct) -> {
 						return FunpLambda.of(vn, extractPredefine(expr), fct);
-					})).applyIf(FunpPredefine.class, f -> f.apply((vn, expr) -> {
+					})).applyIf(FunpPredefine.class, f -> f.apply((vn, expr, isUncapture) -> {
 						var var = FunpVariable.of(vn);
 						if (vns.contains(vn))
 							return var;
 						else {
 							vns.add(vn);
-							return FunpDoAssignVar.of(var, extract(expr), var);
+							var assignVar = FunpDoAssignVar.of(var, extract(expr), var);
+							return isUncapture ? FunpLambdaFree.of(var, assignVar) : assignVar;
 						}
 					})).result();
 				});
