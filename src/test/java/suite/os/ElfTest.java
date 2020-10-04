@@ -114,7 +114,6 @@ public class ElfTest {
 					v
 				)
 				""";
-		System.out.println(program);
 		test(2, program, "");
 	}
 
