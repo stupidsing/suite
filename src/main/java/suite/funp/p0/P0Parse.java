@@ -105,12 +105,7 @@ public class P0Parse extends FunpCfg {
 
 		private Funp p(Node node) {
 			return new SwitchNode<Funp>(node //
-			).match("!! .0", a -> {
-				return checkDo(() -> FunpDoEvalIo.of(p(a)));
-			}).match("!! .0 ~ .1", (a, b) -> {
-				var lambda = bind(Fdt.L_MONO).lambda(dontCare, b);
-				return checkDo(() -> FunpDefine.of(lambda.vn, p(a), lambda.expr, Fdt.L_IOAP));
-			}).match(".0:.1 .2", (a, b, c) -> {
+			).match(".0:.1 .2", (a, b, c) -> {
 				var c0 = Coerce.valueOf(Atom.name(b).toUpperCase());
 				var c1 = Coerce.valueOf(Atom.name(a).toUpperCase());
 				return FunpCoerce.of(c0, c1, p(c));
@@ -132,6 +127,11 @@ public class P0Parse extends FunpCfg {
 				return capture(bind(Fdt.L_MONO).lambdaSeparate(a, b), Fct.ONCE__);
 			}).match(".0 => .1", (a, b) -> {
 				return bind(Fdt.L_MONO).lambdaSeparate(a, b);
+			}).match(".0 | !!", a -> {
+				return checkDo(() -> FunpDoEvalIo.of(p(a)));
+			}).match(".0 | !! .1", (a, b) -> {
+				var lambda = bind(Fdt.L_MONO).lambda(dontCare, b);
+				return checkDo(() -> FunpDefine.of(lambda.vn, p(a), lambda.expr, Fdt.L_IOAP));
 			}).match(".0 | .1", (a, b) -> {
 				return FunpApply.of(p(a), p(b));
 			}).match(".0 [.1]", (a, b) -> {

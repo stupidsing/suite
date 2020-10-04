@@ -25,14 +25,14 @@ define.function !guess () := do!
 	fold (
 		(n, guess) := (1, !get.number ()) #
 		guess != answer #
-		!! if (guess < answer) then (
+		if (guess < answer) then (
 			!put.string "higher...%0A"
 		) else if (answer < guess) then (
 			!put.string "lower...%0A"
 		) else (
 			error
-		) ~
-		(n + 1, !get.number ()) #
+		)
+		| !! (n + 1, !get.number ()) #
 		!put.string name ~
 		!put.string ", you have got it in " ~
 		!put.number n ~

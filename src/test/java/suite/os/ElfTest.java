@@ -102,9 +102,9 @@ public class ElfTest {
 				let { list.filter, !list.free, !list.iter, list.map, } := consult iter.fp ~
 				do! (
 					let list0 := { elems: address.of predef (array 32 * 1), size: 3, } ~
-					let list1 := !! (list0 | precapture list.filter (i => true)) ~
-					let list2 := !! (list1 | precapture list.map (i => i + 1)) ~
-					let iter := !list.iter list2 ~
+					let list1 := list0 | precapture list.filter (i => true) | !! ~
+					let list2 := list1 | precapture list.map (i => i + 1) | !! ~
+					let iter := list2 | !list.iter | !! ~
 					let v := iter/!next () ~
 					iter/!free () ~
 					!list.free list2 ~
@@ -131,10 +131,17 @@ public class ElfTest {
 
 	@Test
 	public void testPut() {
-		test(0, "do! (!! (consult io.fp)/!put.char byte 'A' ~ 0)", "A");
-		test(0, "do! (!! (consult io.fp)/!put.number number 'A' ~ 0)", "65");
-		test(0, "do! (!! (consult io.fp)/!put.number -999 ~ 0)", "-999");
-		test(0, "for! (i := 0 # i < 10 # !! (consult io.fp)/!put.number i ~ i + 1 # 0)", "0123456789");
+		test(0, "do! ((consult io.fp)/!put.char byte 'A' | !! 0)", "A");
+		test(0, "do! ((consult io.fp)/!put.number number 'A' | !! 0)", "65");
+		test(0, "do! ((consult io.fp)/!put.number -999 | !! 0)", "-999");
+		test(0, """
+			let io := consult io.fp ~
+			for! (
+				i := 0 #
+				i < 10 #
+				io/!put.number i | !! (i + 1) #
+				0)
+			""", "0123456789");
 	}
 
 	@Test
