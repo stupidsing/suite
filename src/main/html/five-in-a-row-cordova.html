@@ -19,9 +19,9 @@ file:///home/ywsing/suite/src/main/html/five-in-a-row-cordova.html
 let eatdirs = [[0, -1], [-1, 0], [-1, +1], [+1, +1],];
 let movedirs = [[-1, 0], [+1, 0], [0, -1], [0, +1],];
 
-let sizep = 7;
-
-let nStoneTypes = 5;
+let usp = new URLSearchParams('');
+let nStoneTypes = +usp.get('colors') || 5;
+let sizep = usp.get('size') || 7;
 
 let fun = (() => {
 	let lens_ = gp => {
@@ -1157,8 +1157,8 @@ let cc = ((sizex, sizey) => ({
 	inbounds: (x, y) => 0 <= x && x < sizex && 0 <= y && y < sizey,
 	random_xy: () => ({ x: rand(0, sizex), y: rand(0, sizey), }),
 }))(
-	7,
-	7);
+	+usp.get('sizex') || sizep || 7,
+	+usp.get('sizey') || sizep || 7);
 
 let handle = {};
 

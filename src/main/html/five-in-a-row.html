@@ -22,9 +22,8 @@ let eatdirs = [[0, -1], [-1, 0], [-1, +1], [+1, +1],];
 let movedirs = [[-1, 0], [+1, 0], [0, -1], [0, +1],];
 
 let usp = new URLSearchParams(window.location.search);
-let sizep = usp.get('size');
-
 let nStoneTypes = +usp.get('colors') || 5;
+let sizep = usp.get('size') || 7;
 
 Promise
 .all([].map(loadsrcscript))
