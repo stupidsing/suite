@@ -685,10 +685,6 @@ public class P22InferType extends FunpCfg {
 				var expr3 = f.name != null ? FunpRemark.of(f.name, expr2) : expr2;
 				return eraseRoutine(lt, frame, expr3);
 			})).applyIf(FunpLambdaCapture.class, f -> f.apply((fp0, frameVar, frame, vn, expr, fct) -> {
-
-				// the capture would free itself upon first call, therefore should not be called
-				// for the second time
-
 				var size = getTypeSize(typeOf(frame));
 				var b = ps + ps; // return address and EBP
 				var lt = new LambdaType(n);
@@ -709,6 +705,8 @@ public class P22InferType extends FunpCfg {
 				if (fct == Fct.MANUAL)
 					expr3 = expr2;
 				else if (fct == Fct.ONCE__)
+					// the capture would free itself upon first call, therefore should not be called
+					// for the second time
 					expr3 = FunpHeapDealloc.of(false, size, FunpMemory.of(FunpFramePointer.of(), 0, ps), expr2);
 				else
 					return fail();
