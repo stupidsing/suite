@@ -98,7 +98,7 @@ tp_jdk10() {
 }
 
 tp_kubectl() {
-	VER=$(cchs "curl -sL https://storage.googleapis.com/kubernetes-release/release/stable.txt")
+	local VER=$(cchs "curl -sL https://storage.googleapis.com/kubernetes-release/release/stable.txt")
 	$(cchs "echo https://storage.googleapis.com/kubernetes-release/release/${VER}/bin/linux/amd64/kubectl" @curl "@do-chmod +x") $@
 }
 

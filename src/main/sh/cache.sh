@@ -8,93 +8,93 @@ find ${CCACHE}/ -type f -mtime 28 -print0 | xargs -0 echo rm -f 1>&2
 find ${DCACHE}/ -maxdepth 1 -type f -mtime 360 -type d -print0 | xargs -0 echo rm -rf 1>&2
 
 cchs() {
-	F=/dev/null
+	local F=/dev/null
 	while [ "${1}" ]; do
-		CMD="${1}"
+		local CMD="${1}"
 		shift
 		if [ "${CMD:0:2}" == "{}" ]; then
-			D=$(cat ${F})
-			F=$(cchf "${D}${CMD:2}")
+			local D=$(cat ${F})
+			local F=$(cchf "${D}${CMD:2}")
 		elif [ "${CMD:0:3}" == "@cd" ]; then
-			D=$(cat ${F})
-			F=$(cchf "cd ${D}/; ${CMD:4}")
+			local D=$(cat ${F})
+			local F=$(cchf "cd ${D}/; ${CMD:4}")
 		elif [ "${CMD}" == "@curl" ]; then
-			URL=$(cat ${F})
-			DF=${DCACHE}/$(url-dir "${URL}")
-			DFI=${DF}.inprogress
+			local URL=$(cat ${F})
+			local DF=${DCACHE}/$(url-dir "${URL}")
+			local DFI=${DF}.inprogress
 			[ -f ${DF} ] || do-cmd "curl -sL '${URL}' > ${DFI} && mv ${DFI} ${DF}"
-			F=$(cchf "printf ${DF}")
+			local F=$(cchf "printf ${DF}")
 		elif [ "${CMD}" == "@dir" ]; then
-			D=$(cat ${F})
-			LINK=$(sh -c "readlink -f ${D}/*")
-			F=$(cchf "printf ${LINK}")
+			local D=$(cat ${F})
+			local LINK=$(sh -c "readlink -f ${D}/*")
+			local F=$(cchf "printf ${LINK}")
 		elif [ "${CMD:0:6}" == "@do-cd" ]; then
-			D=$(cat ${F})
-			F=$(cchf "cd ${D}/; ${CMD:7} 1>&2; echo ${D}")
+			local D=$(cat ${F})
+			local F=$(cchf "cd ${D}/; ${CMD:7} 1>&2; echo ${D}")
 		elif [ "${CMD:0:9}" == "@do-chmod" ]; then
-			FILE=$(cat ${F})
+			local FILE=$(cat ${F})
 			chmod ${CMD:10} ${FILE}
-			F=$(cchf "printf ${FILE}")
+			local F=$(cchf "printf ${FILE}")
 		elif [ "${CMD:0:10}" == "@do-git-cd" ]; then
-			D=$(cat ${F})
-			F=$(cchf "V=${D:0:8}; cd ${D:9}/; ${CMD:11} 1>&2; echo ${D}")
+			local D=$(cat ${F})
+			local F=$(cchf "V=${D:0:8}; cd ${D:9}/; ${CMD:11} 1>&2; echo ${D}")
 		elif [ "${CMD}" == "@docker-build" ]; then
-			DOCKERNAME=${CMD:13:}-$(cat "${F}" | md5sum - | cut -d" " -f1)
-			F=$(cchf "cat ${F} | docker build -q -t cchs/${DOCKERNAME} -")
+			local DOCKERNAME=${CMD:13:}-$(cat "${F}" | md5sum - | cut -d" " -f1)
+			local F=$(cchf "cat ${F} | docker build -q -t cchs/${DOCKERNAME} -")
 		elif [ "${CMD:0:7}" == "@git-cd" ]; then
-			D=$(cat ${F})
-			F=$(cchf "V=${D:0:8}; cd ${D:9}/; ${CMD:8}")
+			local D=$(cat ${F})
+			local F=$(cchf "V=${D:0:8}; cd ${D:9}/; ${CMD:8}")
 		elif [ "${CMD:0:10}" == "@git-clone" ]; then
-			URL=$(cat ${F})
-			B=${CMD:11}
-			[ "${B}" ] && OPTS="-b ${B}"
-			DF=${DCACHE}/$(url-dir "${URL}@${B}")
+			local URL=$(cat ${F})
+			local B=${CMD:11}
+			[ "${B}" ] && local OPTS="-b ${B}"
+			local DF=${DCACHE}/$(url-dir "${URL}@${B}")
 			if ! [ -d ${DF} ]; then
 				do-cmd "git clone --depth 1 ${OPTS} --single-branch ${URL} ${DF} --quiet"
 				touch ${DF}.pulltime
 			fi
-			D0=$(date +%s)
-			D1=$(stat -c %Y ${DF}.pulltime)
+			local D0=$(date +%s)
+			local D1=$(stat -c %Y ${DF}.pulltime)
 			if (( 900 < ${D0} - ${D1} )); then
 				do-cmd "cd ${DF}/ && git pull --force --quiet"
 				touch ${DF}.pulltime
 			fi
-			COMMIT=$(cd ${DF}/ && git rev-parse HEAD | cut -c1-8)
-			F=$(cchf "printf ${COMMIT}:${DF}")
+			local COMMIT=$(cd ${DF}/ && git rev-parse HEAD | cut -c1-8)
+			local F=$(cchf "printf ${COMMIT}:${DF}")
 		elif [ "${CMD:0:10}" == "@maven-get" ]; then
-			#REPO=https://repo.maven.apache.org/maven2
-			RGAV=$(cat ${F})
-			REPO=$(echo ${RGAV} | cut -d# -f1)
-			GROUPID=$(echo ${RGAV} | cut -d# -f2)
-			ARTIFACTID=$(echo ${RGAV} | cut -d# -f3)
-			VERSION=$(echo ${RGAV} | cut -d# -f4)
-			P=$(echo ${GROUPID} | sed s#\\.#/#g)
-			URL="${REPO}/${P}/${ARTIFACTID}/${VERSION}/${ARTIFACTID}-${VERSION}.pom"
-			DF=${DCACHE}/$(url-dir "${URL}")
-			DFI=${DF}.inprogress
+			#local REPO=https://repo.maven.apache.org/maven2
+			local RGAV=$(cat ${F})
+			local REPO=$(echo ${RGAV} | cut -d# -f1)
+			local GROUPID=$(echo ${RGAV} | cut -d# -f2)
+			local ARTIFACTID=$(echo ${RGAV} | cut -d# -f3)
+			local VERSION=$(echo ${RGAV} | cut -d# -f4)
+			local P=$(echo ${GROUPID} | sed s#\\.#/#g)
+			local URL="${REPO}/${P}/${ARTIFACTID}/${VERSION}/${ARTIFACTID}-${VERSION}.pom"
+			local DF=${DCACHE}/$(url-dir "${URL}")
+			local DFI=${DF}.inprogress
 			[ -f ${DF} ] || do-cmd curl -sL "${URL}" > ${DFI} && mv ${DFI} ${DF}
-			F=$(cchf "printf ${DF}")
+			local F=$(cchf "printf ${DF}")
 		elif [ "${CMD:0:6}" == "@mkdir" ]; then
-			S=$(cat ${F})
-			DF=${DCACHE}/$(url-dir "${S}")
+			local S=$(cat ${F})
+			local DF=${DCACHE}/$(url-dir "${S}")
 			mkdir -p ${DF}
-			F=$(cchf "printf ${DF}")
+			local F=$(cchf "printf ${DF}")
 		elif [ "${CMD:0:5}" == "@tar-" ]; then
-			OPT=${CMD:5}
-			TARF=$(cat ${F})
-			TARDIR=${TARF}.d
-			TARDIRI=${TARDIR}.inprogress
+			local OPT=${CMD:5}
+			local TARF=$(cat ${F})
+			local TARDIR=${TARF}.d
+			local TARDIRI=${TARDIR}.inprogress
 			[ -d ${TARDIR} ] || do-cmd "mkdir -p ${TARDIRI} && tar ${OPT} ${TARF} -C ${TARDIRI} && mv ${TARDIRI} ${TARDIR}"
-			F=$(cchf "printf ${TARDIR}")
+			local F=$(cchf "printf ${TARDIR}")
 		elif [ "${CMD:0:6}" == "@unzip" ]; then
-			ZIPF=$(cat ${F})
-			ZIPDIR=${ZIPF}.d
-			ZIPDIRI=${ZIPDIR}.inprogress
-			TARGET=${ZIPDIRI}/${CMD:7}
+			local ZIPF=$(cat ${F})
+			local ZIPDIR=${ZIPF}.d
+			local ZIPDIRI=${ZIPDIR}.inprogress
+			local TARGET=${ZIPDIRI}/${CMD:7}
 			[ -d ${ZIPDIR} ] || do-cmd "mkdir -p ${TARGET} && unzip -d ${TARGET} -q ${ZIPF} && mv ${ZIPDIRI} ${ZIPDIR}"
-			F=$(cchf "printf ${ZIPDIR}")
+			local F=$(cchf "printf ${ZIPDIR}")
 		else
-			F=$(cchf "cat ${F} | ${CMD}")
+			local F=$(cchf "cat ${F} | ${CMD}")
 		fi
 	done
 	cat ${F}
@@ -102,13 +102,13 @@ cchs() {
 
 # executes a command if not executed before; otherwise, return previous result
 cchf() {
-	CMD="${@}"
-	MD5=$(printf "${CMD}" | md5sum - | cut -d" " -f1)
-	P=${MD5:0:2}
-	DIR=${CCACHE}/${P}
-	FP=${DIR}/${MD5}
-	KF=${FP}.k
-	VF=${FP}.v
+	local CMD="${@}"
+	local MD5=$(printf "${CMD}" | md5sum - | cut -d" " -f1)
+	local P=${MD5:0:2}
+	local DIR=${CCACHE}/${P}
+	local FP=${DIR}/${MD5}
+	local KF=${FP}.k
+	local VF=${FP}.v
 
 	mkdir -p ${DIR}
 
@@ -122,15 +122,15 @@ cchf() {
 }
 
 do-cmd() {
-	CMD="${@}"
+	local CMD="${@}"
 	echo "START ${CMD}" >&2
 	sh -c "${CMD}"
 	echo "END~${?} ${CMD}" >&2
 }
 
 url-dir() {
-	MD5=$(printf "${1}" | md5sum - | cut -d" " -f1)
-	SHORT=$(printf "${1}" | url-dir-name)
+	local MD5=$(printf "${1}" | md5sum - | cut -d" " -f1)
+	local SHORT=$(printf "${1}" | url-dir-name)
 	echo ${MD5:0:8}.${SHORT}
 }
 
