@@ -45,7 +45,7 @@ public class FunpTest {
 	public void testCapture() {
 		test(46, """
 				define m := 31 ~
-				let.uncapture l := n => capture (n + m) ~
+				let l := precapture (n => capture (n + m)) ~
 				15 | l
 				""");
 

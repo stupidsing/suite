@@ -266,9 +266,6 @@ public class P0Parse extends FunpCfg {
 				return define(a, bind(Fdt.L_MONO).lambdaSeparate(b, c), d, Fdt.G_MONO);
 			}).match("let.global { .0 } ~ .1", (a, b) -> {
 				return defineList(a, b, Fdt.G_MONO);
-			}).match("let.uncapture .0 := .1 ~ .2", (a, b, c) -> {
-				var vn = Atom.name(a);
-				return FunpDefine.of(vn, p(b), FunpLambdaFree.of(FunpVariable.of(vn), nv(vn).p(c)), Fdt.L_MONO);
 			}).match("me", () -> {
 				return FunpMe.of();
 			}).match("null", () -> {
@@ -281,7 +278,7 @@ public class P0Parse extends FunpCfg {
 				return FunpCoerce.of(Coerce.NUMBER, Coerce.NUMBERP, FunpDontCare.of());
 			}).match("numberp .0", a -> {
 				return FunpCoerce.of(Coerce.NUMBER, Coerce.NUMBERP, FunpNumber.ofNumber(num(a)));
-			}).match("precapture .0", a -> {
+			}).match("precapture .0", a -> { // should be called defer.uncapture???
 				return FunpPredefine.of("precapture$" + Get.temp(), p(a), true);
 			}).match("predef .0", a -> {
 				return FunpPredefine.of("predefine$" + Get.temp(), p(a), false);
