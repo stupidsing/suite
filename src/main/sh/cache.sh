@@ -18,6 +18,14 @@ cchs() {
 		elif [ "${CMD:0:3}" == "@cd" ]; then
 			local D=$(cat ${F})
 			local F=$(cchf "cd ${D}/; ${CMD:4}")
+		elif [ "${CMD}" == "@choverlay" ]; then
+			local D=$(cat ${F})
+			local MD5=$(printf "${D}" | md5sum - | cut -d" " -f1)
+			local O=${CCACHE}/${MD5}.o U=${CCACHE}/${MD5}.u
+			mkdir -p ${U}/ ${O}/
+			choverlay_ ${D}/ ${U}/ ${O}/
+			local F=$(cchf "printf ${O}")
+			#choverlayx
 		elif [ "${CMD}" == "@curl" ]; then
 			local URL=$(cat ${F})
 			local DF=${DCACHE}/$(url-dir "${URL}")
@@ -110,7 +118,7 @@ cchf() {
 	local KF=${FP}.k
 	local VF=${FP}.v
 
-	mkdir -p ${DIR}
+	mkdir -p ${DIR}/
 
 	if [ "${CACHE}" != "off" ] && [ -f "${KF}" ] && diff <(printf "${CMD}") <(cat "${KF}"); then
 		true
