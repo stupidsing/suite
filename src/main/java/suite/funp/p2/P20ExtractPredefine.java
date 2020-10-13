@@ -56,7 +56,7 @@ public class P20ExtractPredefine {
 								defers.add(f_ -> FunpLambdaFree.of(var, f_));
 							else if (fpt == Fpt.INVOKE) {
 								var apply = FunpApply.of(FunpDontCare.of(), FunpField.of(FunpReference.of(var), df));
-								defers.add(f_ -> FunpDefine.of("deferred-invoke" + Get.temp(), apply, f_, Fdt.L_IOAP));
+								defers.add(f_ -> FunpDefine.of("deferred-invoke$" + Get.temp(), apply, f_, Fdt.L_IOAP));
 							} else if (fpt == Fpt.NONE__)
 								;
 							else
