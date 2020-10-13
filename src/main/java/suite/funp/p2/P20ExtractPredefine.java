@@ -31,13 +31,11 @@ public class P20ExtractPredefine {
 						return FunpLambda.of(vn, extractPredefine(expr), fct);
 					})).applyIf(FunpPredefine.class, f -> f.apply((vn, expr, fpt) -> {
 						var var = FunpVariable.of(vn);
-						if (vns.contains(vn))
-							return var;
-						else {
-							vns.add(vn);
+						if (vns.add(vn)) {
 							var assignVar = FunpDoAssignVar.of(var, extract(expr), var);
 							return fpt == Fpt.FREE_ ? FunpLambdaFree.of(var, assignVar) : assignVar;
-						}
+						} else
+							return var;
 					})).result();
 				});
 			}
