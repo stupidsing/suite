@@ -26,7 +26,7 @@ public class P0 {
 		NUMBERP, // a number with same size as a machine level pointer
 		NUMBER, // a number with same size as a machine level generic register, 32-bits
 		POINTER, // a machine level pointer
-	};
+	}
 
 	public static class FunpAdjustArrayPointer implements Funp, P2.End {
 		public Funp pointer;
@@ -452,18 +452,18 @@ public class P0 {
 	public static class FunpPredefine implements Funp, P2.End {
 		public String vn;
 		public Funp expr;
-		public boolean isUncapture;
+		public Fpt fpt;
 
-		public static FunpPredefine of(String vn, Funp expr, boolean isUncapture) {
+		public static FunpPredefine of(String vn, Funp expr, Fpt fpt) {
 			var f = new FunpPredefine();
 			f.vn = vn;
 			f.expr = expr;
-			f.isUncapture = isUncapture;
+			f.fpt = fpt;
 			return f;
 		}
 
-		public <R> R apply(FixieFun3<String, Funp, Boolean, R> fun) {
-			return fun.apply(vn, expr, isUncapture);
+		public <R> R apply(FixieFun3<String, Funp, Fpt, R> fun) {
+			return fun.apply(vn, expr, fpt);
 		}
 	}
 
@@ -727,6 +727,11 @@ public class P0 {
 		public static boolean isSubs(Fdt fdt) {
 			return fdt == Fdt.S_MONO || fdt == Fdt.S_POLY;
 		}
-	};
+	}
+
+	public enum Fpt {
+		FREE_, //
+		NONE_, //
+	}
 
 }

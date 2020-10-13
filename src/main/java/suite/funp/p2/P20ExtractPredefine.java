@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import primal.MoreVerbs.Read;
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.Fdt;
+import suite.funp.P0.Fpt;
 import suite.funp.P0.FunpDefine;
 import suite.funp.P0.FunpDoAssignVar;
 import suite.funp.P0.FunpDontCare;
@@ -28,14 +29,14 @@ public class P20ExtractPredefine {
 					return n_.sw( //
 					).applyIf(FunpLambda.class, f -> f.apply((vn, expr, fct) -> {
 						return FunpLambda.of(vn, extractPredefine(expr), fct);
-					})).applyIf(FunpPredefine.class, f -> f.apply((vn, expr, isUncapture) -> {
+					})).applyIf(FunpPredefine.class, f -> f.apply((vn, expr, fpt) -> {
 						var var = FunpVariable.of(vn);
 						if (vns.contains(vn))
 							return var;
 						else {
 							vns.add(vn);
 							var assignVar = FunpDoAssignVar.of(var, extract(expr), var);
-							return isUncapture ? FunpLambdaFree.of(var, assignVar) : assignVar;
+							return fpt == Fpt.FREE_ ? FunpLambdaFree.of(var, assignVar) : assignVar;
 						}
 					})).result();
 				});

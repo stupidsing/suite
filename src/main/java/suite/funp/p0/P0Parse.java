@@ -23,6 +23,7 @@ import suite.funp.Funp_.Funp;
 import suite.funp.P0.Coerce;
 import suite.funp.P0.Fct;
 import suite.funp.P0.Fdt;
+import suite.funp.P0.Fpt;
 import suite.funp.P0.FunpAdjustArrayPointer;
 import suite.funp.P0.FunpApply;
 import suite.funp.P0.FunpArray;
@@ -132,6 +133,13 @@ public class P0Parse extends FunpCfg {
 			}).match(".0 | !! .1", (a, b) -> { // perform side-effects but only return the latter
 				var lambda = bind(Fdt.L_MONO).lambda(dontCare, b);
 				return checkDo(() -> FunpDefine.of(lambda.vn, p(a), lambda.expr, Fdt.L_IOAP));
+			/*}).match(".0 | !defer .1", (a, b) -> { // defers closing by a function
+				return checkDo(() -> FunpPredefine.of("defer$" + Get.temp(), p(a), Fpt.APPLY, (var, result) -> {
+					var apply = FunpApply.of(p(var), p(b));
+					var lambda = bind(Fdt.L_MONO).lambda(dontCare, result);
+					return FunpDefine.of(lambda.vn, apply, lambda.expr, Fdt.L_IOAP);
+				}));*/
+				// }).match(".0 | !defer/.1", (a, b) -> { // defers closing by a child function
 			}).match(".0 | .1", (a, b) -> { // applies a function, pipe form
 				return FunpApply.of(p(a), p(b));
 			}).match(".0 [.1]", (a, b) -> { // indexes an array
@@ -275,11 +283,11 @@ public class P0Parse extends FunpCfg {
 			}).match("numberp .0", a -> { // forms a number with the same size as a pointer
 				return FunpCoerce.of(Coerce.NUMBER, Coerce.NUMBERP, FunpNumber.ofNumber(num(a)));
 			}).match("precapture .0", a -> { // should be called defer.uncapture???
-				return FunpPredefine.of("precapture$" + Get.temp(), p(a), true);
+				return FunpPredefine.of("precapture$" + Get.temp(), p(a), Fpt.FREE_);
 			}).match("predef .0", a -> { // defines a block as a separate variable; able to get a pointer to it
-				return FunpPredefine.of("predefine$" + Get.temp(), p(a), false);
+				return FunpPredefine.of("predefine$" + Get.temp(), p(a), Fpt.NONE_);
 			}).match("predef/.0 .1", (a, b) -> { // defines a block as a separate named variable
-				return FunpPredefine.of(Atom.name(a), p(b), false);
+				return FunpPredefine.of(Atom.name(a), p(b), Fpt.NONE_);
 			}).match("size.of .0", a -> {
 				return FunpSizeOf.of(p(a));
 			}).match("sum .0 .1", (a, b) -> {
@@ -308,7 +316,7 @@ public class P0Parse extends FunpCfg {
 				var s = str.value;
 				var fa = FunpArray.of(ReadChars //
 						.from(s) //
-						.<Funp> map(ch -> FunpCoerce.of(Coerce.NUMBER, Coerce.BYTE, FunpNumber.ofNumber(ch))) //
+						.<Funp>map(ch -> FunpCoerce.of(Coerce.NUMBER, Coerce.BYTE, FunpNumber.ofNumber(ch))) //
 						.snoc(FunpCoerce.of(Coerce.NUMBER, Coerce.BYTE, FunpNumber.ofNumber(0))) //
 						.toList());
 				var fr = s.length() < 80 ? FunpRemark.of(s, fa) : fa;
@@ -468,7 +476,7 @@ public class P0Parse extends FunpCfg {
 			}
 
 			private Funp bind(Node a, Node b, Node c, Node d) {
-				var vnsMutable = Mutable.of(PerSet.<String> empty());
+				var vnsMutable = Mutable.of(PerSet.<String>empty());
 
 				Iterate<Funp> iter = be -> inspect.rewrite(be, Funp.class,
 						n_ -> n_.cast(FunpVariableNew.class, f -> f.apply(vn -> {
@@ -483,7 +491,7 @@ public class P0Parse extends FunpCfg {
 				var else_ = p(d);
 				var f0 = new P03Bind(vns_).bind(be, value, then, else_);
 				var f1 = FunpTypeCheck.of(be, value, f0);
-				return vns_.streamlet().<Funp> fold(f1, (f, vn) -> FunpDefine.of(vn, FunpDontCare.of(), f, fdt));
+				return vns_.streamlet().<Funp>fold(f1, (f, vn) -> FunpDefine.of(vn, FunpDontCare.of(), f, fdt));
 			}
 		}
 
