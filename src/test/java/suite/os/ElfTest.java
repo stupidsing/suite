@@ -105,14 +105,11 @@ public class ElfTest {
 					b/!append 1 ~
 					b/!append 2 ~
 					b/!append 3 ~
-					let list0 := b/!get () ~
+					let list0 := b/!get () | !defer !list.free ~
 					let list1 := list0 | precapture list.filter (i => true) | !! | !defer !list.free ~
-					let list2 := list1 | precapture list.map (i => i + 1) | !! ~
-					let iter := list2 | !list.iter | !! ~
+					let list2 := list1 | precapture list.map (i => i + 1) | !! | !defer !list.free ~
+					let iter := list2 | !list.iter | !! | !defer/!free ~
 					let v := iter/!next () ~
-					iter/!free () ~
-					!list.free list2 ~
-					!list.free list0 ~
 					v
 				)
 				""";
@@ -139,13 +136,13 @@ public class ElfTest {
 		test(0, "do! ((consult io.fp)/!put.number number 'A' | !! 0)", "65");
 		test(0, "do! ((consult io.fp)/!put.number -999 | !! 0)", "-999");
 		test(0, """
-			let io := consult io.fp ~
-			for! (
-				i := 0 #
-				i < 10 #
-				io/!put.number i | !! (i + 1) #
-				0)
-			""", "0123456789");
+				let io := consult io.fp ~
+				for! (
+					i := 0 #
+					i < 10 #
+					io/!put.number i | !! (i + 1) #
+					0)
+				""", "0123456789");
 	}
 
 	@Test

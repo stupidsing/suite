@@ -2,6 +2,8 @@ package suite.funp.p2;
 
 import static primal.statics.Fail.fail;
 
+import java.util.ArrayList;
+
 import primal.MoreVerbs.Read;
 import primal.Verbs.Get;
 import primal.fp.Funs.Iterate;
@@ -21,8 +23,6 @@ import suite.funp.P0.FunpReference;
 import suite.funp.P0.FunpVariable;
 import suite.inspect.Inspect;
 import suite.node.util.Singleton;
-
-import java.util.ArrayList;
 
 public class P20ExtractPredefine {
 
@@ -49,15 +49,26 @@ public class P20ExtractPredefine {
 						var var = FunpVariable.of(vn);
 						if (vns.add(vn)) {
 							var expr_ = extract(expr);
-							if (fpt == Fpt.APPLY_) {
-								var apply = FunpApply.of(var, dv);
-								defers.add(f_ -> FunpDefine.of("deferred-apply$" + Get.temp(), apply, f_, Fdt.L_IOAP));
-							} else if (fpt == Fpt.FREE__)
+							if (fpt == Fpt.APPLY_)
+								defers.add(f_ -> {
+									var vnResult = "result$" + Get.temp();
+									var varResult = FunpVariable.of(vnResult);
+									var apply = FunpApply.of(var, dv);
+									var fda = FunpDefine.of("unused$" + Get.temp(), apply, varResult, Fdt.L_IOAP);
+									return FunpDefine.of(vnResult, f_, fda, Fdt.L_MONO);
+								});
+							else if (fpt == Fpt.FREE__)
 								defers.add(f_ -> FunpLambdaFree.of(var, f_));
-							else if (fpt == Fpt.INVOKE) {
-								var apply = FunpApply.of(FunpDontCare.of(), FunpField.of(FunpReference.of(var), df));
-								defers.add(f_ -> FunpDefine.of("deferred-invoke$" + Get.temp(), apply, f_, Fdt.L_IOAP));
-							} else if (fpt == Fpt.NONE__)
+							else if (fpt == Fpt.INVOKE)
+								defers.add(f_ -> {
+									var vnResult = "result$" + Get.temp();
+									var varResult = FunpVariable.of(vnResult);
+									var field = FunpField.of(FunpReference.of(var), df);
+									var apply = FunpApply.of(FunpDontCare.of(), field);
+									var fda = FunpDefine.of("unused$" + Get.temp(), apply, varResult, Fdt.L_IOAP);
+									return FunpDefine.of(vnResult, f_, fda, Fdt.L_MONO);
+								});
+							else if (fpt == Fpt.NONE__)
 								;
 							else
 								return fail();
