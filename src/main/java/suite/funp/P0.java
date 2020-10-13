@@ -8,6 +8,7 @@ import primal.adt.Fixie_.FixieFun1;
 import primal.adt.Fixie_.FixieFun2;
 import primal.adt.Fixie_.FixieFun3;
 import primal.adt.Fixie_.FixieFun4;
+import primal.adt.Fixie_.FixieFun5;
 import primal.adt.Pair;
 import primal.parser.Operator;
 import primal.primitive.adt.IntMutable;
@@ -453,17 +454,25 @@ public class P0 {
 		public String vn;
 		public Funp expr;
 		public Fpt fpt;
+		public String df;
+		public Funp dv;
 
 		public static FunpPredefine of(String vn, Funp expr, Fpt fpt) {
+			return of(vn, expr, fpt, null, null);
+		}
+
+		public static FunpPredefine of(String vn, Funp expr, Fpt fpt, String df, Funp dv) {
 			var f = new FunpPredefine();
 			f.vn = vn;
 			f.expr = expr;
 			f.fpt = fpt;
+			f.df = df;
+			f.dv = dv;
 			return f;
 		}
 
-		public <R> R apply(FixieFun3<String, Funp, Fpt, R> fun) {
-			return fun.apply(vn, expr, fpt);
+		public <R> R apply(FixieFun5<String, Funp, Fpt, String, Funp, R> fun) {
+			return fun.apply(vn, expr, fpt, df, dv);
 		}
 	}
 
@@ -734,8 +743,10 @@ public class P0 {
 	}
 
 	public enum Fpt {
-		FREE_, //
-		NONE_, //
+		APPLY_, //
+		FREE__, //
+		INVOKE, //
+		NONE__, //
 	}
 
 }

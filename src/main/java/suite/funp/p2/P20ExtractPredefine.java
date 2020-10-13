@@ -1,27 +1,35 @@
 package suite.funp.p2;
 
-import java.util.ArrayList;
+import static primal.statics.Fail.fail;
 
 import primal.MoreVerbs.Read;
+import primal.Verbs.Get;
+import primal.fp.Funs.Iterate;
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.Fdt;
 import suite.funp.P0.Fpt;
+import suite.funp.P0.FunpApply;
 import suite.funp.P0.FunpDefine;
 import suite.funp.P0.FunpDefineRec;
 import suite.funp.P0.FunpDoAssignVar;
 import suite.funp.P0.FunpDontCare;
+import suite.funp.P0.FunpField;
 import suite.funp.P0.FunpLambda;
 import suite.funp.P0.FunpLambdaFree;
 import suite.funp.P0.FunpPredefine;
+import suite.funp.P0.FunpReference;
 import suite.funp.P0.FunpVariable;
 import suite.inspect.Inspect;
 import suite.node.util.Singleton;
+
+import java.util.ArrayList;
 
 public class P20ExtractPredefine {
 
 	private Inspect inspect = Singleton.me.inspect;
 
 	public Funp extractPredefine(Funp node0) {
+		var defers = new ArrayList<Iterate<Funp>>();
 		var vns = new ArrayList<String>();
 
 		var node1 = new Object() {
@@ -37,11 +45,23 @@ public class P20ExtractPredefine {
 								fdt);
 					})).applyIf(FunpLambda.class, f -> f.apply((vn, expr, fct) -> {
 						return FunpLambda.of(vn, extractPredefine(expr), fct);
-					})).applyIf(FunpPredefine.class, f -> f.apply((vn, expr, fpt) -> {
+					})).applyIf(FunpPredefine.class, f -> f.apply((vn, expr, fpt, df, dv) -> {
 						var var = FunpVariable.of(vn);
 						if (vns.add(vn)) {
-							var assignVar = FunpDoAssignVar.of(var, extract(expr), var);
-							return fpt == Fpt.FREE_ ? FunpLambdaFree.of(var, assignVar) : assignVar;
+							var expr_ = extract(expr);
+							if (fpt == Fpt.APPLY_) {
+								var apply = FunpApply.of(var, dv);
+								defers.add(f_ -> FunpDefine.of("deferred-apply$" + Get.temp(), apply, f_, Fdt.L_IOAP));
+							} else if (fpt == Fpt.FREE__)
+								defers.add(f_ -> FunpLambdaFree.of(var, f_));
+							else if (fpt == Fpt.INVOKE) {
+								var apply = FunpApply.of(FunpDontCare.of(), FunpField.of(FunpReference.of(var), df));
+								defers.add(f_ -> FunpDefine.of("deferred-invoke" + Get.temp(), apply, f_, Fdt.L_IOAP));
+							} else if (fpt == Fpt.NONE__)
+								;
+							else
+								return fail();
+							return FunpDoAssignVar.of(var, expr_, var);
 						} else
 							return var;
 					})).result();
@@ -49,7 +69,10 @@ public class P20ExtractPredefine {
 			}
 		}.extract(node0);
 
-		return Read.from(vns).fold(node1, (n, vn) -> FunpDefine.of(vn, FunpDontCare.of(), n, Fdt.L_MONO));
+		var node2 = Read.from(defers).fold(node1, (n, defer) -> defer.apply(n));
+		var node3 = Read.from(vns).fold(node2, (n, vn) -> FunpDefine.of(vn, FunpDontCare.of(), n, Fdt.L_MONO));
+
+		return node3;
 	}
 
 }

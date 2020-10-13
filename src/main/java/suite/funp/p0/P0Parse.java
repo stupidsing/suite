@@ -1,9 +1,5 @@
 package suite.funp.p0;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import primal.MoreVerbs.Read;
 import primal.Verbs.Get;
 import primal.adt.Mutable;
@@ -74,6 +70,10 @@ import suite.node.util.Singleton;
 import suite.node.util.TreeUtil;
 import suite.streamlet.ReadChars;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 public class P0Parse extends FunpCfg {
 
 	private Atom dontCare = Atom.of("_");
@@ -133,13 +133,10 @@ public class P0Parse extends FunpCfg {
 			}).match(".0 | !! .1", (a, b) -> { // perform side-effect before
 				var lambda = bind(Fdt.L_MONO).lambda(dontCare, b);
 				return checkDo(() -> FunpDefine.of(lambda.vn, p(a), lambda.expr, Fdt.L_IOAP));
-			/*}).match(".0 | !defer .1", (a, b) -> { // defers closing by a function
-				return checkDo(() -> FunpPredefine.of("defer$" + Get.temp(), p(a), Fpt.APPLY, (var, result) -> {
-					var apply = FunpApply.of(p(var), p(b));
-					var lambda = bind(Fdt.L_MONO).lambda(dontCare, result);
-					return FunpDefine.of(lambda.vn, apply, lambda.expr, Fdt.L_IOAP);
-				}));*/
-				// }).match(".0 | !defer/.1", (a, b) -> { // defers closing by a child function
+			}).match(".0 | !defer .1", (a, b) -> { // defers closing by a function
+				return checkDo(() -> FunpPredefine.of("defer$" + Get.temp(), p(a), Fpt.APPLY_, null, p(b)));
+			}).match(".0 | !defer/.1", (a, b) -> { // defers closing by a child function
+				return checkDo(() -> FunpPredefine.of("defer$" + Get.temp(), p(a), Fpt.INVOKE, Atom.name(b), null));
 			}).match(".0 | .1", (a, b) -> { // applies a function, pipe form
 				return FunpApply.of(p(a), p(b));
 			}).match(".0 [.1]", (a, b) -> { // indexes an array
@@ -283,11 +280,11 @@ public class P0Parse extends FunpCfg {
 			}).match("numberp .0", a -> { // forms a number with the same size as a pointer
 				return FunpCoerce.of(Coerce.NUMBER, Coerce.NUMBERP, FunpNumber.ofNumber(num(a)));
 			}).match("precapture .0", a -> { // should be called defer.uncapture???
-				return FunpPredefine.of("precapture$" + Get.temp(), p(a), Fpt.FREE_);
+				return FunpPredefine.of("precapture$" + Get.temp(), p(a), Fpt.FREE__);
 			}).match("predef .0", a -> { // defines a block as a separate variable; able to get a pointer to it
-				return FunpPredefine.of("predefine$" + Get.temp(), p(a), Fpt.NONE_);
+				return FunpPredefine.of("predefine$" + Get.temp(), p(a), Fpt.NONE__);
 			}).match("predef/.0 .1", (a, b) -> { // defines a block as a separate named variable
-				return FunpPredefine.of(Atom.name(a), p(b), Fpt.NONE_);
+				return FunpPredefine.of(Atom.name(a), p(b), Fpt.NONE__);
 			}).match("size.of .0", a -> {
 				return FunpSizeOf.of(p(a));
 			}).match("sum .0 .1", (a, b) -> {
