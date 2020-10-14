@@ -58,7 +58,7 @@ cchs() {
 			[ "${B}" ] && local OPTS="-b ${B}"
 			local DF=${DCACHE}/$(url-dir "${URL}@${B}")
 			if ! [ -d ${DF} ]; then
-				do-cmd "git clone ${OPTS} --depth 1 --single-branch ${URL} ${DF} --quiet"
+				do-cmd "git clone ${OPTS} ${URL} ${DF} --quiet"
 				touch ${DF}.pulltime
 			fi
 			local D0=$(date +%s)
