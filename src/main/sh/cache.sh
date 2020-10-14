@@ -18,14 +18,6 @@ cchs() {
 		elif [ "${CMD:0:3}" == "@cd" ]; then
 			local D=$(cat ${F})
 			local F=$(cchf "cd ${D}/; ${CMD:4}")
-		elif [ "${CMD}" == "@choverlay" ]; then
-			local D=$(cat ${F})
-			local MD5=$(printf "${D}" | md5sum - | cut -d" " -f1)
-			local O=${CCACHE}/${MD5}.o U=${CCACHE}/${MD5}.u
-			mkdir -p ${U}/ ${O}/
-			choverlay_ ${D}/ ${U}/ ${O}/
-			local F=$(cchf "printf ${O}")
-			#choverlayx
 		elif [ "${CMD}" == "@curl" ]; then
 			local URL=$(cat ${F})
 			local DF=${DCACHE}/$(url-dir "${URL}")
@@ -38,7 +30,12 @@ cchs() {
 			local F=$(cchf "printf ${LINK}")
 		elif [ "${CMD:0:6}" == "@do-cd" ]; then
 			local D=$(cat ${F})
-			local F=$(cchf "cd ${D}/; ${CMD:7} 1>&2; echo ${D}")
+			local MD5=$(printf "${D}:${CMD}" | md5sum - | cut -d" " -f1)
+			local O=${CCACHE}/${MD5}.o U=${CCACHE}/${MD5}.u
+			mkdir -p ${U}/ ${O}/
+			choverlay_ ${D}/ ${U}/ ${O}/
+			local F=$(cchf "cd ${O}/; ${CMD:7} 1>&2; echo ${O}")
+			#choverlayx
 		elif [ "${CMD:0:9}" == "@do-chmod" ]; then
 			local FILE=$(cat ${F})
 			chmod ${CMD:10} ${FILE}
