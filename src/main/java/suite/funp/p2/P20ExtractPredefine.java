@@ -7,6 +7,7 @@ import suite.funp.Funp_.Funp;
 import suite.funp.P0.Fdt;
 import suite.funp.P0.Fpt;
 import suite.funp.P0.FunpDefine;
+import suite.funp.P0.FunpDefineRec;
 import suite.funp.P0.FunpDoAssignVar;
 import suite.funp.P0.FunpDontCare;
 import suite.funp.P0.FunpLambda;
@@ -27,7 +28,14 @@ public class P20ExtractPredefine {
 			private Funp extract(Funp n) {
 				return inspect.rewrite(n, Funp.class, n_ -> {
 					return n_.sw( //
-					).applyIf(FunpLambda.class, f -> f.apply((vn, expr, fct) -> {
+					).applyIf(FunpDefine.class, f -> f.apply((vn, value, expr, fdt) -> {
+						return FunpDefine.of(vn, extract(value), extractPredefine(expr), fdt);
+					})).applyIf(FunpDefineRec.class, f -> f.apply((pairs, expr, fdt) -> {
+						return FunpDefineRec.of( //
+								Read.from2(pairs).mapValue(this::extract).toList(), //
+								extractPredefine(expr), //
+								fdt);
+					})).applyIf(FunpLambda.class, f -> f.apply((vn, expr, fct) -> {
 						return FunpLambda.of(vn, extractPredefine(expr), fct);
 					})).applyIf(FunpPredefine.class, f -> f.apply((vn, expr, fpt) -> {
 						var var = FunpVariable.of(vn);
