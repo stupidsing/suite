@@ -99,9 +99,13 @@ public class ElfTest {
 	public void testIter() {
 		// var program = "do! (consult iter.fp)/!list.iter []";
 		var program = """
-				let { list.filter, !list.free, !list.iter, list.map, } := consult iter.fp ~
+				let { !list.build, list.filter, !list.free, !list.iter, list.map, } := consult iter.fp ~
 				do! (
-					let list0 := { elems: address.of predef (array 32 * 1), size: 3, } ~
+					let b := !list.build () ~
+					b/!append 1 ~
+					b/!append 2 ~
+					b/!append 3 ~
+					let list0 := b/!get () ~
 					let list1 := list0 | precapture list.filter (i => true) | !! ~
 					let list2 := list1 | precapture list.map (i => i + 1) | !! ~
 					let iter := list2 | !list.iter | !! ~
@@ -109,6 +113,7 @@ public class ElfTest {
 					iter/!free () ~
 					!list.free list2 ~
 					!list.free list1 ~
+					!list.free list0 ~
 					v
 				)
 				""";
