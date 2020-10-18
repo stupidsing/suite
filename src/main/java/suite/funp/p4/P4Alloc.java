@@ -50,8 +50,8 @@ public class P4Alloc extends FunpCfg {
 	}
 
 	public void init(Emit em, OpReg bufferStart) {
-		countPointer = em.spawn(em1 -> em1.emit(Insn.D, amd64.imm(0l, is))).in;
-		labelPointer = em.spawn(em1 -> em1.emit(Insn.D, amd64.imm(0l, is))).in;
+		countPointer = em.spawn(em1 -> em1.emit(Insn.D, amd64.imm(0l, is))).in; // how many used blocks out there
+		labelPointer = em.spawn(em1 -> em1.emit(Insn.D, amd64.imm(0l, ps))).in; // start point of remaining free area
 
 		freeChainTablePointer = em.spawn(em1 -> em1.emit( //
 				Insn.DS, //
@@ -60,9 +60,9 @@ public class P4Alloc extends FunpCfg {
 
 		em.mov(amd64.mem(labelPointer, ps), bufferStart);
 
-		var regPointer = _ax;
-		var regOffset = _bx;
-		var regSize = _cx;
+		var regPointer = _ax; // allocated pointer; return value
+		var regOffset = _bx; // offset to the table of free block lists
+		var regSize = _cx; // size we want to allocate
 
 		var allocVsAdjust = em.spawn(em1 -> {
 			em1.emit(Insn.INC, amd64.mem(countPointer, is));
