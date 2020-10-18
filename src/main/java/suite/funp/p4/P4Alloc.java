@@ -4,7 +4,6 @@ import static primal.statics.Fail.fail;
 
 import primal.adt.Fixie;
 import primal.adt.Fixie_.Fixie3;
-import primal.adt.Mutable;
 import primal.primitive.adt.pair.IntIntPair;
 import suite.assembler.Amd64;
 import suite.assembler.Amd64.Insn;
@@ -30,6 +29,7 @@ public class P4Alloc extends FunpCfg {
 
 	private OpImm countPointer;
 	private OpImm labelPointer;
+	private OpImm xorPointer;
 	private OpImm freeChainTablePointer;
 	private OpImm allocVsRoutine;
 
@@ -52,6 +52,7 @@ public class P4Alloc extends FunpCfg {
 	public void init(Emit em, OpReg bufferStart) {
 		countPointer = em.spawn(em1 -> em1.emit(Insn.D, amd64.imm(0l, is))).in; // how many used blocks out there
 		labelPointer = em.spawn(em1 -> em1.emit(Insn.D, amd64.imm(0l, ps))).in; // start point of remaining free area
+		xorPointer = em.spawn(em1 -> em1.emit(Insn.D, amd64.imm(0l, ps))).in; // allocation checker
 
 		freeChainTablePointer = em.spawn(em1 -> em1.emit( //
 				Insn.DS, //
@@ -66,6 +67,7 @@ public class P4Alloc extends FunpCfg {
 
 		var allocVsAdjust = em.spawn(em1 -> {
 			em1.emit(Insn.INC, amd64.mem(countPointer, is));
+			em1.emit(Insn.XOR, amd64.mem(xorPointer, ps), regPointer);
 			em1.mov(amd64.mem(regPointer, 0, ps), opOffset);
 			em1.addImm(regPointer, ps);
 			em1.emit(Insn.RET);
@@ -111,6 +113,8 @@ public class P4Alloc extends FunpCfg {
 	public void deinit(Emit em) {
 		em.emit(Insn.CMP, amd64.mem(countPointer, is), amd64.imm(0l, is));
 		em.emit(Insn.JNZ, em.spawn(em1 -> em1.emit(Insn.HLT, amd64.remark("ALLOC MISMATCH"))).in);
+		em.emit(Insn.CMP, amd64.mem(xorPointer, ps), amd64.imm(0l, ps));
+		em.emit(Insn.JNZ, em.spawn(em1 -> em1.emit(Insn.HLT, amd64.remark("ALLOC POINTER MISMATCH"))).in);
 	}
 
 	// allocate with a fixed size, but allow de-allocation without specifying size
@@ -139,9 +143,9 @@ public class P4Alloc extends FunpCfg {
 	}
 
 	public void deallocVs(Compile0 c0, Funp reference) {
-		var ref = c0.compilePsReg(reference);
-		c0.em.addImm(ref, -ps);
-		dealloc_(c0, ref, amd64.mem(ref, 0, ps));
+		var regPointer = c0.compilePsReg(reference);
+		c0.em.addImm(regPointer, -ps);
+		dealloc_(c0, regPointer, amd64.mem(regPointer, 0, ps));
 	}
 
 	public CompileOut alloc(Compile0 c0, int size) {
@@ -150,8 +154,8 @@ public class P4Alloc extends FunpCfg {
 
 	public void dealloc(Compile0 c0, int size, Funp reference) {
 		var pair = getAllocSize(size);
-		var ref = c0.compilePsReg(reference);
-		dealloc_(c0, ref, amd64.imm(pair.t0 * ps, ps));
+		var regPointer = c0.compilePsReg(reference);
+		dealloc_(c0, regPointer, amd64.imm(pair.t0 * ps, ps));
 	}
 
 	private CompileOut allocVs_(Fixie3<Compile0, OpReg, Operand> f) {
@@ -187,21 +191,23 @@ public class P4Alloc extends FunpCfg {
 		c1.mask(regPointer).mov(fcp, amd64.mem(regPointer, 0, ps));
 		c1.em.label(labelEnd);
 		c1.em.emit(Insn.INC, amd64.mem(countPointer, is));
+		c1.em.emit(Insn.XOR, amd64.mem(xorPointer, ps), regPointer);
 
 		return Fixie.of(c1, regPointer, opOffset);
 	}
 
-	private void dealloc_(Compile0 c0, OpReg ref, Operand opOffset) {
+	private void dealloc_(Compile0 c0, OpReg regPointer, Operand opOffset) {
+		c0.em.emit(Insn.XOR, amd64.mem(xorPointer, ps), regPointer);
 		c0.em.emit(Insn.DEC, amd64.mem(countPointer, is));
 
-		var c1 = c0.mask(ref);
+		var c1 = c0.mask(regPointer);
 		var rf = c1.em.mov(c1.rs.get(ps), freeChainTablePointer);
 		c1.em.emit(Insn.ADD, rf, opOffset);
 		var fcp = amd64.mem(rf, 0, ps);
 
 		var c2 = c1.mask(fcp);
-		c2.mov(amd64.mem(ref, 0, ps), fcp);
-		c2.mov(fcp, ref);
+		c2.mov(amd64.mem(regPointer, 0, ps), fcp);
+		c2.mov(fcp, regPointer);
 	}
 
 	private IntIntPair getAllocSize(int size0) {
