@@ -61,12 +61,12 @@ public class P4Alloc extends FunpCfg {
 		em.mov(amd64.mem(labelPointer, ps), bufferStart);
 
 		var regPointer = _ax; // allocated pointer; return value
-		var regOffset = _bx; // offset to the table of free block lists
-		var regSize = _cx; // size we want to allocate
+		var opOffset = _bx; // offset to the table of free chains
+		var opSize = _cx; // size we want to allocate
 
 		var allocVsAdjust = em.spawn(em1 -> {
 			em1.emit(Insn.INC, amd64.mem(countPointer, is));
-			em1.mov(amd64.mem(regPointer, 0, ps), regOffset);
+			em1.mov(amd64.mem(regPointer, 0, ps), opOffset);
 			em1.addImm(regPointer, ps);
 			em1.emit(Insn.RET);
 		}).in;
@@ -74,13 +74,13 @@ public class P4Alloc extends FunpCfg {
 		var allocNew = em.spawn(em.label(), em1 -> {
 			var pointer = amd64.mem(labelPointer, ps);
 			em1.mov(regPointer, pointer);
-			em1.emit(Insn.ADD, pointer, regSize);
+			em1.emit(Insn.ADD, pointer, opSize);
 		}, allocVsAdjust).in;
 
 		var allocSize = em.spawn(em.label(), em1 -> {
 			var rf = _dx;
 			em1.mov(rf, freeChainTablePointer);
-			em1.emit(Insn.ADD, rf, regOffset);
+			em1.emit(Insn.ADD, rf, opOffset);
 			var fcp = amd64.mem(rf, 0, ps);
 
 			em1.mov(regPointer, fcp);
@@ -98,9 +98,9 @@ public class P4Alloc extends FunpCfg {
 			em1.addImm(size, ps);
 
 			for (var i = 0; i < allocSizes.length; i++) {
-				em1.mov(regOffset, amd64.imm(i * ps, ps));
-				em1.mov(regSize, amd64.imm(allocSizes[i], ps));
-				em1.emit(Insn.CMP, size, regSize);
+				em1.mov(opOffset, amd64.imm(i * ps, ps));
+				em1.mov(opSize, amd64.imm(allocSizes[i], ps));
+				em1.emit(Insn.CMP, size, opSize);
 				em1.emit(Insn.JLE, allocSize);
 			}
 
@@ -167,28 +167,28 @@ public class P4Alloc extends FunpCfg {
 		return alloc_(c0, amd64.imm(pair.t0 * ps, ps), amd64.imm(pair.t1, ps));
 	}
 
-	private Fixie3<Compile0, OpReg, Operand> alloc_(Compile0 c0, Operand allocIndex, Operand allocSize) {
+	private Fixie3<Compile0, OpReg, Operand> alloc_(Compile0 c0, Operand opOffset, Operand opSize) {
 		var rf = c0.em.mov(c0.rs.get(ps), freeChainTablePointer);
-		c0.em.emit(Insn.ADD, rf, allocIndex);
+		c0.em.emit(Insn.ADD, rf, opOffset);
 		var fcp = amd64.mem(rf, 0, ps);
 
 		var c1 = c0.mask(fcp);
-		var ra = c0.isOutSpec ? c0.pop0 : c1.rs.get(ps);
+		var regPointer = c0.isOutSpec ? c0.pop0 : c1.rs.get(ps);
 		var labelEnd = c1.em.label();
 
-		c1.em.mov(ra, fcp);
-		c1.em.emit(Insn.OR, ra, ra);
+		c1.em.mov(regPointer, fcp);
+		c1.em.emit(Insn.OR, regPointer, regPointer);
 		c1.em.emit(Insn.JZ, c1.spawn(c2 -> {
 			var pointer = amd64.mem(labelPointer, ps);
-			c2.em.mov(ra, pointer);
-			c2.em.emit(Insn.ADD, pointer, allocSize);
+			c2.em.mov(regPointer, pointer);
+			c2.em.emit(Insn.ADD, pointer, opSize);
 		}, labelEnd));
 
-		c1.mask(ra).mov(fcp, amd64.mem(ra, 0, ps));
+		c1.mask(regPointer).mov(fcp, amd64.mem(regPointer, 0, ps));
 		c1.em.label(labelEnd);
 		c1.em.emit(Insn.INC, amd64.mem(countPointer, is));
 
-		return Fixie.of(c1, ra, allocIndex);
+		return Fixie.of(c1, regPointer, opOffset);
 	}
 
 	private void dealloc_(Compile0 c0, OpReg ref, Operand opOffset) {
