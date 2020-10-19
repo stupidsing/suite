@@ -130,7 +130,7 @@ public class P0Parse extends FunpCfg {
 				return bind(Fdt.L_MONO).lambdaSeparate(a, b);
 			}).match(".0 | !!", a -> { // unboxes an I/O
 				return checkDo(() -> FunpDoEvalIo.of(p(a)));
-			}).match(".0 | !! .1", (a, b) -> { // perform side-effects but only return the latter
+			}).match(".0 | !! .1", (a, b) -> { // perform side-effect before
 				var lambda = bind(Fdt.L_MONO).lambda(dontCare, b);
 				return checkDo(() -> FunpDefine.of(lambda.vn, p(a), lambda.expr, Fdt.L_IOAP));
 			/*}).match(".0 | !defer .1", (a, b) -> { // defers closing by a function
