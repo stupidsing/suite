@@ -105,12 +105,13 @@ public class ElfTest {
 					b/!append 1 ~
 					b/!append 2 ~
 					b/!append 3 ~
-					let list0 := b/!get () | !defer !list.free ~
-					let list1 := list0 | precapture list.filter (i => true) | !! | !defer !list.free ~
-					let list2 := list1 | precapture list.map (i => i + 1) | !! | !defer !list.free ~
-					let iter := list2 | !list.iter | !! | !defer/!free ~
-					let v := iter/!next () ~
-					v
+					let iter :=
+						b/!get () | defer !list.free
+						| precapture list.filter (i => true) | !! | defer !list.free
+						| precapture list.map (i => i + 1) | !! | defer !list.free
+						| !list.iter | !! | defer/!free
+					~
+					iter/!next ()
 				)
 				""";
 		test(2, program, "");

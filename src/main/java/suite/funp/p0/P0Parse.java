@@ -133,9 +133,9 @@ public class P0Parse extends FunpCfg {
 			}).match(".0 | !! .1", (a, b) -> { // perform side-effect before
 				var lambda = bind(Fdt.L_MONO).lambda(dontCare, b);
 				return checkDo(() -> FunpDefine.of(lambda.vn, p(a), lambda.expr, Fdt.L_IOAP));
-			}).match(".0 | !defer .1", (a, b) -> { // defers closing by a function
+			}).match(".0 | defer .1", (a, b) -> { // defers closing by a function
 				return checkDo(() -> FunpPredefine.of("defer$" + Get.temp(), p(a), Fpt.APPLY_, null, p(b)));
-			}).match(".0 | !defer/.1", (a, b) -> { // defers closing by a child function
+			}).match(".0 | defer/.1", (a, b) -> { // defers closing by a child function
 				return checkDo(() -> FunpPredefine.of("defer$" + Get.temp(), p(a), Fpt.INVOKE, Atom.name(b), null));
 			}).match(".0 | .1", (a, b) -> { // applies a function, pipe form
 				return FunpApply.of(p(a), p(b));
