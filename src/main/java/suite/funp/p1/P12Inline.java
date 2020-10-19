@@ -206,7 +206,7 @@ public class P12Inline {
 				.distinct() //
 				.filter(def -> def instanceof FunpDefine && countByDefs.getOrDefault(def, zero).value() <= 1) //
 				.map2(def -> (FunpDefine) def) //
-				.filterValue(def -> def.fdt == Fdt.L_MONO || def.fdt == Fdt.L_POLY) //
+				.filterValue(def -> Fdt.isLocal(def.fdt) && Fdt.isPure(def.fdt)) //
 				.toMap();
 
 		var expands = Read //

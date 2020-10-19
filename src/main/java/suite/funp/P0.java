@@ -724,6 +724,10 @@ public class P0 {
 			return fdt == Fdt.G_POLY || fdt == Fdt.L_POLY || fdt == Fdt.S_POLY;
 		}
 
+		public static boolean isPure(Fdt fdt) {
+			return fdt != Fdt.L_IOAP;
+		}
+
 		public static boolean isSubs(Fdt fdt) {
 			return fdt == Fdt.S_MONO || fdt == Fdt.S_POLY;
 		}
