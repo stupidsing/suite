@@ -1,6 +1,11 @@
 expand max-size := 32 ~
 expand type-elem := number ~
-expand type-list := { elems: address.of (array max-size * type-elem) ~ size: number ~ } ~
+
+expand type-list := {
+	elems := address.of (array max-size * type-elem) ~
+	size := number ~
+} ~
+
 expand elem0 := 0 ~
 
 define.global !list.build () := do!
@@ -27,7 +32,10 @@ define.global !list.build () := do!
 			uncapture !append ~
 			let size_ := size* ~
 			!delete^ size ~
-			{ elems, size: size_, }
+			{
+				elems ~
+				size := size_ ~
+			}
 		~
 	}
 ~
@@ -40,7 +48,7 @@ define.global !list.free list := do!
 
 define.global !list.iter list := do!
 	type list = type-list ~
-	let { elems, size, } := list ~
+	let { elems ~ size ~ } := list ~
 	let i := !new^ 0 ~
 	let has.next := () => capture (i* < size) ~
 	let !next := () => capture do!
