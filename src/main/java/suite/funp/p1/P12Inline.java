@@ -266,7 +266,7 @@ public class P12Inline {
 			private Funp inline(Funp node_) {
 				return inspect.rewrite(node_, Funp.class, n_ -> n_.sw() //
 						.applyIf(FunpApply.class, f -> f.apply((value, lambda) -> {
-							return lambda.cast(FunpLambda.class,
+							return lambda.castMap(FunpLambda.class,
 									l -> FunpDefine.of(l.vn, inline(value), inline(l.expr), Fdt.L_MONO));
 						})) //
 						.result());
@@ -288,11 +288,11 @@ public class P12Inline {
 					FunpVariable variable;
 					if ((tagId = n_.cast(FunpTagId.class)) != null //
 							&& (variable = tagId.reference.expr.cast(FunpVariable.class)) != null //
-							&& (tag = defs.get(variable).cast(FunpDefine.class, n -> n.value.cast(FunpTag.class))) != null)
+							&& (tag = defs.get(variable).castMap(FunpDefine.class, n -> n.value.cast(FunpTag.class))) != null)
 						return FunpNumber.of(tag.id);
 					else if ((tagValue = n_.cast(FunpTagValue.class)) != null //
 							&& (variable = tagValue.reference.expr.cast(FunpVariable.class)) != null //
-							&& (tag = defs.get(variable).cast(FunpDefine.class, n -> n.value.cast(FunpTag.class))) != null)
+							&& (tag = defs.get(variable).castMap(FunpDefine.class, n -> n.value.cast(FunpTag.class))) != null)
 						return Equals.string(tag.tag, tagValue.tag) ? tag.value : FunpDontCare.of();
 					else
 						return null;

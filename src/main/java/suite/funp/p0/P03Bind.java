@@ -65,7 +65,7 @@ public class P03Bind {
 			})).applyIf(FunpRepeat.class, f -> f.apply((size0, expr0) -> {
 				return bindArray.apply(size0, i -> expr0);
 			})).applyIf(FunpStruct.class, f -> f.apply((isCompleted, pairs0) -> {
-				var pairs1 = value.cast(FunpStruct.class, g -> g.pairs);
+				var pairs1 = value.castMap(FunpStruct.class, g -> g.pairs);
 				var size0 = pairs0.size();
 
 				Int_Obj<Funp> fun = pairs1 != null && size0 == pairs1.size() //

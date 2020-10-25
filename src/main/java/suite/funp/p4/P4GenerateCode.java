@@ -790,7 +790,7 @@ public class P4GenerateCode extends FunpCfg {
 			var _ax = regs[axReg];
 			var _dx = regs[dxReg];
 
-			var numRhs = rhs.cast(FunpNumber.class, n_ -> n_.i.value());
+			var numRhs = rhs.castMap(FunpNumber.class, n_ -> n_.i.value());
 			var insn = insnByOp.get(operator);
 			var setInsn = setInsnByOp.get(operator);
 			var setRevInsn = setRevInsnByOp.get(operator);

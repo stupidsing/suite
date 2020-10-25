@@ -61,7 +61,7 @@ public class FunExpand extends FunFactory {
 			} else
 				return null;
 		})).applyIf(If1FunExpr.class, e1 -> e1.apply(if_ -> {
-			return if_.cast(ConstantFunExpr.class, e2 -> e2.apply((type, constant) -> {
+			return if_.castMap(ConstantFunExpr.class, e2 -> e2.apply((type, constant) -> {
 				if (type == Type.INT)
 					return ((Integer) constant).intValue() != 0 ? e1.then : e1.else_;
 				else

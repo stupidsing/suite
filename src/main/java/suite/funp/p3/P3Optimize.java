@@ -47,7 +47,7 @@ public class P3Optimize extends FunpCfg {
 			return FunpData.of(Read.from2(pairs).concatMap((expr, range) -> {
 				var expr1 = optimize(expr);
 				var start = range.s;
-				var pairsx = expr1.cast(FunpData.class, g -> g.apply(pairs1 -> Read //
+				var pairsx = expr1.castMap(FunpData.class, g -> g.apply(pairs1 -> Read //
 						.from2(pairs1) //
 						.map((exprc, range1) -> Pair.of(optimize(exprc), IntRange.of(start + range1.s, start + range1.e)))));
 				return pairsx != null ? pairsx : Read.each(Pair.of(expr1, range));
@@ -93,8 +93,8 @@ public class P3Optimize extends FunpCfg {
 	}
 
 	private <T> T evaluate(Funp lhs0, Funp rhs0, Fun2<Integer, Integer, T> fun) {
-		var lhs1 = optimize(lhs0).cast(FunpNumber.class, n -> n.i.value());
-		var rhs1 = optimize(rhs0).cast(FunpNumber.class, n -> n.i.value());
+		var lhs1 = optimize(lhs0).castMap(FunpNumber.class, n -> n.i.value());
+		var rhs1 = optimize(rhs0).castMap(FunpNumber.class, n -> n.i.value());
 		return lhs1 != null && rhs1 != null ? fun.apply(lhs1, rhs1) : null;
 	}
 
