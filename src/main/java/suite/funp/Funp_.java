@@ -39,6 +39,7 @@ import suite.inspect.Inspect;
 import suite.node.Node;
 import suite.node.util.Singleton;
 import suite.object.CastDefaults;
+import suite.object.SwitchDefaults;
 import suite.util.Switch;
 
 public class Funp_ extends FunpCfg {
@@ -47,7 +48,7 @@ public class Funp_ extends FunpCfg {
 
 	public boolean isOptimize;
 
-	public interface Funp extends CastDefaults<Funp> {
+	public interface Funp extends CastDefaults<Funp>, SwitchDefaults<Funp> {
 	}
 
 	public static class CompileException extends RuntimeException {

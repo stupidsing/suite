@@ -22,12 +22,13 @@ import suite.jdk.gen.FunExprM.InstanceOfFunExpr;
 import suite.jdk.gen.FunExprM.InvokeMethodFunExpr;
 import suite.node.util.Singleton;
 import suite.object.CastDefaults;
+import suite.object.SwitchDefaults;
 
 public class FunExpression {
 
 	private static Inspect inspect = Singleton.me.inspect;
 
-	public static abstract class FunExpr implements CastDefaults<FunExpr> {
+	public static abstract class FunExpr implements CastDefaults<FunExpr>, SwitchDefaults<FunExpr> {
 		public FunExpr apply(FunExpr... parameters) {
 			return apply(List.of(parameters));
 		}
