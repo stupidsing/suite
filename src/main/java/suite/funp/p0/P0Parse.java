@@ -181,7 +181,7 @@ public class P0Parse extends FunpCfg {
 			}).match("array.of.many .0", a -> { // an virtual array; for deriving types, cannot be instantiated
 				return FunpRepeat.of(null, p(a));
 			}).match("assert .0 ~ .1", (a, b) -> {
-				return FunpIf.of(p(a), p(b), FunpError.of());
+				return FunpIf.of(p(a), p(b), FunpError.of("failed assert: " + a));
 			}).match("boolean", () -> { // boolean type
 				return FunpBoolean.of(false);
 			}).match("byte", () -> { // byte type
@@ -229,7 +229,7 @@ public class P0Parse extends FunpCfg {
 			}).match("do! .0", a -> { // boxes an I/O operation
 				return do_(parse -> parse.p(a));
 			}).match("error", () -> { // throws up
-				return FunpError.of();
+				return FunpError.of("error");
 			}).match("fold (.0 := .1 # .2 # .3 # .4)", (a, b, c, d, e) -> { // looping
 				return fold(a, b, c, d, e);
 			}).match("for! (.0 := .1 # .2 # .3 # .4)", (a, b, c, d, e) -> { // looping I/O operations

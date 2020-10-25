@@ -297,7 +297,7 @@ public class P4GenerateCode extends FunpCfg {
 			})).applyIf(FunpDontCare.class, f -> {
 				return returnDontCare();
 			}).applyIf(FunpError.class, f -> {
-				em.emit(Insn.HLT);
+				em.emit(Insn.HLT, amd64.remark(f.why));
 				return returnDontCare();
 			}).applyIf(FunpFramePointer.class, t -> {
 				return returnOp(compileFramePointer());

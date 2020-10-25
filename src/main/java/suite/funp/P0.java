@@ -310,12 +310,16 @@ public class P0 {
 	}
 
 	public static class FunpError implements Funp, P4.End {
-		public static FunpError of() {
-			return new FunpError();
+		public String why;
+
+		public static FunpError of(String why) {
+			var f = new FunpError();
+			f.why = why;
+			return f;
 		}
 
-		public <R> R apply(FixieFun0<R> fun) {
-			return fun.apply();
+		public <R> R apply(FixieFun1<String, R> fun) {
+			return fun.apply(why);
 		}
 	}
 
