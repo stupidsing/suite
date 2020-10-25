@@ -19,7 +19,6 @@ import suite.assembler.Amd64.OpReg;
 import suite.assembler.Amd64.Operand;
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.Fct;
-import suite.funp.P0.FunpStruct;
 import suite.funp.P0.FunpVariable;
 
 public class P2 {
@@ -294,12 +293,12 @@ public class P2 {
 	public static class FunpLambdaCapture implements Funp, P2.End {
 		public FunpVariable fpIn;
 		public FunpVariable frameVar;
-		public FunpStruct struct;
+		public Funp struct;
 		public String vn;
 		public Funp expr;
 		public Fct fct;
 
-		public static FunpLambdaCapture of(FunpVariable fpIn, FunpVariable frameVar, FunpStruct struct, String vn, Funp expr, Fct fct) {
+		public static FunpLambdaCapture of(FunpVariable fpIn, FunpVariable frameVar, Funp struct, String vn, Funp expr, Fct fct) {
 			var f = new FunpLambdaCapture();
 			f.fpIn = fpIn;
 			f.frameVar = frameVar;
@@ -310,7 +309,7 @@ public class P2 {
 			return f;
 		}
 
-		public <R> R apply(FixieFun6<FunpVariable, FunpVariable, FunpStruct, String, Funp, Fct, R> fun) {
+		public <R> R apply(FixieFun6<FunpVariable, FunpVariable, Funp, String, Funp, Fct, R> fun) {
 			return fun.apply(fpIn, frameVar, struct, vn, expr, fct);
 		}
 	}
