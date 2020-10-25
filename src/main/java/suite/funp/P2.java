@@ -290,6 +290,28 @@ public class P2 {
 		}
 	}
 
+	public static class FunpLambdaCapSingle implements Funp, P2.End {
+		public FunpVariable fpIn;
+		public FunpVariable frameVar;
+		public String vn;
+		public Funp expr;
+		public Fct fct;
+
+		public static FunpLambdaCapSingle of(FunpVariable fpIn, FunpVariable frameVar, String vn, Funp expr, Fct fct) {
+			var f = new FunpLambdaCapSingle();
+			f.fpIn = fpIn;
+			f.frameVar = frameVar;
+			f.vn = vn;
+			f.expr = expr;
+			f.fct = fct;
+			return f;
+		}
+
+		public <R> R apply(FixieFun5<FunpVariable, FunpVariable, String, Funp, Fct, R> fun) {
+			return fun.apply(fpIn, frameVar, vn, expr, fct);
+		}
+	}
+
 	public static class FunpLambdaCapture implements Funp, P2.End {
 		public FunpVariable fpIn;
 		public FunpVariable frameVar;

@@ -27,6 +27,8 @@ import suite.funp.P0.FunpLambda;
 import suite.funp.P0.FunpReference;
 import suite.funp.P0.FunpStruct;
 import suite.funp.P0.FunpVariable;
+import suite.funp.P2;
+import suite.funp.P2.FunpLambdaCapSingle;
 import suite.funp.P2.FunpLambdaCapture;
 import suite.funp.P2.FunpTypeAssign;
 import suite.inspect.Inspect;
@@ -178,6 +180,12 @@ public class P21CaptureLambda {
 							yield Funp_.fail(f, "scopeless lambda <" + vn + "> capturing variables " + li.captureSet);
 					}
 					case ONCE__ -> capturef.apply(false);
+					case SINGLE -> {
+						var capture = Read.from(captures).uniqueResult();
+						var pcapn = capture.k;
+						var pcap = FunpVariable.of(pcapn);
+						yield FunpLambdaCapSingle.of(pcap, li.cap, vn, c(expr), fct);
+					}
 					case STACKF -> null;
 					default -> fail();
 					};

@@ -698,6 +698,8 @@ public class P22InferType extends FunpCfg {
 					// the capture would free itself upon first call, therefore should not be called
 					// for the second time
 					expr3 = FunpHeapDealloc.of(false, size, FunpMemory.of(FunpFramePointer.of(), 0, ps), expr2);
+				else if (fct == Fct.SINGLE)
+					expr3 = expr2;
 				else
 					return fail();
 
