@@ -1,5 +1,9 @@
 package suite.funp.p0;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import primal.MoreVerbs.Read;
 import primal.Verbs.Get;
 import primal.adt.Mutable;
@@ -69,10 +73,6 @@ import suite.node.io.TermOp;
 import suite.node.util.Singleton;
 import suite.node.util.TreeUtil;
 import suite.streamlet.ReadChars;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class P0Parse extends FunpCfg {
 
