@@ -141,6 +141,7 @@ public class SwitchNode<R> {
 	}
 
 	public R nonNullResult() {
+		var result = result();
 		return result != null ? result : fail("cannot handle " + in);
 	}
 
