@@ -333,9 +333,9 @@ public class P22InferType extends FunpCfg {
 							.fold(PerMap.empty(), (e, p) -> e.put(p.k, p.v));
 				var env2 = env1.replace(vn, Pair.of(Fdt.L_MONO, tv));
 				return typeLambdaOf(tv, new Infer(env2, checks0, checks1, me).infer(expr));
-			})).applyIf(FunpLambdaCapture.class, f -> f.apply((fpIn, frameVar, frame, vn, expr, fct) -> {
+			})).applyIf(FunpLambdaCapture.class, f -> f.apply((fpIn, frameVar, frameValue, vn, expr, fct) -> {
 				var tv = new Reference();
-				var tf = infer(frame);
+				var tf = infer(frameValue);
 				var tr = typeRefOf(tf);
 				unify(f, tr, infer(fpIn));
 				var env1 = PerMap //
@@ -674,8 +674,8 @@ public class P22InferType extends FunpCfg {
 				var expr2 = isPassByReg ? FunpAllocReg.of(lt.is, FunpDontCare.of(), expr1, opArg) : expr1;
 				var expr3 = f.name != null ? FunpRemark.of(f.name, expr2) : expr2;
 				return eraseRoutine(lt, frame, expr3);
-			})).applyIf(FunpLambdaCapture.class, f -> f.apply((fp0, frameVar, frame, vn, expr, fct) -> {
-				var size = getTypeSize(typeOf(frame));
+			})).applyIf(FunpLambdaCapture.class, f -> f.apply((fp0, frameVar, frameValue, vn, expr, fct) -> {
+				var size = getTypeSize(typeOf(frameValue));
 				var b = ps + ps; // return address and EBP
 				var lt = new LambdaType(f);
 				var isPassByReg = lt.isPassByReg;

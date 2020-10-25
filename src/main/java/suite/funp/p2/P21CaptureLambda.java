@@ -122,6 +122,12 @@ public class P21CaptureLambda {
 						if (li.captureSet.add(vn))
 							li.captures.add(Pair.of(vn, access(lambdaByFunp.get(lambda))));
 						return FunpField.of(FunpReference.of(li.cap), vn);
+					}
+					else if (lambda.fct == Fct.SINGLE) { // access from frame variable
+						var li = infoByLambda.get(lambda);
+						if (li.captureSet.add(vn))
+							li.captures.add(Pair.of(vn, access(lambdaByFunp.get(lambda))));
+						return li.cap;
 					} else if (lambda.fct == Fct.STACKF) // accessible through stack frame
 						return access(lambdaByFunp.get(lambda));
 					else
@@ -182,9 +188,8 @@ public class P21CaptureLambda {
 					case ONCE__ -> capturef.apply(false);
 					case SINGLE -> {
 						var capture = Read.from(captures).uniqueResult();
-						var pcapn = capture.k;
-						var pcap = FunpVariable.of(pcapn);
-						yield FunpLambdaCapSingle.of(pcap, li.cap, vn, c(expr), fct);
+						var pcap = FunpVariable.of(capture.k);
+						yield FunpLambdaCapSingle.of(pcap, li.cap, capture.v, vn, c(expr), fct);
 					}
 					case STACKF -> null;
 					default -> fail();
