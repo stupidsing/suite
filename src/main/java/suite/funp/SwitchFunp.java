@@ -15,7 +15,8 @@ public class SwitchFunp extends Switch<Funp> {
 
 	public Funp result() {
 		var result = super.result();
-		result.setMetadata(metadata);
+		if (result != null)
+			result.setMetadata(metadata);
 		return result;
 	}
 
