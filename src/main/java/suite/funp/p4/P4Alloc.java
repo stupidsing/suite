@@ -73,11 +73,7 @@ public class P4Alloc extends FunpCfg {
 			em1.emit(Insn.RET);
 		}).in;
 
-		var allocNew = em.spawn(em.label(), em1 -> {
-			var pointer = amd64.mem(labelPointer, ps);
-			em1.mov(regPointer, pointer);
-			em1.emit(Insn.ADD, pointer, opSize);
-		}, allocVsAdjust).in;
+		var allocNew = em.spawn(em.label(), em1 -> allocNew(em1, regPointer, opSize), allocVsAdjust).in;
 
 		var allocSize = em.spawn(em.label(), em1 -> {
 			var rf = _dx;
@@ -182,11 +178,7 @@ public class P4Alloc extends FunpCfg {
 
 		c1.em.mov(regPointer, fcp);
 		c1.em.emit(Insn.OR, regPointer, regPointer);
-		c1.em.emit(Insn.JZ, c1.spawn(c2 -> {
-			var pointer = amd64.mem(labelPointer, ps);
-			c2.em.mov(regPointer, pointer);
-			c2.em.emit(Insn.ADD, pointer, opSize);
-		}, labelEnd));
+		c1.em.emit(Insn.JZ, c1.spawn(c2 -> allocNew(c2.em, regPointer, opSize), labelEnd));
 
 		c1.mask(regPointer).mov(fcp, amd64.mem(regPointer, 0, ps));
 		c1.em.label(labelEnd);
@@ -208,6 +200,12 @@ public class P4Alloc extends FunpCfg {
 		var c2 = c1.mask(fcp);
 		c2.mov(amd64.mem(regPointer, 0, ps), fcp);
 		c2.mov(fcp, regPointer);
+	}
+
+	private void allocNew(Emit em, OpReg regPointer, Operand opSize) {
+		var pointer = amd64.mem(labelPointer, ps);
+		em.mov(regPointer, pointer);
+		em.emit(Insn.ADD, pointer, opSize);
 	}
 
 	private IntIntPair getAllocSize(int size0) {
