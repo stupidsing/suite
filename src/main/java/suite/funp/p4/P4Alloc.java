@@ -140,10 +140,10 @@ public class P4Alloc extends FunpCfg {
 	}
 
 	private CompileOut allocVs_(Fixie3<Compile0, OpReg, Operand> f) {
-		return f.map((c1, r, index) -> {
-			c1.em.mov(amd64.mem(r, 0, ps), index);
-			c1.em.addImm(r, ps);
-			return c1.returnOp(r);
+		return f.map((c1, opRegPointer, index) -> {
+			c1.em.mov(amd64.mem(opRegPointer, 0, ps), index);
+			c1.em.addImm(opRegPointer, ps);
+			return c1.returnOp(opRegPointer);
 		});
 	}
 
@@ -154,10 +154,8 @@ public class P4Alloc extends FunpCfg {
 
 	private Fixie3<Compile0, OpReg, Operand> alloc_(Compile0 c0, Operand opOffset, Operand opSize) {
 		var rf = c0.rs.get(ps);
-		var c1 = c0.mask(rf);
-		var opRegPointer = c0.isOutSpec ? c0.pop0 : c1.rs.get(ps);
-		var c2 = c1.mask(opRegPointer);
-		var rt = c2.rs.get(ps);
+		var opRegPointer = c0.isOutSpec ? c0.pop0 : c0.mask(rf).rs.get(ps);
+		var rt = c0.mask(rf, opRegPointer).rs.get(ps);
 		var em0 = c0.em;
 		var labelEnd = em0.label();
 
