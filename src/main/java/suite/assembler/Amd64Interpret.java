@@ -32,16 +32,16 @@ import suite.assembler.Amd64.Operand;
 
 public class Amd64Interpret {
 
-	public int codeStart = 0x00000100;
+	public int codeStart = 0x00800000;
 	public BytesBuilder out = new BytesBuilder();
 
 	private LngLng_Obj<LngRange> fl = (s, p) -> LngRange.of(s, s + p);
 	private IntInt_Obj<IntRange> fi = (s, p) -> IntRange.of(s, s + p);
 
 	private LngRange baseNull = LngRange.of(0, codeStart);
-	private LngRange baseCode = fl.apply(baseNull.e, 0x08000000);
-	private LngRange baseData = fl.apply(baseCode.e, 0x08000000);
-	private LngRange baseStack = fl.apply(baseData.e, 0x00040000);
+	private LngRange baseCode = fl.apply(baseNull.e, 65536);
+	private LngRange baseData = fl.apply(baseCode.e, 262144);
+	private LngRange baseStack = fl.apply(baseData.e, 262144);
 	// private LngRange baseEnd = fl.apply(baseStack.e, 0);
 
 	private IntRange posNull = IntRange.of(0, 0);
@@ -390,11 +390,11 @@ public class Amd64Interpret {
 	}
 
 	private int index(long address) {
-		if (address < baseCode.e)
+		if (baseCode.s <= address && address < baseCode.e)
 			return posCode.s + (int) (address - baseCode.s);
-		else if (address < baseData.e)
+		else if (baseData.s <= address && address < baseData.e)
 			return posData.s + (int) (address - baseData.s);
-		else if (address < baseStack.e)
+		else if (baseStack.s <= address && address < baseStack.e)
 			return posStack.s + (int) (address - baseStack.s);
 		else
 			return fail("address gone wild: " + Long.toHexString(address));
