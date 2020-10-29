@@ -166,17 +166,17 @@ public class P4Alloc extends FunpCfg {
 	}
 
 	private void dealloc_(Compile0 c0, OpReg opRegPointer, Operand opOffset) {
+		var opRegFreeChain = c0.mask(opRegPointer).rs.get(ps);
+		var fcp = amd64.mem(opRegFreeChain, 0, ps);
+
 		c0.em.emit(Insn.XOR, amd64.mem(xorPointer, ps), opRegPointer);
 		c0.em.emit(Insn.DEC, amd64.mem(countPointer, is));
 
-		var c1 = c0.mask(opRegPointer);
-		var opRegFreeChain = c1.em.mov(c1.rs.get(ps), freeChainTablePointer);
-		c1.em.emit(Insn.ADD, opRegFreeChain, opOffset);
-		var fcp = amd64.mem(opRegFreeChain, 0, ps);
+		c0.em.mov(opRegFreeChain, freeChainTablePointer);
+		c0.em.emit(Insn.ADD, opRegFreeChain, opOffset);
 
-		var c2 = c1.mask(fcp);
-		c2.mov(amd64.mem(opRegPointer, 0, ps), fcp);
-		c2.mov(fcp, opRegPointer);
+		c0.mask(opRegPointer, opRegFreeChain).mov(amd64.mem(opRegPointer, 0, ps), fcp);
+		c0.mov(fcp, opRegPointer);
 	}
 
 	private void allocVsAdjust(Emit em, OpReg opRegPointer, Operand opOffset) {
