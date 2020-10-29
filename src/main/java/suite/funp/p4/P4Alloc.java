@@ -69,8 +69,7 @@ public class P4Alloc extends FunpCfg {
 		var allocVsAdjust = em.spawn(em1 -> {
 			em1.emit(Insn.INC, amd64.mem(countPointer, is));
 			em1.emit(Insn.XOR, amd64.mem(xorPointer, ps), opRegPointer);
-			em1.mov(amd64.mem(opRegPointer, 0, ps), opOffset);
-			em1.addImm(opRegPointer, ps);
+			allocVsAdjust(em1, opRegPointer, opOffset);
 			em1.emit(Insn.RET);
 		}).in;
 
@@ -141,8 +140,7 @@ public class P4Alloc extends FunpCfg {
 
 	private CompileOut allocVs_(Fixie3<Compile0, OpReg, Operand> f) {
 		return f.map((c1, opRegPointer, index) -> {
-			c1.em.mov(amd64.mem(opRegPointer, 0, ps), index);
-			c1.em.addImm(opRegPointer, ps);
+			allocVsAdjust(c1.em, opRegPointer, index);
 			return c1.returnOp(opRegPointer);
 		});
 	}
@@ -164,7 +162,7 @@ public class P4Alloc extends FunpCfg {
 		em0.emit(Insn.INC, amd64.mem(countPointer, is));
 		em0.emit(Insn.XOR, amd64.mem(xorPointer, ps), opRegPointer);
 
-		return Fixie.of(c1, opRegPointer, opOffset);
+		return Fixie.of(c0, opRegPointer, opOffset);
 	}
 
 	private void dealloc_(Compile0 c0, OpReg opRegPointer, Operand opOffset) {
@@ -179,6 +177,11 @@ public class P4Alloc extends FunpCfg {
 		var c2 = c1.mask(fcp);
 		c2.mov(amd64.mem(opRegPointer, 0, ps), fcp);
 		c2.mov(fcp, opRegPointer);
+	}
+
+	private void allocVsAdjust(Emit em, OpReg opRegPointer, Operand opOffset) {
+		em.mov(amd64.mem(opRegPointer, 0, ps), opOffset);
+		em.addImm(opRegPointer, ps);
 	}
 
 	private void allocSize(Emit em0, OpReg opRegPointer, Operand opOffset, Operand opSize, OpReg rf, OpReg rt, OpImmLabel labelEnd) {
