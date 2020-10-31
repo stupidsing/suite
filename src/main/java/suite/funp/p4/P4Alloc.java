@@ -120,9 +120,7 @@ public class P4Alloc extends FunpCfg {
 	}
 
 	public void deallocVs(Compile0 c0, Funp reference) {
-		var opRegPointer = c0.compilePsReg(reference);
-		c0.em.addImm(opRegPointer, -ps);
-		deallocSize(c0, opRegPointer, amd64.mem(opRegPointer, 0, ps));
+		deallocVs_(c0, reference);
 	}
 
 	public CompileOut alloc(Compile0 c0, int size) {
@@ -140,6 +138,12 @@ public class P4Alloc extends FunpCfg {
 			allocVsAdjust(c1.em, opRegPointer, index);
 			return c1.returnOp(opRegPointer);
 		});
+	}
+
+	private void deallocVs_(Compile0 c0, Funp reference) {
+		var opRegPointer = c0.compilePsReg(reference);
+		c0.em.addImm(opRegPointer, -ps);
+		deallocSize(c0, opRegPointer, amd64.mem(opRegPointer, 0, ps));
 	}
 
 	private Fixie3<Compile0, OpReg, Operand> alloc_(Compile0 c0, int size) {
