@@ -146,6 +146,11 @@ public class P4Alloc extends FunpCfg {
 		deallocSize(c0, opRegPointer, amd64.mem(opRegPointer, 0, ps));
 	}
 
+	private void allocVsAdjust(Emit em, OpReg opRegPointer, Operand opOffset) {
+		em.mov(amd64.mem(opRegPointer, 0, ps), opOffset);
+		em.addImm(opRegPointer, ps);
+	}
+
 	private Fixie3<Compile0, OpReg, Operand> alloc_(Compile0 c0, int size) {
 		var pair = getAllocSize(size);
 		var opRegFreeChain = c0.rs.get(ps);
@@ -157,11 +162,6 @@ public class P4Alloc extends FunpCfg {
 		allocSize(c0.em, opRegPointer, opOffset, opSize, opRegFreeChain, opRegTransfer);
 
 		return Fixie.of(c0, opRegPointer, opOffset);
-	}
-
-	private void allocVsAdjust(Emit em, OpReg opRegPointer, Operand opOffset) {
-		em.mov(amd64.mem(opRegPointer, 0, ps), opOffset);
-		em.addImm(opRegPointer, ps);
 	}
 
 	private void allocSize(Emit em0, OpReg opRegPointer, Operand opOffset, Operand opSize, OpReg opRegFreeChain, OpReg opRegTransfer) {
