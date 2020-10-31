@@ -144,16 +144,13 @@ public class P4Alloc extends FunpCfg {
 
 	private Fixie3<Compile0, OpReg, Operand> alloc_(Compile0 c0, int size) {
 		var pair = getAllocSize(size);
-		return alloc_(c0, amd64.imm(pair.t0 * ps, ps), amd64.imm(pair.t1, ps));
-	}
-
-	private Fixie3<Compile0, OpReg, Operand> alloc_(Compile0 c0, Operand opOffset, Operand opSize) {
 		var opRegFreeChain = c0.rs.get(ps);
+		var opOffset = amd64.imm(pair.t0 * ps, ps);
+		var opSize = amd64.imm(pair.t1, ps);
 		var opRegPointer = c0.isOutSpec ? c0.pop0 : c0.mask(opRegFreeChain).rs.get(ps);
 		var opRegTransfer = c0.mask(opRegFreeChain, opRegPointer).rs.get(ps);
-		var em0 = c0.em;
 
-		allocSize(em0, opRegPointer, opOffset, opSize, opRegFreeChain, opRegTransfer);
+		allocSize(c0.em, opRegPointer, opOffset, opSize, opRegFreeChain, opRegTransfer);
 
 		return Fixie.of(c0, opRegPointer, opOffset);
 	}
