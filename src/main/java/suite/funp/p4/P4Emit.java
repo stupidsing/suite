@@ -128,7 +128,7 @@ public class P4Emit extends FunpCfg {
 				emit(amd64.instruction(Insn.XOR, op0, amd64.imm(i, i == (byte) i ? 1 : op0.size)));
 		}
 
-		private void imulImm(OpReg r0, long i) {
+		public void imulImm(OpReg r0, long i) {
 			if (i != 1l)
 				if (Long.bitCount(i) == 1)
 					shiftImm(Insn.SHL, r0, Long.numberOfTrailingZeros(i));

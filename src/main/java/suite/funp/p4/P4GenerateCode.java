@@ -307,7 +307,7 @@ public class P4GenerateCode extends FunpCfg {
 				else if (factor != null) {
 					var _ax = amd64.regs(ps)[axReg];
 					var ra = compileSpec(factor, rs.get(_ax));
-					em.emit(Insn.IMUL, ra, ra, amd64.imm32(size));
+					em.imulImm(ra, size);
 					return p4alloc.allocVs(this, ra);
 				} else
 					return p4alloc.allocVs(this, size);
