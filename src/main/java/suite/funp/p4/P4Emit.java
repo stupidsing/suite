@@ -184,10 +184,17 @@ public class P4Emit extends FunpCfg {
 				instructions.add(instruction);
 		}
 
-		public Block spawn(Sink<Emit> sink) {
-			var block = spawn(label(), sink, null);
+		public OpImmLabel spawn(Sink<Emit> sink) {
+			var in = label();
+			var block = spawn(in, sink, null);
 			block.align = pushSize;
-			return block;
+			return in;
+		}
+
+		public OpImmLabel spawn(Sink<Emit> sink, OpImmLabel out) {
+			var in = label();
+			spawn(in, sink, out);
+			return in;
 		}
 
 		public Block spawn(OpImmLabel in, Sink<Emit> sink, OpImmLabel out) {

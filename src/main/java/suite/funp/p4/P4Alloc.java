@@ -51,14 +51,14 @@ public class P4Alloc extends FunpCfg {
 	}
 
 	public void init(Emit em, OpReg bufferStart) {
-		countPointer = em.spawn(em1 -> em1.emit(Insn.D, amd64.imm(0l, is))).in; // how many used blocks out there
-		labelPointer = em.spawn(em1 -> em1.emit(Insn.D, amd64.imm(0l, ps))).in; // start point of remaining free area
-		xorPointer = em.spawn(em1 -> em1.emit(Insn.D, amd64.imm(0l, ps))).in; // allocation checker
+		countPointer = em.spawn(em1 -> em1.emit(Insn.D, amd64.imm(0l, is))); // how many used blocks out there
+		labelPointer = em.spawn(em1 -> em1.emit(Insn.D, amd64.imm(0l, ps))); // start point of remaining free area
+		xorPointer = em.spawn(em1 -> em1.emit(Insn.D, amd64.imm(0l, ps))); // allocation checker
 
 		freeChainTablePointer = em.spawn(em1 -> em1.emit( //
 				Insn.DS, //
 				amd64.imm32(allocSizes.length * ps), //
-				amd64.imm8(0l))).in;
+				amd64.imm8(0l)));
 
 		em.mov(amd64.mem(labelPointer, ps), bufferStart);
 
@@ -66,14 +66,11 @@ public class P4Alloc extends FunpCfg {
 		var opOffset = _bx; // offset to the table of free chains
 		var opSize = _cx; // size we want to allocate
 
-		var allocVsAdjust = em.spawn(em1 -> {
-			em1.emit(Insn.INC, amd64.mem(countPointer, is));
-			em1.emit(Insn.XOR, amd64.mem(xorPointer, ps), opRegPointer);
+		var allocSize = em.spawn(em1 -> {
+			allocSize(em1, opRegPointer, opOffset, opSize, _dx, _bx);
 			allocVsAdjust(em1, opRegPointer, opOffset);
 			em1.emit(Insn.RET);
-		}).in;
-
-		var allocSize = em.spawn(em.label(), em1 -> allocSize(em1, opRegPointer, opOffset, opSize, _dx, _bx, allocVsAdjust), allocVsAdjust).in;
+		});
 
 		allocVsRoutine = em.spawn(em1 -> {
 			var size = _ax;
@@ -87,14 +84,14 @@ public class P4Alloc extends FunpCfg {
 			}
 
 			em1.emit(Insn.HLT, amd64.remark("ALLOC TOO LARGE"));
-		}).in;
+		});
 	}
 
 	public void deinit(Emit em) {
 		em.emit(Insn.CMP, amd64.mem(countPointer, is), amd64.imm(0l, is));
-		em.emit(Insn.JNZ, em.spawn(em1 -> em1.emit(Insn.HLT, amd64.remark("ALLOC MISMATCH"))).in);
+		em.emit(Insn.JNZ, em.spawn(em1 -> em1.emit(Insn.HLT, amd64.remark("ALLOC MISMATCH"))));
 		em.emit(Insn.CMP, amd64.mem(xorPointer, ps), amd64.imm(0l, ps));
-		em.emit(Insn.JNZ, em.spawn(em1 -> em1.emit(Insn.HLT, amd64.remark("ALLOC POINTER MISMATCH"))).in);
+		em.emit(Insn.JNZ, em.spawn(em1 -> em1.emit(Insn.HLT, amd64.remark("ALLOC POINTER MISMATCH"))));
 	}
 
 	// allocate with a fixed size, but allow de-allocation without specifying size
@@ -155,12 +152,8 @@ public class P4Alloc extends FunpCfg {
 		var opRegPointer = c0.isOutSpec ? c0.pop0 : c0.mask(opRegFreeChain).rs.get(ps);
 		var opRegTransfer = c0.mask(opRegFreeChain, opRegPointer).rs.get(ps);
 		var em0 = c0.em;
-		var labelEnd = em0.label();
 
-		allocSize(em0, opRegPointer, opOffset, opSize, opRegFreeChain, opRegTransfer, labelEnd);
-		em0.label(labelEnd);
-		em0.emit(Insn.INC, amd64.mem(countPointer, is));
-		em0.emit(Insn.XOR, amd64.mem(xorPointer, ps), opRegPointer);
+		allocSize(em0, opRegPointer, opOffset, opSize, opRegFreeChain, opRegTransfer);
 
 		return Fixie.of(c0, opRegPointer, opOffset);
 	}
@@ -184,17 +177,22 @@ public class P4Alloc extends FunpCfg {
 		em.addImm(opRegPointer, ps);
 	}
 
-	private void allocSize(Emit em0, OpReg opRegPointer, Operand opOffset, Operand opSize, OpReg opRegFreeChain, OpReg opRegTransfer, OpImmLabel labelEnd) {
+	private void allocSize(Emit em0, OpReg opRegPointer, Operand opOffset, Operand opSize, OpReg opRegFreeChain, OpReg opRegTransfer) {
+		var labelEnd = em0.label();
 		var fcp = amd64.mem(opRegFreeChain, 0, ps);
 		em0.mov(opRegFreeChain, freeChainTablePointer);
 		em0.emit(Insn.ADD, opRegFreeChain, opOffset);
 
 		em0.mov(opRegPointer, fcp);
 		em0.emit(Insn.OR, opRegPointer, opRegPointer);
-		em0.emit(Insn.JZ, em0.spawn(em0.label(), em1 -> allocNew(em1, opRegPointer, opSize), labelEnd).in);
+		em0.emit(Insn.JZ, em0.spawn(em1 -> allocNew(em1, opRegPointer, opSize), labelEnd));
 
 		em0.mov(opRegTransfer, amd64.mem(opRegPointer, 0, ps));
 		em0.mov(fcp, opRegTransfer);
+
+		em0.label(labelEnd);
+		em0.emit(Insn.INC, amd64.mem(countPointer, is));
+		em0.emit(Insn.XOR, amd64.mem(xorPointer, ps), opRegPointer);
 	}
 
 	private void allocNew(Emit em, OpReg opRegPointer, Operand opSize) {
