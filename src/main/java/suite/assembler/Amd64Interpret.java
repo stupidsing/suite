@@ -274,7 +274,7 @@ public class Amd64Interpret {
 					p2 = (int) regs[esi];
 					p3 = (int) regs[edx];
 					if (p0 == 0x3C)
-						return (int) p1;
+						return p1;
 					else
 						regs[eax] = switch (p0) {
 						case 0x00 -> io.read(p1, p2, p3);
