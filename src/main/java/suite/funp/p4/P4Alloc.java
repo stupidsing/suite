@@ -50,7 +50,36 @@ public class P4Alloc extends FunpCfg {
 		super(f);
 	}
 
-	public void init(Emit em, OpReg bufferStart) {
+	public void init(Emit em) {
+		OpReg bufferStart;
+
+		if (isLongMode) {
+			var regs64 = amd64.reg64;
+			em.emit(Insn.MOV, amd64.rax, amd64.imm32(9));
+			em.emit(Insn.XOR, amd64.rdi, amd64.rdi);
+			em.emit(Insn.MOV, amd64.rsi, amd64.imm32(65536));
+			em.emit(Insn.MOV, amd64.rdx, amd64.imm32(3));
+			em.emit(Insn.MOV, regs64[10], amd64.imm32(0x22));
+			em.emit(Insn.XOR, regs64[8], regs64[8]);
+			em.emit(Insn.XOR, regs64[9], regs64[9]);
+			em.emit(Insn.NOT, regs64[8]);
+			em.emit(Insn.SYSCALL);
+			bufferStart = amd64.rax;
+		} else {
+			em.emit(Insn.SUB, amd64.esp, amd64.imm32(0x18));
+			em.emit(Insn.MOV, amd64.mem(amd64.esp, 0x00l, 4), amd64.imm32(0));
+			em.emit(Insn.MOV, amd64.mem(amd64.esp, 0x04l, 4), amd64.imm32(0x00010000));
+			em.emit(Insn.MOV, amd64.mem(amd64.esp, 0x08l, 4), amd64.imm32(3));
+			em.emit(Insn.MOV, amd64.mem(amd64.esp, 0x0Cl, 4), amd64.imm32(0x22));
+			em.emit(Insn.MOV, amd64.mem(amd64.esp, 0x10l, 4), amd64.imm32(0xFFFFFFFF));
+			em.emit(Insn.MOV, amd64.mem(amd64.esp, 0x14l, 4), amd64.imm32(0));
+			em.emit(Insn.MOV, amd64.eax, amd64.imm32(0x5A));
+			em.emit(Insn.MOV, amd64.ebx, amd64.esp);
+			em.emit(Insn.INT, amd64.imm8(0x80));
+			em.emit(Insn.ADD, amd64.esp, amd64.imm8(0x18));
+			bufferStart = amd64.eax;
+		}
+
 		countPointer = em.spawn(em1 -> em1.emit(Insn.D, amd64.imm(0l, is))); // how many used blocks out there
 		labelPointer = em.spawn(em1 -> em1.emit(Insn.D, amd64.imm(0l, ps))); // start point of remaining free area
 		xorPointer = em.spawn(em1 -> em1.emit(Insn.D, amd64.imm(0l, ps))); // allocation checker

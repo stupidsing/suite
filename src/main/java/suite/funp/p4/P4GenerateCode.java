@@ -150,37 +150,8 @@ public class P4GenerateCode extends FunpCfg {
 	}
 
 	private List<Instruction> compile0(Funp funp) {
-		var p = new Amd64Parse(mode);
-
 		return p4emit.generate(p4emit.label(), em -> {
-			var prolog_amd64 = List.of( //
-					"MOV (RAX, DWORD +x00000009)", //
-					"XOR (RDI, RDI)", //
-					"MOV (RSI, DWORD +x00010000)", //
-					"MOV (RDX, DWORD +x00000003)", //
-					"MOV (R10, DWORD +x00000022)", //
-					"XOR (R8, R8)", //
-					"XOR (R9, R9)", //
-					"NOT (R8)", //
-					"SYSCALL ()");
-
-			var prolog_i686 = List.of( //
-					"SUB (ESP, +x18)", //
-					"MOV (`ESP + +x00`, 0)", //
-					"MOV (`ESP + +x04`, +x00010000)", //
-					"MOV (`ESP + +x08`, +x00000003)", //
-					"MOV (`ESP + +x0C`, +x00000022)", //
-					"MOV (`ESP + +x10`, +xFFFFFFFF)", //
-					"MOV (`ESP + +x14`, +x00000000)", //
-					"MOV (EAX, +x0000005A)", //
-					"MOV (EBX, ESP)", //
-					"INT (+x80)", //
-					"ADD (ESP, +x18)");
-
-			for (var i : isLongMode ? prolog_amd64 : prolog_i686)
-				em.emit(p.parse(Suite.parse(i)));
-
-			p4alloc.init(em, pointerRegs[axReg]);
+			p4alloc.init(em);
 
 			if (isUseEbp)
 				em.mov(_bp, _sp);
