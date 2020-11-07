@@ -15,6 +15,7 @@ import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.generics.BotSession;
+import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
 import primal.Verbs.Sleep;
 import primal.fp.Funs.Source;
@@ -54,7 +55,7 @@ public class TelegramBot {
 		var subscribedChatIds = Collections.synchronizedSet(new HashSet<Long>());
 
 		return ex(() -> {
-			TelegramBotsApi tba = new TelegramBotsApi();
+			TelegramBotsApi tba = new TelegramBotsApi(DefaultBotSession.class);
 
 			var bot = new TelegramLongPollingBot() {
 				public String getBotUsername() {

@@ -2,8 +2,6 @@ package suite.sample;
 
 import java.nio.file.Path;
 
-import org.telegram.telegrambots.ApiContextInitializer;
-
 import suite.os.Execute;
 import suite.telegram.TelegramBot;
 import suite.util.RunUtil;
@@ -27,7 +25,6 @@ public class TelegramBotMain {
 	}
 
 	public boolean run() {
-		ApiContextInitializer.init();
 		tb.bot();
 		return true;
 	}
