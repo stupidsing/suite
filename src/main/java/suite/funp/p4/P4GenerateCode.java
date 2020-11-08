@@ -22,7 +22,6 @@ import primal.primitive.IntPrim;
 import primal.primitive.IntPrim.IntObj_Obj;
 import primal.primitive.adt.Bytes;
 import primal.primitive.adt.pair.IntObjPair;
-import suite.Suite;
 import suite.assembler.Amd64;
 import suite.assembler.Amd64.Insn;
 import suite.assembler.Amd64.Instruction;

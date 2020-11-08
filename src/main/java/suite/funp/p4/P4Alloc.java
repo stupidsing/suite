@@ -8,7 +8,6 @@ import primal.primitive.adt.pair.IntIntPair;
 import suite.assembler.Amd64;
 import suite.assembler.Amd64.Insn;
 import suite.assembler.Amd64.OpImm;
-import suite.assembler.Amd64.OpImmLabel;
 import suite.assembler.Amd64.OpReg;
 import suite.assembler.Amd64.Operand;
 import suite.funp.FunpCfg;
