@@ -415,13 +415,9 @@ public class P22InferType extends FunpCfg {
 					return unify(ref, TreeUtil.buildUp(TermOp.AND___, list.toList()));
 				};
 
-				if (!isCompleted) {
-					// complete the structure after all types are inferred
-					checks0.add(() -> unify(isCompleted_, Atom.TRUE));
-					checks1.add(() -> !ref.isFree() || completion.g());
-				} else if (!completion.g())
-					Funp_.fail(n, "cannot complete structure");
-
+				// complete the structure after all types are inferred
+				checks0.add(() -> unify(isCompleted_, Atom.TRUE));
+				checks1.add(() -> !ref.isFree() || completion.g());
 				return ts;
 			})).applyIf(FunpTag.class, f -> f.apply((id, tag, value) -> {
 				var types = new HashMap<Node, Reference>();
