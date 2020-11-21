@@ -301,7 +301,7 @@ public class FunpTest {
 	}
 
 	private void test(int expected, String program) {
-		// test(expected, program, false);
+		test(expected, program, false);
 		test(expected, program, true);
 	}
 
