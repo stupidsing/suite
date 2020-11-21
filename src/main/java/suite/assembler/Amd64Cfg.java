@@ -12,8 +12,6 @@ public class Amd64Cfg {
 	public int pushSize;
 	public int nRegisters;
 
-	public static Amd64Cfg me = new Amd64Cfg(RunUtil.isLinux64());
-
 	public Amd64Cfg(boolean isLongMode) {
 		mode = isLongMode ? Amd64Mode.LONG64 : Amd64Mode.PROT32;
 		pointerSize = mode.addrSize;

@@ -100,7 +100,7 @@ public class P4GenerateCode extends FunpCfg {
 	private OpReg _si = pointerRegs[siReg];
 	private OpReg _di = pointerRegs[diReg];
 
-	private RegisterSet newRegisterSet = new RegisterSet();
+	private RegisterSet newRegisterSet;
 	private RegisterSet registerSet;
 	private boolean isUseEbp;
 
@@ -140,6 +140,7 @@ public class P4GenerateCode extends FunpCfg {
 	public P4GenerateCode(Funp_ f) { // or use ESP directly
 		super(f);
 		isUseEbp = !f.isOptimize;
+		newRegisterSet = new RegisterSet(f.isLongMode);
 		registerSet = newRegisterSet.mask(isUseEbp ? _bp : null, _sp);
 		p4deOp = new P4DecomposeOperand(this, isUseEbp);
 	}

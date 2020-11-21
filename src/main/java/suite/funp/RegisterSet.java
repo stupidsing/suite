@@ -19,22 +19,29 @@ public class RegisterSet {
 	private OpReg[] registers;
 	public final int flag;
 
-	public RegisterSet() {
-		this(0);
+	public RegisterSet(boolean isLongMode) {
+		this(isLongMode, 0);
 	}
 
-	private RegisterSet(int flag) {
+	private RegisterSet(boolean isLongMode, int flag) {
 		this.flag = flag;
+		var amd64Cfg = new Amd64Cfg(isLongMode);
 
 		var map = Read //
 				.from2(amd64.regByName) //
 				.values() //
-				.filter(opReg -> opReg.size == Amd64Cfg.me.pushSize) //
+				.filter(opReg -> opReg.size == amd64Cfg.pushSize) //
 				.map2(opReg -> opReg.reg, opReg -> opReg) //
 				.toMap();
 
-		nRegisters = Amd64Cfg.me.nRegisters;
+		nRegisters = amd64Cfg.nRegisters;
 		registers = forInt(nRegisters).map(map::get).toArray(OpReg.class);
+	}
+
+	private RegisterSet(int nRegisters, OpReg[] registers, int flag) {
+		this.nRegisters = nRegisters;
+		this.registers = registers;
+		this.flag = flag;
 	}
 
 	public OpReg get(Operand op) {
@@ -67,11 +74,11 @@ public class RegisterSet {
 	}
 
 	public RegisterSet mask(Operand... operands) {
-		return new RegisterSet(flag | flag(operands));
+		return new RegisterSet(nRegisters, registers, flag | flag(operands));
 	}
 
 	public RegisterSet unmask(int i) {
-		return new RegisterSet(flag & ~flag(i));
+		return new RegisterSet(nRegisters, registers, flag & ~flag(i));
 	}
 
 	private int flag(Operand... operands) {
