@@ -11,8 +11,6 @@ import suite.assembler.Amd64Interpret;
 
 public class FunpTest {
 
-	private Amd64Interpret interpret = new Amd64Interpret();
-
 	@Test
 	public void testArray() {
 		test(48, "define a := [number '0',] ~ a [0]");
@@ -308,6 +306,8 @@ public class FunpTest {
 	}
 
 	private void test(int expected, String program, boolean isLongMode) {
+		var interpret = new Amd64Interpret(isLongMode);
+
 		for (var isOptimize : new boolean[] { false, true, }) {
 			Log_.info(program);
 

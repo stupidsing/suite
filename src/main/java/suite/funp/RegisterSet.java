@@ -25,6 +25,7 @@ public class RegisterSet {
 
 	private RegisterSet(int flag) {
 		this.flag = flag;
+
 		var map = Read //
 				.from2(amd64.regByName) //
 				.values() //

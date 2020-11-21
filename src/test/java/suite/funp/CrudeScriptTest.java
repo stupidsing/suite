@@ -14,11 +14,10 @@ import suite.funp.p4.P4GenerateCode;
 
 public class CrudeScriptTest {
 
-	private Amd64Interpret interpret = new Amd64Interpret();
-
 	@Test
 	public void test() {
 		for (var isLongMode : new boolean[] { false, true, }) {
+			var interpret = new Amd64Interpret(isLongMode);
 			var f = new Funp_(isLongMode, false);
 			var p4 = new P4GenerateCode(f);
 			var isOptimize = false;

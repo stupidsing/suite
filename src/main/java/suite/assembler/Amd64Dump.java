@@ -14,6 +14,10 @@ public class Amd64Dump extends Amd64Cfg {
 
 	private Amd64 amd64 = Amd64.me;
 
+	public Amd64Dump(boolean isLongMode) {
+		super(isLongMode);
+	}
+
 	public String dump(List<Instruction> instructions) {
 		return Read.from(instructions).map(this::dump).toString();
 	}

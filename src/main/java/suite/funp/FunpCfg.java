@@ -44,7 +44,7 @@ public class FunpCfg {
 	}
 
 	public FunpCfg(FunpCfg fc) {
-		for (var f : getClass().getFields())
+		for (var f : FunpCfg.class.getFields())
 			try {
 				f.set(this, f.get(fc));
 			} catch (Exception ex) {

@@ -25,7 +25,6 @@ public class ElfTest {
 	private boolean isLongMode = RunUtil.isLinux64();
 
 	private Amd64 amd64 = Amd64.me;
-	private Amd64Interpret interpret = new Amd64Interpret();
 	private WriteElf elf = new WriteElf(isLongMode);
 
 	@Test
@@ -168,6 +167,8 @@ public class ElfTest {
 	}
 
 	private IntObjPair<String> execute(String program, String input) {
+		var interpret = new Amd64Interpret(isLongMode);
+
 		var ibs = Bytes.of(input.getBytes(Utf8.charset));
 		var main = Funp_.main(isLongMode, true);
 		var result = IntObjPair.of(-1, "-");

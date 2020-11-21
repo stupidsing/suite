@@ -55,7 +55,7 @@ public class Amd64Interpret extends Amd64Cfg {
 	private int c;
 
 	private Amd64 amd64 = Amd64.me;
-	private Amd64Dump dump = new Amd64Dump();
+	private Amd64Dump dump;
 	private int eax = amd64.axReg;
 	private int ebx = amd64.bxReg;
 	private int ecx = amd64.cxReg;
@@ -69,7 +69,9 @@ public class Amd64Interpret extends Amd64Cfg {
 
 	private Sink<Bytes> output = out::append;
 
-	public Amd64Interpret() {
+	public Amd64Interpret(boolean isLongMode) {
+		super(new Amd64Cfg(isLongMode));
+		dump = new Amd64Dump(isLongMode);
 	}
 
 	public int interpret(Pair<List<Instruction>, Bytes> pair, Bytes in) {

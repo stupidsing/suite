@@ -198,7 +198,7 @@ public class Amd64Assemble {
 		assemblePass(false, offset, instructions);
 		var bytes = assemblePass(true, offset, instructions);
 		if (dump)
-			Log_.info(new Amd64Dump().dump(instructions));
+			Log_.info(new Amd64Dump(isLongMode).dump(instructions));
 		return bytes;
 	}
 
