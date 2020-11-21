@@ -8,12 +8,10 @@ import org.junit.jupiter.api.Test;
 import primal.os.Log_;
 import primal.primitive.adt.Bytes;
 import suite.assembler.Amd64Interpret;
-import suite.util.RunUtil;
 
 public class FunpTest {
 
 	private Amd64Interpret interpret = new Amd64Interpret();
-	private boolean isLongMode = RunUtil.isLinux64();
 
 	@Test
 	public void testArray() {
@@ -281,10 +279,8 @@ public class FunpTest {
 	@Test
 	public void testSignExtension() {
 		test(-1, "do! !asm (EAX = number:byte byte -1;) { SHR (EAX, 16); }/EAX");
-		if (isLongMode) {
-			test(-1, "do! !asm (RAX = numberp:byte byte -1;) { SHR (RAX, 32); }/EAX");
-			test(-1, "do! !asm (RAX = numberp:number -1;) { SHR (RAX, 32); }/EAX");
-		}
+		test(-1, "do! !asm (RAX = numberp:byte byte -1;) { SHR (RAX, 32); }/EAX", true);
+		test(-1, "do! !asm (RAX = numberp:number -1;) { SHR (RAX, 32); }/EAX", true);
 	}
 
 	@Test
@@ -307,6 +303,11 @@ public class FunpTest {
 	}
 
 	private void test(int expected, String program) {
+		// test(expected, program, false);
+		test(expected, program, true);
+	}
+
+	private void test(int expected, String program, boolean isLongMode) {
 		for (var isOptimize : new boolean[] { false, true, }) {
 			Log_.info(program);
 
