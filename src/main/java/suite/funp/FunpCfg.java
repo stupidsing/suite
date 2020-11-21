@@ -1,9 +1,9 @@
 package suite.funp;
 
-import primal.statics.Fail;
+import static primal.statics.Fail.fail;
+
 import suite.assembler.Amd64;
 import suite.assembler.Amd64.OpReg;
-import suite.assembler.Amd64Cfg;
 import suite.assembler.Amd64Mode;
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.Coerce;
@@ -15,8 +15,8 @@ public class FunpCfg {
 	public Amd64Mode mode;
 	public int booleanSize;
 	public int integerSize;
-	public int pointerSize = Amd64Cfg.pointerSize;
-	public int pushSize = Amd64Cfg.pushSize;
+	public int pointerSize;
+	public int pushSize;
 
 	public Funp framePointer;
 
@@ -48,7 +48,7 @@ public class FunpCfg {
 			try {
 				f.set(this, f.get(fc));
 			} catch (Exception ex) {
-				Fail.fail(ex);
+				fail(ex);
 			}
 	}
 
