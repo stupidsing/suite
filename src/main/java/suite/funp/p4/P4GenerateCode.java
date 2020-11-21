@@ -100,6 +100,7 @@ public class P4GenerateCode extends FunpCfg {
 	private OpReg _si = pointerRegs[siReg];
 	private OpReg _di = pointerRegs[diReg];
 
+	private RegisterSet newRegisterSet = new RegisterSet();
 	private RegisterSet registerSet;
 	private boolean isUseEbp;
 
@@ -139,7 +140,7 @@ public class P4GenerateCode extends FunpCfg {
 	public P4GenerateCode(Funp_ f) { // or use ESP directly
 		super(f);
 		isUseEbp = !f.isOptimize;
-		registerSet = new RegisterSet().mask(isUseEbp ? _bp : null, _sp);
+		registerSet = newRegisterSet.mask(isUseEbp ? _bp : null, _sp);
 		p4deOp = new P4DecomposeOperand(this, isUseEbp);
 	}
 
@@ -671,9 +672,9 @@ public class P4GenerateCode extends FunpCfg {
 			if (opPops != null)
 				rs1 = rs1.mask(opPops.toArray(Operand[]::new));
 
-			if (op0 != null && new RegisterSet().mask(op0).isAnyMasked(_bp, _sp))
+			if (op0 != null && newRegisterSet.mask(op0).isAnyMasked(_bp, _sp))
 				op0 = c1.em.mov(rs1.get(ps), op0);
-			if (op1 != null && new RegisterSet().mask(op1).isAnyMasked(_bp, _sp))
+			if (op1 != null && newRegisterSet.mask(op1).isAnyMasked(_bp, _sp))
 				op1 = c1.em.mov(rs1.mask(op0).get(ps), op1);
 
 			if (opPops != null)
@@ -957,7 +958,7 @@ public class P4GenerateCode extends FunpCfg {
 		private void compileInvoke(Funp n) {
 			var out = compilePs2Op(n);
 			Operand op;
-			if (!new RegisterSet().mask(out.op1).isAnyMasked(_bp))
+			if (!newRegisterSet.mask(out.op1).isAnyMasked(_bp))
 				op = out.op1;
 			else
 				op = em.mov(rs.mask(out.op0).get(ps), out.op1);

@@ -14,21 +14,10 @@ import suite.assembler.Amd64Cfg;
 public class RegisterSet {
 
 	private static Amd64 amd64 = Amd64.me;
-	private static int nRegisters = Amd64Cfg.me.nRegisters;
-	private static OpReg[] registers;
 
+	private int nRegisters;
+	private OpReg[] registers;
 	public final int flag;
-
-	static {
-		var map = Read //
-				.from2(amd64.regByName) //
-				.values() //
-				.filter(opReg -> opReg.size == Amd64Cfg.me.pushSize) //
-				.map2(opReg -> opReg.reg, opReg -> opReg) //
-				.toMap();
-
-		registers = forInt(nRegisters).map(map::get).toArray(OpReg.class);
-	}
 
 	public RegisterSet() {
 		this(0);
@@ -36,6 +25,15 @@ public class RegisterSet {
 
 	private RegisterSet(int flag) {
 		this.flag = flag;
+		var map = Read //
+				.from2(amd64.regByName) //
+				.values() //
+				.filter(opReg -> opReg.size == Amd64Cfg.me.pushSize) //
+				.map2(opReg -> opReg.reg, opReg -> opReg) //
+				.toMap();
+
+		nRegisters = Amd64Cfg.me.nRegisters;
+		registers = forInt(nRegisters).map(map::get).toArray(OpReg.class);
 	}
 
 	public OpReg get(Operand op) {
