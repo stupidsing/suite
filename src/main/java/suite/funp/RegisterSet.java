@@ -24,7 +24,6 @@ public class RegisterSet {
 	}
 
 	private RegisterSet(boolean isLongMode, int flag) {
-		this.flag = flag;
 		var amd64Cfg = new Amd64Cfg(isLongMode);
 
 		var map = Read //
@@ -36,6 +35,7 @@ public class RegisterSet {
 
 		nRegisters = amd64Cfg.nRegisters;
 		registers = forInt(nRegisters).map(map::get).toArray(OpReg.class);
+		this.flag = flag;
 	}
 
 	private RegisterSet(int nRegisters, OpReg[] registers, int flag) {
