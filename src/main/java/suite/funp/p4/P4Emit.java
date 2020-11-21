@@ -168,7 +168,7 @@ public class P4Emit extends FunpCfg {
 					else
 						emit(amd64.instruction(Insn.MOV, op0, op1));
 				else
-					fail();
+					fail("cannot move from " + op1 + " to " + op0);
 			return op0;
 		}
 
