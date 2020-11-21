@@ -30,7 +30,7 @@ import suite.assembler.Amd64.OpReg;
 import suite.assembler.Amd64.OpRemark;
 import suite.assembler.Amd64.Operand;
 
-public class Amd64Interpret {
+public class Amd64Interpret extends Amd64Cfg {
 
 	public int codeStart = 0x00800000;
 	public BytesBuilder out = new BytesBuilder();
@@ -342,13 +342,13 @@ public class Amd64Interpret {
 	}
 
 	private void push(long value) {
-		regs[esp] -= Amd64Cfg.pushSize;
-		assignMemory(regs[esp], Amd64Cfg.pushSize).f(value);
+		regs[esp] -= pushSize;
+		assignMemory(regs[esp], pushSize).f(value);
 	}
 
 	private long pop() {
-		var i = trim(mem.getLong(index(regs[esp])), Amd64Cfg.pushSize);
-		regs[esp] += Amd64Cfg.pushSize;
+		var i = trim(mem.getLong(index(regs[esp])), pushSize);
+		regs[esp] += pushSize;
 		return i;
 	}
 

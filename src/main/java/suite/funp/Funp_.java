@@ -66,7 +66,7 @@ public class Funp_ extends FunpCfg {
 	}
 
 	public Funp_(boolean isOptimize) {
-		this(Amd64Cfg.isLongMode, isOptimize);
+		this(Amd64Cfg.me.isLongMode, isOptimize);
 	}
 
 	public Funp_(boolean isLongMode, boolean isOptimize) {

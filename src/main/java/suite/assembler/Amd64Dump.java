@@ -10,7 +10,7 @@ import suite.assembler.Amd64.OpNone;
 import suite.assembler.Amd64.OpRemark;
 import suite.assembler.Amd64.Operand;
 
-public class Amd64Dump {
+public class Amd64Dump extends Amd64Cfg {
 
 	private Amd64 amd64 = Amd64.me;
 
@@ -29,7 +29,6 @@ public class Amd64Dump {
 	}
 
 	private String dump(Operand op) {
-		var pointerSize = Amd64Cfg.pointerSize;
 		var regs = amd64.regs(pointerSize);
 		String name;
 
@@ -55,9 +54,9 @@ public class Amd64Dump {
 
 	private String dumpDisp(long disp) {
 		if (0 <= disp)
-			return " + " + dump(disp, Amd64Cfg.pointerSize);
+			return " + " + dump(disp, pointerSize);
 		else
-			return " + -" + dump(-disp, Amd64Cfg.pointerSize);
+			return " + -" + dump(-disp, pointerSize);
 	}
 
 	private String dump(long imm, int size) {
