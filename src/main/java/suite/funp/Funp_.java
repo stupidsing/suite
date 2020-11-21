@@ -12,7 +12,6 @@ import primal.primitive.adt.Bytes;
 import suite.Suite;
 import suite.assembler.Amd64;
 import suite.assembler.Amd64.Instruction;
-import suite.assembler.Amd64Cfg;
 import suite.funp.P0.FunpDefine;
 import suite.funp.P0.FunpDefineRec;
 import suite.funp.P0.FunpDoAssignVar;
@@ -63,10 +62,6 @@ public class Funp_ extends FunpCfg {
 
 	public static Main main(boolean isLongMode, boolean isOptimize) {
 		return new Funp_(isLongMode, isOptimize).new Main();
-	}
-
-	public Funp_(boolean isOptimize) {
-		this(Amd64Cfg.me.isLongMode, isOptimize);
 	}
 
 	public Funp_(boolean isLongMode, boolean isOptimize) {
