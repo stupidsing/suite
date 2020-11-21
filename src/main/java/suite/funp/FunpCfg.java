@@ -67,8 +67,8 @@ public class FunpCfg {
 		return coerce == Coerce.BYTE || coerce == Coerce.NUMBER || coerce == Coerce.NUMBERP;
 	}
 
-	public boolean isSizeOk(long scale) {
-		return scale == 1 || scale == 2 || scale == 4 || isLongMode && scale == 8;
+	public boolean isSizeOk(long size) {
+		return size == 1 || size == 2 || size == 4 || isLongMode && size == 8;
 	}
 
 	public boolean is1248(long scale) {
