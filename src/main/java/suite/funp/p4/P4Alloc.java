@@ -8,6 +8,7 @@ import primal.primitive.adt.pair.IntIntPair;
 import suite.assembler.Amd64;
 import suite.assembler.Amd64.Insn;
 import suite.assembler.Amd64.OpImm;
+import suite.assembler.Amd64.OpMem;
 import suite.assembler.Amd64.OpReg;
 import suite.assembler.Amd64.Operand;
 import suite.funp.FunpCfg;
@@ -181,10 +182,10 @@ public class P4Alloc extends FunpCfg {
 
 	private Fixie3<Compile0, OpReg, Operand> alloc_(Compile0 c0, int size) {
 		var pair = getAllocSize(size);
-		var opRegFreeChain = c0.rs.get(ps);
 		var opOffset = amd64.imm(pair.t0 * ps, ps);
 		var opSize = amd64.imm(pair.t1, ps);
-		var opRegPointer = c0.isOutSpec ? c0.pop0 : c0.mask(opRegFreeChain).rs.get(ps);
+		var opRegPointer = c0.isOutSpec ? c0.pop0 : c0.rs.get(ps);
+		var opRegFreeChain = c0.mask(opRegPointer).rs.get(ps);
 		var opRegTransfer = c0.mask(opRegFreeChain, opRegPointer).rs.get(ps);
 
 		allocSize(c0.em, opRegPointer, opOffset, opSize, opRegFreeChain, opRegTransfer);
@@ -192,11 +193,9 @@ public class P4Alloc extends FunpCfg {
 		return Fixie.of(c0, opRegPointer, opOffset);
 	}
 
-	private void allocSize(Emit em0, OpReg opRegPointer, Operand opOffset, Operand opSize, OpReg opRegFreeChain, OpReg opRegTransfer) {
+	private void allocSize(Emit em0, OpReg opRegPointer, Operand opOffset, Operand opSize, OpReg opRegFreeChain, OpReg opRegTemp) {
 		var labelEnd = em0.label();
-		var fcp = amd64.mem(opRegFreeChain, 0, ps);
-		em0.mov(opRegFreeChain, freeChainTablePointer);
-		em0.emit(Insn.ADD, opRegFreeChain, opOffset);
+		var fcp = getFcp(em0, opOffset, opRegFreeChain);
 
 		em0.mov(opRegPointer, fcp);
 		em0.emit(Insn.OR, opRegPointer, opRegPointer);
@@ -206,8 +205,8 @@ public class P4Alloc extends FunpCfg {
 			em1.emit(Insn.ADD, pointer, opSize);
 		}, labelEnd));
 
-		em0.mov(opRegTransfer, amd64.mem(opRegPointer, 0, ps));
-		em0.mov(fcp, opRegTransfer);
+		em0.mov(opRegTemp, amd64.mem(opRegPointer, 0, ps));
+		em0.mov(fcp, opRegTemp);
 
 		em0.label(labelEnd);
 		em0.emit(Insn.INC, amd64.mem(countPointer, is));
@@ -217,17 +216,22 @@ public class P4Alloc extends FunpCfg {
 
 	private void deallocSize(Compile0 c0, OpReg opRegPointer, Operand opOffset) {
 		var opRegFreeChain = c0.mask(opRegPointer).rs.get(ps);
-		var fcp = amd64.mem(opRegFreeChain, 0, ps);
+		var em0 = c0.em;
 
-		// c0.em.emit(Insn.LOG, amd64.remark("FREE_"), opRegPointer);
-		c0.em.emit(Insn.XOR, amd64.mem(xorPointer, ps), opRegPointer);
-		c0.em.emit(Insn.DEC, amd64.mem(countPointer, is));
+		// em0.emit(Insn.LOG, amd64.remark("FREE_"), opRegPointer);
+		em0.emit(Insn.XOR, amd64.mem(xorPointer, ps), opRegPointer);
+		em0.emit(Insn.DEC, amd64.mem(countPointer, is));
 
-		c0.em.mov(opRegFreeChain, freeChainTablePointer);
-		c0.em.emit(Insn.ADD, opRegFreeChain, opOffset);
+		var fcp = getFcp(em0, opOffset, opRegFreeChain);
 
 		c0.mask(opRegPointer, opRegFreeChain).mov(amd64.mem(opRegPointer, 0, ps), fcp);
-		c0.mov(fcp, opRegPointer);
+		em0.mov(fcp, opRegPointer);
+	}
+
+	private OpMem getFcp(Emit em, Operand opOffset, OpReg opRegFreeChain) {
+		em.mov(opRegFreeChain, freeChainTablePointer);
+		em.emit(Insn.ADD, opRegFreeChain, opOffset);
+		return amd64.mem(opRegFreeChain, 0, ps);
 	}
 
 	private IntIntPair getAllocSize(int size0) {
