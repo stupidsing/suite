@@ -82,11 +82,18 @@ public class Pbft {
 		public Map<General, Message> round(int epoch, Map<General, Message> recvs) {
 			var fromLeader = recvs.get(leader);
 
-			if (state == State.PRE____)
+			if (prepareTime + maxPrepareDuration < epoch) {
+				state = State.VIEWCHG;
+				leaderIndex = (leaderIndex + 1) % nGenerals;
+				leader = generals.get(leaderIndex);
+				return Read //
+						.from(generals) //
+						.map2(r -> r, r -> new Message(Mt.VIEWCHANGE, leader)) //
+						.toMap();
+			} else if (state == State.PRE____)
 				if (this == leader)
 					return Read //
 							.from(generals) //
-							.filter(r -> r != this) //
 							.map2(r -> r, r -> new Message(Mt.PREP, decisionf.g())) //
 							.toMap();
 				else if (fromLeader.type == Mt.PREP) {
@@ -95,7 +102,6 @@ public class Pbft {
 					prepareTime = epoch;
 					return Read //
 							.from(generals) //
-							.filter(r -> r != this) //
 							.map2(r -> r, r -> new Message(Mt.PREPARE, decision)) //
 							.toMap();
 				} else
@@ -105,28 +111,22 @@ public class Pbft {
 					state = State.COMMIT_;
 					return Read //
 							.from(generals) //
-							.filter(r -> r != this) //
 							.map2(r -> r, r -> new Message(Mt.COMMIT, decisionf.g())) //
 							.toMap();
-				} else if (prepareTime + maxPrepareDuration < epoch)
-					return viewChange();
-				else
+				} else
 					return Map.ofEntries();
 			else if (state == State.COMMIT_)
 				if (nGenerals - maxTraitors <= Read.from2(recvs).values().filter(m -> m.type == Mt.COMMIT && m.isDecision(decision)).size()) {
 					Log_.info("EXECUTE " + decision);
 					state = State.PRE____;
 					return Map.ofEntries(entry(null, new Message(Mt.REPLY, decision)));
-				} else if (prepareTime + maxPrepareDuration < epoch)
-					return viewChange();
-				else
+				} else
 					return Map.ofEntries();
 			else if (state == State.VIEWCHG)
 				if (this == leader)
 					if (nGenerals - maxTraitors <= Read.from2(recvs).values().filter(m -> m.type == Mt.VIEWCHANGE && m.isDecision(leader)).size())
 						return Read //
-								.from(generals) // //
-								.filter(r -> r != this) //
+								.from(generals) //
 								.map2(r -> r, r -> new Message(Mt.NEWVIEW, decision)) //
 								.toMap();
 					else
@@ -146,16 +146,6 @@ public class Pbft {
 				return fail();
 		}
 
-		private Map<General, Message> viewChange() {
-			state = State.VIEWCHG;
-			leaderIndex = (leaderIndex + 1) % nGenerals;
-			leader = generals.get(leaderIndex);
-			return Read //
-					.from(generals) // //
-					.filter(r -> r != this) //
-					.map2(r -> r, r -> new Message(Mt.VIEWCHANGE, Integer.toString(leaderIndex))) //
-					.toMap();
-		}
 	}
 
 }
