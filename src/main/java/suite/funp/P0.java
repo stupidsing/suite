@@ -426,6 +426,22 @@ public class P0 {
 		}
 	}
 
+	public static class FunpLog implements Funp, P4.End {
+		public Funp value;
+		public Funp expr;
+
+		public static FunpLog of(Funp value, Funp expr) {
+			var f = new FunpLog();
+			f.value = value;
+			f.expr = expr;
+			return f;
+		}
+
+		public <R> R apply(FixieFun2<Funp, Funp, R> fun) {
+			return fun.apply(value, expr);
+		}
+	}
+
 	public static class FunpMe implements Funp, P4.End {
 		public static FunpMe of() {
 			return new FunpMe();

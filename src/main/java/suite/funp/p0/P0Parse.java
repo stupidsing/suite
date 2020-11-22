@@ -47,6 +47,7 @@ import suite.funp.P0.FunpIndex;
 import suite.funp.P0.FunpIo;
 import suite.funp.P0.FunpLambda;
 import suite.funp.P0.FunpLambdaFree;
+import suite.funp.P0.FunpLog;
 import suite.funp.P0.FunpMe;
 import suite.funp.P0.FunpNumber;
 import suite.funp.P0.FunpPredefine;
@@ -267,6 +268,8 @@ public class P0Parse extends FunpCfg {
 				return define(a, bind(Fdt.L_MONO).lambdaSeparate(b, c), d, Fdt.G_MONO);
 			}).match("let.global { .0 } ~ .1", (a, b) -> { // define lots of global functions
 				return defineList(a, b, Fdt.G_MONO);
+			}).match("log .0 ~ .1", (a, b) -> { // show a value to console
+				return FunpLog.of(p(a), p(b));
 			}).match("me", () -> { // this
 				return FunpMe.of();
 			}).match("null", () -> {

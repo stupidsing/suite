@@ -44,6 +44,7 @@ import suite.funp.P0.FunpDoWhile;
 import suite.funp.P0.FunpDontCare;
 import suite.funp.P0.FunpError;
 import suite.funp.P0.FunpIf;
+import suite.funp.P0.FunpLog;
 import suite.funp.P0.FunpNumber;
 import suite.funp.P0.FunpRemark;
 import suite.funp.P2.FunpAllocGlobal;
@@ -358,6 +359,9 @@ public class P4GenerateCode extends FunpCfg {
 					var source = frame(start, start + ostack);
 					c1.compileAssign(source, target);
 				});
+			})).applyIf(FunpLog.class, f -> f.apply((value, expr) -> {
+				em.emit(Insn.LOG, amd64.imm32(((FunpNumber) value).i.value()));
+				return compile(expr);
 			})).applyIf(FunpMemory.class, f -> f.apply((pointer, start, end) -> {
 				var size = end - start;
 				Operand op0, op1;

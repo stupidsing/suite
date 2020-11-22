@@ -69,6 +69,7 @@ import suite.funp.P0.FunpIndex;
 import suite.funp.P0.FunpIo;
 import suite.funp.P0.FunpLambda;
 import suite.funp.P0.FunpLambdaFree;
+import suite.funp.P0.FunpLog;
 import suite.funp.P0.FunpMe;
 import suite.funp.P0.FunpNumber;
 import suite.funp.P0.FunpReference;
@@ -348,6 +349,9 @@ public class P22InferType extends FunpCfg {
 			})).applyIf(FunpLambdaFree.class, f -> f.apply((lambda, expr) -> {
 				unify(f, infer(lambda), typeLambdaOf(new Reference(), new Reference()));
 				return infer(expr);
+			})).applyIf(FunpLog.class, f -> f.apply((value, expr) -> {
+				unify(f, infer(value), typeNumber);
+				return infer(expr);
 			})).applyIf(FunpMe.class, f -> {
 				return me;
 			}).applyIf(FunpNumber.class, f -> {
@@ -525,10 +529,6 @@ public class P22InferType extends FunpCfg {
 					list.add(Pair.of(erase(element), IntRange.of(offset0, offset += elementSize)));
 				}
 				return FunpData.of(list);
-			})).applyIf(FunpTypeAssign.class, f -> f.apply((lhs, rhs, expr) -> {
-				return erase(expr);
-			})).applyIf(FunpTypeCheck.class, f -> f.apply((lhs, rhs, expr) -> {
-				return erase(expr);
 			})).applyIf(FunpDefine.class, f -> f.apply((vn, value, expr, fdt) -> {
 				var size = getTypeSize(typeOf(value));
 				if (value instanceof FunpLambda)
@@ -803,6 +803,10 @@ public class P22InferType extends FunpCfg {
 				var size0 = getTypeSize(typeOf(l));
 				var size1 = getTypeSize(typeOf(r));
 				return size0 == size1 ? FunpOp.of(size0, op, erase(l), erase(r)) : Funp_.fail(f, "wrong sizes");
+			})).applyIf(FunpTypeAssign.class, f -> f.apply((lhs, rhs, expr) -> {
+				return erase(expr);
+			})).applyIf(FunpTypeCheck.class, f -> f.apply((lhs, rhs, expr) -> {
+				return erase(expr);
 			})).applyIf(FunpVariable.class, f -> f.apply(var -> {
 				return getVariable(var);
 			})).result();
