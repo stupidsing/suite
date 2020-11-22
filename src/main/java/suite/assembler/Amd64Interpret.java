@@ -219,7 +219,12 @@ public class Amd64Interpret extends Amd64Cfg {
 				case JZ -> jumpIf(c == 0, labelAddressByInsnIndex.get(source0));
 				case LABEL -> jumpIf(false, 0);
 				case LEA -> assign.f(address((OpMem) op1));
-				case LOG -> Log_.info("value = " + Format.hex8(source0));
+				case LOG -> {
+					if (op0 instanceof OpRemark)
+						Log_.info(((OpRemark) op0).remark + " = " + Format.hex8(source1));
+					else
+						Log_.info("value = " + Format.hex8(source0));
+				}
 				case MOV -> assign.f(source1);
 				case MOVSB -> movsb();
 				case MOVSD -> movsd();
