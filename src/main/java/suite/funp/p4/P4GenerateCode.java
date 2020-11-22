@@ -360,7 +360,7 @@ public class P4GenerateCode extends FunpCfg {
 					c1.compileAssign(source, target);
 				});
 			})).applyIf(FunpLog.class, f -> f.apply((value, expr) -> {
-				em.emit(Insn.LOG, amd64.imm32(((FunpNumber) value).i.value()));
+				em.emit(Insn.LOG, compileOp(4, value));
 				return compile(expr);
 			})).applyIf(FunpMemory.class, f -> f.apply((pointer, start, end) -> {
 				var size = end - start;
