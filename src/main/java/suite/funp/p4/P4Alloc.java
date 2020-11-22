@@ -212,12 +212,14 @@ public class P4Alloc extends FunpCfg {
 		em0.label(labelEnd);
 		em0.emit(Insn.INC, amd64.mem(countPointer, is));
 		em0.emit(Insn.XOR, amd64.mem(xorPointer, ps), opRegPointer);
+		// em0.emit(Insn.LOG, amd64.remark("ALLOC"), opRegPointer);
 	}
 
 	private void deallocSize(Compile0 c0, OpReg opRegPointer, Operand opOffset) {
 		var opRegFreeChain = c0.mask(opRegPointer).rs.get(ps);
 		var fcp = amd64.mem(opRegFreeChain, 0, ps);
 
+		// c0.em.emit(Insn.LOG, amd64.remark("FREE_"), opRegPointer);
 		c0.em.emit(Insn.XOR, amd64.mem(xorPointer, ps), opRegPointer);
 		c0.em.emit(Insn.DEC, amd64.mem(countPointer, is));
 
