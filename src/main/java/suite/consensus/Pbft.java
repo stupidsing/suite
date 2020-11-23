@@ -8,6 +8,7 @@ import primal.os.Log_;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 
 import static java.util.Map.entry;
 import static primal.statics.Fail.fail;
@@ -39,8 +40,8 @@ public class Pbft {
 			this.decision = decision;
 		}
 
-		public boolean isDecision(Object decision) {
-			return Verbs.Equals.ab(this.decision, decision);
+		public boolean isDecision(Mt type, Object decision) {
+			return this.type == type &&Verbs.Equals.ab(this.decision, decision);
 		}
 	}
 
@@ -82,6 +83,12 @@ public class Pbft {
 		public Map<General, Message> round(int epoch, Map<General, Message> recvs) {
 			var fromLeader = recvs.get(leader);
 
+			var count = new Object() {
+				private int f(Predicate<Message> predicate) {
+					return Read.from2(recvs).values().filter(predicate).size();
+				}
+			};
+
 			if (prepareTime + maxPrepareDuration < epoch) {
 				state = State.VIEWCHG;
 				leaderIndex = (leaderIndex + 1) % nGenerals;
@@ -107,7 +114,7 @@ public class Pbft {
 				} else
 					return Map.ofEntries();
 			else if (state == State.PREPARE)
-				if (nGenerals - maxTraitors <= Read.from2(recvs).values().filter(m -> m.type == Mt.PREPARE && m.isDecision(decision)).size()) {
+				if (nGenerals - maxTraitors <= count.f(m -> m.isDecision(Mt.PREPARE, decision))) {
 					state = State.COMMIT_;
 					return Read //
 							.from(generals) //
@@ -116,7 +123,7 @@ public class Pbft {
 				} else
 					return Map.ofEntries();
 			else if (state == State.COMMIT_)
-				if (nGenerals - maxTraitors <= Read.from2(recvs).values().filter(m -> m.type == Mt.COMMIT && m.isDecision(decision)).size()) {
+				if (nGenerals - maxTraitors <= count.f(m -> m.isDecision(Mt.COMMIT, decision))) {
 					Log_.info("EXECUTE " + decision);
 					state = State.PRE____;
 					return Map.ofEntries(entry(null, new Message(Mt.REPLY, decision)));
@@ -124,7 +131,7 @@ public class Pbft {
 					return Map.ofEntries();
 			else if (state == State.VIEWCHG)
 				if (this == leader)
-					if (nGenerals - maxTraitors <= Read.from2(recvs).values().filter(m -> m.type == Mt.VIEWCHANGE && m.isDecision(leader)).size())
+					if (nGenerals - maxTraitors <= count.f(m -> m.isDecision(Mt.VIEWCHANGE, leader)))
 						return Read //
 								.from(generals) //
 								.map2(r -> r, r -> new Message(Mt.NEWVIEW, decision)) //
