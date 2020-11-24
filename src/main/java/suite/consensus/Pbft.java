@@ -1,17 +1,17 @@
 package suite.consensus;
 
-import primal.MoreVerbs.Read;
-import primal.Verbs;
-import primal.fp.Funs.Source;
-import primal.os.Log_;
+import static java.util.Map.entry;
+import static primal.statics.Fail.fail;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 
-import static java.util.Map.entry;
-import static primal.statics.Fail.fail;
+import primal.MoreVerbs.Read;
+import primal.Verbs;
+import primal.fp.Funs.Source;
+import primal.os.Log_;
 
 /**
  * https://www.geeksforgeeks.org/practical-byzantine-fault-tolerancepbft/
@@ -42,7 +42,7 @@ public class Pbft {
 		}
 
 		public boolean isDecision(Mt type, Object decision) {
-			return this.type == type &&Verbs.Equals.ab(this.decision, decision);
+			return this.type == type && Verbs.Equals.ab(this.decision, decision);
 		}
 	}
 
