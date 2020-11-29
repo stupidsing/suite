@@ -16,7 +16,7 @@ define.function !alloc size0 := do!
 		expand ps := pointer* ~
 		fold (
 			(pointer, pr) := address.of alloc.free.chain, null #
-			pr = null && ps != null #
+			pr = null && predef (ps != null) #
 			if (ps*/size != sizep) then (
 				address.of ps*/next, null
 			) else (

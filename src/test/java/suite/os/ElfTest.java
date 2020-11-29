@@ -12,7 +12,6 @@ import primal.primitive.adt.Bytes;
 import primal.primitive.adt.pair.IntObjPair;
 import suite.assembler.Amd64;
 import suite.assembler.Amd64.Insn;
-import suite.assembler.Amd64.Instruction;
 import suite.assembler.Amd64Assemble;
 import suite.assembler.Amd64Interpret;
 import suite.assembler.Amd64Mode;
@@ -22,10 +21,7 @@ import suite.util.RunUtil;
 // http://www.muppetlabs.com/~breadbox/software/tiny/teensy.html
 public class ElfTest {
 
-	private boolean isLongMode = RunUtil.isLinux64();
-
 	private Amd64 amd64 = Amd64.me;
-	private WriteElf elf = new WriteElf(isLongMode);
 
 	@Test
 	public void testAllocate() {
@@ -41,20 +37,27 @@ public class ElfTest {
 	}
 
 	@Test
-	public void testAssembler() {
-		List<Instruction> instructions;
+	public void testAssembler32() {
+		var instructions = List.of( //
+				amd64.instruction(Insn.MOV, amd64.eax, amd64.imm32(0x01)), //
+				amd64.instruction(Insn.INT, amd64.imm8(0x80)));
 
-		if (isLongMode)
-			instructions = List.of( //
-					amd64.instruction(Insn.MOV, amd64.rax, amd64.imm64(0x3C)), //
-					amd64.instruction(Insn.MOV, amd64.rdi, amd64.imm64(0x00)), //
-					amd64.instruction(Insn.SYSCALL));
-		else
-			instructions = List.of( //
-					amd64.instruction(Insn.MOV, amd64.eax, amd64.imm32(0x01)), //
-					amd64.instruction(Insn.INT, amd64.imm8(0x80)));
+		var aa = new Amd64Assemble(Amd64Mode.PROT32);
+		var elf = new WriteElf(false);
+		var exec = elf.exec(new byte[0], offset -> aa.assemble(offset, instructions, true));
+		assertEquals(0, exec.code);
+		assertEquals("", exec.out);
+	}
 
-		var aa = new Amd64Assemble(isLongMode ? Amd64Mode.LONG64 : Amd64Mode.PROT32);
+	@Test
+	public void testAssembler64() {
+		var instructions = List.of( //
+				amd64.instruction(Insn.MOV, amd64.rax, amd64.imm64(0x3C)), //
+				amd64.instruction(Insn.MOV, amd64.rdi, amd64.imm64(0x00)), //
+				amd64.instruction(Insn.SYSCALL));
+
+		var aa = new Amd64Assemble(Amd64Mode.LONG64);
+		var elf = new WriteElf(true);
 		var exec = elf.exec(new byte[0], offset -> aa.assemble(offset, instructions, true));
 		assertEquals(0, exec.code);
 		assertEquals("", exec.out);
@@ -80,9 +83,13 @@ public class ElfTest {
 
 	@Test
 	public void testGuess() {
-		var program = "do! (consult guess.fp)/!guess {}";
-		for (var isOptimize : new boolean[] { false, true, })
-			elf.write(offset -> Funp_.main(isLongMode, isOptimize).compile(offset, program).v, Tmp.path("guess"));
+		for (var isLongMode : new boolean[] { false, true, }) {
+			var program = "do! (consult guess.fp)/!guess {}";
+			var elf = new WriteElf(isLongMode);
+
+			for (var isOptimize : new boolean[] { false, true, })
+				elf.write(offset -> Funp_.main(isLongMode, isOptimize).compile(offset, program).v, Tmp.path("guess"));
+		}
 	}
 
 	// io :: a -> io a
@@ -147,8 +154,10 @@ public class ElfTest {
 
 	@Test
 	public void testRdtsc() {
-		execute("consult 'asm.${platform}.fp' ~ do! (!asm.rdtsc and +x7FFFFFFF % 100)", "");
-		execute("consult 'asm.${platform}.fp' ~ do! (!asm.rdtscp and +x7FFFFFFF % 100)", "");
+		for (var isLongMode : new boolean[] { false, true, }) {
+			execute("consult 'asm.${platform}.fp' ~ do! (!asm.rdtsc and +x7FFFFFFF % 100)", "", isLongMode);
+			execute("consult 'asm.${platform}.fp' ~ do! (!asm.rdtscp and +x7FFFFFFF % 100)", "", isLongMode);
+		}
 	}
 
 	@Test
@@ -161,12 +170,15 @@ public class ElfTest {
 	}
 
 	private void test(int code, String program, String input, String expected) {
-		var result = execute(program, input);
-		assertEquals(code, result.k);
-		assertEquals(expected, result.v);
+		for (var isLongMode : new boolean[] { false, true, }) {
+			var result = execute(program, input, isLongMode);
+			assertEquals(code, result.k);
+			assertEquals(expected, result.v);
+		}
 	}
 
-	private IntObjPair<String> execute(String program, String input) {
+	private IntObjPair<String> execute(String program, String input, boolean isLongMode) {
+		var elf = new WriteElf(isLongMode);
 		var interpret = new Amd64Interpret(isLongMode);
 
 		var ibs = Bytes.of(input.getBytes(Utf8.charset));
