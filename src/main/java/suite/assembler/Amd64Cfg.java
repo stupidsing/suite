@@ -2,8 +2,6 @@ package suite.assembler;
 
 import static primal.statics.Fail.fail;
 
-import suite.util.RunUtil;
-
 public class Amd64Cfg {
 
 	public boolean isLongMode;
