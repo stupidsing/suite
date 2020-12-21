@@ -125,7 +125,7 @@ public class HkexFactBook {
 
 	private String getUrl(int year) {
 		var dir = "https://www.hkex.com.hk/-/media/HKEX-Market/Market-Data/Statistics/Consolidated-Reports/HKEX-Fact-Book";
-		if (year <= 2017)
+		if (year <= 2019)
 			return dir + "/HKEX-Fact-Book-" + year + "/FB_" + year + ".pdf";
 		else
 			return fail();
