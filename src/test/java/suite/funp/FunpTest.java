@@ -24,8 +24,8 @@ public class FunpTest {
 
 	@Test
 	public void testAssign() {
-		test(3, "define p := address.of predef { a: 1, b: 2, c: 3, } ~ do! (!assign p*/b := 4 ~ p*/c)");
-		test(4, "define p := address.of predef { a: 1, b: 2, c: 3, } ~ do! (!assign p*/c := 4 ~ p*/c)");
+		test(3, "define p := address-of predef { a: 1, b: 2, c: 3, } ~ do! (!assign p*/b := 4 ~ p*/c)");
+		test(4, "define p := address-of predef { a: 1, b: 2, c: 3, } ~ do! (!assign p*/c := 4 ~ p*/c)");
 	}
 
 	@Test
@@ -34,7 +34,7 @@ public class FunpTest {
 		test(0, "define a := [0, 1,] ~ if (`[1, v,]` = a) then v else 0");
 		test(2, "define s := { a: 1, b: 2, c: 3, } ~ if (`{ a, b: v, c, }` = s) then v else 0");
 		test(2, "define s := { a: 1, b: 2, c: 3, } ~ if (`{ c, a, b: v, }` = s) then v else 0");
-		test(2, "define s := { a: 1, b: 2, c: 3, } ~ if (`address.of { a, b: v, c, }` = address.of s) then v else 0");
+		test(2, "define s := { a: 1, b: 2, c: 3, } ~ if (`address-of { a, b: v, c, }` = address-of s) then v else 0");
 	}
 
 	@Test
@@ -116,7 +116,7 @@ public class FunpTest {
 	public void testDefine() {
 		test(4, "define i := 3 ~ i + 1");
 		test(4, "define f i := i + 1 ~ 3 | f");
-		test(1, "define.global a := [0, 1, 2,] ~ a [1]");
+		test(1, "define-global a := [0, 1, 2,] ~ a [1]");
 		test(1, "define { a: 1, b: (() => me/a), c: 3, } ~ b ()");
 		test(4, "define (a, b) := (3, 4) ~ b");
 		test(4, "define [a, b,] := [3, 4,] ~ b");
@@ -150,13 +150,13 @@ public class FunpTest {
 		// global required
 		test(0, """
 				let module :=
-					let.global f () := 0 ~
+					let-global f () := 0 ~
 					let g () := f () ~
 					{ g, }
 				~
 				() | module/g""");
 
-		test(9, "define.global max (a, b) := if (a < b) then b else a ~ max (8, 9)");
+		test(9, "define-global max (a, b) := if (a < b) then b else a ~ max (8, 9)");
 	}
 
 	@Test
@@ -174,7 +174,7 @@ public class FunpTest {
 		test(2, "let f := { b: v, } => v ~ f { a: 1, b: 2, c: 3, }");
 		test(2, "let f := [a, b, c,] => b ~ f [1, 2, 3,]");
 		test(6, "let g := glob (a => a + 1) ~ 3 | g | g | g");
-		test(6, "define.function f a := a + 1 ~ 3 | f | f | f");
+		test(6, "define-function f a := a + 1 ~ 3 | f | f | f");
 	}
 
 	@Test
@@ -186,7 +186,7 @@ public class FunpTest {
 	public void testLet() {
 		test(4, "let i := 3 ~ i + 1");
 		test(4, "let f i := i + 1 ~ 3 | f");
-		test(1, "let.global a := [0, 1, 2,] ~ a [1]");
+		test(1, "let-global a := [0, 1, 2,] ~ a [1]");
 		test(1, "let { a: 1, b: (() => me/a), c: 3, } ~ b ()");
 		test(4, "let (a, b) := (3, 4) ~ b");
 		test(4, "let [a, b,] := [3, 4,] ~ b");
@@ -215,13 +215,13 @@ public class FunpTest {
 				)
 				""");
 		test(2, """
-				define.function !list.iter list := do!
-				     type list = { elems: address.of (array 3 * number), size: number, } ~
+				define-function !list-iter list := do!
+				     type list = { elems: address-of (array 3 * number), size: number, } ~
 				     let { elems, size, } := list ~
 				     let i := !new^ 0 ~
 				     {
 				             !free () := do! (!delete^ i ~ ()) ~
-				             has.next () := i* < size ~
+				             has-next () := i* < size ~
 				             !next () := do!
 				                     let i_ := i* ~
 				                     !assign i* := i_ + 1 ~
@@ -231,7 +231,7 @@ public class FunpTest {
 				~
 				do! (
 				     let elems := !new^ [1, 2, 3,] ~
-				     let iter := !list.iter { elems, size: 3, } ~
+				     let iter := !list-iter { elems, size: 3, } ~
 				     let u := iter/!next () ~
 				     let v := iter/!next () ~
 				     iter/!free () ~
@@ -261,12 +261,12 @@ public class FunpTest {
 
 	@Test
 	public void testReference() {
-		test(5, "define i := 3 ~ define p := address.of i ~ 2 + p*");
+		test(5, "define i := 3 ~ define p := address-of i ~ 2 + p*");
 	}
 
 	@Test
 	public void testReturnArray() {
-		test(2, "define.function f i := [0, 1, i,] ~ (predef (f 2)) [2]");
+		test(2, "define-function f i := [0, 1, i,] ~ (predef (f 2)) [2]");
 	}
 
 	@Test
@@ -284,13 +284,13 @@ public class FunpTest {
 	@Test
 	public void testString() {
 		test(65, "define s := \"A world for us\" ~ number:byte s* [0]");
-		test(65, "let.global s := \"A world for us\" ~ number:byte s* [0]");
+		test(65, "let-global s := \"A world for us\" ~ number:byte s* [0]");
 	}
 
 	@Test
 	public void testStruct() {
 		test(3, "define s := { a: 1, b: 2, c: 3, } ~ s/c");
-		test(3, "define p := address.of predef { a: 1, b: 2, c: 3, } ~ p*/c");
+		test(3, "define p := address-of predef { a: 1, b: 2, c: 3, } ~ p*/c");
 	}
 
 	@Test

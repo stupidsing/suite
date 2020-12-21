@@ -164,7 +164,7 @@
 						</div>
 						<div className='dropdown-list'>
 							<div>
-								{list.map((item, i) =>
+								{list-map((item, i) =>
 									<div key={item.name} className={i === index ? 'selected' : ''} onClick={() => selectByIndex(i)} onMouseOver={() => selectByIndex(i)}>
 										<span className='dropdown' style={{ color: item.hex }}>{item.name}</span>
 										<i className='fa fa-check'></i>

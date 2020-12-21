@@ -132,7 +132,7 @@ public class SmartSplit {
 	}
 
 	/**
-	 * Judges if the input string has balanced quote characters and bracket
+	 * Judges if the input-string has balanced quote characters and bracket
 	 * characters.
 	 *
 	 * @param isThrow if this is set to true, and the string is deemed unparseable

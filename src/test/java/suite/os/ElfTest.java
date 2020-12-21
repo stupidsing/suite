@@ -103,19 +103,19 @@ public class ElfTest {
 
 	@Test
 	public void testIter() {
-		// var program = "do! (consult iter.fp)/!list.iter []";
+		// var program = "do! (consult iter.fp)/!list-iter []";
 		var program = """
-				let { !list.build, list.filter, !list.free, !list.iter, list.map, } := consult iter.fp ~
+				let { !list-build, list-filter, !list-free, !list-iter, list-map, } := consult iter.fp ~
 				do! (
-					let b := !list.build () ~
+					let b := !list-build () ~
 					b/!append 1 ~
 					b/!append 2 ~
 					b/!append 3 ~
 					let iter :=
-						b/!get () | defer !list.free
-						| precapture list.filter (i => true) | !! | defer !list.free
-						| precapture list.map (i => i + 1) | !! | defer !list.free
-						| !list.iter | !! | defer/!free
+						b/!get () | defer !list-free
+						| precapture list-filter (i => true) | !! | defer !list-free
+						| precapture list-map (i => i + 1) | !! | defer !list-free
+						| !list-iter | !! | defer/!free
 					~
 					iter/!next ()
 				)
@@ -126,11 +126,11 @@ public class ElfTest {
 	@Test
 	public void testNumbers() {
 		test(0, """
-				let { !get.number, !put.number, } := consult io.fp ~
+				let { !get-number, !put-number, } := consult io.fp ~
 				do! (
-				let m := type number !get.number {} ~
-				let n := type number !get.number {} ~
-				!put.number (m + n) ~ 0
+				let m := type number !get-number {} ~
+				let n := type number !get-number {} ~
+				!put-number (m + n) ~ 0
 				)
 				""", //
 				"25\n57\n", //
@@ -139,15 +139,15 @@ public class ElfTest {
 
 	@Test
 	public void testPut() {
-		test(0, "do! ((consult io.fp)/!put.char byte 'A' | !! 0)", "A");
-		test(0, "do! ((consult io.fp)/!put.number number 'A' | !! 0)", "65");
-		test(0, "do! ((consult io.fp)/!put.number -999 | !! 0)", "-999");
+		test(0, "do! ((consult io.fp)/!put-char byte 'A' | !! 0)", "A");
+		test(0, "do! ((consult io.fp)/!put-number number 'A' | !! 0)", "65");
+		test(0, "do! ((consult io.fp)/!put-number -999 | !! 0)", "-999");
 		test(0, """
 				let io := consult io.fp ~
 				for! (
 					i := 0 #
 					i < 10 #
-					io/!put.number i | !! (i + 1) #
+					io/!put-number i | !! (i + 1) #
 					0)
 				""", "0123456789");
 	}
@@ -155,8 +155,8 @@ public class ElfTest {
 	@Test
 	public void testRdtsc() {
 		for (var isLongMode : new boolean[] { false, true, }) {
-			execute("consult 'asm.${platform}.fp' ~ do! (!asm.rdtsc and +x7FFFFFFF % 100)", "", isLongMode);
-			execute("consult 'asm.${platform}.fp' ~ do! (!asm.rdtscp and +x7FFFFFFF % 100)", "", isLongMode);
+			execute("consult 'asm.${platform}.fp' ~ do! (!asm-rdtsc and +x7FFFFFFF % 100)", "", isLongMode);
+			execute("consult 'asm.${platform}.fp' ~ do! (!asm-rdtscp and +x7FFFFFFF % 100)", "", isLongMode);
 		}
 	}
 

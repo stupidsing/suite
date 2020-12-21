@@ -2,13 +2,13 @@ expand max-size := 32 ~
 expand type-elem := number ~
 
 expand type-list := {
-	elems := address.of (array max-size * type-elem) ~
+	elems := address-of (array max-size * type-elem) ~
 	size := number ~
 } ~
 
 expand elem0 := 0 ~
 
-define.global !list.build () := do!
+define-global !list-build () := do!
 	let elems := !new-array^ (max-size * type-elem) ~
 	let dummy := fold (
 	    i := 0 #
@@ -40,17 +40,17 @@ define.global !list.build () := do!
 	}
 ~
 
-define.global !list.free list := do!
+define-global !list-free list := do!
 	type list = type-list ~
 	!delete-array^ list/elems ~
 	()
 ~
 
-define.global !list.iter list := do!
+define-global !list-iter list := do!
 	type list = type-list ~
 	let { elems ~ size ~ } := list ~
 	let i := !new^ 0 ~
-	let has.next := () => capture (i* < size) ~
+	let has-next := () => capture (i* < size) ~
 	let !next := () => capture do!
 		let i_ := i* ~
 		!assign i* := i_ + 1 ~
@@ -58,23 +58,23 @@ define.global !list.iter list := do!
 	~
 	{
 		!free := () => capture1 do!
-			uncapture has.next ~
+			uncapture has-next ~
 			uncapture !next ~
 			!delete^ i ~
 			()
 		~
-		has.next ~
+		has-next ~
 		!next ~
 	}
 ~
 
-define.global list.filter f := list => capture do!
-	let in := !list.iter list ~
-	let out := !list.build () ~
+define-global list-filter f := list => capture do!
+	let in := !list-iter list ~
+	let out := !list-build () ~
 	fold (
 		b := true #
 		b #
-		if (in/has.next ()) then (
+		if (in/has-next ()) then (
 			let elem := in/!next () ~
 			if (f elem) then (
 				out/!append elem ~ true
@@ -86,13 +86,13 @@ define.global list.filter f := list => capture do!
 	)
 ~
 
-define.global list.map f := list => capture do!
-		let in := !list.iter list ~
-		let out := !list.build () ~
+define-global list-map f := list => capture do!
+		let in := !list-iter list ~
+		let out := !list-build () ~
 		fold (
 			b := true #
 			b #
-			if (in/has.next ()) then (
+			if (in/has-next ()) then (
 				let elem := in/!next () ~
 				out/!append (f elem) ~
 				true
@@ -103,9 +103,9 @@ define.global list.map f := list => capture do!
 ~
 
 {
-	!list.build,
-	list.filter,
-	!list.free,
-	!list.iter,
-	list.map,
+	!list-build,
+	list-filter,
+	!list-free,
+	!list-iter,
+	list-map,
 }

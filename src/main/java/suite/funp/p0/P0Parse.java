@@ -173,13 +173,13 @@ public class P0Parse extends FunpCfg {
 				return new_(a, false, null);
 			}).match("!new-array^ (.0 * .1)", (a, b) -> { // allocates a fixed-size array
 				return new_(b, true, p(a));
-			}).match("address.of .0", a -> { // gets a pointer to something
+			}).match("address-of .0", a -> { // gets a pointer to something
 				return FunpReference.of(p(a));
-			}).match("address.of.any", () -> { // gets a pointer to the void
+			}).match("address-of-any", () -> { // gets a pointer to the void
 				return FunpReference.of(FunpDontCare.of());
 			}).match("array .0 * .1", (a, b) -> { // forms a array repeating an element
 				return FunpRepeat.of(Int.num(a), p(b));
-			}).match("array.of.many .0", a -> { // an virtual array; for deriving types, cannot be instantiated
+			}).match("array-of-many .0", a -> { // an virtual array; for deriving types, cannot be instantiated
 				return FunpRepeat.of(null, p(a));
 			}).match("assert .0 ~ .1", (a, b) -> {
 				return FunpIf.of(p(a), p(b), FunpError.of("failed assert: " + a));
@@ -209,11 +209,11 @@ public class P0Parse extends FunpCfg {
 				return define(a, bind(Fdt.L_MONO).lambdaSeparate(b, c), d, Fdt.L_POLY);
 			}).match("define { .0 } ~ .1", (a, b) -> { // define lots of variables
 				return defineList(a, b, Fdt.L_POLY);
-			}).match("define.function .0 .1 := .2 ~ .3", (a, b, c, d) -> {
+			}).match("define-function .0 .1 := .2 ~ .3", (a, b, c, d) -> {
 				var lambda = bind(Fdt.L_MONO).lambdaSeparate(b, c);
 				lambda.fct = Fct.STACKF;
 				return define(a, lambda, d, Fdt.S_POLY);
-			}).match("define.global .0 := .1 ~ .2", (a, b, c) -> { // defines a global variable
+			}).match("define-global .0 := .1 ~ .2", (a, b, c) -> { // defines a global variable
 				var tree = Tree.decompose(a, TermOp.TUPLE_);
 				if (tree == null || !isId(tree.getLeft())) {
 					var bind = bind(Fdt.G_POLY);
@@ -221,11 +221,11 @@ public class P0Parse extends FunpCfg {
 					return FunpDefine.of(lambda.vn, p(b), lambda.expr, bind.outerFdt);
 				} else
 					return null;
-			}).match("define.global .0 .1 := .2 ~ .3", (a, b, c, d) -> { // defines a global function
+			}).match("define-global .0 .1 := .2 ~ .3", (a, b, c, d) -> { // defines a global function
 				return define(a, bind(Fdt.L_MONO).lambdaSeparate(b, c), d, Fdt.G_POLY);
-			}).match("define.global { .0 } ~ .1", (a, b) -> { // define lots of global variables
+			}).match("define-global { .0 } ~ .1", (a, b) -> { // define lots of global variables
 				return defineList(a, b, Fdt.G_POLY);
-			}).match("define.virtual .0 := .1 ~ .2", (a, b, c) -> { // defines a name for typing
+			}).match("define-virtual .0 := .1 ~ .2", (a, b, c) -> { // defines a name for typing
 				return defineList(Read.each2(Pair.of(Atom.name(a), b)), c, Fdt.VIRT);
 			}).match("do! .0", a -> { // boxes an I/O operation
 				return do_(parse -> parse.p(a));
@@ -256,7 +256,7 @@ public class P0Parse extends FunpCfg {
 				return define(a, bind(Fdt.L_MONO).lambdaSeparate(b, c), d, Fdt.L_MONO);
 			}).match("let { .0 } ~ .1", (a, b) -> { // define lots of variables
 				return defineList(a, b, Fdt.L_MONO);
-			}).match("let.global .0 := .1 ~ .2", (a, b, c) -> { // defines a global variable
+			}).match("let-global .0 := .1 ~ .2", (a, b, c) -> { // defines a global variable
 				var tree = Tree.decompose(a, TermOp.TUPLE_);
 				if (tree == null || !isId(tree.getLeft())) {
 					var bind = bind(Fdt.G_MONO);
@@ -264,9 +264,9 @@ public class P0Parse extends FunpCfg {
 					return FunpDefine.of(lambda.vn, p(b), lambda.expr, bind.outerFdt);
 				} else
 					return null;
-			}).match("let.global .0 .1 := .2 ~ .3", (a, b, c, d) -> { // defines a global function
+			}).match("let-global .0 .1 := .2 ~ .3", (a, b, c, d) -> { // defines a global function
 				return define(a, bind(Fdt.L_MONO).lambdaSeparate(b, c), d, Fdt.G_MONO);
-			}).match("let.global { .0 } ~ .1", (a, b) -> { // define lots of global functions
+			}).match("let-global { .0 } ~ .1", (a, b) -> { // define lots of global functions
 				return defineList(a, b, Fdt.G_MONO);
 			}).match("log .0 ~ .1", (a, b) -> { // show a value to console
 				return FunpLog.of(p(a), p(b));
