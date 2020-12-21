@@ -73,7 +73,7 @@ public class Pbft {
 		VIEWCHG, //
 	}
 
-	public class GoodGeneral implements General { // a good one
+	public class GoodGeneral implements General {
 		private int leaderIndex;
 		private General leader;
 		private Object decision;
