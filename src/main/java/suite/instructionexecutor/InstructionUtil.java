@@ -182,7 +182,7 @@ public class InstructionUtil {
 		}
 	}
 
-	public static Insn getEvalInsn(TermOp operator) {
+	public static Insn getEvalInsn(Operator operator) {
 		return InstructionUtil.evalInsns.get(operator);
 	}
 

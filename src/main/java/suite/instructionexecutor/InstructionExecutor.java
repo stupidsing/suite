@@ -8,6 +8,7 @@ import java.util.List;
 import primal.adt.map.BiHashMap;
 import primal.adt.map.BiMap;
 import primal.os.Log_;
+import primal.parser.Operator;
 import suite.Suite;
 import suite.instructionexecutor.InstructionUtil.Activation;
 import suite.instructionexecutor.InstructionUtil.Frame;
@@ -82,7 +83,7 @@ public class InstructionExecutor implements AutoCloseable {
 				var regs = frame != null ? frame.registers : null;
 				var insn = instructions[ip = current.ip++];
 				Thunk thunk;
-				TermOp op;
+				Operator op;
 				int i;
 
 				switch (insn.insn) {

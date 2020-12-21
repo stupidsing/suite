@@ -38,7 +38,6 @@ import suite.funp.p4.P4GenerateCode;
 import suite.inspect.Inspect;
 import suite.node.Node;
 import suite.node.io.SwitchNode;
-import suite.node.io.TermOp;
 import suite.node.parser.IterativeParser;
 import suite.node.util.Singleton;
 import suite.object.CastDefaults;
@@ -48,7 +47,7 @@ import suite.util.Switch;
 public class Funp_ extends FunpCfg {
 
 	private static Inspect inspect = Singleton.me.inspect;
-	private static IterativeParser parser = new IterativeParser(TermOp.values, TermOp.TUPLE_);
+	private static IterativeParser parser = new IterativeParser(FunpOp.values, FunpOp.TUPLE_);
 
 	private static BindArrayUtil bindArrayUtil = new BindArrayUtil(parser);
 

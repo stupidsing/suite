@@ -1,4 +1,4 @@
-package suite.node.io;
+package suite.funp;
 
 import static primal.statics.Rethrow.ex;
 
@@ -6,17 +6,17 @@ import java.util.List;
 
 import primal.Verbs.Equals;
 import primal.parser.Operator;
+import primal.parser.Operator.Assoc;
+import suite.node.io.BaseOp;
 
-public class TermOp implements Operator {
+public class FunpOp {
 
 	public static BaseOp NEXT__ = BaseOp.NEXT__;
-	public static BaseOp IS____ = BaseOp.IS____;
 	public static BaseOp CONTD_ = BaseOp.CONTD_;
 	public static BaseOp DEFINE = BaseOp.DEFINE;
 	public static BaseOp BIGOR_ = BaseOp.BIGOR_;
 	public static BaseOp BIGAND = BaseOp.BIGAND;
 	public static BaseOp FUN___ = BaseOp.FUN___;
-	public static BaseOp ARROW_ = BaseOp.ARROW_;
 	public static BaseOp SEP___ = BaseOp.SEP___;
 	public static BaseOp JOIN__ = BaseOp.JOIN__;
 	public static BaseOp OR____ = BaseOp.OR____;
@@ -38,40 +38,38 @@ public class TermOp implements Operator {
 	public static BaseOp DEREF_ = BaseOp.DEREF_;
 
 	public static Operator[] values = new Operator[] { //
-			NEXT__, //
-			IS____, //
-			CONTD_, //
-			DEFINE, //
-			BIGOR_, //
-			BIGAND, //
-			FUN___, //
-			ARROW_, //
-			SEP___, //
-			JOIN__, //
-			OR____, //
-			AND___, //
-			EQUAL_, //
-			NOTEQ_, //
-			LE____, //
-			LT____, //
-			PLUS__, //
-			MINUS_, //
-			MULT__, //
-			DIVIDE, //
-			MODULO, //
-			POWER_, //
-			BRACES, //
-			TUPLE_, //
-			ITEM__, //
-			COLON_, //
-			DEREF_, //
+			FunpOp.NEXT__, //
+			FunpOp.CONTD_, //
+			FunpOp.DEFINE, //
+			FunpOp.BIGOR_, //
+			FunpOp.BIGAND, //
+			FunpOp.FUN___, //
+			FunpOp.SEP___, //
+			FunpOp.JOIN__, //
+			FunpOp.OR____, //
+			FunpOp.AND___, //
+			FunpOp.EQUAL_, //
+			FunpOp.NOTEQ_, //
+			FunpOp.LE____, //
+			FunpOp.LT____, //
+			FunpOp.PLUS__, //
+			FunpOp.MINUS_, //
+			FunpOp.MULT__, //
+			FunpOp.DIVIDE, //
+			FunpOp.MODULO, //
+			FunpOp.POWER_, //
+			FunpOp.BRACES, //
+			FunpOp.TUPLE_, //
+			FunpOp.ITEM__, //
+			FunpOp.COLON_, //
+			FunpOp.DEREF_, //
 	};
 
 	public int precedence;
 	public String name;
 	public Assoc assoc;
 
-	private TermOp(int precedence, String name, Assoc assoc) {
+	private FunpOp(int precedence, String name, Assoc assoc) {
 		this.precedence = precedence;
 		this.name = name;
 		this.assoc = assoc;
@@ -84,16 +82,16 @@ public class TermOp implements Operator {
 		return null;
 	}
 
-	public static TermOp valueOf(String field) {
-		return (TermOp) ex(() -> TermOp.class.getField(field).get(null));
+	public static FunpOp valueOf(String field) {
+		return (FunpOp) ex(() -> FunpOp.class.getField(field).get(null));
 	}
 
 	public static boolean isSpaceBefore(Operator operator) {
-		return List.of(TermOp.NEXT__).contains(operator);
+		return List.of(BaseOp.NEXT__).contains(operator);
 	}
 
 	public static boolean isSpaceAfter(Operator operator) {
-		return List.of(TermOp.NEXT__, TermOp.AND___, TermOp.OR____).contains(operator);
+		return List.of(BaseOp.NEXT__, BaseOp.AND___, BaseOp.OR____).contains(operator);
 	}
 
 	public static int getLeftPrec(Operator operator) {
@@ -102,21 +100,6 @@ public class TermOp implements Operator {
 
 	public static int getRightPrec(Operator operator) {
 		return operator.precedence() - (operator.assoc() == Assoc.RIGHT ? 1 : 0);
-	}
-
-	@Override
-	public String name_() {
-		return name;
-	}
-
-	@Override
-	public Assoc assoc() {
-		return assoc;
-	}
-
-	@Override
-	public int precedence() {
-		return precedence;
 	}
 
 	@Override

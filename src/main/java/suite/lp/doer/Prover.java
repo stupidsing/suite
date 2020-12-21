@@ -6,6 +6,7 @@ import java.util.List;
 import primal.Verbs.Right;
 import primal.fp.Funs.Source;
 import primal.os.Log_;
+import primal.parser.Operator;
 import suite.Suite;
 import suite.lp.Configuration.ProverCfg;
 import suite.lp.Trail;
@@ -215,7 +216,7 @@ public class Prover {
 		return formOp(n0, n1, FAIL, OK, TermOp.OR____);
 	}
 
-	private Node formOp(Node n0, Node n1, Node bail, Node done, TermOp op) {
+	private Node formOp(Node n0, Node n1, Node bail, Node done, Operator op) {
 		if (n0 == bail)
 			return n1;
 		else if (n1 == bail)

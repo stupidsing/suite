@@ -17,6 +17,7 @@ import primal.fp.Funs.Sink;
 import primal.fp.Funs.Source;
 import primal.fp.Funs2.Fun2;
 import primal.fp.Funs2.Sink2;
+import primal.parser.Operator;
 import primal.parser.Operator.Assoc;
 import primal.primitive.IntPrim;
 import primal.primitive.IntPrim.IntObj_Obj;
@@ -34,6 +35,7 @@ import suite.assembler.Amd64.Operand;
 import suite.assembler.Amd64Assemble;
 import suite.assembler.Amd64Parse;
 import suite.funp.FunpCfg;
+import suite.funp.FunpOp;
 import suite.funp.Funp_;
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.Coerce;
@@ -109,26 +111,26 @@ public class P4GenerateCode extends FunpCfg {
 	private OpReg p2_edx = pointerRegs[dxReg];
 
 	private Map<Object, Insn> insnByOp = Map.ofEntries( //
-			entry(TermOp.BIGOR_, Insn.OR), //
-			entry(TermOp.BIGAND, Insn.AND), //
-			entry(TermOp.PLUS__, Insn.ADD), //
-			entry(TermOp.MINUS_, Insn.SUB), //
-			entry(TermOp.MULT__, Insn.IMUL), //
+			entry(FunpOp.BIGOR_, Insn.OR), //
+			entry(FunpOp.BIGAND, Insn.AND), //
+			entry(FunpOp.PLUS__, Insn.ADD), //
+			entry(FunpOp.MINUS_, Insn.SUB), //
+			entry(FunpOp.MULT__, Insn.IMUL), //
 			entry(TreeUtil.AND, Insn.AND), //
 			entry(TreeUtil.OR_, Insn.OR), //
 			entry(TreeUtil.XOR, Insn.XOR));
 
-	private Map<TermOp, Insn> setInsnByOp = Map.ofEntries( //
-			entry(TermOp.EQUAL_, Insn.SETE), //
-			entry(TermOp.LE____, Insn.SETLE), //
-			entry(TermOp.LT____, Insn.SETL), //
-			entry(TermOp.NOTEQ_, Insn.SETNE));
+	private Map<Operator, Insn> setInsnByOp = Map.ofEntries( //
+			entry(FunpOp.EQUAL_, Insn.SETE), //
+			entry(FunpOp.LE____, Insn.SETLE), //
+			entry(FunpOp.LT____, Insn.SETL), //
+			entry(FunpOp.NOTEQ_, Insn.SETNE));
 
-	private Map<TermOp, Insn> setRevInsnByOp = Map.ofEntries( //
-			entry(TermOp.EQUAL_, Insn.SETE), //
-			entry(TermOp.LE____, Insn.SETGE), //
-			entry(TermOp.LT____, Insn.SETG), //
-			entry(TermOp.NOTEQ_, Insn.SETNE));
+	private Map<Operator, Insn> setRevInsnByOp = Map.ofEntries( //
+			entry(FunpOp.EQUAL_, Insn.SETE), //
+			entry(FunpOp.LE____, Insn.SETGE), //
+			entry(FunpOp.LT____, Insn.SETG), //
+			entry(FunpOp.NOTEQ_, Insn.SETNE));
 
 	private Map<Atom, Insn> shInsnByOp = Map.ofEntries( //
 			entry(TreeUtil.SHL, Insn.SHL), //
@@ -220,7 +222,7 @@ public class P4GenerateCode extends FunpCfg {
 			})).applyIf(FunpBoolean.class, f -> f.apply(b -> {
 				return returnOp(amd64.imm(b ? 1 : 0, bs));
 			})).applyIf(FunpCmp.class, f -> f.apply((op, l, r) -> {
-				var isEq = op == TermOp.EQUAL_;
+				var isEq = op == FunpOp.EQUAL_;
 				var r0 = compileIsReg(l.pointer);
 				var r1 = mask(r0).compileIsReg(r.pointer);
 				var size0 = l.size();
@@ -255,7 +257,7 @@ public class P4GenerateCode extends FunpCfg {
 						.sink((n_, ofs) -> c1.compileAssign(n_,
 								FunpMemory.of(t.pointer, t.start + ofs.s, t.start + ofs.e))));
 			})).applyIf(FunpDoAsm.class, f -> f.apply((assigns, asm, opResult) -> {
-				var p = new Amd64Parse(mode, TermOp.TUPLE_);
+				var p = new Amd64Parse(mode, FunpOp.TUPLE_);
 				new Object() {
 					private Object assign(Compile0 c1, int i) {
 						return i < assigns.size() ? assigns.get(i).map((op, f) -> {
@@ -368,7 +370,7 @@ public class P4GenerateCode extends FunpCfg {
 
 				Source<IntObjPair<OpReg>> mfp = () -> {
 					var ft = pointer.cast(FunpOpLr.class);
-					var fn = ft != null && ft.operator == TermOp.PLUS__ ? ft.right.cast(FunpNumber.class) : null;
+					var fn = ft != null && ft.operator == FunpOp.PLUS__ ? ft.right.cast(FunpNumber.class) : null;
 					var i = fn != null ? fn.i.value() : IntPrim.EMPTYVALUE;
 					var pointer1 = i != IntPrim.EMPTYVALUE ? ft.left : pointer;
 					var start1 = start + (i != IntPrim.EMPTYVALUE ? i : 0);
@@ -777,20 +779,20 @@ public class P4GenerateCode extends FunpCfg {
 			if (opResult == null && op != null && size <= ps)
 				opResult = regs[lea(op).reg];
 
-			if (opResult == null && operator == TermOp.OR____) {
+			if (opResult == null && operator == FunpOp.OR____) {
 				compileLoad(size, lhs);
 				opResult = compileOp(size, rhs);
 			}
 
-			if (opResult == null && operator == TermOp.DIVIDE && numRhs != null && Integer.bitCount(numRhs) == 1)
+			if (opResult == null && operator == FunpOp.DIVIDE && numRhs != null && Integer.bitCount(numRhs) == 1)
 				em.shiftImm(Insn.SHR, opResult = compileLoad(size, rhs), Integer.numberOfTrailingZeros(numRhs));
 
 			if (opResult == null)
-				if (operator == TermOp.DIVIDE)
+				if (operator == FunpOp.DIVIDE)
 					opResult = compileDivMod(lhs, rhs, _ax, _dx);
-				else if (operator == TermOp.MODULO)
+				else if (operator == FunpOp.MODULO)
 					opResult = compileDivMod(lhs, rhs, _dx, _ax);
-				else if (operator == TermOp.MINUS_) {
+				else if (operator == FunpOp.MINUS_) {
 					var pair = compileCommutativeTree(size, Insn.SUB, assoc, lhs, rhs);
 					opResult = pair.v;
 					if (pair.k == rhs)
