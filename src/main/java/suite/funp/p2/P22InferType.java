@@ -39,6 +39,7 @@ import suite.assembler.Amd64;
 import suite.assembler.Amd64.OpReg;
 import suite.assembler.Amd64.Operand;
 import suite.funp.FunpCfg;
+import suite.funp.FunpOp;
 import suite.funp.Funp_;
 import suite.funp.Funp_.CompileException;
 import suite.funp.Funp_.Funp;
@@ -121,7 +122,6 @@ import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Tree;
 import suite.node.io.SwitchNode;
-import suite.node.io.TermOp;
 import suite.node.util.Singleton;
 import suite.node.util.TreeUtil;
 import suite.util.Switch;
@@ -252,7 +252,7 @@ public class P22InferType extends FunpCfg {
 				var ts = typeStructOf( //
 						Reference.of(Atom.TRUE), //
 						Dict.of(map), //
-						TreeUtil.buildUp(TermOp.AND___, Read.from(vns).<Node> map(Atom::of).toList()));
+						TreeUtil.buildUp(FunpOp.AND___, Read.from(vns).<Node> map(Atom::of).toList()));
 				var infer1 = new Infer(env1, checks0, checks1, ts);
 
 				for (var pair : pairs_)
@@ -416,7 +416,7 @@ public class P22InferType extends FunpCfg {
 						list = Streamlet.concat(fs0, fs1).distinct();
 					}
 
-					return unify(ref, TreeUtil.buildUp(TermOp.AND___, list.toList()));
+					return unify(ref, TreeUtil.buildUp(FunpOp.AND___, list.toList()));
 				};
 
 				// complete the structure after all types are inferred
@@ -438,9 +438,9 @@ public class P22InferType extends FunpCfg {
 				return tr;
 			})).applyIf(FunpTree.class, f -> f.apply((op, lhs, rhs, size) -> {
 				Node ti;
-				if (Set.of(TermOp.BIGAND, TermOp.BIGOR_).contains(op))
+				if (Set.of(FunpOp.BIGAND, FunpOp.BIGOR_).contains(op))
 					ti = typeBoolean;
-				else if (Set.of(TermOp.EQUAL_, TermOp.NOTEQ_).contains(op))
+				else if (Set.of(FunpOp.EQUAL_, FunpOp.NOTEQ_).contains(op))
 					ti = new Reference();
 				else {
 					var t = size != null ? Int.of(getCoerceSize(size)) : new Reference();
@@ -448,7 +448,7 @@ public class P22InferType extends FunpCfg {
 				}
 				unify(n, infer(lhs), ti);
 				unify(n, infer(rhs), ti);
-				var cmp = Set.of(TermOp.EQUAL_, TermOp.NOTEQ_, TermOp.LE____, TermOp.LT____).contains(op);
+				var cmp = Set.of(FunpOp.EQUAL_, FunpOp.NOTEQ_, FunpOp.LE____, FunpOp.LT____).contains(op);
 				return cmp ? typeBoolean : ti;
 			})).applyIf(FunpTree2.class, f -> f.apply((op, lhs, rhs) -> {
 				unify(n, infer(lhs), typeNumber);
@@ -784,7 +784,7 @@ public class P22InferType extends FunpCfg {
 			})).applyIf(FunpTree.class, f -> f.apply((op, l, r, size) -> {
 				var size0 = getTypeSize(typeOf(l));
 				var size1 = getTypeSize(typeOf(r));
-				if (Set.of(TermOp.EQUAL_, TermOp.NOTEQ_).contains(op) && (!is1248(size0) || !is1248(size1))) {
+				if (Set.of(FunpOp.EQUAL_, FunpOp.NOTEQ_).contains(op) && (!is1248(size0) || !is1248(size1))) {
 					var offsetStack0 = IntMutable.nil();
 					var offsetStack1 = IntMutable.nil();
 					var ml = l.cast(FunpMemory.class);
@@ -850,8 +850,8 @@ public class P22InferType extends FunpCfg {
 		private FunpOpLr adjustPointer(Funp address, Funp index, int size) {
 			var index_ = FunpCoerce.of(Coerce.NUMBER, Coerce.NUMBERP, erase(index));
 			var size_ = FunpCoerce.of(Coerce.NUMBER, Coerce.NUMBERP, FunpNumber.ofNumber(size));
-			var inc = FunpOpLr.of(ps, TermOp.MULT__, size_, index_);
-			return FunpOpLr.of(ps, TermOp.PLUS__, erase(address), inc);
+			var inc = FunpOpLr.of(ps, FunpOp.MULT__, size_, index_);
+			return FunpOpLr.of(ps, FunpOp.PLUS__, erase(address), inc);
 		}
 
 		private Funp assign(Funp var, Funp value, Funp expr) {
@@ -918,7 +918,7 @@ public class P22InferType extends FunpCfg {
 					})).applyIf(FunpDeref.class, f -> f.apply(pointer -> {
 						return erase(pointer);
 					})).applyIf(FunpField.class, f -> f.apply((ref, field) -> {
-						return FunpOpLr.of(ps, TermOp.PLUS__, erase(ref), FunpNumber.ofNumber(getFieldOffset(f).s));
+						return FunpOpLr.of(ps, FunpOp.PLUS__, erase(ref), FunpNumber.ofNumber(getFieldOffset(f).s));
 					})).applyIf(FunpIndex.class, f -> f.apply((ref, index) -> {
 						var type = new Reference();
 						unify(f, typeRefOf(typeArrayOf(null, type)), typeOf(ref));
@@ -1042,7 +1042,7 @@ public class P22InferType extends FunpCfg {
 		}
 
 		private Funp getAddress(int scope0) {
-			return getMemory(scope0).apply((p, s, e) -> FunpOpLr.of(ps, TermOp.PLUS__, p, FunpNumber.ofNumber(s)));
+			return getMemory(scope0).apply((p, s, e) -> FunpOpLr.of(ps, FunpOp.PLUS__, p, FunpNumber.ofNumber(s)));
 		}
 
 		private FunpMemory getMemory(int scope0) {
@@ -1061,8 +1061,8 @@ public class P22InferType extends FunpCfg {
 					: null;
 
 			var nfp0 = FunpNumber.of(offset);
-			var nfp1 = frame != null ? FunpOpLr.of(ps, TermOp.PLUS__, frame, nfp0) : nfp0;
-			var nfp2 = offsetOperand != null ? FunpOpLr.of(ps, TermOp.PLUS__, nfp1, FunpOperand.of(offsetOperand)) : nfp1;
+			var nfp1 = frame != null ? FunpOpLr.of(ps, FunpOp.PLUS__, frame, nfp0) : nfp0;
+			var nfp2 = offsetOperand != null ? FunpOpLr.of(ps, FunpOp.PLUS__, nfp1, FunpOperand.of(offsetOperand)) : nfp1;
 			return FunpMemory.of(nfp2, start, end);
 		}
 

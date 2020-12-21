@@ -13,6 +13,7 @@ import primal.statics.Fail;
 import suite.Suite;
 import suite.ebnf.Ebnf;
 import suite.ebnf.Ebnf.Ast;
+import suite.funp.FunpOp;
 import suite.funp.Funp_;
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.Fdt;
@@ -34,7 +35,6 @@ import suite.node.Node;
 import suite.node.Str;
 import suite.node.Tree;
 import suite.node.io.SwitchNode;
-import suite.node.io.TermOp;
 import suite.node.tree.TreeTuple;
 
 public class P0CrudeScript {
@@ -102,7 +102,7 @@ public class P0CrudeScript {
 				}).match("expression (.0,)", a -> {
 					return expr(a);
 				}).match("expression-add (.0, .1)", (a, b) -> {
-					return Tree.read(b).fold(expr(a), (f, c) -> FunpTree.of(TermOp.PLUS__, f, expr(c)));
+					return Tree.read(b).fold(expr(a), (f, c) -> FunpTree.of(FunpOp.PLUS__, f, expr(c)));
 				}).match("expression-and (.0,)", a -> {
 					return expr(a);
 				}).match("expression-as (.0,)", a -> {
@@ -112,11 +112,11 @@ public class P0CrudeScript {
 				}).matchArray("expression-array .0", m -> {
 					return FunpArray.of(Read.from(m).map(this::expr).toList());
 				}).match("expression-bool-and (.0, .1)", (a, b) -> {
-					return Tree.read(b).fold(expr(a), (f, c) -> FunpTree.of(TermOp.BIGAND, f, expr(c)));
+					return Tree.read(b).fold(expr(a), (f, c) -> FunpTree.of(FunpOp.BIGAND, f, expr(c)));
 				}).match("expression-bool-not (.0,)", a -> {
 					return expr(a);
 				}).match("expression-bool-or (.0, .1)", (a, b) -> {
-					return Tree.read(b).fold(expr(a), (f, c) -> FunpTree.of(TermOp.BIGOR_, f, expr(c)));
+					return Tree.read(b).fold(expr(a), (f, c) -> FunpTree.of(FunpOp.BIGOR_, f, expr(c)));
 				}).match("expression-compare (.0,)", a -> {
 					return expr(a);
 				}).match("expression-dict .0", a -> {
@@ -133,15 +133,15 @@ public class P0CrudeScript {
 							.fold(expr(a), (f, o) -> o.toFixie().map((op, d) -> {
 								return new SwitchNode<Funp>(op //
 								).matchArray("'/'", m_ -> {
-									return FunpTree.of(TermOp.DIVIDE, f, expr(d));
+									return FunpTree.of(FunpOp.DIVIDE, f, expr(d));
 								}).matchArray("'%'", m_ -> {
-									return FunpTree.of(TermOp.MODULO, f, expr(d));
+									return FunpTree.of(FunpOp.MODULO, f, expr(d));
 								}).nonNullResult();
 							}));
 				}).match("expression-invoke (.0, .1)", (a, b) -> {
 					return Tree.read(b).fold(expr(a), (f, c) -> FunpApply.of(f, expr(c)));
 				}).match("expression-mul (.0, .1)", (a, b) -> {
-					return Tree.read(b).fold(expr(a), (f, c) -> FunpTree.of(TermOp.MULT__, f, expr(c)));
+					return Tree.read(b).fold(expr(a), (f, c) -> FunpTree.of(FunpOp.MULT__, f, expr(c)));
 				}).match("expression-not (.0,)", a -> {
 					return expr(a);
 				}).match("expression-lambda (bind (<IDENTIFIER> (.0,),), expression (.1,),)", (a, b) -> {
@@ -175,7 +175,7 @@ public class P0CrudeScript {
 					var ref0 = FunpReference.of(e0);
 
 					var e1 = pre_ == 0 ? e0
-							: FunpDoAssignRef.of(ref0, FunpTree.of(TermOp.PLUS__, e0, FunpNumber.ofNumber(pre_)), e0);
+							: FunpDoAssignRef.of(ref0, FunpTree.of(FunpOp.PLUS__, e0, FunpNumber.ofNumber(pre_)), e0);
 					var e2 = post == 0 ? e1 : Fail.<Funp> fail();
 					return s == e ? e2 : fail();
 				}).match("expression-prop (.0, .1)", (a, b) -> {

@@ -33,36 +33,36 @@ public class FunpOp {
 	public static BaseOp POWER_ = BaseOp.POWER_;
 	public static BaseOp BRACES = BaseOp.BRACES;
 	public static BaseOp TUPLE_ = BaseOp.TUPLE_;
-	public static BaseOp ITEM__ = BaseOp.ITEM__;
+	public static BaseOp ITEM__ = new BaseOp(340, "/", Assoc.LEFT);
 	public static BaseOp COLON_ = BaseOp.COLON_;
 	public static BaseOp DEREF_ = BaseOp.DEREF_;
 
 	public static Operator[] values = new Operator[] { //
-			FunpOp.NEXT__, //
-			FunpOp.CONTD_, //
-			FunpOp.DEFINE, //
-			FunpOp.BIGOR_, //
-			FunpOp.BIGAND, //
-			FunpOp.FUN___, //
-			FunpOp.SEP___, //
-			FunpOp.JOIN__, //
-			FunpOp.OR____, //
-			FunpOp.AND___, //
-			FunpOp.EQUAL_, //
-			FunpOp.NOTEQ_, //
-			FunpOp.LE____, //
-			FunpOp.LT____, //
-			FunpOp.PLUS__, //
-			FunpOp.MINUS_, //
-			FunpOp.MULT__, //
-			FunpOp.DIVIDE, //
-			FunpOp.MODULO, //
-			FunpOp.POWER_, //
-			FunpOp.BRACES, //
-			FunpOp.TUPLE_, //
-			FunpOp.ITEM__, //
-			FunpOp.COLON_, //
-			FunpOp.DEREF_, //
+			NEXT__, //
+			CONTD_, //
+			DEFINE, //
+			BIGOR_, //
+			BIGAND, //
+			FUN___, //
+			SEP___, //
+			JOIN__, //
+			OR____, //
+			AND___, //
+			EQUAL_, //
+			NOTEQ_, //
+			LE____, //
+			LT____, //
+			PLUS__, //
+			MINUS_, //
+			MULT__, //
+			DIVIDE, //
+			MODULO, //
+			POWER_, //
+			BRACES, //
+			TUPLE_, //
+			ITEM__, //
+			COLON_, //
+			DEREF_, //
 	};
 
 	public int precedence;

@@ -5,6 +5,7 @@ import static suite.util.Streamlet_.forInt;
 import primal.persistent.PerSet;
 import primal.primitive.IntPrim.IntObj_Obj;
 import primal.primitive.IntPrim.Int_Obj;
+import suite.funp.FunpOp;
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.FunpArray;
 import suite.funp.P0.FunpBoolean;
@@ -23,7 +24,6 @@ import suite.funp.P0.FunpTagId;
 import suite.funp.P0.FunpTagValue;
 import suite.funp.P0.FunpTree;
 import suite.funp.P0.FunpVariable;
-import suite.node.io.TermOp;
 import suite.util.Switch;
 
 public class P03Bind {
@@ -82,13 +82,13 @@ public class P03Bind {
 
 					// FIXME double else
 					var bind = bind(value_, FunpTagValue.of(ref, tag), then, else_);
-					return FunpIf.of(FunpTree.of(TermOp.EQUAL_, FunpNumber.of(id), FunpTagId.of(ref)), bind, else_);
+					return FunpIf.of(FunpTree.of(FunpOp.EQUAL_, FunpNumber.of(id), FunpTagId.of(ref)), bind, else_);
 				}).result();
 			})).applyIf(FunpVariable.class, f -> f.apply(var -> {
 				return vns.contains(var) ? FunpDoAssignVar.of(f, value, then) : be;
 			})).result();
 
-			return result != null ? result : FunpIf.of(FunpTree.of(TermOp.EQUAL_, be, value), then, else_);
+			return result != null ? result : FunpIf.of(FunpTree.of(FunpOp.EQUAL_, be, value), then, else_);
 		}
 	}
 

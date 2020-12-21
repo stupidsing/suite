@@ -6,6 +6,7 @@ import primal.fp.Funs2.Fun2;
 import primal.primitive.IntInt_Int;
 import primal.primitive.adt.IntRange;
 import suite.funp.FunpCfg;
+import suite.funp.FunpOp;
 import suite.funp.Funp_;
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.FunpBoolean;
@@ -20,7 +21,6 @@ import suite.funp.P2.FunpData;
 import suite.funp.P2.FunpMemory;
 import suite.funp.P2.FunpOpLr;
 import suite.inspect.Inspect;
-import suite.node.io.TermOp;
 import suite.node.util.Singleton;
 import suite.node.util.TreeUtil;
 import suite.primitive.IntInt_Bool;
@@ -68,7 +68,7 @@ public class P3Optimize extends FunpCfg {
 				}
 				return null;
 			})).applyIf(FunpReference.class, g -> {
-				return FunpOpLr.of(ps, TermOp.PLUS__, g.expr, FunpNumber.ofNumber(start));
+				return FunpOpLr.of(ps, FunpOp.PLUS__, g.expr, FunpNumber.ofNumber(start));
 			}).result();
 		})).applyIf(FunpReference.class, f -> f.apply(expr -> {
 			return optimize(expr).sw().applyIf(FunpMemory.class, g -> g.pointer).result();

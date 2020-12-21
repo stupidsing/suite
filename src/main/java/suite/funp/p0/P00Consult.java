@@ -11,6 +11,7 @@ import primal.io.ReadStream;
 import primal.statics.Rethrow.FunIo;
 import primal.statics.Rethrow.SourceEx;
 import suite.funp.FunpCfg;
+import suite.funp.FunpOp;
 import suite.funp.Funp_;
 import suite.funp.Funp_.Funp;
 import suite.http.HttpClient;
@@ -18,7 +19,6 @@ import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.Formatter;
-import suite.node.io.TermOp;
 
 public class P00Consult extends FunpCfg {
 
@@ -42,8 +42,8 @@ public class P00Consult extends FunpCfg {
 	private Node consult(String url) {
 		FunIo<ReadStream, Node> r0 = is -> {
 			var parsed = Funp_.parse(ReadString.from(is));
-			var predef = Tree.of(TermOp.ITEM__, Atom.of("predef"), Atom.of(url));
-			return Tree.of(TermOp.TUPLE_, predef, parsed);
+			var predef = Tree.of(FunpOp.ITEM__, Atom.of("predef"), Atom.of(url));
+			return Tree.of(FunpOp.TUPLE_, predef, parsed);
 		};
 		return consult_(url, is -> is.doRead(r0));
 	}
@@ -52,9 +52,9 @@ public class P00Consult extends FunpCfg {
 		FunIo<ReadStream, Node> r0 = is -> {
 			var node = Funp_.parse(ReadString.from(is) + "$APP");
 			return Tree //
-					.read(node, TermOp.CONTD_) //
+					.read(node, FunpOp.CONTD_) //
 					.reverse() //
-					.fold(program, (n, left) -> Tree.of(TermOp.CONTD_, left, n));
+					.fold(program, (n, left) -> Tree.of(FunpOp.CONTD_, left, n));
 		};
 
 		return consult_(url, is -> is.doRead(r0));

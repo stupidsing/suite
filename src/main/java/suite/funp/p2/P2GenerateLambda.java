@@ -8,6 +8,7 @@ import primal.MoreVerbs.Read;
 import primal.Verbs.Get;
 import primal.fp.Funs.Fun;
 import primal.persistent.PerMap;
+import suite.funp.FunpOp;
 import suite.funp.Funp_;
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.Fdt;
@@ -33,7 +34,6 @@ import suite.funp.P0.FunpStruct;
 import suite.funp.P0.FunpTree;
 import suite.funp.P0.FunpTree2;
 import suite.funp.P0.FunpVariable;
-import suite.node.io.TermOp;
 import suite.node.util.TreeUtil;
 import suite.util.To;
 
@@ -193,9 +193,9 @@ public class P2GenerateLambda {
 			})).applyIf(FunpTree.class, f -> f.apply((op, lhs, rhs, size) -> {
 				var v0 = compile_(lhs);
 				var v1 = compile_(rhs);
-				if (op == TermOp.BIGAND)
+				if (op == FunpOp.BIGAND)
 					return rt -> new Bool(b(rt, v0) && b(rt, v1));
-				else if (op == TermOp.BIGOR_)
+				else if (op == FunpOp.BIGOR_)
 					return rt -> new Bool(b(rt, v0) || b(rt, v1));
 				else {
 					var fun = TreeUtil.evaluateOp(op);

@@ -17,6 +17,7 @@ import primal.primitive.adt.IntMutable;
 import primal.streamlet.Streamlet2;
 import suite.assembler.Amd64;
 import suite.funp.FunpCfg;
+import suite.funp.FunpOp;
 import suite.funp.Funp_;
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.Coerce;
@@ -68,7 +69,6 @@ import suite.node.Int;
 import suite.node.Node;
 import suite.node.Str;
 import suite.node.Tree;
-import suite.node.io.TermOp;
 import suite.node.util.Singleton;
 import suite.node.util.TreeUtil;
 import suite.streamlet.ReadChars;
@@ -154,13 +154,13 @@ public class P0Parse extends FunpCfg {
 			}).match("[.0]", a -> { // forms a list
 				return isArray(a) ? FunpArray.of(Tree.read(a).map(this::p).toList()) : null;
 			}).match("{ .0 }", a -> { // forms a struct
-				var isCompleted = Tree.decompose(a, TermOp.AND___) == null;
+				var isCompleted = Tree.decompose(a, FunpOp.AND___) == null;
 				return FunpStruct.of(isCompleted, kvs(a).mapValue(this::p).toList());
 			}).match("!asm .0 {.1}/.2", (a, b, c) -> {
-				return checkDo(() -> FunpDoAsm.of(Tree.read(a, TermOp.OR____).map(n -> {
+				return checkDo(() -> FunpDoAsm.of(Tree.read(a, FunpOp.OR____).map(n -> {
 					var ma = Funp_.pattern(".0 = .1").match(n);
 					return Pair.of(Amd64.me.regByName.get(ma[0]), p(ma[1]));
-				}).toList(), Tree.read(b, TermOp.OR____).toList(), Amd64.me.regByName.get(c)));
+				}).toList(), Tree.read(b, FunpOp.OR____).toList(), Amd64.me.regByName.get(c)));
 			}).match("!assign .0 := .1 ~ .2", (a, b, c) -> { // re-assigns a variable
 				return checkDo(() -> FunpDoAssignRef.of(FunpReference.of(p(a)), p(b), p(c)));
 			}).match("!delete^ .0 ~ .1", (a, b) -> { // de-allocates
@@ -195,7 +195,7 @@ public class P0Parse extends FunpCfg {
 					}
 				}.d(a);
 			}).match("define .0 := .1 ~ .2", (a, b, c) -> { // defines a variable
-				var tree = Tree.decompose(a, TermOp.TUPLE_);
+				var tree = Tree.decompose(a, FunpOp.TUPLE_);
 				if (tree == null || !isId(tree.getLeft())) {
 					var bind = bind(Fdt.L_POLY);
 					var lambda = bind.lambda(a, c);
@@ -212,7 +212,7 @@ public class P0Parse extends FunpCfg {
 				lambda.fct = Fct.STACKF;
 				return define(a, lambda, d, Fdt.S_POLY);
 			}).match("define-global .0 := .1 ~ .2", (a, b, c) -> { // defines a global variable
-				var tree = Tree.decompose(a, TermOp.TUPLE_);
+				var tree = Tree.decompose(a, FunpOp.TUPLE_);
 				if (tree == null || !isId(tree.getLeft())) {
 					var bind = bind(Fdt.G_POLY);
 					var lambda = bind.lambda(a, c);
@@ -242,7 +242,7 @@ public class P0Parse extends FunpCfg {
 			}).match("if .0 then .1 else .2", (a, b, c) -> {
 				return FunpIf.of(p(a), p(b), p(c));
 			}).match("let .0 := .1 ~ .2", (a, b, c) -> { // defines a variable
-				var tree = Tree.decompose(a, TermOp.TUPLE_);
+				var tree = Tree.decompose(a, FunpOp.TUPLE_);
 				if (tree == null || !isId(tree.getLeft())) {
 					var bind = bind(Fdt.L_MONO);
 					var lambda = bind.lambda(a, c);
@@ -255,7 +255,7 @@ public class P0Parse extends FunpCfg {
 			}).match("let { .0 } ~ .1", (a, b) -> { // define lots of variables
 				return defineList(a, b, Fdt.L_MONO);
 			}).match("let-global .0 := .1 ~ .2", (a, b, c) -> { // defines a global variable
-				var tree = Tree.decompose(a, TermOp.TUPLE_);
+				var tree = Tree.decompose(a, FunpOp.TUPLE_);
 				if (tree == null || !isId(tree.getLeft())) {
 					var bind = bind(Fdt.G_MONO);
 					var lambda = bind.lambda(a, c);
@@ -289,7 +289,7 @@ public class P0Parse extends FunpCfg {
 			}).match("size.of .0", a -> {
 				return FunpSizeOf.of(p(a));
 			}).match("sum .0 .1", (a, b) -> {
-				return FunpTree.of(TermOp.PLUS__, p(a), p(b), null);
+				return FunpTree.of(FunpOp.PLUS__, p(a), p(b), null);
 			}).match("type .0 .1", (a, b) -> { // binds the type of something
 				return FunpTypeCheck.of(p(a), null, p(b));
 			}).match("type .0 = .1 ~ .2", (a, b, c) -> { // bind the types of two values
@@ -320,7 +320,7 @@ public class P0Parse extends FunpCfg {
 				var fr = s.length() < 80 ? FunpRemark.of(s, fa) : fa;
 				return FunpDefine.of(vn, fr, FunpReference.of(FunpVariable.of(vn)), Fdt.G_MONO);
 			}).applyTree((op, l, r) -> {
-				if (op == TermOp.TUPLE_) {
+				if (op == FunpOp.TUPLE_) {
 					var apply = FunpApply.of(p(r), p(l));
 					return checkDo() && isBang(l) ? FunpDoEvalIo.of(apply) : apply;
 				} else
@@ -377,7 +377,7 @@ public class P0Parse extends FunpCfg {
 
 		private boolean isBang(Node n) {
 			Tree t;
-			while ((t = Tree.decompose(n, TermOp.ITEM__)) != null)
+			while ((t = Tree.decompose(n, FunpOp.ITEM__)) != null)
 				n = t.getRight();
 			return n instanceof Atom && Atom.name(n).startsWith("!");
 		}
@@ -396,7 +396,7 @@ public class P0Parse extends FunpCfg {
 						var tree = Tree.decompose(t);
 						if (tree != null) {
 							var operator = tree.getOperator();
-							var b = operator == TermOp.AND___ || operator == TermOp.CONTD_;
+							var b = operator == FunpOp.AND___ || operator == FunpOp.CONTD_;
 							return b ? tree : Funp_.fail(null, "unknown operator " + operator);
 						} else
 							return null;
@@ -494,7 +494,7 @@ public class P0Parse extends FunpCfg {
 		}
 
 		private boolean isArray(Node l) {
-			return TreeUtil.isList(l, TermOp.AND___);
+			return TreeUtil.isList(l, FunpOp.AND___);
 		}
 
 		private boolean isVar(Node v) {

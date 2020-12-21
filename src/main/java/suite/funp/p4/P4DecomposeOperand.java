@@ -10,6 +10,7 @@ import suite.assembler.Amd64.OpMem;
 import suite.assembler.Amd64.OpReg;
 import suite.assembler.Amd64.Operand;
 import suite.funp.FunpCfg;
+import suite.funp.FunpOp;
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.FunpCoerce;
 import suite.funp.P0.FunpDontCare;
@@ -18,7 +19,6 @@ import suite.funp.P2.FunpFramePointer;
 import suite.funp.P2.FunpMemory;
 import suite.funp.P2.FunpOpLr;
 import suite.funp.P2.FunpOperand;
-import suite.node.io.TermOp;
 import suite.node.util.TreeUtil;
 
 public class P4DecomposeOperand extends FunpCfg {
@@ -87,7 +87,7 @@ public class P4DecomposeOperand extends FunpCfg {
 			private void decompose(Funp n0) {
 				Integer number;
 				FunpOpLr tree;
-				for (var n1 : decompose.apply(TermOp.MULT__, n0))
+				for (var n1 : decompose.apply(FunpOp.MULT__, n0))
 					if (n1 instanceof FunpFramePointer && isUseEbp && reg == null)
 						reg = _bp;
 					else if ((number = isNumber(n1)) != null)
@@ -108,7 +108,7 @@ public class P4DecomposeOperand extends FunpCfg {
 			private boolean ok = isSizeOk(size);
 
 			private DecomposeAdd(Funp n0) {
-				for (var n1 : decompose.apply(TermOp.PLUS__, n0))
+				for (var n1 : decompose.apply(FunpOp.PLUS__, n0))
 					if (n1 instanceof FunpFramePointer && !isUseEbp) {
 						addReg(_sp, 1);
 						disp -= fd;
