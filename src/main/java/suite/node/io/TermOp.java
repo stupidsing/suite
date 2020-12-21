@@ -9,33 +9,33 @@ import primal.parser.Operator;
 
 public class TermOp implements Operator {
 
-	public static TermOp NEXT__ = new TermOp("#", Assoc.RIGHT);
-	public static TermOp IS____ = new TermOp(" :- ", Assoc.RIGHT);
-	public static TermOp CONTD_ = new TermOp(" ~ ", Assoc.RIGHT);
-	public static TermOp DEFINE = new TermOp(" := ", Assoc.RIGHT);
-	public static TermOp BIGOR_ = new TermOp(" || ", Assoc.RIGHT);
-	public static TermOp BIGAND = new TermOp(" && ", Assoc.RIGHT);
-	public static TermOp FUN___ = new TermOp(" => ", Assoc.RIGHT);
-	public static TermOp ARROW_ = new TermOp(" -> ", Assoc.RIGHT);
-	public static TermOp SEP___ = new TermOp(" | ", Assoc.LEFT);
-	public static TermOp JOIN__ = new TermOp(" . ", Assoc.LEFT);
-	public static TermOp OR____ = new TermOp(";", Assoc.RIGHT);
-	public static TermOp AND___ = new TermOp(",", Assoc.RIGHT);
-	public static TermOp EQUAL_ = new TermOp(" = ", Assoc.RIGHT);
-	public static TermOp NOTEQ_ = new TermOp(" != ", Assoc.RIGHT);
-	public static TermOp LE____ = new TermOp(" <= ", Assoc.RIGHT);
-	public static TermOp LT____ = new TermOp(" < ", Assoc.RIGHT);
-	public static TermOp PLUS__ = new TermOp(" + ", Assoc.RIGHT);
-	public static TermOp MINUS_ = new TermOp(" - ", Assoc.LEFT);
-	public static TermOp MULT__ = new TermOp(" * ", Assoc.RIGHT);
-	public static TermOp DIVIDE = new TermOp(" / ", Assoc.LEFT);
-	public static TermOp MODULO = new TermOp(" % ", Assoc.LEFT);
-	public static TermOp POWER_ = new TermOp("^", Assoc.RIGHT);
-	public static TermOp BRACES = new TermOp("_{", Assoc.LEFT);
-	public static TermOp TUPLE_ = new TermOp(" ", Assoc.RIGHT);
-	public static TermOp ITEM__ = new TermOp("/", Assoc.LEFT);
-	public static TermOp COLON_ = new TermOp(":", Assoc.RIGHT);
-	public static TermOp DEREF_ = new TermOp("*", Assoc.LEFT);
+	public static TermOp NEXT__ = new TermOp(100, "#", Assoc.RIGHT);
+	public static TermOp IS____ = new TermOp(110, " :- ", Assoc.RIGHT);
+	public static TermOp CONTD_ = new TermOp(120, " ~ ", Assoc.RIGHT);
+	public static TermOp DEFINE = new TermOp(130, " := ", Assoc.RIGHT);
+	public static TermOp BIGOR_ = new TermOp(140, " || ", Assoc.RIGHT);
+	public static TermOp BIGAND = new TermOp(150, " && ", Assoc.RIGHT);
+	public static TermOp FUN___ = new TermOp(160, " => ", Assoc.RIGHT);
+	public static TermOp ARROW_ = new TermOp(170, " -> ", Assoc.RIGHT);
+	public static TermOp SEP___ = new TermOp(180, " | ", Assoc.LEFT);
+	public static TermOp JOIN__ = new TermOp(190, " . ", Assoc.LEFT);
+	public static TermOp OR____ = new TermOp(200, ";", Assoc.RIGHT);
+	public static TermOp AND___ = new TermOp(210, ",", Assoc.RIGHT);
+	public static TermOp EQUAL_ = new TermOp(220, " = ", Assoc.RIGHT);
+	public static TermOp NOTEQ_ = new TermOp(230, " != ", Assoc.RIGHT);
+	public static TermOp LE____ = new TermOp(240, " <= ", Assoc.RIGHT);
+	public static TermOp LT____ = new TermOp(250, " < ", Assoc.RIGHT);
+	public static TermOp PLUS__ = new TermOp(260, " + ", Assoc.RIGHT);
+	public static TermOp MINUS_ = new TermOp(270, " - ", Assoc.LEFT);
+	public static TermOp MULT__ = new TermOp(280, " * ", Assoc.RIGHT);
+	public static TermOp DIVIDE = new TermOp(290, " / ", Assoc.LEFT);
+	public static TermOp MODULO = new TermOp(300, " % ", Assoc.LEFT);
+	public static TermOp POWER_ = new TermOp(310, "^", Assoc.RIGHT);
+	public static TermOp BRACES = new TermOp(320, "_{", Assoc.LEFT);
+	public static TermOp TUPLE_ = new TermOp(330, " ", Assoc.RIGHT);
+	public static TermOp ITEM__ = new TermOp(340, "/", Assoc.LEFT);
+	public static TermOp COLON_ = new TermOp(350, ":", Assoc.RIGHT);
+	public static TermOp DEREF_ = new TermOp(360, "*", Assoc.LEFT);
 
 	public static TermOp[] values = new TermOp[] { //
 			NEXT__, //
@@ -67,17 +67,12 @@ public class TermOp implements Operator {
 			DEREF_, //
 	};
 
+	public int precedence;
 	public String name;
 	public Assoc assoc;
-	public int precedence;
 
-	static {
-		var precedence = 0;
-		for (var operator : values)
-			operator.precedence = ++precedence;
-	}
-
-	private TermOp(String name, Assoc assoc) {
+	private TermOp(int precedence, String name, Assoc assoc) {
+		this.precedence = precedence;
 		this.name = name;
 		this.assoc = assoc;
 	}
