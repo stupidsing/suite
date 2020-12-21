@@ -33,7 +33,7 @@ public class TermOp implements Operator {
 	public static BaseOp POWER_ = BaseOp.POWER_;
 	public static BaseOp BRACES = BaseOp.BRACES;
 	public static BaseOp TUPLE_ = BaseOp.TUPLE_;
-	public static BaseOp ITEM__ = new BaseOp(340, "/", Assoc.LEFT);
+	public static BaseOp ITEM__ = BaseOp.ITEM__;
 	public static BaseOp COLON_ = BaseOp.COLON_;
 	public static BaseOp DEREF_ = BaseOp.DEREF_;
 

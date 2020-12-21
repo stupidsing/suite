@@ -28,6 +28,7 @@ public class BaseOp implements Operator {
 	public static BaseOp POWER_ = new BaseOp(310, "^", Assoc.RIGHT);
 	public static BaseOp BRACES = new BaseOp(320, "_{", Assoc.LEFT);
 	public static BaseOp TUPLE_ = new BaseOp(330, " ", Assoc.RIGHT);
+	public static BaseOp ITEM__ = new BaseOp(340, "/", Assoc.LEFT);
 	public static BaseOp COLON_ = new BaseOp(350, ":", Assoc.RIGHT);
 	public static BaseOp DEREF_ = new BaseOp(360, "*", Assoc.LEFT);
 
