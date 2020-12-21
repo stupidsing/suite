@@ -43,7 +43,7 @@ public class HkexFactBookTest {
 
 	@Test
 	public void testMainBoard() {
-		var companies = hkexFactBook.queryMainBoardCompanies(2012);
+		var companies = hkexFactBook.queryMainBoardCompanies(2019);
 		System.out.println(companies.toList());
 		assertTrue(companies.isAny(symbol -> Equals.string(symbol, "0005.HK")));
 	}

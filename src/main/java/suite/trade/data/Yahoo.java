@@ -238,17 +238,6 @@ public class Yahoo {
 			return new HashMap<>();
 	}
 
-	public String tableUrl(String symbol, TimeRange period) {
-		var frDate = period.fr;
-		var toDate = period.to;
-		return "https://chart.finance.yahoo.com/table.csv" //
-				+ "?s=" + encode(symbol) //
-				+ "&a=" + frDate.month() + "&b=" + frDate.dow() + "&c=" + frDate.year() //
-				+ "&d=" + toDate.month() + "&e=" + toDate.dow() + "&f=" + toDate.year() //
-				+ "&g=d" //
-				+ "&ignore=.csv";
-	}
-
 	private void adjust(String symbol, long[] ts, float[] prices) {
 		var adjusters = new HashMap<String, FoldOp<Long, Float>>();
 		adjusters.put("0700.HK", (d, p) -> Compare.string(Time.ofEpochSec(d).ymd(), "2014-05-14") <= 0 ? p * .2f : p);
