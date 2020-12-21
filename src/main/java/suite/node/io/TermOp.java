@@ -1,40 +1,71 @@
 package suite.node.io;
 
+import static primal.statics.Rethrow.ex;
+
 import java.util.List;
 
 import primal.Verbs.Equals;
 import primal.parser.Operator;
 
-public enum TermOp implements Operator {
+public class TermOp implements Operator {
 
-	NEXT__("#", Assoc.RIGHT), //
-	IS____(" :- ", Assoc.RIGHT), //
-	CONTD_(" ~ ", Assoc.RIGHT), //
-	DEFINE(" := ", Assoc.RIGHT), //
-	BIGOR_(" || ", Assoc.RIGHT), //
-	BIGAND(" && ", Assoc.RIGHT), //
-	FUN___(" => ", Assoc.RIGHT), //
-	ARROW_(" -> ", Assoc.RIGHT), //
-	SEP___(" | ", Assoc.LEFT), //
-	JOIN__(" . ", Assoc.LEFT), //
-	OR____(";", Assoc.RIGHT), //
-	AND___(",", Assoc.RIGHT), //
-	EQUAL_(" = ", Assoc.RIGHT), //
-	NOTEQ_(" != ", Assoc.RIGHT), //
-	LE____(" <= ", Assoc.RIGHT), //
-	LT____(" < ", Assoc.RIGHT), //
-	PLUS__(" + ", Assoc.RIGHT), //
-	MINUS_(" - ", Assoc.LEFT), //
-	MULT__(" * ", Assoc.RIGHT), //
-	DIVIDE(" / ", Assoc.LEFT), //
-	MODULO(" % ", Assoc.LEFT), //
-	POWER_("^", Assoc.RIGHT), //
-	BRACES("_{", Assoc.LEFT), //
-	TUPLE_(" ", Assoc.RIGHT), //
-	ITEM__("/", Assoc.LEFT), //
-	COLON_(":", Assoc.RIGHT), //
-	DEREF_("*", Assoc.LEFT), //
-	;
+	public static TermOp NEXT__ = new TermOp("#", Assoc.RIGHT);
+	public static TermOp IS____ = new TermOp(" :- ", Assoc.RIGHT);
+	public static TermOp CONTD_ = new TermOp(" ~ ", Assoc.RIGHT);
+	public static TermOp DEFINE = new TermOp(" := ", Assoc.RIGHT);
+	public static TermOp BIGOR_ = new TermOp(" || ", Assoc.RIGHT);
+	public static TermOp BIGAND = new TermOp(" && ", Assoc.RIGHT);
+	public static TermOp FUN___ = new TermOp(" => ", Assoc.RIGHT);
+	public static TermOp ARROW_ = new TermOp(" -> ", Assoc.RIGHT);
+	public static TermOp SEP___ = new TermOp(" | ", Assoc.LEFT);
+	public static TermOp JOIN__ = new TermOp(" . ", Assoc.LEFT);
+	public static TermOp OR____ = new TermOp(";", Assoc.RIGHT);
+	public static TermOp AND___ = new TermOp(",", Assoc.RIGHT);
+	public static TermOp EQUAL_ = new TermOp(" = ", Assoc.RIGHT);
+	public static TermOp NOTEQ_ = new TermOp(" != ", Assoc.RIGHT);
+	public static TermOp LE____ = new TermOp(" <= ", Assoc.RIGHT);
+	public static TermOp LT____ = new TermOp(" < ", Assoc.RIGHT);
+	public static TermOp PLUS__ = new TermOp(" + ", Assoc.RIGHT);
+	public static TermOp MINUS_ = new TermOp(" - ", Assoc.LEFT);
+	public static TermOp MULT__ = new TermOp(" * ", Assoc.RIGHT);
+	public static TermOp DIVIDE = new TermOp(" / ", Assoc.LEFT);
+	public static TermOp MODULO = new TermOp(" % ", Assoc.LEFT);
+	public static TermOp POWER_ = new TermOp("^", Assoc.RIGHT);
+	public static TermOp BRACES = new TermOp("_{", Assoc.LEFT);
+	public static TermOp TUPLE_ = new TermOp(" ", Assoc.RIGHT);
+	public static TermOp ITEM__ = new TermOp("/", Assoc.LEFT);
+	public static TermOp COLON_ = new TermOp(":", Assoc.RIGHT);
+	public static TermOp DEREF_ = new TermOp("*", Assoc.LEFT);
+
+	public static TermOp[] values = new TermOp[] { //
+			NEXT__, //
+			IS____, //
+			CONTD_, //
+			DEFINE, //
+			BIGOR_, //
+			BIGAND, //
+			FUN___, //
+			ARROW_, //
+			SEP___, //
+			JOIN__, //
+			OR____, //
+			AND___, //
+			EQUAL_, //
+			NOTEQ_, //
+			LE____, //
+			LT____, //
+			PLUS__, //
+			MINUS_, //
+			MULT__, //
+			DIVIDE, //
+			MODULO, //
+			POWER_, //
+			BRACES, //
+			TUPLE_, //
+			ITEM__, //
+			COLON_, //
+			DEREF_, //
+	};
 
 	public String name;
 	public Assoc assoc;
@@ -42,7 +73,7 @@ public enum TermOp implements Operator {
 
 	static {
 		var precedence = 0;
-		for (var operator : values())
+		for (var operator : values)
 			operator.precedence = ++precedence;
 	}
 
@@ -52,10 +83,14 @@ public enum TermOp implements Operator {
 	}
 
 	public static TermOp find(String name) {
-		for (var operator : values())
+		for (var operator : values)
 			if (Equals.string(operator.name, name))
 				return operator;
 		return null;
+	}
+
+	public static TermOp valueOf(String field) {
+		return (TermOp) ex(() -> TermOp.class.getField(field).get(null));
 	}
 
 	public static boolean isSpaceBefore(Operator operator) {

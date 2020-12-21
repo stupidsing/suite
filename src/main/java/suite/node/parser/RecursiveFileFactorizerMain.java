@@ -26,7 +26,7 @@ public class RecursiveFileFactorizerMain {
 			FileUtil.findPaths(Paths.get("src/main/ll/fc")) //
 					.filter(path -> Wildcard.isMatch("*.sl", path.getFileName().toString())) //
 					.forEach(path -> {
-						var recursiveFactorizer = new RecursiveFactorizer(TermOp.values());
+						var recursiveFactorizer = new RecursiveFactorizer(TermOp.values);
 
 						var bs = fts //
 								.fold(ReadString.from(path), (s_, ft) -> recursiveFactorizer.rewrite(ft.k, ft.v, s_)) //

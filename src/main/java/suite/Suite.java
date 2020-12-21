@@ -51,7 +51,7 @@ public class Suite {
 			"rbt-get", //
 			"replace"));
 
-	private static IterativeParser parser = new IterativeParser(TermOp.values(), TermOp.TUPLE_);
+	private static IterativeParser parser = new IterativeParser(TermOp.values, TermOp.TUPLE_);
 	private static BindArrayUtil bindArrayUtil = new BindArrayUtil(parser);
 	private static CompileUtil compileUtil = new CompileUtil();
 	private static EvaluateUtil evaluateUtil = new EvaluateUtil();

@@ -9,7 +9,7 @@ public class RecursiveFactorizerMain {
 
 	public static void main(String[] args) {
 		RunUtil.run(() -> {
-			var recursiveFactorizer = new RecursiveFactorizer(TermOp.values());
+			var recursiveFactorizer = new RecursiveFactorizer(TermOp.values);
 			var s0 = ReadString.from(System.in);
 			var sx = recursiveFactorizer.rewrite(args[0], args[1], s0);
 			System.out.println(sx);

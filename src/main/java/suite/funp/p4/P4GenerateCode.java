@@ -34,7 +34,6 @@ import suite.assembler.Amd64.Operand;
 import suite.assembler.Amd64Assemble;
 import suite.assembler.Amd64Parse;
 import suite.funp.FunpCfg;
-import suite.funp.FunpOp;
 import suite.funp.Funp_;
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.Coerce;
@@ -400,7 +399,7 @@ public class P4GenerateCode extends FunpCfg {
 			}).applyIf(FunpOpLr.class, f -> f.apply((opSize, op, lhs0, rhs0) -> {
 				var lhs1 = compileSideEffects(lhs0);
 				var rhs1 = compileSideEffects(rhs0);
-				var assoc = op instanceof FunpOp ? ((FunpOp) op).assoc() : Assoc.RIGHT;
+				var assoc = op instanceof TermOp ? ((TermOp) op).assoc() : Assoc.RIGHT;
 				return returnOp(compileTree(opSize, op, assoc, lhs1, rhs1));
 			})).applyIf(FunpOperand.class, f -> f.apply(op -> {
 				return returnOp(op.value());

@@ -48,7 +48,7 @@ import suite.util.Switch;
 public class Funp_ extends FunpCfg {
 
 	private static Inspect inspect = Singleton.me.inspect;
-	private static IterativeParser parser = new IterativeParser(TermOp.values(), TermOp.TUPLE_);
+	private static IterativeParser parser = new IterativeParser(TermOp.values, TermOp.TUPLE_);
 
 	private static BindArrayUtil bindArrayUtil = new BindArrayUtil(parser);
 

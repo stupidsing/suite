@@ -28,7 +28,7 @@ public class EbnfOperatorTest {
 		var s = Build.string(sb -> {
 			var i = 0;
 
-			for (var operator : TermOp.values()) {
+			for (var operator : TermOp.values) {
 				var op = "\"" + operator.name_().trim() + "\"";
 				var v = v(i++);
 				var v1 = v(i);

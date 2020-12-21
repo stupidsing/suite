@@ -54,11 +54,14 @@ public class EvalPredicates {
 
 	public BuiltinPredicate compare = (prover, ps) -> {
 		var tree = (Tree) ps;
-		return switch ((TermOp) tree.getOperator()) {
-		case LE____ -> comparer.compare(tree.getLeft(), tree.getRight()) <= 0;
-		case LT____ -> comparer.compare(tree.getLeft(), tree.getRight()) < 0;
-		default -> fail("unknown comparison");
-		};
+		var op = tree.getOperator();
+
+		if (op == TermOp.LE____)
+			return comparer.compare(tree.getLeft(), tree.getRight()) <= 0;
+		else if (op == TermOp.LT____)
+			return comparer.compare(tree.getLeft(), tree.getRight()) < 0;
+		else
+			return fail("unknown comparison");
 	};
 
 	public BuiltinPredicate dictKeyValue = PredicateUtil.p3((prover, node, key, value) -> {

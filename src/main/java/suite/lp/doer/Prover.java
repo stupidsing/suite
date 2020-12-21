@@ -99,9 +99,9 @@ public class Prover {
 			if (query instanceof Tree) {
 				var tree = (Tree) query;
 				Node left = tree.getLeft(), right = tree.getRight();
+				var op = tree.getOperator();
 
-				switch ((TermOp) tree.getOperator()) {
-				case OR____:
+				if (op == TermOp.OR____) {
 					var pit = trail.getPointInTime();
 					var bt = new Data<Source<Boolean>>(() -> {
 						trail.unwind(pit);
@@ -111,15 +111,12 @@ public class Prover {
 					alt = andTree(bt, orTree(andTree(right, rem), alt));
 					query = left;
 					continue;
-				case AND___:
+				} else if (op == TermOp.AND___) {
 					rem = andTree(right, rem);
 					query = left;
 					continue;
-				case EQUAL_:
+				} else if (op == TermOp.EQUAL_)
 					query = isSuccess(bind(left, right));
-					break;
-				default:
-				}
 			} else if (query instanceof Data) {
 				query = isSuccess(Data.<Source<Boolean>> get(query).g());
 				continue;

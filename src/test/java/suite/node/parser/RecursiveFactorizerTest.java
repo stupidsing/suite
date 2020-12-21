@@ -36,7 +36,7 @@ import suite.util.To;
 public class RecursiveFactorizerTest {
 
 	private Nodify nodify = Singleton.me.nodify;
-	private RecursiveFactorizer recursiveFactorizer = new RecursiveFactorizer(TermOp.values());
+	private RecursiveFactorizer recursiveFactorizer = new RecursiveFactorizer(TermOp.values);
 	private Rewrite rw = new Rewrite();
 
 	@Test
@@ -49,7 +49,7 @@ public class RecursiveFactorizerTest {
 
 	@Test
 	public void testPrologComments() {
-		var recursiveFactorizer = new RecursiveFactorizer(TermOp.values());
+		var recursiveFactorizer = new RecursiveFactorizer(TermOp.values);
 		var rf = recursiveFactorizer.parse("" //
 				+ "-- comment\n" //
 				+ "0\n");
