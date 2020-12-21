@@ -9,7 +9,7 @@ import primal.fp.Funs.Source;
 import suite.assembler.Amd64.Insn;
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.FunpBoolean;
-import suite.funp.P2.FunpOp;
+import suite.funp.P2.FunpOpLr;
 import suite.node.io.TermOp;
 
 public class P4JumpIf {
@@ -51,7 +51,7 @@ public class P4JumpIf {
 		private Insn jnx, jxx, jxxRev, jnxRev;
 
 		public JumpIf(Funp node) {
-			var tree = node.cast(FunpOp.class);
+			var tree = node.cast(FunpOpLr.class);
 			if (tree != null) {
 				opSize = tree.opSize;
 				operator = tree.operator;

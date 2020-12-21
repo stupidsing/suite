@@ -110,7 +110,7 @@ let defs = [
 		public int size() {
 			return end - start;
 		}`],
-	['FunpOp', `
+	['FunpOpLr', `
 		int opSize
 		Object operator
 		Funp left

@@ -16,7 +16,7 @@ import suite.funp.P0.FunpDontCare;
 import suite.funp.P0.FunpNumber;
 import suite.funp.P2.FunpFramePointer;
 import suite.funp.P2.FunpMemory;
-import suite.funp.P2.FunpOp;
+import suite.funp.P2.FunpOpLr;
 import suite.funp.P2.FunpOperand;
 import suite.node.io.TermOp;
 import suite.node.util.TreeUtil;
@@ -64,8 +64,8 @@ public class P4DecomposeOperand extends FunpCfg {
 			}
 
 			private void decompose(Funp n_) {
-				FunpOp tree;
-				if ((tree = n_.cast(FunpOp.class)) != null && tree.operator == operator) {
+				FunpOpLr tree;
+				if ((tree = n_.cast(FunpOpLr.class)) != null && tree.operator == operator) {
 					decompose(tree.left);
 					decompose(tree.right);
 				} else
@@ -86,13 +86,13 @@ public class P4DecomposeOperand extends FunpCfg {
 
 			private void decompose(Funp n0) {
 				Integer number;
-				FunpOp tree;
+				FunpOpLr tree;
 				for (var n1 : decompose.apply(TermOp.MULT__, n0))
 					if (n1 instanceof FunpFramePointer && isUseEbp && reg == null)
 						reg = _bp;
 					else if ((number = isNumber(n1)) != null)
 						scale *= number;
-					else if ((tree = n1.cast(FunpOp.class)) != null //
+					else if ((tree = n1.cast(FunpOpLr.class)) != null //
 							&& tree.operator == TreeUtil.SHL //
 							&& (number = isNumber(tree.right)) != null) {
 						decompose(tree.left);

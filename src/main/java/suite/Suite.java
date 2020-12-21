@@ -51,10 +51,10 @@ public class Suite {
 			"rbt-get", //
 			"replace"));
 
-	private static BindArrayUtil bindArrayUtil = new BindArrayUtil();
+	private static IterativeParser parser = new IterativeParser(TermOp.values(), TermOp.TUPLE_);
+	private static BindArrayUtil bindArrayUtil = new BindArrayUtil(parser);
 	private static CompileUtil compileUtil = new CompileUtil();
 	private static EvaluateUtil evaluateUtil = new EvaluateUtil();
-	private static IterativeParser parser = new IterativeParser(TermOp.values());
 
 	public static void addRule(RuleSet rs, String rule) {
 		rs.addRule(Rule.of(parse(rule)));

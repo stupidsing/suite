@@ -34,6 +34,7 @@ import suite.assembler.Amd64.Operand;
 import suite.assembler.Amd64Assemble;
 import suite.assembler.Amd64Parse;
 import suite.funp.FunpCfg;
+import suite.funp.FunpOp;
 import suite.funp.Funp_;
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.Coerce;
@@ -62,7 +63,7 @@ import suite.funp.P2.FunpInvoke1;
 import suite.funp.P2.FunpInvoke2;
 import suite.funp.P2.FunpInvokeIo;
 import suite.funp.P2.FunpMemory;
-import suite.funp.P2.FunpOp;
+import suite.funp.P2.FunpOpLr;
 import suite.funp.P2.FunpOperand;
 import suite.funp.P2.FunpOperand2;
 import suite.funp.P2.FunpRoutine1;
@@ -255,7 +256,7 @@ public class P4GenerateCode extends FunpCfg {
 						.sink((n_, ofs) -> c1.compileAssign(n_,
 								FunpMemory.of(t.pointer, t.start + ofs.s, t.start + ofs.e))));
 			})).applyIf(FunpDoAsm.class, f -> f.apply((assigns, asm, opResult) -> {
-				var p = new Amd64Parse(mode);
+				var p = new Amd64Parse(mode, TermOp.TUPLE_);
 				new Object() {
 					private Object assign(Compile0 c1, int i) {
 						return i < assigns.size() ? assigns.get(i).map((op, f) -> {
@@ -367,7 +368,7 @@ public class P4GenerateCode extends FunpCfg {
 				Operand op0, op1;
 
 				Source<IntObjPair<OpReg>> mfp = () -> {
-					var ft = pointer.cast(FunpOp.class);
+					var ft = pointer.cast(FunpOpLr.class);
 					var fn = ft != null && ft.operator == TermOp.PLUS__ ? ft.right.cast(FunpNumber.class) : null;
 					var i = fn != null ? fn.i.value() : IntPrim.EMPTYVALUE;
 					var pointer1 = i != IntPrim.EMPTYVALUE ? ft.left : pointer;
@@ -396,10 +397,10 @@ public class P4GenerateCode extends FunpCfg {
 				};
 			})).applyIf(FunpNumber.class, f -> {
 				return returnOp(amd64.imm(f.i.value(), is));
-			}).applyIf(FunpOp.class, f -> f.apply((opSize, op, lhs0, rhs0) -> {
+			}).applyIf(FunpOpLr.class, f -> f.apply((opSize, op, lhs0, rhs0) -> {
 				var lhs1 = compileSideEffects(lhs0);
 				var rhs1 = compileSideEffects(rhs0);
-				var assoc = op instanceof TermOp ? ((TermOp) op).assoc() : Assoc.RIGHT;
+				var assoc = op instanceof FunpOp ? ((FunpOp) op).assoc() : Assoc.RIGHT;
 				return returnOp(compileTree(opSize, op, assoc, lhs1, rhs1));
 			})).applyIf(FunpOperand.class, f -> f.apply(op -> {
 				return returnOp(op.value());
@@ -761,7 +762,7 @@ public class P4GenerateCode extends FunpCfg {
 		// if operator is Insn.CMP, this would return a 1-byte operand.
 		// otherwise a integer-sized (is) operand is returned.
 		private Operand compileTree(int size, Object operator, Assoc assoc, Funp lhs, Funp rhs) {
-			var f = FunpOp.of(size, operator, lhs, rhs);
+			var f = FunpOpLr.of(size, operator, lhs, rhs);
 			var regs = amd64.regs(size);
 			var _ax = regs[axReg];
 			var _dx = regs[dxReg];

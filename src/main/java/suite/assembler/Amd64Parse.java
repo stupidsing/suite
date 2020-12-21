@@ -7,6 +7,7 @@ import java.util.IdentityHashMap;
 import java.util.Map;
 
 import primal.MoreVerbs.Read;
+import primal.parser.Operator;
 import primal.streamlet.Streamlet;
 import suite.Suite;
 import suite.assembler.Amd64.Insn;
@@ -19,21 +20,22 @@ import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Tree;
 import suite.node.io.SwitchNode;
-import suite.node.io.TermOp;
 
 public class Amd64Parse {
 
 	private static Amd64 amd64 = Amd64.me;
 
 	private Amd64Mode mode;
+	private Operator opTuple;
 	private Map<Node, Operand> references = new IdentityHashMap<>();
 
-	public Amd64Parse(Amd64Mode mode) {
+	public Amd64Parse(Amd64Mode mode, Operator opTuple) {
 		this.mode = mode;
+		this.opTuple = opTuple;
 	}
 
 	public Instruction parse(Node node) {
-		var tree = Tree.decompose(node, TermOp.TUPLE_);
+		var tree = Tree.decompose(node, opTuple);
 		var insn = Insn.valueOf(Atom.name(tree.getLeft()));
 		var ops = tree.getRight();
 		var operands = scan(ops, ".0, .1").map(this::parseOperand).toList();

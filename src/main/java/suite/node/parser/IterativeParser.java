@@ -28,9 +28,11 @@ public class IterativeParser {
 
 	private TerminalParser terminalParser = new TerminalParser();
 	private Operator[] operators;
+	private Operator opTuple;
 
-	public IterativeParser(Operator[] operators) {
+	public IterativeParser(Operator[] operators, Operator opTuple) {
 		this.operators = operators;
+		this.opTuple = opTuple;
 	}
 
 	private class Section {
@@ -78,12 +80,12 @@ public class IterativeParser {
 		Sink<Node> add = node -> {
 			var section = stack.peek();
 			if (!section.isDanglingRight)
-				addOperator.f(TermOp.TUPLE_);
+				addOperator.f(opTuple);
 			Tree.forceSetRight(section.list.getLast(), node);
 			section.isDanglingRight = false;
 		};
 
-		var lex = new Lexer(operators, TermOp.TUPLE_, in);
+		var lex = new Lexer(operators, opTuple, in);
 		stack.push(new Section(' '));
 		Token token;
 

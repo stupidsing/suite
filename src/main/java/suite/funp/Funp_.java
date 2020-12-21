@@ -9,7 +9,8 @@ import primal.adt.Pair;
 import primal.fp.Funs.Source;
 import primal.persistent.PerMap;
 import primal.primitive.adt.Bytes;
-import suite.Suite;
+import suite.BindArrayUtil;
+import suite.BindArrayUtil.Pattern;
 import suite.assembler.Amd64;
 import suite.assembler.Amd64.Instruction;
 import suite.funp.P0.FunpDefine;
@@ -36,6 +37,9 @@ import suite.funp.p3.P3Optimize;
 import suite.funp.p4.P4GenerateCode;
 import suite.inspect.Inspect;
 import suite.node.Node;
+import suite.node.io.SwitchNode;
+import suite.node.io.TermOp;
+import suite.node.parser.IterativeParser;
 import suite.node.util.Singleton;
 import suite.object.CastDefaults;
 import suite.object.SwitchDefaults;
@@ -44,6 +48,9 @@ import suite.util.Switch;
 public class Funp_ extends FunpCfg {
 
 	private static Inspect inspect = Singleton.me.inspect;
+	private static IterativeParser parser = new IterativeParser(TermOp.values(), TermOp.TUPLE_);
+
+	private static BindArrayUtil bindArrayUtil = new BindArrayUtil(parser);
 
 	public boolean isOptimize;
 
@@ -85,7 +92,7 @@ public class Funp_ extends FunpCfg {
 			var p3 = new P3Optimize(f);
 			var p4 = new P4GenerateCode(f);
 
-			var node = Suite.parse(fp);
+			var node = parse(fp);
 			var n0 = p0.parse(node);
 			var n1 = p10.check(n0);
 			var n2 = p11.reduce(n1);
@@ -138,6 +145,19 @@ public class Funp_ extends FunpCfg {
 		return defByVariables;
 	}
 
+	public static <T> T fail(Funp n, String m0) {
+		var m1 = n != null ? m0 + "\nin construct " + describe(n) : m0;
+		throw new CompileException(n, m1, null);
+	}
+
+	public static Node parse(String in) {
+		return parser.parse(in);
+	}
+
+	public static Pattern pattern(String in) {
+		return bindArrayUtil.pattern(in);
+	}
+
 	public static <T> T rethrow(String in, Source<T> source) {
 		try {
 			return source.g();
@@ -148,9 +168,12 @@ public class Funp_ extends FunpCfg {
 		}
 	}
 
-	public static <T> T fail(Funp n, String m0) {
-		var m1 = n != null ? m0 + "\nin construct " + describe(n) : m0;
-		throw new CompileException(n, m1, null);
+	public static Node substitute(String pattern, Node... nodes) {
+		return bindArrayUtil.pattern(pattern).subst(nodes);
+	}
+
+	public static <T> SwitchNode<T> switchNode(Node in) {
+		return new SwitchNode<>(in, bindArrayUtil::pattern);
 	}
 
 	private static String describe(Funp n) {

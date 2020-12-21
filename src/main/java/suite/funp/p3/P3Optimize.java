@@ -18,7 +18,7 @@ import suite.funp.P0.FunpNumber;
 import suite.funp.P0.FunpReference;
 import suite.funp.P2.FunpData;
 import suite.funp.P2.FunpMemory;
-import suite.funp.P2.FunpOp;
+import suite.funp.P2.FunpOpLr;
 import suite.inspect.Inspect;
 import suite.node.io.TermOp;
 import suite.node.util.Singleton;
@@ -68,11 +68,11 @@ public class P3Optimize extends FunpCfg {
 				}
 				return null;
 			})).applyIf(FunpReference.class, g -> {
-				return FunpOp.of(ps, TermOp.PLUS__, g.expr, FunpNumber.ofNumber(start));
+				return FunpOpLr.of(ps, TermOp.PLUS__, g.expr, FunpNumber.ofNumber(start));
 			}).result();
 		})).applyIf(FunpReference.class, f -> f.apply(expr -> {
 			return optimize(expr).sw().applyIf(FunpMemory.class, g -> g.pointer).result();
-		})).applyIf(FunpOp.class, f -> f.apply((opSize, op, lhs, rhs) -> {
+		})).applyIf(FunpOpLr.class, f -> f.apply((opSize, op, lhs, rhs) -> {
 			var iib = TreeUtil.boolOperations.get(op);
 			var iii = TreeUtil.intOperations.get(op);
 			var iit = TreeUtil.tupleOperations.get(op);

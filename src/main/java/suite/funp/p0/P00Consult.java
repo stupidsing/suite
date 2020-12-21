@@ -10,15 +10,14 @@ import primal.fp.Funs.Fun;
 import primal.io.ReadStream;
 import primal.statics.Rethrow.FunIo;
 import primal.statics.Rethrow.SourceEx;
-import suite.Suite;
 import suite.funp.FunpCfg;
+import suite.funp.Funp_;
 import suite.funp.Funp_.Funp;
 import suite.http.HttpClient;
 import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.Formatter;
-import suite.node.io.SwitchNode;
 import suite.node.io.TermOp;
 
 public class P00Consult extends FunpCfg {
@@ -28,7 +27,7 @@ public class P00Consult extends FunpCfg {
 	}
 
 	public Node c(Node node) {
-		return new SwitchNode<Node>(node //
+		return Funp_.<Node> switchNode(node //
 		).match("consult .0 ~ .1", (a, b) -> {
 			return c(consult(Formatter.display(a).replace("${platform}", isLongMode ? "amd64" : "i686"), b));
 		}).match("consult .0", a -> {
@@ -42,7 +41,7 @@ public class P00Consult extends FunpCfg {
 
 	private Node consult(String url) {
 		FunIo<ReadStream, Node> r0 = is -> {
-			var parsed = Suite.parse(ReadString.from(is));
+			var parsed = Funp_.parse(ReadString.from(is));
 			var predef = Tree.of(TermOp.ITEM__, Atom.of("predef"), Atom.of(url));
 			return Tree.of(TermOp.TUPLE_, predef, parsed);
 		};
@@ -51,7 +50,7 @@ public class P00Consult extends FunpCfg {
 
 	private Node consult(String url, Node program) {
 		FunIo<ReadStream, Node> r0 = is -> {
-			var node = Suite.parse(ReadString.from(is) + "$APP");
+			var node = Funp_.parse(ReadString.from(is) + "$APP");
 			return Tree //
 					.read(node, TermOp.CONTD_) //
 					.reverse() //

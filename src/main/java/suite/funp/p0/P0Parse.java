@@ -15,7 +15,6 @@ import primal.persistent.PerMap;
 import primal.persistent.PerSet;
 import primal.primitive.adt.IntMutable;
 import primal.streamlet.Streamlet2;
-import suite.Suite;
 import suite.assembler.Amd64;
 import suite.funp.FunpCfg;
 import suite.funp.Funp_;
@@ -69,7 +68,6 @@ import suite.node.Int;
 import suite.node.Node;
 import suite.node.Str;
 import suite.node.Tree;
-import suite.node.io.SwitchNode;
 import suite.node.io.TermOp;
 import suite.node.util.Singleton;
 import suite.node.util.TreeUtil;
@@ -106,7 +104,7 @@ public class P0Parse extends FunpCfg {
 		}
 
 		private Funp p(Node node) {
-			return new SwitchNode<Funp>(node //
+			return Funp_.<Funp> switchNode(node //
 			).match(".0:.1 .2", (a, b, c) -> { // coerce: conversion between shorter and longer data types
 				var c0 = Coerce.valueOf(Atom.name(b).toUpperCase());
 				var c1 = Coerce.valueOf(Atom.name(a).toUpperCase());
@@ -160,7 +158,7 @@ public class P0Parse extends FunpCfg {
 				return FunpStruct.of(isCompleted, kvs(a).mapValue(this::p).toList());
 			}).match("!asm .0 {.1}/.2", (a, b, c) -> {
 				return checkDo(() -> FunpDoAsm.of(Tree.read(a, TermOp.OR____).map(n -> {
-					var ma = Suite.pattern(".0 = .1").match(n);
+					var ma = Funp_.pattern(".0 = .1").match(n);
 					return Pair.of(Amd64.me.regByName.get(ma[0]), p(ma[1]));
 				}).toList(), Tree.read(b, TermOp.OR____).toList(), Amd64.me.regByName.get(c)));
 			}).match("!assign .0 := .1 ~ .2", (a, b, c) -> { // re-assigns a variable
@@ -192,7 +190,7 @@ public class P0Parse extends FunpCfg {
 			}).match("case || .0", a -> { // select case
 				return new Object() {
 					private Funp d(Node n) {
-						var m = Suite.pattern(".0 => .1 || .2").match(n);
+						var m = Funp_.pattern(".0 => .1 || .2").match(n);
 						return m != null ? FunpIf.of(p(m[0]), p(m[1]), d(m[2])) : p(n);
 					}
 				}.d(a);
@@ -204,7 +202,7 @@ public class P0Parse extends FunpCfg {
 					return FunpDefine.of(lambda.vn, p(b), lambda.expr, bind.outerFdt);
 				} else
 					return null;
-				// return parse(Suite.subst("poly .1 | (.0 => .2)", m));
+				// return parse(Funp_.subst("poly .1 | (.0 => .2)", m));
 			}).match("define .0 .1 := .2 ~ .3", (a, b, c, d) -> { // defines a function
 				return define(a, bind(Fdt.L_MONO).lambdaSeparate(b, c), d, Fdt.L_POLY);
 			}).match("define { .0 } ~ .1", (a, b) -> { // define lots of variables
@@ -251,7 +249,7 @@ public class P0Parse extends FunpCfg {
 					return FunpDefine.of(lambda.vn, p(b), lambda.expr, bind.outerFdt);
 				} else
 					return null;
-				// return parse(Suite.subst(".1 | (.0 => .2)", m));
+				// return parse(Funp_.subst(".1 | (.0 => .2)", m));
 			}).match("let .0 .1 := .2 ~ .3", (a, b, c, d) -> { // defines a function
 				return define(a, bind(Fdt.L_MONO).lambdaSeparate(b, c), d, Fdt.L_MONO);
 			}).match("let { .0 } ~ .1", (a, b) -> { // define lots of variables
@@ -405,10 +403,10 @@ public class P0Parse extends FunpCfg {
 					}) //
 					.map(n -> {
 						Node[] m;
-						if ((m = Suite.pattern(".0 .1 := .2").match(n)) != null)
-							return Pair.of(Atom.name(m[0]), Suite.substitute(".0 => .1", m[1], m[2]));
-						else if ((m = Suite.pattern(".0 := .1").match(n)) != null
-								|| (m = Suite.pattern(".0: .1").match(n)) != null)
+						if ((m = Funp_.pattern(".0 .1 := .2").match(n)) != null)
+							return Pair.of(Atom.name(m[0]), Funp_.substitute(".0 => .1", m[1], m[2]));
+						else if ((m = Funp_.pattern(".0 := .1").match(n)) != null
+								|| (m = Funp_.pattern(".0: .1").match(n)) != null)
 							return Pair.of(Atom.name(m[0]), m[1]);
 						else
 							return Pair.of(Atom.name(n), n);
@@ -472,7 +470,7 @@ public class P0Parse extends FunpCfg {
 			}
 
 			private Funp bind(Node a, Node b, Node c) {
-				return bind(a, b, c, Suite.parse("error"));
+				return bind(a, b, c, Atom.of("error"));
 			}
 
 			private Funp bind(Node a, Node b, Node c, Node d) {

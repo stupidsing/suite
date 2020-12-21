@@ -9,15 +9,22 @@ import suite.lp.doer.BinderFactory.BindEnv;
 import suite.lp.sewing.impl.SewingGeneralizerImpl;
 import suite.node.Atom;
 import suite.node.Node;
+import suite.node.parser.IterativeParser;
 import suite.util.Memoize;
 import suite.util.To;
 
 public class BindArrayUtil {
 
+	private IterativeParser parser;
+
 	public interface Pattern {
 		public Node[] match(Node node);
 
 		public Node subst(Node... nodes);
+	}
+
+	public BindArrayUtil(IterativeParser parser) {
+		this.parser = parser;
 	}
 
 	public Pattern pattern(String pattern) {
@@ -26,7 +33,7 @@ public class BindArrayUtil {
 
 	private Fun<String, Pattern> patterns = Memoize.fun(pattern_ -> {
 		var sg = new SewingGeneralizerImpl();
-		var sgs = sg.g(Suite.parse(pattern_));
+		var sgs = sg.g(parser.parse(pattern_));
 		var ne = sgs.g();
 
 		var cb = new CompileBinderImpl(false);

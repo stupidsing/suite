@@ -336,14 +336,14 @@ public class P2 {
 		}
 	}
 
-	public static class FunpOp implements Funp, P4.End {
+	public static class FunpOpLr implements Funp, P4.End {
 		public int opSize;
 		public Object operator;
 		public Funp left;
 		public Funp right;
 
-		public static FunpOp of(int opSize, Object operator, Funp left, Funp right) {
-			var f = new FunpOp();
+		public static FunpOpLr of(int opSize, Object operator, Funp left, Funp right) {
+			var f = new FunpOpLr();
 			f.opSize = opSize;
 			f.operator = operator;
 			f.left = left;

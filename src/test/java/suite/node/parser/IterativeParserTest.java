@@ -15,7 +15,7 @@ import suite.os.LogUtil;
 
 public class IterativeParserTest {
 
-	private IterativeParser iterativeParser = new IterativeParser(TermOp.values());
+	private IterativeParser iterativeParser = new IterativeParser(TermOp.values(), TermOp.TUPLE_);
 
 	@Test
 	public void testParseAuto() {

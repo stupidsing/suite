@@ -1,7 +1,7 @@
 package suite.funp.p0;
 
 import primal.persistent.PerMap;
-import suite.Suite;
+import suite.funp.Funp_;
 import suite.lp.doer.Binder;
 import suite.lp.doer.Generalizer;
 import suite.lp.kb.Prototype;
@@ -19,7 +19,7 @@ public class P01Expand {
 	public Node e(Node node) {
 		Node[] m;
 
-		if ((m = Suite.pattern("expand .0 := .1 ~ .2").match(node)) != null) {
+		if ((m = Funp_.pattern("expand .0 := .1 ~ .2").match(node)) != null) {
 			var head = m[0];
 			return new P01Expand(macros.put(Prototype.of(head), new Node[] { head, m[1], })).e(m[2]);
 		} else if ((m = macros.getOrNull(Prototype.of(node))) != null) {

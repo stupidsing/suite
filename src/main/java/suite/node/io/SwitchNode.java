@@ -29,9 +29,15 @@ public class SwitchNode<R> {
 
 	private Node in;
 	private R result;
+	private Fun<String, Pattern> patternf;
 
 	public SwitchNode(Node in) {
+		this(in, Suite::pattern);
+	}
+
+	public SwitchNode(Node in, Fun<String, Pattern> patternf) {
 		this.in = in;
+		this.patternf = patternf;
 	}
 
 	public <T extends Node> SwitchNode<R> applyIf(Class<T> c, Fun<T, R> fun) {
@@ -109,27 +115,27 @@ public class SwitchNode<R> {
 	}
 
 	public SwitchNode<R> match(String pattern, FixieFun0<R> fun) {
-		return match0_(Suite.pattern(pattern), fun);
+		return match0_(patternf.apply(pattern), fun);
 	}
 
 	public SwitchNode<R> match(String pattern, FixieFun1<Node, R> fun) {
-		return match1_(Suite.pattern(pattern), fun);
+		return match1_(patternf.apply(pattern), fun);
 	}
 
 	public SwitchNode<R> match(String pattern, FixieFun2<Node, Node, R> fun) {
-		return match2_(Suite.pattern(pattern), fun);
+		return match2_(patternf.apply(pattern), fun);
 	}
 
 	public SwitchNode<R> match(String pattern, FixieFun3<Node, Node, Node, R> fun) {
-		return match3_(Suite.pattern(pattern), fun);
+		return match3_(patternf.apply(pattern), fun);
 	}
 
 	public SwitchNode<R> match(String pattern, FixieFun4<Node, Node, Node, Node, R> fun) {
-		return match4_(Suite.pattern(pattern), fun);
+		return match4_(patternf.apply(pattern), fun);
 	}
 
 	public SwitchNode<R> match(String pattern, FixieFun5<Node, Node, Node, Node, Node, R> fun) {
-		return match5_(Suite.pattern(pattern), fun);
+		return match5_(patternf.apply(pattern), fun);
 	}
 
 	public SwitchNode<R> matchArray(Pattern pattern, Fun<Node[], R> fun) {
@@ -137,7 +143,7 @@ public class SwitchNode<R> {
 	}
 
 	public SwitchNode<R> matchArray(String pattern, Fun<Node[], R> fun) {
-		return match_(Suite.pattern(pattern), fun);
+		return match_(patternf.apply(pattern), fun);
 	}
 
 	public R nonNullResult() {

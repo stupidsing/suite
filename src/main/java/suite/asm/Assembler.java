@@ -34,6 +34,7 @@ import suite.node.Reference;
 import suite.node.Str;
 import suite.node.Tree;
 import suite.node.io.SwitchNode;
+import suite.node.io.TermOp;
 import suite.parser.CommentPreprocessor;
 import suite.text.Preprocess;
 import suite.text.Preprocess.Run;
@@ -143,7 +144,7 @@ class AsmA implements Asm {
 
 	public AsmA(Amd64Mode mode) {
 		aa = new Amd64Assemble(mode);
-		ap = new Amd64Parse(mode);
+		ap = new Amd64Parse(mode, TermOp.TUPLE_);
 	}
 
 	public Bytes assemble(boolean isPass2, int address, Node instruction) {

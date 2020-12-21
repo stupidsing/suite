@@ -11,7 +11,7 @@ import suite.node.io.TermOp;
 public class ParserCompareTest {
 
 	private Operator[] operators = TermOp.values();
-	private IterativeParser iterativeParser = new IterativeParser(operators);
+	private IterativeParser iterativeParser = new IterativeParser(operators, TermOp.TUPLE_);
 	private RecursiveParser recursiveParser = new RecursiveParser(operators);
 
 	@Test
