@@ -11,7 +11,7 @@ public class QuandlTest {
 
 	private Quandl quandl = new Quandl();
 
-	@Test
+	@Test // requires ~/private/secrets.sl
 	public void test() {
 		var e = Time.now();
 		var s = e.addDays(-360);

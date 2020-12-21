@@ -26,10 +26,10 @@ public class HkexTest {
 
 		var name = Read //
 				.from(companies) //
-				.filter(fixie -> Equals.string(fixie.symbol, "0005.HK")) //
+				.filter(fixie -> Equals.string(fixie.symbol, "0101.HK")) //
 				.uniqueResult().name;
 
-		assertTrue(name.equals("HSBC Holdings plc"));
+		assertTrue(name.equals("Hang Lung Properties Ltd."));
 	}
 
 	@Test

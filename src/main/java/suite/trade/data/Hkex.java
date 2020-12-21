@@ -1,6 +1,7 @@
 package suite.trade.data;
 
 import static primal.statics.Rethrow.ex;
+import static suite.util.Streamlet_.forInt;
 
 import java.util.HashSet;
 import java.util.List;
@@ -274,9 +275,7 @@ public class Hkex {
 	}
 
 	public Streamlet<Instrument> queryCompanies() {
-		return Read //
-				.each(queryCompanies(0), queryCompanies(1), queryCompanies(2)) //
-				.flatMap(list -> list);
+		return forInt(0, 10).map(this::queryCompanies).flatMap(list -> list);
 	}
 
 	private List<Instrument> queryCompanies(int pageNo) {
