@@ -57,7 +57,7 @@ public class UctTest {
 		return nWins + "/" + nTotal;
 	}
 
-	@Test
+	@Test // long test
 	public void testRandomEvaluationTime() {
 		var gameSet = new GameSet(new Board(), Occupation.BLACK);
 		var i = 0;
@@ -132,7 +132,7 @@ public class UctTest {
 		assertTrue(move.getY() < Weiqi.size - 2);
 	}
 
-	@Test
+	@Test // long test
 	public void testUctGame() {
 		new Profiler().profile(() -> {
 			var df = new DecimalFormat("0.000");

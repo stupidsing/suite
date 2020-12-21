@@ -19,7 +19,6 @@ import primal.Nouns.Utf8;
 import primal.Verbs.Compare;
 import primal.Verbs.Equals;
 import primal.Verbs.WriteFile;
-import primal.fp.Funs2.FoldOp;
 import primal.primitive.FltMoreVerbs.LiftFlt;
 import primal.primitive.LngMoreVerbs.LiftLng;
 import primal.primitive.adt.pair.LngFltPair;
@@ -27,7 +26,6 @@ import primal.streamlet.Streamlet;
 import primal.streamlet.Streamlet2;
 import suite.cfg.HomeDir;
 import suite.http.HttpClient;
-import suite.node.util.Singleton;
 import suite.os.LogUtil;
 import suite.streamlet.As;
 import suite.trade.Time;
@@ -36,40 +34,8 @@ import suite.util.To;
 
 public class Yahoo {
 
-	private Cleanse cleanse = new Cleanse();
 	private ObjectMapper om = new ObjectMapper();
 	private QuoteCache<String> quoteCache = new QuoteCache<>(this::quote_);
-
-	public DataSource dataSourceCsv(String symbol, TimeRange period) {
-		var urlString = tableUrl(symbol, period);
-
-		// Date, Open, High, Low, Close, Volume, Adj Close
-		var arrays = Singleton.me.storeCache //
-				.http(urlString) //
-				.collect(As::csv) //
-				.skip(1) //
-				.sort((a0, a1) -> Compare.objects(a0[0], a1[0])) //
-				.collect();
-
-		var ts = arrays.collect(LiftLng.of(array -> closeTs(array[0]))).toArray();
-		var ops = arrays.collect(LiftFlt.of(array -> Float.parseFloat(array[1]))).toArray();
-		var cls = arrays.collect(LiftFlt.of(array -> Float.parseFloat(array[4]))).toArray();
-		var los = arrays.collect(LiftFlt.of(array -> Float.parseFloat(array[3]))).toArray();
-		var his = arrays.collect(LiftFlt.of(array -> Float.parseFloat(array[2]))).toArray();
-		var volumes = arrays.collect(LiftFlt.of(array -> Float.parseFloat(array[5]))).toArray();
-
-		adjust(symbol, ts, ops);
-		adjust(symbol, ts, cls);
-		adjust(symbol, ts, los);
-		adjust(symbol, ts, his);
-
-		cleanse.cleanse(ops);
-		cleanse.cleanse(cls);
-		cleanse.cleanse(los);
-		cleanse.cleanse(his);
-
-		return DataSource.ofOhlcv(ts, ops, cls, los, his, volumes);
-	}
 
 	// https://l1-query.finance.yahoo.com/v7/finance/chart/0012.HK?period1=0&period2=1497550133&interval=1d&indicators=quote&includeTimestamps=true&includePrePost=true&events=div%7Csplit%7Cearn&corsDomain=finance.yahoo.com
 	public DataSource dataSourceL1(String symbol, TimeRange period) {
@@ -238,17 +204,6 @@ public class Yahoo {
 			return new HashMap<>();
 	}
 
-	private void adjust(String symbol, long[] ts, float[] prices) {
-		var adjusters = new HashMap<String, FoldOp<Long, Float>>();
-		adjusters.put("0700.HK", (d, p) -> Compare.string(Time.ofEpochSec(d).ymd(), "2014-05-14") <= 0 ? p * .2f : p);
-		adjusters.put("2318.HK", (d, p) -> Compare.string(Time.ofEpochSec(d).ymd(), "2014-03-23") <= 0 ? p * .5f : p);
-
-		var adjuster = adjusters.get(symbol);
-		if (adjuster != null)
-			for (var d = 0; d < prices.length; d++)
-				prices[d] = adjuster.apply(ts[d], prices[d]);
-	}
-
 	private long getOpenTimeBefore(String exchange, long t) {
 		return !isHkg(exchange) ? t : HkexUtil.getOpenTimeBefore(Time.ofEpochSec(t)).epochSec();
 	}
@@ -259,10 +214,6 @@ public class Yahoo {
 
 	private boolean isHkg(String exchange) {
 		return Equals.string(exchange, "HKG");
-	}
-
-	private long closeTs(String ymd) {
-		return Time.of(ymd + " 16:30:00").epochSec();
 	}
 
 	private String encode(String s) {
