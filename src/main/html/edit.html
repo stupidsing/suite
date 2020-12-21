@@ -6,6 +6,7 @@ file:///home/ywsing/suite/src/main/html/edit.html
 <html>
 	<head>
 		<title>Rich Text Editor</title>
+
 		<script type='text/javascript'>
 			let doc_, defaultText = '<div>Lorem ipsum</div>';
 
@@ -79,6 +80,7 @@ file:///home/ywsing/suite/src/main/html/edit.html
 				}
 			};
 		</script>
+
 		<style type='text/css'>
 			#editMode label { cursor: pointer; }
 			.sourceText { margin: 0; }
@@ -96,6 +98,7 @@ file:///home/ywsing/suite/src/main/html/edit.html
 			select { font-family: monospace; }
 		</style>
 	</head>
+
 	<body onload='initDocument();'>
 		<form name='submitter' method='post' action='sample.php' onsubmit='if (validateMode()) { this.editDoc.value = doc_.innerHTML; return true; } else return false;'>
 			<input type='hidden' name='editDoc'>
