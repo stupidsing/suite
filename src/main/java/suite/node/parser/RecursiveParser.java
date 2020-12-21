@@ -44,7 +44,7 @@ public class RecursiveParser {
 			else if (name.equals("`"))
 				return TreeTuple.of(Atom.of("`"), node(fn1));
 			else
-				return Tree.of(TermOp.valueOf(name), node(fn0), node(fn2));
+				return Tree.of(TermOp.find(name), node(fn0), node(fn2));
 		} else
 			return terminalParser.parseTerminal(((FTerminal) fn).chars.toString());
 	}

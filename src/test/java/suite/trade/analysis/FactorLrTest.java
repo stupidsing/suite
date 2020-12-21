@@ -14,7 +14,7 @@ public class FactorLrTest {
 
 	private TradeCfg cfg = new TradeCfgImpl();
 
-	@Test
+	@Test // crude oil instrument expired, fail
 	public void test() {
 		var indices = Read.each(Usex.crudeOil, Usex.dowJones, Usex.nasdaq, Usex.sp500);
 

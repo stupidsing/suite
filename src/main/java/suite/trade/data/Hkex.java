@@ -167,7 +167,7 @@ public class Hkex {
 
 	private Map<String, Instrument> companyBySymbol = Read.from(companies).toMap(company -> company.symbol);
 
-	private Set<String> delisted = new HashSet<>(List.of("0013.HK"));
+	private Set<String> delisted = new HashSet<>(List.of("0013.HK", "0020.HK"));
 	private Obj_Int<String> queryLotSize = sina::queryLotSize;
 
 	public static final Set<String> commonFirstNames = new HashSet<>(

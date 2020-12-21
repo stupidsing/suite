@@ -35,7 +35,7 @@ public class PrecompileTest {
 		Read.from(allLibraries).sink(lib -> assertTrue(Suite.precompile(lib, new ProverCfg())));
 	}
 
-	@Test
+	@Test // long test
 	public void testThreeTimes() {
 		new Profiler().profile(() -> {
 			for (var i = 0; i < 3; i++)

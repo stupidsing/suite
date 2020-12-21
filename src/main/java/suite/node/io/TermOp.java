@@ -119,4 +119,9 @@ public class TermOp implements Operator {
 		return precedence;
 	}
 
+	@Override
+	public String toString() {
+		return name;
+	}
+
 }

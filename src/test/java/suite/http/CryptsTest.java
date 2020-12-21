@@ -9,7 +9,7 @@ import suite.http.Crypts.Crypt;
 
 public class CryptsTest {
 
-	@Test
+	@Test // need to create directory at ~/private
 	public void test() {
 		var in = "Secret Message";
 

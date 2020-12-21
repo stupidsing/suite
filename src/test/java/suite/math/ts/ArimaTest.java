@@ -25,17 +25,17 @@ public class ArimaTest {
 		public DblObjPair<Arima_> arima(float[] xs, int p, int d, int q);
 	}
 
-	@Test
+	@Test // case with randomness, may fail occasionally
 	public void testArma20() {
 		test(vec.of(.5f, .5f), vec.of());
 	}
 
-	@Test
+	@Test // case with randomness, may fail occasionally
 	public void testArma02() {
 		test(vec.of(), vec.of(.5f, .5f));
 	}
 
-	@Test
+	@Test // case with randomness, may fail occasionally
 	public void testMa2() {
 		test(vec.of(), vec.of(.5f, -.5f, 0f));
 	}

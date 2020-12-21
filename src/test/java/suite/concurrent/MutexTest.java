@@ -22,14 +22,14 @@ public class MutexTest {
 		public void run() throws DeadlockException;
 	}
 
-	@Test
+	@Test // long test
 	public void testDeadlock() {
 		var ra = lockInOrder(PerList.of(a, b));
 		var rb = lockInOrder(PerList.of(b, a));
 		assertTrue(isDeadlock(ra, rb));
 	}
 
-	@Test
+	@Test // long test
 	public void testNoDeadlock() {
 		var ra = lockInOrder(PerList.of(a, b));
 		var rb = lockInOrder(PerList.of(a, b));

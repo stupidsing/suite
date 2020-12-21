@@ -14,7 +14,7 @@ import primal.Verbs.Start;
 
 public class RunOnceTest {
 
-	@Test
+	@Test // long test
 	public void test() {
 		var value = 1;
 

@@ -8,7 +8,7 @@ import suite.streamlet.As;
 
 public class StoreCacheTest {
 
-	@Test
+	@Test // requires ~/private/secrets.sl
 	public void test() {
 		var size = Defaults //
 				.bindSecrets("stockUrl .0") //

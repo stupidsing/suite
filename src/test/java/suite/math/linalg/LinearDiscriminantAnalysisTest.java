@@ -1,6 +1,7 @@
 package suite.math.linalg;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -25,6 +26,7 @@ public class LinearDiscriminantAnalysisTest {
 		Singleton.me.storeCache //
 				.http("https://archive.ics.uci.edu/ml/machine-learning-databases/iris/iris.data") //
 				.collect(As::csv) //
+				.filter(t -> 0 < t.length) //
 				.sink(t -> {
 					var category = categoryIdByName.computeIfAbsent(t[4], c -> categoryCounter.getAndIncrement());
 

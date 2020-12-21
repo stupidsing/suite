@@ -93,7 +93,7 @@ public class B_TreeTest {
 		}
 	}
 
-	@Test
+	@Test // long test
 	public void testInsertPerformance() throws IOException {
 		var nKeys = 16384;
 		var pageSize = 4096;

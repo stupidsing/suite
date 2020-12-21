@@ -11,7 +11,7 @@ import suite.os.FileUtil;
 
 public class TwoPassIndexTest {
 
-	@Test
+	@Test // long test
 	public void test() {
 		var filenames = FileUtil //
 				.findPaths(Paths.get("src/test/java")) //
