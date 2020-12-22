@@ -153,7 +153,7 @@ module(gc, {
 	gc_.lastAllocated = 0;
 	gc_.root = 0;
 	markAndSweep();
-	!gc_.first || fatal("some memory not garbage collected");
+	gc!_.first || fatal("some memory not garbage collected");
 	memdeinit();
 })
 

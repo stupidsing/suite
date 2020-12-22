@@ -26,11 +26,11 @@ public class ElfTest {
 	@Test
 	public void testAllocate() {
 		test(0, """
-				let { !alloc, !dealloc, } := consult allocate.fp ~ do! (
-					let p := !alloc 12 ~
-					let q := !alloc 24 ~
-					!dealloc (12, p) ~
-					!dealloc (24, q) ~
+				let { alloc!, dealloc!, } := consult allocate.fp ~ do (
+					let p := alloc! 12 ~
+					let q := alloc! 24 ~
+					dealloc! (12, p) ~
+					dealloc! (24, q) ~
 					0
 				)
 				""", "");
@@ -84,7 +84,7 @@ public class ElfTest {
 	@Test
 	public void testGuess() {
 		for (var isLongMode : new boolean[] { false, true, }) {
-			var program = "do! (consult guess.fp).!guess {}";
+			var program = "do (consult guess.fp).!guess {}";
 			var elf = new WriteElf(isLongMode);
 
 			for (var isOptimize : new boolean[] { false, true, })
@@ -97,27 +97,27 @@ public class ElfTest {
 	@Test
 	public void testIo() {
 		var text = "garbage\n";
-		var program = "do! (consult io.fp).!cat {}";
+		var program = "do (consult io.fp).cat! {}";
 		test(0, program, text);
 	}
 
 	@Test
 	public void testIter() {
-		// var program = "do! (consult iter.fp).!list-iter []";
+		// var program = "do (consult iter.fp).list-iter! []";
 		var program = """
-				let { !list-build, list-filter, !list-free, !list-iter, list-map, } := consult iter.fp ~
-				do! (
-					let b := !list-build () ~
-					b.!append 1 ~
-					b.!append 2 ~
-					b.!append 3 ~
+				let { list-build!, list-filter, list-free!, list-iter!, list-map, } := consult iter.fp ~
+				do (
+					let b := list-build! () ~
+					b.append! 1 ~
+					b.append! 2 ~
+					b.append! 3 ~
 					let iter :=
-						b.!get () | defer !list-free
-						| precapture list-filter (i => true) | !! | defer !list-free
-						| precapture list-map (i => i + 1) | !! | defer !list-free
-						| !list-iter | !! | defer/!free
+						b.get! () | defer list-free!
+						| precapture list-filter (i => true) | !! | defer list-free!
+						| precapture list-map (i => i + 1) | !! | defer list-free!
+						| list-iter! | !! | defer/free!
 					~
-					iter.!next ()
+					iter.next! ()
 				)
 				""";
 		test(2, program, "");
@@ -126,11 +126,11 @@ public class ElfTest {
 	@Test
 	public void testNumbers() {
 		test(0, """
-				let { !get-number, !put-number, } := consult io.fp ~
-				do! (
-				let m := type number !get-number {} ~
-				let n := type number !get-number {} ~
-				!put-number (m + n) ~ 0
+				let { get-number!, put-number!, } := consult io.fp ~
+				do (
+				let m := type number get-number! {} ~
+				let n := type number get-number! {} ~
+				put-number! (m + n) ~ 0
 				)
 				""", //
 				"25\n57\n", //
@@ -139,15 +139,15 @@ public class ElfTest {
 
 	@Test
 	public void testPut() {
-		test(0, "do! ((consult io.fp).!put-char byte 'A' | !! 0)", "A");
-		test(0, "do! ((consult io.fp).!put-number number 'A' | !! 0)", "65");
-		test(0, "do! ((consult io.fp).!put-number -999 | !! 0)", "-999");
+		test(0, "do ((consult io.fp).put-char! byte 'A' | !! 0)", "A");
+		test(0, "do ((consult io.fp).put-number! number 'A' | !! 0)", "65");
+		test(0, "do ((consult io.fp).put-number! -999 | !! 0)", "-999");
 		test(0, """
 				let io := consult io.fp ~
 				for! (
 					i := 0 #
 					i < 10 #
-					io.!put-number i | !! (i + 1) #
+					io.put-number! i | !! (i + 1) #
 					0)
 				""", "0123456789");
 	}
@@ -155,8 +155,8 @@ public class ElfTest {
 	@Test
 	public void testRdtsc() {
 		for (var isLongMode : new boolean[] { false, true, }) {
-			execute("consult 'asm.${platform}.fp' ~ do! (!asm-rdtsc and +x7FFFFFFF % 100)", "", isLongMode);
-			execute("consult 'asm.${platform}.fp' ~ do! (!asm-rdtscp and +x7FFFFFFF % 100)", "", isLongMode);
+			execute("consult 'asm.${platform}.fp' ~ do (asm-rdtsc! and +x7FFFFFFF % 100)", "", isLongMode);
+			execute("consult 'asm.${platform}.fp' ~ do (asm-rdtscp! and +x7FFFFFFF % 100)", "", isLongMode);
 		}
 	}
 

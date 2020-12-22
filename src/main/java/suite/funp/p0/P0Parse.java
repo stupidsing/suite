@@ -222,7 +222,7 @@ public class P0Parse extends FunpCfg {
 				return defineList(a, b, Fdt.G_POLY);
 			}).match("define-virtual %0 := %1 ~ %2", (a, b, c) -> { // defines a name for typing
 				return defineList(Read.each2(Pair.of(Atom.name(a), b)), c, Fdt.VIRT);
-			}).match("do! %0", a -> { // boxes an I/O operation
+			}).match("do %0", a -> { // boxes an I/O operation
 				return do_(parse -> parse.p(a));
 			}).match("error", () -> { // throws up
 				return FunpError.of("error");
@@ -379,7 +379,7 @@ public class P0Parse extends FunpCfg {
 			Tree t;
 			while ((t = Tree.decompose(n, FunpOp.DOT___)) != null)
 				n = t.getRight();
-			return n instanceof Atom && Atom.name(n).startsWith("!");
+			return n instanceof Atom && Atom.name(n).endsWith("!");
 		}
 
 		private boolean isId(Node n) {
