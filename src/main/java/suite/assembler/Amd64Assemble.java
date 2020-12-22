@@ -265,6 +265,8 @@ public class Amd64Assemble {
 		case CPUID -> new InsnCode(bs(0x0F, 0xA2));
 		case CVTSD2SI -> assembleRegRm(i_op0, i_op1, 0x2C).append(0x0F).pre(0xF2);
 		case CVTSS2SI -> assembleRegRm(i_op0, i_op1, 0x2C).append(0x0F).pre(0xF3);
+		case CVTSI2SD -> assembleRegRm(i_op0, i_op1, 0x2A).append(0x0F).pre(0xF2);
+		case CVTSI2SS -> assembleRegRm(i_op0, i_op1, 0x2A).append(0x0F).pre(0xF3);
 		case D -> {
 			opImm = (OpImm) i_op0;
 			var bb = new BytesBuilder();

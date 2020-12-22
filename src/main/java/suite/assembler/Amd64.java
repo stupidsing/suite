@@ -34,6 +34,8 @@ public class Amd64 {
 		CPUID, //
 		CVTSD2SI, //
 		CVTSS2SI, //
+		CVTSI2SD, //
+		CVTSI2SS, //
 		D, //
 		DEC, //
 		DIV, //
