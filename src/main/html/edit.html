@@ -8,7 +8,34 @@ file:///home/ywsing/suite/src/main/html/edit.html
 		<title>Rich Text Editor</title>
 
 		<script type='text/javascript'>
-			let doc_, defaultText = '<div>Lorem ipsum</div>';
+			let doc_, defaultText = `
+			<p>Lorem ipsum</p>
+			<p>
+				<div style='display: grid; grid-template-columns: min-content min-content;'>
+					<div style='border-top: 1px solid grey; padding: 4px;'>x</div>
+					<div style='border-top: 1px solid grey; padding: 4px;'>y</div>
+					<div style='border-top: 1px solid grey; padding: 4px;'>1.2</div>
+					<div style='border-top: 1px solid grey; padding: 4px;'>2.4</div>
+					<div style='border-top: 1px solid grey; padding: 4px;'/></div>
+					<div style='border-top: 1px solid grey; padding: 4px;'/></div>
+				</div>
+			</p>
+			<p>
+				<table border=1 style='border-collapse: collapse;'>
+					<tbody>
+						<tr>
+							<td>x</td>
+							<td>y</td>
+						</tr>
+						<tr>
+							<td>1.2</td>
+							<td>2.4</td>
+						</tr>
+					</tbody>
+				</table>
+			</p>
+			<p>Lorem ipsum</p>
+			`;
 
 			let initDocument = () => {
 				doc_ = document.getElementById('textbox');
@@ -91,11 +118,9 @@ file:///home/ywsing/suite/src/main/html/edit.html
 				padding: 12px;
 				overflow: scroll;
 			}
-			.toolbar0 select { font-size: 10px; }
 			.toolbarButton { cursor: pointer; }
-			body { font-family: monospace; }
 			img.toolbarButton { border: 0; }
-			select { font-family: monospace; }
+			body, input, select { font-family: monospace; }
 		</style>
 	</head>
 
