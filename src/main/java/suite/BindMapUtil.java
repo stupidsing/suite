@@ -13,10 +13,16 @@ import suite.util.Memoize;
 
 public class BindMapUtil {
 
+	private String variablePrefix;
+
 	public interface Pattern {
 		public Map<String, Node> match(Node node);
 
 		public Node subst(Map<String, Node> map);
+	}
+
+	public BindMapUtil(String variablePrefix) {
+		this.variablePrefix = variablePrefix;
 	}
 
 	public Pattern pattern(String pattern) {
@@ -24,7 +30,7 @@ public class BindMapUtil {
 	}
 
 	private Fun<String, Pattern> patterns = Memoize.fun(pattern_ -> {
-		var sg = new SewingGeneralizerImpl();
+		var sg = new SewingGeneralizerImpl(variablePrefix);
 		var sgs = sg.g(Suite.parse(pattern_));
 		var ne = sgs.g();
 

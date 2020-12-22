@@ -1,7 +1,7 @@
 consult "asm.${platform}.fp" ~
 
-expand !adjust-pointer .pointer .add :=
-	type .pointer pointer:numberp sum (numberp:pointer .pointer) (numberp:number .add)
+expand !adjust-pointer %pointer %add :=
+	type %pointer pointer:numberp sum (numberp:pointer %pointer) (numberp:number %add)
 ~
 
 define-function !mmap length := do!

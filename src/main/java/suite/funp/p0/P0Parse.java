@@ -105,96 +105,96 @@ public class P0Parse extends FunpCfg {
 
 		private Funp p(Node node) {
 			return Funp_.<Funp> switchNode(node //
-			).match(".0:.1 .2", (a, b, c) -> { // coerce: conversion between shorter and longer data types
+			).match("%0:%1 %2", (a, b, c) -> { // coerce: conversion between shorter and longer data types
 				var c0 = Coerce.valueOf(Atom.name(b).toUpperCase());
 				var c1 = Coerce.valueOf(Atom.name(a).toUpperCase());
 				return FunpCoerce.of(c0, c1, p(c));
-			}).match(".0 .1 .2", (a, b, c) -> { // invokes binary operator
+			}).match("%0 %1 %2", (a, b, c) -> { // invokes binary operator
 				if (TreeUtil.tupleOperations.containsKey(b))
 					return FunpTree2.of((Atom) b, p(a), p(c));
 				else
 					return null;
-			}).match(".0 .1 ~ .2", (a, b, c) -> { // performs side-effect before
+			}).match("%0 %1 ~ %2", (a, b, c) -> { // performs side-effect before
 				if (isBang(a)) {
 					var apply = FunpApply.of(p(b), p(a));
 					var lambda = bind(Fdt.L_MONO).lambda(dontCare, c);
 					return checkDo(() -> FunpDefine.of(lambda.vn, apply, lambda.expr, Fdt.L_IOAP));
 				} else
 					return null;
-			}).match(".0 => capture .1", (a, b) -> { // capturing lambda that would be freed by uncapture
+			}).match("%0 => capture %1", (a, b) -> { // capturing lambda that would be freed by uncapture
 				return capture(bind(Fdt.L_MONO).lambdaSeparate(a, b), Fct.MANUAL);
-			}).match(".0 => capture1 .1", (a, b) -> { // capturing lambda that would be freed by first invocation
+			}).match("%0 => capture1 %1", (a, b) -> { // capturing lambda that would be freed by first invocation
 				return capture(bind(Fdt.L_MONO).lambdaSeparate(a, b), Fct.ONCE__);
-			}).match(".0 => .1", (a, b) -> { // lambda that only refer to parent stack frames - cannot be returned!
+			}).match("%0 => %1", (a, b) -> { // lambda that only refer to parent stack frames - cannot be returned!
 				return bind(Fdt.L_MONO).lambdaSeparate(a, b);
-			}).match(".0 | !!", a -> { // unboxes an I/O
+			}).match("%0 | !!", a -> { // unboxes an I/O
 				return checkDo(() -> FunpDoEvalIo.of(p(a)));
-			}).match(".0 | !! .1", (a, b) -> { // perform side-effect before
+			}).match("%0 | !! %1", (a, b) -> { // perform side-effect before
 				var lambda = bind(Fdt.L_MONO).lambda(dontCare, b);
 				return checkDo(() -> FunpDefine.of(lambda.vn, p(a), lambda.expr, Fdt.L_IOAP));
-			}).match(".0 | defer .1", (a, b) -> { // defers closing by a function
+			}).match("%0 | defer %1", (a, b) -> { // defers closing by a function
 				return checkDo(() -> FunpPredefine.of("defer$" + Get.temp(), p(a), Fpt.APPLY_, null, p(b)));
-			}).match(".0 | defer/.1", (a, b) -> { // defers closing by a child function
+			}).match("%0 | defer/%1", (a, b) -> { // defers closing by a child function
 				return checkDo(() -> FunpPredefine.of("defer$" + Get.temp(), p(a), Fpt.INVOKE, Atom.name(b), null));
-			}).match(".0 | .1", (a, b) -> { // applies a function, pipe form
+			}).match("%0 | %1", (a, b) -> { // applies a function, pipe form
 				return FunpApply.of(p(a), p(b));
-			}).match(".0 [.1]", (a, b) -> { // indexes an array
+			}).match("%0 [%1]", (a, b) -> { // indexes an array
 				return !isArray(b) ? FunpIndex.of(FunpReference.of(p(a)), p(b)) : null;
-			}).match(".0 ++ .1", (a, b) -> { // adjusts a pointer
+			}).match("%0 ++ %1", (a, b) -> { // adjusts a pointer
 				return FunpAdjustArrayPointer.of(p(a), p(b));
-			}).match(".0, .1", (a, b) -> { // forms a tuple
+			}).match("%0, %1", (a, b) -> { // forms a tuple
 				return FunpStruct.of(List.of(Pair.of("t0", p(a)), Pair.of("t1", p(b))));
-			}).match(".0:.1", (a, b) -> { // forms a tag
+			}).match("%0:%1", (a, b) -> { // forms a tag
 				var tag = Atom.name(a);
 				return FunpTag.of(IntMutable.of(idByTag.computeIfAbsent(tag, t -> ++tagId)), tag, p(b));
-			}).match(".0/.1", (a, b) -> { // retrieves member of a struct
+			}).match("%0.%1", (a, b) -> { // retrieves member of a struct
 				return b instanceof Atom ? FunpField.of(FunpReference.of(p(a)), Atom.name(b)) : null;
-			}).match(".0*", a -> { // dereferences a pointer
+			}).match("%0*", a -> { // dereferences a pointer
 				return FunpDeref.of(p(a));
-			}).match("[.0]", a -> { // forms a list
+			}).match("[%0]", a -> { // forms a list
 				return isArray(a) ? FunpArray.of(Tree.read(a).map(this::p).toList()) : null;
-			}).match("{ .0 }", a -> { // forms a struct
+			}).match("{ %0 }", a -> { // forms a struct
 				var isCompleted = Tree.decompose(a, FunpOp.AND___) == null;
 				return FunpStruct.of(isCompleted, kvs(a).mapValue(this::p).toList());
-			}).match("!asm .0 {.1}/.2", (a, b, c) -> {
+			}).match("!asm %0 {%1}/%2", (a, b, c) -> {
 				return checkDo(() -> FunpDoAsm.of(Tree.read(a, FunpOp.OR____).map(n -> {
-					var ma = Funp_.pattern(".0 = .1").match(n);
+					var ma = Funp_.pattern("%0 = %1").match(n);
 					return Pair.of(Amd64.me.regByName.get(ma[0]), p(ma[1]));
 				}).toList(), Tree.read(b, FunpOp.OR____).toList(), Amd64.me.regByName.get(c)));
-			}).match("!assign .0 := .1 ~ .2", (a, b, c) -> { // re-assigns a variable
+			}).match("!assign %0 := %1 ~ %2", (a, b, c) -> { // re-assigns a variable
 				return checkDo(() -> FunpDoAssignRef.of(FunpReference.of(p(a)), p(b), p(c)));
-			}).match("!delete^ .0 ~ .1", (a, b) -> { // de-allocates
+			}).match("!delete^ %0 ~ %1", (a, b) -> { // de-allocates
 				return checkDo(() -> FunpDoHeapDel.of(false, p(a), p(b)));
-			}).match("!delete-array^ .0 ~ .1", (a, b) -> { // de-allocates an array
+			}).match("!delete-array^ %0 ~ %1", (a, b) -> { // de-allocates an array
 				return checkDo(() -> FunpDoHeapDel.of(true, p(a), p(b)));
-			}).match("!new^ .0", a -> { // allocates and assigns
+			}).match("!new^ %0", a -> { // allocates and assigns
 				return new_(a, false, null);
-			}).match("!new-array^ (.0 * .1)", (a, b) -> { // allocates a fixed-size array
+			}).match("!new-array^ (%0 * %1)", (a, b) -> { // allocates a fixed-size array
 				return new_(b, true, p(a));
-			}).match("address-of .0", a -> { // gets a pointer to something
+			}).match("address-of %0", a -> { // gets a pointer to something
 				return FunpReference.of(p(a));
 			}).match("address-of-any", () -> { // gets a pointer to the void
 				return FunpReference.of(FunpDontCare.of());
-			}).match("array .0 * .1", (a, b) -> { // forms a array repeating an element
+			}).match("array %0 * %1", (a, b) -> { // forms a array repeating an element
 				return FunpRepeat.of(Int.num(a), p(b));
-			}).match("array-of-many .0", a -> { // an virtual array; for deriving types, cannot be instantiated
+			}).match("array-of-many %0", a -> { // an virtual array; for deriving types, cannot be instantiated
 				return FunpRepeat.of(null, p(a));
-			}).match("assert .0 ~ .1", (a, b) -> {
+			}).match("assert %0 ~ %1", (a, b) -> {
 				return FunpIf.of(p(a), p(b), FunpError.of("failed assert: " + a));
 			}).match("boolean", () -> { // boolean type
 				return FunpBoolean.of(false);
 			}).match("byte", () -> { // byte type
 				return FunpCoerce.of(Coerce.NUMBER, Coerce.BYTE, FunpDontCare.of());
-			}).match("byte .0", a -> { // forms a byte
+			}).match("byte %0", a -> { // forms a byte
 				return FunpCoerce.of(Coerce.NUMBER, Coerce.BYTE, FunpNumber.ofNumber(num(a)));
-			}).match("case || .0", a -> { // select case
+			}).match("case || %0", a -> { // select case
 				return new Object() {
 					private Funp d(Node n) {
-						var m = Funp_.pattern(".0 => .1 || .2").match(n);
+						var m = Funp_.pattern("%0 => %1 || %2").match(n);
 						return m != null ? FunpIf.of(p(m[0]), p(m[1]), d(m[2])) : p(n);
 					}
 				}.d(a);
-			}).match("define .0 := .1 ~ .2", (a, b, c) -> { // defines a variable
+			}).match("define %0 := %1 ~ %2", (a, b, c) -> { // defines a variable
 				var tree = Tree.decompose(a, FunpOp.TUPLE_);
 				if (tree == null || !isId(tree.getLeft())) {
 					var bind = bind(Fdt.L_POLY);
@@ -202,16 +202,16 @@ public class P0Parse extends FunpCfg {
 					return FunpDefine.of(lambda.vn, p(b), lambda.expr, bind.outerFdt);
 				} else
 					return null;
-				// return parse(Funp_.subst("poly .1 | (.0 => .2)", m));
-			}).match("define .0 .1 := .2 ~ .3", (a, b, c, d) -> { // defines a function
+				// return parse(Funp_.subst("poly %1 | (%0 => %2)", m));
+			}).match("define %0 %1 := %2 ~ %3", (a, b, c, d) -> { // defines a function
 				return define(a, bind(Fdt.L_MONO).lambdaSeparate(b, c), d, Fdt.L_POLY);
-			}).match("define { .0 } ~ .1", (a, b) -> { // define lots of variables
+			}).match("define { %0 } ~ %1", (a, b) -> { // define lots of variables
 				return defineList(a, b, Fdt.L_POLY);
-			}).match("define-function .0 .1 := .2 ~ .3", (a, b, c, d) -> {
+			}).match("define-function %0 %1 := %2 ~ %3", (a, b, c, d) -> {
 				var lambda = bind(Fdt.L_MONO).lambdaSeparate(b, c);
 				lambda.fct = Fct.STACKF;
 				return define(a, lambda, d, Fdt.S_POLY);
-			}).match("define-global .0 := .1 ~ .2", (a, b, c) -> { // defines a global variable
+			}).match("define-global %0 := %1 ~ %2", (a, b, c) -> { // defines a global variable
 				var tree = Tree.decompose(a, FunpOp.TUPLE_);
 				if (tree == null || !isId(tree.getLeft())) {
 					var bind = bind(Fdt.G_POLY);
@@ -219,29 +219,29 @@ public class P0Parse extends FunpCfg {
 					return FunpDefine.of(lambda.vn, p(b), lambda.expr, bind.outerFdt);
 				} else
 					return null;
-			}).match("define-global .0 .1 := .2 ~ .3", (a, b, c, d) -> { // defines a global function
+			}).match("define-global %0 %1 := %2 ~ %3", (a, b, c, d) -> { // defines a global function
 				return define(a, bind(Fdt.L_MONO).lambdaSeparate(b, c), d, Fdt.G_POLY);
-			}).match("define-global { .0 } ~ .1", (a, b) -> { // define lots of global variables
+			}).match("define-global { %0 } ~ %1", (a, b) -> { // define lots of global variables
 				return defineList(a, b, Fdt.G_POLY);
-			}).match("define-virtual .0 := .1 ~ .2", (a, b, c) -> { // defines a name for typing
+			}).match("define-virtual %0 := %1 ~ %2", (a, b, c) -> { // defines a name for typing
 				return defineList(Read.each2(Pair.of(Atom.name(a), b)), c, Fdt.VIRT);
-			}).match("do! .0", a -> { // boxes an I/O operation
+			}).match("do! %0", a -> { // boxes an I/O operation
 				return do_(parse -> parse.p(a));
 			}).match("error", () -> { // throws up
 				return FunpError.of("error");
-			}).match("fold (.0 := .1 # .2 # .3 # .4)", (a, b, c, d, e) -> { // looping
+			}).match("fold (%0 := %1 # %2 # %3 # %4)", (a, b, c, d, e) -> { // looping
 				return fold(a, b, c, d, e);
-			}).match("for! (.0 := .1 # .2 # .3 # .4)", (a, b, c, d, e) -> { // looping I/O operations
+			}).match("for! (%0 := %1 # %2 # %3 # %4)", (a, b, c, d, e) -> { // looping I/O operations
 				return do_(parse -> parse.fold(a, b, c, d, e));
-			}).match("glob (.0 => .1)", (a, b) -> { // without frame
+			}).match("glob (%0 => %1)", (a, b) -> { // without frame
 				var lambda = bind(Fdt.L_MONO).lambdaSeparate(a, b);
 				lambda.fct = Fct.NOSCOP;
 				return lambda;
-			}).match("if (`.0` = .1) then .2 else .3", (a, b, c, d) -> {
+			}).match("if (`%0` = %1) then %2 else %3", (a, b, c, d) -> {
 				return bind(Fdt.L_MONO).bind(a, b, c, d);
-			}).match("if .0 then .1 else .2", (a, b, c) -> {
+			}).match("if %0 then %1 else %2", (a, b, c) -> {
 				return FunpIf.of(p(a), p(b), p(c));
-			}).match("let .0 := .1 ~ .2", (a, b, c) -> { // defines a variable
+			}).match("let %0 := %1 ~ %2", (a, b, c) -> { // defines a variable
 				var tree = Tree.decompose(a, FunpOp.TUPLE_);
 				if (tree == null || !isId(tree.getLeft())) {
 					var bind = bind(Fdt.L_MONO);
@@ -249,12 +249,12 @@ public class P0Parse extends FunpCfg {
 					return FunpDefine.of(lambda.vn, p(b), lambda.expr, bind.outerFdt);
 				} else
 					return null;
-				// return parse(Funp_.subst(".1 | (.0 => .2)", m));
-			}).match("let .0 .1 := .2 ~ .3", (a, b, c, d) -> { // defines a function
+				// return parse(Funp_.subst("%1 | (%0 => %2)", m));
+			}).match("let %0 %1 := %2 ~ %3", (a, b, c, d) -> { // defines a function
 				return define(a, bind(Fdt.L_MONO).lambdaSeparate(b, c), d, Fdt.L_MONO);
-			}).match("let { .0 } ~ .1", (a, b) -> { // define lots of variables
+			}).match("let { %0 } ~ %1", (a, b) -> { // define lots of variables
 				return defineList(a, b, Fdt.L_MONO);
-			}).match("let-global .0 := .1 ~ .2", (a, b, c) -> { // defines a global variable
+			}).match("let-global %0 := %1 ~ %2", (a, b, c) -> { // defines a global variable
 				var tree = Tree.decompose(a, FunpOp.TUPLE_);
 				if (tree == null || !isId(tree.getLeft())) {
 					var bind = bind(Fdt.G_MONO);
@@ -262,11 +262,11 @@ public class P0Parse extends FunpCfg {
 					return FunpDefine.of(lambda.vn, p(b), lambda.expr, bind.outerFdt);
 				} else
 					return null;
-			}).match("let-global .0 .1 := .2 ~ .3", (a, b, c, d) -> { // defines a global function
+			}).match("let-global %0 %1 := %2 ~ %3", (a, b, c, d) -> { // defines a global function
 				return define(a, bind(Fdt.L_MONO).lambdaSeparate(b, c), d, Fdt.G_MONO);
-			}).match("let-global { .0 } ~ .1", (a, b) -> { // define lots of global functions
+			}).match("let-global { %0 } ~ %1", (a, b) -> { // define lots of global functions
 				return defineList(a, b, Fdt.G_MONO);
-			}).match("log .0 ~ .1", (a, b) -> { // show a value to console
+			}).match("log %0 ~ %1", (a, b) -> { // show a value to console
 				return FunpLog.of(p(a), p(b));
 			}).match("me", () -> { // this
 				return FunpMe.of();
@@ -274,27 +274,27 @@ public class P0Parse extends FunpCfg {
 				return FunpCoerce.of(Coerce.NUMBER, Coerce.POINTER, FunpNumber.ofNumber(0));
 			}).match("number", () -> { // a number type
 				return FunpNumber.of(IntMutable.nil());
-			}).match("number .0", a -> { // forms a number
+			}).match("number %0", a -> { // forms a number
 				return FunpNumber.ofNumber(num(a));
 			}).match("numberp", () -> { // a number type with the same size as a pointer
 				return FunpCoerce.of(Coerce.NUMBER, Coerce.NUMBERP, FunpDontCare.of());
-			}).match("numberp .0", a -> { // forms a number with the same size as a pointer
+			}).match("numberp %0", a -> { // forms a number with the same size as a pointer
 				return FunpCoerce.of(Coerce.NUMBER, Coerce.NUMBERP, FunpNumber.ofNumber(num(a)));
-			}).match("precapture .0", a -> { // should be called defer.uncapture???
+			}).match("precapture %0", a -> { // should be called defer.uncapture???
 				return FunpPredefine.of("precapture$" + Get.temp(), p(a), Fpt.FREE__);
-			}).match("predef .0", a -> { // defines a block as a separate variable; able to get a pointer to it
+			}).match("predef %0", a -> { // defines a block as a separate variable; able to get a pointer to it
 				return FunpPredefine.of("predefine$" + Get.temp(), p(a), Fpt.NONE__);
-			}).match("predef/.0 .1", (a, b) -> { // defines a block as a separate named variable
+			}).match("predef/%0 %1", (a, b) -> { // defines a block as a separate named variable
 				return FunpPredefine.of(Atom.name(a), p(b), Fpt.NONE__);
-			}).match("size.of .0", a -> {
+			}).match("size-of %0", a -> {
 				return FunpSizeOf.of(p(a));
-			}).match("sum .0 .1", (a, b) -> {
+			}).match("sum %0 %1", (a, b) -> {
 				return FunpTree.of(FunpOp.PLUS__, p(a), p(b), null);
-			}).match("type .0 .1", (a, b) -> { // binds the type of something
+			}).match("type %0 %1", (a, b) -> { // binds the type of something
 				return FunpTypeCheck.of(p(a), null, p(b));
-			}).match("type .0 = .1 ~ .2", (a, b, c) -> { // bind the types of two values
+			}).match("type %0 = %1 ~ %2", (a, b, c) -> { // bind the types of two values
 				return FunpTypeCheck.of(p(a), p(b), p(c));
-			}).match("uncapture .0 ~ .1", (a, b) -> { // free a captured lambda
+			}).match("uncapture %0 ~ %1", (a, b) -> { // free a captured lambda
 				return FunpLambdaFree.of(p(a), p(b));
 			}).match(Atom.FALSE, () -> {
 				return FunpBoolean.of(false);
@@ -377,7 +377,7 @@ public class P0Parse extends FunpCfg {
 
 		private boolean isBang(Node n) {
 			Tree t;
-			while ((t = Tree.decompose(n, FunpOp.ITEM__)) != null)
+			while ((t = Tree.decompose(n, FunpOp.DOT___)) != null)
 				n = t.getRight();
 			return n instanceof Atom && Atom.name(n).startsWith("!");
 		}
@@ -403,10 +403,10 @@ public class P0Parse extends FunpCfg {
 					}) //
 					.map(n -> {
 						Node[] m;
-						if ((m = Funp_.pattern(".0 .1 := .2").match(n)) != null)
-							return Pair.of(Atom.name(m[0]), Funp_.substitute(".0 => .1", m[1], m[2]));
-						else if ((m = Funp_.pattern(".0 := .1").match(n)) != null
-								|| (m = Funp_.pattern(".0: .1").match(n)) != null)
+						if ((m = Funp_.pattern("%0 %1 := %2").match(n)) != null)
+							return Pair.of(Atom.name(m[0]), Funp_.substitute("%0 => %1", m[1], m[2]));
+						else if ((m = Funp_.pattern("%0 := %1").match(n)) != null
+								|| (m = Funp_.pattern("%0: %1").match(n)) != null)
 							return Pair.of(Atom.name(m[0]), m[1]);
 						else
 							return Pair.of(Atom.name(n), n);

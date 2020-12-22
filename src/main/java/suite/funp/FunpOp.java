@@ -33,6 +33,7 @@ public class FunpOp {
 	public static BaseOp POWER_ = BaseOp.POWER_;
 	public static BaseOp TUPLE_ = BaseOp.TUPLE_;
 	public static BaseOp ITEM__ = BaseOp.ITEM__;
+	public static BaseOp DOT___ = new BaseOp(350, ".", Assoc.LEFT);
 	public static BaseOp COLON_ = BaseOp.COLON_;
 	public static BaseOp DEREF_ = BaseOp.DEREF_;
 
@@ -59,6 +60,7 @@ public class FunpOp {
 			POWER_, //
 			TUPLE_, //
 			ITEM__, //
+			DOT___, //
 			COLON_, //
 			DEREF_, //
 	};

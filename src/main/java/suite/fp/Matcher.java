@@ -4,11 +4,12 @@ import static primal.statics.Rethrow.ex;
 
 import primal.fp.Funs.Source;
 import suite.BindMapUtil;
+import suite.lp.doer.ProverConstant;
 import suite.node.Node;
 
 public class Matcher<T> {
 
-	private static BindMapUtil bindMapUtil = new BindMapUtil();
+	private static BindMapUtil bindMapUtil = new BindMapUtil(ProverConstant.variablePrefix);
 
 	public static Matcher<APPLY> apply = new Matcher<>(APPLY::new, "APPLY .param .fun");
 	public static Matcher<ATOM> atom = new Matcher<>(ATOM::new, "ATOM .value");

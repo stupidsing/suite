@@ -21,7 +21,9 @@ public class GeneralizerFactoryTest {
 	}
 
 	private void test(String pattern, String match) {
-		for (var gf : new GeneralizerFactory[] { new CompileGeneralizerImpl(), new SewingGeneralizerImpl(), }) {
+		for (var gf : new GeneralizerFactory[] { //
+				new CompileGeneralizerImpl(), //
+				new SewingGeneralizerImpl(ProverConstant.variablePrefix), }) {
 			var p = gf.generalizer(Suite.parse(pattern));
 
 			assertTrue(Binder.bind(p.apply(gf.mapper().env()), Suite.parse(match)));

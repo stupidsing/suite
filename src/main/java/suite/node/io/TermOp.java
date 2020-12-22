@@ -10,7 +10,7 @@ import primal.parser.Operator;
 public class TermOp implements Operator {
 
 	public static BaseOp NEXT__ = BaseOp.NEXT__;
-	public static BaseOp IS____ = BaseOp.IS____;
+	public static BaseOp IS____ = new BaseOp(110, " :- ", Assoc.RIGHT);
 	public static BaseOp CONTD_ = BaseOp.CONTD_;
 	public static BaseOp DEFINE = BaseOp.DEFINE;
 	public static BaseOp BIGOR_ = BaseOp.BIGOR_;
@@ -31,7 +31,7 @@ public class TermOp implements Operator {
 	public static BaseOp DIVIDE = BaseOp.DIVIDE;
 	public static BaseOp MODULO = BaseOp.MODULO;
 	public static BaseOp POWER_ = BaseOp.POWER_;
-	public static BaseOp BRACES = BaseOp.BRACES;
+	public static BaseOp BRACES = new BaseOp(320, "_{", Assoc.LEFT);
 	public static BaseOp TUPLE_ = BaseOp.TUPLE_;
 	public static BaseOp ITEM__ = BaseOp.ITEM__;
 	public static BaseOp COLON_ = BaseOp.COLON_;

@@ -49,7 +49,7 @@ public class Funp_ extends FunpCfg {
 	private static Inspect inspect = Singleton.me.inspect;
 	private static IterativeParser parser = new IterativeParser(FunpOp.values, FunpOp.TUPLE_);
 
-	private static BindArrayUtil bindArrayUtil = new BindArrayUtil(parser);
+	private static BindArrayUtil bindArrayUtil = new BindArrayUtil("%", parser);
 
 	public boolean isOptimize;
 
@@ -153,8 +153,8 @@ public class Funp_ extends FunpCfg {
 		return parser.parse(in);
 	}
 
-	public static Pattern pattern(String in) {
-		return bindArrayUtil.pattern(in);
+	public static Pattern pattern(String pattern) {
+		return bindArrayUtil.pattern(pattern);
 	}
 
 	public static <T> T rethrow(String in, Source<T> source) {

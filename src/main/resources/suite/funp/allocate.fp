@@ -1,4 +1,4 @@
-consult "linux.fp" ~
+consult linux.fp ~
 
 define-virtual ps-block := {
 	size: numberp,
@@ -17,10 +17,10 @@ define-function !alloc size0 := do!
 		fold (
 			(pointer, pr) := address-of alloc-free-chain, null #
 			pr = null && predef (ps != null) #
-			if (ps*/size != sizep) then (
-				address-of ps*/next, null
+			if (ps*.size != sizep) then (
+				address-of ps*.next, null
 			) else (
-				!assign ps := ps*/next ~
+				!assign ps := ps*.next ~
 				null, ps
 			) #
 			pr
@@ -29,16 +29,16 @@ define-function !alloc size0 := do!
 	if (p0 = null) then (
 		let ap := alloc-pointer ~
 		let ps := if (ap != null) then ap else !mmap 16384 ~
-		let pointer.block := !adjust-pointer ps os-ps ~
-		!assign alloc-pointer := !adjust-pointer pointer.block size1 ~
-		!assign ps*/size := sizep ~
-		pointer.block
+		let pointer-block := !adjust-pointer ps os-ps ~
+		!assign alloc-pointer := !adjust-pointer pointer-block size1 ~
+		!assign ps*.size := sizep ~
+		pointer-block
 	) else p0
 ~
 
 -- can replace by default !delete
-define-function !dealloc (size0, pointer.block) := do!
-	let ps := !adjust-pointer pointer.block (0 - os-ps) ~
+define-function !dealloc (size0, pointer-block) := do!
+	let ps := !adjust-pointer pointer-block (0 - os-ps) ~
 	!assign ps* := type ps-block {
 		size: numberp:number max (os-ps, size0),
 		next: alloc-free-chain,
@@ -49,7 +49,7 @@ define-function !dealloc (size0, pointer.block) := do!
 
 define-function !alloc-mut-number init := do!
 	type init = number ~
-	let size := size.of init ~
+	let size := size-of init ~
 	let address := !alloc size ~
 	let pointer := pointer:pointer address ~
 	!assign pointer* := init ~

@@ -6,7 +6,6 @@ import primal.fp.Funs.Fun;
 import primal.primitive.IntVerbs.NewInt;
 import suite.lp.compile.impl.CompileBinderImpl;
 import suite.lp.doer.BinderFactory.BindEnv;
-import suite.lp.doer.ProverConstant;
 import suite.lp.sewing.impl.SewingGeneralizerImpl;
 import suite.node.Atom;
 import suite.node.Node;
@@ -16,6 +15,7 @@ import suite.util.To;
 
 public class BindArrayUtil {
 
+	private String variablePrefix;
 	private IterativeParser parser;
 
 	public interface Pattern {
@@ -24,7 +24,8 @@ public class BindArrayUtil {
 		public Node subst(Node... nodes);
 	}
 
-	public BindArrayUtil(IterativeParser parser) {
+	public BindArrayUtil(String variablePrefix, IterativeParser parser) {
+		this.variablePrefix = variablePrefix;
 		this.parser = parser;
 	}
 
@@ -33,7 +34,7 @@ public class BindArrayUtil {
 	}
 
 	private Fun<String, Pattern> patterns = Memoize.fun(pattern_ -> {
-		var sg = new SewingGeneralizerImpl();
+		var sg = new SewingGeneralizerImpl(variablePrefix);
 		var sgs = sg.g(parser.parse(pattern_));
 		var ne = sgs.g();
 
@@ -46,7 +47,7 @@ public class BindArrayUtil {
 		Atom atom;
 		var n = 0;
 
-		while (sgm.getIndex(atom = Atom.of(ProverConstant.variablePrefix + n++)) != null)
+		while (sgm.getIndex(atom = Atom.of(variablePrefix + n++)) != null)
 			atoms.add(atom);
 
 		var size = atoms.size();

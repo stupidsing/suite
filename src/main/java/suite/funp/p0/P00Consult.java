@@ -28,9 +28,9 @@ public class P00Consult extends FunpCfg {
 
 	public Node c(Node node) {
 		return Funp_.<Node> switchNode(node //
-		).match("consult .0 ~ .1", (a, b) -> {
+		).match("consult %0 ~ %1", (a, b) -> {
 			return c(consult(Formatter.display(a).replace("${platform}", isLongMode ? "amd64" : "i686"), b));
-		}).match("consult .0", a -> {
+		}).match("consult %0", a -> {
 			return c(consult(Formatter.display(a)));
 		}).applyIf(Tree.class, tree -> {
 			return Tree.of(tree.getOperator(), c(tree.getLeft()), c(tree.getRight()));

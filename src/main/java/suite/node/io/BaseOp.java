@@ -5,7 +5,6 @@ import primal.parser.Operator;
 public class BaseOp implements Operator {
 
 	public static BaseOp NEXT__ = new BaseOp(100, "#", Assoc.RIGHT);
-	public static BaseOp IS____ = new BaseOp(110, " :- ", Assoc.RIGHT);
 	public static BaseOp CONTD_ = new BaseOp(120, " ~ ", Assoc.RIGHT);
 	public static BaseOp DEFINE = new BaseOp(130, " := ", Assoc.RIGHT);
 	public static BaseOp BIGOR_ = new BaseOp(140, " || ", Assoc.RIGHT);
@@ -26,11 +25,10 @@ public class BaseOp implements Operator {
 	public static BaseOp DIVIDE = new BaseOp(290, " / ", Assoc.LEFT);
 	public static BaseOp MODULO = new BaseOp(300, " % ", Assoc.LEFT);
 	public static BaseOp POWER_ = new BaseOp(310, "^", Assoc.RIGHT);
-	public static BaseOp BRACES = new BaseOp(320, "_{", Assoc.LEFT);
 	public static BaseOp TUPLE_ = new BaseOp(330, " ", Assoc.RIGHT);
 	public static BaseOp ITEM__ = new BaseOp(340, "/", Assoc.LEFT);
-	public static BaseOp COLON_ = new BaseOp(350, ":", Assoc.RIGHT);
-	public static BaseOp DEREF_ = new BaseOp(360, "*", Assoc.LEFT);
+	public static BaseOp COLON_ = new BaseOp(360, ":", Assoc.RIGHT);
+	public static BaseOp DEREF_ = new BaseOp(370, "*", Assoc.LEFT);
 
 	public int precedence;
 	public String name;

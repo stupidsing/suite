@@ -24,8 +24,8 @@ public class FunpTest {
 
 	@Test
 	public void testAssign() {
-		test(3, "define p := address-of predef { a: 1, b: 2, c: 3, } ~ do! (!assign p*/b := 4 ~ p*/c)");
-		test(4, "define p := address-of predef { a: 1, b: 2, c: 3, } ~ do! (!assign p*/c := 4 ~ p*/c)");
+		test(3, "define p := address-of predef { a: 1, b: 2, c: 3, } ~ do! (!assign p*.b := 4 ~ p*.c)");
+		test(4, "define p := address-of predef { a: 1, b: 2, c: 3, } ~ do! (!assign p*.c := 4 ~ p*.c)");
 	}
 
 	@Test
@@ -117,7 +117,7 @@ public class FunpTest {
 		test(4, "define i := 3 ~ i + 1");
 		test(4, "define f i := i + 1 ~ 3 | f");
 		test(1, "define-global a := [0, 1, 2,] ~ a [1]");
-		test(1, "define { a: 1, b: (() => me/a), c: 3, } ~ b ()");
+		test(1, "define { a: 1, b: (() => me.a), c: 3, } ~ b ()");
 		test(4, "define (a, b) := (3, 4) ~ b");
 		test(4, "define [a, b,] := [3, 4,] ~ b");
 		test(4, "define { a, b, } := { a: 3, b: 4, } ~ b");
@@ -154,7 +154,7 @@ public class FunpTest {
 					let g () := f () ~
 					{ g, }
 				~
-				() | module/g""");
+				() | module.g""");
 
 		test(9, "define-global max (a, b) := if (a < b) then b else a ~ max (8, 9)");
 	}
@@ -187,7 +187,7 @@ public class FunpTest {
 		test(4, "let i := 3 ~ i + 1");
 		test(4, "let f i := i + 1 ~ 3 | f");
 		test(1, "let-global a := [0, 1, 2,] ~ a [1]");
-		test(1, "let { a: 1, b: (() => me/a), c: 3, } ~ b ()");
+		test(1, "let { a: 1, b: (() => me.a), c: 3, } ~ b ()");
 		test(4, "let (a, b) := (3, 4) ~ b");
 		test(4, "let [a, b,] := [3, 4,] ~ b");
 		test(4, "let { a: av, b: bv, } := { a: 3, b: 4, } ~ bv");
@@ -232,9 +232,9 @@ public class FunpTest {
 				do! (
 				     let elems := !new^ [1, 2, 3,] ~
 				     let iter := !list-iter { elems, size: 3, } ~
-				     let u := iter/!next () ~
-				     let v := iter/!next () ~
-				     iter/!free () ~
+				     let u := iter.!next () ~
+				     let v := iter.!next () ~
+				     iter.!free () ~
 				     !delete^ elems ~
 				     v
 				)
@@ -289,8 +289,8 @@ public class FunpTest {
 
 	@Test
 	public void testStruct() {
-		test(3, "define s := { a: 1, b: 2, c: 3, } ~ s/c");
-		test(3, "define p := address-of predef { a: 1, b: 2, c: 3, } ~ p*/c");
+		test(3, "define s := { a: 1, b: 2, c: 3, } ~ s.c");
+		test(3, "define p := address-of predef { a: 1, b: 2, c: 3, } ~ p*.c");
 	}
 
 	@Test

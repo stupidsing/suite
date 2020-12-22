@@ -42,7 +42,7 @@ define-global !list-build () := do!
 
 define-global !list-free list := do!
 	type list = type-list ~
-	!delete-array^ list/elems ~
+	!delete-array^ list.elems ~
 	()
 ~
 
@@ -74,15 +74,15 @@ define-global list-filter f := list => capture do!
 	fold (
 		b := true #
 		b #
-		if (in/has-next ()) then (
-			let elem := in/!next () ~
+		if (in.has-next ()) then (
+			let elem := in.!next () ~
 			if (f elem) then (
-				out/!append elem ~ true
+				out.!append elem ~ true
 			) else true
 		) else false
 		#
-		in/!free () ~
-		out/!get ()
+		in.!free () ~
+		out.!get ()
 	)
 ~
 
@@ -92,13 +92,13 @@ define-global list-map f := list => capture do!
 		fold (
 			b := true #
 			b #
-			if (in/has-next ()) then (
-				let elem := in/!next () ~
-				out/!append (f elem) ~
+			if (in.has-next ()) then (
+				let elem := in.!next () ~
+				out.!append (f elem) ~
 				true
 			) else false #
-			in/!free () ~
-			out/!get ()
+			in.!free () ~
+			out.!get ()
 		)
 ~
 

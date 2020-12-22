@@ -31,7 +31,7 @@ public class Rule {
 
 	public synchronized Node newClause(Node query, Node cut) {
 		if (sewingGeneralizer == null) {
-			sewingGeneralizer = new SewingGeneralizerImpl();
+			sewingGeneralizer = new SewingGeneralizerImpl(ProverConstant.variablePrefix);
 			headFun = sewingGeneralizer.generalizer(head);
 			tailFun = sewingGeneralizer.generalizer(tail);
 			cutIndex = sewingGeneralizer.mapper().computeIndex(ProverConstant.cut);

@@ -21,6 +21,7 @@ import suite.instructionexecutor.FunInstructionExecutor;
 import suite.lp.Configuration.ProverCfg;
 import suite.lp.Configuration.TraceLevel;
 import suite.lp.doer.Prover;
+import suite.lp.doer.ProverConstant;
 import suite.lp.kb.DoubleIndexedRuleSet;
 import suite.lp.kb.Prototype;
 import suite.lp.kb.Rule;
@@ -52,7 +53,7 @@ public class Suite {
 			"replace"));
 
 	private static IterativeParser parser = new IterativeParser(TermOp.values, TermOp.TUPLE_);
-	private static BindArrayUtil bindArrayUtil = new BindArrayUtil(parser);
+	private static BindArrayUtil bindArrayUtil = new BindArrayUtil(ProverConstant.variablePrefix, parser);
 	private static CompileUtil compileUtil = new CompileUtil();
 	private static EvaluateUtil evaluateUtil = new EvaluateUtil();
 

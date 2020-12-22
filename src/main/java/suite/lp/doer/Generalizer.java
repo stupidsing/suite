@@ -12,7 +12,16 @@ import suite.node.io.Rewrite_;
 
 public class Generalizer {
 
+	private String variablePrefix;
 	private Map<Atom, Reference> variables = new HashMap<>();
+
+	public Generalizer() {
+		this(ProverConstant.variablePrefix);
+	}
+
+	public Generalizer(String variablePrefix) {
+		this.variablePrefix = variablePrefix;
+	}
 
 	public Node generalize(Node node) {
 		Tree tree = Tree.of(null, null, node);
@@ -31,7 +40,7 @@ public class Generalizer {
 				var name = atom.name;
 				if (name.startsWith(ProverConstant.wildcardPrefix))
 					right = new Reference();
-				if (name.startsWith(ProverConstant.variablePrefix))
+				if (name.startsWith(variablePrefix))
 					right = getVariable(atom);
 			} else if ((rt = Tree.decompose(right)) != null)
 				right = nextTree = Tree.of(rt.getOperator(), generalize(rt.getLeft()), rt.getRight());
