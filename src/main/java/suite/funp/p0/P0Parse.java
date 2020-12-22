@@ -104,8 +104,23 @@ public class P0Parse extends FunpCfg {
 		}
 
 		private Funp p(Node node) {
-			return Funp_.<Funp> switchNode(node //
-			).match("%0:%1 %2", (a, b, c) -> { // coerce: conversion between shorter and longer data types
+			return Funp_.<Funp>switchNode(node //
+			).match("!asm %0 {%1}/%2", (a, b, c) -> {
+				return checkDo(() -> FunpDoAsm.of(Tree.read(a, FunpOp.OR____).map(n -> {
+					var ma = Funp_.pattern("%0 = %1").match(n);
+					return Pair.of(Amd64.me.regByName.get(ma[0]), p(ma[1]));
+				}).toList(), Tree.read(b, FunpOp.OR____).toList(), Amd64.me.regByName.get(c)));
+			}).match("!assign %0 := %1 ~ %2", (a, b, c) -> { // re-assigns a variable
+				return checkDo(() -> FunpDoAssignRef.of(FunpReference.of(p(a)), p(b), p(c)));
+			}).match("!delete %0 ~ %1", (a, b) -> { // de-allocates
+				return checkDo(() -> FunpDoHeapDel.of(false, p(a), p(b)));
+			}).match("!delete-array %0 ~ %1", (a, b) -> { // de-allocates an array
+				return checkDo(() -> FunpDoHeapDel.of(true, p(a), p(b)));
+			}).match("!new %0", a -> { // allocates and assigns
+				return new_(a, false, null);
+			}).match("!new-array (%0 * %1)", (a, b) -> { // allocates a fixed-size array
+				return new_(b, true, p(a));
+			}).match("%0:%1 %2", (a, b, c) -> { // coerce: conversion between shorter and longer data types
 				var c0 = Coerce.valueOf(Atom.name(b).toUpperCase());
 				var c1 = Coerce.valueOf(Atom.name(a).toUpperCase());
 				return FunpCoerce.of(c0, c1, p(c));
@@ -153,24 +168,6 @@ public class P0Parse extends FunpCfg {
 				return FunpDeref.of(p(a));
 			}).match("[%0]", a -> { // forms a list
 				return isArray(a) ? FunpArray.of(Tree.read(a).map(this::p).toList()) : null;
-			}).match("{ %0 }", a -> { // forms a struct
-				var isCompleted = Tree.decompose(a, FunpOp.AND___) == null;
-				return FunpStruct.of(isCompleted, kvs(a).mapValue(this::p).toList());
-			}).match("!asm %0 {%1}/%2", (a, b, c) -> {
-				return checkDo(() -> FunpDoAsm.of(Tree.read(a, FunpOp.OR____).map(n -> {
-					var ma = Funp_.pattern("%0 = %1").match(n);
-					return Pair.of(Amd64.me.regByName.get(ma[0]), p(ma[1]));
-				}).toList(), Tree.read(b, FunpOp.OR____).toList(), Amd64.me.regByName.get(c)));
-			}).match("!assign %0 := %1 ~ %2", (a, b, c) -> { // re-assigns a variable
-				return checkDo(() -> FunpDoAssignRef.of(FunpReference.of(p(a)), p(b), p(c)));
-			}).match("!delete^ %0 ~ %1", (a, b) -> { // de-allocates
-				return checkDo(() -> FunpDoHeapDel.of(false, p(a), p(b)));
-			}).match("!delete-array^ %0 ~ %1", (a, b) -> { // de-allocates an array
-				return checkDo(() -> FunpDoHeapDel.of(true, p(a), p(b)));
-			}).match("!new^ %0", a -> { // allocates and assigns
-				return new_(a, false, null);
-			}).match("!new-array^ (%0 * %1)", (a, b) -> { // allocates a fixed-size array
-				return new_(b, true, p(a));
 			}).match("address-of %0", a -> { // gets a pointer to something
 				return FunpReference.of(p(a));
 			}).match("address-of-any", () -> { // gets a pointer to the void
@@ -296,6 +293,9 @@ public class P0Parse extends FunpCfg {
 				return FunpTypeCheck.of(p(a), p(b), p(c));
 			}).match("uncapture %0 ~ %1", (a, b) -> { // free a captured lambda
 				return FunpLambdaFree.of(p(a), p(b));
+			}).match("{ %0 }", a -> { // forms a struct
+				var isCompleted = Tree.decompose(a, FunpOp.AND___) == null;
+				return FunpStruct.of(isCompleted, kvs(a).mapValue(this::p).toList());
 			}).match(Atom.FALSE, () -> {
 				return FunpBoolean.of(false);
 			}).match(Atom.NIL, () -> { // form an empty array

@@ -30,7 +30,6 @@ public class FunpOp {
 	public static BaseOp MULT__ = BaseOp.MULT__;
 	public static BaseOp DIVIDE = BaseOp.DIVIDE;
 	public static BaseOp MODULO = BaseOp.MODULO;
-	public static BaseOp POWER_ = BaseOp.POWER_;
 	public static BaseOp TUPLE_ = BaseOp.TUPLE_;
 	public static BaseOp ITEM__ = BaseOp.ITEM__;
 	public static BaseOp DOT___ = new BaseOp(350, ".", Assoc.LEFT);
@@ -57,7 +56,6 @@ public class FunpOp {
 			MULT__, //
 			DIVIDE, //
 			MODULO, //
-			POWER_, //
 			TUPLE_, //
 			ITEM__, //
 			DOT___, //

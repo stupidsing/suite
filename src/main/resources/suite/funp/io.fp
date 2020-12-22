@@ -6,10 +6,10 @@ expand buffer-size := 256 ~
 
 define-function !new-mut-number init := do!
 	type init = number ~
-	let pointer := !new^ init ~
+	let pointer := !new init ~
 	!assign pointer* := init ~
 	{
-		destroy () := do! (!delete^ pointer ~ ()) ~
+		destroy () := do! (!delete pointer ~ ()) ~
 		get () := do! pointer* ~
 		set v1 := do! (!assign pointer* := v1 ~ ()) ~
 	}

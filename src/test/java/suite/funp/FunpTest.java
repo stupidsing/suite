@@ -197,30 +197,30 @@ public class FunpTest {
 	public void testNew() {
 		test(579, """
 				do! (
-					let p := !new^ _ ~
-					let q := !new^ _ ~
+					let p := !new _ ~
+					let q := !new _ ~
 					!assign p* := 123 ~
 					!assign q* := 456 ~
 					let v := p* + q* ~
-					!delete^ p ~
-					!delete^ q ~
+					!delete p ~
+					!delete q ~
 					v
 				)
 				""");
 		test(456, """
 				do! (
-					let p := !new^ 456 ~
+					let p := !new 456 ~
 					let v := p* ~
-					!delete^ p ~ v
+					!delete p ~ v
 				)
 				""");
 		test(2, """
 				define-function !list-iter list := do!
 				     type list = { elems: address-of (array 3 * number), size: number, } ~
 				     let { elems, size, } := list ~
-				     let i := !new^ 0 ~
+				     let i := !new 0 ~
 				     {
-				             !free () := do! (!delete^ i ~ ()) ~
+				             !free () := do! (!delete i ~ ()) ~
 				             has-next () := i* < size ~
 				             !next () := do!
 				                     let i_ := i* ~
@@ -230,12 +230,12 @@ public class FunpTest {
 				     }
 				~
 				do! (
-				     let elems := !new^ [1, 2, 3,] ~
+				     let elems := !new [1, 2, 3,] ~
 				     let iter := !list-iter { elems, size: 3, } ~
 				     let u := iter.!next () ~
 				     let v := iter.!next () ~
 				     iter.!free () ~
-				     !delete^ elems ~
+				     !delete elems ~
 				     v
 				)
 				""");
@@ -245,10 +245,10 @@ public class FunpTest {
 	public void testNewArray() {
 		test(456, """
 				do! (
-					let p := !new-array^ (99 * number) ~
+					let p := !new-array (99 * number) ~
 					!assign p* [98] := 456 ~
 					let v := p* [98] ~
-					!delete-array^ p ~ v
+					!delete-array p ~ v
 				)
 				""");
 	}

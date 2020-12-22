@@ -23,7 +23,6 @@ public class BaseOp implements Operator {
 	public static BaseOp MULT__ = new BaseOp(280, " * ", Assoc.RIGHT);
 	public static BaseOp DIVIDE = new BaseOp(290, " / ", Assoc.LEFT);
 	public static BaseOp MODULO = new BaseOp(300, " % ", Assoc.LEFT);
-	public static BaseOp POWER_ = new BaseOp(310, "^", Assoc.RIGHT);
 	public static BaseOp TUPLE_ = new BaseOp(330, " ", Assoc.RIGHT);
 	public static BaseOp ITEM__ = new BaseOp(340, "/", Assoc.LEFT);
 	public static BaseOp COLON_ = new BaseOp(360, ":", Assoc.RIGHT);

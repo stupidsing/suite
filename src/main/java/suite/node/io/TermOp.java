@@ -30,7 +30,7 @@ public class TermOp implements Operator {
 	public static BaseOp MULT__ = BaseOp.MULT__;
 	public static BaseOp DIVIDE = BaseOp.DIVIDE;
 	public static BaseOp MODULO = BaseOp.MODULO;
-	public static BaseOp POWER_ = BaseOp.POWER_;
+	public static BaseOp POWER_ = new BaseOp(310, "^", Assoc.RIGHT);
 	public static BaseOp BRACES = new BaseOp(320, "_{", Assoc.LEFT);
 	public static BaseOp TUPLE_ = BaseOp.TUPLE_;
 	public static BaseOp ITEM__ = BaseOp.ITEM__;
