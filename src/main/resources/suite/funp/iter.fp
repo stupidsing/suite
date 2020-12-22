@@ -11,10 +11,10 @@ expand elem0 := 0 ~
 define-global list-build! () := do
 	let elems := !new-array (max-size * type-elem) ~
 	let dummy := fold (
-	    i := 0 #
-	    i < max-size #
-	    !assign elems* [i] := elem0 ~ i + 1 #
-	    ()
+		i := 0 #
+		i < max-size #
+		!assign elems* [i] := elem0 ~ i + 1 #
+		()
 	) ~
 	let size := !new 0 ~
 	let append! := elem => capture do

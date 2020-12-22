@@ -11,25 +11,25 @@ public class OlderFunTest {
 
 	private static String concatList0 = """
 			define concat-list0 := split_{h => t =>
-			    if-list_{h}_{h1 => t1 => h1; concat-list0_{t1; t}}_{concat-list0_{t}}
+				if-list_{h}_{h1 => t1 => h1; concat-list0_{t1; t}}_{concat-list0_{t}}
 			} ~
 			""";
 
 	private static String filter0 = """
 			define filter0 := fun =>
-			    split_{h => t =>
-			        define others := filter0_{fun}_{t} ~
-			        if (fun_{h}) then (h; others) else others
-			    }
+				split_{h => t =>
+					define others := filter0_{fun}_{t} ~
+					if (fun_{h}) then (h; others) else others
+				}
 			~
 			""";
 
 	private static String ifTree = """
 			define if-list := list => f1 => f2 =>
-			    if (is-list_{list}) then (
-			        f1_{head_{list}}_{tail_{list}}
-			    )
-			    else f2
+				if (is-list_{list}) then (
+					f1_{head_{list}}_{tail_{list}}
+				)
+				else f2
 			~
 			""";
 
