@@ -104,7 +104,7 @@ public class P0Parse extends FunpCfg {
 		}
 
 		private Funp p(Node node) {
-			return Funp_.<Funp>switchNode(node //
+			return Funp_.<Funp> switchNode(node //
 			).match("!asm %0 {%1}/%2", (a, b, c) -> {
 				return checkDo(() -> FunpDoAsm.of(Tree.read(a, FunpOp.OR____).map(n -> {
 					var ma = Funp_.pattern("%0 = %1").match(n);
