@@ -6,6 +6,7 @@ import primal.fp.Funs.Fun;
 import primal.primitive.fp.AsInt;
 import suite.lp.compile.impl.CompileBinderImpl;
 import suite.lp.doer.BinderFactory.BindEnv;
+import suite.lp.doer.ProverConstant;
 import suite.lp.sewing.impl.SewingGeneralizerImpl;
 import suite.node.Atom;
 import suite.node.Node;
@@ -45,7 +46,7 @@ public class BindArrayUtil {
 		Atom atom;
 		var n = 0;
 
-		while (sgm.getIndex(atom = Atom.of("." + n++)) != null)
+		while (sgm.getIndex(atom = Atom.of(ProverConstant.variablePrefix + n++)) != null)
 			atoms.add(atom);
 
 		var size = atoms.size();
