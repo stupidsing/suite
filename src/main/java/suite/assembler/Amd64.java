@@ -32,6 +32,8 @@ public class Amd64 {
 		CMPSW, //
 		CMPXCHG, //
 		CPUID, //
+		CVTSD2SI, //
+		CVTSS2SI, //
 		D, //
 		DEC, //
 		DIV, //

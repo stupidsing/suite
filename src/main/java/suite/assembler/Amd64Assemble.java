@@ -78,6 +78,7 @@ public class Amd64Assemble {
 	}
 
 	private class InsnCode implements Encode {
+		public int pre;
 		public int opSize;
 		public byte[] bs;
 		public Modrm modrm;
@@ -89,6 +90,7 @@ public class Amd64Assemble {
 		}
 
 		private InsnCode(int opSize, long imm, int immSize) {
+			this.pre = -1;
 			this.opSize = opSize;
 			this.imm = imm;
 			this.immSize = immSize;
@@ -99,8 +101,18 @@ public class Amd64Assemble {
 		}
 
 		private InsnCode(int opSize, byte[] bs) {
+			this.pre = -1;
 			this.opSize = opSize;
 			this.bs = bs;
+		}
+
+		private InsnCode append(int b) {
+			var bs_ = bs(b);
+			var length0 = bs_.length;
+			var length1 = bs.length;
+			var bs1 = Arrays.copyOf(bs_, length0 + length1);
+			Bytes_.copy(bs, 0, bs1, length0, length1);
+			return set(pre, opSize, bs1, imm, immSize);
 		}
 
 		private InsnCode imm(OpImm imm) {
@@ -108,31 +120,24 @@ public class Amd64Assemble {
 		}
 
 		private InsnCode imm(long imm1, int size1) {
-			return set(opSize, bs, imm1, size1);
+			return set(pre, opSize, bs, imm1, size1);
 		}
 
 		private InsnCode pre(int pre) {
-			return pre(bs(pre));
-		}
-
-		private InsnCode pre(byte[] pre) {
-			var length0 = pre.length;
-			var length1 = bs.length;
-			var bs1 = Arrays.copyOf(pre, length0 + length1);
-			Bytes_.copy(bs, 0, bs1, length0, length1);
-			return set(opSize, bs1, imm, immSize);
+			return set(pre, opSize, bs, imm, immSize);
 		}
 
 		private InsnCode setByte(int b) {
-			return set(opSize, bs(b), imm, immSize);
+			return set(pre, opSize, bs(b), imm, immSize);
 		}
 
 		private InsnCode size(int size1) {
-			return set(size1, bs, imm, immSize);
+			return set(pre, size1, bs, imm, immSize);
 		}
 
-		private InsnCode set(int opSize1, byte[] bs1, long imm, int immSize) {
+		private InsnCode set(int pre, int opSize1, byte[] bs1, long imm, int immSize) {
 			var insnCode = new InsnCode(opSize1, bs1);
+			insnCode.pre = pre;
 			insnCode.modrm = modrm;
 			insnCode.immSize = immSize;
 			insnCode.imm = imm;
@@ -229,8 +234,8 @@ public class Amd64Assemble {
 		case AAA -> assemble(0x37);
 		case ADC -> assembleRmRegImm(instruction, 0x10, 0x80, 2);
 		case ADD -> assembleRmRegImm(instruction, 0x00, 0x80, 0);
-		case ADDPS -> assembleRegRm(i_op0, i_op1, 0x58).pre(0x0F);
-		case ADDSS -> assembleRegRm(i_op0, i_op1, 0x58).pre(bs(0xF3, 0x0F));
+		case ADDPS -> assembleRegRm(i_op0, i_op1, 0x58).append(0x0F);
+		case ADDSS -> assembleRegRm(i_op0, i_op1, 0x58).append(0x0F).pre(0xF3);
 		case ADVANCE -> new InsnCode(new byte[(int) (((OpImm) i_op0).imm - offset)]);
 		case ALIGN -> {
 			var align = i_op0.cast(OpImm.class).imm;
@@ -256,8 +261,10 @@ public class Amd64Assemble {
 		case CMPSD -> new InsnCode(4, bs(0xA7));
 		case CMPSQ -> new InsnCode(8, bs(0xA7));
 		case CMPSW -> new InsnCode(2, bs(0xA7));
-		case CMPXCHG -> assembleRmReg(instruction, 0xB0, -1, isReg).pre(0x0F);
+		case CMPXCHG -> assembleRmReg(instruction, 0xB0, -1, isReg).append(0x0F);
 		case CPUID -> new InsnCode(bs(0x0F, 0xA2));
+		case CVTSD2SI -> assembleRegRm(i_op0, i_op1, 0x2C).append(0x0F).pre(0xF2);
+		case CVTSS2SI -> assembleRegRm(i_op0, i_op1, 0x2C).append(0x0F).pre(0xF3);
 		case D -> {
 			opImm = (OpImm) i_op0;
 			var bb = new BytesBuilder();
@@ -266,8 +273,8 @@ public class Amd64Assemble {
 		}
 		case DEC -> assembleRm(instruction, isLongMode ? -1 : 0x48, 0xFE, 1);
 		case DIV -> assembleByteFlag(i_op0, 0xF6, 6);
-		case DIVPS -> assembleRegRm(i_op0, i_op1, 0x5E).pre(0x0F);
-		case DIVSS -> assembleRegRm(i_op0, i_op1, 0x5E).pre(bs(0xF3, 0x0F));
+		case DIVPS -> assembleRegRm(i_op0, i_op1, 0x5E).append(0x0F);
+		case DIVSS -> assembleRegRm(i_op0, i_op1, 0x5E).append(0x0F).pre(0xF3);
 		case DS -> {
 			bs = new byte[(int) i_op0.cast(OpImm.class).imm];
 			var b = (opImm = i_op1.cast(OpImm.class)) != null ? opImm.imm : 0x90;
@@ -289,7 +296,7 @@ public class Amd64Assemble {
 				yield assembleByteFlag(i_op0, 0xF6, 5);
 			else if (i_op0.size == i_op1.size)
 				if (i_op2 instanceof OpNone)
-					yield assembleRegRm(i_op0, i_op1, 0xAF).pre(0x0F);
+					yield assembleRegRm(i_op0, i_op1, 0xAF).append(0x0F);
 				else if ((opImm = i_op2.cast(OpImm.class)) != null) {
 					if (opImm.size <= 1)
 						yield assembleRegRm(i_op0, i_op1, 0x6B).imm(opImm);
@@ -311,7 +318,7 @@ public class Amd64Assemble {
 				yield invalid;
 		}
 		case INTO -> assemble(0xCE);
-		case INVLPG -> assemble(i_op0, 0x01, 7).pre(0x0F);
+		case INVLPG -> assemble(i_op0, 0x01, 7).append(0x0F);
 		case IRET -> assemble(0xCF);
 		case JA -> assembleJump(instruction, offset, 0x77, bs(0x0F, 0x87));
 		case JAE -> assembleJump(instruction, offset, 0x73, bs(0x0F, 0x83));
@@ -350,9 +357,9 @@ public class Amd64Assemble {
 		case LOOPNE -> assembleJump(instruction, offset, 0xE0, null);
 		case LOOPNZ -> assembleJump(instruction, offset, 0xE0, null);
 		case LOOPZ -> assembleJump(instruction, offset, 0xE1, null);
-		case LGDT -> assemble(i_op0, 0x01, 2, mode.opSize).pre(0x0F);
-		case LIDT -> assemble(i_op0, 0x01, 3, mode.opSize).pre(0x0F);
-		case LTR -> assemble(i_op0, 0x00, 3, mode.opSize).pre(0x0F);
+		case LGDT -> assemble(i_op0, 0x01, 2, mode.opSize).append(0x0F);
+		case LIDT -> assemble(i_op0, 0x01, 3, mode.opSize).append(0x0F);
+		case LTR -> assemble(i_op0, 0x00, 3, mode.opSize).append(0x0F);
 		case MOV -> {
 			if ((opImm = i_op1.cast(OpImm.class)) != null //
 					&& isRm.test(i_op0) //
@@ -390,17 +397,17 @@ public class Amd64Assemble {
 			else
 				yield invalid;
 		}
-		case MOVAPS -> assembleRmReg(instruction, 0x29, 0x28, isXmm).size(4).pre(0x0F);
-		case MOVD -> assembleRmReg(instruction, 0x7E, 0x6E, isXmm).size(4).pre(bs(0x66, 0x0F));
-		case MOVQ -> assembleRmReg(instruction, 0x7E, 0x6E, isXmm).size(8).pre(bs(0x66, 0x0F));
+		case MOVAPS -> assembleRmReg(instruction, 0x29, 0x28, isXmm).size(4).append(0x0F);
+		case MOVD -> assembleRmReg(instruction, 0x7E, 0x6E, isXmm).size(4).append(0x0F).pre(0x66);
+		case MOVQ -> assembleRmReg(instruction, 0x7E, 0x6E, isXmm).size(8).append(0x0F).pre(0x66);
 		case MOVSB -> new InsnCode(1, bs(0xA4));
 		case MOVSD -> new InsnCode(4, bs(0xA5));
 		case MOVSQ -> new InsnCode(8, bs(0xA5));
-		case MOVSS -> assembleRmReg(instruction, 0x10, 0x11, isXmm).size(8).pre(bs(0xF3, 0x0F));
+		case MOVSS -> assembleRmReg(instruction, 0x10, 0x11, isXmm).size(8).append(0x0F).pre(0xF3);
 		case MOVSW -> new InsnCode(2, bs(0xA5));
 		case MOVSX -> {
 			if (i_op1.size < i_op0.size && (i_op1.size == 1 || i_op1.size == 2))
-				yield assembleRegRmExtended(instruction, 0xBE).pre(0x0F);
+				yield assembleRegRmExtended(instruction, 0xBE).append(0x0F);
 			else
 				yield fail();
 		}
@@ -411,10 +418,10 @@ public class Amd64Assemble {
 			} else
 				yield fail();
 		}
-		case MOVZX -> assembleRegRmExtended(instruction, 0xB6).pre(0x0F);
+		case MOVZX -> assembleRegRmExtended(instruction, 0xB6).append(0x0F);
 		case MUL -> assembleByteFlag(i_op0, 0xF6, 4);
-		case MULPS -> assembleRegRm(i_op0, i_op1, 0x59).pre(0x0F);
-		case MULSS -> assembleRegRm(i_op0, i_op1, 0x59).pre(bs(0xF3, 0x0F));
+		case MULPS -> assembleRegRm(i_op0, i_op1, 0x59).append(0x0F);
+		case MULSS -> assembleRegRm(i_op0, i_op1, 0x59).append(0x0F).pre(0xF3);
 		case NEG -> assembleByteFlag(i_op0, 0xF6, 3);
 		case NOP -> assemble(0x90);
 		case NOT -> assembleByteFlag(i_op0, 0xF6, 2);
@@ -485,16 +492,16 @@ public class Amd64Assemble {
 		case SAL -> assembleShift(instruction, 0xC0, 4);
 		case SAR -> assembleShift(instruction, 0xC0, 7);
 		case SBB -> assembleRmRegImm(instruction, 0x18, 0x80, 3);
-		case SETA -> assemble(i_op0, 0x97, 0).pre(0x0F);
-		case SETAE -> assemble(i_op0, 0x93, 0).pre(0x0F);
-		case SETB -> assemble(i_op0, 0x92, 0).pre(0x0F);
-		case SETBE -> assemble(i_op0, 0x96, 0).pre(0x0F);
-		case SETE -> assemble(i_op0, 0x94, 0).pre(0x0F);
-		case SETG -> assemble(i_op0, 0x9F, 0).pre(0x0F);
-		case SETGE -> assemble(i_op0, 0x9D, 0).pre(0x0F);
-		case SETL -> assemble(i_op0, 0x9C, 0).pre(0x0F);
-		case SETLE -> assemble(i_op0, 0x9E, 0).pre(0x0F);
-		case SETNE -> assemble(i_op0, 0x95, 0).pre(0x0F);
+		case SETA -> assemble(i_op0, 0x97, 0).append(0x0F);
+		case SETAE -> assemble(i_op0, 0x93, 0).append(0x0F);
+		case SETB -> assemble(i_op0, 0x92, 0).append(0x0F);
+		case SETBE -> assemble(i_op0, 0x96, 0).append(0x0F);
+		case SETE -> assemble(i_op0, 0x94, 0).append(0x0F);
+		case SETG -> assemble(i_op0, 0x9F, 0).append(0x0F);
+		case SETGE -> assemble(i_op0, 0x9D, 0).append(0x0F);
+		case SETL -> assemble(i_op0, 0x9C, 0).append(0x0F);
+		case SETLE -> assemble(i_op0, 0x9E, 0).append(0x0F);
+		case SETNE -> assemble(i_op0, 0x95, 0).append(0x0F);
 		case SHL -> assembleShift(instruction, 0xC0, 4);
 		case SHR -> assembleShift(instruction, 0xC0, 5);
 		case STI -> assemble(0xFB);
@@ -503,8 +510,8 @@ public class Amd64Assemble {
 		case STOSQ -> new InsnCode(8, bs(0xAB));
 		case STOSW -> new InsnCode(2, bs(0xAB));
 		case SUB -> assembleRmRegImm(instruction, 0x28, 0x80, 5);
-		case SUBPS -> assembleRegRm(i_op0, i_op1, 0x5C).pre(0x0F);
-		case SUBSS -> assembleRegRm(i_op0, i_op1, 0x5C).pre(bs(0xF3, 0x0F));
+		case SUBPS -> assembleRegRm(i_op0, i_op1, 0x5C).append(0x0F);
+		case SUBSS -> assembleRegRm(i_op0, i_op1, 0x5C).append(0x0F).pre(0xF3);
 		case SYSCALL -> new InsnCode(bs(0x0F, 0x05));
 		case SYSENTER -> new InsnCode(bs(0x0F, 0x34));
 		case SYSEXIT -> new InsnCode(bs(0x0F, 0x35));
@@ -722,6 +729,7 @@ public class Amd64Assemble {
 		if (insnCode.isValid()) {
 			var modrm = insnCode.modrm;
 			var bb = new BytesBuilder();
+			appendIf(bb, insnCode.pre);
 			if (vexs != null)
 				bb.append(vexs);
 			else {

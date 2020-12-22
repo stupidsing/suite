@@ -761,7 +761,7 @@ public class P4GenerateCode extends FunpCfg {
 		}
 
 		// if operator is Insn.CMP, this would return a 1-byte operand.
-		// otherwise a integer-sized (is) operand is returned.
+		// otherwise an integer-sized (is) operand is returned.
 		private Operand compileTree(int size, Object operator, Assoc assoc, Funp lhs, Funp rhs) {
 			var f = FunpOpLr.of(size, operator, lhs, rhs);
 			var regs = amd64.regs(size);
