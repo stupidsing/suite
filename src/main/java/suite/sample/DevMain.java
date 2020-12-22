@@ -13,7 +13,7 @@ import primal.Verbs.ReadString;
 import primal.adt.Fixie_.FixieFun3;
 import primal.adt.Fixie_.FixieFun6;
 import primal.fp.Funs.Sink;
-import primal.primitive.ChrVerbs.ToChr;
+import primal.primitive.ChrVerbs.NewChr;
 import primal.primitive.IntPrim.IntSink;
 import primal.primitive.adt.IntMutable;
 import primal.primitive.adt.Ints.IntsBuilder;
@@ -299,7 +299,7 @@ public class DevMain {
 		private String get(int px, int py, int length) {
 			var i0 = start(py) + px;
 			var ix = end(py);
-			return new String(ToChr.array(length, i_ -> {
+			return new String(NewChr.array(length, i_ -> {
 				var i = i_ + i0;
 				return i < ix ? chars.get.apply(i) : ' ';
 			}));

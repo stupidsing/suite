@@ -15,7 +15,7 @@ import primal.adt.Fixie;
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
 import primal.primitive.IntInt_Obj;
-import primal.primitive.IntVerbs.ToInt;
+import primal.primitive.IntVerbs.NewInt;
 import primal.primitive.adt.pair.FltFltPair;
 import primal.streamlet.Streamlet;
 import primal.streamlet.Streamlet2;
@@ -356,7 +356,7 @@ public class BackAllocatorGeneral {
 						var prices = ds.prices;
 						var length = prices.length;
 
-						IntFunction<int[]> getDays = c -> ToInt.array(length, i -> {
+						IntFunction<int[]> getDays = c -> NewInt.array(length, i -> {
 							var price = prices[i];
 							int j = i, j1;
 							while (0 <= (j1 = j - 1) && Quant.sign(prices[j1], price) == c)

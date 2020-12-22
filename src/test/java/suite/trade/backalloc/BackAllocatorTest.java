@@ -9,8 +9,8 @@ import org.junit.jupiter.api.Test;
 
 import primal.MoreVerbs.Read;
 import primal.adt.Pair;
-import primal.primitive.IntVerbs.ToInt;
-import primal.primitive.LngVerbs.ToLng;
+import primal.primitive.IntVerbs.NewInt;
+import primal.primitive.LngVerbs.NewLng;
 import primal.primitive.fp.AsDbl;
 import suite.trade.Time;
 import suite.trade.data.DataSource;
@@ -27,11 +27,11 @@ public class BackAllocatorTest {
 		var ba1 = ba0.stopLoss(.98d);
 
 		var length = prices.length;
-		var ts = ToLng.array(length, i -> start.addDays(i).epochSec());
+		var ts = NewLng.array(length, i -> start.addDays(i).epochSec());
 
 		var ds = DataSource.of(ts, prices);
 		var akds = DataSource.alignAll(Read.from2(List.of(Pair.of(symbol, ds))));
-		var indices = ToInt.array(length, i -> i);
+		var indices = NewInt.array(length, i -> i);
 
 		var odt = ba1.allocate(akds, indices);
 

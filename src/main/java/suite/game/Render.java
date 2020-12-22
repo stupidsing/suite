@@ -15,7 +15,7 @@ import javax.swing.JLabel;
 import primal.fp.Funs2.BiFun;
 import primal.os.Log_;
 import primal.primitive.IntInt_Obj;
-import primal.primitive.IntVerbs.ToInt;
+import primal.primitive.IntVerbs.NewInt;
 import suite.cfg.Defaults;
 import suite.math.R3;
 import suite.streamlet.As;
@@ -60,7 +60,7 @@ public class Render {
 
 	public Image renderPixels(int width, int height, IntInt_Obj<R3> f) {
 		var nThreads = Defaults.nThreads;
-		var txs = ToInt.array(nThreads + 1, i -> width * i / nThreads);
+		var txs = NewInt.array(nThreads + 1, i -> width * i / nThreads);
 		var pixels = new R3[width][height];
 
 		forInt(nThreads).collect(As.executeThreadsByInt(t -> {

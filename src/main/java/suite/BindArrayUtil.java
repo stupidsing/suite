@@ -3,7 +3,7 @@ package suite;
 import java.util.ArrayList;
 
 import primal.fp.Funs.Fun;
-import primal.primitive.IntVerbs.ToInt;
+import primal.primitive.IntVerbs.NewInt;
 import suite.lp.compile.impl.CompileBinderImpl;
 import suite.lp.doer.BinderFactory.BindEnv;
 import suite.lp.doer.ProverConstant;
@@ -50,8 +50,8 @@ public class BindArrayUtil {
 			atoms.add(atom);
 
 		var size = atoms.size();
-		var sgi = ToInt.array(size, i -> sgm.getIndex(atoms.get(i)));
-		var cbi = ToInt.array(size, i -> cbm.getIndex(ne.env.refs[sgi[i]]));
+		var sgi = NewInt.array(size, i -> sgm.getIndex(atoms.get(i)));
+		var cbi = NewInt.array(size, i -> cbm.getIndex(ne.env.refs[sgi[i]]));
 
 		return new Pattern() {
 			public Node[] match(Node node) {

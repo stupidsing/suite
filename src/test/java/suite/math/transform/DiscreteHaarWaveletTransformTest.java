@@ -7,13 +7,13 @@ import java.util.Random;
 
 import org.junit.jupiter.api.Test;
 
-import primal.primitive.IntVerbs.ToInt;
+import primal.primitive.IntVerbs.NewInt;
 
 public class DiscreteHaarWaveletTransformTest {
 
 	@Test
 	public void testFft() {
-		var data = ToInt.array(16, i -> i);
+		var data = NewInt.array(16, i -> i);
 
 		for (var i = 0; i < data.length; i++) {
 			var j = new Random().nextInt(data.length);

@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 import primal.Nouns.Tmp;
 import primal.Verbs.Compare;
 import primal.Verbs.DeleteFile;
-import primal.primitive.IntVerbs.ToInt;
+import primal.primitive.IntVerbs.NewInt;
 import suite.btree.impl.B_TreeBuilder;
 import suite.file.impl.JournalledFileFactory;
 import suite.node.util.Singleton;
@@ -32,7 +32,7 @@ public class B_TreeTest {
 
 	@BeforeEach
 	public void before() {
-		keys = ToInt.array(nKeys, i -> i);
+		keys = NewInt.array(nKeys, i -> i);
 	}
 
 	@Test
@@ -99,7 +99,7 @@ public class B_TreeTest {
 		var pageSize = 4096;
 		var path = Tmp.path("b_tree-file");
 
-		keys = ToInt.array(nKeys, i -> i);
+		keys = NewInt.array(nKeys, i -> i);
 
 		for (var i = 0; i < nKeys; i++) {
 			var j = random.nextInt(nKeys);
