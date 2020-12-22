@@ -6,7 +6,6 @@ import java.util.List;
 
 import primal.Verbs.Equals;
 import primal.parser.Operator;
-import primal.parser.Operator.Assoc;
 
 public class TermOp implements Operator {
 
@@ -36,7 +35,6 @@ public class TermOp implements Operator {
 	public static BaseOp TUPLE_ = BaseOp.TUPLE_;
 	public static BaseOp ITEM__ = BaseOp.ITEM__;
 	public static BaseOp COLON_ = BaseOp.COLON_;
-	public static BaseOp DEREF_ = BaseOp.DEREF_;
 
 	public static Operator[] values = new Operator[] { //
 			NEXT__, //
@@ -65,7 +63,6 @@ public class TermOp implements Operator {
 			TUPLE_, //
 			ITEM__, //
 			COLON_, //
-			DEREF_, //
 	};
 
 	public int precedence;

@@ -27,7 +27,6 @@ public class BaseOp implements Operator {
 	public static BaseOp TUPLE_ = new BaseOp(330, " ", Assoc.RIGHT);
 	public static BaseOp ITEM__ = new BaseOp(340, "/", Assoc.LEFT);
 	public static BaseOp COLON_ = new BaseOp(360, ":", Assoc.RIGHT);
-	public static BaseOp DEREF_ = new BaseOp(370, "*", Assoc.LEFT);
 
 	public int precedence;
 	public String name;

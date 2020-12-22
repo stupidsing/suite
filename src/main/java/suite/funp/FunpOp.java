@@ -35,7 +35,7 @@ public class FunpOp {
 	public static BaseOp ITEM__ = BaseOp.ITEM__;
 	public static BaseOp DOT___ = new BaseOp(350, ".", Assoc.LEFT);
 	public static BaseOp COLON_ = BaseOp.COLON_;
-	public static BaseOp DEREF_ = BaseOp.DEREF_;
+	public static BaseOp DEREF_ = new BaseOp(370, "*", Assoc.LEFT);
 
 	public static Operator[] values = new Operator[] { //
 			NEXT__, //
