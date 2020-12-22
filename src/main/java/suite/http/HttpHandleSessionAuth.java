@@ -20,7 +20,7 @@ import suite.util.HtmlUtil;
  *
  * @author ywsing
  */
-public class HttpAuthSession {
+public class HttpHandleSessionAuth {
 
 	public static long timeoutDuration = 3600 * 1000l;
 

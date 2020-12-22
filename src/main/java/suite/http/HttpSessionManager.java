@@ -30,7 +30,7 @@ public class HttpSessionManager implements SessionManager {
 					var iter = sessions.values().iterator();
 
 					while (iter.hasNext())
-						if (iter.next().lastRequestDt.value() + HttpAuthSession.timeoutDuration < current)
+						if (iter.next().lastRequestDt.value() + HttpHandleSessionAuth.timeoutDuration < current)
 							iter.remove();
 				} finally {
 					isCleaning.set(false);

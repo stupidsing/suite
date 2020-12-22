@@ -24,11 +24,23 @@ import suite.http.Http.Response;
 
 public class HttpHandle {
 
-	public Handler data(String data) {
-		return request -> Response.of(Pull.from(data));
+	public Handler routeByMethod(PerMap<String, Handler> map) {
+		return request -> map //
+				.getOpt(request.method) //
+				.map(handler -> handler.handle(request)) //
+				.or(Http.R405);
 	}
 
-	public Handler dir(Path root) {
+	public Handler routeByPath(PerMap<String, Handler> map) {
+		return request0 -> request0 //
+				.split() //
+				.map((path, request1) -> map //
+						.getOpt(path) //
+						.map(handler -> handler.handle(request1)) //
+						.or(Http.R404));
+	}
+
+	public Handler serveDir(Path root) {
 		return request -> ex(() -> {
 			var path = root;
 			long size;
@@ -92,33 +104,21 @@ public class HttpHandle {
 		});
 	}
 
-	public Handler dispatchMethod(PerMap<String, Handler> map) {
-		return request -> map //
-				.getOpt(request.method) //
-				.map(handler -> handler.handle(request)) //
-				.or(Http.R405);
-	}
-
-	public Handler dispatchPath(PerMap<String, Handler> map) {
-		return request0 -> request0 //
-				.split() //
-				.map((path, request1) -> map //
-						.getOpt(path) //
-						.map(handler -> handler.handle(request1)) //
-						.or(Http.R404));
-	}
-
-	public Handler session(BiPredicate<String, String> authenticate, Handler handler) {
-		return new HttpAuthSession().getHandler(authenticate, handler);
-	}
-
-	public Handler sse(Sink<Sink<Bytes>> write) {
+	public Handler serveSse(Sink<Sink<Bytes>> write) {
 		var sseHeaders = new Header(PerMap //
 				.<String, PerList<String>> empty() //
 				.put("Cache-Control", PerList.of("no-cache")) //
 				.put("Content-Type", PerList.of("text/event-stream")));
 
 		return request -> Response.ofWriter(Http.S200, sseHeaders, write);
+	}
+
+	public Handler serveText(String data) {
+		return request -> Response.of(Pull.from(data));
+	}
+
+	public Handler wrapSession(BiPredicate<String, String> authenticate, Handler handler) {
+		return new HttpHandleSessionAuth().getHandler(authenticate, handler);
 	}
 
 }

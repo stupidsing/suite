@@ -28,7 +28,7 @@ import suite.trade.Time;
  *
  * @author ywsing
  */
-public class HttpAuthToken {
+public class HttpHandleTokenAuth {
 
 	public static long timeoutDuration = 3600l;
 
@@ -53,7 +53,7 @@ public class HttpAuthToken {
 				+ "</html>"));
 	}
 
-	public Handler handleGetToken(Fun2<String, String, List<String>> getRolesFun) {
+	public Handler getToken(Fun2<String, String, List<String>> getRolesFun) {
 		return request -> ex(() -> {
 			var bs = Bytes.of(request.in).toArray();
 			var json = om.readTree(bs);
@@ -64,11 +64,11 @@ public class HttpAuthToken {
 		});
 	}
 
-	public Handler handleRefreshToken(Fun2<String, String, List<String>> getRolesFun) {
+	public Handler refreshToken(Fun2<String, String, List<String>> getRolesFun) {
 		return verifyToken(List.of(), (username, roles, request) -> returnToken(username, roles));
 	}
 
-	public Handler handleFilter(String requiredRole, Handler handler) {
+	public Handler applyFilter(String requiredRole, Handler handler) {
 		return verifyToken(List.of(requiredRole), (username, roles, request) -> handler.handle(request));
 	}
 

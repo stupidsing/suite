@@ -24,8 +24,8 @@ import suite.http.Http;
 import suite.http.Http.Handler;
 import suite.http.Http.Header;
 import suite.http.Http.Response;
-import suite.http.HttpAuthToken;
 import suite.http.HttpHandle;
+import suite.http.HttpHandleTokenAuth;
 import suite.http.HttpHeaderUtil;
 import suite.http.HttpNio;
 import suite.http.HttpServe;
@@ -87,7 +87,7 @@ public class ServerMain {
 				.put("Cache-Control", PerList.of("no-cache")) //
 				.put("Content-Type", PerList.of("text/event-stream")));
 
-		Handler handlerSite = request -> Response.of(Pull.from("" //
+		Handler handlerDump = request -> Response.of(Pull.from("" //
 				+ "<html>" //
 				+ "<br/>method = " + request.method //
 				+ "<br/>server = " + request.server //
@@ -120,22 +120,22 @@ public class ServerMain {
 			return Response.of(Pull.from("<pre>" + sbs.log + new TreeMap<>(sbs.pnlByKey) + "</pre>"));
 		};
 
-		var hat = new HttpAuthToken();
 		var hh = new HttpHandle();
+		var hhta = new HttpHandleTokenAuth();
 
-		return hh.dispatchPath(PerMap //
+		return hh.routeByPath(PerMap //
 				.<String, Handler> empty() //
-				.put("api", hat.handleFilter("role", hh.data("in good shape"))) //
-				.put("hello", hh.data("hello world")) //
-				.put("html", hh.dir(Paths.get(FileUtil.suiteDir() + "/src/main/html"))) //
-				.put("path", hh.dir(Tmp.root)) //
-				.put("site", hh.session(authenticate, handlerSite)) //
+				.put("api", hhta.applyFilter("role", hh.serveText("in good shape"))) //
+				.put("hello", hh.serveText("hello world")) //
+				.put("html", hh.serveDir(Paths.get(FileUtil.suiteDir() + "/src/main/html"))) //
+				.put("path", hh.serveDir(Tmp.root)) //
+				.put("site", hh.wrapSession(authenticate, handlerDump)) //
 				.put("sse", handlerSse) //
 				.put("status", handlerStatus) //
-				.put("token", hh.dispatchMethod(PerMap //
+				.put("token", hh.routeByMethod(PerMap //
 						.<String, Handler> empty() //
-						.put("PATCH", hat.handleRefreshToken(authenticateRoles)) //
-						.put("POST", hat.handleGetToken(authenticateRoles)))));
+						.put("PATCH", hhta.refreshToken(authenticateRoles)) //
+						.put("POST", hhta.getToken(authenticateRoles)))));
 	}
 
 	private void runScheduler() {
