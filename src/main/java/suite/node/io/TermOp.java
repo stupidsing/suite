@@ -91,7 +91,7 @@ public class TermOp implements Operator {
 	}
 
 	public static boolean isSpaceAfter(Operator operator) {
-		return List.of(TermOp.NEXT__, TermOp.AND___, TermOp.OR____).contains(operator);
+		return List.of(TermOp.NEXT__, BaseOp.AND___, BaseOp.OR____).contains(operator);
 	}
 
 	public static int getLeftPrec(Operator operator) {

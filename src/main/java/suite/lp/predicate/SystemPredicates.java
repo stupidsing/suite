@@ -9,6 +9,7 @@ import suite.lp.predicate.PredicateUtil.BuiltinPredicate;
 import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Tree;
+import suite.node.io.BaseOp;
 import suite.node.io.TermOp;
 
 public class SystemPredicates {
@@ -41,9 +42,9 @@ public class SystemPredicates {
 		addPredicate("dkv", evalPredicates.dictKeyValue);
 		addPredicate("eval.fun", evalPredicates.evalFun);
 		addPredicate("eval.js", evalPredicates.evalJs);
-		addPredicate(TermOp.LE____, evalPredicates.compare);
-		addPredicate(TermOp.LT____, evalPredicates.compare);
-		addPredicate(TermOp.NOTEQ_, evalPredicates.notEquals);
+		addPredicate(BaseOp.LE____, evalPredicates.compare);
+		addPredicate(BaseOp.LT____, evalPredicates.compare);
+		addPredicate(BaseOp.NOTEQ_, evalPredicates.notEquals);
 		addPredicate("generalize", evalPredicates.generalize);
 		addPredicate("graph.bind", evalPredicates.graphBind);
 		addPredicate("graph.generalize", evalPredicates.graphGeneralize);

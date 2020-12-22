@@ -25,6 +25,7 @@ import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Str;
 import suite.node.Tree;
+import suite.node.io.BaseOp;
 import suite.node.io.Formatter;
 import suite.node.io.Grapher;
 import suite.node.io.TermOp;
@@ -56,9 +57,9 @@ public class EvalPredicates {
 		var tree = (Tree) ps;
 		var op = tree.getOperator();
 
-		if (op == TermOp.LE____)
+		if (op == BaseOp.LE____)
 			return comparer.compare(tree.getLeft(), tree.getRight()) <= 0;
-		else if (op == TermOp.LT____)
+		else if (op == BaseOp.LT____)
 			return comparer.compare(tree.getLeft(), tree.getRight()) < 0;
 		else
 			return fail("unknown comparison");

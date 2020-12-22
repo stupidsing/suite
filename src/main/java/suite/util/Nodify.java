@@ -30,6 +30,7 @@ import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Str;
 import suite.node.Tree;
+import suite.node.io.BaseOp;
 import suite.node.io.TermOp;
 
 /**
@@ -116,7 +117,7 @@ public class Nodify {
 				};
 				return new Nodifier(forward, n -> {
 					var list = Tree //
-							.read(n, TermOp.OR____) //
+							.read(n, BaseOp.OR____) //
 							.map(n_ -> apply_(n_, nodifier1)) //
 							.toList();
 					return To.array_(list.size(), componentType, list::get);
@@ -177,7 +178,7 @@ public class Nodify {
 					Tree.forceSetRight(tree, Atom.NIL);
 					return start.getRight();
 				}, n -> {
-					var list = Tree.read(n, TermOp.OR____).map(n_ -> apply_(n_, nodifier1)).toList();
+					var list = Tree.read(n, BaseOp.OR____).map(n_ -> apply_(n_, nodifier1)).toList();
 					var o1 = (Collection<Object>) Instantiate.clazz(clazz);
 					o1.addAll(list);
 					return o1;

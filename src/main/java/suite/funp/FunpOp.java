@@ -1,10 +1,5 @@
 package suite.funp;
 
-import static primal.statics.Rethrow.ex;
-
-import java.util.List;
-
-import primal.Verbs.Equals;
 import primal.parser.Operator;
 import primal.parser.Operator.Assoc;
 import suite.node.io.BaseOp;
@@ -71,33 +66,6 @@ public class FunpOp {
 		this.precedence = precedence;
 		this.name = name;
 		this.assoc = assoc;
-	}
-
-	public static Operator find(String name) {
-		for (var operator : values)
-			if (Equals.string(operator.name_(), name))
-				return operator;
-		return null;
-	}
-
-	public static FunpOp valueOf(String field) {
-		return (FunpOp) ex(() -> FunpOp.class.getField(field).get(null));
-	}
-
-	public static boolean isSpaceBefore(Operator operator) {
-		return List.of(BaseOp.NEXT__).contains(operator);
-	}
-
-	public static boolean isSpaceAfter(Operator operator) {
-		return List.of(BaseOp.NEXT__, BaseOp.AND___, BaseOp.OR____).contains(operator);
-	}
-
-	public static int getLeftPrec(Operator operator) {
-		return operator.precedence() - (operator.assoc() == Assoc.LEFT ? 1 : 0);
-	}
-
-	public static int getRightPrec(Operator operator) {
-		return operator.precedence() - (operator.assoc() == Assoc.RIGHT ? 1 : 0);
 	}
 
 	@Override

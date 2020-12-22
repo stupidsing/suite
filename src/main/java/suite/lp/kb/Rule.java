@@ -7,6 +7,7 @@ import suite.lp.sewing.impl.SewingGeneralizerImpl;
 import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Tree;
+import suite.node.io.BaseOp;
 import suite.node.io.TermOp;
 
 public class Rule {
@@ -41,7 +42,7 @@ public class Rule {
 		env.refs[cutIndex].bound(cut);
 
 		return Tree.ofAnd(//
-				Tree.of(TermOp.EQUAL_, //
+				Tree.of(BaseOp.EQUAL_, //
 						query, //
 						headFun.apply(env)), //
 				tailFun.apply(env));

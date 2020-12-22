@@ -23,9 +23,9 @@ import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Str;
 import suite.node.Tree;
+import suite.node.io.BaseOp;
 import suite.node.io.Formatter;
 import suite.node.io.SwitchNode;
-import suite.node.io.TermOp;
 import suite.node.util.Comparer;
 import suite.node.util.TreeUtil;
 import suite.util.To;
@@ -65,7 +65,7 @@ public class InterpretFunLazy {
 				.toMap();
 
 		var df = new HashMap<String, Thunk>();
-		df.put(TermOp.AND___.name, bi(this::cons));
+		df.put(BaseOp.AND___.name, bi(this::cons));
 		df.put("fst", () -> f(in -> ((Cons) in.get()).fst));
 		df.put("if", () -> f(a -> () -> f(b -> () -> f(c -> a.get() == Atom.TRUE ? b : c))));
 		df.put("snd", () -> f(in -> ((Cons) in.get()).snd));
@@ -96,7 +96,7 @@ public class InterpretFunLazy {
 	private Node inferType(Node node) {
 		var env0 = PerMap //
 				.<String, Node> empty() //
-				.put(TermOp.AND___.name, Suite.substitute("FUN .0 FUN .1 CONS .0 .1")) //
+				.put(BaseOp.AND___.name, Suite.substitute("FUN .0 FUN .1 CONS .0 .1")) //
 				.put("fst", Suite.substitute("FUN (CONS .0 .1) .0")) //
 				.put("if", Suite.substitute("FUN BOOLEAN FUN .1 FUN .1 .1")) //
 				.put("snd", Suite.substitute("FUN (CONS .0 .1) .1"));

@@ -4,11 +4,11 @@ import primal.Verbs.Get;
 import primal.parser.Operator;
 import suite.node.Node;
 import suite.node.Tree;
-import suite.node.io.TermOp;
+import suite.node.io.BaseOp;
 
 public class TreeAnd extends Tree {
 
-	private static Operator operator = TermOp.AND___;
+	private static Operator operator = BaseOp.AND___;
 
 	public TreeAnd(Node left, Node right) {
 		super(left, right);

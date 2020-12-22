@@ -12,7 +12,7 @@ import suite.math.sym.Sym.Field;
 import suite.node.Int;
 import suite.node.Node;
 import suite.node.Tree;
-import suite.node.io.TermOp;
+import suite.node.io.BaseOp;
 import suite.node.util.TreeUtil;
 
 public class Express {
@@ -30,8 +30,8 @@ public class Express {
 	public Pattern patSin = Suite.pattern("sin .0");
 	public Pattern patCos = Suite.pattern("cos .0");
 
-	public OpGroup add = new OpGroup(null, TermOp.PLUS__, n0, patNeg);
-	public OpGroup mul = new OpGroup(add, TermOp.MULT__, n1, patInv);
+	public OpGroup add = new OpGroup(null, BaseOp.PLUS__, n0, patNeg);
+	public OpGroup mul = new OpGroup(add, BaseOp.MULT__, n1, patInv);
 
 	public Field<Node> field = new Field<>( //
 			n0, //

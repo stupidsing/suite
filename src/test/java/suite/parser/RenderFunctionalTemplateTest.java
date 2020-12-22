@@ -8,7 +8,7 @@ import primal.MoreVerbs.Read;
 import primal.adt.Pair;
 import suite.node.Node;
 import suite.node.Str;
-import suite.node.io.TermOp;
+import suite.node.io.BaseOp;
 import suite.node.util.TreeUtil;
 
 public class RenderFunctionalTemplateTest {
@@ -19,7 +19,7 @@ public class RenderFunctionalTemplateTest {
 
 		var map = Read //
 				.from2(List.of( //
-						Pair.of("list", TreeUtil.buildUp(TermOp.OR____, fruits)), //
+						Pair.of("list", TreeUtil.buildUp(BaseOp.OR____, fruits)), //
 						Pair.of("title", new Str("My favourite things")))) //
 				.toMap();
 

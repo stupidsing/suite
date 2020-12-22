@@ -12,7 +12,7 @@ import suite.node.Reference;
 import suite.node.Suspend;
 import suite.node.Tree;
 import suite.node.Tuple;
-import suite.node.io.TermOp;
+import suite.node.io.BaseOp;
 import suite.util.To;
 
 public class SewingClonerImpl implements ClonerFactory {
@@ -47,7 +47,7 @@ public class SewingClonerImpl implements ClonerFactory {
 				};
 			} else if ((tree = Tree.decompose(node0)) != null) {
 				var operator = tree.getOperator();
-				if (operator != TermOp.OR____) {
+				if (operator != BaseOp.OR____) {
 					var f = cloner(tree.getLeft());
 					funs.add(env -> Tree.of(operator, f.apply(env), null));
 					node = tree.getRight();

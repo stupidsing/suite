@@ -11,7 +11,7 @@ import primal.fp.Funs.Iterate;
 import primal.parser.Operator;
 import suite.Suite;
 import suite.node.Node;
-import suite.node.io.TermOp;
+import suite.node.io.BaseOp;
 import suite.node.util.Comparer;
 
 public class InstructionUtil {
@@ -23,15 +23,15 @@ public class InstructionUtil {
 		for (var insn : Insn.values())
 			insnNames.put(insn, insn.name);
 
-		evalInsns.put(TermOp.PLUS__, Insn.EVALADD_______);
-		evalInsns.put(TermOp.DIVIDE, Insn.EVALDIV_______);
-		evalInsns.put(TermOp.EQUAL_, Insn.EVALEQ________);
-		evalInsns.put(TermOp.LE____, Insn.EVALLE________);
-		evalInsns.put(TermOp.LT____, Insn.EVALLT________);
-		evalInsns.put(TermOp.MULT__, Insn.EVALMUL_______);
-		evalInsns.put(TermOp.MINUS_, Insn.EVALSUB_______);
-		evalInsns.put(TermOp.MODULO, Insn.EVALMOD_______);
-		evalInsns.put(TermOp.NOTEQ_, Insn.EVALNE________);
+		evalInsns.put(BaseOp.PLUS__, Insn.EVALADD_______);
+		evalInsns.put(BaseOp.DIVIDE, Insn.EVALDIV_______);
+		evalInsns.put(BaseOp.EQUAL_, Insn.EVALEQ________);
+		evalInsns.put(BaseOp.LE____, Insn.EVALLE________);
+		evalInsns.put(BaseOp.LT____, Insn.EVALLT________);
+		evalInsns.put(BaseOp.MULT__, Insn.EVALMUL_______);
+		evalInsns.put(BaseOp.MINUS_, Insn.EVALSUB_______);
+		evalInsns.put(BaseOp.MODULO, Insn.EVALMOD_______);
+		evalInsns.put(BaseOp.NOTEQ_, Insn.EVALNE________);
 	}
 
 	public enum Insn {

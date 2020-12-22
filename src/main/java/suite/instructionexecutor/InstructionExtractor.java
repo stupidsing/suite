@@ -23,6 +23,7 @@ import suite.node.Int;
 import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Tree;
+import suite.node.io.BaseOp;
 import suite.node.io.TermOp;
 
 public class InstructionExtractor implements AutoCloseable {
@@ -59,7 +60,7 @@ public class InstructionExtractor implements AutoCloseable {
 		Node value;
 
 		while (!deque.isEmpty())
-			if ((tree = Tree.decompose(deque.pop(), TermOp.AND___)) != null) {
+			if ((tree = Tree.decompose(deque.pop(), BaseOp.AND___)) != null) {
 				IdentityKey<Node> key = IdentityKey.of(tree);
 				var ip = ipByLabelId.get(key);
 

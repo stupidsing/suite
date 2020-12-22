@@ -8,6 +8,7 @@ import primal.fp.Funs.Source;
 import primal.parser.Operator;
 import primal.puller.Puller;
 import primal.streamlet.Streamlet;
+import suite.node.io.BaseOp;
 import suite.node.io.TermOp;
 import suite.node.tree.TreeAnd;
 import suite.node.tree.TreeOp;
@@ -42,7 +43,7 @@ public abstract class Tree extends Node {
 	}
 
 	public static Streamlet<Node> read(Node node) {
-		return read(node, TermOp.AND___);
+		return read(node, BaseOp.AND___);
 	}
 
 	public static Streamlet<Node> read(Node node0, Operator operator) {
@@ -65,9 +66,9 @@ public abstract class Tree extends Node {
 	}
 
 	public static Tree of(Operator operator, Node left, Node right) {
-		if (operator == TermOp.AND___)
+		if (operator == BaseOp.AND___)
 			return ofAnd(left, right);
-		else if (operator == TermOp.OR____)
+		else if (operator == BaseOp.OR____)
 			return ofOr(left, right);
 		else if (operator == TermOp.TUPLE_)
 			return TreeTuple.of(left, right);

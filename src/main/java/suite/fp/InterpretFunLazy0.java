@@ -13,8 +13,8 @@ import suite.node.Atom;
 import suite.node.Int;
 import suite.node.Node;
 import suite.node.Reference;
+import suite.node.io.BaseOp;
 import suite.node.io.SwitchNode;
-import suite.node.io.TermOp;
 import suite.node.util.TreeUtil;
 
 public class InterpretFunLazy0 {
@@ -88,7 +88,7 @@ public class InterpretFunLazy0 {
 				.<String, Node> empty() //
 				.put(Atom.TRUE.name, Suite.parse("BOOLEAN")) //
 				.put(Atom.FALSE.name, Suite.parse("BOOLEAN")) //
-				.put(TermOp.AND___.name, Suite.substitute("FUN .0 FUN .1 CONS .0 .1")) //
+				.put(BaseOp.AND___.name, Suite.substitute("FUN .0 FUN .1 CONS .0 .1")) //
 				.put(ERROR.name, new Reference()) //
 				.put(FST__.name, Suite.substitute("FUN (CONS .0 .1) .0")) //
 				.put(SND__.name, Suite.substitute("FUN (CONS .0 .1) .1"));
@@ -113,7 +113,7 @@ public class InterpretFunLazy0 {
 				.<String, Thunk> empty() //
 				.put(Atom.TRUE.name, () -> Atom.TRUE) //
 				.put(Atom.FALSE.name, () -> Atom.FALSE) //
-				.put(TermOp.AND___.name, () -> f(a -> () -> f(b -> () -> cons(a, b)))) //
+				.put(BaseOp.AND___.name, () -> f(a -> () -> f(b -> () -> cons(a, b)))) //
 				.put(ERROR.name, error) //
 				.put(FST__.name, () -> f(in -> ((Cons) in.get()).fst)) //
 				.put(SND__.name, () -> f(in -> ((Cons) in.get()).snd));

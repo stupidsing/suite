@@ -26,7 +26,7 @@ import suite.node.Int;
 import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Tree;
-import suite.node.io.TermOp;
+import suite.node.io.BaseOp;
 
 public class FunCreatorTest {
 
@@ -93,7 +93,7 @@ public class FunCreatorTest {
 		assertEquals(Suite.parse("1"), fc.create(() -> f.object(N1)).apply(void_).g());
 		assertEquals(Suite.parse("1 + 1"), fc.create(() -> f //
 				.invokeStatic(Tree.class, "of", //
-						f.object(TermOp.PLUS__), //
+						f.object(BaseOp.PLUS__), //
 						f.object(N1).cast_(Node.class), //
 						f.object(N1).cast_(Node.class))) //
 				.apply(void_) //

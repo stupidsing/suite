@@ -25,9 +25,9 @@ import suite.node.Int;
 import suite.node.Node;
 import suite.node.Str;
 import suite.node.Tree;
+import suite.node.io.BaseOp;
 import suite.node.io.Formatter;
 import suite.node.io.SwitchNode;
-import suite.node.io.TermOp;
 import suite.node.util.Comparer;
 import suite.node.util.TreeUtil;
 import suite.util.To;
@@ -154,8 +154,8 @@ public class InterpretFunEager {
 					Tree p0, p1;
 					do {
 						var out = iter.apply(in);
-						p0 = Tree.decompose(out, TermOp.AND___);
-						p1 = Tree.decompose(p0.getRight(), TermOp.AND___);
+						p0 = Tree.decompose(out, BaseOp.AND___);
+						p1 = Tree.decompose(p0.getRight(), BaseOp.AND___);
 						in = p1.getLeft();
 					} while (p0.getLeft() != Atom.TRUE);
 					return p1.getRight();
@@ -196,7 +196,7 @@ public class InterpretFunEager {
 				.toMap();
 
 		var df = new HashMap<String, Node>();
-		df.put(TermOp.AND___.name, f2(Tree::ofAnd));
+		df.put(BaseOp.AND___.name, f2(Tree::ofAnd));
 		df.put("+call%i-t1", f1(i -> fn(1, l -> Data.<Intrinsic> get(i).invoke(ic, l))));
 		df.put("+call%i-t2", f1(i -> fn(2, l -> Data.<Intrinsic> get(i).invoke(ic, l))));
 		df.put("+call%i-t3", f1(i -> fn(3, l -> Data.<Intrinsic> get(i).invoke(ic, l))));
@@ -304,9 +304,9 @@ public class InterpretFunEager {
 
 	private Operator oper(Node type) {
 		if (type == Atom.of("L"))
-			return TermOp.OR____;
+			return BaseOp.OR____;
 		else if (type == Atom.of("P"))
-			return TermOp.AND___;
+			return BaseOp.AND___;
 		else
 			return fail("unknown CONS type");
 	}

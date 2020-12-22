@@ -15,6 +15,7 @@ import suite.node.Atom;
 import suite.node.Int;
 import suite.node.Node;
 import suite.node.Tree;
+import suite.node.io.BaseOp;
 import suite.node.io.TermOp;
 import suite.primitive.IntInt_Bool;
 
@@ -27,19 +28,19 @@ public class TreeUtil {
 	public static Atom XOR = Atom.of("xor");
 
 	public static Map<Operator, IntInt_Bool> boolOperations = Map.ofEntries( //
-			entry(TermOp.EQUAL_, (a, b) -> a == b), //
-			entry(TermOp.NOTEQ_, (a, b) -> a != b), //
-			entry(TermOp.LE____, (a, b) -> a <= b), //
-			entry(TermOp.LT____, (a, b) -> a < b));
+			entry(BaseOp.EQUAL_, (a, b) -> a == b), //
+			entry(BaseOp.NOTEQ_, (a, b) -> a != b), //
+			entry(BaseOp.LE____, (a, b) -> a <= b), //
+			entry(BaseOp.LT____, (a, b) -> a < b));
 
 	public static Map<Operator, IntInt_Int> intOperations = Map.ofEntries( //
-			entry(TermOp.BIGAND, (a, b) -> a & b), //
-			entry(TermOp.BIGOR_, (a, b) -> a | b), //
-			entry(TermOp.PLUS__, (a, b) -> a + b), //
-			entry(TermOp.MINUS_, (a, b) -> a - b), //
-			entry(TermOp.MULT__, (a, b) -> a * b), //
-			entry(TermOp.DIVIDE, (a, b) -> a / b), //
-			entry(TermOp.MODULO, (a, b) -> a % b), //
+			entry(BaseOp.BIGAND, (a, b) -> a & b), //
+			entry(BaseOp.BIGOR_, (a, b) -> a | b), //
+			entry(BaseOp.PLUS__, (a, b) -> a + b), //
+			entry(BaseOp.MINUS_, (a, b) -> a - b), //
+			entry(BaseOp.MULT__, (a, b) -> a * b), //
+			entry(BaseOp.DIVIDE, (a, b) -> a / b), //
+			entry(BaseOp.MODULO, (a, b) -> a % b), //
 			entry(TermOp.POWER_, TreeUtil::intPow));
 
 	public static Map<Node, IntInt_Int> tupleOperations = Map.ofEntries( //

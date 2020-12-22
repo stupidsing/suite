@@ -130,9 +130,9 @@ public class Formatter {
 		}).doIf(Dict.class, n -> {
 			sb.append("dict<");
 			for (var e : n.getMap().entrySet()) {
-				format(e.getKey(), TermOp.getLeftPrec(TermOp.AND___));
+				format(e.getKey(), TermOp.getLeftPrec(BaseOp.AND___));
 				sb.append(":");
-				format(e.getValue(), TermOp.getLeftPrec(TermOp.AND___));
+				format(e.getValue(), TermOp.getLeftPrec(BaseOp.AND___));
 				sb.append(",");
 			}
 			sb.append(">");
@@ -147,7 +147,7 @@ public class Formatter {
 		}).doIf(Tuple.class, n -> {
 			sb.append("tuple<");
 			for (var n_ : n.nodes) {
-				format(n_, TermOp.getLeftPrec(TermOp.AND___));
+				format(n_, TermOp.getLeftPrec(BaseOp.AND___));
 				sb.append(", ");
 			}
 			sb.append(">");

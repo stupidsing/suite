@@ -19,7 +19,7 @@ import suite.node.Data;
 import suite.node.Node;
 import suite.node.Suspend;
 import suite.node.Tree;
-import suite.node.io.TermOp;
+import suite.node.io.BaseOp;
 
 public class Prover {
 
@@ -102,7 +102,7 @@ public class Prover {
 				Node left = tree.getLeft(), right = tree.getRight();
 				var op = tree.getOperator();
 
-				if (op == TermOp.OR____) {
+				if (op == BaseOp.OR____) {
 					var pit = trail.getPointInTime();
 					var bt = new Data<Source<Boolean>>(() -> {
 						trail.unwind(pit);
@@ -112,11 +112,11 @@ public class Prover {
 					alt = andTree(bt, orTree(andTree(right, rem), alt));
 					query = left;
 					continue;
-				} else if (op == TermOp.AND___) {
+				} else if (op == BaseOp.AND___) {
 					rem = andTree(right, rem);
 					query = left;
 					continue;
-				} else if (op == TermOp.EQUAL_)
+				} else if (op == BaseOp.EQUAL_)
 					query = isSuccess(bind(left, right));
 			} else if (query instanceof Data) {
 				query = isSuccess(Data.<Source<Boolean>> get(query).g());
@@ -209,11 +209,11 @@ public class Prover {
 	}
 
 	private Node andTree(Node n0, Node n1) {
-		return formOp(n0, n1, OK, FAIL, TermOp.AND___);
+		return formOp(n0, n1, OK, FAIL, BaseOp.AND___);
 	}
 
 	private Node orTree(Node n0, Node n1) {
-		return formOp(n0, n1, FAIL, OK, TermOp.OR____);
+		return formOp(n0, n1, FAIL, OK, BaseOp.OR____);
 	}
 
 	private Node formOp(Node n0, Node n1, Node bail, Node done, Operator op) {

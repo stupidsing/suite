@@ -11,6 +11,7 @@ import primal.parser.Operator.Assoc;
 import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Tree;
+import suite.node.io.BaseOp;
 import suite.node.io.Formatter;
 import suite.node.io.TermOp;
 import suite.streamlet.ReadChars;
@@ -185,7 +186,7 @@ public class PrettyPrinter {
 			return isLookingLikeList(op, child);
 		}
 
-		return op != TermOp.TUPLE_ && (op == TermOp.AND___ || op == TermOp.OR____ || node == Atom.NIL);
+		return op != TermOp.TUPLE_ && (op == BaseOp.AND___ || op == BaseOp.OR____ || node == Atom.NIL);
 	}
 
 	private OperatorPosition appendOperatorLineFeed(Operator op) {
@@ -201,7 +202,7 @@ public class PrettyPrinter {
 	private OperatorPosition appendOperator(Operator op) {
 		var name = op.name_();
 		name = (op == TermOp.BRACES ? " " : "") + name;
-		name += op == TermOp.AND___ || op == TermOp.OR____ ? " " : "";
+		name += op == BaseOp.AND___ || op == BaseOp.OR____ ? " " : "";
 		if (isLineBegin())
 			name = Trim.left(name);
 		append(name);

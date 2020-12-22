@@ -12,6 +12,7 @@ import suite.lp.search.CompiledProverBuilder;
 import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Tree;
+import suite.node.io.BaseOp;
 import suite.node.io.TermOp;
 import suite.node.util.TreeUtil;
 
@@ -56,7 +57,7 @@ public class SldResolution {
 			var value1 = orsMap.get(negate(e.getKey()));
 
 			if (value1 != null)
-				results.add(TreeUtil.buildUp(TermOp.AND___, Concat.lists(value0.g(), value1.g())));
+				results.add(TreeUtil.buildUp(BaseOp.AND___, Concat.lists(value0.g(), value1.g())));
 		}
 
 		return results;

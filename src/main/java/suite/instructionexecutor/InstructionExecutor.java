@@ -20,6 +20,7 @@ import suite.node.Int;
 import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Tree;
+import suite.node.io.BaseOp;
 import suite.node.io.TermOp;
 import suite.node.util.Comparer;
 
@@ -178,14 +179,14 @@ public class InstructionExecutor implements AutoCloseable {
 						current.ip = insn.op1;
 				}
 				case IFNOTCONS_____ -> {
-					if ((tree = Tree.decompose(regs[insn.op0], TermOp.OR____)) != null) {
+					if ((tree = Tree.decompose(regs[insn.op0], BaseOp.OR____)) != null) {
 						stack[sp++] = tree.getLeft();
 						stack[sp++] = tree.getRight();
 					} else
 						current.ip = insn.op1;
 				}
 				case IFNOTPAIR_____ -> {
-					if ((tree = Tree.decompose(regs[insn.op0], TermOp.AND___)) != null) {
+					if ((tree = Tree.decompose(regs[insn.op0], BaseOp.AND___)) != null) {
 						stack[sp++] = tree.getLeft();
 						stack[sp++] = tree.getRight();
 					} else

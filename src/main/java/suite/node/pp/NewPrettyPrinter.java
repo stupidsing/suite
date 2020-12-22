@@ -6,6 +6,7 @@ import java.util.Set;
 import suite.Suite;
 import suite.node.Node;
 import suite.node.Tree;
+import suite.node.io.BaseOp;
 import suite.node.io.Formatter;
 import suite.node.io.TermOp;
 
@@ -64,10 +65,10 @@ public class NewPrettyPrinter {
 			} else if (operator == TermOp.IS____) {
 				format_(tree.getLeft(), TermOp.getLeftPrec(operator), indent, prefix);
 				format_(tree.getRight(), TermOp.getRightPrec(operator), indent1, operator.name_());
-			} else if (operator == TermOp.BIGAND || operator == TermOp.BIGOR_) {
+			} else if (operator == BaseOp.BIGAND || operator == BaseOp.BIGOR_) {
 				format_(tree.getLeft(), TermOp.getLeftPrec(operator), indent, prefix);
 				format_(tree.getRight(), TermOp.getRightPrec(operator), indent, operator.name_());
-			} else if (operator == TermOp.AND___ || operator == TermOp.OR____) {
+			} else if (operator == BaseOp.AND___ || operator == BaseOp.OR____) {
 				format_(tree.getLeft(), prec, indent, prefix);
 				node = tree.getRight();
 				while ((tree = Tree.decompose(node)) != null && tree.getOperator() == operator) {

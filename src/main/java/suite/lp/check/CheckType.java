@@ -19,6 +19,7 @@ import suite.node.Atom;
 import suite.node.Dict;
 import suite.node.Node;
 import suite.node.Reference;
+import suite.node.io.BaseOp;
 import suite.node.io.SwitchNode;
 import suite.node.io.TermOp;
 import suite.node.tree.TreeTuple;
@@ -69,7 +70,7 @@ public class CheckType {
 		}).applyIf(Reference.class, n -> {
 			return variableTypes.computeIfAbsent(IdentityKey.of(n), k -> new Reference()).finalNode();
 		}).applyTree((op, l, r) -> {
-			if (op == TermOp.AND___) {
+			if (op == BaseOp.AND___) {
 				var type = Suite.substitute(".0;", getType(l));
 				bind(type, getType(r));
 				return type;

@@ -49,6 +49,7 @@ import suite.node.Reference;
 import suite.node.Suspend;
 import suite.node.Tree;
 import suite.node.Tuple;
+import suite.node.io.BaseOp;
 import suite.node.io.Formatter;
 import suite.node.io.TermOp;
 import suite.node.util.Rewrite;
@@ -305,11 +306,11 @@ public class SewingProverImpl implements ProverFactory {
 		Node m[];
 		Cps cps;
 
-		if (1 < (list = TreeUtil.breakdown(TermOp.AND___, node)).size()) {
+		if (1 < (list = TreeUtil.breakdown(BaseOp.AND___, node)).size()) {
 			cps = cpsx;
 			for (var n : list.reverse())
 				cps = compileCps(bf, n, cps);
-		} else if (1 < (list = TreeUtil.breakdown(TermOp.OR____, node)).size())
+		} else if (1 < (list = TreeUtil.breakdown(BaseOp.OR____, node)).size())
 			cps = orCps(list.map(n -> compileCps(bf, n, cpsx)));
 		else if ((m = Suite.pattern(".0 = .1").match(node)) != null) {
 			var b = complexity(m[0]) <= complexity(m[1]);
@@ -451,9 +452,9 @@ public class SewingProverImpl implements ProverFactory {
 		Tree tree;
 		Node[] m;
 
-		if (1 < (list = TreeUtil.breakdown(TermOp.AND___, node)).size())
+		if (1 < (list = TreeUtil.breakdown(BaseOp.AND___, node)).size())
 			tr = andTr(list.map(n -> compileTr(bf, n)));
-		else if (1 < (list = TreeUtil.breakdown(TermOp.OR____, node)).size())
+		else if (1 < (list = TreeUtil.breakdown(BaseOp.OR____, node)).size())
 			tr = orTr(list.map(n -> compileTr(bf, n)));
 		else if ((m = Suite.pattern(".0 = .1").match(node)) != null) {
 			var b = complexity(m[0]) <= complexity(m[1]);
@@ -483,7 +484,7 @@ public class SewingProverImpl implements ProverFactory {
 				});
 				rt.pushAlt(rt_ -> {
 					restore.restore(rt);
-					return p.test(rt, TreeUtil.buildUp(TermOp.AND___, vs)) ? okay : fail;
+					return p.test(rt, TreeUtil.buildUp(BaseOp.AND___, vs)) ? okay : fail;
 				});
 				return tr1;
 			};
@@ -532,7 +533,7 @@ public class SewingProverImpl implements ProverFactory {
 					});
 				return okay;
 			};
-		} else if ((m = Suite.pattern("member .0 .1").match(node)) != null && TreeUtil.isList(m[0], TermOp.AND___)) {
+		} else if ((m = Suite.pattern("member .0 .1").match(node)) != null && TreeUtil.isList(m[0], BaseOp.AND___)) {
 			var elems_ = Tree.read(m[0]).map(bf::binder).toList();
 			var f = bf.cloner(m[1]);
 			tr = rt -> {
