@@ -10,7 +10,6 @@ public class BaseOp implements Operator {
 	public static BaseOp BIGOR_ = new BaseOp(140, " || ", Assoc.RIGHT);
 	public static BaseOp BIGAND = new BaseOp(150, " && ", Assoc.RIGHT);
 	public static BaseOp FUN___ = new BaseOp(160, " => ", Assoc.RIGHT);
-	public static BaseOp ARROW_ = new BaseOp(170, " -> ", Assoc.RIGHT);
 	public static BaseOp SEP___ = new BaseOp(180, " | ", Assoc.LEFT);
 	public static BaseOp JOIN__ = new BaseOp(190, " . ", Assoc.LEFT);
 	public static BaseOp OR____ = new BaseOp(200, ";", Assoc.RIGHT);

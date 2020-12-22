@@ -6,6 +6,7 @@ import java.util.List;
 
 import primal.Verbs.Equals;
 import primal.parser.Operator;
+import primal.parser.Operator.Assoc;
 
 public class TermOp implements Operator {
 
@@ -16,7 +17,7 @@ public class TermOp implements Operator {
 	public static BaseOp BIGOR_ = BaseOp.BIGOR_;
 	public static BaseOp BIGAND = BaseOp.BIGAND;
 	public static BaseOp FUN___ = BaseOp.FUN___;
-	public static BaseOp ARROW_ = BaseOp.ARROW_;
+	public static BaseOp ARROW_ = new BaseOp(170, " -> ", Assoc.RIGHT);
 	public static BaseOp SEP___ = BaseOp.SEP___;
 	public static BaseOp JOIN__ = BaseOp.JOIN__;
 	public static BaseOp OR____ = BaseOp.OR____;
