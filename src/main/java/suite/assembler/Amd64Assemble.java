@@ -230,6 +230,7 @@ public class Amd64Assemble {
 		case ADC -> assembleRmRegImm(instruction, 0x10, 0x80, 2);
 		case ADD -> assembleRmRegImm(instruction, 0x00, 0x80, 0);
 		case ADDPS -> assembleRegRm(i_op0, i_op1, 0x58).pre(0x0F);
+		case ADDSS -> assembleRegRm(i_op0, i_op1, 0x58).pre(bs(0xF3, 0x0F));
 		case ADVANCE -> new InsnCode(new byte[(int) (((OpImm) i_op0).imm - offset)]);
 		case ALIGN -> {
 			var align = i_op0.cast(OpImm.class).imm;
@@ -265,6 +266,8 @@ public class Amd64Assemble {
 		}
 		case DEC -> assembleRm(instruction, isLongMode ? -1 : 0x48, 0xFE, 1);
 		case DIV -> assembleByteFlag(i_op0, 0xF6, 6);
+		case DIVPS -> assembleRegRm(i_op0, i_op1, 0x5E).pre(0x0F);
+		case DIVSS -> assembleRegRm(i_op0, i_op1, 0x5E).pre(bs(0xF3, 0x0F));
 		case DS -> {
 			bs = new byte[(int) i_op0.cast(OpImm.class).imm];
 			var b = (opImm = i_op1.cast(OpImm.class)) != null ? opImm.imm : 0x90;
@@ -393,6 +396,7 @@ public class Amd64Assemble {
 		case MOVSB -> new InsnCode(1, bs(0xA4));
 		case MOVSD -> new InsnCode(4, bs(0xA5));
 		case MOVSQ -> new InsnCode(8, bs(0xA5));
+		case MOVSS -> assembleRmReg(instruction, 0x10, 0x11, isXmm).size(8).pre(bs(0xF3, 0x0F));
 		case MOVSW -> new InsnCode(2, bs(0xA5));
 		case MOVSX -> {
 			if (i_op1.size < i_op0.size && (i_op1.size == 1 || i_op1.size == 2))
@@ -410,6 +414,7 @@ public class Amd64Assemble {
 		case MOVZX -> assembleRegRmExtended(instruction, 0xB6).pre(0x0F);
 		case MUL -> assembleByteFlag(i_op0, 0xF6, 4);
 		case MULPS -> assembleRegRm(i_op0, i_op1, 0x59).pre(0x0F);
+		case MULSS -> assembleRegRm(i_op0, i_op1, 0x59).pre(bs(0xF3, 0x0F));
 		case NEG -> assembleByteFlag(i_op0, 0xF6, 3);
 		case NOP -> assemble(0x90);
 		case NOT -> assembleByteFlag(i_op0, 0xF6, 2);
@@ -499,6 +504,7 @@ public class Amd64Assemble {
 		case STOSW -> new InsnCode(2, bs(0xAB));
 		case SUB -> assembleRmRegImm(instruction, 0x28, 0x80, 5);
 		case SUBPS -> assembleRegRm(i_op0, i_op1, 0x5C).pre(0x0F);
+		case SUBSS -> assembleRegRm(i_op0, i_op1, 0x5C).pre(bs(0xF3, 0x0F));
 		case SYSCALL -> new InsnCode(bs(0x0F, 0x05));
 		case SYSENTER -> new InsnCode(bs(0x0F, 0x34));
 		case SYSEXIT -> new InsnCode(bs(0x0F, 0x35));

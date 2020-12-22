@@ -17,6 +17,7 @@ public class Amd64 {
 		ADC, //
 		ADD, //
 		ADDPS, //
+		ADDSS, //
 		ADVANCE, //
 		ALIGN, //
 		AND, //
@@ -34,6 +35,8 @@ public class Amd64 {
 		D, //
 		DEC, //
 		DIV, //
+		DIVPS, //
+		DIVSS, //
 		DS, // define space
 		HLT, //
 		IDIV, //
@@ -83,12 +86,14 @@ public class Amd64 {
 		MOVSB, //
 		MOVSD, //
 		MOVSQ, //
+		MOVSS, //
 		MOVSW, //
 		MOVSX, //
 		MOVSXD, //
 		MOVZX, //
 		MUL, //
 		MULPS, //
+		MULSS, //
 		NEG, //
 		NOP, //
 		NOT, //
@@ -130,6 +135,7 @@ public class Amd64 {
 		STOSW, //
 		SUB, //
 		SUBPS, //
+		SUBSS, //
 		SYSCALL, //
 		SYSENTER, //
 		SYSEXIT, //
