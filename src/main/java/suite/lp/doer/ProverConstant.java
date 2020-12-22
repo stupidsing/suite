@@ -21,16 +21,16 @@ public class ProverConstant {
 			return false;
 	}
 
-	public static boolean isWildcard(String name) {
-		return name.startsWith(ProverConstant.wildcardPrefix);
+	public static boolean isCut(Node node) {
+		return node == ProverConstant.cut;
 	}
 
 	public static boolean isVariable(String name) {
 		return name.startsWith(ProverConstant.variablePrefix);
 	}
 
-	public static boolean isCut(Node node) {
-		return node == ProverConstant.cut;
+	public static boolean isWildcard(String name) {
+		return name.startsWith(ProverConstant.wildcardPrefix);
 	}
 
 }
