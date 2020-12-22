@@ -98,10 +98,8 @@ public class Formatter {
 	/**
 	 * Converts a node to its string representation.
 	 *
-	 * @param node
-	 *            Node to be converted.
-	 * @param parentPrec
-	 *            Minimum operator precedence without adding parentheses.
+	 * @param node       Node to be converted.
+	 * @param parentPrec Minimum operator precedence without adding parentheses.
 	 */
 	private void format(Node node0, int parentPrec) {
 		var node = node0.finalNode();

@@ -32,9 +32,9 @@ public class MonadTest {
 	public void testMutable() {
 		var fp0 = """
 				do (
-				    definem string v #
-				    v := \"abc\" #
-				    getm_{v} #
+					definem string v #
+					v := \"abc\" #
+					getm_{v} #
 				)
 				""";
 		assertEquals("abc", evalMonad(fp0));
@@ -44,8 +44,8 @@ public class MonadTest {
 	public void testMutableFail() {
 		var fp0 = """
 				do (
-				    definem int v #
-				    v := "abc" #
+					definem int v #
+					v := "abc" #
 				)
 				""";
 

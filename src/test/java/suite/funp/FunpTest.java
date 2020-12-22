@@ -65,10 +65,10 @@ public class FunpTest {
 		// definition that makes the capture1 time latter than the assignment to m.
 		test(31, """
 				do (
-				        let m := 31 ~
-				        let l := n => capture1 m ~
-				        !assign m := 63 ~
-				        15 | l
+						let m := 31 ~
+						let l := n => capture1 m ~
+						!assign m := 63 ~
+						15 | l
 				)
 				""");
 
@@ -216,27 +216,27 @@ public class FunpTest {
 				""");
 		test(2, """
 				define-function list-iter! list := do
-				     type list = { elems: address-of (array 3 * number), size: number, } ~
-				     let { elems, size, } := list ~
-				     let i := !new 0 ~
-				     {
-				             free! () := do (!delete i ~ ()) ~
-				             has-next () := i* < size ~
-				             next! () := do
-				                     let i_ := i* ~
-				                     !assign i* := i_ + 1 ~
-				                     elems* [i_]
-				             ~
-				     }
+					type list = { elems: address-of (array 3 * number), size: number, } ~
+					let { elems, size, } := list ~
+					let i := !new 0 ~
+					{
+						free! () := do (!delete i ~ ()) ~
+						has-next () := i* < size ~
+						next! () := do
+							let i_ := i* ~
+							!assign i* := i_ + 1 ~
+							elems* [i_]
+						~
+					}
 				~
 				do (
-				     let elems := !new [1, 2, 3,] ~
-				     let iter := list-iter! { elems, size: 3, } ~
-				     let u := iter.next! () ~
-				     let v := iter.next! () ~
-				     iter.free! () ~
-				     !delete elems ~
-				     v
+					let elems := !new [1, 2, 3,] ~
+					let iter := list-iter! { elems, size: 3, } ~
+					let u := iter.next! () ~
+					let v := iter.next! () ~
+					iter.free! () ~
+					!delete elems ~
+					v
 				)
 				""");
 	}

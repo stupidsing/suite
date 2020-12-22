@@ -34,9 +34,9 @@ public class FunTypeTest {
 
 		assertType("number", data + """
 				let f := v =>
-				    if (v = `Leaf $i`) then i
-				    else if (v = `Link Leaf $i`) then i
-				    else 0
+					if (v = `Leaf $i`) then i
+					else if (v = `Link Leaf $i`) then i
+					else 0
 				~
 				f_{Link Leaf 3}
 				""");

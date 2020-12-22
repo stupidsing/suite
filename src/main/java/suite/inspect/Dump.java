@@ -151,10 +151,8 @@ public class Dump {
 	 *
 	 * Private fields are not dumped.
 	 *
-	 * @param prefix
-	 *                   To be appended before each line.
-	 * @param object
-	 *                   The monster.
+	 * @param prefix To be appended before each line.
+	 * @param object The monster.
 	 */
 	public static String toDetails(String prefix, Object object) {
 		return Build.string(sb -> toDetails(prefix, object, sb));

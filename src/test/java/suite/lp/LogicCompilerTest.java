@@ -49,15 +49,15 @@ public class LogicCompilerTest {
 	public void testFibonacci() {
 		assertTrue(prove("""
 				(
-				    fib 0 1 :- ! #
-				    fib 1 1 :- ! #
-				    fib .n .f
-				        :- let .n1 (.n - 1)
-				        , let .n2 (.n1 - 1)
-				        , fib .n1 .f1
-				        , fib .n2 .f2
-				        , let .f (.f1 + .f2)
-				    #
+					fib 0 1 :- ! #
+					fib 1 1 :- ! #
+					fib .n .f
+						:- let .n1 (.n - 1)
+						, let .n2 (.n1 - 1)
+						, fib .n1 .f1
+						, fib .n2 .f2
+						, let .f (.f1 + .f2)
+					#
 				) ~ fib 10 89
 				"""));
 	}

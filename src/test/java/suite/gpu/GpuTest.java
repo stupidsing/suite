@@ -16,8 +16,8 @@ public class GpuTest {
 	public void test() {
 		var openCl = """
 				__kernel void add_floats(__global float *a, __global float *b, __global float *o, int n) {
-				    int i = get_global_id(0);
-				    if (i < n) o[i] = a[i] * a[i] + b[i] * b[i];
+					int i = get_global_id(0);
+					if (i < n) o[i] = a[i] * a[i] + b[i] * b[i];
 				}
 				""";
 

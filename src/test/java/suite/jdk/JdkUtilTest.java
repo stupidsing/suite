@@ -28,9 +28,9 @@ public class JdkUtilTest {
 
 	private String source = "" //
 			+ "public class " + className + " implements Runnable {" //
-			+ "  public void run() {" //
-			+ "    System.out.println(\"TEST\");" //
-			+ "  }" //
+			+ "	public void run() {" //
+			+ "		System.out.println(\"TEST\");" //
+			+ "	}" //
 			+ "}";
 
 	@Test

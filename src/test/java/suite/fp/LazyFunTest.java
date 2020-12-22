@@ -41,8 +41,8 @@ public class LazyFunTest {
 	public void testDefines() {
 		assertEquals(Int.of(62), eval("""
 				lets (
-				    a := n => if (0 < n) then (b_{n - 1} * 2) else 0 #
-				    b := n => if (0 < n) then (a_{n - 1} + 1) else 0 #
+					a := n => if (0 < n) then (b_{n - 1} * 2) else 0 #
+					b := n => if (0 < n) then (a_{n - 1} + 1) else 0 #
 				) ~ a_{10}
 				"""));
 	}
@@ -51,17 +51,17 @@ public class LazyFunTest {
 	public void testFibonacci() {
 		assertEquals(Int.of(89), eval("""
 				define fib :=
-				    1; 1; zip_{`+`}_{fib}_{tail_{fib}}
+					1; 1; zip_{`+`}_{fib}_{tail_{fib}}
 				~ fib | get_{10}
 				"""));
 
 		assertEquals(Int.of(144), eval("""
 				define fib := x =>
-				    if (x = `$a; $y`) then
-				        if (y = `$b; $z`) then
-				            (fib_{y} + fib_{z})
-				        else 1
-				    else 0
+					if (x = `$a; $y`) then
+						if (y = `$b; $z`) then
+							(fib_{y} + fib_{z})
+						else 1
+					else 0
 				~ fib_{0; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0; }
 				"""));
 	}

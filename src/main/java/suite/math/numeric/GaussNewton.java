@@ -54,10 +54,8 @@ public class GaussNewton {
 	}
 
 	/**
-	 * @param residualFun
-	 *            function to minimize.
-	 * @param jacobianFun
-	 *            Jacobian of s.
+	 * @param residualFun function to minimize.
+	 * @param jacobianFun Jacobian of s.
 	 * @return
 	 */
 	private float[] gn(Fun<float[], float[]> residualFun, Fun<float[], float[][]> jacobianFun, float[] initials) {

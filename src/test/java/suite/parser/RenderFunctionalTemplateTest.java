@@ -26,13 +26,13 @@ public class RenderFunctionalTemplateTest {
 		System.out.println(new RenderFunctionalTemplate() //
 				.render("""
 						<html>
-						    <head>
-						        <#= title #>
-						    </head>
-						    </body>
-						        Fruits:
-						<# . (list | apply . map_{fruit => id#>        <li><#= fruit #></li>
-						<#}) #>    <body>
+							<head>
+								<#= title #>
+							</head>
+							</body>
+								Fruits:
+						<# . (list | apply . map_{fruit => id#>		<li><#= fruit #></li>
+						<#}) #>	<body>
 						</html>
 						""", //
 						map));

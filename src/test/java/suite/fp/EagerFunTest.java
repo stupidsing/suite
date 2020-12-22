@@ -78,9 +78,9 @@ public class EagerFunTest {
 				data T as C ~
 				let list1 := [T] of (A; B; C;) ~
 				let result := (
-				    (A, 1,; A, 2,;);
-				    (B, 1,; B, 2,;);
-				    (C, 1,; C, 2,;);
+					(A, 1,; A, 2,;);
+					(B, 1,; B, 2,;);
+					(C, 1,; C, 2,;);
 				) ~
 					cross_{a => b => (a, b,)}_{list1}_{1; 2;} = result
 				""";
@@ -104,9 +104,9 @@ public class EagerFunTest {
 	public void testFibonacci() {
 		assertEquals(Int.of(89), eval("""
 				define fib := n =>
-				    if (1 < n)
-				    then (fib_{n - 1} + fib_{n - 2})
-				    else 1
+					if (1 < n)
+					then (fib_{n - 1} + fib_{n - 2})
+					else 1
 				~
 				fib_{10}
 				"""));
@@ -308,11 +308,11 @@ public class EagerFunTest {
 	public void testSwitch() {
 		assertEquals(eval("\"B\""), eval("""
 				define switch :=
-				    case
-				    || 1 => "A"
-				    || 2 => "B"
-				    || 3 => "C"
-				    || anything => "D"
+					case
+					|| 1 => "A"
+					|| 2 => "B"
+					|| 3 => "C"
+					|| anything => "D"
 				~
 				switch_{2}
 				"""));

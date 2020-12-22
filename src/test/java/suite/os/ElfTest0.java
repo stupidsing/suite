@@ -31,32 +31,32 @@ public class ElfTest0 {
 	public void testCat() {
 		var program = """
 				declare linux-read = function [pointer:(byte * 256) buffer, int length,] (
-				    buffer;
-				    asm _ MOV (ECX, EAX);
-				    length;
-				    asm _ MOV (EDX, EAX);
-				    asm _ MOV (EAX, 3);
-				    asm _ XOR (EBX, EBX);
-				    asm _ INT (-128);
-				    -- length in EAX
+					buffer;
+					asm _ MOV (ECX, EAX);
+					length;
+					asm _ MOV (EDX, EAX);
+					asm _ MOV (EAX, 3);
+					asm _ XOR (EBX, EBX);
+					asm _ INT (-128);
+					-- length in EAX
 				);
 
 				declare linux-write = function [pointer:(byte * 256) buffer, int length,] (
-				    buffer;
-				    asm _ MOV (ECX, EAX);
-				    length;
-				    asm _ MOV (EDX, EAX);
-				    asm _ MOV (EAX, 4);
-				    asm _ MOV (EBX, 1);
-				    asm _ INT (-128);
-				    -- length in EAX
+					buffer;
+					asm _ MOV (ECX, EAX);
+					length;
+					asm _ MOV (EDX, EAX);
+					asm _ MOV (EAX, 4);
+					asm _ MOV (EBX, 1);
+					asm _ INT (-128);
+					-- length in EAX
 				);
 
 				signature buffer = byte * 256;
 				declare nBytesRead;
 
 				while (({nBytesRead} = linux-read [& buffer, 256,]) != 0) do (
-				    linux-write [& buffer, nBytesRead,];
+					linux-write [& buffer, nBytesRead,];
 				);
 				0;
 				""";
