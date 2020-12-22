@@ -9,7 +9,6 @@ import primal.fp.Funs.Fun;
 import primal.fp.Funs.Iterate;
 import primal.primitive.adt.Chars;
 import primal.primitive.adt.Chars.CharsBuilder;
-import primal.primitive.fp.AsChr;
 import suite.Suite;
 import suite.inspect.Inspect;
 import suite.lp.doer.Generalizer;
@@ -136,7 +135,7 @@ public class FactorizeResult {
 	}
 
 	public String unparse() {
-		return AsChr.build(cb -> {
+		return Chars.build(cb -> {
 			cb.append(pre);
 			unparse(cb, node);
 			cb.append(post);

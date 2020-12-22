@@ -8,7 +8,7 @@ import java.util.Random;
 import org.junit.jupiter.api.Test;
 
 import primal.Verbs.ReadString;
-import primal.primitive.fp.AsChr;
+import primal.primitive.ChrVerbs.ToChr;
 import suite.persistent.PerRope.IRopeList;
 
 public class PerRopeTest {
@@ -16,7 +16,7 @@ public class PerRopeTest {
 	@Test
 	public void test() {
 		var length = 1024;
-		var s = new String(AsChr.array(length, c -> (char) c));
+		var s = new String(ToChr.array(length, c -> (char) c));
 		var rope = new PerRope<>(IRopeList.of(""));
 		var p = 0;
 

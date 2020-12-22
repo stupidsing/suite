@@ -14,7 +14,7 @@ import javax.mail.internet.MimeMessage;
 import javax.net.ssl.SSLSocketFactory;
 
 import primal.primitive.ChrChr_Int;
-import primal.primitive.fp.AsChr;
+import primal.primitive.adt.Chars;
 import suite.cfg.Defaults;
 
 public class SmtpSsl {
@@ -67,7 +67,7 @@ public class SmtpSsl {
 	}
 
 	private static String convert(char[] salt, String in0, ChrChr_Int f) {
-		return AsChr.build(cb -> {
+		return Chars.build(cb -> {
 			var in1 = in0.toCharArray();
 
 			for (var i = 0; i < in1.length; i++) {

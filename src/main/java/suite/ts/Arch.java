@@ -8,9 +8,9 @@ import java.util.Arrays;
 import java.util.Random;
 
 import primal.primitive.DblPrim.DblSource;
+import primal.primitive.FltVerbs.ConcatFlt;
 import primal.primitive.FltVerbs.CopyFlt;
 import primal.primitive.adt.pair.FltObjPair;
-import primal.primitive.fp.AsFlt;
 import suite.math.numeric.Statistic;
 import suite.streamlet.As;
 import suite.util.To;
@@ -32,7 +32,7 @@ public class Arch {
 		// conditional heteroskedasticity
 		var lr1 = stat.linearRegression(forInt(length).map(i -> FltObjPair.of(variances[i], copyPadZeroes(variances, i - p, i))));
 
-		return AsFlt.concat(lr0.coefficients, lr1.coefficients);
+		return ConcatFlt.arrays(lr0.coefficients, lr1.coefficients);
 	}
 
 	// https://quant.stackexchange.com/questions/9351/algorithm-to-fit-ar1-garch1-1-model-of-log-returns

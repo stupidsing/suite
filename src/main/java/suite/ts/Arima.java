@@ -15,7 +15,6 @@ import primal.primitive.FltVerbs.CopyFlt;
 import primal.primitive.adt.Floats;
 import primal.primitive.adt.pair.DblObjPair;
 import primal.primitive.adt.pair.FltObjPair;
-import primal.primitive.fp.AsFlt;
 import suite.math.linalg.Vector;
 import suite.math.numeric.Statistic;
 import suite.math.numeric.Statistic.LinearRegression;
@@ -83,7 +82,7 @@ public class Arima {
 		var mas = To.vector(q, i -> 1f);
 		var xs1 = nDiffs(xs0, d);
 		var arima = armaBackcast(xs1, ars, mas);
-		var xs2 = AsFlt.concat(xs1, vec.of(arima.x1));
+		var xs2 = ConcatFlt.arrays(xs1, vec.of(arima.x1));
 		return DblObjPair.of(nSums(xs2, d), arima);
 	}
 
@@ -93,7 +92,7 @@ public class Arima {
 		var length = xs.length;
 		var p = ars.length;
 		var q = mas.length;
-		var xsp = AsFlt.concat(new float[p], xs);
+		var xsp = ConcatFlt.arrays(new float[p], xs);
 		var epq = new float[length + q];
 		var arma = new Arma(ars, mas);
 
@@ -143,7 +142,7 @@ public class Arima {
 	private DblObjPair<Arima_> arimaEm(float[] xs0, int p, int d, int q) {
 		var xs1 = nDiffs(xs0, d);
 		var arima = armaEm(xs1, p, q);
-		var xs2 = AsFlt.concat(xs1, vec.of(arima.x1));
+		var xs2 = ConcatFlt.arrays(xs1, vec.of(arima.x1));
 		return DblObjPair.of(nSums(xs2, d), arima);
 	}
 
@@ -215,7 +214,7 @@ public class Arima {
 	private DblObjPair<Arima_> arimaIa(float[] xs0, int p, int d, int q) {
 		var xs1 = nDiffs(xs0, d);
 		var arima = armaIa(xs1, p, q);
-		var xs2 = AsFlt.concat(xs1, vec.of(arima.x1));
+		var xs2 = ConcatFlt.arrays(xs1, vec.of(arima.x1));
 		return DblObjPair.of(nSums(xs2, d), arima);
 	}
 
@@ -271,13 +270,13 @@ public class Arima {
 	public DblObjPair<Arima_> arimaMle(float[] xs0, int p, int d, int q) {
 		var xs1 = nDiffs(xs0, d);
 		var arima = armaMle(xs1, p, q);
-		var xs2 = AsFlt.concat(xs1, vec.of(arima.x1));
+		var xs2 = ConcatFlt.arrays(xs1, vec.of(arima.x1));
 		return DblObjPair.of(nSums(xs2, d), arima);
 	}
 
 	private Arima_ armaMle(float[] xs, int p, int q) {
 		var length = xs.length;
-		var xsp = AsFlt.concat(new float[p], xs);
+		var xsp = ConcatFlt.arrays(new float[p], xs);
 		var epq = new float[length + q];
 
 		class LogLikelihood implements DblSource {

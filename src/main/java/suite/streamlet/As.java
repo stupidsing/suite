@@ -29,9 +29,9 @@ import primal.primitive.Int_Dbl;
 import primal.primitive.Int_Flt;
 import primal.primitive.Int_Int;
 import primal.primitive.adt.Bytes;
+import primal.primitive.adt.Floats;
+import primal.primitive.adt.Ints;
 import primal.primitive.adt.map.ObjIntMap;
-import primal.primitive.fp.AsFlt;
-import primal.primitive.fp.AsInt;
 import primal.primitive.puller.IntPuller;
 import primal.primitive.streamlet.FltStreamlet;
 import primal.primitive.streamlet.IntStreamlet;
@@ -81,7 +81,7 @@ public class As {
 
 	public static Fun<IntPuller, FltStreamlet> floats(Int_Flt fun0) {
 		var fun1 = fun0.rethrow();
-		return ts -> new FltStreamlet(AsFlt.build(b -> {
+		return ts -> new FltStreamlet(Floats.build(b -> {
 			int c;
 			while ((c = ts.pull()) != IntPrim.EMPTYVALUE)
 				b.append(fun1.apply(c));
@@ -94,7 +94,7 @@ public class As {
 
 	public static Fun<IntPuller, IntStreamlet> ints(Int_Int fun0) {
 		var fun1 = fun0.rethrow();
-		return ts -> new IntStreamlet(AsInt.build(b -> {
+		return ts -> new IntStreamlet(Ints.build(b -> {
 			int c;
 			while ((c = ts.pull()) != IntPrim.EMPTYVALUE)
 				b.append(fun1.apply(c));

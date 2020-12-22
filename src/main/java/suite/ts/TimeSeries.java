@@ -12,10 +12,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import primal.MoreVerbs.Read;
+import primal.primitive.IntVerbs.ToInt;
 import primal.primitive.adt.Floats;
 import primal.primitive.adt.pair.FltObjPair;
-import primal.primitive.fp.AsFlt;
-import primal.primitive.fp.AsInt;
 import suite.math.linalg.CholeskyDecomposition;
 import suite.math.linalg.Vector;
 import suite.math.numeric.Statistic;
@@ -49,7 +48,7 @@ public class TimeSeries {
 		var lr = stat.linearRegression(forInt(tor, length) //
 				.map(i -> FltObjPair.of(ydiffs[i],
 						// i - drift term, necessary?
-						AsFlt.concat(Floats.of(ys[i - 1], 1f, i), Floats.of(ydiffs, i - tor, i)).toArray())));
+						Floats.concat(Floats.of(ys[i - 1], 1f, i), Floats.of(ydiffs, i - tor, i)).toArray())));
 		return lr.tStatistic()[0];
 	}
 
@@ -94,7 +93,7 @@ public class TimeSeries {
 	// epchan
 	public double hurst(float[] ys, int tor) {
 		var logys = To.vector(ys, Math::log);
-		var tors = AsInt.array(tor, t -> t + 1);
+		var tors = ToInt.array(tor, t -> t + 1);
 		var logVrs = To.vector(tor, t -> {
 			var diffs = dropDiff_(tors[t], logys);
 			var diffs2 = To.vector(diffs, diff -> diff * diff);

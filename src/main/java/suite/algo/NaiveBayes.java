@@ -6,7 +6,7 @@ import static suite.util.Streamlet_.forInt;
 import java.util.List;
 
 import primal.adt.Pair;
-import primal.primitive.fp.AsInt;
+import primal.primitive.IntVerbs.ToInt;
 import suite.streamlet.As;
 import suite.util.To;
 
@@ -21,8 +21,8 @@ public class NaiveBayes {
 		var nCategories = 2;
 		var length_ = records.get(0).k.length;
 		var ms = new int[nCategories];
-		var ws = AsInt.array(nCategories, cat -> 1);
-		var is = To.array(nCategories, int[].class, cat -> AsInt.array(length_, i -> 1));
+		var ws = ToInt.array(nCategories, cat -> 1);
+		var is = To.array(nCategories, int[].class, cat -> ToInt.array(length_, i -> 1));
 
 		for (var record : records) {
 			var xs = record.k;

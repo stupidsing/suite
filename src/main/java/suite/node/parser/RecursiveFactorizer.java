@@ -6,7 +6,6 @@ import java.util.List;
 import primal.parser.Operator;
 import primal.parser.Operator.Assoc;
 import primal.primitive.adt.Chars;
-import primal.primitive.fp.AsChr;
 import suite.node.io.TermOp;
 import suite.node.parser.FactorizeResult.FTerminal;
 import suite.text.Preprocess;
@@ -43,7 +42,7 @@ public class RecursiveFactorizer {
 
 		// append possibly missed comments
 		var p = reverser.reverse(0);
-		return new FactorizeResult(AsChr.concat(in.range(0, p), parsed.pre), parsed.node, parsed.post);
+		return new FactorizeResult(Chars.concat(in.range(0, p), parsed.pre), parsed.node, parsed.post);
 	}
 
 	private FactorizeResult parse_(Chars chars, int fromOp) {
