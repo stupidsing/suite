@@ -6,6 +6,7 @@ import static java.lang.Math.max;
 
 import java.util.Arrays;
 
+import primal.Verbs.New;
 import primal.primitive.DblVerbs.NewDbl;
 import suite.math.linalg.Vector;
 import suite.ts.TimeSeries;
@@ -137,7 +138,7 @@ public class MovingAverage {
 	}
 
 	public MovingRange[] movingRange(float[] prices, int windowSize) {
-		return To.array(prices.length, MovingRange.class, i -> {
+		return New.array(prices.length, MovingRange.class, i -> {
 			var window = ts.back(i, windowSize, prices);
 			Arrays.sort(window);
 			var length = window.length;

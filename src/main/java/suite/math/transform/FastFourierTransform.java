@@ -4,15 +4,15 @@ import static java.lang.Math.PI;
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
 
+import primal.Verbs.New;
 import suite.math.Complex;
-import suite.util.To;
 
 // https://rosettacode.org/wiki/Fast_Fourier_transform#Java
 public class FastFourierTransform {
 
 	public Complex[] ifft(Complex[] cs0) {
 		var size = cs0.length;
-		var cs1 = To.array(size, Complex.class, i -> cs0[i].conjugate());
+		var cs1 = New.array(size, Complex.class, i -> cs0[i].conjugate());
 		var cs2 = fft(cs1);
 		var inv = 1f / size;
 

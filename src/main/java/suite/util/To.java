@@ -14,7 +14,6 @@ import java.net.URL;
 import primal.Nouns.Buffer;
 import primal.Nouns.Utf8;
 import primal.Verbs.Format;
-import primal.Verbs.New;
 import primal.Verbs.WriteFile;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Sink;
@@ -32,13 +31,6 @@ import suite.serialize.SerOutput;
 import suite.streamlet.As;
 
 public class To {
-
-	public static <T> T[] array(int length, Class<T> clazz, Int_Obj<T> f) {
-		var ts = New.array(clazz, length);
-		for (var i = 0; i < length; i++)
-			ts[i] = f.apply(i);
-		return ts;
-	}
 
 	public static Object array_(int length, Class<?> clazz, Int_Obj<Object> f) {
 		var ts = Array.newInstance(clazz, length);

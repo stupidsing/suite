@@ -18,6 +18,7 @@ import primal.MoreVerbs.Read;
 import primal.Nouns.Utf8;
 import primal.Verbs.Compare;
 import primal.Verbs.Equals;
+import primal.Verbs.New;
 import primal.Verbs.WriteFile;
 import primal.primitive.FltMoreVerbs.LiftFlt;
 import primal.primitive.LngMoreVerbs.LiftLng;
@@ -30,7 +31,6 @@ import suite.os.LogUtil;
 import suite.streamlet.As;
 import suite.trade.Time;
 import suite.trade.TimeRange;
-import suite.util.To;
 
 public class Yahoo {
 
@@ -116,7 +116,7 @@ public class Yahoo {
 					.concat(dataJsons0, dataJsons1) //
 					.mapValue(json_ -> json_.collect(LiftFlt.of(JsonNode::floatValue)).toArray()) //
 					.filterValue(fs -> length <= fs.length) //
-					.mapValue(fs -> To.array(length, LngFltPair.class, i -> LngFltPair.of(ts[i], fs[i]))) //
+					.mapValue(fs -> New.array(length, LngFltPair.class, i -> LngFltPair.of(ts[i], fs[i]))) //
 					.toMap();
 
 			var dividends = jsons //

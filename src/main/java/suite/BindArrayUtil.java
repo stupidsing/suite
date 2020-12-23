@@ -2,6 +2,7 @@ package suite;
 
 import java.util.ArrayList;
 
+import primal.Verbs.New;
 import primal.fp.Funs.Fun;
 import primal.primitive.IntVerbs.NewInt;
 import suite.lp.compile.impl.CompileBinderImpl;
@@ -11,7 +12,6 @@ import suite.node.Atom;
 import suite.node.Node;
 import suite.node.parser.IterativeParser;
 import suite.util.Memoize;
-import suite.util.To;
 
 public class BindArrayUtil {
 
@@ -58,7 +58,7 @@ public class BindArrayUtil {
 			public Node[] match(Node node) {
 				var env = cbm.env();
 				return pred.test(new BindEnv(env), node) //
-						? To.array(size, Node.class, i -> env.get(cbi[i])) //
+						? New.array(size, Node.class, i -> env.get(cbi[i])) //
 						: null;
 			}
 

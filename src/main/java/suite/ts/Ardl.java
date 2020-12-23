@@ -3,6 +3,7 @@ package suite.ts;
 import static primal.statics.Fail.fail;
 import static suite.util.Streamlet_.forInt;
 
+import primal.Verbs.New;
 import primal.primitive.FltVerbs.ConcatFlt;
 import primal.primitive.FltVerbs.CopyFlt;
 import primal.primitive.adt.pair.FltObjPair;
@@ -31,7 +32,7 @@ public class Ardl {
 		var n = fsList.length;
 		var length = fsList[0].length;
 
-		return To.array(n, LinearRegression.class, it -> {
+		return New.array(n, LinearRegression.class, it -> {
 			var fs = fsList[it];
 
 			return length == fs.length
@@ -45,7 +46,7 @@ public class Ardl {
 	}
 
 	private float[] getExplanatoryVariables(float[][] fsList, int it, int t) {
-		return ConcatFlt.arrays(To.array(fsList.length, float[].class, is -> {
+		return ConcatFlt.arrays(New.array(fsList.length, float[].class, is -> {
 			var fsi = fsList[is];
 			var xs = new float[maxLag + (isIncludeCurrent ? 1 : 0)];
 			CopyFlt.array(fsi, t, xs, 0, maxLag);

@@ -1,7 +1,7 @@
 package suite.math.linalg;
 
+import primal.Verbs.New;
 import primal.fp.Funs.Fun;
-import suite.util.To;
 
 // https://sebastianraschka.com/Articles/2014_python_lda.html
 public class LinearDiscriminantAnalysis {
@@ -50,7 +50,7 @@ public class LinearDiscriminantAnalysis {
 		}
 
 		var mul = cd.inverseMul(sw);
-		var mt = mtx.transpose(To.array(nParameters, float[].class, n -> mul.apply(mtx.transpose(sb)[n])));
+		var mt = mtx.transpose(New.array(nParameters, float[].class, n -> mul.apply(mtx.transpose(sb)[n])));
 		var eigens = eigen.power1(mt);
 		var w = new float[k][];
 
