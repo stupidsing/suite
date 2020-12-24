@@ -13,6 +13,19 @@ M2_HOME=$(cchs "echo http://ftp.cuhk.edu.hk/pub/packages/apache.org/maven/maven-
 NODE_HOME=$(cchs "echo https://nodejs.org/dist/v12.18.4/node-v12.18.4-linux-x64.tar.xz" @curl @tar-xf @dir)
 PATH=${GH_HOME}/bin:${GIT_HD:9}/bin:${GOROOT}/bin:${GRADLE_HOME}/bin:${JAVA_HOME}/bin:${M2_HOME}/bin:${NODE_HOME}/bin:${PATH}
 
+save_tp() {
+	echo ECLIPSE_HOME=${ECLIPSE_HOME}
+	echo GH_HOME=${GH_HOME}
+	echo GIT_HD=${GIT_HD}
+	echo GOROOT=${GOROOT}
+	echo GRADLE_HOME=${GRADLE_HOME}
+	echo JAVA_HOME=${JAVA_HOME}
+	echo M2_HOME=${M2_HOME}
+	echo M2_HOME=${M2_HOME}
+	echo NODE_HOME=${NODE_HOME}
+	echo PATH='${GH_HOME}/bin:${GIT_HD:9}/bin:${GOROOT}/bin:${GRADLE_HOME}/bin:${JAVA_HOME}/bin:${M2_HOME}/bin:${NODE_HOME}/bin:${PATH}'
+}
+
 tp_android_avdmanager() {
 	JAVA_HOME=$(tp_jdk10) \
 	JAVA_OPTS="-XX:+IgnoreUnrecognizedVMOptions --add-modules java.se.ee" \
