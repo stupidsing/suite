@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import primal.MoreVerbs.Read;
+import primal.Verbs.New;
 import suite.lp.doer.ClonerFactory;
 import suite.lp.sewing.VariableMapper;
 import suite.node.Dict;
@@ -13,7 +14,6 @@ import suite.node.Suspend;
 import suite.node.Tree;
 import suite.node.Tuple;
 import suite.node.io.BaseOp;
-import suite.util.To;
 
 public class SewingClonerImpl implements ClonerFactory {
 
@@ -63,7 +63,7 @@ public class SewingClonerImpl implements ClonerFactory {
 			} else if (node0 instanceof Tuple) {
 				var ps = Read.from(Tuple.t(node0)).map(this::cloner).toArray(Clone_.class);
 				var size = ps.length;
-				fun = env -> Tuple.of(To.array(size, Node.class, i -> ps[i].apply(env)));
+				fun = env -> Tuple.of(New.array(size, Node.class, i -> ps[i].apply(env)));
 			} else
 				fun = env -> node0;
 

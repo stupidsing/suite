@@ -6,6 +6,7 @@ import java.util.Map;
 
 import primal.MoreVerbs.Read;
 import primal.Verbs.Get;
+import primal.Verbs.New;
 import primal.fp.Funs.Fun;
 import primal.persistent.PerMap;
 import suite.funp.FunpOp;
@@ -35,7 +36,6 @@ import suite.funp.P0.FunpTree;
 import suite.funp.P0.FunpTree2;
 import suite.funp.P0.FunpVariable;
 import suite.node.util.TreeUtil;
-import suite.util.To;
 
 public class P2GenerateLambda {
 
@@ -186,7 +186,7 @@ public class P2GenerateLambda {
 				return rt -> new Ref(v.apply(rt));
 			}).applyIf(FunpRepeat.class, f -> f.apply((count, expr) -> {
 				var expr_ = compile_(expr);
-				return rt -> new Vec(To.array(count, Value.class, i -> expr_.apply(rt)));
+				return rt -> new Vec(New.array(count, Value.class, i -> expr_.apply(rt)));
 			})).applyIf(FunpStruct.class, f -> f.apply((isCompleted, pairs) -> {
 				var funs = Read.from2(pairs).mapValue(this::compile_).collect();
 				return rt -> new Struct(funs.mapValue(v -> v.apply(rt)).toMap());

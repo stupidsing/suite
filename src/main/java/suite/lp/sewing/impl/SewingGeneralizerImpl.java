@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import primal.MoreVerbs.Read;
+import primal.Verbs.New;
 import suite.lp.doer.GeneralizerFactory;
 import suite.lp.doer.ProverConstant;
 import suite.lp.sewing.VariableMapper;
@@ -15,7 +16,6 @@ import suite.node.Suspend;
 import suite.node.Tree;
 import suite.node.Tuple;
 import suite.node.io.BaseOp;
-import suite.util.To;
 
 public class SewingGeneralizerImpl implements GeneralizerFactory {
 
@@ -81,7 +81,7 @@ public class SewingGeneralizerImpl implements GeneralizerFactory {
 			} else if (node0 instanceof Tuple) {
 				var fs = Read.from(Tuple.t(node0)).map(this::generalizer).toArray(Generalize_.class);
 				var length = fs.length;
-				fun = env -> Tuple.of(To.array(length, Node.class, i -> fs[i].apply(env)));
+				fun = env -> Tuple.of(New.array(length, Node.class, i -> fs[i].apply(env)));
 			} else
 				fun = env -> node0;
 

@@ -5,10 +5,10 @@ import static suite.util.Streamlet_.forInt;
 
 import java.util.List;
 
+import primal.Verbs.New;
 import primal.adt.Pair;
 import primal.primitive.IntVerbs.NewInt;
 import suite.streamlet.As;
-import suite.util.To;
 
 // Introduction to Machine Learning, page 24
 public class NaiveBayes {
@@ -22,7 +22,7 @@ public class NaiveBayes {
 		var length_ = records.get(0).k.length;
 		var ms = new int[nCategories];
 		var ws = NewInt.array(nCategories, cat -> 1);
-		var is = To.array(nCategories, int[].class, cat -> NewInt.array(length_, i -> 1));
+		var is = New.array(nCategories, int[].class, cat -> NewInt.array(length_, i -> 1));
 
 		for (var record : records) {
 			var xs = record.k;
@@ -38,7 +38,7 @@ public class NaiveBayes {
 		length = length_;
 		b = log(threshold) + log(ms[i(true)]) - log(ms[i(false)]);
 
-		ps = To.array(nCategories, float[].class, i -> {
+		ps = New.array(nCategories, float[].class, i -> {
 			var range = forInt(length_);
 			var is_ = is[i];
 			return range.collect(As.floats(j -> (float) (is_[j] / ws[i]))).toArray();

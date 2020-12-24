@@ -250,7 +250,7 @@ public class NeuralNetwork {
 							.toList()) //
 					.toList();
 
-			var outputs = To.array(nOutputChannels, float[][].class, oc -> {
+			var outputs = New.array(nOutputChannels, float[][].class, oc -> {
 				var output = new float[hsx][hsy];
 				for (var ic = 0; ic < nInputChannels; ic++)
 					mtx.addOn(output, outs.get(oc).get(ic).output);
@@ -258,7 +258,7 @@ public class NeuralNetwork {
 			});
 
 			return new Out<>(outputs, errors0 -> {
-				return To.array(nInputChannels, float[][].class, ic -> {
+				return New.array(nInputChannels, float[][].class, ic -> {
 					var error = new float[ix][iy];
 					for (var oc = 0; oc < nOutputChannels; oc++)
 						mtx.addOn(error, outs.get(oc).get(ic).backprop.apply(errors0[oc]));

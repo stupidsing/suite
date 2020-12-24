@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 
 import primal.MoreVerbs.Read;
 import primal.Verbs.Equals;
+import primal.Verbs.New;
 import primal.Verbs.Right;
 import primal.adt.Pair;
 import primal.fp.Funs.Fun;
@@ -58,7 +59,7 @@ public class StatisticalArbitrageTest {
 
 		var ds = cfg.dataSource(Instrument.hsiSymbol).cleanse();
 		var prices = ds.prices;
-		var mas = To.array(power, float[].class, p -> ma.movingAvg(prices, 1 << p));
+		var mas = New.array(power, float[].class, p -> ma.movingAvg(prices, 1 << p));
 		var returns = ts.returns(prices);
 
 		var lr = stat.linearRegression(forInt(1 << power, prices.length)

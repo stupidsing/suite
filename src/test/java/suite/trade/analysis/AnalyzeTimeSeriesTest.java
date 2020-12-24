@@ -5,13 +5,14 @@ import static java.lang.Math.max;
 import static suite.util.Streamlet_.forInt;
 
 import java.util.Arrays;
+import java.util.function.IntFunction;
 
 import org.junit.jupiter.api.Test;
 
+import primal.Verbs.New;
 import primal.os.Log_;
 import primal.primitive.FltMoreVerbs.ReadFlt;
 import primal.primitive.IntMoreVerbs.ReadInt;
-import primal.primitive.IntPrim.Int_Obj;
 import primal.primitive.adt.pair.IntFltPair;
 import suite.math.Tanh;
 import suite.math.linalg.VirtualVector;
@@ -82,16 +83,16 @@ public class AnalyzeTimeSeriesTest {
 				max.update(i, f);
 		}
 
-		Int_Obj<BuySell> momFun = n -> {
+		IntFunction<BuySell> momFun = n -> {
 			var d0 = 1 + n;
 			var d1 = 1;
 			return cr.buySell(d -> Quant.sign(prices[d - d0], prices[d - d1])).start(d0);
 		};
 
-		Int_Obj<BuySell> revert = d -> momFun.apply(d).scale(0d, -1d);
-		Int_Obj<BuySell> trend_ = d -> momFun.apply(d).scale(0d, +1d);
-		var reverts = To.array(8, BuySell.class, revert);
-		var trends_ = To.array(8, BuySell.class, trend_);
+		IntFunction<BuySell> revert = d -> momFun.apply(d).scale(0d, -1d);
+		IntFunction<BuySell> trend_ = d -> momFun.apply(d).scale(0d, +1d);
+		var reverts = New.array(8, BuySell.class, revert);
+		var trends_ = New.array(8, BuySell.class, trend_);
 		var tanh = cr.buySell(d -> Tanh.tanh(3.2d * reverts[1].apply(d)));
 		var holds = mt.hold(prices, 1f, 1f, 1f);
 		var ma200 = ma.movingAvg(prices, 200);

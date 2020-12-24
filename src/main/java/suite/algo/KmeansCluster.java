@@ -7,6 +7,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import primal.MoreVerbs.Read;
 import primal.Verbs.Left;
+import primal.Verbs.New;
 import primal.primitive.IntMoreVerbs.LiftInt;
 import primal.primitive.IntMoreVerbs.ReadInt;
 import primal.primitive.IntPrim.Obj_Int;
@@ -15,7 +16,6 @@ import primal.primitive.adt.map.ObjIntMap;
 import primal.primitive.adt.pair.DblObjPair;
 import primal.primitive.adt.pair.IntDblPair;
 import suite.math.linalg.Vector;
-import suite.util.To;
 
 public class KmeansCluster {
 
@@ -58,7 +58,7 @@ public class KmeansCluster {
 		var centers = Left.of(points, k);
 
 		for (var iteration = 0; iteration < nIterations; iteration++) {
-			var bins = To.array(k, KmeansBin.class, j -> new KmeansBin());
+			var bins = New.array(k, KmeansBin.class, j -> new KmeansBin());
 
 			for (var point : points) {
 				var bin = bins[findNearest(point, centers)];

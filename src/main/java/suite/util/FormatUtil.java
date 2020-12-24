@@ -4,6 +4,7 @@ import static suite.util.Streamlet_.forInt;
 
 import primal.MoreVerbs.Read;
 import primal.Verbs.Build;
+import primal.Verbs.New;
 import primal.primitive.IntMoreVerbs.LiftInt;
 import suite.streamlet.As;
 
@@ -14,7 +15,7 @@ public class FormatUtil {
 		var nColumns = arrays.collect(LiftInt.of(array -> array.length)).max();
 
 		var rows = arrays //
-				.map(array -> To.array(nColumns, String.class, column -> column < array.length ? array[column] : "")) //
+				.map(array -> New.array(nColumns, String.class, column -> column < array.length ? array[column] : "")) //
 				.toArray(String[].class);
 
 		var widths = forInt(nColumns) //

@@ -6,6 +6,7 @@ import static suite.util.Streamlet_.forInt;
 import java.util.List;
 
 import primal.MoreVerbs.Read;
+import primal.Verbs.New;
 import primal.fp.Funs.Fun;
 import suite.math.linalg.CholeskyDecomposition;
 import suite.math.linalg.Matrix;
@@ -42,7 +43,7 @@ public class RadialBasisFunctionNetwork {
 			vec.addOn(sums[cl], ins[i]);
 		}
 
-		centers = To.array(nHiddens, float[].class, cl -> vec.scale(sums[cl], 1d / sizes[cl]));
+		centers = New.array(nHiddens, float[].class, cl -> vec.scale(sums[cl], 1d / sizes[cl]));
 
 		for (var i = 0; i < ins.length; i++) {
 			var cl = kmc[i];

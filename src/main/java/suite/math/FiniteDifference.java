@@ -1,5 +1,6 @@
 package suite.math;
 
+import primal.Verbs.New;
 import primal.fp.Funs.Fun;
 import primal.primitive.DblPrim.Obj_Dbl;
 import suite.math.linalg.Vector;
@@ -27,7 +28,7 @@ public class FiniteDifference {
 	public Fun<float[], float[][]> forward(Fun<float[], float[]> fun) {
 		return xs -> {
 			var ys = fun.apply(xs);
-			return To.array(xs.length, float[].class, i -> {
+			return New.array(xs.length, float[].class, i -> {
 				var x0 = xs[i];
 				xs[i] += step;
 				var gradient = vec.scale(vec.sub(fun.apply(xs), ys), invStep);

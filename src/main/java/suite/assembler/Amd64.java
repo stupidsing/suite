@@ -2,11 +2,11 @@ package suite.assembler;
 
 import java.util.Set;
 
+import primal.Verbs.New;
 import primal.adt.map.BiHashMap;
 import primal.adt.map.BiMap;
 import suite.node.Atom;
 import suite.object.ToStringObject;
-import suite.util.To;
 
 public class Amd64 {
 
@@ -223,13 +223,13 @@ public class Amd64 {
 
 	public Operand none = new OpNone();
 
-	public OpReg[] reg8 = To.array(16, OpReg.class, r -> newReg(1, r));
-	public OpReg[] reg8_lh = To.array(16, OpReg.class, r -> newReg(1, r));
-	public OpReg[] reg16 = To.array(16, OpReg.class, r -> newReg(2, r));
-	public OpReg[] reg32 = To.array(16, OpReg.class, r -> newReg(4, r));
-	public OpReg[] reg64 = To.array(16, OpReg.class, r -> newReg(8, r));
-	public OpRegXmm[] regXmm = To.array(16, OpRegXmm.class, this::newRegXmm);
-	public OpRegYmm[] regYmm = To.array(16, OpRegYmm.class, this::newRegYmm);
+	public OpReg[] reg8 = New.array(16, OpReg.class, r -> newReg(1, r));
+	public OpReg[] reg8_lh = New.array(16, OpReg.class, r -> newReg(1, r));
+	public OpReg[] reg16 = New.array(16, OpReg.class, r -> newReg(2, r));
+	public OpReg[] reg32 = New.array(16, OpReg.class, r -> newReg(4, r));
+	public OpReg[] reg64 = New.array(16, OpReg.class, r -> newReg(8, r));
+	public OpRegXmm[] regXmm = New.array(16, OpRegXmm.class, this::newRegXmm);
+	public OpRegYmm[] regYmm = New.array(16, OpRegYmm.class, this::newRegYmm);
 
 	public int axReg = 0;
 	public int cxReg = 1;

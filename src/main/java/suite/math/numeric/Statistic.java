@@ -9,6 +9,7 @@ import static primal.statics.Fail.fail;
 import java.util.List;
 
 import primal.Verbs.Build;
+import primal.Verbs.New;
 import primal.fp.Funs.Fun;
 import primal.primitive.IntPrim.Obj_Int;
 import primal.primitive.Int_Dbl;
@@ -76,7 +77,7 @@ public class Statistic {
 	public LinearRegression linearRegression(Streamlet<FltObjPair<float[]>> pairs) {
 		List<FltObjPair<float[]>> list = pairs.toList();
 		var size = list.size();
-		var x = To.array(size, float[].class, i -> list.get(i).v);
+		var x = New.array(size, float[].class, i -> list.get(i).v);
 		var y = To.vector(size, i -> list.get(i).k);
 		return linearRegression(x, y, null);
 	}
@@ -124,7 +125,7 @@ public class Statistic {
 			coefficients = coeffs;
 			coefficientNames = coefficientNames_ != null //
 					? coefficientNames_ //
-					: To.array(nDepVariables_, String.class, i -> "c" + i);
+					: New.array(nDepVariables_, String.class, i -> "c" + i);
 			residuals = residuals_;
 			invn2 = 1d / (nDataPoints_ - nDepVariables_ - 1);
 			sst = sst_;

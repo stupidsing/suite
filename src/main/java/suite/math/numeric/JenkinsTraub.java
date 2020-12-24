@@ -8,6 +8,7 @@ import static primal.statics.Fail.fail;
 import java.util.Arrays;
 import java.util.Random;
 
+import primal.Verbs.New;
 import suite.math.Complex;
 import suite.util.To;
 
@@ -20,7 +21,7 @@ public class JenkinsTraub {
 
 	public Complex jt(Complex[] poly0) {
 		var inv0 = poly0[0].inverse();
-		var poly1 = To.array(poly0.length, Complex.class, i -> Complex.mul(poly0[i], inv0));
+		var poly1 = New.array(poly0.length, Complex.class, i -> Complex.mul(poly0[i], inv0));
 		if (poly0[0].abs2() != 0d)
 			return jt_(poly1);
 		else
@@ -107,7 +108,7 @@ public class JenkinsTraub {
 		var scaled0 = scale(h, ph);
 		var scaled1 = Arrays.copyOf(scaled0, scaled0.length + 1);
 		scaled1[h.length] = Complex.zero;
-		var sub = To.array(poly.length, Complex.class, i -> Complex.sub(poly[i], scaled1[i]));
+		var sub = New.array(poly.length, Complex.class, i -> Complex.sub(poly[i], scaled1[i]));
 		return Boolean.TRUE ? divXms(sub, s) : div(sub, new Complex[] { s.scale(-1d), Complex.of(1f, 0f), });
 	}
 
@@ -142,7 +143,7 @@ public class JenkinsTraub {
 					scaled1[i] = scaled0[i - diff];
 			}
 			var num_ = num;
-			var sub = To.array(numLength, Complex.class, i -> Complex.sub(num_[i], scaled1[i]));
+			var sub = New.array(numLength, Complex.class, i -> Complex.sub(num_[i], scaled1[i]));
 			num = Arrays.copyOfRange(sub, 0, numLength - 1);
 		}
 		return num;
@@ -153,11 +154,11 @@ public class JenkinsTraub {
 	}
 
 	private Complex[] scale(Complex[] cs, Complex scale) {
-		return To.array(cs.length, Complex.class, i -> Complex.mul(cs[i], scale));
+		return New.array(cs.length, Complex.class, i -> Complex.mul(cs[i], scale));
 	}
 
 	private Complex[] d(Complex[] poly) {
-		return To.array(poly.length - 1, Complex.class, i -> {
+		return New.array(poly.length - 1, Complex.class, i -> {
 			var i1 = i + 1;
 			return poly[i1].scale(i1);
 		});

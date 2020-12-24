@@ -7,6 +7,7 @@ import static suite.util.Streamlet_.forInt;
 import java.util.Arrays;
 import java.util.Random;
 
+import primal.Verbs.New;
 import primal.primitive.DblPrim.DblSource;
 import primal.primitive.FltVerbs.ConcatFlt;
 import primal.primitive.FltVerbs.CopyFlt;
@@ -25,7 +26,7 @@ public class Arch {
 
 		// auto regressive
 		var length = ys.length;
-		var xs0 = To.array(length, float[].class, i -> copyPadZeroes(ys, i - p, i));
+		var xs0 = New.array(length, float[].class, i -> copyPadZeroes(ys, i - p, i));
 		var lr0 = stat.linearRegression(xs0, ys, null);
 		var variances = To.vector(lr0.residuals, residual -> residual * residual);
 
