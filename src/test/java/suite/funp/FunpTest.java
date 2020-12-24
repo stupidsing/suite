@@ -19,13 +19,13 @@ public class FunpTest {
 
 	@Test
 	public void testAsm() {
-		test(3, "do $asm! (ESI = 2;) { INC ESI; }/ESI");
+		test(3, "do asm! (ESI = 2;) { INC ESI; }/ESI");
 	}
 
 	@Test
 	public void testAssign() {
-		test(3, "define p := address-of predef { a: 1, b: 2, c: 3, } ~ do ($assign! p*.b := 4 ~ p*.c)");
-		test(4, "define p := address-of predef { a: 1, b: 2, c: 3, } ~ do ($assign! p*.c := 4 ~ p*.c)");
+		test(3, "define p := address-of predef { a: 1, b: 2, c: 3, } ~ do (assign! p*.b := 4 ~ p*.c)");
+		test(4, "define p := address-of predef { a: 1, b: 2, c: 3, } ~ do (assign! p*.c := 4 ~ p*.c)");
 	}
 
 	@Test
@@ -67,7 +67,7 @@ public class FunpTest {
 				do (
 						let m := 31 ~
 						let l := n => capture1 m ~
-						$assign! m := 63 ~
+						assign! m := 63 ~
 						15 | l
 				)
 				""");
@@ -197,10 +197,10 @@ public class FunpTest {
 	public void testNew() {
 		test(579, """
 				do (
-					let p := $new! _ ~
-					let q := $new! _ ~
-					$assign! p* := 123 ~
-					$assign! q* := 456 ~
+					let p := new! _ ~
+					let q := new! _ ~
+					assign! p* := 123 ~
+					assign! q* := 456 ~
 					let v := p* + q* ~
 					$delete! p ~
 					$delete! q ~
@@ -209,7 +209,7 @@ public class FunpTest {
 				""");
 		test(456, """
 				do (
-					let p := $new! 456 ~
+					let p := new! 456 ~
 					let v := p* ~
 					$delete! p ~ v
 				)
@@ -218,19 +218,19 @@ public class FunpTest {
 				define-function list-iter! list := do
 					type list = { elems: address-of (array 3 * number), size: number, } ~
 					let { elems, size, } := list ~
-					let i := $new! 0 ~
+					let i := new! 0 ~
 					{
 						free! () := do ($delete! i ~ ()) ~
 						has-next () := i* < size ~
 						next! () := do
 							let i_ := i* ~
-							$assign! i* := i_ + 1 ~
+							assign! i* := i_ + 1 ~
 							elems* [i_]
 						~
 					}
 				~
 				do (
-					let elems := $new! [1, 2, 3,] ~
+					let elems := new! [1, 2, 3,] ~
 					let iter := list-iter! { elems, size: 3, } ~
 					let u := iter.next! () ~
 					let v := iter.next! () ~
@@ -245,8 +245,8 @@ public class FunpTest {
 	public void testNewArray() {
 		test(456, """
 				do (
-					let p := $new-array! (99 * number) ~
-					$assign! p* [98] := 456 ~
+					let p := new-array! (99 * number) ~
+					assign! p* [98] := 456 ~
 					let v := p* [98] ~
 					$delete-array! p ~ v
 				)
@@ -276,9 +276,9 @@ public class FunpTest {
 
 	@Test
 	public void testSignExtension() {
-		test(-1, "do $asm! (EAX = number:byte byte -1;) { SHR (EAX, 16); }/EAX");
-		test(-1, "do $asm! (RAX = numberp:byte byte -1;) { SHR (RAX, 32); }/EAX", true);
-		test(-1, "do $asm! (RAX = numberp:number -1;) { SHR (RAX, 32); }/EAX", true);
+		test(-1, "do asm! (EAX = number:byte byte -1;) { SHR (EAX, 16); }/EAX");
+		test(-1, "do asm! (RAX = numberp:byte byte -1;) { SHR (RAX, 32); }/EAX", true);
+		test(-1, "do asm! (RAX = numberp:number -1;) { SHR (RAX, 32); }/EAX", true);
 	}
 
 	@Test

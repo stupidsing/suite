@@ -8,7 +8,7 @@ define-virtual ps-block := {
 let-global alloc-pointer := type (address-of ps-block) null ~
 let-global alloc-free-chain := type (address-of ps-block) null ~
 
--- can replace by default $new!
+-- can replace by default new!
 define-function alloc! size0 := do
 	let size1 := max (os-ps, size0) ~
 	let sizep := numberp:number size1 ~
@@ -20,7 +20,7 @@ define-function alloc! size0 := do
 			if (ps*.size != sizep) then (
 				address-of ps*.next, null
 			) else (
-				$assign! ps := ps*.next ~
+				assign! ps := ps*.next ~
 				null, ps
 			) #
 			pr
@@ -30,8 +30,8 @@ define-function alloc! size0 := do
 		let ap := alloc-pointer ~
 		let ps := if (ap != null) then ap else mmap! 16384 ~
 		let pointer-block := adjust-pointer! ps os-ps ~
-		$assign! alloc-pointer := adjust-pointer! pointer-block size1 ~
-		$assign! ps*.size := sizep ~
+		assign! alloc-pointer := adjust-pointer! pointer-block size1 ~
+		assign! ps*.size := sizep ~
 		pointer-block
 	) else p0
 ~
@@ -39,11 +39,11 @@ define-function alloc! size0 := do
 -- can replace by default $delete!
 define-function dealloc! (size0, pointer-block) := do
 	let ps := adjust-pointer! pointer-block (0 - os-ps) ~
-	$assign! ps* := type ps-block {
+	assign! ps* := type ps-block {
 		size: numberp:number max (os-ps, size0),
 		next: alloc-free-chain,
 	} ~
-	$assign! alloc-free-chain := ps ~
+	assign! alloc-free-chain := ps ~
 	()
 ~
 
@@ -52,11 +52,11 @@ define-function alloc-mut-number! init := do
 	let size := size-of init ~
 	let address := alloc! size ~
 	let pointer := pointer:pointer address ~
-	$assign! pointer* := init ~
+	assign! pointer* := init ~
 	{
 		destroy () := dealloc! (size, address) ~
 		get () := do pointer* ~
-		set v1 := do ($assign! pointer* := v1 ~ ()) ~
+		set v1 := do (assign! pointer* := v1 ~ ()) ~
 	}
 ~
 
