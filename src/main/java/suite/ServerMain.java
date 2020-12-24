@@ -25,6 +25,7 @@ import suite.http.Http.Handler;
 import suite.http.Http.Header;
 import suite.http.Http.Response;
 import suite.http.HttpHandle;
+import suite.http.HttpHandleSessionAuth;
 import suite.http.HttpHandleTokenAuth;
 import suite.http.HttpHeaderUtil;
 import suite.http.HttpNio;
@@ -121,6 +122,7 @@ public class ServerMain {
 		};
 
 		var hh = new HttpHandle();
+		var hhsa = new HttpHandleSessionAuth();
 		var hhta = new HttpHandleTokenAuth();
 
 		return hh.routeByPath(PerMap //
@@ -129,7 +131,7 @@ public class ServerMain {
 				.put("hello", hh.serveText("hello world")) //
 				.put("html", hh.serveDir(Paths.get(FileUtil.suiteDir() + "/src/main/html"))) //
 				.put("path", hh.serveDir(Tmp.root)) //
-				.put("site", hh.wrapSession(authenticate, handlerDump)) //
+				.put("site", hhsa.getHandler(authenticate, handlerDump)) //
 				.put("sse", handlerSse) //
 				.put("status", handlerStatus) //
 				.put("token", hh.routeByMethod(PerMap //

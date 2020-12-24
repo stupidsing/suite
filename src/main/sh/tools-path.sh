@@ -3,6 +3,7 @@
 curl -sL https://raw.githubusercontent.com/stupidsing/suite/master/src/main/sh/cache.sh
 
 echo '
+ECLIPSE_HOME=$(cchs "echo http://ftp.jaist.ac.jp/pub/eclipse/technology/epp/downloads/release/2020-12/R/eclipse-java-2020-12-R-linux-gtk-x86_64.tar.gz" @curl @tar-zxf @dir)
 GH_HOME=$(cchs "echo https://github.com/cli/cli/releases/download/v1.4.0/gh_1.4.0_linux_amd64.tar.gz" @curl @tar-zxf @dir)
 GIT_HD=$(cchs "echo git@github.com:stupidsing/home-data.git" @git-clone)
 GOROOT=$(cchs "echo https://dl.google.com/go/go1.15.2.linux-amd64.tar.gz" @curl @tar-zxf @dir)
@@ -52,7 +53,7 @@ tp_cordova() {
 }
 
 tp_eclipse() {
-	$(cchs "echo http://ftp.jaist.ac.jp/pub/eclipse/technology/epp/downloads/release/2020-12/R/eclipse-java-2020-12-R-linux-gtk-x86_64.tar.gz" @curl @tar-zxf @dir)/eclipse $@
+	${ECLIPSE_HOME}/eclipse $@
 }
 
 tp_eclipse_cpp() {

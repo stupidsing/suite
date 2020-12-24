@@ -9,7 +9,6 @@ import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.function.BiPredicate;
 
 import primal.MoreVerbs.Pull;
 import primal.Verbs.Equals;
@@ -115,10 +114,6 @@ public class HttpHandle {
 
 	public Handler serveText(String data) {
 		return request -> Response.of(Pull.from(data));
-	}
-
-	public Handler wrapSession(BiPredicate<String, String> authenticate, Handler handler) {
-		return new HttpHandleSessionAuth().getHandler(authenticate, handler);
 	}
 
 }
