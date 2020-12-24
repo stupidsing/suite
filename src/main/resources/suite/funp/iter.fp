@@ -9,19 +9,19 @@ expand type-list := {
 expand elem0 := 0 ~
 
 define-global list-build! () := do
-	let elems := !new-array (max-size * type-elem) ~
+	let elems := $new-array! (max-size * type-elem) ~
 	let dummy := fold (
 		i := 0 #
 		i < max-size #
-		!assign elems* [i] := elem0 ~ i + 1 #
+		$assign! elems* [i] := elem0 ~ i + 1 #
 		()
 	) ~
-	let size := !new 0 ~
+	let size := $new! 0 ~
 	let append! := elem => capture do
 		let size_ := size* ~
 		if (size_ < max-size) then (
-			!assign elems* [size_] := elem ~
-			!assign size* := size_ + 1 ~
+			$assign! elems* [size_] := elem ~
+			$assign! size* := size_ + 1 ~
 			()
 		)
 		else error
@@ -31,7 +31,7 @@ define-global list-build! () := do
 		get! := () => capture1 do
 			uncapture append! ~
 			let size_ := size* ~
-			!delete size ~
+			$delete! size ~
 			{
 				elems ~
 				size := size_ ~
@@ -42,25 +42,25 @@ define-global list-build! () := do
 
 define-global list-free! list := do
 	type list = type-list ~
-	!delete-array list.elems ~
+	$delete-array! list.elems ~
 	()
 ~
 
 define-global list-iter! list := do
 	type list = type-list ~
 	let { elems ~ size ~ } := list ~
-	let i := !new 0 ~
+	let i := $new! 0 ~
 	let has-next := () => capture (i* < size) ~
 	let next! := () => capture do
 		let i_ := i* ~
-		!assign i* := i_ + 1 ~
+		$assign! i* := i_ + 1 ~
 		elems* [i_]
 	~
 	{
 		free! := () => capture1 do
 			uncapture has-next ~
 			uncapture next! ~
-			!delete i ~
+			$delete! i ~
 			()
 		~
 		has-next ~

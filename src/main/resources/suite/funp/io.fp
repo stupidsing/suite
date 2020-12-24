@@ -6,12 +6,12 @@ expand buffer-size := 256 ~
 
 define-function new-mut-number! init := do
 	type init = number ~
-	let pointer := !new init ~
-	!assign pointer* := init ~
+	let pointer := $new! init ~
+	$assign! pointer* := init ~
 	{
-		destroy () := do (!delete pointer ~ ()) ~
+		destroy () := do ($delete! pointer ~ ()) ~
 		get () := do pointer* ~
-		set v1 := do (!assign pointer* := v1 ~ ()) ~
+		set v1 := do ($assign! pointer* := v1 ~ ()) ~
 	}
 ~
 
@@ -33,7 +33,7 @@ define-function get-char! () := do
 	let (s0, e0) := start-end ~
 	let (s1, e1) := if (s0 < e0) then start-end else (0, read! (address-of buffer, buffer-size)) ~
 	assert (s1 < e1) ~
-	!assign start-end := (s1 + 1, e1) ~
+	$assign! start-end := (s1 + 1, e1) ~
 	buffer [s1]
 ~
 
@@ -41,7 +41,7 @@ define-function get-line! (pointer, length) :=
 	for! (
 		(n, ch) := (0, get-char! ()) #
 		n < length && number:byte ch != 10 #
-		!assign pointer* [n] := ch ~
+		$assign! pointer* [n] := ch ~
 		(n + 1, get-char! ()) #
 	)
 ~
@@ -68,7 +68,7 @@ define-function get-string! (pointer, length) :=
 		let p1 := pointer ++ n ~
 		let nBytesRead := read! (p1, 1) ~
 		(n + nBytesRead, p1* [0] != byte 10) #
-		!assign pointer* [n - 1] := byte 0 ~
+		$assign! pointer* [n - 1] := byte 0 ~
 	)
 ~
 
