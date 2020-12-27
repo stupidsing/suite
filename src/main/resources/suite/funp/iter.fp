@@ -17,7 +17,7 @@ define-global list-build! () := do
 		()
 	) ~
 	let size := new! 0 ~
-	let append! := elem => capture do
+	let append! := elem => $capture do
 		let size_ := size* ~
 		if (size_ < max-size) then (
 			assign! elems* [size_] := elem ~
@@ -28,7 +28,7 @@ define-global list-build! () := do
 	~
 	{
 		append! ~
-		get! := () => capture1 do
+		get! := () => $capture1 do
 			uncapture append! ~
 			let size_ := size* ~
 			$delete! size ~
@@ -50,14 +50,14 @@ define-global list-iter! list := do
 	type list = type-list ~
 	let { elems ~ size ~ } := list ~
 	let i := new! 0 ~
-	let has-next := () => capture (i* < size) ~
-	let next! := () => capture do
+	let has-next := () => $capture (i* < size) ~
+	let next! := () => $capture do
 		let i_ := i* ~
 		assign! i* := i_ + 1 ~
 		elems* [i_]
 	~
 	{
-		free! := () => capture1 do
+		free! := () => $capture1 do
 			uncapture has-next ~
 			uncapture next! ~
 			$delete! i ~
@@ -68,7 +68,7 @@ define-global list-iter! list := do
 	}
 ~
 
-define-global list-filter f := list => capture do
+define-global list-filter f := list => $capture do
 	let in := list-iter! list ~
 	let out := list-build! () ~
 	fold (
@@ -86,7 +86,7 @@ define-global list-filter f := list => capture do
 	)
 ~
 
-define-global list-map f := list => capture do
+define-global list-map f := list => $capture do
 		let in := list-iter! list ~
 		let out := list-build! () ~
 		fold (

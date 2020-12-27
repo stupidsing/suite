@@ -125,9 +125,9 @@ public class P0Parse extends FunpCfg {
 					return checkDo(() -> FunpDefine.of(lambda.vn, apply, lambda.expr, Fdt.L_IOAP));
 				} else
 					return null;
-			}).match("%0 => capture %1", (a, b) -> { // capturing lambda that would be freed by uncapture
+			}).match("%0 => $capture %1", (a, b) -> { // capturing lambda that would be freed by uncapture
 				return capture(bind(Fdt.L_MONO).lambdaSeparate(a, b), Fct.MANUAL);
-			}).match("%0 => capture1 %1", (a, b) -> { // capturing lambda that would be freed by first invocation
+			}).match("%0 => $capture1 %1", (a, b) -> { // capturing lambda that would be freed by first invocation
 				return capture(bind(Fdt.L_MONO).lambdaSeparate(a, b), Fct.ONCE__);
 			}).match("%0 => %1", (a, b) -> { // lambda that only refer to parent stack frames - cannot be returned!
 				return bind(Fdt.L_MONO).lambdaSeparate(a, b);
