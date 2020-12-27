@@ -49,7 +49,7 @@ public class Funp_ extends FunpCfg {
 	private static Inspect inspect = Singleton.me.inspect;
 	private static IterativeParser parser = new IterativeParser(FunpOp.values, FunpOp.TUPLE_);
 
-	private static BindArrayUtil bindArrayUtil = new BindArrayUtil("%", parser);
+	private static BindArrayUtil bindArrayUtil = new BindArrayUtil("€", parser);
 
 	public boolean isOptimize;
 

@@ -19,7 +19,7 @@ public class P01Expand {
 	public Node e(Node node) {
 		Node[] m;
 
-		if ((m = Funp_.pattern("expand %0 := %1 ~ %2").match(node)) != null) {
+		if ((m = Funp_.pattern("expand €0 := €1 ~ €2").match(node)) != null) {
 			var head = m[0];
 			return new P01Expand(macros.put(Prototype.of(head), new Node[] { head, m[1], })).e(m[2]);
 		} else if ((m = macros.getOrNull(Prototype.of(node))) != null) {
