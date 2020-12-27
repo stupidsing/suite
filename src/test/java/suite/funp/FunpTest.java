@@ -41,14 +41,14 @@ public class FunpTest {
 	public void testCapture() {
 		test(46, """
 				define m := 31 ~
-				let l := precapture (n => $capture (n + m)) ~
+				let l := precapture (n => capture (n + m)) ~
 				15 | l
 				""");
 
 		try {
 			test(46, """
 					define m := 31 ~
-					let l := n => $capture (n + m) ~
+					let l := n => capture (n + m) ~
 					15 | l
 					""");
 			fail();
@@ -59,26 +59,26 @@ public class FunpTest {
 
 	@Test
 	public void testCapture1() {
-		test(46, "define m := 31 ~ let l := n => $capture1 (n + m) ~ 15 | l");
+		test(46, "define m := 31 ~ let l := n => capture1 (n + m) ~ 15 | l");
 
 		// unreliable when optimized. the optimizer would substitute the variable
 		// definition that makes the capture1 time latter than the assignment to m.
 		test(31, """
 				do (
 						let m := 31 ~
-						let l := n => $capture1 m ~
+						let l := n => capture1 m ~
 						assign! m := 63 ~
 						15 | l
 				)
 				""");
 
-		test(0, "define m j := (type j = number ~ 0) ~ 1 | (n => $capture1 (m 2))");
+		test(0, "define m j := (type j = number ~ 0) ~ 1 | (n => capture1 (m 2))");
 
 		// use capture1 to return a lambda expression
 		test(12, """
-				define f j := i => $capture1 (i + j) ~
-				define g j := i => $capture1 (i + j) ~
-				define h j := i => $capture1 (i + j) ~
+				define f j := i => capture1 (i + j) ~
+				define g j := i => capture1 (i + j) ~
+				define h j := i => capture1 (i + j) ~
 				0 | (i => 0 | f 1 | g 2 | h 3 | f 1 | g 2 | h 3)
 				""");
 
@@ -86,7 +86,7 @@ public class FunpTest {
 		// call. the second call should cause problem...
 		if (Boolean.FALSE)
 			test(6, """
-					define f j := i => $capture1 (i + j) ~
+					define f j := i => capture1 (i + j) ~
 					define fs := f 2 ~
 					define a := 0 | fs | fs ~
 					a
@@ -202,8 +202,8 @@ public class FunpTest {
 					assign! p* := 123 ~
 					assign! q* := 456 ~
 					let v := p* + q* ~
-					$delete! p ~
-					$delete! q ~
+					delete! p ~
+					delete! q ~
 					v
 				)
 				""");
@@ -211,7 +211,7 @@ public class FunpTest {
 				do (
 					let p := new! 456 ~
 					let v := p* ~
-					$delete! p ~ v
+					delete! p ~ v
 				)
 				""");
 		test(2, """
@@ -220,7 +220,7 @@ public class FunpTest {
 					let { elems, size, } := list ~
 					let i := new! 0 ~
 					{
-						free! () := do ($delete! i ~ ()) ~
+						free! () := do (delete! i ~ ()) ~
 						has-next () := i* < size ~
 						next! () := do
 							let i_ := i* ~
@@ -235,7 +235,7 @@ public class FunpTest {
 					let u := iter.next! () ~
 					let v := iter.next! () ~
 					iter.free! () ~
-					$delete! elems ~
+					delete! elems ~
 					v
 				)
 				""");
@@ -248,7 +248,7 @@ public class FunpTest {
 					let p := new-array! (99 * number) ~
 					assign! p* [98] := 456 ~
 					let v := p* [98] ~
-					$delete-array! p ~ v
+					delete-array! p ~ v
 				)
 				""");
 	}

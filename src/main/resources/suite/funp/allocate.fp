@@ -36,7 +36,7 @@ define-function alloc! size0 := do
 	) else p0
 ~
 
--- can replace by default $delete!
+-- can replace by default delete!
 define-function dealloc! (size0, pointer-block) := do
 	let ps := adjust-pointer! pointer-block (0 - os-ps) ~
 	assign! ps* := type ps-block {

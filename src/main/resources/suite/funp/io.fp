@@ -9,7 +9,7 @@ define-function new-mut-number! init := do
 	let pointer := new! init ~
 	assign! pointer* := init ~
 	{
-		destroy () := do ($delete! pointer ~ ()) ~
+		destroy () := do (delete! pointer ~ ()) ~
 		get () := do pointer* ~
 		set v1 := do (assign! pointer* := v1 ~ ()) ~
 	}

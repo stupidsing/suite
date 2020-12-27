@@ -105,9 +105,9 @@ public class P0Parse extends FunpCfg {
 
 		private Funp p(Node node) {
 			return Funp_.<Funp>switchNode(node //
-			).match("$delete! €0 ~ €1", (a, b) -> { // de-allocates
+			).match("delete! €0 ~ €1", (a, b) -> { // de-allocates
 				return checkDo(() -> FunpDoHeapDel.of(false, p(a), p(b)));
-			}).match("$delete-array! €0 ~ €1", (a, b) -> { // de-allocates an array
+			}).match("delete-array! €0 ~ €1", (a, b) -> { // de-allocates an array
 				return checkDo(() -> FunpDoHeapDel.of(true, p(a), p(b)));
 			}).match("€0:€1 €2", (a, b, c) -> { // coerce: conversion between shorter and longer data types
 				var c0 = Coerce.valueOf(Atom.name(b).toUpperCase());
@@ -125,9 +125,9 @@ public class P0Parse extends FunpCfg {
 					return checkDo(() -> FunpDefine.of(lambda.vn, apply, lambda.expr, Fdt.L_IOAP));
 				} else
 					return null;
-			}).match("€0 => $capture €1", (a, b) -> { // capturing lambda that would be freed by uncapture
+			}).match("€0 => capture €1", (a, b) -> { // capturing lambda that would be freed by uncapture
 				return capture(bind(Fdt.L_MONO).lambdaSeparate(a, b), Fct.MANUAL);
-			}).match("€0 => $capture1 €1", (a, b) -> { // capturing lambda that would be freed by first invocation
+			}).match("€0 => capture1 €1", (a, b) -> { // capturing lambda that would be freed by first invocation
 				return capture(bind(Fdt.L_MONO).lambdaSeparate(a, b), Fct.ONCE__);
 			}).match("€0 => €1", (a, b) -> { // lambda that only refer to parent stack frames - cannot be returned!
 				return bind(Fdt.L_MONO).lambdaSeparate(a, b);
