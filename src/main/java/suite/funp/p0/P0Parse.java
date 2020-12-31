@@ -135,11 +135,11 @@ public class P0Parse extends FunpCfg {
 				return checkDo(() -> FunpPredefine.of("defer$" + Get.temp(), p(a), Fpt.APPLY_, null, p(b)));
 			}).match("€0 | defer/€1", (a, b) -> { // defers closing by a child function
 				return checkDo(() -> FunpPredefine.of("defer$" + Get.temp(), p(a), Fpt.INVOKE, Atom.name(b), null));
-			}).match("€0 | unbox!", a -> { // unboxes an I/O
-				return checkDo(() -> FunpDoEvalIo.of(p(a)));
-			}).match("€0 | unbox! €1", (a, b) -> { // perform side-effect before
+			}).match("€0 | return! €1", (a, b) -> { // perform side-effect before
 				var lambda = bind(Fdt.L_MONO).lambda(dontCare, b);
 				return checkDo(() -> FunpDefine.of(lambda.vn, p(a), lambda.expr, Fdt.L_IOAP));
+			}).match("€0 | unbox!", a -> { // unboxes an I/O
+				return checkDo(() -> FunpDoEvalIo.of(p(a)));
 			}).match("€0 | €1", (a, b) -> { // applies a function, pipe form
 				return FunpApply.of(p(a), p(b));
 			}).match("€0 [€1]", (a, b) -> { // indexes an array

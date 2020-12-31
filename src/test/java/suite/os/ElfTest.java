@@ -139,15 +139,15 @@ public class ElfTest {
 
 	@Test
 	public void testPut() {
-		test(0, "do ((consult io.fp).put-char! byte 'A' | unbox! 0)", "A");
-		test(0, "do ((consult io.fp).put-number! number 'A' | unbox! 0)", "65");
-		test(0, "do ((consult io.fp).put-number! -999 | unbox! 0)", "-999");
+		test(0, "do ((consult io.fp).put-char! byte 'A' | return! 0)", "A");
+		test(0, "do ((consult io.fp).put-number! number 'A' | return! 0)", "65");
+		test(0, "do ((consult io.fp).put-number! -999 | return! 0)", "-999");
 		test(0, """
 				let io := consult io.fp ~
 				for! (
 					i := 0 #
 					i < 10 #
-					io.put-number! i | unbox! (i + 1) #
+					io.put-number! i | return! (i + 1) #
 					0)
 				""", "0123456789");
 	}
