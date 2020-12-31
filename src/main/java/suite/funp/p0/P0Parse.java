@@ -131,15 +131,15 @@ public class P0Parse extends FunpCfg {
 				return capture(bind(Fdt.L_MONO).lambdaSeparate(a, b), Fct.ONCE__);
 			}).match("€0 => €1", (a, b) -> { // lambda that only refer to parent stack frames - cannot be returned!
 				return bind(Fdt.L_MONO).lambdaSeparate(a, b);
-			}).match("€0 | !!", a -> { // unboxes an I/O
-				return checkDo(() -> FunpDoEvalIo.of(p(a)));
-			}).match("€0 | !! €1", (a, b) -> { // perform side-effect before
-				var lambda = bind(Fdt.L_MONO).lambda(dontCare, b);
-				return checkDo(() -> FunpDefine.of(lambda.vn, p(a), lambda.expr, Fdt.L_IOAP));
 			}).match("€0 | defer €1", (a, b) -> { // defers closing by a function
 				return checkDo(() -> FunpPredefine.of("defer$" + Get.temp(), p(a), Fpt.APPLY_, null, p(b)));
 			}).match("€0 | defer/€1", (a, b) -> { // defers closing by a child function
 				return checkDo(() -> FunpPredefine.of("defer$" + Get.temp(), p(a), Fpt.INVOKE, Atom.name(b), null));
+			}).match("€0 | unbox!", a -> { // unboxes an I/O
+				return checkDo(() -> FunpDoEvalIo.of(p(a)));
+			}).match("€0 | unbox! €1", (a, b) -> { // perform side-effect before
+				var lambda = bind(Fdt.L_MONO).lambda(dontCare, b);
+				return checkDo(() -> FunpDefine.of(lambda.vn, p(a), lambda.expr, Fdt.L_IOAP));
 			}).match("€0 | €1", (a, b) -> { // applies a function, pipe form
 				return FunpApply.of(p(a), p(b));
 			}).match("€0 [€1]", (a, b) -> { // indexes an array

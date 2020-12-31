@@ -32,7 +32,7 @@ define-function !guess () := do
 		) else (
 			error
 		)
-		| !! (n + 1, get-number! ()) #
+		| unbox! (n + 1, get-number! ()) #
 		put-string! name ~
 		put-string! ", you have got it in " ~
 		put-number! n ~

@@ -113,9 +113,9 @@ public class ElfTest {
 					b.append! 3 ~
 					let iter :=
 						b.get! () | defer list-free!
-						| precapture list-filter (i => true) | !! | defer list-free!
-						| precapture list-map (i => i + 1) | !! | defer list-free!
-						| list-iter! | !! | defer/free!
+						| precapture list-filter (i => true) | unbox! | defer list-free!
+						| precapture list-map (i => i + 1) | unbox! | defer list-free!
+						| list-iter! | unbox! | defer/free!
 					~
 					iter.next! ()
 				)
@@ -139,15 +139,15 @@ public class ElfTest {
 
 	@Test
 	public void testPut() {
-		test(0, "do ((consult io.fp).put-char! byte 'A' | !! 0)", "A");
-		test(0, "do ((consult io.fp).put-number! number 'A' | !! 0)", "65");
-		test(0, "do ((consult io.fp).put-number! -999 | !! 0)", "-999");
+		test(0, "do ((consult io.fp).put-char! byte 'A' | unbox! 0)", "A");
+		test(0, "do ((consult io.fp).put-number! number 'A' | unbox! 0)", "65");
+		test(0, "do ((consult io.fp).put-number! -999 | unbox! 0)", "-999");
 		test(0, """
 				let io := consult io.fp ~
 				for! (
 					i := 0 #
 					i < 10 #
-					io.put-number! i | !! (i + 1) #
+					io.put-number! i | unbox! (i + 1) #
 					0)
 				""", "0123456789");
 	}
