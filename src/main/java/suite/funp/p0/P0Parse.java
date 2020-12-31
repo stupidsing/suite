@@ -187,6 +187,8 @@ public class P0Parse extends FunpCfg {
 						return m != null ? FunpIf.of(p(m[0]), p(m[1]), d(m[2])) : p(n);
 					}
 				}.d(a);
+			}).match("defer-uncapture €0", a -> { // defers uncapturing
+				return FunpPredefine.of("defer-uncapture$" + Get.temp(), p(a), Fpt.FREE__);
 			}).match("define €0 := €1 ~ €2", (a, b, c) -> { // defines a variable
 				var tree = Tree.decompose(a, FunpOp.TUPLE_);
 				if (tree == null || !isId(tree.getLeft())) {
@@ -277,8 +279,6 @@ public class P0Parse extends FunpCfg {
 				return FunpCoerce.of(Coerce.NUMBER, Coerce.NUMBERP, FunpDontCare.of());
 			}).match("numberp €0", a -> { // forms a number with the same size as a pointer
 				return FunpCoerce.of(Coerce.NUMBER, Coerce.NUMBERP, FunpNumber.ofNumber(num(a)));
-			}).match("precapture €0", a -> { // should be called defer.uncapture???
-				return FunpPredefine.of("precapture$" + Get.temp(), p(a), Fpt.FREE__);
 			}).match("predef €0", a -> { // defines a block as a separate variable; able to get a pointer to it
 				return FunpPredefine.of("predefine$" + Get.temp(), p(a), Fpt.NONE__);
 			}).match("predef/€0 €1", (a, b) -> { // defines a block as a separate named variable
