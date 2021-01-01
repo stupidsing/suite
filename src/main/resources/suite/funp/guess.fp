@@ -1,4 +1,4 @@
-define-global io := consult "io.fp" ~
+define-global io := consult io.fp ~
 
 define-global {
 	get-number!,
@@ -8,7 +8,7 @@ define-global {
 	put-string!,
 } := io ~
 
-consult "linux.fp" ~
+consult linux.fp ~
 
 define-function !guess () := do
 	let name := address-of predef (array 32 * byte) ~

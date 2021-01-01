@@ -84,7 +84,7 @@ public class ElfTest {
 	@Test
 	public void testGuess() {
 		for (var isLongMode : new boolean[] { false, true, }) {
-			var program = "do (consult guess.fp).!guess {}";
+			var program = "do (consult guess.fp).!guess ()";
 			var elf = new WriteElf(isLongMode);
 
 			for (var isOptimize : new boolean[] { false, true, })
@@ -97,7 +97,7 @@ public class ElfTest {
 	@Test
 	public void testIo() {
 		var text = "garbage\n";
-		var program = "do (consult io.fp).cat! {}";
+		var program = "do (consult io.fp).cat! ()";
 		test(0, program, text);
 	}
 
@@ -128,8 +128,8 @@ public class ElfTest {
 		test(0, """
 				let { get-number!, put-number!, } := consult io.fp ~
 				do (
-				let m := type number get-number! {} ~
-				let n := type number get-number! {} ~
+				let m := type number get-number! () ~
+				let n := type number get-number! () ~
 				put-number! (m + n) ~ 0
 				)
 				""", //

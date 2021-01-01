@@ -1,4 +1,4 @@
-consult "linux.fp" ~
+consult linux.fp ~
 
 -- global functions should not reference non-global functions
 
