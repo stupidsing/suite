@@ -33,7 +33,7 @@ cchs() {
 			local MD5=$(printf "${D}:${CMD}" | md5sum - | cut -d" " -f1)
 			local O=${CCACHE}/${MD5}.o U=${CCACHE}/${MD5}.u
 			mkdir -p ${U}/ ${O}/
-			choverlay_ ${D}/ ${U}/ ${O}/
+			#choverlay_ ${D}/ ${U}/ ${O}/
 			local F=$(cchf "cd ${O}/; ${CMD:7} 1>&2; echo ${O}")
 			#choverlayx
 		elif [ "${CMD:0:9}" == "@do-chmod" ]; then
