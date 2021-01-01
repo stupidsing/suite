@@ -21,7 +21,6 @@ save_tp() {
 	echo GRADLE_HOME=${GRADLE_HOME}
 	echo JAVA_HOME=${JAVA_HOME}
 	echo M2_HOME=${M2_HOME}
-	echo M2_HOME=${M2_HOME}
 	echo NODE_HOME=${NODE_HOME}
 	echo PATH='${GH_HOME}/bin:${GIT_HD:9}/bin:${GOROOT}/bin:${GRADLE_HOME}/bin:${JAVA_HOME}/bin:${M2_HOME}/bin:${NODE_HOME}/bin:${PATH}'
 }
