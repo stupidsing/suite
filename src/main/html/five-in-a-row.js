@@ -27,9 +27,9 @@ let fiveinarow = evalscripts(['fun', 'render',])
 
 		let setcell = (vm, x, y, vmc1) => {
 			let vmt0 = vm.board;
-			vmt0 = vmt0 != null ? vmt0 : cc.arrayx();
+			vmt0 = vmt0 ?? cc.arrayx();
 			let vmr0 = vmt0[x];
-			vmr0 = vmr0 != null ? vmr0 : cc.arrayy(x);
+			vmr0 = vmr0 ?? cc.arrayy(x);
 			let vmc0 = vmr0[y];
 			// let vmr1 = vmr0.map(vmc => vmc != vmc0 ? vmc : vmc1);
 			// let vmt1 = vmt0.map(vmr => vmr != vmr0 ? vmr : vmr1);
