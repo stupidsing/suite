@@ -43,7 +43,10 @@ tp_android_emulator() {
 tp_android_sdk_tools() {
 	# "@do-cd JAVA_HOME=$(tp_jdk10) JAVA_OPTS='\''-XX:+IgnoreUnrecognizedVMOptions --add-modules java.se.ee'\''
 	cchs "curl -sL https://developer.android.com/studio" "grep dl.google.com | grep commandlinetools-linux" "head -1" "cut -d\\\" -f2" @curl @unzip "@cd pwd" \
-	"@do-cd JAVA_HOME=$(tp_jdk8) JAVA_OPTS=-XX:+IgnoreUnrecognizedVMOptions cmdline-tools/bin/sdkmanager \
+	"@do-cd mv cmdline-tools tools" \
+	"@do-cd mkdir cmdline-tools" \
+	"@do-cd mv tools cmdline-tools/" \
+	"@do-cd JAVA_HOME=$(tp_jdk8) JAVA_OPTS=-XX:+IgnoreUnrecognizedVMOptions cmdline-tools/tools/bin/sdkmanager \
 	'\''build-tools;29.0.3'\'' emulator platform-tools '\''platforms;android-27'\'' '\''system-images;android-27;default;x86_64'\''"
 }
 
