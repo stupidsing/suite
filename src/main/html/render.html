@@ -31,7 +31,7 @@ evalscripts(['fun', 'render',])
 
 	let component = (path, publicf, privatef, xhtml) => {
 		let change = f => renderAgain(view, vm => {
-			let vm_ = vm != null ? vm[path] : null;
+			let vm_ = vm?.[path];
 			return ({ ...vm, [path]: f(vm_), });
 		});
 		return {

@@ -408,8 +408,8 @@ loadedmodule = globalThis.render = evalscript('fun.js').then(({ read, }) => {
 	};
 
 	let rd_switch = routes => (vm0, vm1, cudf) => {
-		let key0 = vm0 != null ? vm0.k : null;
-		let key1 = vm1 != null ? vm1.k : null;
+		let key0 = vm0?.k;
+		let key1 = vm1?.k;
 		if (key0 != key1) {
 			if (key0 != null) routes[key0](vm0.v, null, cudf);
 			if (key1 != null) routes[key1](null, vm1.v, cudf);
