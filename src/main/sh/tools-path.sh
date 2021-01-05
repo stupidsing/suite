@@ -28,7 +28,7 @@ save_tp() {
 tp_android_avdmanager() {
 	JAVA_HOME=$(tp_jdk10) \
 	JAVA_OPTS="-XX:+IgnoreUnrecognizedVMOptions --add-modules java.se.ee" \
-	$(tp_android_sdk_tools)/tools/bin/avdmanager $@
+	$(tp_android_sdk_tools)/cmdline-tools/tools/bin/avdmanager $@
 }
 
 tp_android_bundletool() {
@@ -37,7 +37,7 @@ tp_android_bundletool() {
 
 tp_android_emulator() {
 	# sudo adduser ${USER} kvm
-	$(tp_android_sdk_tools)/tools/emulator $@
+	$(tp_android_sdk_tools)/cmdline-tools/tools/emulator $@
 }
 
 tp_android_sdk_tools() {
