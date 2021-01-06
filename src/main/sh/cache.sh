@@ -28,15 +28,19 @@ cchs() {
 			local D=$(cat ${F})
 			local LINK=$(sh -c "readlink -f ${D}/*")
 			local F=$(cchf "printf ${LINK}")
+		elif [ "${CMD:0:6}" == "@do" ]; then
+			local D=$(cat ${F})
+			local MD5=$(printf "${D}:${CMD}" | md5sum - | cut -d" " -f1)
+			local F=$(cchf "cd ${D}/; ${CMD:4} 1>&2; echo ${D}")
+			local O=${CCACHE}/${MD5}.o U=${CCACHE}/${MD5}.u
+			mkdir -p ${U}/ ${O}/
+			choverlay_ ${D}/ ${U}/ ${O}/
+			local F=$(cchf "cd ${O}/; ${CMD:7} 1>&2; echo ${O}")
+			#choverlayx
 		elif [ "${CMD:0:6}" == "@do-cd" ]; then
 			local D=$(cat ${F})
 			local MD5=$(printf "${D}:${CMD}" | md5sum - | cut -d" " -f1)
 			local F=$(cchf "cd ${D}/; ${CMD:7} 1>&2; echo ${D}")
-			#local O=${CCACHE}/${MD5}.o U=${CCACHE}/${MD5}.u
-			#mkdir -p ${U}/ ${O}/
-			#choverlay_ ${D}/ ${U}/ ${O}/
-			#local F=$(cchf "cd ${O}/; ${CMD:7} 1>&2; echo ${O}")
-			##choverlayx
 		elif [ "${CMD:0:9}" == "@do-chmod" ]; then
 			local FILE=$(cat ${F})
 			chmod ${CMD:10} ${FILE}
