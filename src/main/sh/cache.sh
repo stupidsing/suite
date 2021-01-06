@@ -28,7 +28,7 @@ cchs() {
 			local D=$(cat ${F})
 			local LINK=$(sh -c "readlink -f ${D}/*")
 			local F=$(cchf "printf ${LINK}")
-		elif [ "${CMD:0:6}" == "@do" ]; then
+		elif [ "${CMD:0:3}" == "@do" ]; then
 			local D=$(cat ${F})
 			local MD5=$(printf "${D}:${CMD}" | md5sum - | cut -d" " -f1)
 			local F=$(cchf "cd ${D}/; ${CMD:4} 1>&2; echo ${D}")
