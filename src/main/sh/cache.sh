@@ -115,6 +115,10 @@ cchs() {
 		else
 			local F=$(cchf "cat ${F} | ${CMD}")
 		fi
+		if [ ${?} != 0 ]; then
+			echo FAIL >2
+			return 1
+		fi
 	done
 	cat ${F}
 }
