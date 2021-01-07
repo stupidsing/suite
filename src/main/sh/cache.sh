@@ -30,15 +30,24 @@ cchs() {
 			local F=$(cchf "printf ${LINK}")
 		elif [ "${CMD:0:6}" == "@do-cd" ]; then
 			local D=$(cat ${F})
-			local MD5=$(printf "${D}:${CMD}" | md5sum - | cut -d" " -f1)
 			local F=$(cchf "cd ${D}/; ${CMD:7} 1>&2; echo ${D}")
 		elif [ "${CMD:0:9}" == "@do-chmod" ]; then
 			local FILE=$(cat ${F})
 			chmod ${CMD:10} ${FILE}
 			local F=$(cchf "printf ${FILE}")
 		elif [ "${CMD:0:10}" == "@do-git-cd" ]; then
-			local D=$(cat ${F})
-			local F=$(cchf "V=${D:0:8}; cd ${D:9}/; ${CMD:11} 1>&2; echo ${D}")
+			local G=$(cat ${F})
+			local D=${G:9}
+			local F=$(cchf "V=${G:0:8}; cd ${D}/; ${CMD:11} 1>&2; echo ${G}")
+		elif [ "${CMD:0:9}" == "@git-exec" ]; then
+			local G=$(cat ${F})
+			local D=${G:9}
+			local MD5=$(printf "${G}:${CMD}" | md5sum - | cut -d" " -f1)
+			local O=${CCACHE}/${MD5}.o U=${CCACHE}/${MD5}.u
+			mkdir -p ${U}/ ${O}/
+			choverlay_ ${D}/ ${U}/ ${O}/
+			local F=$(cchf "V=${G:0:8}; cd ${D}/; ${CMD:10} 1>&2; echo ${G}")
+			#choverlayx
 		elif [ "${CMD:0:5}" == "@exec" ]; then
 			local D=$(cat ${F})
 			local MD5=$(printf "${D}:${CMD}" | md5sum - | cut -d" " -f1)
@@ -51,8 +60,9 @@ cchs() {
 			local DOCKERNAME=${CMD:13:}-$(cat "${F}" | md5sum - | cut -d" " -f1)
 			local F=$(cchf "cat ${F} | docker build -q -t cchs/${DOCKERNAME} -")
 		elif [ "${CMD:0:7}" == "@git-cd" ]; then
-			local D=$(cat ${F})
-			local F=$(cchf "V=${D:0:8}; cd ${D:9}/; ${CMD:8}")
+			local G=$(cat ${F})
+			local D=${G:9}
+			local F=$(cchf "V=${G:0:8}; cd ${D}/; ${CMD:8}")
 		elif [ "${CMD:0:10}" == "@git-clone" ]; then
 			local URL=$(cat ${F})
 			local B=${CMD:11}
