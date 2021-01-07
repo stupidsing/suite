@@ -37,7 +37,7 @@ tp_android_bundletool() {
 
 tp_android_emulator() {
 	# sudo adduser ${USER} kvm
-	$(tp_android_sdk_tools)/cmdline-tools/tools/emulator $@
+	$(tp_android_sdk_tools)/emulator/emulator $@
 }
 
 tp_android_sdk_tools() {
