@@ -39,21 +39,12 @@ cchs() {
 			local G=$(cat ${F})
 			local D=${G:9}
 			local F=$(cchf "V=${G:0:8}; cd ${D}/; ${CMD:11} 1>&2; echo ${G}")
-		elif [ "${CMD:0:9}" == "@git-exec" ]; then
-			local G=$(cat ${F})
-			local D=${G:9}
-			local MD5=$(printf "${G}:${CMD}" | md5sum - | cut -d" " -f1)
-			local O=${CCACHE}/${MD5}.o U=${CCACHE}/${MD5}.u
-			mkdir -p ${U}/ ${O}/
-			choverlay_ ${D}/ ${U}/ ${O}/
-			local F=$(cchf "V=${G:0:8}; cd ${D}/; ${CMD:10} 1>&2; echo ${G}")
-			#choverlayx
 		elif [ "${CMD:0:5}" == "@exec" ]; then
 			local D=$(cat ${F})
 			local MD5=$(printf "${D}:${CMD}" | md5sum - | cut -d" " -f1)
 			local O=${CCACHE}/${MD5}.o U=${CCACHE}/${MD5}.u
 			mkdir -p ${U}/ ${O}/
-			choverlay_ ${D}/ ${U}/ ${O}/
+			mountpoint -q ${O}/ || choverlay_ ${D}/ ${U}/ ${O}/
 			local F=$(cchf "cd ${O}/; ${CMD:6} 1>&2; echo ${O}")
 			#choverlayx
 		elif [ "${CMD}" == "@docker-build" ]; then
@@ -80,6 +71,15 @@ cchs() {
 			fi
 			local COMMIT=$(cd ${DF}/ && git rev-parse HEAD | cut -c1-8)
 			local F=$(cchf "printf ${COMMIT}:${DF}")
+		elif [ "${CMD:0:9}" == "@git-exec" ]; then
+			local G=$(cat ${F})
+			local D=${G:9}
+			local MD5=$(printf "${G}:${CMD}" | md5sum - | cut -d" " -f1)
+			local O=${CCACHE}/${MD5}.o U=${CCACHE}/${MD5}.u
+			mkdir -p ${U}/ ${O}/
+			choverlay_ ${D}/ ${U}/ ${O}/
+			local F=$(cchf "V=${G:0:8}; cd ${D}/; ${CMD:10} 1>&2; echo ${G}")
+			#choverlayx
 		elif [ "${CMD:0:10}" == "@maven-get" ]; then
 			#local REPO=https://repo.maven.apache.org/maven2
 			local RGAV=$(cat ${F})
