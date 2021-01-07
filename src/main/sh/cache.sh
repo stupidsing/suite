@@ -43,8 +43,8 @@ cchs() {
 			local D=$(cat ${F})
 			local MD5=$(printf "${D}:${CMD}" | md5sum - | cut -d" " -f1)
 			local O=${CCACHE}/${MD5}.o U=${CCACHE}/${MD5}.u W=${CCACHE}/${MD5}.w
-			mkdir -p ${U}/ ${O}/
-			mountpoint -q ${O}/ || WORKDIR=${W} choverlay_ ${D}/ ${U}/ ${O}/
+			mkdir -p ${U}/ ${O}/ ${W}/
+			mountpoint -q ${O}/ || WORKDIR=${W}/ choverlay_ ${D}/ ${U}/ ${O}/
 			local F=$(cchf "cd ${O}/; ${CMD:6} 1>&2; echo ${O}")
 			#choverlayx
 		elif [ "${CMD}" == "@docker-build" ]; then
@@ -76,8 +76,8 @@ cchs() {
 			local D=${G:9}
 			local MD5=$(printf "${G}:${CMD}" | md5sum - | cut -d" " -f1)
 			local O=${CCACHE}/${MD5}.o U=${CCACHE}/${MD5}.u W=${CCACHE}/${MD5}.w
-			mkdir -p ${U}/ ${O}/
-			mountpoint -q ${O}/ || WORKDIR=${W} choverlay_ ${D}/ ${U}/ ${O}/
+			mkdir -p ${U}/ ${O}/ ${W}/
+			mountpoint -q ${O}/ || WORKDIR=${W}/ choverlay_ ${D}/ ${U}/ ${O}/
 			local F=$(cchf "V=${G:0:8}; cd ${D}/; ${CMD:10} 1>&2; echo ${G}")
 			#choverlayx
 		elif [ "${CMD:0:10}" == "@maven-get" ]; then
