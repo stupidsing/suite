@@ -46,7 +46,7 @@ tp_android_sdk_tools() {
 	"@do-cd mv cmdline-tools/ tools/" \
 	"@do-cd mkdir cmdline-tools/" \
 	"@do-cd mv tools/ cmdline-tools/" \
-	"@do-cd JAVA_HOME=$(tp_jdk8) JAVA_OPTS=-XX:+IgnoreUnrecognizedVMOptions cmdline-tools/tools/bin/sdkmanager \
+	"@exec JAVA_HOME=$(tp_jdk8) JAVA_OPTS=-XX:+IgnoreUnrecognizedVMOptions cmdline-tools/tools/bin/sdkmanager \
 	'\''build-tools;29.0.3'\'' emulator platform-tools '\''platforms;android-27'\'' '\''system-images;android-27;default;x86_64'\''"
 }
 
