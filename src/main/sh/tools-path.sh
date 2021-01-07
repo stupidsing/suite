@@ -60,11 +60,11 @@ tp_apt_i() {
 
 tp_cdk() {
 	# https://github.com/aws/aws-cdk
-	$(cchs "echo npm-i-aws-cdk" @mkdir "@do-cd npm install aws-cdk")/node_modules/.bin/cdk $@
+	$(cchs "echo npm-i-aws-cdk" @mkdir "@exec npm install aws-cdk")/node_modules/.bin/cdk $@
 }
 
 tp_cordova() {
-	$(cchs "echo npm-i-cordova" @mkdir "@do-cd ${NODE_HOME}/bin/npm install cordova")/node_modules/.bin/cordova $@
+	$(cchs "echo npm-i-cordova" @mkdir "@exec ${NODE_HOME}/bin/npm install cordova")/node_modules/.bin/cordova $@
 }
 
 tp_eclipse() {
@@ -110,7 +110,7 @@ tp_jdk10() {
 	for P in dl dl-ssl; do
 		echo "cat /dev/null | openssl s_client -showcerts -connect ${P}.google.com:443 -servername ${P}.google.com | openssl x509 | ./bin/keytool -import -keystore lib/security/cacerts -storepass changeit -noprompt -alias ${P}_google_com" >> /tmp/install-certs.sh
 	done
-	cchs "echo https://download.java.net/openjdk/jdk10/ri/openjdk-10+44_linux-x64_bin_ri.tar.gz" @curl @tar-zxf @dir "@do-cd sh /tmp/install-certs.sh"
+	cchs "echo https://download.java.net/openjdk/jdk10/ri/openjdk-10+44_linux-x64_bin_ri.tar.gz" @curl @tar-zxf @dir "@exec sh /tmp/install-certs.sh"
 }
 
 tp_kubectl() {
@@ -127,16 +127,16 @@ tp_minions() {
 }
 
 tp_mirrormagic() {
-	$(cchs "echo https://www.artsoft.org/RELEASES/unix/mirrormagic/mirrormagic-3.0.0.tar.gz" @curl @tar-zxf @dir "@do-cd make")/mirrormagic $@
+	$(cchs "echo https://www.artsoft.org/RELEASES/unix/mirrormagic/mirrormagic-3.0.0.tar.gz" @curl @tar-zxf @dir "@exec make")/mirrormagic $@
 }
 
 tp_rocksndiamonds() {
 	# https://www.artsoft.org/rocksndiamonds/news/
-	$(cchs "echo https://www.artsoft.org/RELEASES/unix/rocksndiamonds/rocksndiamonds-4.1.3.0.tar.gz" @curl @tar-zxf @dir "@do-cd make")/rocksndiamonds
+	$(cchs "echo https://www.artsoft.org/RELEASES/unix/rocksndiamonds/rocksndiamonds-4.1.3.0.tar.gz" @curl @tar-zxf @dir "@exec make")/rocksndiamonds
 }
 
 tp_slant() {
-	$(cchs "echo https://www.chiark.greenend.org.uk/~sgtatham/puzzles/puzzles.tar.gz" @curl @tar-zxf @dir "@do-cd ./configure" "@do-cd make")/slant $@
+	$(cchs "echo https://www.chiark.greenend.org.uk/~sgtatham/puzzles/puzzles.tar.gz" @curl @tar-zxf @dir "@exec ./configure" "@exec make")/slant $@
 }
 
 tp_suite() {
@@ -144,7 +144,7 @@ tp_suite() {
 }
 
 tp_leafpad() {
-	$(cchs "echo http://savannah.nongnu.org/download/leafpad/leafpad-0.8.17.tar.gz" @curl @tar-zxf @dir "@do-cd ./configure" "@do-cd make")/src/leafpad $@
+	$(cchs "echo http://savannah.nongnu.org/download/leafpad/leafpad-0.8.17.tar.gz" @curl @tar-zxf @dir "@exec ./configure" "@exec make")/src/leafpad $@
 }
 
 tp_vms_empire() {
