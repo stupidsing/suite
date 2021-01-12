@@ -6,11 +6,11 @@ echo '
 ECLIPSE_HOME=$(cchs "echo http://ftp.jaist.ac.jp/pub/eclipse/technology/epp/downloads/release/2020-12/R/eclipse-java-2020-12-R-linux-gtk-x86_64.tar.gz" @curl @tar-zxf @dir)
 GH_HOME=$(cchs "echo https://github.com/cli/cli/releases/download/v1.4.0/gh_1.4.0_linux_amd64.tar.gz" @curl @tar-zxf @dir)
 GIT_HD=$(cchs "echo git@github.com:stupidsing/home-data.git" @git-clone)
-GOROOT=$(cchs "echo https://dl.google.com/go/go1.15.2.linux-amd64.tar.gz" @curl @tar-zxf @dir)
-GRADLE_HOME=$(cchs "echo https://services.gradle.org/distributions/gradle-6.6.1-bin.zip" @curl @unzip @dir)
+GOROOT=$(cchs "echo https://dl.google.com/go/go1.15.6.linux-amd64.tar.gz" @curl @tar-zxf @dir)
+GRADLE_HOME=$(cchs "echo https://services.gradle.org/distributions/gradle-6.8-bin.zip" @curl @unzip @dir)
 JAVA_HOME=$(cchs "curl -sL https://jdk.java.net/15/" "grep https://download.java.net/ | grep -v sha256 | grep linux-x64 | grep \\.tar\\.gz" "cut -d\\\" -f2" @curl @tar-zxf @dir)
 M2_HOME=$(cchs "echo http://ftp.cuhk.edu.hk/pub/packages/apache.org/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.tar.gz" @curl @tar-zxf @dir)
-NODE_HOME=$(cchs "echo https://nodejs.org/dist/v12.18.4/node-v12.18.4-linux-x64.tar.xz" @curl @tar-xf @dir)
+NODE_HOME=$(cchs "echo https://nodejs.org/dist/v12.18.4/node-v14.15.4-linux-x64.tar.xz" @curl @tar-xf @dir)
 PATH=${GH_HOME}/bin:${GIT_HD:9}/bin:${GOROOT}/bin:${GRADLE_HOME}/bin:${JAVA_HOME}/bin:${M2_HOME}/bin:${NODE_HOME}/bin:${PATH}
 
 save_tp() {
