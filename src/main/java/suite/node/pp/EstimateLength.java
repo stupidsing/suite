@@ -7,6 +7,11 @@ import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.Formatter;
 
+/**
+ * Estimate the length in characters when displaying a node as string.
+ *
+ * @author ywsing
+ */
 public class EstimateLength {
 
 	private Map<Integer, Integer> lengthByIds;
