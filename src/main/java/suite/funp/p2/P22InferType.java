@@ -395,18 +395,18 @@ public class P22InferType extends FunpCfg {
 						list = Read //
 								.from2(types2) //
 								.sort((p0, p1) -> {
-									var b0 = isReference(p0.v);
-									var b1 = isReference(p1.v);
+									var isRef0 = isReference(p0.v);
+									var isRef1 = isReference(p1.v);
 									var typeSize0 = getTypeSize(p0.v);
 									var typeSize1 = getTypeSize(p1.v);
-									var a0 = typeSize0 % ps == 0;
-									var a1 = typeSize1 % ps == 0;
-									var o0 = pos.get(Atom.name(p0.k));
-									var o1 = pos.get(Atom.name(p1.k));
-									var c = -Boolean.compare(b0, b1);
-									c = c == 0 ? -Boolean.compare(a0, a1) : c;
+									var isAlign0 = typeSize0 % ps == 0;
+									var isAlign1 = typeSize1 % ps == 0;
+									var pos0 = pos.get(Atom.name(p0.k));
+									var pos1 = pos.get(Atom.name(p1.k));
+									var c = -Boolean.compare(isRef0, isRef1);
+									c = c == 0 ? -Boolean.compare(isAlign0, isAlign1) : c;
 									c = c == 0 ? -Integer.compare(typeSize0, typeSize1) : c;
-									c = c == 0 ? Integer.compare(o0, o1) : c;
+									c = c == 0 ? Integer.compare(pos0, pos1) : c;
 									return c;
 								}) //
 								.keys();
