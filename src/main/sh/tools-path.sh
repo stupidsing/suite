@@ -14,14 +14,14 @@ NODE_HOME=$(cchs "echo https://nodejs.org/dist/v14.15.4/node-v14.15.4-linux-x64.
 PATH=${GH_HOME}/bin:${GIT_HD:9}/bin:${GOROOT}/bin:${GRADLE_HOME}/bin:${JAVA_HOME}/bin:${M2_HOME}/bin:${NODE_HOME}/bin:${PATH}
 
 save_tp() {
-	echo ECLIPSE_HOME=${ECLIPSE_HOME}
-	echo GH_HOME=${GH_HOME}
-	echo GIT_HD=${GIT_HD}
-	echo GOROOT=${GOROOT}
-	echo GRADLE_HOME=${GRADLE_HOME}
-	echo JAVA_HOME=${JAVA_HOME}
-	echo M2_HOME=${M2_HOME}
-	echo NODE_HOME=${NODE_HOME}
+	echo export ECLIPSE_HOME=${ECLIPSE_HOME}
+	echo export GH_HOME=${GH_HOME}
+	echo export GIT_HD=${GIT_HD}
+	echo export GOROOT=${GOROOT}
+	echo export GRADLE_HOME=${GRADLE_HOME}
+	echo export JAVA_HOME=${JAVA_HOME}
+	echo export M2_HOME=${M2_HOME}
+	echo export NODE_HOME=${NODE_HOME}
 	echo PATH='${GH_HOME}/bin:${GIT_HD:9}/bin:${GOROOT}/bin:${GRADLE_HOME}/bin:${JAVA_HOME}/bin:${M2_HOME}/bin:${NODE_HOME}/bin:${PATH}'
 }
 
