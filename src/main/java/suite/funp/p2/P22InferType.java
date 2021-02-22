@@ -755,7 +755,7 @@ public class P22InferType extends FunpCfg {
 
 						if (isReference(type)) {
 							var shift = offset0 / ps - 1;
-							if (shift < ps - 2)
+							if (shift < (ps - 2) * 8)
 								clazz |= 1 << shift;
 							else
 								Funp_.fail(f, "too many struct members");
