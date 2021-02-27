@@ -212,17 +212,17 @@ public class P22InferType extends FunpCfg {
 			return new Switch<Node>(n //
 			).applyIf(FunpAdjustArrayPointer.class, f -> f.apply((pointer, adjust) -> {
 				var tp = typeRefOf(typeArrayOf(null, new Reference()));
-				unify(n, tp, infer(pointer));
-				unify(n, typeNumber, infer(adjust));
+				unify(f, tp, infer(pointer));
+				unify(f, typeNumber, infer(adjust));
 				return tp;
 			})).applyIf(FunpApply.class, f -> f.apply((value, lambda) -> {
 				var tr = new Reference();
-				unify(n, typeLambdaOf(infer(value), tr), infer(lambda));
+				unify(f, typeLambdaOf(infer(value), tr), infer(lambda));
 				return tr;
 			})).applyIf(FunpArray.class, f -> f.apply(elements -> {
 				var te = new Reference();
 				for (var element : elements)
-					unify(n, te, infer(element));
+					unify(f, te, infer(element));
 				return typeArrayOf(elements.size(), te);
 			})).applyIf(FunpBoolean.class, f -> {
 				return typeBoolean;
@@ -235,7 +235,7 @@ public class P22InferType extends FunpCfg {
 					else
 						return fail();
 				};
-				unify(n, tf.apply(from), infer(expr));
+				unify(f, tf.apply(from), infer(expr));
 				return tf.apply(to);
 			})).applyIf(FunpDefine.class, f -> f.apply((vn, value, expr, fdt) -> {
 				var tvalue = infer(value, "definition of variable '" + vn + "'");
@@ -257,51 +257,51 @@ public class P22InferType extends FunpCfg {
 
 				for (var pair : pairs_)
 					pair.map((vn, v) -> unify( //
-							n, //
+							f, //
 							env1.getOrFail(vn).v, //
 							infer1.infer(v, "definition of variable '" + vn + "'")));
 
 				return infer1.infer(expr);
 			})).applyIf(FunpDeref.class, f -> f.apply(pointer -> {
 				var t = new Reference();
-				unify(n, typeRefOf(t), infer(pointer));
+				unify(f, typeRefOf(t), infer(pointer));
 				return t;
 			})).applyIf(FunpDoAsm.class, f -> f.apply((assigns, asm, opResult) -> {
-				BiPredicate<Operand, Node> opType = (op, t) -> unify(n, typePatInt.subst(Int.of(op.size)), t);
+				BiPredicate<Operand, Node> opType = (op, t) -> unify(f, typePatInt.subst(Int.of(op.size)), t);
 				var tr = new Reference();
 				var b = Read.from(assigns).isAll(assign -> opType.test(assign.k, infer(assign.v)));
 				return b && opType.test(opResult, tr) ? tr : Funp_.fail(f, "wrong types");
 			})).applyIf(FunpDoAssignRef.class, f -> f.apply((reference, value, expr) -> {
-				unify(n, infer(reference), typeRefOf(infer(value)));
+				unify(f, infer(reference), typeRefOf(infer(value)));
 				return infer(expr);
 			})).applyIf(FunpDoAssignVar.class, f -> f.apply((var, value, expr) -> {
-				unify(n, getVariable(var, false), infer(value));
+				unify(f, getVariable(var, false), infer(value));
 				return infer(expr);
 			})).applyIf(FunpDoEvalIo.class, f -> f.apply(expr -> {
 				var t = new Reference();
-				unify(n, typeIoOf(t), infer(expr));
+				unify(f, typeIoOf(t), infer(expr));
 				return t;
 			})).applyIf(FunpDoFold.class, f -> f.apply((init, cont, next) -> {
 				var tv = new Reference();
 				var tvio = typeIoOf(tv);
-				unify(n, tv, infer(init));
-				unify(n, typeLambdaOf(tv, typeBoolean), infer(cont));
-				unify(n, typeLambdaOf(tv, tvio), infer(next));
+				unify(f, tv, infer(init));
+				unify(f, typeLambdaOf(tv, typeBoolean), infer(cont));
+				unify(f, typeLambdaOf(tv, tvio), infer(next));
 				return tvio;
 			})).applyIf(FunpDoHeapDel.class, f -> f.apply((isDynamicSize, reference, expr) -> {
-				unify(n, typeRefOf(new Reference()), infer(reference));
+				unify(f, typeRefOf(new Reference()), infer(reference));
 				return infer(expr);
 			})).applyIf(FunpDoHeapNew.class, f -> f.apply((isDynamicSize, factor) -> {
 				if (factor == null)
 					return typeRefOf(new Reference());
 				else {
-					unify(n, infer(factor), typeNumber);
+					unify(f, infer(factor), typeNumber);
 					return typeRefOf(typeArrayOf(null, new Reference()));
 				}
 			})).applyIf(FunpDontCare.class, f -> {
 				return new Reference();
 			}).applyIf(FunpDoWhile.class, f -> f.apply((while_, do_, expr) -> {
-				unify(n, typeBoolean, infer(while_));
+				unify(f, typeBoolean, infer(while_));
 				infer(do_);
 				return infer(expr);
 			})).applyIf(FunpError.class, f -> {
@@ -310,19 +310,19 @@ public class P22InferType extends FunpCfg {
 				var tf = new Reference();
 				var map = new HashMap<Node, Reference>();
 				map.put(Atom.of(field), tf);
-				unify(n, typeRefOf(typeStructOf(Dict.of(map))), infer(reference));
+				unify(f, typeRefOf(typeStructOf(Dict.of(map))), infer(reference));
 				return tf;
 			})).applyIf(FunpIf.class, f -> f.apply((if_, then, else_) -> {
 				Node t;
-				unify(n, typeBoolean, infer(if_));
-				unify(n, t = infer(then), infer(else_));
+				unify(f, typeBoolean, infer(if_));
+				unify(f, t = infer(then), infer(else_));
 				return t;
 			})).applyIf(FunpIo.class, f -> f.apply(expr -> {
 				return typeIoOf(infer(expr));
 			})).applyIf(FunpIndex.class, f -> f.apply((reference, index) -> {
 				var te = new Reference();
-				unify(n, typeRefOf(typeArrayOf(null, te)), infer(reference));
-				unify(n, typeNumber, infer(index));
+				unify(f, typeRefOf(typeArrayOf(null, te)), infer(reference));
+				unify(f, typeNumber, infer(index));
 				return te;
 			})).applyIf(FunpLambda.class, f -> f.apply((vn, expr, fct) -> {
 				var tv = new Reference();
@@ -340,7 +340,7 @@ public class P22InferType extends FunpCfg {
 				var tv = new Reference();
 				var tf = infer(frame);
 				var tr = typeRefOf(tf);
-				unify(n, tr, infer(fpIn));
+				unify(f, tr, infer(fpIn));
 				var env1 = PerMap //
 						.<String, Pair<Fdt, Node>> empty() //
 						.replace(frameVar.vn, Pair.of(Fdt.L_MONO, tf)) //
@@ -428,13 +428,13 @@ public class P22InferType extends FunpCfg {
 				types.put(Atom.of(tag), Reference.of(infer(value)));
 				return typeTagOf(Dict.of(types));
 			})).applyIf(FunpTagId.class, f -> f.apply(reference -> {
-				unify(n, typeRefOf(typeTagOf(Dict.of())), infer(reference));
+				unify(f, typeRefOf(typeTagOf(Dict.of())), infer(reference));
 				return typeNumber;
 			})).applyIf(FunpTagValue.class, f -> f.apply((reference, tag) -> {
 				var tr = new Reference();
 				var types = new HashMap<Node, Reference>();
 				types.put(Atom.of(tag), Reference.of(tr));
-				unify(n, typeRefOf(typeTagOf(Dict.of(types))), infer(reference));
+				unify(f, typeRefOf(typeTagOf(Dict.of(types))), infer(reference));
 				return tr;
 			})).applyIf(FunpTree.class, f -> f.apply((op, lhs, rhs, size) -> {
 				Node ti;
@@ -446,24 +446,24 @@ public class P22InferType extends FunpCfg {
 					var t = size != null ? Int.of(getCoerceSize(size)) : new Reference();
 					ti = typePatInt.subst(t);
 				}
-				unify(n, infer(lhs), ti);
-				unify(n, infer(rhs), ti);
+				unify(f, infer(lhs), ti);
+				unify(f, infer(rhs), ti);
 				var cmp = Set.of(FunpOp.EQUAL_, FunpOp.NOTEQ_, FunpOp.LE____, FunpOp.LT____).contains(op);
 				return cmp ? typeBoolean : ti;
 			})).applyIf(FunpTree2.class, f -> f.apply((op, lhs, rhs) -> {
-				unify(n, infer(lhs), typeNumber);
-				unify(n, infer(rhs), typeNumber);
+				unify(f, infer(lhs), typeNumber);
+				unify(f, infer(rhs), typeNumber);
 				return typeNumber;
 			})).applyIf(FunpTypeAssign.class, f -> f.apply((lhs, rhs, expr) -> {
-				unify(n, getVariable(lhs, false), infer(rhs));
+				unify(f, getVariable(lhs, false), infer(rhs));
 				return infer(expr);
 			})).applyIf(FunpTypeCheck.class, f -> f.apply((lhs, rhs, expr) -> {
 				Node te;
 				if (rhs != null) {
-					unify(n, infer(lhs), infer(rhs));
+					unify(f, infer(lhs), infer(rhs));
 					te = infer(expr);
 				} else
-					unify(n, infer(lhs), te = infer(expr));
+					unify(f, infer(lhs), te = infer(expr));
 				return te;
 			})).applyIf(FunpVariable.class, f -> {
 				return getVariable(f);
@@ -659,10 +659,10 @@ public class P22InferType extends FunpCfg {
 				var isScoped = fct != Fct.NOSCOP;
 				var b = ps + ps; // return address and EBP
 				var scope1 = isScoped ? scope + 1 : 0;
-				var lt = new LambdaType(n);
-				var isPassReg = lt.isPassReg();
+				var lt = new LambdaType(f);
+				var isPassByReg = lt.isPassByReg;
 				var opArg = lt.p0reg();
-				var av = isPassReg ? register(opArg, lt.is) : localStack(scope1, IntMutable.of(0), b, b + lt.is);
+				var av = isPassByReg ? register(opArg, lt.is) : localStack(scope1, IntMutable.of(0), b, b + lt.is);
 				var frame = isScoped ? framePointer : FunpDontCare.of();
 				PerMap<String, Var> env1;
 
@@ -677,16 +677,16 @@ public class P22InferType extends FunpCfg {
 				var env2 = env1.replace(vn, av);
 
 				var expr1 = new Erase(scope1, env2, me).erase(expr0);
-				var expr2 = isPassReg ? FunpAllocReg.of(lt.is, FunpDontCare.of(), expr1, opArg) : expr1;
+				var expr2 = isPassByReg ? FunpAllocReg.of(lt.is, FunpDontCare.of(), expr1, opArg) : expr1;
 				var expr3 = f.name != null ? FunpRemark.of(f.name, expr2) : expr2;
 				return eraseRoutine(lt, frame, expr3);
 			})).applyIf(FunpLambdaCapture.class, f -> f.apply((fp0, frameVar, frame, vn, expr, fct) -> {
 				var size = getTypeSize(typeOf(frame));
 				var b = ps + ps; // return address and EBP
-				var lt = new LambdaType(n);
-				var isPassReg = lt.isPassReg();
+				var lt = new LambdaType(f);
+				var isPassByReg = lt.isPassByReg;
 				var opArg = lt.p0reg();
-				var av = isPassReg ? register(opArg, lt.is) : localStack(1, IntMutable.of(0), b, b + lt.is);
+				var av = isPassByReg ? register(opArg, lt.is) : localStack(1, IntMutable.of(0), b, b + lt.is);
 
 				var env1 = PerMap //
 						.<String, Var> empty() //
@@ -695,7 +695,7 @@ public class P22InferType extends FunpCfg {
 
 				var fp1 = erase(fp0);
 				var expr1 = new Erase(1, env1, null).erase(expr);
-				var expr2 = isPassReg ? FunpAllocReg.of(lt.is, FunpDontCare.of(), expr1, opArg) : expr1;
+				var expr2 = isPassByReg ? FunpAllocReg.of(lt.is, FunpDontCare.of(), expr1, opArg) : expr1;
 				Funp expr3;
 
 				if (fct == Fct.MANUAL)
@@ -755,7 +755,7 @@ public class P22InferType extends FunpCfg {
 
 						if (isReference(type)) {
 							var shift = offset0 / ps - 1;
-							if (shift < ps - 2)
+							if (shift < (ps - 2) * 8)
 								clazz |= 1 << shift;
 							else
 								Funp_.fail(f, "too many struct members");
@@ -824,7 +824,8 @@ public class P22InferType extends FunpCfg {
 			var lt = new LambdaType(lambda);
 			var lambda1 = erase(lambda);
 			var saves = Mutable.of(new ArrayList<Pair<OpReg, Integer>>());
-			var is_ = lt.isPassReg() ? 0 : lt.is;
+			var isPassByReg = lt.isPassByReg;
+			var is_ = isPassByReg ? 0 : lt.is;
 			int os_;
 			Funp invoke;
 			if (lt.os == is || lt.os == ps)
@@ -836,11 +837,10 @@ public class P22InferType extends FunpCfg {
 			var reg = Mutable.<Operand> nil();
 			var op = size == is ? FunpOperand.of(reg) : null;
 			var value_ = op != null ? op : value;
-			var isPassReg = lt.isPassReg();
 			var opArg = lt.p0reg();
-			var as0 = isPassReg ? FunpAllocReg.of(lt.is, value_, invoke, opArg) : invoke;
+			var as0 = isPassByReg ? FunpAllocReg.of(lt.is, value_, invoke, opArg) : invoke;
 			var as1 = FunpSaveRegisters1.of(as0, saves);
-			var as2 = isPassReg ? as1 : allocStack(size, value_, as1);
+			var as2 = isPassByReg ? as1 : allocStack(size, value_, as1);
 			var as3 = allocStack(os_, FunpDontCare.of(), as2);
 			var as4 = op != null ? FunpAssignOp.of(op, value, as3) : as3;
 			var as5 = FunpSaveRegisters0.of(as4, saves);
@@ -898,7 +898,7 @@ public class P22InferType extends FunpCfg {
 		}
 
 		private Funp eraseRoutine(LambdaType lt, Funp frame, Funp expr) {
-			var is_ = lt.isPassReg() ? 0 : lt.is;
+			var is_ = lt.isPassByReg ? 0 : lt.is;
 			if (lt.os == is || lt.os == ps)
 				return FunpRoutine1.of(frame, expr, lt.is, lt.os, is_, 0);
 			else if (lt.os == ps + ps)
@@ -1078,21 +1078,26 @@ public class P22InferType extends FunpCfg {
 
 	private class LambdaType {
 		private int is, os;
+		private boolean isPassByReg;
 
 		private LambdaType(Funp lambda) {
 			var tp = new Reference();
 			var tr = new Reference();
 			unify(lambda, typeOf(lambda), typeLambdaOf(tp, tr));
+
+			var tp_ = tp.finalNode();
+
 			is = getTypeSize(tp);
 			os = getTypeSize(tr);
+
+			isPassByReg = false //
+					|| typePatInt.match(tp_) != null && is == P22InferType.this.is //
+					|| typePatInt.match(tp_) != null && is == P22InferType.this.ps //
+					|| isReference(tp_);
 		}
 
 		private Mutable<Operand> p0reg() {
-			return isPassReg() ? Mutable.of(Amd64.me.regs(is)[Amd64.me.axReg]) : null;
-		}
-
-		private boolean isPassReg() {
-			return is == P22InferType.this.is || is == P22InferType.this.ps;
+			return isPassByReg ? Mutable.of(Amd64.me.regs(is)[Amd64.me.axReg]) : null;
 		}
 	}
 
