@@ -5,7 +5,7 @@ import java.lang.management.ManagementFactory;
 
 import org.junit.jupiter.api.Test;
 
-public class ThreadMxBeanTest {
+public class DumpThreadTest {
 
 	@Test
 	public void test() {
