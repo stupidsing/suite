@@ -301,9 +301,9 @@ public class Symbolic {
 					}).match(patInv, a -> {
 						return pos(a).map(mul::inverse);
 					}).match(patPow, (a, b) -> {
-						if (b instanceof Int) {
+						if (b instanceof Int i) {
 							var pos = pos(a).toList();
-							var power = Int.num(b);
+							var power = i.number;
 
 							Int_Obj<Streamlet<Node>> f = power_ -> {
 								List<Node> n = new ArrayList<>();
@@ -405,7 +405,7 @@ public class Symbolic {
 					}).match(patInv, a -> {
 						return inv1(poly(a));
 					}).match(patPow, (a, b) -> {
-						return b instanceof Int ? pow(a, Int.num(b)) : Opt.none();
+						return b instanceof Int i ? pow(a, i.number) : Opt.none();
 					}).applyIf(Node.class, n -> {
 						if (n == nf.n0)
 							return Opt.of(dpn.p0);

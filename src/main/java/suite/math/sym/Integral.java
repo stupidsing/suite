@@ -18,7 +18,7 @@ public class Integral {
 			(a, b) -> a * b);
 
 	public Opt<Integer> parse(Node node) {
-		return node instanceof Int ? Opt.of(Int.num(node)) : Opt.none();
+		return node instanceof Int i ? Opt.of(i.number) : Opt.none();
 	}
 
 	public Node format(int a) {

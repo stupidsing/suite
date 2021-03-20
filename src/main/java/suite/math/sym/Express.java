@@ -59,13 +59,12 @@ public class Express {
 			var xn = 0;
 			var constant = e;
 			Node[] m;
-			Node n;
 
 			for (var child : nodes0)
 				if (child instanceof Int)
 					constant = apply(child, constant);
-				else if ((m = patNeg.match(child)) != null && (n = m[0]) instanceof Int)
-					constant = apply(Int.of(-Int.num(n)), constant);
+				else if ((m = patNeg.match(child)) != null && m[0] instanceof Int i)
+					constant = apply(Int.of(-i.number), constant);
 				else if (child.compareTo(x) == 0)
 					xn++;
 				else
