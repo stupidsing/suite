@@ -273,8 +273,8 @@ evalscripts(['fun', 'render',])
 	eventSource.onError = console.error;
 	eventSource.onMessage = console.info;
 
-	eventSource.addEventListener("close", ev => eventSource.close());
-	eventSource.addEventListener("number", ev => renderAgain(view, vm => ({ ...vm, sse: [...vm.sse, JSON.parse(ev.data).i,], })));
+	eventSource.addEventListener('close', ev => eventSource.close());
+	eventSource.addEventListener('number', ev => renderAgain(view, vm => ({ ...vm, sse: [...vm.sse, JSON.parse(ev.data).i,], })));
 })
 .catch(console.error);
 	</script>
