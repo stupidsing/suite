@@ -39,9 +39,9 @@ public class IoPredicates {
 	};
 
 	public BuiltinPredicate exec = PredicateUtil.p1((prover, p0) -> {
-		if (p0 instanceof Str)
+		if (p0 instanceof Str str)
 			try {
-				var cmd = Str.str(p0);
+				var cmd = str.value;
 				return Runtime.getRuntime().exec(cmd).waitFor() == 0;
 			} catch (IOException | InterruptedException ex) {
 				Log_.error(ex);
@@ -49,7 +49,7 @@ public class IoPredicates {
 		return false;
 	});
 
-	public BuiltinPredicate exit = PredicateUtil.sink(n -> System.exit(n instanceof Int ? Int.num(n) : 0));
+	public BuiltinPredicate exit = PredicateUtil.sink(n -> System.exit(n instanceof Int i ? i.number : 0));
 
 	public BuiltinPredicate fileExists = PredicateUtil.bool(n -> Files.exists(Paths.get(Formatter.display(n))));
 

@@ -132,19 +132,18 @@ public class SystemPredicates {
 		BuiltinPredicate predicate;
 		Tree tree;
 		Operator op;
-		Node left;
 		String name = null;
 		Node pass = null;
 
-		if (query instanceof Atom) {
-			name = Atom.name(query);
+		if (query instanceof Atom atom) {
+			name = atom.name;
 			pass = Atom.NIL;
 		} else if ((tree = Tree.decompose(query)) != null)
 			if ((op = tree.getOperator()) != TermOp.TUPLE_) {
 				name = op.name_();
 				pass = query;
-			} else if ((left = tree.getLeft()) instanceof Atom) {
-				name = Atom.name(left);
+			} else if (tree.getLeft() instanceof Atom atom) {
+				name = atom.name;
 				pass = tree.getRight();
 			}
 
@@ -182,7 +181,7 @@ public class SystemPredicates {
 	private BuiltinPredicate once = PredicateUtil.p1((prover, p0) -> new Prover(prover).prove0(p0));
 
 	private BuiltinPredicate systemPredicate = PredicateUtil.p1((prover, p0) -> {
-		var atom = p0 instanceof Atom ? (Atom) p0 : null;
+		var atom = p0 instanceof Atom a ? a : null;
 		var name = atom != null ? atom.name : null;
 		return name != null && predicates.containsKey(name);
 	});

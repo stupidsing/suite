@@ -28,8 +28,8 @@ public class FormatPredicates {
 	private ReversePolish rpn = new ReversePolish();
 
 	public BuiltinPredicate charAscii = PredicateUtil.p2((prover, p0, p1) -> {
-		return p0 instanceof Str && prover.bind(Int.of(Str.str(p0).charAt(0)), p1) //
-				|| p1 instanceof Int && prover.bind(new Str("" + (char) Int.num(p1)), p0);
+		return p0 instanceof Str s && prover.bind(Int.of(s.value.charAt(0)), p1) //
+				|| p1 instanceof Int i && prover.bind(new Str("" + (char) i.number), p0);
 	});
 
 	public BuiltinPredicate concat = PredicateUtil.ps((prover, nodes) -> {
@@ -79,16 +79,16 @@ public class FormatPredicates {
 	public BuiltinPredicate prettyPrintNew = PredicateUtil.sink(n -> System.out.println(new NewPrettyPrinter().prettyPrint(n)));
 
 	public BuiltinPredicate rpnPredicate = PredicateUtil.p2((prover, node, r) -> {
-		if (r instanceof Str)
-			return prover.bind(node, rpn.fromRpn(Str.str(r)));
+		if (r instanceof Str str)
+			return prover.bind(node, rpn.fromRpn(str.value));
 		else
 			return prover.bind(new Str(rpn.toRpn(node)), r);
 	});
 
 	public BuiltinPredicate startsWith = PredicateUtil.p2((prover, s, start) -> true //
-			&& s instanceof Atom //
-			&& start instanceof Atom //
-			&& Atom.name(s).startsWith(Atom.name(start)));
+			&& s instanceof Atom s_ //
+			&& start instanceof Atom start_ //
+			&& s_.name.startsWith(start_.name));
 
 	public BuiltinPredicate stringLength = PredicateUtil.fun(n -> Int.of(Str.str(n).length()));
 
@@ -96,8 +96,8 @@ public class FormatPredicates {
 		var name = Str.str(s0);
 		var length = name.length();
 
-		if (p0 instanceof Int && px instanceof Int) {
-			int m = Int.num(p0), n = Int.num(px);
+		if (p0 instanceof Int p0_ && px instanceof Int px_) {
+			int m = p0_.number, n = px_.number;
 
 			while (m < 0)
 				m += length;

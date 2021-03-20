@@ -40,7 +40,7 @@ public class LinearRuleSet implements RuleSet {
 
 	@Override
 	public boolean equals(Object object) {
-		return object instanceof LinearRuleSet && Equals.ab(rules, ((LinearRuleSet) object).rules);
+		return object instanceof LinearRuleSet lrs && Equals.ab(rules, lrs.rules);
 	}
 
 	@Override

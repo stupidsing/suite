@@ -166,8 +166,8 @@ public class EvalPredicates {
 			return prover.bind(tree.getLeft(), l) //
 					&& prover.bind(oper, op) //
 					&& prover.bind(tree.getRight(), r);
-		} else if (op instanceof Atom) {
-			var operator = TermOp.find(Atom.name(op));
+		} else if (op instanceof Atom atom) {
+			var operator = TermOp.find(atom.name);
 			return prover.bind(t, Tree.of(operator, l, r));
 		} else
 			return false;
