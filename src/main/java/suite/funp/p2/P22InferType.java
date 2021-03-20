@@ -158,7 +158,7 @@ public class P22InferType extends FunpCfg {
 	private Map<Funp, Node> typeByNode = new IdentityHashMap<>();
 	private Map<Funp, Boolean> isRegByNode = new IdentityHashMap<>();
 
-	private boolean isGcStruct = true;
+	private boolean isGcStruct = false;
 
 	public P22InferType(Funp_ f) {
 		super(f);
