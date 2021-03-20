@@ -44,8 +44,7 @@ public class SewingGeneralizerImpl implements GeneralizerFactory {
 			var node0 = node;
 			Tree tree;
 
-			if (node0 instanceof Atom) {
-				var atom = (Atom) node0;
+			if (node0 instanceof Atom atom) {
 				var name = atom.name;
 				if (ProverConstant.isCut(node0) || name.startsWith(variablePrefix)) {
 					var index = vm.computeIndex(atom);
@@ -54,9 +53,9 @@ public class SewingGeneralizerImpl implements GeneralizerFactory {
 					fun = env -> new Reference();
 				else
 					fun = env -> node0;
-			} else if (node0 instanceof Dict) {
+			} else if (node0 instanceof Dict dict) {
 				var array = Read //
-						.from2(Dict.m(node0)) //
+						.from2(dict.getMap()) //
 						.map((key, value) -> new Generalize_[] { generalizer(key), generalizer(value), }) //
 						.toArray(Generalize_[].class);
 				var length = array.length;
@@ -78,8 +77,8 @@ public class SewingGeneralizerImpl implements GeneralizerFactory {
 					var rf = generalizer(tree.getRight());
 					fun = env -> Tree.of(operator, lf.apply(env), new Suspend(() -> rf.apply(env)));
 				}
-			} else if (node0 instanceof Tuple) {
-				var fs = Read.from(Tuple.t(node0)).map(this::generalizer).toArray(Generalize_.class);
+			} else if (node0 instanceof Tuple tuple) {
+				var fs = Read.from(tuple.nodes).map(this::generalizer).toArray(Generalize_.class);
 				var length = fs.length;
 				fun = env -> Tuple.of(New.array(length, Node.class, i -> fs[i].apply(env)));
 			} else

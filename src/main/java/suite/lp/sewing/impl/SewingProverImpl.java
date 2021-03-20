@@ -319,10 +319,10 @@ public class SewingProverImpl implements ProverFactory {
 			var p = bf.binder(n1);
 			var f = bf.cloner(n0);
 			cps = rt -> p.test(rt, f.apply(rt.env)) ? cpsx : null;
-		} else if ((m = Suite.pattern(".0 .1").match(node)) != null && m[0] instanceof Atom)
-			cps = compileCpsCallPredicate(bf, Atom.name(m[0]), m[1], node, cpsx);
-		else if (node instanceof Atom) {
-			var name = Atom.name(node);
+		} else if ((m = Suite.pattern(".0 .1").match(node)) != null && m[0] instanceof Atom atom)
+			cps = compileCpsCallPredicate(bf, atom.name, m[1], node, cpsx);
+		else if (node instanceof Atom atom) {
+			var name = atom.name;
 			if (Equals.string(name, ""))
 				cps = cpsx;
 			else if (Equals.string(name, "fail"))
@@ -585,8 +585,8 @@ public class SewingProverImpl implements ProverFactory {
 					return Read.from(results).uniqueResult();
 				});
 
-				if (n0 instanceof Reference) {
-					rt.trail.addBind((Reference) n0, suspend);
+				if (n0 instanceof Reference ref) {
+					rt.trail.addBind(ref, suspend);
 					return okay;
 				} else
 					return fail;
@@ -620,10 +620,10 @@ public class SewingProverImpl implements ProverFactory {
 				});
 				return tr0;
 			};
-		} else if ((m = Suite.pattern(".0 .1").match(node)) != null && m[0] instanceof Atom)
-			tr = compileTrCallPredicate(bf, Atom.name(m[0]), m[1], node);
-		else if (node instanceof Atom) {
-			var name = Atom.name(node);
+		} else if ((m = Suite.pattern(".0 .1").match(node)) != null && m[0] instanceof Atom atom)
+			tr = compileTrCallPredicate(bf, atom.name, m[1], node);
+		else if (node instanceof Atom atom) {
+			var name = atom.name;
 			if (node == ProverConstant.cut)
 				tr = cutEnd();
 			else if (Equals.string(name, ""))
@@ -632,8 +632,8 @@ public class SewingProverImpl implements ProverFactory {
 				tr = fail;
 			else
 				tr = compileTrCallPredicate(bf, name, Atom.NIL, node);
-		} else if (node instanceof Data<?>) {
-			var data = ((Data<?>) node).data;
+		} else if (node instanceof Data<?> d) {
+			var data = d.data;
 			if (data instanceof Source<?>)
 				tr = rt -> ((Source<?>) data).g() != Boolean.TRUE ? okay : fail;
 			else
@@ -877,7 +877,7 @@ public class SewingProverImpl implements ProverFactory {
 		if (tree != null)
 			return 1 + max(complexity(tree.getLeft()), complexity(tree.getRight()));
 		else
-			return node instanceof Atom && ProverConstant.isVariable(Atom.name(node)) ? 0 : 1;
+			return node instanceof Atom atom && ProverConstant.isVariable(atom.name) ? 0 : 1;
 	}
 
 	private Mutable<Cps> getCpsByPrototype(Prototype prototype) {
@@ -892,7 +892,7 @@ public class SewingProverImpl implements ProverFactory {
 		TraceLevel traceLevel;
 		if (Suite.isProverTrace) {
 			var head = prototype.head;
-			var name = head instanceof Atom ? Atom.name(head) : null;
+			var name = head instanceof Atom atom ? atom.name : null;
 
 			traceLevel = name != null //
 					&& !name.startsWith("member") //

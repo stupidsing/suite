@@ -33,9 +33,9 @@ public class SewingClonerImpl implements ClonerFactory {
 			var node0 = node;
 			Tree tree;
 
-			if (node0 instanceof Dict) {
+			if (node0 instanceof Dict dict) {
 				var array = Read //
-						.from2(Dict.m(node0)) //
+						.from2(dict.getMap()) //
 						.map((key, value) -> new Clone_[] { cloner(key), cloner(value), }) //
 						.toArray(Clone_[].class);
 				var length = array.length;
@@ -57,11 +57,11 @@ public class SewingClonerImpl implements ClonerFactory {
 					var rf = cloner(tree.getRight());
 					fun = env -> Tree.of(operator, lf.apply(env), new Suspend(() -> rf.apply(env)));
 				}
-			} else if (node0 instanceof Reference) {
-				var index = vm.computeIndex((Reference) node0);
+			} else if (node0 instanceof Reference ref) {
+				var index = vm.computeIndex(ref);
 				fun = env -> env.get(index);
-			} else if (node0 instanceof Tuple) {
-				var ps = Read.from(Tuple.t(node0)).map(this::cloner).toArray(Clone_.class);
+			} else if (node0 instanceof Tuple tuple) {
+				var ps = Read.from(tuple.nodes).map(this::cloner).toArray(Clone_.class);
 				var size = ps.length;
 				fun = env -> Tuple.of(New.array(size, Node.class, i -> ps[i].apply(env)));
 			} else

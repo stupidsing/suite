@@ -42,7 +42,7 @@ public class VariableMapper<K> {
 		}
 
 		private String display(K key) {
-			return key instanceof Node ? Formatter.display((Node) key) : key.toString();
+			return key instanceof Node node ? Formatter.display(node) : key.toString();
 		}
 	}
 
