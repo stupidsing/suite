@@ -270,8 +270,8 @@ evalscripts(['fun', 'render',])
 
 	let eventSource = new EventSource('/sse');
 
-	eventSource.onError = error => console.log(error);
-	eventSource.onMessage = event => console.log(event);
+	eventSource.onError = console.error;
+	eventSource.onMessage = console.info;
 
 	eventSource.addEventListener("close", ev => eventSource.close());
 	eventSource.addEventListener("number", ev => renderAgain(view, vm => ({ ...vm, sse: [...vm.sse, JSON.parse(ev.data).i,], })));
