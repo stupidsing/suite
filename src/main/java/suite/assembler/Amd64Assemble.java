@@ -435,8 +435,7 @@ public class Amd64Assemble {
 					yield assembleRm(instruction, 0x58, 0x8E, 0);
 				else
 					yield invalid;
-			else if (i_op0 instanceof OpRegSegment) {
-				var sreg = (OpRegSegment) i_op0;
+			else if (i_op0 instanceof OpRegSegment sreg) {
 				yield switch (sreg.sreg) {
 				case 0 -> isLongMode ? invalid : assemble(0x07); // POP ES
 				case 1 -> invalid; // POP CS, no such thing
@@ -460,8 +459,7 @@ public class Amd64Assemble {
 					yield assembleRm(instruction, 0x50, 0xFE, 6);
 				else
 					yield invalid;
-			else if (i_op0 instanceof OpRegSegment) {
-				var sreg = (OpRegSegment) i_op0;
+			else if (i_op0 instanceof OpRegSegment sreg) {
 				yield switch (sreg.sreg) {
 				case 0 -> isLongMode ? invalid : assemble(0x06); // PUSH ES
 				case 1 -> isLongMode ? invalid : assemble(0x0E); // PUSH CS
@@ -687,7 +685,7 @@ public class Amd64Assemble {
 			if (shiftImm != null) {
 				isShiftImm = shiftImm.imm != 1;
 				b1 = b + (isShiftImm ? 0 : 16);
-			} else if (shift.size == 1 && shift instanceof OpReg && ((OpReg) shift).reg == 1) { // CL
+			} else if (shift.size == 1 && shift instanceof OpReg shiftReg && shiftReg.reg == 1) { // CL
 				isShiftImm = false;
 				b1 = b + 16 + 2;
 			} else
@@ -776,8 +774,8 @@ public class Amd64Assemble {
 		}
 	}
 
-	private Predicate<Operand> isAcc = op -> op instanceof OpReg && ((OpReg) op).reg == 0;
-	private Predicate<Operand> isNonRexReg = op -> op instanceof OpReg && ((OpReg) op).reg < 8;
+	private Predicate<Operand> isAcc = op -> op instanceof OpReg opReg && opReg.reg == 0;
+	private Predicate<Operand> isNonRexReg = op -> op instanceof OpReg opReg && opReg.reg < 8;
 	private Predicate<Operand> isReg = op -> op instanceof OpReg;
 	private Predicate<Operand> isRm = op -> op instanceof OpMem || op instanceof OpReg;
 	private Predicate<Operand> isXmm = op -> op instanceof OpRegXmm;
@@ -787,15 +785,13 @@ public class Amd64Assemble {
 		int mod, rm, s, i, b, dispSize;
 		long disp;
 
-		if (operand instanceof OpReg) { // EAX
-			var op = (OpReg) operand;
+		if (operand instanceof OpReg op) { // EAX
 			mod = 3;
 			rm = op.reg;
 			s = i = b = -1;
 			dispSize = 0;
 			disp = 0;
-		} else if (operand instanceof OpMem) {
-			var op = (OpMem) operand;
+		} else if (operand instanceof OpMem op) {
 			var br = op.baseReg;
 			var ir = op.indexReg;
 
