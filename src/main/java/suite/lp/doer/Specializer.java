@@ -8,10 +8,9 @@ import suite.node.io.Rewrite_;
 public class Specializer {
 
 	public Node specialize(Node node) {
-		if (node instanceof Reference) {
-			var ref = (Reference) node;
+		if (node instanceof Reference ref)
 			node = Atom.of(ref.name());
-		} else
+		else
 			node = Rewrite_.map(node, this::specialize);
 		return node;
 	}

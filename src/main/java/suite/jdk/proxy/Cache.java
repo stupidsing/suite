@@ -72,7 +72,7 @@ public class Cache {
 					results.put(key, result = invocation.invoke(m, ps));
 				} catch (InvocationTargetException ite) {
 					var th = ite.getTargetException();
-					throw th instanceof Exception ? (Exception) th : ite;
+					throw th instanceof Exception ex ? ex : ite;
 				}
 			else
 				result = results.get(key);

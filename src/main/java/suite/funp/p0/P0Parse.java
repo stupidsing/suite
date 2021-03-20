@@ -152,7 +152,7 @@ public class P0Parse extends FunpCfg {
 				var tag = Atom.name(a);
 				return FunpTag.of(IntMutable.of(idByTag.computeIfAbsent(tag, t -> ++tagId)), tag, p(b));
 			}).match("€0.€1", (a, b) -> { // retrieves member of a struct
-				return b instanceof Atom ? FunpField.of(FunpReference.of(p(a)), Atom.name(b)) : null;
+				return b instanceof Atom atom ? FunpField.of(FunpReference.of(p(a)), atom.name) : null;
 			}).match("€0*", a -> { // dereferences a pointer
 				return FunpDeref.of(p(a));
 			}).match("[€0]", a -> { // forms a list
@@ -379,12 +379,12 @@ public class P0Parse extends FunpCfg {
 			Tree t;
 			while ((t = Tree.decompose(n, FunpOp.DOT___)) != null)
 				n = t.getRight();
-			return n instanceof Atom && Atom.name(n).endsWith("!");
+			return n instanceof Atom atom && atom.name.endsWith("!");
 		}
 
 		private boolean isId(Node n) {
-			if (n instanceof Atom) {
-				var ch0 = Atom.name(n).charAt(0);
+			if (n instanceof Atom atom) {
+				var ch0 = atom.name.charAt(0);
 				return ch0 == '!' || Character.isAlphabetic(ch0);
 			} else
 				return false;
@@ -431,11 +431,11 @@ public class P0Parse extends FunpCfg {
 		}
 
 		private int num(Node a) {
-			var s = a instanceof Atom ? Atom.name(a) : null;
+			var s = a instanceof Atom atom ? atom.name : null;
 			if (s != null)
 				return s.length() == 1 ? s.charAt(0) : Funp_.fail(null, "'" + a + "' is not a number");
-			else if (a instanceof Int)
-				return Int.num(a);
+			else if (a instanceof Int int_)
+				return int_.number;
 			else
 				return Funp_.fail(null, "'" + a + "' is not a number");
 		}

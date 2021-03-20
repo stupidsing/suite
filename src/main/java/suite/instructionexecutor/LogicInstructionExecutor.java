@@ -59,17 +59,15 @@ public class LogicInstructionExecutor extends InstructionExecutor {
 			var rl = insn1.op1;
 			var rr = insn1.op2;
 
-			if (node instanceof Tree) {
-				var tree = (Tree) node;
-
+			if (node instanceof Tree tree)
 				if (tree.getOperator() == op) {
 					regs[rl] = tree.getLeft();
 					regs[rr] = tree.getRight();
 				} else
 					current.ip = insn.op1;
-			} else if (node instanceof Reference) {
+			else if (node instanceof Reference ref) {
 				Tree tree = Tree.of(op, regs[rl] = new Reference(), regs[rr] = new Reference());
-				trail.addBind((Reference) node, tree);
+				trail.addBind(ref, tree);
 			} else
 				current.ip = insn.op1;
 		}

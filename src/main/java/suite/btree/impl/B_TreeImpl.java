@@ -383,10 +383,8 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 			var ptr = kp.pointer;
 			w.print(pfx + (kp.key != null ? kp.key : "MIN-KEY"));
 
-			if (ptr instanceof B_TreeImpl.Branch) {
+			if (ptr instanceof B_TreeImpl<?, ?>.Branch branch) {
 				w.println();
-				@SuppressWarnings("unchecked")
-				var branch = (Branch) ptr;
 				dump(w, pfx + "\t", branch.pointer);
 			} else if (ptr instanceof B_TreeImpl.Leaf)
 				w.println(" = " + kp.leafValue());

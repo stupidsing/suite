@@ -401,7 +401,7 @@ public class P4GenerateCode extends FunpCfg {
 			}).applyIf(FunpOpLr.class, f -> f.apply((opSize, op, lhs0, rhs0) -> {
 				var lhs1 = compileSideEffects(lhs0);
 				var rhs1 = compileSideEffects(rhs0);
-				var assoc = op instanceof TermOp ? ((TermOp) op).assoc() : Assoc.RIGHT;
+				var assoc = op instanceof TermOp termOp ? termOp.assoc() : Assoc.RIGHT;
 				return returnOp(compileTree(opSize, op, assoc, lhs1, rhs1));
 			})).applyIf(FunpOperand.class, f -> f.apply(op -> {
 				return returnOp(op.value());
@@ -851,8 +851,8 @@ public class P4GenerateCode extends FunpCfg {
 		private Pair<Funp, OpReg> compileCommutativeTree(int size, Insn insn, Assoc assoc, Funp lhs, Funp rhs) {
 			var opLhs = p4deOp.decomposeNumber(fd, lhs, size);
 			var opRhs = p4deOp.decomposeNumber(fd, rhs, size);
-			var opLhsReg = opLhs instanceof OpReg ? (OpReg) opLhs : null;
-			var opRhsReg = opRhs instanceof OpReg ? (OpReg) opRhs : null;
+			var opLhsReg = opLhs instanceof OpReg opReg ? opReg : null;
+			var opRhsReg = opRhs instanceof OpReg opReg ? opReg : null;
 
 			if (opLhsReg != null && !rs.isAnyMasked(opLhsReg))
 				return Pair.of(lhs, compileRegInstruction(size, insn, opLhsReg, opRhs, rhs));
@@ -1097,8 +1097,8 @@ public class P4GenerateCode extends FunpCfg {
 		// loads the address of a memory operand
 		public OpReg lea(OpMem opMem) {
 			var op = em.lea(opMem);
-			if (op instanceof OpReg)
-				return (OpReg) op;
+			if (op instanceof OpReg opReg)
+				return opReg;
 			else {
 				var op0 = isOutSpec ? pop0 : rs.get(ps);
 				var opr = pointerRegs[op0.reg];

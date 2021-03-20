@@ -118,8 +118,8 @@ public class InstructionExtractor implements AutoCloseable {
 			var node = rs.get(index).finalNode();
 			Tree tree;
 
-			if (node instanceof Int)
-				return Int.num(node);
+			if (node instanceof Int i)
+				return i.number;
 			else if (node instanceof Reference) { // transient register
 
 				// allocates new register in current local frame

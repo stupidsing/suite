@@ -97,8 +97,7 @@ public class Prover {
 			// logUtil.info(Formatter.dump(query));
 			query = query.finalNode();
 
-			if (query instanceof Tree) {
-				var tree = (Tree) query;
+			if (query instanceof Tree tree) {
 				Node left = tree.getLeft(), right = tree.getRight();
 				var op = tree.getOperator();
 
@@ -150,7 +149,7 @@ public class Prover {
 
 					var prototype = Prototype.of(query);
 					var head = prototype != null ? prototype.head : null;
-					var atom = head instanceof Atom ? (Atom) head : null;
+					var atom = head instanceof Atom atom_ ? atom_ : null;
 					var name = atom != null ? atom.name : null;
 					isTrace &= whites == null || whites.contains(name);
 					isTrace &= blacks == null || !blacks.contains(name);

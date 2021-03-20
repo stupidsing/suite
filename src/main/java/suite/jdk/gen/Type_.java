@@ -17,10 +17,10 @@ public class Type_ {
 	public static Class<?> classOf(Type type) {
 		String className;
 
-		if (type instanceof ObjectType)
-			className = ((ObjectType) type).getClassName();
-		else if (type instanceof BasicType)
-			className = Const.getTypeName(((BasicType) type).getType());
+		if (type instanceof ObjectType type_)
+			className = type_.getClassName();
+		else if (type instanceof BasicType type_)
+			className = Const.getTypeName(type_.getType());
 		else
 			return fail();
 

@@ -531,8 +531,8 @@ public class P22InferType extends FunpCfg {
 				return FunpData.of(list);
 			})).applyIf(FunpDefine.class, f -> f.apply((vn, value, expr, fdt) -> {
 				var size = getTypeSize(typeOf(value));
-				if (value instanceof FunpLambda)
-					((FunpLambda) value).name = vn;
+				if (value instanceof FunpLambda fl)
+					fl.name = vn;
 				if (Fdt.isGlobal(fdt)) {
 					var address = Mutable.<Operand> nil();
 					var var = global(address, 0, size);
@@ -601,8 +601,7 @@ public class P22InferType extends FunpCfg {
 					return fail();
 			})).applyIf(FunpDeref.class, f -> f.apply(pointer0 -> {
 				var pointer1 = erase(pointer0);
-				if (pointer1 instanceof FunpIndex) {
-					var g = (FunpIndex) pointer1;
+				if (pointer1 instanceof FunpIndex g) {
 					var elementSize = getTypeSize(type0);
 					var address = adjustPointer(g.reference, g.index, elementSize);
 					return FunpMemory.of(address, 0, elementSize);
@@ -1258,8 +1257,8 @@ public class P22InferType extends FunpCfg {
 				return "boolean";
 			else if ((m = typePatDecor.match(n)) != null)
 				if ((d = typeDecorArray.match(m[0])) != null)
-					if (d[0] instanceof Int) {
-						int size = Int.num(d[0]);
+					if (d[0] instanceof Int i) {
+						int size = i.number;
 						return "[" + size + "]" + toTypeString(set, m[1]);
 					} else if (d[0] instanceof Reference)
 						return "[]" + toTypeString(set, m[1]);

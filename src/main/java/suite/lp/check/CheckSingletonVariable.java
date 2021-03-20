@@ -34,8 +34,8 @@ public class CheckSingletonVariable {
 
 		private void scan(Node node) {
 			while (true) {
-				if (node instanceof Atom) {
-					var name = Atom.name(node);
+				if (node instanceof Atom atom) {
+					var name = atom.name;
 
 					// check all variables starting with alphabets; ignore
 					// computer-generated code
@@ -49,8 +49,7 @@ public class CheckSingletonVariable {
 							value = Boolean.FALSE;
 						isSingleton.put(node, value);
 					}
-				} else if (node instanceof Tree) {
-					var tree = (Tree) node;
+				} else if (node instanceof Tree tree) {
 					scan(tree.getLeft());
 					node = tree.getRight();
 					continue;

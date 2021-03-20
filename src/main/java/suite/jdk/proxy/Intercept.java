@@ -26,7 +26,7 @@ public class Intercept {
 				return invocation1.invoke(method, parameters);
 			} catch (InvocationTargetException ite) {
 				var th = ite.getTargetException();
-				throw th instanceof Exception ? (Exception) th : ite;
+				throw th instanceof Exception ex ? ex : ite;
 			}
 		};
 

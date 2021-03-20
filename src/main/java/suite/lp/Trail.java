@@ -11,13 +11,12 @@ public class Trail {
 	private List<Reference> boundReferences = new ArrayList<>();
 
 	public void addBind(Reference reference, Node target) {
-		if (target instanceof Reference) {
-			var reference1 = (Reference) target;
+		if (target instanceof Reference reference1)
 			if (reference.getId() < reference1.getId())
 				addDirectedBind(reference1, reference);
 			else
 				addDirectedBind(reference, reference1);
-		} else
+		else
 			addDirectedBind(reference, target);
 	}
 

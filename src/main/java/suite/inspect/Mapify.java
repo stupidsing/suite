@@ -115,8 +115,7 @@ public class Mapify {
 						// happens when an enum implements an interface
 						return m;
 				}, o -> {
-					if (o instanceof Map) {
-						var map = (Map<?, ?>) o;
+					if (o instanceof Map<?, ?> map) {
 						var className = map.get("@class").toString();
 						var clazz1 = ex(() -> Class.forName(className));
 						return apply_(o, getMapifier(clazz1).unmapify);
@@ -146,7 +145,7 @@ public class Mapify {
 		}).applyIf(ParameterizedType.class, pt -> {
 			var rawType = pt.getRawType();
 			var typeArgs = pt.getActualTypeArguments();
-			var clazz = rawType instanceof Class ? (Class<?>) rawType : null;
+			var clazz = rawType instanceof Class<?> c ? c : null;
 
 			if (collectionClasses.contains(clazz)) {
 				var mapifier1 = getMapifier(typeArgs[0]);

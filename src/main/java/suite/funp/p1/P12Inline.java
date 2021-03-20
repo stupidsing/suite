@@ -179,8 +179,8 @@ public class P12Inline {
 					count(expr, isWithinIo);
 					return n_;
 				})).applyIf(FunpReference.class, f -> f.apply(expr -> {
-					if (expr instanceof FunpVariable)
-						getVariableCount((FunpVariable) expr).update(9999);
+					if (expr instanceof FunpVariable fv)
+						getVariableCount(fv).update(9999);
 					return null;
 				})).applyIf(FunpVariable.class, f -> f.apply(vn -> {
 					getVariableCount(f).increment();

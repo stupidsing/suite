@@ -1,6 +1,5 @@
 package suite.funp;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import primal.adt.Fixie_.FixieFun0;
@@ -659,17 +658,6 @@ public class P0 {
 			f.left = left;
 			f.right = right;
 			return f;
-		}
-
-		public static List<Funp> unfold(Funp n, Atom op) {
-			var list = new ArrayList<Funp>();
-			FunpTree2 tree;
-			while (n instanceof FunpTree && (tree = (FunpTree2) n).operator == op) {
-				list.add(tree.left);
-				n = tree.right;
-			}
-			list.add(n);
-			return list;
 		}
 
 		public <R> R apply(FixieFun3<Atom, Funp, Funp, R> fun) {

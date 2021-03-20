@@ -50,10 +50,10 @@ public class P03Bind {
 			return forInt(size0).fold(then, (i, then_) -> bind(fun0.apply(i), fun1.apply(i), then_, else_));
 		};
 
-		if (be instanceof FunpBoolean && value instanceof FunpBoolean)
-			return ((FunpBoolean) be).b == ((FunpBoolean) value).b ? then : else_;
-		else if (be instanceof FunpNumber && value instanceof FunpNumber)
-			return ((FunpNumber) be).i == ((FunpNumber) value).i ? then : else_;
+		if (be instanceof FunpBoolean be_ && value instanceof FunpBoolean value_)
+			return be_.b == value_.b ? then : else_;
+		else if (be instanceof FunpNumber be_ && value instanceof FunpNumber value_)
+			return be_.i == value_.i ? then : else_;
 		else {
 			var result = be.sw( //
 			).applyIf(FunpArray.class, f -> f.apply(elements0 -> {

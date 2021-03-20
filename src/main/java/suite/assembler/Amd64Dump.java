@@ -36,11 +36,9 @@ public class Amd64Dump extends Amd64Cfg {
 		var regs = amd64.regs(pointerSize);
 		String name;
 
-		if (op instanceof OpImm) {
-			var opImm = (OpImm) op;
+		if (op instanceof OpImm opImm)
 			return dump(opImm.imm, opImm.size);
-		} else if (op instanceof OpMem) {
-			var opMem = (OpMem) op;
+		else if (op instanceof OpMem opMem) {
 			var baseReg = opMem.baseReg;
 			var indexReg = opMem.indexReg;
 			var s = "" //
@@ -48,8 +46,8 @@ public class Amd64Dump extends Amd64Cfg {
 					+ (0 <= indexReg ? " + " + dump(regs[indexReg]) + " * " + (1 << opMem.scale) : "") //
 					+ (0 < opMem.disp.size ? dumpDisp(opMem.disp.imm) : "");
 			return "[" + s.substring(3) + "]";
-		} else if (op instanceof OpRemark)
-			return ((OpRemark) op).remark;
+		} else if (op instanceof OpRemark opRemark)
+			return opRemark.remark;
 		else if ((name = (amd64.registerByName.inverse().get(op).name)) != null)
 			return name;
 		else

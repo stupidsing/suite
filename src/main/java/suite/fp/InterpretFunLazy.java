@@ -232,8 +232,7 @@ public class InterpretFunLazy {
 
 				return frame -> {
 					var value = value_.apply(frame).get();
-					if (value instanceof Cons) {
-						var cons = (Cons) value;
+					if (value instanceof Cons cons) {
 						frame.add(cons.fst);
 						frame.add(cons.snd);
 						return then_.apply(frame);

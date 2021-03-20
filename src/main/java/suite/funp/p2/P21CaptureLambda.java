@@ -75,7 +75,7 @@ public class P21CaptureLambda {
 			private boolean isRef; // whether the variable needs to be stored by-reference
 
 			private Vi(Funp def) {
-				defLambda = def instanceof FunpLambda ? (FunpLambda) def : lambdaByFunp.get(def);
+				defLambda = def instanceof FunpLambda fl ? fl : lambdaByFunp.get(def);
 			}
 
 			private FunpLambda setLambda(boolean isRef_, FunpLambda varLambda_) {
@@ -132,10 +132,10 @@ public class P21CaptureLambda {
 			// if we are capturing the reference, dereference to get the actual value
 			if (!isRef)
 				return access;
-			else if (!(access instanceof FunpReference))
-				return FunpDeref.of(access);
+			else if (access instanceof FunpReference fr)
+				return fr.expr;
 			else
-				return ((FunpReference) access).expr;
+				return FunpDeref.of(access);
 		};
 
 		var accessors = Read.from2(infoByVar).concatMap2((var, vi) -> {

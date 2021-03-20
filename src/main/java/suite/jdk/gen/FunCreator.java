@@ -164,8 +164,8 @@ public class FunCreator<I> extends FunFactory {
 						String p;
 						if (instruction instanceof BranchInstruction)
 							p = Integer.toString(visit.jumps.get(i));
-						else if (instruction instanceof CPInstruction)
-							p = constantPool.constantToString(constantPool.getConstant(((CPInstruction) instruction).getIndex()));
+						else if (instruction instanceof CPInstruction cpi)
+							p = constantPool.constantToString(constantPool.getConstant(cpi.getIndex()));
 						else
 							p = "";
 						Log_.info("(" + i + ") " + s + " " + p);

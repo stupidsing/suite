@@ -25,7 +25,7 @@ public class LazyFunInstructionExecutor extends FunInstructionExecutor {
 			}
 
 			public Node yawn(Node node) {
-				return node instanceof Thunk ? yawnThunk((Thunk) node) : node;
+				return node instanceof Thunk thunk ? yawnThunk(thunk) : node;
 			}
 		});
 	}

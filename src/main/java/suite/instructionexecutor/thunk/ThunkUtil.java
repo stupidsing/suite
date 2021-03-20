@@ -86,8 +86,7 @@ public class ThunkUtil {
 	public static Node deepYawn(Iterate<Node> yawn, Node node) {
 		node = yawn.apply(node);
 
-		if (node instanceof Tree) {
-			var tree = (Tree) node;
+		if (node instanceof Tree tree) {
 			var left = deepYawn(yawn, tree.getLeft());
 			var right = deepYawn(yawn, tree.getRight());
 			node = Tree.of(tree.getOperator(), left, right);

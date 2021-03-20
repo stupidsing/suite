@@ -168,18 +168,17 @@ public class Inspect {
 				});
 			}
 
-			private Object rewriteField(Object t0) {
-				if (baseClass.isInstance(t0)) {
+			private Object rewriteField(Object t) {
+				if (baseClass.isInstance(t)) {
 					@SuppressWarnings("unchecked")
-					var t1 = rewrite((T) t0);
+					var t1 = rewrite((T) t);
 					return t1;
-				} else if (t0 instanceof Collection)
-					return Read.from((Collection<?>) t0).map(this::rewriteField).toList();
-				else if (t0 instanceof Pair) {
-					var t1 = (Pair<?, ?>) t0;
-					return Pair.of(rewriteField(t1.k), rewriteField(t1.v));
+				} else if (t instanceof Collection<?> c)
+					return Read.from(c).map(this::rewriteField).toList();
+				else if (t instanceof Pair<?, ?> p) {
+					return Pair.of(rewriteField(p.k), rewriteField(p.v));
 				} else
-					return t0;
+					return t;
 			}
 		}.rewrite(t0);
 	}

@@ -19,7 +19,7 @@ public class SynchronizeUtil {
 					return method.invoke(object, ps);
 				} catch (InvocationTargetException ite) {
 					var th = ite.getTargetException();
-					throw th instanceof Exception ? (Exception) th : ite;
+					throw th instanceof Exception ex ? ex : ite;
 				}
 			}
 		};

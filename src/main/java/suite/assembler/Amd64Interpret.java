@@ -129,14 +129,13 @@ public class Amd64Interpret extends Amd64Cfg {
 			try {
 				Obj_Lng<Operand> fetch = op -> {
 					long v0;
-					if (op instanceof OpImm)
-						v0 = ((OpImm) op).imm;
-					else if (op instanceof OpMem)
-						v0 = mem.getLong(index(address((OpMem) op)));
-					else if (op instanceof OpReg) {
-						var reg = ((OpReg) op).reg;
-						v0 = regs[reg];
-					} else
+					if (op instanceof OpImm opImm)
+						v0 = opImm.imm;
+					else if (op instanceof OpMem opMem)
+						v0 = mem.getLong(index(address(opMem)));
+					else if (op instanceof OpReg opReg)
+						v0 = regs[opReg.reg];
+					else
 						v0 = 0;
 					return trim(v0, op.size);
 				};
@@ -150,10 +149,10 @@ public class Amd64Interpret extends Amd64Cfg {
 				LngSink assign;
 				Runnable r;
 
-				if (op0 instanceof OpMem)
-					assign = assignMemory(address((OpMem) op0), op0.size);
-				else if (op0 instanceof OpReg) {
-					var reg = ((OpReg) op0).reg;
+				if (op0 instanceof OpMem opMem)
+					assign = assignMemory(address(opMem), op0.size);
+				else if (op0 instanceof OpReg opReg) {
+					var reg = opReg.reg;
 					assign = switch (op0.size) {
 					case 1 -> i -> regs[reg] = regs[reg] & 0xFFFFFFFFFFFFFF00l | i & 0x00000000000000FFl;
 					case 2 -> i -> regs[reg] = regs[reg] & 0xFFFFFFFFFFFF0000l | i & 0x000000000000FFFFl;
@@ -177,7 +176,7 @@ public class Amd64Interpret extends Amd64Cfg {
 				case CMPSB -> cmpsb();
 				case CMPSD -> cmpsd();
 				case DEC -> assign.f(source0 - 1);
-				case HLT -> fail(op0 instanceof OpRemark ? ((OpRemark) op0).remark : null);
+				case HLT -> fail(op0 instanceof OpRemark opRemark ? opRemark.remark : null);
 				case IDIV -> {
 					var n = (regs[edx] << 32) + regs[eax];
 					var div = n / source0;
@@ -220,8 +219,8 @@ public class Amd64Interpret extends Amd64Cfg {
 				case LABEL -> jumpIf(false, 0);
 				case LEA -> assign.f(address((OpMem) op1));
 				case LOG -> {
-					if (op0 instanceof OpRemark)
-						Log_.info(((OpRemark) op0).remark + " = " + Format.hex8(source1));
+					if (op0 instanceof OpRemark opRemark)
+						Log_.info(opRemark.remark + " = " + Format.hex8(source1));
 					else
 						Log_.info("value = " + Format.hex8(source0));
 				}

@@ -316,8 +316,8 @@ public class EditorView {
 		component.setVisible(visible);
 		refresh();
 		if (visible)
-			if (component instanceof JTextComponent)
-				focus((JTextComponent) component);
+			if (component instanceof JTextComponent jtc)
+				focus(jtc);
 			else
 				component.requestFocusInWindow();
 		else if (isOwningFocus(component))
@@ -332,8 +332,8 @@ public class EditorView {
 
 	private boolean isOwningFocus(Component component) {
 		var isFocusOwner = component.isFocusOwner();
-		if (component instanceof JComponent)
-			for (var c : ((JComponent) component).getComponents())
+		if (component instanceof JComponent jc)
+			for (var c : jc.getComponents())
 				isFocusOwner |= isOwningFocus(c);
 		return isFocusOwner;
 	}

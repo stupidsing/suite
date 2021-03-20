@@ -70,7 +70,7 @@ public class P4JumpIf {
 				var r0 = new JumpIf(left).jnxIf();
 				var r1 = new JumpIf(right).jnxIf();
 				return r0 != null && r1 != null ? () -> r0.g() && r1.g() : null;
-			} else if (operator == FunpOp.NOTEQ_ && right instanceof FunpBoolean && ((FunpBoolean) right).b)
+			} else if (operator == FunpOp.NOTEQ_ && right instanceof FunpBoolean fb && fb.b)
 				return new JumpIf(left).jxxIf();
 			else if (jnx != null)
 				return () -> cmpJmp.apply(opSize, jnx, jnxRev, left, right);
@@ -83,7 +83,7 @@ public class P4JumpIf {
 				var r0 = new JumpIf(left).jxxIf();
 				var r1 = new JumpIf(right).jxxIf();
 				return r0 != null && r1 != null ? () -> r0.g() && r1.g() : null;
-			} else if (operator == FunpOp.NOTEQ_ && right instanceof FunpBoolean && ((FunpBoolean) right).b)
+			} else if (operator == FunpOp.NOTEQ_ && right instanceof FunpBoolean fb && fb.b)
 				return new JumpIf(left).jnxIf();
 			else if (jxx != null)
 				return () -> cmpJmp.apply(opSize, jxx, jxxRev, left, right);

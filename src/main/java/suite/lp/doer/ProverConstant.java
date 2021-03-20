@@ -14,8 +14,8 @@ public class ProverConstant {
 	 * Would a certain end-node be generalized?
 	 */
 	public static boolean isVariant(Node node) {
-		if (node instanceof Atom) {
-			var name = Atom.name(node);
+		if (node instanceof Atom atom) {
+			var name = atom.name;
 			return isWildcard(name) || isVariable(name) || isCut(node);
 		} else
 			return false;

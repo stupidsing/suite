@@ -70,8 +70,8 @@ public class Amd64Parse {
 	}
 
 	private Operand parseOperand(Node node, int size) {
-		if (node instanceof Int)
-			return amd64.imm(Int.num(node), size);
+		if (node instanceof Int i)
+			return amd64.imm(i.number, size);
 		else if (node instanceof Reference)
 			return references.computeIfAbsent(node, n -> amd64.new OpImmLabel(size));
 		else
@@ -98,8 +98,8 @@ public class Amd64Parse {
 					opMem.scale = Int.num(m[1]);
 				} else
 					fail("bad operand");
-			else if (component instanceof Int) {
-				opDisp.imm = Int.num(component);
+			else if (component instanceof Int i) {
+				opDisp.imm = i.number;
 				opDisp.size = opDisp.size == 0 ? mode.dispSize : fail("bad operand");
 			} else if (component instanceof Reference)
 				opDisp.size = opDisp.size == 0 ? mode.dispSize : fail("bad operand");

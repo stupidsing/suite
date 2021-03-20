@@ -159,8 +159,8 @@ public class Fut<T> {
 
 		if (o.t != null)
 			return o.t;
-		else if (o.ex instanceof RuntimeException)
-			throw (RuntimeException) o.ex;
+		else if (o.ex instanceof RuntimeException re)
+			throw re;
 		else
 			throw new RuntimeException(o.ex);
 	}

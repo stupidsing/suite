@@ -89,8 +89,8 @@ public class FunGenerateBytecode {
 			var ihs = new ArrayList<InstructionHandle>();
 
 			for (var instruction : list)
-				ihs.add(instruction instanceof BranchInstruction //
-						? il.append((BranchInstruction) instruction) //
+				ihs.add(instruction instanceof BranchInstruction bi //
+						? il.append(bi) //
 						: il.append(instruction));
 
 			jumps.forEach((src, tgt) -> ((BranchInstruction) ihs.get(src).getInstruction()).setTarget(ihs.get(tgt)));
@@ -148,7 +148,7 @@ public class FunGenerateBytecode {
 				list.add(factory.createGetStatic(className, e1.fieldName, e1.fieldType));
 			}).doIf(FieldTypeFunExpr_.class, e1 -> {
 				var className = ((ObjectType) fti.typeOf(e1.object)).getClassName();
-				var set = e1 instanceof FieldTypeSetFunExpr ? ((FieldTypeSetFunExpr) e1).value : null;
+				var set = e1 instanceof FieldTypeSetFunExpr fe ? fe.value : null;
 				Instruction instruction;
 				visit_(e1.object);
 				if (set != null) {

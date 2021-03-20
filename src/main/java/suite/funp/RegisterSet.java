@@ -84,14 +84,13 @@ public class RegisterSet {
 	private int flag(Operand... operands) {
 		var flag_ = 0;
 		for (var operand : operands)
-			if (operand instanceof OpReg)
-				flag_ |= flag(((OpReg) operand).reg);
-			else if (operand instanceof OpMem) {
-				var operand1 = (OpMem) operand;
-				if (0 <= operand1.baseReg)
-					flag_ |= flag(operand1.baseReg);
-				if (0 <= operand1.indexReg)
-					flag_ |= flag(operand1.indexReg);
+			if (operand instanceof OpReg opReg)
+				flag_ |= flag(opReg.reg);
+			else if (operand instanceof OpMem opMem) {
+				if (0 <= opMem.baseReg)
+					flag_ |= flag(opMem.baseReg);
+				if (0 <= opMem.indexReg)
+					flag_ |= flag(opMem.indexReg);
 			}
 		return flag_;
 	}

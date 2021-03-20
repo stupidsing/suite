@@ -133,7 +133,7 @@ public class FunRewrite extends FunFactory {
 			placeholders.put(var, lfe);
 			return seq(alfe, rewrite(do_));
 		})).applyIf(FieldFunExpr_.class, e1 -> e1.apply((fieldName, object) -> {
-			var set = e1 instanceof FieldSetFunExpr ? ((FieldSetFunExpr) e1).value : null;
+			var set = e1 instanceof FieldSetFunExpr fe ? fe.value : null;
 			var object0 = rewrite(object);
 			var clazz = fti.classOf(object0);
 			var field = ex(() -> clazz.getField(fieldName));
