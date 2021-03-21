@@ -34,9 +34,7 @@ public class Object_ {
 	public static Mapper mapper(Type type) {
 		Mapper mapper;
 
-		if (type instanceof Class) {
-			var clazz = (Class<?>) type;
-
+		if (type instanceof Class clazz) {
 			if (Util.isSimple(clazz))
 				mapper = new Mapper(object -> object, object -> object);
 			else if (clazz.isArray()) {
@@ -71,8 +69,7 @@ public class Object_ {
 						// happens when an enum implements an interface
 						return m;
 				}, object -> {
-					if (object instanceof Map) {
-						var map = (Map<?, ?>) object;
+					if (object instanceof Map<?, ?> map) {
 						var className = map.get("@class").toString();
 						var clazz1 = ex(() -> Class.forName(className));
 						return apply_(mapper(clazz1).unmap, object);
@@ -101,10 +98,9 @@ public class Object_ {
 					return object1;
 				}));
 			}
-		} else if (type instanceof ParameterizedType) {
-			var pt = (ParameterizedType) type;
+		} else if (type instanceof ParameterizedType pt) {
 			var rawType = pt.getRawType();
-			var clazz = rawType instanceof Class ? (Class<?>) rawType : null;
+			var clazz = rawType instanceof Class<?> c ? c : null;
 
 			if (List.class.isAssignableFrom(clazz))
 				mapper = new Mapper(object -> {

@@ -84,8 +84,7 @@ public class Serialize {
 	// do not handle nulls
 	private <T> Serializer<?> auto_(Type type) {
 		Serializer<?> serializer;
-		if (type instanceof Class) {
-			var clazz = (Class<?>) type;
+		if (type instanceof Class<?> clazz) {
 			if (Equals.ab(clazz, boolean.class) || Equals.ab(clazz, Boolean.class))
 				serializer = boolean_;
 			else if (Equals.ab(clazz, Bytes.class))
@@ -110,8 +109,7 @@ public class Serialize {
 				serializer = poly(clazz);
 			else
 				serializer = autoFields(clazz);
-		} else if (type instanceof ParameterizedType) {
-			var pt = (ParameterizedType) type;
+		} else if (type instanceof ParameterizedType pt) {
 			var rawType = pt.getRawType();
 			var typeArgs = pt.getActualTypeArguments();
 			var clazz = rawType instanceof Class ? (Class<?>) rawType : null;

@@ -63,7 +63,7 @@ public class LogUtil {
 			} catch (InvocationTargetException ite) {
 				var th = ite.getTargetException();
 				Log_.error(tag + prefix, th);
-				throw th instanceof Exception ? (Exception) th : ite;
+				throw th instanceof Exception ex ? ex : ite;
 			}
 		});
 	}

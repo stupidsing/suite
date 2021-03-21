@@ -57,7 +57,7 @@ public class Dict extends Node {
 
 	public Map<Node, Reference> getMap() {
 		var n = reference.finalNode();
-		return n instanceof Dict ? ((Dict) n).map : map;
+		return n instanceof Dict dict ? dict.map : map;
 	}
 
 }

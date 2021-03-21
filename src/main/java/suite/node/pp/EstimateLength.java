@@ -29,9 +29,7 @@ public class EstimateLength {
 				if (length == null) {
 					int len;
 
-					if (node instanceof Tree) {
-						var tree = (Tree) node;
-
+					if (node instanceof Tree tree) {
 						var op = tree.getOperator();
 						var len0 = estimate(tree.getLeft());
 						var len1 = estimate(tree.getRight());

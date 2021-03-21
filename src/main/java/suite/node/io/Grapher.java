@@ -188,8 +188,8 @@ public class Grapher {
 					Node node;
 					GN gn1;
 					if (gn.type == ReadType.TERM //
-							&& (node = gn.terminal) instanceof Atom //
-							&& Atom.name(node).startsWith(ProverConstant.variablePrefix))
+							&& (node = gn.terminal) instanceof Atom atom //
+							&& atom.name.startsWith(ProverConstant.variablePrefix))
 						gn1 = new GN(new Reference());
 					else
 						gn1 = gn;
@@ -204,8 +204,8 @@ public class Grapher {
 				.map(gn -> {
 					Node node;
 					GN gn1;
-					if (gn.type == ReadType.TERM && (node = gn.terminal) instanceof Reference)
-						gn1 = new GN(Atom.of(((Reference) node).name()));
+					if (gn.type == ReadType.TERM && (node = gn.terminal) instanceof Reference ref)
+						gn1 = new GN(Atom.of(ref.name()));
 					else
 						gn1 = gn;
 					return gn1;

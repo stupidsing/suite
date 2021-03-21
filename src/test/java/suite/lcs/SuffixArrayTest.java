@@ -41,7 +41,7 @@ public class SuffixArrayTest {
 				}
 
 				public boolean equals(Object object) {
-					return object instanceof Key && start == ((Key) object).start;
+					return object instanceof Key key && start == key.start;
 				}
 
 				public int compareTo(Key key) {

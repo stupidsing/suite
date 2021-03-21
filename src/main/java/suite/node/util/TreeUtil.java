@@ -107,8 +107,8 @@ public class TreeUtil {
 			}
 
 			return fun.apply(lhs, rhs);
-		} else if (node instanceof Int)
-			return Int.num(node);
+		} else if (node instanceof Int i)
+			return i.number;
 		else
 			return fail("cannot evaluate expression: " + node);
 	}

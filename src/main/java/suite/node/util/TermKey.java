@@ -39,8 +39,8 @@ public class TermKey implements Comparable<TermKey> {
 		}
 
 		public void visit(Node node) {
-			if (node instanceof Reference) {
-				var id = ((Reference) node).getId();
+			if (node instanceof Reference ref) {
+				var id = ref.getId();
 				referenceSink.f(aliases.computeIfAbsent(id, any -> nAliases++));
 			} else {
 				var nr = NodeRead.of(node);

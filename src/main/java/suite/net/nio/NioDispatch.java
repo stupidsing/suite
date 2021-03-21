@@ -279,10 +279,10 @@ public class NioDispatch implements Closeable {
 
 		public void read(Sink<Bytes> sink0, Sink<IOException> fail) {
 			Sink<Object> okay1 = object -> {
-				if (object instanceof Bytes)
-					sink0.f((Bytes) object);
-				else if (object instanceof IOException)
-					fail.f((IOException) object);
+				if (object instanceof Bytes bytes)
+					sink0.f(bytes);
+				else if (object instanceof IOException ex)
+					fail.f(ex);
 				else
 					fail.f(null);
 			};
@@ -305,8 +305,8 @@ public class NioDispatch implements Closeable {
 
 	public void asyncConnect(InetSocketAddress address, Sink<AsyncRw> okay0, Sink<IOException> fail) {
 		Sink<Object> okay1 = rw -> {
-			if (rw instanceof AsyncRw)
-				okay0.f((AsyncRw) rw);
+			if (rw instanceof AsyncRw asyncRw)
+				okay0.f(asyncRw);
 			else
 				fail.f(null);
 		};

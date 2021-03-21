@@ -55,8 +55,7 @@ public class PrettyPrinter {
 		var length = estimateLength.getEstimatedLength(node);
 
 		// line too long?
-		if (node instanceof Tree) {
-			var tree = (Tree) node;
+		if (node instanceof Tree tree) {
 			var op = tree.getOperator();
 			var prec = op.precedence();
 			var isNeedPars = prec <= prec0;
@@ -137,9 +136,7 @@ public class PrettyPrinter {
 	private void prettyPrintList(Operator op, Node node) {
 		int prec = op.precedence(), prec1 = prec - 1;
 
-		if (node instanceof Tree) {
-			var tree = (Tree) node;
-
+		if (node instanceof Tree tree) {
 			if (tree.getOperator() == op) {
 				var isLeftAssoc = op.assoc() == Assoc.LEFT;
 				OperatorPosition opPos;

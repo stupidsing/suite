@@ -165,7 +165,7 @@ public class Nodify {
 		}).applyIf(ParameterizedType.class, pt -> {
 			var rawType = pt.getRawType();
 			var typeArgs = pt.getActualTypeArguments();
-			var clazz = rawType instanceof Class ? (Class<?>) rawType : null;
+			var clazz = rawType instanceof Class<?> c ? c : null;
 
 			if (collectionClasses.contains(clazz)) {
 				var nodifier1 = getNodifier(typeArgs[0]);

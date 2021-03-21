@@ -20,14 +20,13 @@ public abstract class Tree extends Node {
 	private Node left, right;
 
 	public static Tree decompose(Node node) {
-		return node instanceof Tree ? (Tree) node : null;
+		return node instanceof Tree tree ? tree : null;
 	}
 
 	public static Tree decompose(Node node, Operator operator) {
-		if (node instanceof Tree) {
-			var tree = (Tree) node;
+		if (node instanceof Tree tree)
 			return tree.getOperator() == operator ? tree : null;
-		} else
+		else
 			return null;
 	}
 

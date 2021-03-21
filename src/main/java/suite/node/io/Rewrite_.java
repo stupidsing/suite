@@ -55,8 +55,8 @@ public class Rewrite_ {
 		public static NodeRead of(Node node) {
 			Tree tree;
 
-			if (node instanceof Dict) {
-				var map = Dict.m(node);
+			if (node instanceof Dict dict) {
+				var map = dict.getMap();
 				return new NodeRead(ReadType.DICT, null, null, Read //
 						.from2(map) //
 						.sort((p0, p1) -> Comparer.comparer.compare(p0.k, p1.k)) //
@@ -66,8 +66,8 @@ public class Rewrite_ {
 				var p0 = Pair.of(LEFT_, tree.getLeft());
 				var p1 = Pair.of(RIGHT, tree.getRight());
 				return new NodeRead(ReadType.TREE, null, tree.getOperator(), Read.each2(p0, p1));
-			} else if (node instanceof Tuple) {
-				var nodes = Tuple.t(node);
+			} else if (node instanceof Tuple tuple) {
+				var nodes = tuple.nodes;
 				return new NodeRead(ReadType.TUPLE, null, null, Read //
 						.from(nodes) //
 						.<Node, Node> map2(n -> Atom.NIL, Node::finalNode) //

@@ -30,7 +30,7 @@ public class MapObject<T extends MapObject<T>> extends BaseObject<T> implements 
 					var tx = map.get(key);
 					if (tx == null) {
 						var list0 = Read.from(MapObject_.list(t0));
-						var list1 = list0.map(v -> v instanceof MapObject ? clone((MapObject<?>) v) : v).toList();
+						var list1 = list0.map(v -> v instanceof MapObject<?> mo ? clone(mo) : v).toList();
 						map.put(key, tx = MapObject_.construct(getClass(), list1));
 					}
 					return tx;

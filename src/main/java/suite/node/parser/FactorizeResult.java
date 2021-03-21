@@ -115,9 +115,9 @@ public class FactorizeResult {
 		Iterate<Node> rewrite = n0 -> {
 			var m = Suite.pattern(FTerminal.class.getName() + ":.0").match(n0);
 			var n1 = m != null ? m[0] : null;
-			var n2 = n1 instanceof Dict ? Dict.m(n1).get(Atom.of("chars")) : null;
+			var n2 = n1 instanceof Dict dict ? dict.getMap().get(Atom.of("chars")) : null;
 			var n3 = n2 != null ? n2.finalNode() : null;
-			var s = n3 instanceof Str ? Str.str(n3) : null;
+			var s = n3 instanceof Str str ? str.value : null;
 			var b = s != null && s.startsWith(ProverConstant.variablePrefix) && s.substring(1).matches("[0-9]*");
 			return b ? generalizer.generalize(Atom.of(s)) : n0;
 		};
@@ -143,8 +143,7 @@ public class FactorizeResult {
 	}
 
 	private void unparse(CharsBuilder cb, FNode fn) {
-		if (fn instanceof FTree) {
-			var ft = (FTree) fn;
+		if (fn instanceof FTree ft) {
 			var pairs = ft.pairs;
 			for (var pair : pairs) {
 				unparse(cb, pair.node);

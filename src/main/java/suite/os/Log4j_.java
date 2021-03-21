@@ -148,7 +148,7 @@ public class Log4j_ {
 				var th = ite.getTargetException();
 				var isTrimmed = trimStackTrace(th);
 				log.error(prefix + (isTrimmed ? "(Trimmed)" : ""), th);
-				throw th instanceof Exception ? (Exception) th : ite;
+				throw th instanceof Exception ex ? ex : ite;
 			}
 		});
 	}

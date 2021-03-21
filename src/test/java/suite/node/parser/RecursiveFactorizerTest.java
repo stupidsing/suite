@@ -81,8 +81,7 @@ public class RecursiveFactorizerTest {
 	private FNode transform(FNode fn0, Iterate<FNode> fun) {
 		var fnx = fun.apply(fn0);
 		if (fnx == null)
-			if (fn0 instanceof FTree) {
-				var ft = (FTree) fn0;
+			if (fn0 instanceof FTree ft) {
 				var pairs = Read //
 						.from(ft.pairs) //
 						.map(pair -> new FPair(transform(pair.node, fun), pair.chars)) //

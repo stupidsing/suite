@@ -27,8 +27,7 @@ public class AutoObject<T extends AutoObject<T>> extends BaseObject<T> implement
 			@SuppressWarnings("unchecked")
 			var object = (T) new Object() {
 				private Object c_(Object v0) throws IllegalAccessException {
-					if (v0 instanceof AutoObject) {
-						var v1 = (AutoObject<?>) v0;
+					if (v0 instanceof AutoObject<?> v1) {
 						var key = IdentityKey.of(v1);
 						var vx = map.get(key);
 						if (vx == null) {
@@ -37,20 +36,19 @@ public class AutoObject<T extends AutoObject<T>> extends BaseObject<T> implement
 								field.set(vx, c_(field.get(v1)));
 						}
 						return vx;
-					} else if (v0 instanceof Collection) {
+					} else if (v0 instanceof Collection<?> col) {
 						var v1 = new ArrayList<Object>();
-						for (var c : (Collection<?>) v0)
+						for (var c : col)
 							v1.add(c_(c));
 						return v1;
-					} else if (v0 instanceof Map) {
+					} else if (v0 instanceof Map<?, ?> map) {
 						var v1 = new HashMap<Object, Object>();
-						for (var e : ((Map<?, ?>) v0).entrySet())
+						for (var e : map.entrySet())
 							v1.put(c_(e.getKey()), c_(e.getValue()));
 						return v1;
-					} else if (v0 instanceof Pair) {
-						var pair = (Pair<?, ?>) v0;
+					} else if (v0 instanceof Pair<?, ?> pair)
 						return Pair.of(c_(pair.k), c_(pair.v));
-					} else
+					else
 						return v0;
 				}
 			}.c_(this);

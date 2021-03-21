@@ -46,8 +46,8 @@ public class JsMain {
 		for (var filename : filenames) {
 			var r = engine.eval(new FileReader(filename));
 			b &= r == Boolean.TRUE //
-					|| r instanceof Number && ((Number) r).intValue() != 0 //
-					|| r instanceof String && Is.notBlank((String) r);
+					|| r instanceof Number n && n.intValue() != 0 //
+					|| r instanceof String s && Is.notBlank(s);
 		}
 
 		return b;
