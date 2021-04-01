@@ -32,6 +32,7 @@ public class FunpTest {
 	public void testBind() {
 		test(1, "define a := [0, 1,] ~ if (`[0, v,]` = a) then v else 0");
 		test(0, "define a := [0, 1,] ~ if (`[1, v,]` = a) then v else 0");
+		test(2, "define s := { a: 1, b: 2, c: 3, } ~ if (`{ b: v, }` = s) then v else 0");
 		test(2, "define s := { a: 1, b: 2, c: 3, } ~ if (`{ a, b: v, c, }` = s) then v else 0");
 		test(2, "define s := { a: 1, b: 2, c: 3, } ~ if (`{ c, a, b: v, }` = s) then v else 0");
 		test(2, "define s := { a: 1, b: 2, c: 3, } ~ if (`address-of { a, b: v, c, }` = address-of s) then v else 0");
