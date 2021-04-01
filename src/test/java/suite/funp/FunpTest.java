@@ -37,7 +37,7 @@ public class FunpTest {
 		test(2, "define s := { a: 1, b: 2, c: 3, } ~ if (`address-of { a, b: v, c, }` = address-of s) then v else 0");
 		test(6, "let [3, 4, 5, v, 7,] := [3, 4, 5, 6, 7,] ~ v");
 		test(9, "let { a: 1, b: v, c: 2, } := { a: 1, b: 9, c: 2, } ~ v");
-		}
+	}
 
 	@Test
 	public void testCapture() {
