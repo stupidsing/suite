@@ -47,6 +47,7 @@ public class P03Bind {
 				return i -> FunpIndex.of(FunpReference.of(value), FunpNumber.ofNumber(i));
 			}).result();
 
+			// FIXME multiple elses
 			return forInt(size0).fold(then, (i, then_) -> bind(fun0.apply(i), fun1.apply(i), then_, else_));
 		};
 
@@ -72,6 +73,7 @@ public class P03Bind {
 						? i -> pairs1.get(i).v //
 						: i -> FunpField.of(FunpReference.of(value), pairs0.get(i).k);
 
+				// FIXME multiple elses
 				return forInt(size0).fold(then, (i, then_) -> bind(pairs0.get(i).v, fun.apply(i), then_, else_));
 			})).applyIf(FunpTag.class, f -> f.apply((id, tag, value_) -> {
 				return new Switch<Funp>(value //
