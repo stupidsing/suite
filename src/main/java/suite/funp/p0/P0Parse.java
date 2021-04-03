@@ -458,21 +458,29 @@ public class P0Parse extends FunpCfg {
 				return lambda(a, true).apply(b);
 			}
 
+			// if we are binding to a single variable directly, treat it as a declaration;
+			// otherwise we have to parse the bind.
+			// plus some do-monad handlings.
 			private Fun<Node, FunpLambda> lambda(Node a, boolean isPassDo) {
-				var isVar = isVar(a);
-				var vn = isVar ? Atom.name(a) : "l$" + Get.temp();
-				outerFdt = isVar ? fdt : Fdt.L_MONO;
-				var nv = isPassDo ? nv(vn) : new Parse(vns.replace(vn).remove(doToken));
-				return b -> {
-					var f = isVar ? nv.p(b) : nv.bind(fdt).bind(a, Atom.of(vn), b);
-					return FunpLambda.of(vn, f);
-				};
+				if (isVar(a)) {
+					var vn = Atom.name(a);
+					var nv = isPassDo ? nv(vn) : new Parse(vns.replace(vn).remove(doToken));
+					outerFdt = fdt;
+					return b -> FunpLambda.of(vn, nv.p(b));
+				} else {
+					var vn = "l$" + Get.temp();
+					var nv = isPassDo ? nv(vn) : new Parse(vns.replace(vn).remove(doToken));
+					outerFdt = Fdt.L_MONO;
+					return b -> FunpLambda.of(vn, nv.bind(fdt).bind(a, Atom.of(vn), b));
+				}
 			}
 
+			// destructure a bind. The bind must succeed.
 			private Funp bind(Node a, Node b, Node c) {
 				return bind(a, b, c, Atom.of("error"));
 			}
 
+			// destructure a bind, or return something "else" if failed to.
 			private Funp bind(Node a, Node b, Node c, Node d) {
 				var vnsMutable = Mutable.of(PerSet.<String>empty());
 
