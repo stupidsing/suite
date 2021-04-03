@@ -459,7 +459,7 @@ public class P0Parse extends FunpCfg {
 			}
 
 			// if we are binding to a single variable directly, treat it as a declaration;
-			// otherwise we have to parse the bind.
+			// otherwise we have to parse the destructuring bind.
 			// plus some do-monad handlings.
 			private Fun<Node, FunpLambda> lambda(Node a, boolean isPassDo) {
 				if (isVar(a)) {
