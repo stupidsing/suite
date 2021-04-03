@@ -275,7 +275,7 @@ public class P12Inline {
 	}
 
 	// Before - define s := t:3 ~ if (`t:v` = s) then v else 0
-	// After - 3
+	// After - define s := t:3 ~ 3
 	private Funp inlineTags(Funp node) {
 		var defs = Funp_.associateDefinitions(node);
 
