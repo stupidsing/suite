@@ -231,7 +231,7 @@ public class P12Inline {
 	}
 
 	// Before - define s := (struct (a 1, b 2, c 3,)) ~ s/c
-	// After - 3
+	// After - define s := (struct (a 1, b 2, c 3,)) ~ 3
 	private Funp inlineFields(Funp node) {
 		var defs = Funp_.associateDefinitions(node);
 
