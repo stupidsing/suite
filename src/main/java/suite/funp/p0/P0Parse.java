@@ -280,7 +280,7 @@ public class P0Parse extends FunpCfg {
 			}).match("numberp €0", a -> { // forms a number with the same size as a pointer
 				return FunpCoerce.of(Coerce.NUMBER, Coerce.NUMBERP, FunpNumber.ofNumber(num(a)));
 			}).match("predef €0", a -> { // defines a block as a separate variable; able to get a pointer to it
-				return FunpPredefine.of("predefine$" + Get.temp(), p(a), Fpt.NONE__);
+				return FunpPredefine.of(null, p(a), Fpt.NONE__);
 			}).match("predef/€0 €1", (a, b) -> { // defines a block as a separate named variable
 				return FunpPredefine.of(Atom.name(a), p(b), Fpt.NONE__);
 			}).match("size-of €0", a -> {

@@ -46,8 +46,9 @@ public class P20ExtractPredefine {
 					})).applyIf(FunpLambda.class, f -> f.apply((vn, expr, fct) -> {
 						return FunpLambda.of(vn, extractPredefine(expr), fct);
 					})).applyIf(FunpPredefine.class, f -> f.apply((vn, expr, fpt, df, dv) -> {
-						var var = FunpVariable.of(vn);
-						if (vns.add(vn)) {
+						var vn_ = vn != null ? vn : "predefine$" + Get.temp();
+						var var = FunpVariable.of(vn_);
+						if (vns.add(vn_)) {
 							var expr_ = extract(expr);
 							if (fpt == Fpt.APPLY_)
 								defers.add(f_ -> {
