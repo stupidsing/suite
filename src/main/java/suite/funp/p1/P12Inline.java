@@ -175,13 +175,13 @@ public class P12Inline {
 				})).applyIf(FunpLambda.class, f -> f.apply((vn, expr, fct) -> {
 					count(expr, false);
 					return n_;
-				})).applyIf(FunpTypeCheck.class, f -> f.apply((left, right, expr) -> {
-					count(expr, isWithinIo);
-					return n_;
 				})).applyIf(FunpReference.class, f -> f.apply(expr -> {
 					if (expr instanceof FunpVariable fv)
 						getVariableCount(fv).update(9999);
 					return null;
+				})).applyIf(FunpTypeCheck.class, f -> f.apply((left, right, expr) -> {
+					count(expr, isWithinIo);
+					return n_;
 				})).applyIf(FunpVariable.class, f -> f.apply(vn -> {
 					getVariableCount(f).increment();
 					return null;
