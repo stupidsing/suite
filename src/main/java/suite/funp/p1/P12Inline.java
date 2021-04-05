@@ -233,7 +233,7 @@ public class P12Inline {
 	// Before - define s := (struct (a 1, b 2, c 3,)) ~ s/c
 	// After - define s := (struct (a 1, b 2, c 3,)) ~ 3
 	private Funp inlineFields(Funp node) {
-		var defs = Funp_.associateDefinitions(node);
+		var defByVariables = Funp_.associateDefinitions(node);
 
 		return new Object() {
 			private Funp inline(Funp node_) {
@@ -244,7 +244,7 @@ public class P12Inline {
 					FunpVariable variable;
 					if ((field = n_.cast(FunpField.class)) != null //
 							&& (variable = field.reference.expr.cast(FunpVariable.class)) != null //
-							&& (define = defs.get(variable).cast(FunpDefine.class)) != null //
+							&& (define = defByVariables.get(variable).cast(FunpDefine.class)) != null //
 							&& (define.fdt == Fdt.L_MONO || define.fdt == Fdt.L_POLY) //
 							&& (struct = define.value.cast(FunpStruct.class)) != null) {
 						var pair = Read //
