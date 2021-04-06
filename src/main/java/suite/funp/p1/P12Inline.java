@@ -41,16 +41,18 @@ public class P12Inline {
 	public P12Inline(Funp_ f) {
 	}
 
-	public Funp inline(Funp node, int rounds, int f0, int f1, int f2, int f3, int f4) {
+	public Funp inline(Funp node, int rounds) {
 		node = renameVariables(node);
 
 		for (var i = 0; i < rounds; i++) {
-			node = 0 < f0 ? inlineDefineAssigns(node) : node;
-			node = 0 < f1 ? inlineDefines(node) : node;
-			node = 0 < f2 ? inlineFields(node) : node;
-			node = 0 < f3 ? inlineLambdas(node) : node;
-			node = 0 < f4 ? inlineTags(node) : node;
+			node = inlineDefineAssigns(node);
+			node = inlineFields(node);
+			node = inlineLambdas(node);
+			node = inlineTags(node);
 		}
+
+		for (var i = 0; i < rounds; i++)
+			node = inlineDefines(node);
 
 		if (Boolean.FALSE)
 			Dump.line(node);
@@ -152,8 +154,6 @@ public class P12Inline {
 	}
 
 	// Before - define i := 1 ~ i + 1
-	// After - 1 + 1
-	// Before - expand i := 1 ~ i + i
 	// After - 1 + 1
 	private Funp inlineDefines(Funp node) {
 		var defByVariables = Funp_.associateDefinitions(node);
@@ -288,11 +288,13 @@ public class P12Inline {
 					FunpVariable variable;
 					if ((tagId = n_.cast(FunpTagId.class)) != null //
 							&& (variable = tagId.reference.expr.cast(FunpVariable.class)) != null //
-							&& (tag = defs.get(variable).castMap(FunpDefine.class, n -> n.value.cast(FunpTag.class))) != null)
+							&& (tag = defs.get(variable).castMap(FunpDefine.class,
+									n -> n.value.cast(FunpTag.class))) != null)
 						return FunpNumber.of(tag.id);
 					else if ((tagValue = n_.cast(FunpTagValue.class)) != null //
 							&& (variable = tagValue.reference.expr.cast(FunpVariable.class)) != null //
-							&& (tag = defs.get(variable).castMap(FunpDefine.class, n -> n.value.cast(FunpTag.class))) != null)
+							&& (tag = defs.get(variable).castMap(FunpDefine.class,
+									n -> n.value.cast(FunpTag.class))) != null)
 						return Equals.string(tag.tag, tagValue.tag) ? tag.value : FunpDontCare.of();
 					else
 						return null;

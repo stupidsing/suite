@@ -95,7 +95,7 @@ public class Funp_ extends FunpCfg {
 			var n0 = p0.parse(node);
 			var n1 = p10.check(n0);
 			var n2 = p11.reduce(n1);
-			var n3 = p12.inline(n2, isOptimize ? 3 : 0, 1, 1, 1, 1, 1);
+			var n3 = p12.inline(n2, isOptimize ? 3 : 0);
 			var n4 = p20.extractPredefine(n3);
 			var n5 = p21.captureLambdas(n4);
 			var n6 = p22.infer(n5);

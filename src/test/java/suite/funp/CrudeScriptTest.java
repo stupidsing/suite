@@ -23,7 +23,7 @@ public class CrudeScriptTest {
 			var isOptimize = false;
 
 			var f0 = new P0CrudeScript(f).parse("{ return 1 + 2 * 3; }");
-			var f1 = new P12Inline(f).inline(f0, isOptimize ? 3 : 0, 1, 1, 1, 1, 1);
+			var f1 = new P12Inline(f).inline(f0, isOptimize ? 3 : 0);
 			var f2 = new P22InferType(f).infer(f1);
 			var f3 = new P3Optimize(f).optimize(f2);
 			var pair = p4.compile(interpret.codeStart, f3);
