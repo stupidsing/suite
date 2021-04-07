@@ -114,11 +114,9 @@ public class P12Inline {
 			private Funp inline(Funp node_) {
 				return inspect.rewrite(node_, Funp.class, n0 -> {
 					var vns = new ArrayList<Pair<String, Fdt>>();
-					FunpDoAssignVar assign;
 					FunpTypeCheck check;
-					FunpDefine define;
 
-					while ((define = n0.cast(FunpDefine.class)) != null //
+					while (n0 instanceof FunpDefine define //
 							&& Fdt.isLocal(define.fdt) //
 							&& define.value instanceof FunpDontCare) {
 						vns.add(Pair.of(define.vn, define.fdt));
@@ -128,7 +126,7 @@ public class P12Inline {
 					if ((check = n0.cast(FunpTypeCheck.class)) != null)
 						n0 = check.expr;
 
-					if ((assign = n0.cast(FunpDoAssignVar.class)) != null) {
+					if (n0 instanceof FunpDoAssignVar assign) {
 						var vn = assign.var.vn;
 						var n1 = assign.expr;
 						var n2 = check != null ? FunpTypeCheck.of(check.left, check.right, n1) : n1;
@@ -238,15 +236,11 @@ public class P12Inline {
 		return new Object() {
 			private Funp inline(Funp node_) {
 				return inspect.rewrite(node_, Funp.class, n_ -> {
-					FunpDefine define;
-					FunpField field;
-					FunpStruct struct;
-					FunpVariable variable;
-					if ((field = n_.cast(FunpField.class)) != null //
-							&& (variable = field.reference.expr.cast(FunpVariable.class)) != null //
-							&& (define = defByVariables.get(variable).cast(FunpDefine.class)) != null //
+					if (n_ instanceof FunpField field //
+							&& field.reference.expr instanceof FunpVariable variable //
+							&& defByVariables.get(variable) instanceof FunpDefine define //
 							&& (define.fdt == Fdt.L_MONO || define.fdt == Fdt.L_POLY) //
-							&& (struct = define.value.cast(FunpStruct.class)) != null) {
+							&& define.value instanceof FunpStruct struct) {
 						var pair = Read //
 								.from2(struct.pairs) //
 								.filterKey(field_ -> Equals.string(field_, field.field)) //
