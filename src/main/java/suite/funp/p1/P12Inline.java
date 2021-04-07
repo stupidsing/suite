@@ -52,7 +52,7 @@ public class P12Inline {
 		}
 
 		for (var i = 0; i < rounds; i++)
-			node = inlineDefines(node);
+			node = inlineDefines(node); // may remove or reorder calculations
 
 		if (Boolean.FALSE)
 			Dump.line(node);
@@ -107,7 +107,7 @@ public class P12Inline {
 		return new Rename(PerMap.empty()).rename(node);
 	}
 
-	// Before - define i := memory ~ assign i := value ~ expr
+	// Before - define i := <don't care> ~ assign i := value ~ expr
 	// After - define i := value ~ expr
 	private Funp inlineDefineAssigns(Funp node) {
 		return new Object() {
@@ -282,19 +282,15 @@ public class P12Inline {
 		return new Object() {
 			private Funp inline(Funp node_) {
 				return inspect.rewrite(node_, Funp.class, n_ -> {
-					FunpTag tag;
-					FunpTagId tagId;
-					FunpTagValue tagValue;
-					FunpVariable variable;
-					if ((tagId = n_.cast(FunpTagId.class)) != null //
-							&& (variable = tagId.reference.expr.cast(FunpVariable.class)) != null //
-							&& (tag = defs.get(variable).castMap(FunpDefine.class,
-									n -> n.value.cast(FunpTag.class))) != null)
+					if (n_ instanceof FunpTagId tagId //
+							&& tagId.reference.expr instanceof FunpVariable variable //
+							&& defs.get(variable) instanceof FunpDefine define //
+							&& define.value instanceof FunpTag tag)
 						return FunpNumber.of(tag.id);
-					else if ((tagValue = n_.cast(FunpTagValue.class)) != null //
-							&& (variable = tagValue.reference.expr.cast(FunpVariable.class)) != null //
-							&& (tag = defs.get(variable).castMap(FunpDefine.class,
-									n -> n.value.cast(FunpTag.class))) != null)
+					else if (n_ instanceof FunpTagValue tagValue //
+							&& tagValue.reference.expr instanceof FunpVariable variable //
+							&& defs.get(variable) instanceof FunpDefine define //
+							&& define.value instanceof FunpTag tag)
 						return Equals.string(tag.tag, tagValue.tag) ? tag.value : FunpDontCare.of();
 					else
 						return null;
