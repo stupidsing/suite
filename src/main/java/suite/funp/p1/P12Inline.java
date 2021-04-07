@@ -259,8 +259,8 @@ public class P12Inline {
 		}.inline(node);
 	}
 
-	// Before - 3 | (i => i)
-	// After - 3
+	// Before - 3 | (i => i + 1)
+	// After - 3 + 1
 	private Funp inlineLambdas(Funp node) {
 		return new Object() {
 			private Funp inline(Funp node_) {
