@@ -259,10 +259,9 @@ public class P12Inline {
 		return new Object() {
 			private Funp inline(Funp node_) {
 				return inspect.rewrite(node_, Funp.class, n_ -> n_.sw() //
-						.applyIf(FunpApply.class, f -> f.apply((value, lambda) -> {
-							return lambda.castMap(FunpLambda.class,
-									l -> FunpDefine.of(l.vn, inline(value), inline(l.expr), Fdt.L_MONO));
-						})) //
+						.applyIf(FunpApply.class, f -> f.apply((value, lambda) -> lambda instanceof FunpLambda l //
+								? FunpDefine.of(l.vn, inline(value), inline(l.expr), Fdt.L_MONO) //
+								: null)) //
 						.result());
 			}
 		}.inline(node);
