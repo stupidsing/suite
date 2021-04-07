@@ -41,7 +41,7 @@ public class FunpTest {
 		test(6, "let [3, 4, 5, v, 7,] := [3, 4, 5, 6, 7,] ~ v");
 		test(9, "let { a: 1, b: v, c: 2, } := { a: 1, b: 9, c: 2, } ~ v");
 
-		test(1, "let { a: 1, b: [0, v, 2,], c: 2, } := { a: 1, b: predef [0, 1, 2,], c: 2, } ~ v");
+		test(1, "let list := [0, 1, 2,] ~ let { a: 1, b: [0, v, 2,], c: 2, } := { a: 1, b: list, c: 2, } ~ v");
 	}
 
 	@Test
