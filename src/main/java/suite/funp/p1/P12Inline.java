@@ -3,6 +3,7 @@ package suite.funp.p1;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 
 import primal.MoreVerbs.Read;
 import primal.Verbs.Equals;
@@ -46,9 +47,9 @@ public class P12Inline {
 
 		for (var i = 0; i < rounds; i++) {
 			node = inlineDefineAssigns(node);
-			node = inlineFields(node);
+			node = inlineFields(node); // may reorder or duplicate calculations
 			node = inlineLambdas(node);
-			node = inlineTags(node);
+			node = inlineTags(node); // may reorder or duplicate calculations
 		}
 
 		for (var i = 0; i < rounds; i++)
@@ -107,7 +108,7 @@ public class P12Inline {
 		return new Rename(PerMap.empty()).rename(node);
 	}
 
-	// Before - define i := <don't care> ~ assign i := value ~ expr
+	// Before - define i := don't_care ~ assign i := value ~ expr
 	// After - define i := value ~ expr
 	private Funp inlineDefineAssigns(Funp node) {
 		return new Object() {
@@ -237,10 +238,7 @@ public class P12Inline {
 			private Funp inline(Funp node_) {
 				return inspect.rewrite(node_, Funp.class, n_ -> {
 					if (n_ instanceof FunpField field //
-							&& field.reference.expr instanceof FunpVariable variable //
-							&& defByVariables.get(variable) instanceof FunpDefine define //
-							&& (define.fdt == Fdt.L_MONO || define.fdt == Fdt.L_POLY) //
-							&& define.value instanceof FunpStruct struct) {
+							&& lookup(defByVariables, field.reference.expr) instanceof FunpStruct struct) {
 						var pair = Read //
 								.from2(struct.pairs) //
 								.filterKey(field_ -> Equals.string(field_, field.field)) //
@@ -254,15 +252,17 @@ public class P12Inline {
 	}
 
 	// Before - 3 | (i => i + 1)
-	// After - 3 + 1
+	// After - let i := 3 ~ i + 1
 	private Funp inlineLambdas(Funp node) {
 		return new Object() {
 			private Funp inline(Funp node_) {
-				return inspect.rewrite(node_, Funp.class, n_ -> n_.sw() //
-						.applyIf(FunpApply.class, f -> f.apply((value, lambda) -> lambda instanceof FunpLambda l //
-								? FunpDefine.of(l.vn, inline(value), inline(l.expr), Fdt.L_MONO) //
-								: null)) //
-						.result());
+				return inspect.rewrite(node_, Funp.class, n_ -> {
+					if (n_ instanceof FunpApply apply //
+							&& apply.lambda instanceof FunpLambda lambda)
+						return FunpDefine.of(lambda.vn, inline(apply.value), inline(lambda.expr), Fdt.L_MONO);
+					else
+						return null;
+				});
 			}
 		}.inline(node);
 	}
@@ -270,26 +270,31 @@ public class P12Inline {
 	// Before - define s := t:3 ~ if (`t:v` = s) then v else 0
 	// After - define s := t:3 ~ 3
 	private Funp inlineTags(Funp node) {
-		var defs = Funp_.associateDefinitions(node);
+		var defByVariables = Funp_.associateDefinitions(node);
 
 		return new Object() {
 			private Funp inline(Funp node_) {
 				return inspect.rewrite(node_, Funp.class, n_ -> {
 					if (n_ instanceof FunpTagId tagId //
-							&& tagId.reference.expr instanceof FunpVariable variable //
-							&& defs.get(variable) instanceof FunpDefine define //
-							&& define.value instanceof FunpTag tag)
+							&& lookup(defByVariables, tagId.reference.expr) instanceof FunpTag tag)
 						return FunpNumber.of(tag.id);
 					else if (n_ instanceof FunpTagValue tagValue //
-							&& tagValue.reference.expr instanceof FunpVariable variable //
-							&& defs.get(variable) instanceof FunpDefine define //
-							&& define.value instanceof FunpTag tag)
+							&& lookup(defByVariables, tagValue.reference.expr) instanceof FunpTag tag)
 						return Equals.string(tag.tag, tagValue.tag) ? tag.value : FunpDontCare.of();
 					else
 						return null;
 				});
 			}
 		}.inline(node);
+	}
+
+	private Funp lookup(Map<FunpVariable, Funp> defByVariables, Funp expr) {
+		if (expr instanceof FunpVariable variable //
+				&& defByVariables.get(variable) instanceof FunpDefine define //
+				&& (define.fdt == Fdt.L_MONO || define.fdt == Fdt.L_POLY))
+			return lookup(defByVariables, define.value);
+		else
+			return expr;
 	}
 
 }
