@@ -120,8 +120,8 @@ public class P12Inline {
 			public void count(Funp node_, boolean isWithinIo) {
 				inspect.rewrite(node_, Funp.class, n_ -> n_.sw( //
 				).applyIf(FunpDefine.class, f -> f.apply((vn, value, expr, fdt) -> {
-					if (isWithinIo) // too dangerous to inline imperative code
-						getCount(f).update(9999);
+					// too dangerous to inline imperative code
+					getCount(f).update(isWithinIo ? 9999 : 0);
 					return null;
 				})).applyIf(FunpDoAssignVar.class, f -> f.apply((var, value, expr) -> {
 					getVariableCount(var).update(9999);
@@ -158,21 +158,11 @@ public class P12Inline {
 			}
 		}.count(node, false);
 
-		var zero = IntMutable.of(0);
-
 		var defines = Read //
-				.from2(defByVariables) //
-				.values() //
-				.distinct() //
-				.filter(def -> def instanceof FunpDefine && countByDefs.getOrDefault(def, zero).value() <= 1) //
-				.map2(def -> (FunpDefine) def) //
+				.from2(countByDefs) //
+				.filter((def, c) -> def instanceof FunpDefine && c.value() <= 1) //
+				.map2((def, c) -> def, (def, c) -> (FunpDefine) def) //
 				.filterValue(def -> Fdt.isLocal(def.fdt) && Fdt.isPure(def.fdt)) //
-				.toMap();
-
-		var expands = Read //
-				.from2(defByVariables) //
-				.mapValue(defines::get) //
-				.filterValue(def -> def != null) //
 				.toMap();
 
 		return new Object() {
@@ -181,7 +171,7 @@ public class P12Inline {
 					FunpDefine define;
 					if ((define = defines.get(n_)) != null)
 						return inline(define.expr);
-					else if ((define = expands.get(n_)) != null)
+					else if ((define = defines.get(defByVariables.get(n_))) != null)
 						return inline(define.value);
 					else
 						return null;
@@ -259,11 +249,13 @@ public class P12Inline {
 	// Before - 3 | (i => i + 1)
 	// After - let i := 3 ~ i + 1
 	private Funp inlineLambdas(Funp node) {
+		var defByVariables = Funp_.associateDefinitions(node);
+
 		return new Object() {
 			private Funp inline(Funp node_) {
 				return inspect.rewrite(node_, Funp.class, n_ -> {
 					if (n_ instanceof FunpApply apply //
-							&& apply.lambda instanceof FunpLambda lambda //
+							&& lookup(defByVariables, apply.lambda) instanceof FunpLambda lambda //
 							&& lambda.fct != Fct.ONCE__)
 						return FunpDefine.of(lambda.vn, inline(apply.value), inline(lambda.expr), Fdt.L_MONO);
 					else
