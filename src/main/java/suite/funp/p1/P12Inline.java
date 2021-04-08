@@ -110,50 +110,6 @@ public class P12Inline {
 		return new Rename(PerMap.empty()).rename(node);
 	}
 
-	// Before - define i := don't_care ~ assign i := value ~ expr
-	// After - define i := value ~ expr
-	private Funp inlineDefineAssigns(Funp node) {
-		return new Object() {
-			private Funp inline(Funp node_) {
-				return inspect.rewrite(node_, Funp.class, n0 -> {
-					var vns = new ArrayList<Pair<String, Fdt>>();
-					FunpTypeCheck check;
-
-					while (n0 instanceof FunpDefine define //
-							&& Fdt.isLocal(define.fdt) //
-							&& define.value instanceof FunpDontCare) {
-						vns.add(Pair.of(define.vn, define.fdt));
-						n0 = define.expr;
-					}
-
-					if ((check = n0.cast(FunpTypeCheck.class)) != null)
-						n0 = check.expr;
-
-					if (n0 instanceof FunpDoAssignVar assign) {
-						var vn = assign.var.vn;
-						var n1 = assign.expr;
-						var n2 = check != null ? FunpTypeCheck.of(check.left, check.right, n1) : n1;
-						Fdt fdt = null;
-
-						for (var pair : Reverse.of(vns)) {
-							var vn_ = pair.k;
-							var fdt_ = pair.v;
-							if (!Equals.string(vn, vn_))
-								n2 = FunpDefine.of(vn_, FunpDontCare.of(), n2, fdt_);
-							else
-								fdt = fdt_;
-						}
-
-						if (fdt != null)
-							return FunpDefine.of(vn, assign.value, inline(n2), fdt);
-					}
-
-					return null;
-				});
-			}
-		}.inline(node);
-	}
-
 	// Before - define i := 1 ~ i + 1
 	// After - 1 + 1
 	private Funp inlineDefines(Funp node) {
@@ -229,6 +185,50 @@ public class P12Inline {
 						return inline(define.value);
 					else
 						return null;
+				});
+			}
+		}.inline(node);
+	}
+
+	// Before - define i := don't_care ~ assign i := value ~ expr
+	// After - define i := value ~ expr
+	private Funp inlineDefineAssigns(Funp node) {
+		return new Object() {
+			private Funp inline(Funp node_) {
+				return inspect.rewrite(node_, Funp.class, n0 -> {
+					var vns = new ArrayList<Pair<String, Fdt>>();
+					FunpTypeCheck check;
+
+					while (n0 instanceof FunpDefine define //
+							&& Fdt.isLocal(define.fdt) //
+							&& define.value instanceof FunpDontCare) {
+						vns.add(Pair.of(define.vn, define.fdt));
+						n0 = define.expr;
+					}
+
+					if ((check = n0.cast(FunpTypeCheck.class)) != null)
+						n0 = check.expr;
+
+					if (n0 instanceof FunpDoAssignVar assign) {
+						var vn = assign.var.vn;
+						var n1 = assign.expr;
+						var n2 = check != null ? FunpTypeCheck.of(check.left, check.right, n1) : n1;
+						Fdt fdt = null;
+
+						for (var pair : Reverse.of(vns)) {
+							var vn_ = pair.k;
+							var fdt_ = pair.v;
+							if (!Equals.string(vn, vn_))
+								n2 = FunpDefine.of(vn_, FunpDontCare.of(), n2, fdt_);
+							else
+								fdt = fdt_;
+						}
+
+						if (fdt != null)
+							return FunpDefine.of(vn, assign.value, inline(n2), fdt);
+					}
+
+					return null;
 				});
 			}
 		}.inline(node);
