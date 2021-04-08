@@ -259,13 +259,11 @@ public class P12Inline {
 	// Before - 3 | (i => i + 1)
 	// After - let i := 3 ~ i + 1
 	private Funp inlineLambdas(Funp node) {
-		var defByVariables = Funp_.associateDefinitions(node);
-
 		return new Object() {
 			private Funp inline(Funp node_) {
 				return inspect.rewrite(node_, Funp.class, n_ -> {
 					if (n_ instanceof FunpApply apply //
-							&& lookup(defByVariables, apply.lambda) instanceof FunpLambda lambda //
+							&& apply.lambda instanceof FunpLambda lambda //
 							&& lambda.fct != Fct.ONCE__)
 						return FunpDefine.of(lambda.vn, inline(apply.value), inline(lambda.expr), Fdt.L_MONO);
 					else
