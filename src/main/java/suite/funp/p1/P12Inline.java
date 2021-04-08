@@ -14,6 +14,7 @@ import primal.persistent.PerMap;
 import primal.primitive.adt.IntMutable;
 import suite.funp.Funp_;
 import suite.funp.Funp_.Funp;
+import suite.funp.P0.Fct;
 import suite.funp.P0.Fdt;
 import suite.funp.P0.FunpApply;
 import suite.funp.P0.FunpDefine;
@@ -23,6 +24,7 @@ import suite.funp.P0.FunpDontCare;
 import suite.funp.P0.FunpField;
 import suite.funp.P0.FunpIo;
 import suite.funp.P0.FunpLambda;
+import suite.funp.P0.FunpLambdaFree;
 import suite.funp.P0.FunpNumber;
 import suite.funp.P0.FunpReference;
 import suite.funp.P0.FunpStruct;
@@ -174,6 +176,10 @@ public class P12Inline {
 				})).applyIf(FunpLambda.class, f -> f.apply((vn, expr, fct) -> {
 					count(expr, false);
 					return n_;
+				})).applyIf(FunpLambdaFree.class, f -> f.apply((lambda, expr) -> {
+					if (lambda instanceof FunpVariable fv)
+						getVariableCount(fv).update(9999);
+					return null;
 				})).applyIf(FunpReference.class, f -> f.apply(expr -> {
 					if (expr instanceof FunpVariable fv)
 						getVariableCount(fv).update(9999);
@@ -188,8 +194,7 @@ public class P12Inline {
 			}
 
 			private IntMutable getVariableCount(FunpVariable var) {
-				var def = defByVariables.get(var);
-				return getCount(def);
+				return getCount(defByVariables.get(var));
 			}
 
 			private IntMutable getCount(Funp def) {
@@ -254,11 +259,14 @@ public class P12Inline {
 	// Before - 3 | (i => i + 1)
 	// After - let i := 3 ~ i + 1
 	private Funp inlineLambdas(Funp node) {
+		var defByVariables = Funp_.associateDefinitions(node);
+
 		return new Object() {
 			private Funp inline(Funp node_) {
 				return inspect.rewrite(node_, Funp.class, n_ -> {
 					if (n_ instanceof FunpApply apply //
-							&& apply.lambda instanceof FunpLambda lambda)
+							&& lookup(defByVariables, apply.lambda) instanceof FunpLambda lambda //
+							&& lambda.fct != Fct.ONCE__)
 						return FunpDefine.of(lambda.vn, inline(apply.value), inline(lambda.expr), Fdt.L_MONO);
 					else
 						return null;
