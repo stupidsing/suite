@@ -297,7 +297,8 @@ public class P12Inline {
 	private Funp lookup(Map<FunpVariable, Funp> defByVariables, Funp expr) {
 		if (expr instanceof FunpVariable variable //
 				&& defByVariables.get(variable) instanceof FunpDefine define //
-				&& (define.fdt == Fdt.L_MONO || define.fdt == Fdt.L_POLY))
+				&& Fdt.isLocal(define.fdt) //
+				&& Fdt.isPure(define.fdt))
 			return lookup(defByVariables, define.value);
 		else
 			return expr;
