@@ -62,11 +62,12 @@ public class Summarize {
 	public <K> SummarizeByStrategy<K> summarize(Fun<Trade, K> fun) {
 		var summaryByKey = trades //
 				.groupBy(fun, trades_ -> Fut.of(() -> summarize_(trades_, priceBySymbol, s -> null))) //
+				.mapValue(Fut::get) //
 				.filterKey(key -> key != null) //
 				.collect();
 
 		var nSharesByKeyBySymbol = summaryByKey //
-				.concatMap((key, summary) -> summary.get().account //
+				.concatMap((key, summary) -> summary.account //
 						.portfolio() //
 						.map((symbol, n) -> Fixie.of(symbol, key, n))) //
 				.groupBy(Fixie3::get0, fixies0 -> fixies0 //
