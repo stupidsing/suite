@@ -17,6 +17,7 @@ import primal.fp.Funs.Sink;
 import primal.primitive.Dbl_Dbl;
 import primal.primitive.adt.pair.LngFltPair;
 import primal.streamlet.Streamlet;
+import suite.concurrent.Fut;
 import suite.trade.Account;
 import suite.trade.Account.TransactionSummary;
 import suite.trade.Time;
@@ -60,12 +61,12 @@ public class Summarize {
 
 	public <K> SummarizeByStrategy<K> summarize(Fun<Trade, K> fun) {
 		var summaryByKey = trades //
-				.groupBy(fun, trades_ -> summarize_(trades_, priceBySymbol, s -> null)) //
+				.groupBy(fun, trades_ -> Fut.of(() -> summarize_(trades_, priceBySymbol, s -> null))) //
 				.filterKey(key -> key != null) //
 				.collect();
 
 		var nSharesByKeyBySymbol = summaryByKey //
-				.concatMap((key, summary) -> summary.account //
+				.concatMap((key, summary) -> summary.get().account //
 						.portfolio() //
 						.map((symbol, n) -> Fixie.of(symbol, key, n))) //
 				.groupBy(Fixie3::get0, fixies0 -> fixies0 //
