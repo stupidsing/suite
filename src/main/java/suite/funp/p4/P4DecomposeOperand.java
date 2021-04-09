@@ -64,8 +64,7 @@ public class P4DecomposeOperand extends FunpCfg {
 			}
 
 			private void decompose(Funp n_) {
-				FunpOpLr tree;
-				if ((tree = n_.cast(FunpOpLr.class)) != null && tree.operator == operator) {
+				if (n_ instanceof FunpOpLr tree && tree.operator == operator) {
 					decompose(tree.left);
 					decompose(tree.right);
 				} else
@@ -86,13 +85,12 @@ public class P4DecomposeOperand extends FunpCfg {
 
 			private void decompose(Funp n0) {
 				Integer number;
-				FunpOpLr tree;
 				for (var n1 : decompose.apply(FunpOp.MULT__, n0))
 					if (n1 instanceof FunpFramePointer && isUseEbp && reg == null)
 						reg = _bp;
 					else if ((number = isNumber(n1)) != null)
 						scale *= number;
-					else if ((tree = n1.cast(FunpOpLr.class)) != null //
+					else if (n1 instanceof FunpOpLr tree //
 							&& tree.operator == TreeUtil.SHL //
 							&& (number = isNumber(tree.right)) != null) {
 						decompose(tree.left);
@@ -146,11 +144,9 @@ public class P4DecomposeOperand extends FunpCfg {
 	}
 
 	private Integer isNumber(Funp node) {
-		FunpCoerce coerce;
-		FunpNumber number;
-		if ((coerce = node.cast(FunpCoerce.class)) != null)
+		if (node instanceof FunpCoerce coerce)
 			return isNumber(coerce.expr);
-		else if ((number = node.cast(FunpNumber.class)) != null)
+		else if (node instanceof FunpNumber number)
 			return number.i.value();
 		else
 			return null;
