@@ -76,8 +76,7 @@ public class P4Emit extends FunpCfg {
 		}
 
 		public OpReg emitRegInsn(Insn insn, OpReg op0, Operand op1) {
-			OpImm opImm;
-			if ((opImm = op1.cast(OpImm.class)) != null && opImm.isBound()) {
+			if (op1 instanceof OpImm opImm && opImm.isBound()) {
 				var i = opImm.imm;
 				if (insn == Insn.ADD)
 					addImm(op0, i);
