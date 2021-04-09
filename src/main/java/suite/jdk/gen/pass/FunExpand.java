@@ -61,31 +61,27 @@ public class FunExpand extends FunFactory {
 			} else
 				return null;
 		})).applyIf(If1FunExpr.class, e1 -> e1.apply(if_ -> {
-			return if_.castMap(ConstantFunExpr.class, e2 -> e2.apply((type, constant) -> {
-				if (type == Type.INT)
-					return ((Integer) constant).intValue() != 0 ? e1.then : e1.else_;
-				else
-					return null;
-			}));
+			if (if_ instanceof ConstantFunExpr e2 && e2.type == Type.INT)
+				return ((Integer) e2.constant).intValue() != 0 ? e1.then : e1.else_;
+			else
+				return null;
 		})).result();
 	}
 
 	private FunExpr replaceFieldInject(FunExpr expr0, String fieldName, FunExpr to) {
-		return rewrite(e -> {
-			var inj = e.cast(FieldInjectFunExpr.class);
-			return inj != null && Equals.string(inj.fieldName, fieldName) ? to : null;
-		}, expr0);
+		return rewrite( //
+				e -> e instanceof FieldInjectFunExpr inj && Equals.string(inj.fieldName, fieldName) ? to : null, //
+				expr0);
 	}
 
-	private int weight(FunExpr e0) {
-		var cast = e0.cast(CastFunExpr.class);
-		if (cast != null)
+	private int weight(FunExpr e) {
+		if (e instanceof CastFunExpr cast)
 			return weight(cast.expr);
 		else
 			return inspect //
-					.fields(e0.getClass()) //
+					.fields(e.getClass()) //
 					.toInt(AsInt.sum(field -> {
-						var e1 = ex(() -> field.get(e0));
+						var e1 = ex(() -> field.get(e));
 						if (e1 instanceof FunExpr)
 							return weight_(e1);
 						else if (e1 instanceof Iterable<?> iter)
