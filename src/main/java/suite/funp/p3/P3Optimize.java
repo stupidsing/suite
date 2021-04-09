@@ -92,10 +92,10 @@ public class P3Optimize extends FunpCfg {
 		return fun != null ? evaluate(lhs0, rhs0, (lhs1, rhs1) -> FunpBoolean.of(fun.apply(lhs1, rhs1))) : null;
 	}
 
-	private <T> T evaluate(Funp lhs0, Funp rhs0, Fun2<Integer, Integer, T> fun) {
-		var lhs1 = optimize(lhs0).castMap(FunpNumber.class, n -> n.i.value());
-		var rhs1 = optimize(rhs0).castMap(FunpNumber.class, n -> n.i.value());
-		return lhs1 != null && rhs1 != null ? fun.apply(lhs1, rhs1) : null;
+	private <T> T evaluate(Funp lhs, Funp rhs, Fun2<Integer, Integer, T> fun) {
+		return optimize(lhs) instanceof FunpNumber ln && optimize(rhs) instanceof FunpNumber rn //
+				? fun.apply(ln.i.value(), rn.i.value()) //
+				: null;
 	}
 
 }
