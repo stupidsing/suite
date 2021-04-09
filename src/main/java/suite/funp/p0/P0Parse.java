@@ -484,11 +484,12 @@ public class P0Parse extends FunpCfg {
 			private Funp bind(Node a, Node b, Node c, Node d) {
 				var vnsMutable = Mutable.of(PerSet.<String>empty());
 
-				Iterate<Funp> iter = be -> inspect.rewrite(be, Funp.class,
-						n_ -> n_.castMap(FunpVariableNew.class, f -> f.apply(vn -> {
+				Iterate<Funp> iter = be -> inspect.rewrite(be, Funp.class, n_ -> n_ instanceof FunpVariableNew f //
+						? f.apply(vn -> {
 							vnsMutable.update(vnsMutable.value().replace(vn));
 							return FunpVariable.of(vn);
-						})));
+						}) //
+						: null);
 
 				var be = iter.apply(p(a));
 				var vns_ = vnsMutable.value();

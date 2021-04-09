@@ -66,15 +66,19 @@ public class P03Bind {
 			})).applyIf(FunpRepeat.class, f -> f.apply((size0, expr0) -> {
 				return bindArray.apply(size0, i -> expr0);
 			})).applyIf(FunpStruct.class, f -> f.apply((isCompleted, pairs0) -> {
-				var pairs1 = value.castMap(FunpStruct.class, g -> g.pairs);
 				var size0 = pairs0.size();
 
-				Int_Obj<Funp> fun = pairs1 != null && size0 == pairs1.size() //
-						? i -> pairs1.get(i).v //
-						: i -> FunpField.of(FunpReference.of(value), pairs0.get(i).k);
-
 				// FIXME multiple elses
-				return forInt(size0).fold(then, (i, then_) -> bind(pairs0.get(i).v, fun.apply(i), then_, else_));
+				if (value instanceof FunpStruct g) {
+					var pairs1 = g.pairs;
+
+					return forInt(size0).fold(then, (i, then_) -> bind(pairs0.get(i).v, pairs1.get(i).v, then_, else_));
+				} else
+					return forInt(size0).fold(then, (i, then_) -> bind( //
+							pairs0.get(i).v, //
+							FunpField.of(FunpReference.of(value), pairs0.get(i).k), //
+							then_, //
+							else_));
 			})).applyIf(FunpTag.class, f -> f.apply((id, tag, value_) -> {
 				return new Switch<Funp>(value //
 				).applyIf(FunpTag.class, g -> g.apply((id1, tag1, value1) -> {

@@ -34,17 +34,18 @@ public class P11ReduceTailCall {
 
 	public Funp reduce(Funp node) {
 		return inspect.rewrite(node, Funp.class, node_ -> {
-			return node_.castMap(FunpDefineRec.class, f -> f.apply((pairs, expr, type) -> {
-				if (pairs.size() == 1) {
-					var pair = pairs.get(0);
-					var lambdaVar = pair.k;
-					var lambda1 = pair.v.castMap(FunpLambda.class, g -> g.apply((vn, do_, fct) -> {
-						return !isHasLambda(do_) ? rewriteTco(lambdaVar, vn, do_) : null;
-					}));
-					return lambda1 != null ? FunpDefineRec.of(List.of(Pair.of(lambdaVar, lambda1)), expr, type) : null;
-				} else
-					return null;
-			}));
+			List<Pair<String, Funp>> pairs;
+			Pair<String, Funp> pair;
+			String lambdaVar;
+			Funp lambda1;
+			if (node_ instanceof FunpDefineRec defs //
+					&& (pairs = defs.pairs).size() == 1 //
+					&& (pair = pairs.get(0)).v instanceof FunpLambda g //
+					&& !isHasLambda(g.expr) //
+					&& (lambda1 = rewriteTco(lambdaVar = pair.k, g.vn, g.expr)) != null) {
+				return FunpDefineRec.of(List.of(Pair.of(lambdaVar, lambda1)), defs.expr, defs.fdt);
+			} else
+				return null;
 		});
 	}
 
@@ -55,9 +56,9 @@ public class P11ReduceTailCall {
 			private Funp tco(Funp do_) {
 				return new Switch<Funp>(do_ //
 				).applyIf(FunpApply.class, f -> f.apply((value, lambda) -> {
-					return lambda.castMap(FunpVariable.class, g -> g.apply(vn_ -> {
-						return Equals.string(lambdaVn, vn_) ? cont(true, value, FunpDontCare.of()) : null;
-					}));
+					return lambda instanceof FunpVariable fv && Equals.string(lambdaVn, fv.vn) //
+							? cont(true, value, FunpDontCare.of()) //
+							: null;
 				})).applyIf(FunpIf.class, g -> g.apply((if_, then, else_) -> {
 					return FunpIf.of(if_, tco(then), tco(else_));
 				})).applyIf(Funp.class, g -> {
