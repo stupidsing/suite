@@ -231,9 +231,8 @@ public class P4GenerateCode extends FunpCfg {
 			})).applyIf(FunpCoerce.class, f -> f.apply((fr, to, expr) -> {
 				var frSize = getCoerceSize(fr);
 				var toSize = getCoerceSize(to);
-				FunpNumber number;
 
-				if ((number = expr.cast(FunpNumber.class)) != null)
+				if (expr instanceof FunpNumber number)
 					return returnOp(amd64.imm(number.i.value(), toSize));
 				else if (frSize != toSize) {
 					var reg = (pop0 != null && pop0.reg < 4 ? pop0 : rs.get(1)).reg;
@@ -768,7 +767,7 @@ public class P4GenerateCode extends FunpCfg {
 			var _ax = regs[axReg];
 			var _dx = regs[dxReg];
 
-			var numRhs = rhs.castMap(FunpNumber.class, n_ -> n_.i.value());
+			var numRhs = rhs instanceof FunpNumber n_ ? n_.i.value() : null;
 			var insn = insnByOp.get(operator);
 			var setInsn = setInsnByOp.get(operator);
 			var setRevInsn = setRevInsnByOp.get(operator);
