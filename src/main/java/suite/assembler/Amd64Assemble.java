@@ -224,10 +224,6 @@ public class Amd64Assemble {
 		var i_op0 = instruction.op0;
 		var i_op1 = instruction.op1;
 		var i_op2 = instruction.op2;
-		OpImm opImm;
-		OpReg opReg;
-		OpRegControl opRegCtrl;
-		OpRegSegment opRegSegment;
 		byte[] bs;
 
 		Encode encode = switch (instruction.insn) {
@@ -238,7 +234,7 @@ public class Amd64Assemble {
 		case ADDSS -> assembleRegRm(i_op0, i_op1, 0x58).append(0x0F).pre(0xF3);
 		case ADVANCE -> new InsnCode(new byte[(int) (((OpImm) i_op0).imm - offset)]);
 		case ALIGN -> {
-			var align = i_op0.cast(OpImm.class).imm;
+			var align = ((OpImm) i_op0).imm;
 			var alignm1 = align - 1;
 			bs = new byte[(int) (align - (offset & alignm1) & alignm1)];
 			Arrays.fill(bs, (byte) 0x90);
@@ -247,7 +243,7 @@ public class Amd64Assemble {
 		case AND -> assembleRmRegImm(instruction, 0x20, 0x80, 4);
 		case AOP -> assemble(0x67);
 		case CALL -> {
-			if ((opImm = i_op0.cast(OpImm.class)) != null && 4 <= i_op0.size)
+			if (i_op0 instanceof OpImm opImm && 4 <= i_op0.size)
 				yield assembleJumpImm(opImm, offset, -1, bs(0xE8));
 			else if (isRm.test(i_op0))
 				yield assemble(i_op0, 0xFF, 2);
@@ -268,7 +264,7 @@ public class Amd64Assemble {
 		case CVTSI2SD -> assembleRegRm(i_op0, i_op1, 0x2A).append(0x0F).pre(0xF2);
 		case CVTSI2SS -> assembleRegRm(i_op0, i_op1, 0x2A).append(0x0F).pre(0xF3);
 		case D -> {
-			opImm = (OpImm) i_op0;
+			OpImm opImm = (OpImm) i_op0;
 			var bb = new BytesBuilder();
 			appendImm(bb, opImm.size, opImm.imm);
 			yield new InsnCode(bb.toBytes().toArray());
@@ -278,15 +274,15 @@ public class Amd64Assemble {
 		case DIVPS -> assembleRegRm(i_op0, i_op1, 0x5E).append(0x0F);
 		case DIVSS -> assembleRegRm(i_op0, i_op1, 0x5E).append(0x0F).pre(0xF3);
 		case DS -> {
-			bs = new byte[(int) i_op0.cast(OpImm.class).imm];
-			var b = (opImm = i_op1.cast(OpImm.class)) != null ? opImm.imm : 0x90;
+			bs = new byte[(int) ((OpImm) i_op0).imm];
+			var b = i_op1 instanceof OpImm opImm ? opImm.imm : 0x90;
 			Arrays.fill(bs, (byte) b);
 			yield new InsnCode(Bytes.of(bs).toArray());
 		}
 		case HLT -> assemble(0xF4);
 		case IDIV -> assembleByteFlag(i_op0, 0xF6, 7);
 		case IMM -> {
-			if ((opImm = i_op0.cast(OpImm.class)) != null) {
+			if (i_op0 instanceof OpImm opImm) {
 				var insnCode_ = new InsnCode(mode.opSize, opImm);
 				insnCode_.bs = new byte[] {};
 				yield insnCode_;
@@ -299,14 +295,14 @@ public class Amd64Assemble {
 			else if (i_op0.size == i_op1.size)
 				if (i_op2 instanceof OpNone)
 					yield assembleRegRm(i_op0, i_op1, 0xAF).append(0x0F);
-				else if ((opImm = i_op2.cast(OpImm.class)) != null) {
+				else if (i_op2 instanceof OpImm opImm)
 					if (opImm.size <= 1)
 						yield assembleRegRm(i_op0, i_op1, 0x6B).imm(opImm);
 					else if (opImm.size == Math.min(4, i_op0.size))
 						yield assembleRegRm(i_op0, i_op1, 0x69).imm(opImm);
 					else
 						yield invalid;
-				} else
+				else
 					yield invalid;
 			else
 				yield invalid;
@@ -314,7 +310,7 @@ public class Amd64Assemble {
 		case IN -> assembleInOut(i_op1, i_op0, 0xE4);
 		case INC -> assembleRm(instruction, isLongMode ? -1 : 0x40, 0xFE, 0);
 		case INT -> {
-			if ((opImm = i_op0.cast(OpImm.class)) != null)
+			if (i_op0 instanceof OpImm opImm)
 				yield opImm.imm != 3 ? assemble(0xCD).imm(opImm.imm, 1) : assemble(0xCC);
 			else
 				yield invalid;
@@ -363,7 +359,7 @@ public class Amd64Assemble {
 		case LIDT -> assemble(i_op0, 0x01, 3, mode.opSize).append(0x0F);
 		case LTR -> assemble(i_op0, 0x00, 3, mode.opSize).append(0x0F);
 		case MOV -> {
-			if ((opImm = i_op1.cast(OpImm.class)) != null //
+			if (i_op1 instanceof OpImm opImm //
 					&& isRm.test(i_op0) //
 					&& Integer.MIN_VALUE <= opImm.imm && opImm.imm <= Integer.MAX_VALUE //
 					&& (!isNonRexReg.test(i_op0) //
@@ -377,22 +373,22 @@ public class Amd64Assemble {
 			else if ((encode = assembleRmReg(instruction, 0x88)).isValid())
 				yield encode;
 			else if (i_op0.size == i_op1.size)
-				if ((opImm = i_op1.cast(OpImm.class)) != null)
+				if (i_op1 instanceof OpImm opImm)
 					if (i_op0 instanceof OpReg && isNonRexReg.test(i_op0))
 						yield assembleReg(instruction, 0xB0 + (opImm.size <= 1 ? 0 : 8)).imm(opImm);
 					else
 						yield invalid;
-				else if ((opRegSegment = i_op0.cast(OpRegSegment.class)) != null)
+				else if (i_op0 instanceof OpRegSegment opRegSegment)
 					yield assemble(i_op1, 0x8E, opRegSegment.sreg);
-				else if ((opRegSegment = i_op1.cast(OpRegSegment.class)) != null)
+				else if (i_op1 instanceof OpRegSegment opRegSegment)
 					yield assemble(i_op0, 0x8C, opRegSegment.sreg);
 				else if (i_op0.size == 4 //
-						&& (opReg = i_op0.cast(OpReg.class)) != null //
-						&& (opRegCtrl = i_op1.cast(OpRegControl.class)) != null)
+						&& i_op0 instanceof OpReg opReg //
+						&& i_op1 instanceof OpRegControl opRegCtrl)
 					yield new InsnCode(4, new byte[] { (byte) 0x0F, (byte) 0x20, b(opReg.reg, opRegCtrl.creg, 3), });
 				else if (i_op0.size == 4 //
-						&& (opRegCtrl = i_op0.cast(OpRegControl.class)) != null //
-						&& (opReg = i_op1.cast(OpReg.class)) != null)
+						&& i_op0 instanceof OpRegControl opRegCtrl //
+						&& i_op1 instanceof OpReg opReg)
 					yield new InsnCode(4, new byte[] { (byte) 0x0F, (byte) 0x22, b(opReg.reg, opRegCtrl.creg, 3), });
 				else
 					yield invalid;
@@ -435,14 +431,14 @@ public class Amd64Assemble {
 					yield assembleRm(instruction, 0x58, 0x8E, 0);
 				else
 					yield invalid;
-			else if (i_op0 instanceof OpRegSegment sreg) {
-				yield switch (sreg.sreg) {
+			else if (i_op0 instanceof OpRegSegment opRegSegment) {
+				yield switch (opRegSegment.sreg) {
 				case 0 -> isLongMode ? invalid : assemble(0x07); // POP ES
 				case 1 -> invalid; // POP CS, no such thing
 				case 2 -> isLongMode ? invalid : assemble(0x17); // POP SS
 				case 3 -> isLongMode ? invalid : assemble(0x1F); // POP DS
-				case 4 -> new InsnCode(sreg.size, bs(0x0F, 0xA1)); // POP FS
-				case 5 -> new InsnCode(sreg.size, bs(0x0F, 0xA9)); // POP GS
+				case 4 -> new InsnCode(opRegSegment.size, bs(0x0F, 0xA1)); // POP FS
+				case 5 -> new InsnCode(opRegSegment.size, bs(0x0F, 0xA9)); // POP GS
 				default -> invalid;
 				};
 			} else
@@ -451,7 +447,7 @@ public class Amd64Assemble {
 		case POPA -> assemble(0x61);
 		case POPF -> assemble(0x9D);
 		case PUSH -> {
-			if ((opImm = i_op0.cast(OpImm.class)) != null) {
+			if (i_op0 instanceof OpImm opImm) {
 				var size = i_op0.size;
 				yield new InsnCode(size, opImm).setByte(0x68 + (1 < size ? 0 : 2));
 			} else if (isRm.test(i_op0))
@@ -484,7 +480,7 @@ public class Amd64Assemble {
 		case RET -> {
 			if (i_op0 instanceof OpNone)
 				yield assemble(0xC3);
-			else if ((opImm = i_op0.cast(OpImm.class)) != null && i_op0.size == 2)
+			else if (i_op0 instanceof OpImm opImm && i_op0.size == 2)
 				yield new InsnCode(i_op0.size, opImm).setByte(0xC2);
 			else
 				yield invalid;
@@ -516,7 +512,7 @@ public class Amd64Assemble {
 		case SYSENTER -> new InsnCode(bs(0x0F, 0x34));
 		case SYSEXIT -> new InsnCode(bs(0x0F, 0x35));
 		case TEST -> {
-			if ((opImm = i_op1.cast(OpImm.class)) != null)
+			if (i_op1 instanceof OpImm opImm)
 				yield i_op0.size == i_op1.size ? assembleRmImm(i_op0, opImm, 0xA8, 0xF6, 0) : invalid;
 			else
 				yield assembleByteFlag(i_op0, 0x84, i_op1);
@@ -528,7 +524,7 @@ public class Amd64Assemble {
 		case VMULPS -> assembleRegRm(i_op0, i_op2, 0x59).vex(Vexp.VP__, i_op1, Vexm.VM0F__);
 		case VSUBPS -> assembleRegRm(i_op0, i_op2, 0x5C).vex(Vexp.VP__, i_op1, Vexm.VM0F__);
 		case XCHG -> {
-			if ((opReg = i_op1.cast(OpReg.class)) != null)
+			if (i_op1 instanceof OpReg opReg)
 				if (isAcc.test(i_op0) && i_op0.size == i_op1.size)
 					yield assemble(0x90 + opReg.reg);
 				else
@@ -547,8 +543,7 @@ public class Amd64Assemble {
 	private InsnCode assembleInOut(Operand port, Operand acc, int b) {
 		if (isAcc.test(acc)) {
 			var portImm = port.cast(OpImm.class);
-			var portReg = port.cast(OpReg.class);
-			var isDX = port.size == 2 && portReg != null && portReg.reg == 2;
+			var isDX = port.size == 2 && port instanceof OpReg portReg && portReg.reg == 2;
 			var insnCode = new InsnCode(acc.size, bs(b + (acc.size == 1 ? 0 : 1) + (portImm != null ? 0 : 8)));
 
 			if (portImm != null) {
@@ -564,11 +559,7 @@ public class Amd64Assemble {
 	}
 
 	private InsnCode assembleJump(Instruction instruction, long offset, int bj1, byte[] bj24) {
-		var opImm = instruction.op0.cast(OpImm.class);
-		if (opImm != null)
-			return assembleJumpImm(opImm, offset, bj1, bj24);
-		else
-			return invalid;
+		return instruction.op0 instanceof OpImm opImm ? assembleJumpImm(opImm, offset, bj1, bj24) : invalid;
 	}
 
 	private InsnCode assembleJumpImm(OpImm op0, long offset, int bj1, byte[] bj24) {
@@ -597,9 +588,8 @@ public class Amd64Assemble {
 	}
 
 	private InsnCode assembleRegRmExtended(Instruction instruction, int b) {
-		var reg = instruction.op0.cast(OpReg.class);
-		if (reg != null && isRm.test(instruction.op1))
-			return assemble(instruction.op1, b + (instruction.op1.size <= 1 ? 0 : 1), reg.reg, reg.size);
+		if (instruction.op0 instanceof OpReg opReg && isRm.test(instruction.op1))
+			return assemble(instruction.op1, b + (instruction.op1.size <= 1 ? 0 : 1), opReg.reg, opReg.size);
 		else
 			return invalid;
 	}
@@ -614,15 +604,14 @@ public class Amd64Assemble {
 	}
 
 	private InsnCode assembleReg(Instruction instruction, int bReg) {
-		var op0 = instruction.op0.cast(OpReg.class);
+		var op0 = (OpReg) instruction.op0;
 		return new InsnCode(op0.size, bs(bReg + op0.reg));
 	}
 
 	private InsnCode assembleRmRegImm(Instruction instruction, int bModrm, int bImm, int num) {
 		var size0 = instruction.op0.size;
 		var size1 = instruction.op1.size;
-		var opImm = instruction.op1.cast(OpImm.class);
-		if ((size1 == 1 || size0 == size1) && opImm != null)
+		if ((size1 == 1 || size0 == size1) && instruction.op1 instanceof OpImm opImm)
 			return assembleRmImm(instruction.op0, opImm, bModrm + 4, bImm, num);
 		else
 			return size0 == size1 ? assembleRmReg(instruction, bModrm) : invalid;
