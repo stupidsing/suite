@@ -180,6 +180,7 @@ public class Funp_ extends FunpCfg {
 
 		return new Switch<String>(n) //
 				.applyIf(FunpDefine.class, f -> c + " (" + f.vn + ")") //
+				.applyIf(FunpDefineRec.class, f -> c + " (" + Read.from2(f.pairs).keys().toJoinedString(", ") + ")") //
 				.applyIf(FunpDoAssignVar.class, f -> c + " (" + f.var.vn + ")") //
 				.applyIf(FunpField.class, f -> c + " (" + f.field + ")") //
 				.applyIf(FunpLambda.class, f -> c + " (" + f.vn + ")") //
