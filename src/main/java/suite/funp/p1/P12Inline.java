@@ -86,8 +86,9 @@ public class P12Inline {
 			private Funp rename(Funp node_) {
 				return inspect.rewrite(node_, Funp.class, n_ -> n_.sw( //
 				).applyIf(FunpDefine.class, f -> f.apply((vn, value, expr, fdt) -> {
-					var r1 = new Rename(vns.replace(vn, newVarName.apply(vn)));
-					return FunpDefine.of(newVarName.apply(vn), rename(value), r1.rename(expr), fdt);
+					var vn_ = newVarName.apply(vn);
+					var r1 = new Rename(vns.replace(vn, vn_));
+					return FunpDefine.of(vn_, rename(value), r1.rename(expr), fdt);
 				})).applyIf(FunpDefineRec.class, f -> f.apply((pairs0, expr, fdt) -> {
 					var pairs = Read.from2(pairs0);
 					var vns1 = pairs.keys().fold(vns, (vns_, vn) -> vns_.replace(vn, newVarName.apply(vn)));
@@ -119,6 +120,10 @@ public class P12Inline {
 			public void count(Funp node_, boolean isWithinIo) {
 				inspect.rewrite(node_, Funp.class, n_ -> n_.sw( //
 				).applyIf(FunpDefine.class, f -> f.apply((vn, value, expr, fdt) -> {
+					// too dangerous to inline imperative code
+					getCount(f).update(isWithinIo ? 9999 : 0);
+					return null;
+				})).applyIf(FunpDefineRec.class, f -> f.apply((pairs, expr, fdt) -> {
 					// too dangerous to inline imperative code
 					getCount(f).update(isWithinIo ? 9999 : 0);
 					return null;
