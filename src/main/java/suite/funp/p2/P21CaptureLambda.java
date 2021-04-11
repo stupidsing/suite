@@ -39,7 +39,7 @@ public class P21CaptureLambda {
 
 	public Funp captureLambdas(Funp node0) {
 		var grandLambda = FunpLambda.of("grand$", node0);
-		var defByVars = Funp_.associateDefinitions(node0);
+		var defByVariables = Funp_.associateDefinitions(node0);
 		var lambdaByFunp = new IdentityHashMap<Funp, FunpLambda>();
 
 		class AssociateLambda {
@@ -85,7 +85,7 @@ public class P21CaptureLambda {
 		}
 
 		var infoByLambda = Read.from2(lambdaByFunp).values().distinct().map2(lambda -> new Li()).toMap();
-		var infoByVar = Read.from2(defByVars).mapValue(Vi::new).toMap();
+		var infoByVar = Read.from2(defByVariables).mapValue(Vi::new).toMap();
 
 		// capture-by-reference if necessary, e.g. assignments or references occurred
 		new Object() {
@@ -105,7 +105,7 @@ public class P21CaptureLambda {
 						} else
 							return null;
 					}).doIf(FunpVariable.class, f -> {
-						infoByVar.get(f).setLambda(defByVars.get(f) instanceof FunpDefineRec, lambda);
+						infoByVar.get(f).setLambda(defByVariables.get(f) instanceof FunpDefineRec, lambda);
 					}).result();
 				});
 			}
