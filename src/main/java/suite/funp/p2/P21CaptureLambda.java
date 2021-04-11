@@ -85,7 +85,7 @@ public class P21CaptureLambda {
 		}
 
 		var infoByLambda = Read.from2(lambdaByFunp).values().distinct().map2(lambda -> new Li()).toMap();
-		var infoByVar = Read.from2(defByVariables).mapValue(Vi::new).toMap();
+		var infoByVar = Read.from2(defByVariables).mapValue(pair -> new Vi(pair.v)).toMap();
 
 		// capture-by-reference if necessary, e.g. assignments or references occurred
 		new Object() {
@@ -105,7 +105,7 @@ public class P21CaptureLambda {
 						} else
 							return null;
 					}).doIf(FunpVariable.class, f -> {
-						infoByVar.get(f).setLambda(defByVariables.get(f) instanceof FunpDefineRec, lambda);
+						infoByVar.get(f).setLambda(defByVariables.get(f).v instanceof FunpDefineRec, lambda);
 					}).result();
 				});
 			}

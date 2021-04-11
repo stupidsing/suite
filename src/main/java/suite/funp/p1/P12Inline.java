@@ -12,6 +12,7 @@ import primal.adt.Pair;
 import primal.fp.Funs.Iterate;
 import primal.persistent.PerMap;
 import primal.primitive.adt.IntMutable;
+import primal.primitive.adt.pair.IntObjPair;
 import suite.funp.Funp_;
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.Fct;
@@ -154,7 +155,7 @@ public class P12Inline {
 			}
 
 			private IntMutable getVariableCount(FunpVariable var) {
-				return getCount(defByVariables.get(var));
+				return getCount(defByVariables.get(var).v);
 			}
 
 			private IntMutable getCount(Funp def) {
@@ -173,9 +174,10 @@ public class P12Inline {
 			private Funp inline(Funp node_) {
 				return inspect.rewrite(node_, Funp.class, n_ -> {
 					FunpDefine define;
+					IntObjPair<Funp> pair;
 					if ((define = defines.get(n_)) != null)
 						return inline(define.expr);
-					else if ((define = defines.get(defByVariables.get(n_))) != null)
+					else if ((pair = defByVariables.get(n_)) != null && (define = defines.get(pair.v)) != null)
 						return inline(define.value);
 					else
 						return null;
@@ -290,9 +292,9 @@ public class P12Inline {
 		}.inline(node);
 	}
 
-	private Funp lookup(Map<FunpVariable, Funp> defByVariables, Funp expr) {
+	private Funp lookup(Map<FunpVariable, IntObjPair<Funp>> defByVariables, Funp expr) {
 		if (expr instanceof FunpVariable variable //
-				&& defByVariables.get(variable) instanceof FunpDefine define //
+				&& defByVariables.get(variable).v instanceof FunpDefine define //
 				&& Fdt.isLocal(define.fdt) //
 				&& Fdt.isPure(define.fdt))
 			return lookup(defByVariables, define.value);
