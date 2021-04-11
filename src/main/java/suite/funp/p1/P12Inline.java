@@ -85,10 +85,9 @@ public class P12Inline {
 
 			private Funp rename(Funp node_) {
 				return inspect.rewrite(node_, Funp.class, n_ -> n_.sw( //
-				).applyIf(FunpDefine.class, f -> f.apply((vn0, value, expr, fdt) -> {
-					var vn1 = newVarName.apply(vn0);
-					var r1 = new Rename(vns.replace(vn0, vn1));
-					return FunpDefine.of(vn1, rename(value), r1.rename(expr), fdt);
+				).applyIf(FunpDefine.class, f -> f.apply((vn, value, expr, fdt) -> {
+					var r1 = new Rename(vns.replace(vn, newVarName.apply(vn)));
+					return FunpDefine.of(newVarName.apply(vn), rename(value), r1.rename(expr), fdt);
 				})).applyIf(FunpDefineRec.class, f -> f.apply((pairs0, expr, fdt) -> {
 					var pairs = Read.from2(pairs0);
 					var vns1 = pairs.keys().fold(vns, (vns_, vn) -> vns_.replace(vn, newVarName.apply(vn)));
