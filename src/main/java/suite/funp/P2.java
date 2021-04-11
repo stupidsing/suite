@@ -189,7 +189,7 @@ public class P2 {
 	public static class FunpHeapAlloc implements Funp, P4.End {
 		public boolean isDynamicSize;
 		public int size;
-		public Funp factor;
+		public Funp factor; // total allocation: size * factor
 
 		public static FunpHeapAlloc of(boolean isDynamicSize, int size, Funp factor) {
 			var f = new FunpHeapAlloc();
