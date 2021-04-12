@@ -347,7 +347,7 @@ public class P22InferType extends FunpCfg {
 						.replace(vn, Pair.of(Fdt.L_MONO, tv));
 				return typeLambdaOf(tv, new Infer(env1, checks0, checks1, null).infer(expr));
 			})).applyIf(FunpLambdaFree.class, f -> f.apply((lambda, expr) -> {
-				unify(f, infer(lambda), typeLambdaOf(new Reference(), new Reference()));
+				unify(f, infer(lambda), typeRefOf(typeLambdaOf(new Reference(), new Reference())));
 				return infer(expr);
 			})).applyIf(FunpLog.class, f -> f.apply((value, expr) -> {
 				unify(f, infer(value), typeNumber);
@@ -707,8 +707,8 @@ public class P22InferType extends FunpCfg {
 					return fail();
 
 				return eraseRoutine(lt, fp1, expr3);
-			})).applyIf(FunpLambdaFree.class, f -> f.apply((lambda, expr) -> {
-				return FunpHeapDealloc.of(true, 0, FunpMemory.of(getAddress(lambda), 0, ps), erase(expr));
+			})).applyIf(FunpLambdaFree.class, f -> f.apply((lambdaRef, expr) -> {
+				return FunpHeapDealloc.of(true, 0, FunpMemory.of(erase(lambdaRef), 0, ps), erase(expr));
 			})).applyIf(FunpMe.class, f -> {
 				return me.get(scope);
 			}).applyIf(FunpReference.class, f -> f.apply(expr -> {

@@ -410,18 +410,18 @@ public class P0 {
 	}
 
 	public static class FunpLambdaFree implements Funp, P2.End {
-		public Funp lambda;
+		public FunpReference lambdaRef;
 		public Funp expr;
 
-		public static FunpLambdaFree of(Funp lambda, Funp expr) {
+		public static FunpLambdaFree of(FunpReference lambdaRef, Funp expr) {
 			var f = new FunpLambdaFree();
-			f.lambda = lambda;
+			f.lambdaRef = lambdaRef;
 			f.expr = expr;
 			return f;
 		}
 
-		public <R> R apply(FixieFun2<Funp, Funp, R> fun) {
-			return fun.apply(lambda, expr);
+		public <R> R apply(FixieFun2<FunpReference, Funp, R> fun) {
+			return fun.apply(lambdaRef, expr);
 		}
 	}
 

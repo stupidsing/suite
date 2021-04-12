@@ -59,7 +59,7 @@ public class P20ExtractPredefine {
 									return FunpDefine.of(vnResult, f_, fda, Fdt.L_MONO);
 								});
 							else if (fpt == Fpt.FREE__)
-								defers.add(f_ -> FunpLambdaFree.of(var, f_));
+								defers.add(f_ -> FunpLambdaFree.of(FunpReference.of(var), f_));
 							else if (fpt == Fpt.INVOKE)
 								defers.add(f_ -> {
 									var vnResult = "result$" + Get.temp();

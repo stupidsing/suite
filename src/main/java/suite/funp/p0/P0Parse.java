@@ -292,7 +292,7 @@ public class P0Parse extends FunpCfg {
 			}).match("type €0 = €1 ~ €2", (a, b, c) -> { // bind the types of two values
 				return FunpTypeCheck.of(p(a), p(b), p(c));
 			}).match("uncapture €0 ~ €1", (a, b) -> { // free a captured lambda
-				return FunpLambdaFree.of(p(a), p(b));
+				return FunpLambdaFree.of(FunpReference.of(p(a)), p(b));
 			}).match("{ €0 }", a -> { // forms a struct
 				var isCompleted = Tree.decompose(a, FunpOp.AND___) == null;
 				return FunpStruct.of(isCompleted, kvs(a).mapValue(this::p).toList());

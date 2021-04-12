@@ -25,7 +25,6 @@ import suite.funp.P0.FunpDontCare;
 import suite.funp.P0.FunpField;
 import suite.funp.P0.FunpIo;
 import suite.funp.P0.FunpLambda;
-import suite.funp.P0.FunpLambdaFree;
 import suite.funp.P0.FunpNumber;
 import suite.funp.P0.FunpReference;
 import suite.funp.P0.FunpStruct;
@@ -137,10 +136,6 @@ public class P12Inline {
 				})).applyIf(FunpLambda.class, f -> f.apply((vn, expr, fct) -> {
 					count(expr, false);
 					return n_;
-				})).applyIf(FunpLambdaFree.class, f -> f.apply((lambda, expr) -> {
-					if (lambda instanceof FunpVariable fv)
-						getVariableCount(fv).update(9999);
-					return null;
 				})).applyIf(FunpReference.class, f -> f.apply(expr -> {
 					if (expr instanceof FunpVariable fv)
 						getVariableCount(fv).update(9999);
