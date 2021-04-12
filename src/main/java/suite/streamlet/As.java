@@ -19,7 +19,6 @@ import primal.adt.Pair;
 import primal.adt.map.ListMultimap;
 import primal.fp.Funs.Fun;
 import primal.fp.Funs.Sink;
-import primal.fp.Funs.Source;
 import primal.fp.Funs2.Fun2;
 import primal.primitive.DblPrim.Obj_Dbl;
 import primal.primitive.IntPrim;
@@ -42,10 +41,6 @@ import suite.primitive.Bytes_;
 import suite.util.To;
 
 public class As {
-
-	public interface Seq<I, O> {
-		public O apply(int index, I i);
-	}
 
 	public static Fun<Puller<String>, String> conc(String delimiter) {
 		return puller -> Build.string(sb -> puller.sink(s -> {
@@ -138,17 +133,6 @@ public class As {
 
 	public static <K, V, T> Fun<Puller2<K, V>, Streamlet<T>> pairMap(Fun2<K, V, T> fun) {
 		return puller -> new Streamlet<>(() -> puller.map(fun::apply));
-	}
-
-	public static <I, O> Fun<Puller<I>, Puller<O>> sequenced(Seq<I, O> seq) {
-		return puller -> Puller.of(new Source<>() {
-			private int index;
-
-			public O g() {
-				var i = puller.pull();
-				return i != null ? seq.apply(index++, i) : null;
-			}
-		});
 	}
 
 	public static <K, V> Map<K, Set<V>> setMap(Puller<Pair<K, V>> puller) {

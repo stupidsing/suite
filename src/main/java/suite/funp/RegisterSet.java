@@ -45,8 +45,7 @@ public class RegisterSet {
 	}
 
 	public OpReg get(Operand op) {
-		var prefer = op.cast(OpReg.class);
-		return prefer != null && !isMasked_(prefer.reg) ? prefer : get_(op.size, false);
+		return op instanceof OpReg prefer && !isMasked_(prefer.reg) ? prefer : get_(op.size, false);
 	}
 
 	public OpReg get(int size) {

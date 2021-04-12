@@ -3,6 +3,7 @@ package suite.funp.p1;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 
 import primal.MoreVerbs.Read;
 import primal.Verbs.Equals;
@@ -11,8 +12,10 @@ import primal.adt.Pair;
 import primal.fp.Funs.Iterate;
 import primal.persistent.PerMap;
 import primal.primitive.adt.IntMutable;
+import primal.primitive.adt.pair.IntObjPair;
 import suite.funp.Funp_;
 import suite.funp.Funp_.Funp;
+import suite.funp.P0.Fct;
 import suite.funp.P0.Fdt;
 import suite.funp.P0.FunpApply;
 import suite.funp.P0.FunpDefine;
@@ -22,6 +25,7 @@ import suite.funp.P0.FunpDontCare;
 import suite.funp.P0.FunpField;
 import suite.funp.P0.FunpIo;
 import suite.funp.P0.FunpLambda;
+import suite.funp.P0.FunpLambdaFree;
 import suite.funp.P0.FunpNumber;
 import suite.funp.P0.FunpReference;
 import suite.funp.P0.FunpStruct;
@@ -41,16 +45,18 @@ public class P12Inline {
 	public P12Inline(Funp_ f) {
 	}
 
-	public Funp inline(Funp node, int rounds, int f0, int f1, int f2, int f3, int f4) {
+	public Funp inline(Funp node, int rounds) {
 		node = renameVariables(node);
 
 		for (var i = 0; i < rounds; i++) {
-			node = 0 < f0 ? inlineDefineAssigns(node) : node;
-			node = 0 < f1 ? inlineDefines(node) : node;
-			node = 0 < f2 ? inlineFields(node) : node;
-			node = 0 < f3 ? inlineLambdas(node) : node;
-			node = 0 < f4 ? inlineTags(node) : node;
+			node = inlineDefineAssigns(node);
+			node = inlineFields(node); // may reorder or duplicate calculations
+			node = inlineLambdas(node);
+			node = inlineTags(node); // may reorder or duplicate calculations
 		}
+
+		for (var i = 0; i < rounds; i++)
+			node = inlineDefines(node); // may remove or reorder calculations
 
 		if (Boolean.FALSE)
 			Dump.line(node);
@@ -80,10 +86,10 @@ public class P12Inline {
 
 			private Funp rename(Funp node_) {
 				return inspect.rewrite(node_, Funp.class, n_ -> n_.sw( //
-				).applyIf(FunpDefine.class, f -> f.apply((vn0, value, expr, fdt) -> {
-					var vn1 = newVarName.apply(vn0);
-					var r1 = new Rename(vns.replace(vn0, vn1));
-					return FunpDefine.of(vn1, rename(value), r1.rename(expr), fdt);
+				).applyIf(FunpDefine.class, f -> f.apply((vn, value, expr, fdt) -> {
+					var vn_ = newVarName.apply(vn);
+					var r1 = new Rename(vns.replace(vn, vn_));
+					return FunpDefine.of(vn_, rename(value), r1.rename(expr), fdt);
 				})).applyIf(FunpDefineRec.class, f -> f.apply((pairs0, expr, fdt) -> {
 					var pairs = Read.from2(pairs0);
 					var vns1 = pairs.keys().fold(vns, (vns_, vn) -> vns_.replace(vn, newVarName.apply(vn)));
@@ -105,18 +111,91 @@ public class P12Inline {
 		return new Rename(PerMap.empty()).rename(node);
 	}
 
-	// Before - define i := memory ~ assign i := value ~ expr
+	// Before - define i := 1 ~ i + 1
+	// After - 1 + 1
+	private Funp inlineDefines(Funp node) {
+		var defByVariables = Funp_.associateDefinitions(node);
+		var countByDefs = new HashMap<Funp, IntMutable>();
+
+		new Object() {
+			public void count(Funp node_, boolean isWithinIo) {
+				inspect.rewrite(node_, Funp.class, n_ -> n_.sw( //
+				).applyIf(FunpDefine.class, f -> f.apply((vn, value, expr, fdt) -> {
+					// too dangerous to inline imperative code
+					getCount(f).update(isWithinIo ? 9999 : 0);
+					return null;
+				})).applyIf(FunpDefineRec.class, f -> f.apply((pairs, expr, fdt) -> {
+					// too dangerous to inline imperative code
+					getCount(f).update(isWithinIo ? 9999 : 0);
+					return null;
+				})).applyIf(FunpDoAssignVar.class, f -> f.apply((var, value, expr) -> {
+					getVariableCount(var).update(9999);
+					return null;
+				})).applyIf(FunpIo.class, f -> f.apply(expr -> {
+					count(expr, true);
+					return n_;
+				})).applyIf(FunpLambda.class, f -> f.apply((vn, expr, fct) -> {
+					count(expr, false);
+					return n_;
+				})).applyIf(FunpLambdaFree.class, f -> f.apply((lambda, expr) -> {
+					if (lambda instanceof FunpVariable fv)
+						getVariableCount(fv).update(9999);
+					return null;
+				})).applyIf(FunpReference.class, f -> f.apply(expr -> {
+					if (expr instanceof FunpVariable fv)
+						getVariableCount(fv).update(9999);
+					return null;
+				})).applyIf(FunpTypeCheck.class, f -> f.apply((left, right, expr) -> {
+					count(expr, isWithinIo);
+					return n_;
+				})).applyIf(FunpVariable.class, f -> f.apply(vn -> {
+					getVariableCount(f).increment();
+					return null;
+				})).result());
+			}
+
+			private IntMutable getVariableCount(FunpVariable var) {
+				return getCount(defByVariables.get(var).v);
+			}
+
+			private IntMutable getCount(Funp def) {
+				return countByDefs.computeIfAbsent(def, v -> IntMutable.of(0));
+			}
+		}.count(node, false);
+
+		var defines = Read //
+				.from2(countByDefs) //
+				.filter((def, c) -> def instanceof FunpDefine && c.value() <= 1) //
+				.map2((def, c) -> def, (def, c) -> (FunpDefine) def) //
+				.filterValue(def -> Fdt.isLocal(def.fdt) && Fdt.isPure(def.fdt)) //
+				.toMap();
+
+		return new Object() {
+			private Funp inline(Funp node_) {
+				return inspect.rewrite(node_, Funp.class, n_ -> {
+					FunpDefine define;
+					IntObjPair<Funp> pair;
+					if ((define = defines.get(n_)) != null)
+						return inline(define.expr);
+					else if ((pair = defByVariables.get(n_)) != null && (define = defines.get(pair.v)) != null)
+						return inline(define.value);
+					else
+						return null;
+				});
+			}
+		}.inline(node);
+	}
+
+	// Before - define i := don't_care ~ assign i := value ~ expr
 	// After - define i := value ~ expr
 	private Funp inlineDefineAssigns(Funp node) {
 		return new Object() {
 			private Funp inline(Funp node_) {
 				return inspect.rewrite(node_, Funp.class, n0 -> {
 					var vns = new ArrayList<Pair<String, Fdt>>();
-					FunpDoAssignVar assign;
 					FunpTypeCheck check;
-					FunpDefine define;
 
-					while ((define = n0.cast(FunpDefine.class)) != null //
+					while (n0 instanceof FunpDefine define //
 							&& Fdt.isLocal(define.fdt) //
 							&& define.value instanceof FunpDontCare) {
 						vns.add(Pair.of(define.vn, define.fdt));
@@ -126,7 +205,7 @@ public class P12Inline {
 					if ((check = n0.cast(FunpTypeCheck.class)) != null)
 						n0 = check.expr;
 
-					if ((assign = n0.cast(FunpDoAssignVar.class)) != null) {
+					if (n0 instanceof FunpDoAssignVar assign) {
 						var vn = assign.var.vn;
 						var n1 = assign.expr;
 						var n2 = check != null ? FunpTypeCheck.of(check.left, check.right, n1) : n1;
@@ -151,102 +230,16 @@ public class P12Inline {
 		}.inline(node);
 	}
 
-	// Before - define i := 1 ~ i + 1
-	// After - 1 + 1
-	// Before - expand i := 1 ~ i + i
-	// After - 1 + 1
-	private Funp inlineDefines(Funp node) {
-		var defByVariables = Funp_.associateDefinitions(node);
-		var countByDefs = new HashMap<Funp, IntMutable>();
-
-		new Object() {
-			public void count(Funp node_, boolean isWithinIo) {
-				inspect.rewrite(node_, Funp.class, n_ -> n_.sw( //
-				).applyIf(FunpDefine.class, f -> f.apply((vn, value, expr, fdt) -> {
-					if (isWithinIo) // too dangerous to inline imperative code
-						getCount(f).update(9999);
-					return null;
-				})).applyIf(FunpDoAssignVar.class, f -> f.apply((var, value, expr) -> {
-					getVariableCount(var).update(9999);
-					return null;
-				})).applyIf(FunpIo.class, f -> f.apply(expr -> {
-					count(expr, true);
-					return n_;
-				})).applyIf(FunpLambda.class, f -> f.apply((vn, expr, fct) -> {
-					count(expr, false);
-					return n_;
-				})).applyIf(FunpTypeCheck.class, f -> f.apply((left, right, expr) -> {
-					count(expr, isWithinIo);
-					return n_;
-				})).applyIf(FunpReference.class, f -> f.apply(expr -> {
-					if (expr instanceof FunpVariable fv)
-						getVariableCount(fv).update(9999);
-					return null;
-				})).applyIf(FunpVariable.class, f -> f.apply(vn -> {
-					getVariableCount(f).increment();
-					return null;
-				})).result());
-			}
-
-			private IntMutable getVariableCount(FunpVariable var) {
-				var def = defByVariables.get(var);
-				return getCount(def);
-			}
-
-			private IntMutable getCount(Funp def) {
-				return countByDefs.computeIfAbsent(def, v -> IntMutable.of(0));
-			}
-		}.count(node, false);
-
-		var zero = IntMutable.of(0);
-
-		var defines = Read //
-				.from2(defByVariables) //
-				.values() //
-				.distinct() //
-				.filter(def -> def instanceof FunpDefine && countByDefs.getOrDefault(def, zero).value() <= 1) //
-				.map2(def -> (FunpDefine) def) //
-				.filterValue(def -> Fdt.isLocal(def.fdt) && Fdt.isPure(def.fdt)) //
-				.toMap();
-
-		var expands = Read //
-				.from2(defByVariables) //
-				.mapValue(defines::get) //
-				.filterValue(def -> def != null) //
-				.toMap();
-
-		return new Object() {
-			private Funp inline(Funp node_) {
-				return inspect.rewrite(node_, Funp.class, n_ -> {
-					FunpDefine define;
-					if ((define = defines.get(n_)) != null)
-						return inline(define.expr);
-					else if ((define = expands.get(n_)) != null)
-						return inline(define.value);
-					else
-						return null;
-				});
-			}
-		}.inline(node);
-	}
-
 	// Before - define s := (struct (a 1, b 2, c 3,)) ~ s/c
-	// After - 3
+	// After - define s := (struct (a 1, b 2, c 3,)) ~ 3
 	private Funp inlineFields(Funp node) {
-		var defs = Funp_.associateDefinitions(node);
+		var defByVariables = Funp_.associateDefinitions(node);
 
 		return new Object() {
 			private Funp inline(Funp node_) {
 				return inspect.rewrite(node_, Funp.class, n_ -> {
-					FunpDefine define;
-					FunpField field;
-					FunpStruct struct;
-					FunpVariable variable;
-					if ((field = n_.cast(FunpField.class)) != null //
-							&& (variable = field.reference.expr.cast(FunpVariable.class)) != null //
-							&& (define = defs.get(variable).cast(FunpDefine.class)) != null //
-							&& (define.fdt == Fdt.L_MONO || define.fdt == Fdt.L_POLY) //
-							&& (struct = define.value.cast(FunpStruct.class)) != null) {
+					if (n_ instanceof FunpField field //
+							&& lookup(defByVariables, field.reference.expr) instanceof FunpStruct struct) {
 						var pair = Read //
 								.from2(struct.pairs) //
 								.filterKey(field_ -> Equals.string(field_, field.field)) //
@@ -259,46 +252,54 @@ public class P12Inline {
 		}.inline(node);
 	}
 
-	// Before - 3 | (i => i)
-	// After - 3
+	// Before - 3 | (i => i + 1)
+	// After - let i := 3 ~ i + 1
 	private Funp inlineLambdas(Funp node) {
+		var defByVariables = Funp_.associateDefinitions(node);
+
 		return new Object() {
 			private Funp inline(Funp node_) {
-				return inspect.rewrite(node_, Funp.class, n_ -> n_.sw() //
-						.applyIf(FunpApply.class, f -> f.apply((value, lambda) -> {
-							return lambda.castMap(FunpLambda.class,
-									l -> FunpDefine.of(l.vn, inline(value), inline(l.expr), Fdt.L_MONO));
-						})) //
-						.result());
+				return inspect.rewrite(node_, Funp.class, n_ -> {
+					if (n_ instanceof FunpApply apply //
+							&& lookup(defByVariables, apply.lambda) instanceof FunpLambda lambda //
+							&& lambda.fct != Fct.ONCE__)
+						return FunpDefine.of(lambda.vn, inline(apply.value), inline(lambda.expr), Fdt.L_MONO);
+					else
+						return null;
+				});
 			}
 		}.inline(node);
 	}
 
 	// Before - define s := t:3 ~ if (`t:v` = s) then v else 0
-	// After - 3
+	// After - define s := t:3 ~ 3
 	private Funp inlineTags(Funp node) {
-		var defs = Funp_.associateDefinitions(node);
+		var defByVariables = Funp_.associateDefinitions(node);
 
 		return new Object() {
 			private Funp inline(Funp node_) {
 				return inspect.rewrite(node_, Funp.class, n_ -> {
-					FunpTag tag;
-					FunpTagId tagId;
-					FunpTagValue tagValue;
-					FunpVariable variable;
-					if ((tagId = n_.cast(FunpTagId.class)) != null //
-							&& (variable = tagId.reference.expr.cast(FunpVariable.class)) != null //
-							&& (tag = defs.get(variable).castMap(FunpDefine.class, n -> n.value.cast(FunpTag.class))) != null)
+					if (n_ instanceof FunpTagId tagId //
+							&& lookup(defByVariables, tagId.reference.expr) instanceof FunpTag tag)
 						return FunpNumber.of(tag.id);
-					else if ((tagValue = n_.cast(FunpTagValue.class)) != null //
-							&& (variable = tagValue.reference.expr.cast(FunpVariable.class)) != null //
-							&& (tag = defs.get(variable).castMap(FunpDefine.class, n -> n.value.cast(FunpTag.class))) != null)
+					else if (n_ instanceof FunpTagValue tagValue //
+							&& lookup(defByVariables, tagValue.reference.expr) instanceof FunpTag tag)
 						return Equals.string(tag.tag, tagValue.tag) ? tag.value : FunpDontCare.of();
 					else
 						return null;
 				});
 			}
 		}.inline(node);
+	}
+
+	private Funp lookup(Map<FunpVariable, IntObjPair<Funp>> defByVariables, Funp expr) {
+		if (expr instanceof FunpVariable variable //
+				&& defByVariables.get(variable).v instanceof FunpDefine define //
+				&& Fdt.isLocal(define.fdt) //
+				&& Fdt.isPure(define.fdt))
+			return lookup(defByVariables, define.value);
+		else
+			return expr;
 	}
 
 }

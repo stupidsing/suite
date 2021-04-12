@@ -280,7 +280,7 @@ public class P0Parse extends FunpCfg {
 			}).match("numberp €0", a -> { // forms a number with the same size as a pointer
 				return FunpCoerce.of(Coerce.NUMBER, Coerce.NUMBERP, FunpNumber.ofNumber(num(a)));
 			}).match("predef €0", a -> { // defines a block as a separate variable; able to get a pointer to it
-				return FunpPredefine.of("predefine$" + Get.temp(), p(a), Fpt.NONE__);
+				return FunpPredefine.of(null, p(a), Fpt.NONE__);
 			}).match("predef/€0 €1", (a, b) -> { // defines a block as a separate named variable
 				return FunpPredefine.of(Atom.name(a), p(b), Fpt.NONE__);
 			}).match("size-of €0", a -> {
@@ -458,29 +458,38 @@ public class P0Parse extends FunpCfg {
 				return lambda(a, true).apply(b);
 			}
 
+			// if we are binding to a single variable directly, treat it as a declaration;
+			// otherwise we have to parse the destructuring bind.
+			// plus some do-monad handlings.
 			private Fun<Node, FunpLambda> lambda(Node a, boolean isPassDo) {
-				var isVar = isVar(a);
-				var vn = isVar ? Atom.name(a) : "l$" + Get.temp();
-				outerFdt = isVar ? fdt : Fdt.L_MONO;
-				var nv = isPassDo ? nv(vn) : new Parse(vns.replace(vn).remove(doToken));
-				return b -> {
-					var f = isVar ? nv.p(b) : nv.bind(fdt).bind(a, Atom.of(vn), b);
-					return FunpLambda.of(vn, f);
-				};
+				if (isVar(a)) {
+					var vn = Atom.name(a);
+					var nv = isPassDo ? nv(vn) : new Parse(vns.replace(vn).remove(doToken));
+					outerFdt = fdt;
+					return b -> FunpLambda.of(vn, nv.p(b));
+				} else {
+					var vn = "l$" + Get.temp();
+					var nv = isPassDo ? nv(vn) : new Parse(vns.replace(vn).remove(doToken));
+					outerFdt = Fdt.L_MONO;
+					return b -> FunpLambda.of(vn, nv.bind(fdt).bind(a, Atom.of(vn), b));
+				}
 			}
 
+			// destructure a bind. The bind must succeed.
 			private Funp bind(Node a, Node b, Node c) {
 				return bind(a, b, c, Atom.of("error"));
 			}
 
+			// destructure a bind, or return something "else" if failed to.
 			private Funp bind(Node a, Node b, Node c, Node d) {
 				var vnsMutable = Mutable.of(PerSet.<String>empty());
 
-				Iterate<Funp> iter = be -> inspect.rewrite(be, Funp.class,
-						n_ -> n_.castMap(FunpVariableNew.class, f -> f.apply(vn -> {
+				Iterate<Funp> iter = be -> inspect.rewrite(be, Funp.class, n_ -> n_ instanceof FunpVariableNew f //
+						? f.apply(vn -> {
 							vnsMutable.update(vnsMutable.value().replace(vn));
 							return FunpVariable.of(vn);
-						})));
+						}) //
+						: null);
 
 				var be = iter.apply(p(a));
 				var vns_ = vnsMutable.value();

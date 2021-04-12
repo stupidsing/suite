@@ -9,6 +9,7 @@ import primal.adt.Pair;
 import primal.fp.Funs.Source;
 import primal.persistent.PerMap;
 import primal.primitive.adt.Bytes;
+import primal.primitive.adt.pair.IntObjPair;
 import suite.BindArrayUtil;
 import suite.BindArrayUtil.Pattern;
 import suite.assembler.Amd64;
@@ -95,7 +96,7 @@ public class Funp_ extends FunpCfg {
 			var n0 = p0.parse(node);
 			var n1 = p10.check(n0);
 			var n2 = p11.reduce(n1);
-			var n3 = p12.inline(n2, isOptimize ? 3 : 0, 1, 1, 1, 1, 1);
+			var n3 = p12.inline(n2, isOptimize ? 3 : 0);
 			var n4 = p20.extractPredefine(n3);
 			var n5 = p21.captureLambdas(n4);
 			var n6 = p22.infer(n5);
@@ -115,24 +116,27 @@ public class Funp_ extends FunpCfg {
 		}
 	}
 
-	public static Map<FunpVariable, Funp> associateDefinitions(Funp node) {
-		var defByVariables = new IdentityHashMap<FunpVariable, Funp>();
+	public static Map<FunpVariable, IntObjPair<Funp>> associateDefinitions(Funp node) {
+		var defByVariables = new IdentityHashMap<FunpVariable, IntObjPair<Funp>>();
 
 		new Object() {
-			private Funp associate(PerMap<String, Funp> vars, Funp node_) {
+			private Funp associate(PerMap<String, IntObjPair<Funp>> vars, Funp node_) {
 				return inspect.rewrite(node_, Funp.class, n_ -> n_.sw( //
 				).applyIf(FunpDefine.class, f -> f.apply((vn, value, expr, fdt) -> {
 					associate(vars, value);
-					associate(vars.replace(vn, f), expr);
+					associate(vars.replace(vn, IntObjPair.of(0, f)), expr);
 					return n_;
 				})).applyIf(FunpDefineRec.class, f -> f.apply((pairs, expr, fdt) -> {
-					var vars1 = Read.from(pairs).fold(vars, (vs, pair) -> vs.replace(pair.k, f));
+					var vars1 = vars;
+					var i = 0;
+					for (var pair : pairs)
+						vars1 = vars1.replace(pair.k, IntObjPair.of(i++, f));
 					for (var pair : pairs)
 						associate(vars1, pair.v);
 					associate(vars1, expr);
 					return n_;
 				})).applyIf(FunpLambda.class, f -> f.apply((vn, expr, fct) -> {
-					associate(vars.replace(vn, f), expr);
+					associate(vars.replace(vn, IntObjPair.of(0, f)), expr);
 					return n_;
 				})).applyIf(FunpVariable.class, f -> f.apply(vn -> {
 					defByVariables.put(f, vars.getOrFail(vn));
@@ -180,6 +184,7 @@ public class Funp_ extends FunpCfg {
 
 		return new Switch<String>(n) //
 				.applyIf(FunpDefine.class, f -> c + " (" + f.vn + ")") //
+				.applyIf(FunpDefineRec.class, f -> c + " (" + Read.from2(f.pairs).keys().toJoinedString(", ") + ")") //
 				.applyIf(FunpDoAssignVar.class, f -> c + " (" + f.var.vn + ")") //
 				.applyIf(FunpField.class, f -> c + " (" + f.field + ")") //
 				.applyIf(FunpLambda.class, f -> c + " (" + f.vn + ")") //

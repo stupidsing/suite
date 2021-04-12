@@ -52,8 +52,7 @@ public class P4JumpIf {
 		private Insn jnx, jxx, jxxRev, jnxRev;
 
 		public JumpIf(Funp node) {
-			var tree = node.cast(FunpOpLr.class);
-			if (tree != null) {
+			if (node instanceof FunpOpLr tree) {
 				opSize = tree.opSize;
 				operator = tree.operator;
 				left = tree.left;

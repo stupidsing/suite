@@ -711,14 +711,14 @@ public class P0 {
 		}
 	}
 
-	public enum Fct { // capture type
+	public enum Fct { // function capture type
 		MANUAL, // capture the variables and allocate a capture frame, to be uncaptured (freed) manually
 		NOSCOP, // no access to variables of outer scope
 		ONCE__, // capture the variables and allocate a capture frame, which is to be freed after first call; lambda cannot be called twice
 		STACKF, // pass the stack frame, no need to capture; lambda lifetime equals to stack frame lifetime
 	}
 
-	public enum Fdt {
+	public enum Fdt { // functional definition type
 		G_MONO, // global variable, mono type
 		G_POLY, // global variable, polymorphic type
 		L_IOAP, // local variable, I/O access

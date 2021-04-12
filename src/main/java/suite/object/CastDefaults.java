@@ -1,6 +1,6 @@
 package suite.object;
 
-import primal.fp.Funs.Fun;
+import primal.adt.Opt;
 
 public interface CastDefaults<T> {
 
@@ -8,8 +8,8 @@ public interface CastDefaults<T> {
 		return clazz.isInstance(this) ? clazz.cast(this) : null;
 	}
 
-	public default <U extends T, V> V castMap(Class<U> clazz, Fun<U, V> fun) {
-		return clazz.isInstance(this) ? fun.apply(clazz.cast(this)) : null;
+	public default <U extends T> Opt<U> castOpt(Class<U> clazz) {
+		return clazz.isInstance(this) ? Opt.of(clazz.cast(this)) : Opt.none();
 	}
 
 }

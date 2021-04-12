@@ -812,8 +812,7 @@ public class P22InferType extends FunpCfg {
 		}
 
 		private Funp applyOnce(Funp value, Funp lambda, int size) {
-			var lambda_ = lambda.cast(FunpLambda.class);
-			if (lambda_ != null) // expands the lambda directly
+			if (lambda instanceof FunpLambda lambda_) // expands the lambda directly
 				return lambda_.apply((vn, expr, fct) -> defineLocal(lambda, vn, value, expr, size));
 			else
 				return apply(value, lambda, size);

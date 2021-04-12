@@ -39,7 +39,7 @@ public class P21CaptureLambda {
 
 	public Funp captureLambdas(Funp node0) {
 		var grandLambda = FunpLambda.of("grand$", node0);
-		var defByVars = Funp_.associateDefinitions(node0);
+		var defByVariables = Funp_.associateDefinitions(node0);
 		var lambdaByFunp = new IdentityHashMap<Funp, FunpLambda>();
 
 		class AssociateLambda {
@@ -52,10 +52,10 @@ public class P21CaptureLambda {
 			private Funp a(Funp node) {
 				return inspect.rewrite(node, Funp.class, n -> {
 					lambdaByFunp.put(n, lambda);
-					return n.castMap(FunpLambda.class, f -> f.apply((var, expr, fct) -> {
-						new AssociateLambda(f).a(expr);
+					return n.castOpt(FunpLambda.class).map(f -> {
+						new AssociateLambda(f).a(f.expr);
 						return f;
-					}));
+					}).or(null);
 				});
 			}
 		}
@@ -85,7 +85,7 @@ public class P21CaptureLambda {
 		}
 
 		var infoByLambda = Read.from2(lambdaByFunp).values().distinct().map2(lambda -> new Li()).toMap();
-		var infoByVar = Read.from2(defByVars).mapValue(Vi::new).toMap();
+		var infoByVar = Read.from2(defByVariables).mapValue(pair -> new Vi(pair.v)).toMap();
 
 		// capture-by-reference if necessary, e.g. assignments or references occurred
 		new Object() {
@@ -99,10 +99,13 @@ public class P21CaptureLambda {
 						associate(f.value);
 						associate(f.expr);
 					}).applyIf(FunpReference.class, f -> {
-						var r = f.expr.castMap(FunpVariable.class, var -> infoByVar.get(var).setLambda(true, lambda));
-						return r != null ? f : null;
+						if (f.expr instanceof FunpVariable var) {
+							infoByVar.get(var).setLambda(true, lambda);
+							return f;
+						} else
+							return null;
 					}).doIf(FunpVariable.class, f -> {
-						infoByVar.get(f).setLambda(defByVars.get(f) instanceof FunpDefineRec, lambda);
+						infoByVar.get(f).setLambda(defByVariables.get(f).v instanceof FunpDefineRec, lambda);
 					}).result();
 				});
 			}

@@ -34,7 +34,7 @@ public class Object_ {
 	public static Mapper mapper(Type type) {
 		Mapper mapper;
 
-		if (type instanceof Class clazz) {
+		if (type instanceof Class<?> clazz) {
 			if (Util.isSimple(clazz))
 				mapper = new Mapper(object -> object, object -> object);
 			else if (clazz.isArray()) {
