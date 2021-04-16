@@ -81,6 +81,10 @@ tp_geckodriver() {
 	cchs "echo https://github.com/mozilla/geckodriver/releases/download/v0.26.0/geckodriver-v0.26.0-linux64.tar.gz" @curl @tar-zxf @dir
 }
 
+tp_geth() {
+	$(cchs "echo git@github.com:ethereum/go-ethereum.git" @git-clone "@do-git-cd make geth" "@git-cd pwd")/build/bin/geth $@
+}
+
 tp_google_java_format() {
 	java -jar $(cchs "echo https://github.com/google/google-java-format/releases/download/google-java-format-1.8/google-java-format-1.8-all-deps.jar" @curl) $@
 }
