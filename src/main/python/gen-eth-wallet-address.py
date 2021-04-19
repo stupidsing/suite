@@ -1,8 +1,7 @@
 #!/usr/bin/python
 # https://github.com/Destiner/blocksmith/blob/master/blocksmith/ethereum.py
 # sudo apt install python-ecdsa python-pip python-setuptools
-# pip install --user wheel
-# pip install --user pycryptodome
+# pip install --user pycryptodome wheel
 
 import codecs
 import ecdsa
