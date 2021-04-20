@@ -62,7 +62,7 @@ tp_cdk() {
 }
 
 tp_cordova() {
-	$(cchs "echo npm-i-cordova" @mkdir "@exec ${NODE_HOME}/bin/npm install cordova")/node_modules/.bin/cordova $@
+	$(cchs "echo npm-i-cordova" @mkdir "@exec npm install cordova")/node_modules/.bin/cordova $@
 }
 
 tp_eclipse() {
@@ -139,6 +139,10 @@ tp_rocksndiamonds() {
 
 tp_slant() {
 	$(cchs "echo https://www.chiark.greenend.org.uk/~sgtatham/puzzles/puzzles.tar.gz" @curl @tar-zxf @dir "@exec ./configure" "@exec make")/slant $@
+}
+
+tp_solcjs() {
+	$(cchs "echo npm-i-solcjs" @mkdir "@exec npm install solc")/node_modules/.bin/solcjs $@
 }
 
 tp_suite() {
