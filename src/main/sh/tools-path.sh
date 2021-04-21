@@ -4,7 +4,7 @@ curl -sL https://raw.githubusercontent.com/stupidsing/suite/master/src/main/sh/c
 
 echo '
 ECLIPSE_HOME=$(cchs "echo http://ftp.jaist.ac.jp/pub/eclipse/technology/epp/downloads/release/2021-03/R/eclipse-java-2021-03-R-linux-gtk-x86_64.tar.gz" @curl @tar-zxf @dir)
-GH_HOME=$(cchs "echo https://github.com/cli/cli/releases/download/v1.9.1/gh_1.9.1_linux_amd64.tar.gz" @curl @tar-zxf @dir)
+GH_HOME=$(cchs "echo https://github.com/cli/cli/releases/download/v1.9.2/gh_1.9.2_linux_amd64.tar.gz" @curl @tar-zxf @dir)
 GIT_HD=$(cchs "echo git@github.com:stupidsing/home-data.git" @git-clone)
 GOROOT=$(cchs "echo https://dl.google.com/go/go1.15.6.linux-amd64.tar.gz" @curl @tar-zxf @dir)
 GRADLE_HOME=$(cchs "echo https://services.gradle.org/distributions/gradle-6.8.3-bin.zip" @curl @unzip @dir)
