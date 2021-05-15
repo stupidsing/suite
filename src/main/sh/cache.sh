@@ -8,81 +8,81 @@ find ${CCACHE}/ -type f -mtime 28 -print0 | xargs -0 echo rm -f 1>&2
 find ${DCACHE}/ -maxdepth 1 -type f -mtime 360 -type d -print0 | xargs -0 echo rm -rf 1>&2
 
 cchs() {
-	local F=/dev/null
+	local STATE=/dev/null
 	while [ "${1}" ]; do
 		local CMD="${1}"
 		shift
 		if [ "${CMD:0:2}" == "{}" ]; then
-			local D=$(cat ${F})
-			local F=$(cchf "${D}${CMD:2}")
+			local DIR=$(cat ${STATE})
+			local STATE=$(exec-memoized "${DIR}${CMD:2}")
 		elif [ "${CMD:0:3}" == "@cd" ]; then
-			local D=$(cat ${F})
-			local F=$(cchf "cd ${D}/; ${CMD:4}")
+			local DIR=$(cat ${STATE})
+			local STATE=$(exec-memoized "cd ${DIR}/; ${CMD:4}")
 		elif [ "${CMD}" == "@curl" ]; then
-			local URL=$(cat ${F})
+			local URL=$(cat ${STATE})
 			local DF=${DCACHE}/$(url-dir "${URL}")
 			local DFI=${DF}.inprogress
-			[ -f ${DF} ] || do-cmd "curl -sL '${URL}' > ${DFI} && mv ${DFI} ${DF}"
-			local F=$(cchf "printf ${DF}")
+			[ -f ${DF} ] || exec-logged "curl -sL '${URL}' > ${DFI} && mv ${DFI} ${DF}"
+			local STATE=$(exec-logged "printf ${DF}")
 		elif [ "${CMD}" == "@dir" ]; then
-			local D=$(cat ${F})
-			local LINK=$(sh -c "readlink -f ${D}/*")
-			local F=$(cchf "printf ${LINK}")
+			local DIR=$(cat ${STATE})
+			local LINK=$(sh -c "readlink -f ${DIR}/*")
+			local STATE=$(exec-logged "printf ${LINK}")
 		elif [ "${CMD:0:6}" == "@do-cd" ]; then
-			local D=$(cat ${F})
-			local F=$(cchf "cd ${D}/; ${CMD:7} 1>&2; echo ${D}")
+			local DIR=$(cat ${STATE})
+			local STATE=$(exec-memoized "cd ${DIR}/; ${CMD:7} 1>&2; echo ${DIR}")
 		elif [ "${CMD:0:9}" == "@do-chmod" ]; then
-			local FILE=$(cat ${F})
+			local FILE=$(cat ${STATE})
 			chmod ${CMD:10} ${FILE}
-			local F=$(cchf "printf ${FILE}")
+			local STATE=$(exec-logged "printf ${FILE}")
 		elif [ "${CMD:0:10}" == "@do-git-cd" ]; then
-			local G=$(cat ${F})
-			local D=${G:9}
-			local F=$(cchf "V=${G:0:8}; cd ${D}/; ${CMD:11} 1>&2; echo ${G}")
+			local GIT=$(cat ${STATE})
+			local DIR=${GIT:9}
+			local STATE=$(exec-memoized "V=${GIT:0:8}; cd ${DIR}/; ${CMD:11} 1>&2; echo ${GIT}")
 		elif [ "${CMD:0:5}" == "@exec" ]; then
-			local D=$(cat ${F})
-			local MD5=$(printf "${D}:${CMD}" | md5sum - | cut -d" " -f1)
+			local DIR=$(cat ${STATE})
+			local MD5=$(printf "${DIR}:${CMD}" | md5sum - | cut -d" " -f1)
 			local O=${CCACHE}/${MD5}.o U=${CCACHE}/${MD5}.u W=${CCACHE}/${MD5}.w
 			mkdir -p ${U}/ ${O}/ ${W}/
-			mountpoint -q ${O}/ || WORKDIR=${W}/ choverlay_ ${D}/ ${U}/ ${O}/
-			local F=$(cchf "cd ${O}/; ${CMD:6} 1>&2; echo ${O}")
+			mountpoint -q ${O}/ || WORKDIR=${W}/ choverlay_ ${DIR}/ ${U}/ ${O}/
+			local STATE=$(exec-memoized "cd ${O}/; ${CMD:6} 1>&2; echo ${O}")
 			#choverlayx
 		elif [ "${CMD}" == "@docker-build" ]; then
-			local DOCKERNAME=${CMD:13:}-$(cat "${F}" | md5sum - | cut -d" " -f1)
-			local F=$(cchf "cat ${F} | docker build -q -t cchs/${DOCKERNAME} -")
+			local DOCKERNAME=${CMD:13:}-$(cat "${STATE}" | md5sum - | cut -d" " -f1)
+			local STATE=$(exec-memoized "cat ${STATE} | docker build -q -t cchs/${DOCKERNAME} -")
 		elif [ "${CMD:0:7}" == "@git-cd" ]; then
-			local G=$(cat ${F})
-			local D=${G:9}
-			local F=$(cchf "V=${G:0:8}; cd ${D}/; ${CMD:8}")
+			local GIT=$(cat ${STATE})
+			local DIR=${GIT:9}
+			local STATE=$(exec-memoized "V=${GIT:0:8}; cd ${DIR}/; ${CMD:8}")
 		elif [ "${CMD:0:10}" == "@git-clone" ]; then
-			local URL=$(cat ${F})
-			local B=${CMD:11}
-			[ "${B}" ] && local OPTS="-b ${B}"
-			local DF=${DCACHE}/$(url-dir "${URL}@${B}")
+			local URL=$(cat ${STATE})
+			local BRANCH=${CMD:11}
+			[ "${BRANCH}" ] && local OPTS="-b ${BRANCH}"
+			local DF=${DCACHE}/$(url-dir "${URL}@${BRANCH}")
 			if ! [ -d ${DF} ]; then
-				do-cmd "git clone ${OPTS} ${URL} ${DF} --quiet"
+				exec-logged "git clone ${OPTS} ${URL} ${DF} --quiet"
 				touch ${DF}.pulltime
 			fi
-			local D0=$(date +%s)
-			local D1=$(stat -c %Y ${DF}.pulltime)
-			if (( 900 < ${D0} - ${D1} )); then
-				do-cmd "cd ${DF}/ && git pull --force --quiet"
+			local TS0=$(date +%s)
+			local TS1=$(stat -c %Y ${DF}.pulltime)
+			if (( 900 < ${TS0} - ${TS1} )); then
+				exec-logged "cd ${DF}/ && git pull --force --quiet"
 				touch ${DF}.pulltime
 			fi
 			local COMMIT=$(cd ${DF}/ && git rev-parse HEAD | cut -c1-8)
-			local F=$(cchf "printf ${COMMIT}:${DF}")
+			local STATE=$(exec-logged "printf ${COMMIT}:${DF}")
 		elif [ "${CMD:0:9}" == "@git-exec" ]; then
-			local G=$(cat ${F})
-			local D=${G:9}
-			local MD5=$(printf "${G}:${CMD}" | md5sum - | cut -d" " -f1)
+			local GIT=$(cat ${STATE})
+			local DIR=${GIT:9}
+			local MD5=$(printf "${GIT}:${CMD}" | md5sum - | cut -d" " -f1)
 			local O=${CCACHE}/${MD5}.o U=${CCACHE}/${MD5}.u W=${CCACHE}/${MD5}.w
 			mkdir -p ${U}/ ${O}/ ${W}/
-			mountpoint -q ${O}/ || WORKDIR=${W}/ choverlay_ ${D}/ ${U}/ ${O}/
-			local F=$(cchf "V=${G:0:8}; cd ${D}/; ${CMD:10} 1>&2; echo ${G}")
+			mountpoint -q ${O}/ || WORKDIR=${W}/ choverlay_ ${DIR}/ ${U}/ ${O}/
+			local STATE=$(exec-memoized "V=${GIT:0:8}; cd ${DIR}/; ${CMD:10} 1>&2; echo ${GIT}")
 			#choverlayx
 		elif [ "${CMD:0:10}" == "@maven-get" ]; then
 			#local REPO=https://repo.maven.apache.org/maven2
-			local RGAV=$(cat ${F})
+			local RGAV=$(cat ${STATE})
 			local REPO=$(echo ${RGAV} | cut -d# -f1)
 			local GROUPID=$(echo ${RGAV} | cut -d# -f2)
 			local ARTIFACTID=$(echo ${RGAV} | cut -d# -f3)
@@ -91,40 +91,40 @@ cchs() {
 			local URL="${REPO}/${P}/${ARTIFACTID}/${VERSION}/${ARTIFACTID}-${VERSION}.pom"
 			local DF=${DCACHE}/$(url-dir "${URL}")
 			local DFI=${DF}.inprogress
-			[ -f ${DF} ] || do-cmd curl -sL "${URL}" > ${DFI} && mv ${DFI} ${DF}
-			local F=$(cchf "printf ${DF}")
+			[ -f ${DF} ] || exec-logged curl -sL "${URL}" > ${DFI} && mv ${DFI} ${DF}
+			local STATE=$(exec-logged "printf ${DF}")
 		elif [ "${CMD:0:6}" == "@mkdir" ]; then
-			local S=$(cat ${F})
-			local DF=${DCACHE}/$(url-dir "${S}")
-			mkdir -p ${DF}
-			local F=$(cchf "printf ${DF}")
+			local S=$(cat ${STATE})
+			local DIR=${DCACHE}/$(url-dir "${S}")
+			mkdir -p ${DIR}
+			local STATE=$(exec-logged "printf ${DIR}")
 		elif [ "${CMD:0:5}" == "@tar-" ]; then
 			local OPT=${CMD:5}
-			local TARF=$(cat ${F})
-			local TARDIR=${TARF}.d
+			local TARFILE=$(cat ${STATE})
+			local TARDIR=${TARFILE}.d
 			local TARDIRI=${TARDIR}.inprogress
-			[ -d ${TARDIR} ] || do-cmd "mkdir -p ${TARDIRI} && tar ${OPT} ${TARF} -C ${TARDIRI} && mv ${TARDIRI} ${TARDIR}"
-			local F=$(cchf "printf ${TARDIR}")
+			[ -d ${TARDIR} ] || exec-logged "mkdir -p ${TARDIRI} && tar ${OPT} ${TARFILE} -C ${TARDIRI} && mv ${TARDIRI} ${TARDIR}"
+			local STATE=$(exec-logged "printf ${TARDIR}")
 		elif [ "${CMD:0:6}" == "@unzip" ]; then
-			local ZIPF=$(cat ${F})
-			local ZIPDIR=${ZIPF}.d
+			local ZIPFILE=$(cat ${STATE})
+			local ZIPDIR=${ZIPFILE}.d
 			local ZIPDIRI=${ZIPDIR}.inprogress
 			local TARGET=${ZIPDIRI}/${CMD:7}
-			[ -d ${ZIPDIR} ] || do-cmd "mkdir -p ${TARGET} && unzip -d ${TARGET} -q ${ZIPF} && mv ${ZIPDIRI} ${ZIPDIR}"
-			local F=$(cchf "printf ${ZIPDIR}")
+			[ -d ${ZIPDIR} ] || exec-logged "mkdir -p ${TARGET} && unzip -d ${TARGET} -q ${ZIPFILE} && mv ${ZIPDIRI} ${ZIPDIR}"
+			local STATE=$(exec-logged "printf ${ZIPDIR}")
 		else
-			local F=$(cchf "cat ${F} | ${CMD}")
+			local STATE=$(exec-memoized "cat ${STATE} | ${CMD}")
 		fi
 		if [ ${?} != 0 ]; then
 			echo FAIL >2
 			return 1
 		fi
 	done
-	cat ${F}
+	cat ${STATE}
 }
 
 # executes a command if not executed before; otherwise, return previous result
-cchf() {
+exec-memoized() {
 	local CMD="${@}"
 	local MD5=$(printf "${CMD}" | md5sum - | cut -d" " -f1)
 	local P=${MD5:0:2}
@@ -138,13 +138,13 @@ cchf() {
 	if [ "${CACHE}" != "off" ] && [ -f "${KF}" ] && diff <(printf "${CMD}") <(cat "${KF}"); then
 		true
 	else
-		do-cmd "${CMD}" | tee "${VF}" 1>&2 && printf "${CMD}" > "${KF}"
+		exec-logged "${CMD}" | tee "${VF}" 1>&2 && printf "${CMD}" > "${KF}"
 	fi
 
 	printf "${VF}"
 }
 
-do-cmd() {
+exec-logged() {
 	local CMD="${@}"
 	echo "START ${CMD}" >&2
 	sh -c "${CMD}"
