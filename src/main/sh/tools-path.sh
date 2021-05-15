@@ -8,14 +8,14 @@ MAVEN_V=3.8.1
 NODE_V=14.17.0
 
 echo '
-ECLIPSE_HOME=$(cchs "echo http://ftp.jaist.ac.jp/pub/eclipse/technology/epp/downloads/release/${ECLIPSE_V}/R/eclipse-java-${ECLIPSE_V}-R-linux-gtk-x86_64.tar.gz" @curl @tar-zxf @dir)
-GH_HOME=$(cchs "echo https://github.com/cli/cli/releases/download/v${GH_V}/gh_${GH_V}_linux_amd64.tar.gz" @curl @tar-zxf @dir)
+ECLIPSE_HOME=$(cchs "echo http://ftp.jaist.ac.jp/pub/eclipse/technology/epp/downloads/release/'${ECLIPSE_V}'/R/eclipse-java-'${ECLIPSE_V}'-R-linux-gtk-x86_64.tar.gz" @curl @tar-zxf @dir)
+GH_HOME=$(cchs "echo https://github.com/cli/cli/releases/download/v'${GH_V}'/gh_'${GH_V}'_linux_amd64.tar.gz" @curl @tar-zxf @dir)
 GIT_HD=$(cchs "echo git@github.com:stupidsing/home-data.git" @git-clone)
 GOROOT=$(cchs "echo https://dl.google.com/go/go1.16.4.linux-amd64.tar.gz" @curl @tar-zxf @dir)
 GRADLE_HOME=$(cchs "echo https://services.gradle.org/distributions/gradle-7.0.1-bin.zip" @curl @unzip @dir)
 JAVA_HOME=$(cchs "curl -sL https://jdk.java.net/16/" "grep https://download.java.net/ | grep -v sha256 | grep linux-x64 | grep \\.tar\\.gz" "cut -d\\\" -f2" @curl @tar-zxf @dir)
-M2_HOME=$(cchs "echo https://apache.website-solution.net/maven/maven-3/${MAVEN_V}/binaries/apache-maven-${MAVEN_V}-bin.tar.gz" @curl @tar-zxf @dir)
-NODE_HOME=$(cchs "echo https://nodejs.org/dist/v${NODE_V}/node-v${NODE_V}-linux-x64.tar.xz" @curl @tar-xf @dir)
+M2_HOME=$(cchs "echo https://apache.website-solution.net/maven/maven-3/'${MAVEN_V}'/binaries/apache-maven-'${MAVEN_V}'-bin.tar.gz" @curl @tar-zxf @dir)
+NODE_HOME=$(cchs "echo https://nodejs.org/dist/v'${NODE_V}'/node-v'${NODE_V}'-linux-x64.tar.xz" @curl @tar-xf @dir)
 PATH=${GH_HOME}/bin:${GIT_HD:9}/bin:${GOROOT}/bin:${GRADLE_HOME}/bin:${JAVA_HOME}/bin:${M2_HOME}/bin:${NODE_HOME}/bin:${PATH}
 
 save_tp() {
