@@ -135,20 +135,25 @@ exec-memoized() {
 
 	mkdir -p ${DIR}/
 
-	if [ "${CACHE}" != "off" ] && [ -f "${KF}" ] && diff <(printf "${CMD}") <(cat "${KF}"); then
+	if [ "${CACHE}" != "off" ] && [ -f ${KF} ] && diff <(printf "${CMD}") <(cat ${KF}); then
 		true
 	else
-		exec-logged "${CMD}" | tee "${VF}" 1>&2 && printf "${CMD}" > "${KF}"
+		exec-logged "${CMD}" | tee ${VF} 1>&2 && printf "${CMD}" > ${KF}
+		local RC=${?}
+		[ "${RC}" == "0" ] || rm -f ${KF} ${VF}
 	fi
 
-	printf "${VF}"
+	printf ${VF}
+	return ${RC}
 }
 
 exec-logged() {
 	local CMD="${@}"
 	echo "START ${CMD}" >&2
 	sh -c "${CMD}"
-	echo "END~${?} ${CMD}" >&2
+	local RC=${?}
+	echo "END~${RC} ${CMD}" >&2
+	return ${RC}
 }
 
 url-dir() {
