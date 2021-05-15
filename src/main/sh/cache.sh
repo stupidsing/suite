@@ -20,21 +20,21 @@ cchs() {
 			local STATE=$(exec-memoized "cd ${DIR}/; ${CMD:4}")
 		elif [ "${CMD}" == "@curl" ]; then
 			local URL=$(cat ${STATE})
-			local DF=${DCACHE}/$(url-dir "${URL}")
-			local DFI=${DF}.inprogress
-			[ -f ${DF} ] || exec-logged "curl -sL '${URL}' > ${DFI} && mv ${DFI} ${DF}"
-			local STATE=$(exec-logged "printf ${DF}")
+			local FILE=${DCACHE}/$(url-dir "${URL}")
+			local FILEI=${FILE}.inprogress
+			[ -f ${FILE} ] || exec-logged "curl -sL '${URL}' > ${FILEI} && mv ${FILEI} ${FILE}"
+			local STATE=$(exec-memoized "printf ${FILE}")
 		elif [ "${CMD}" == "@dir" ]; then
 			local DIR=$(cat ${STATE})
 			local LINK=$(sh -c "readlink -f ${DIR}/*")
-			local STATE=$(exec-logged "printf ${LINK}")
+			local STATE=$(exec-memoized "printf ${LINK}")
 		elif [ "${CMD:0:6}" == "@do-cd" ]; then
 			local DIR=$(cat ${STATE})
 			local STATE=$(exec-memoized "cd ${DIR}/; ${CMD:7} 1>&2; echo ${DIR}")
 		elif [ "${CMD:0:9}" == "@do-chmod" ]; then
 			local FILE=$(cat ${STATE})
 			chmod ${CMD:10} ${FILE}
-			local STATE=$(exec-logged "printf ${FILE}")
+			local STATE=$(exec-memoized "printf ${FILE}")
 		elif [ "${CMD:0:10}" == "@do-git-cd" ]; then
 			local GIT=$(cat ${STATE})
 			local DIR=${GIT:9}
@@ -70,7 +70,7 @@ cchs() {
 				touch ${DF}.pulltime
 			fi
 			local COMMIT=$(cd ${DF}/ && git rev-parse HEAD | cut -c1-8)
-			local STATE=$(exec-logged "printf ${COMMIT}:${DF}")
+			local STATE=$(exec-memoized "printf ${COMMIT}:${DF}")
 		elif [ "${CMD:0:9}" == "@git-exec" ]; then
 			local GIT=$(cat ${STATE})
 			local DIR=${GIT:9}
@@ -89,29 +89,29 @@ cchs() {
 			local VERSION=$(echo ${RGAV} | cut -d# -f4)
 			local P=$(echo ${GROUPID} | sed s#\\.#/#g)
 			local URL="${REPO}/${P}/${ARTIFACTID}/${VERSION}/${ARTIFACTID}-${VERSION}.pom"
-			local DF=${DCACHE}/$(url-dir "${URL}")
-			local DFI=${DF}.inprogress
-			[ -f ${DF} ] || exec-logged curl -sL "${URL}" > ${DFI} && mv ${DFI} ${DF}
-			local STATE=$(exec-logged "printf ${DF}")
+			local FILE=${DCACHE}/$(url-dir "${URL}")
+			local FILEI=${FILE}.inprogress
+			[ -f ${FILE} ] || exec-logged curl -sL "${URL}" > ${FILEI} && mv ${FILEI} ${FILE}
+			local STATE=$(exec-memoized "printf ${DF}")
 		elif [ "${CMD:0:6}" == "@mkdir" ]; then
 			local S=$(cat ${STATE})
 			local DIR=${DCACHE}/$(url-dir "${S}")
 			mkdir -p ${DIR}
-			local STATE=$(exec-logged "printf ${DIR}")
+			local STATE=$(exec-memoized "printf ${DIR}")
 		elif [ "${CMD:0:5}" == "@tar-" ]; then
 			local OPT=${CMD:5}
-			local TARFILE=$(cat ${STATE})
-			local TARDIR=${TARFILE}.d
-			local TARDIRI=${TARDIR}.inprogress
-			[ -d ${TARDIR} ] || exec-logged "mkdir -p ${TARDIRI} && tar ${OPT} ${TARFILE} -C ${TARDIRI} && mv ${TARDIRI} ${TARDIR}"
-			local STATE=$(exec-logged "printf ${TARDIR}")
+			local FILE=$(cat ${STATE})
+			local DIR=${FILE}.d
+			local DIRI=${DIR}.inprogress
+			[ -d ${DIR} ] || exec-logged "mkdir -p ${DIRI} && tar ${OPT} ${FILE} -C ${DIRI} && mv ${DIRI} ${DIR}"
+			local STATE=$(exec-memoized "printf ${DIR}")
 		elif [ "${CMD:0:6}" == "@unzip" ]; then
-			local ZIPFILE=$(cat ${STATE})
-			local ZIPDIR=${ZIPFILE}.d
-			local ZIPDIRI=${ZIPDIR}.inprogress
-			local TARGET=${ZIPDIRI}/${CMD:7}
-			[ -d ${ZIPDIR} ] || exec-logged "mkdir -p ${TARGET} && unzip -d ${TARGET} -q ${ZIPFILE} && mv ${ZIPDIRI} ${ZIPDIR}"
-			local STATE=$(exec-logged "printf ${ZIPDIR}")
+			local FILE=$(cat ${STATE})
+			local DIR=${FILE}.d
+			local DIRI=${DIR}.inprogress
+			local TARGET=${DIRI}/${CMD:7}
+			[ -d ${DIR} ] || exec-logged "mkdir -p ${TARGET} && unzip -d ${TARGET} -q ${FILE} && mv ${DIRI} ${DIR}"
+			local STATE=$(exec-memoized "printf ${DIR}")
 		else
 			local STATE=$(exec-memoized "cat ${STATE} | ${CMD}")
 		fi
