@@ -42,7 +42,8 @@ cchs() {
 		elif [ "${CMD:0:5}" == "@exec" ]; then
 			local DIR=$(cat ${STATE})
 			local MD5=$(printf "${DIR}:${CMD}" | md5sum - | cut -d" " -f1)
-			local O=${CCACHE}/${MD5}.o U=${CCACHE}/${MD5}.u W=${CCACHE}/${MD5}.w
+			local PREFIX=${CCACHE}/${MD5}
+			local O=${PREFIX}.o U=${PREFIX}.u W=${PREFIX}.w
 			mkdir -p ${U}/ ${O}/ ${W}/
 			mountpoint -q ${O}/ || WORKDIR=${W}/ choverlay_ ${DIR}/ ${U}/ ${O}/
 			local STATE=$(exec-memoized "cd ${O}/; ${CMD:6} 1>&2; echo ${O}")
@@ -76,7 +77,8 @@ cchs() {
 			local GIT=$(cat ${STATE})
 			local DIR=${GIT:9}
 			local MD5=$(printf "${GIT}:${CMD}" | md5sum - | cut -d" " -f1)
-			local O=${CCACHE}/${MD5}.o U=${CCACHE}/${MD5}.u W=${CCACHE}/${MD5}.w
+			local PREFIX=${CCACHE}/${MD5}
+			local O=${PREFIX}.o U=${PREFIX}.u W=${PREFIX}.w
 			mkdir -p ${U}/ ${O}/ ${W}/
 			mountpoint -q ${O}/ || WORKDIR=${W}/ choverlay_ ${DIR}/ ${U}/ ${O}/
 			local STATE=$(exec-memoized "V=${GIT:0:8}; cd ${DIR}/; ${CMD:10} 1>&2; echo ${GIT}")
