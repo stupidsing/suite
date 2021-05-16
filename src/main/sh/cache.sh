@@ -41,8 +41,7 @@ cchs() {
 			local STATE=$(exec-memoized "V=${GIT:0:8}; cd ${DIR}/; ${CMD:11} 1>&2; echo ${GIT}")
 		elif [ "${CMD:0:5}" == "@exec" ]; then
 			local DIR=$(cat ${STATE})
-			local MD5=$(printf "${DIR}:${CMD}" | md5sum - | cut -d" " -f1)
-			local PREFIX=${CCACHE}/${MD5}
+			local PREFIX=$(md5-dir "${DIR}:${CMD}")
 			local O=${PREFIX}.o U=${PREFIX}.u W=${PREFIX}.w
 			mkdir -p ${U}/ ${O}/ ${W}/
 			mountpoint -q ${O}/ || WORKDIR=${W}/ choverlay_ ${DIR}/ ${U}/ ${O}/
@@ -76,8 +75,7 @@ cchs() {
 		elif [ "${CMD:0:9}" == "@git-exec" ]; then
 			local GIT=$(cat ${STATE})
 			local DIR=${GIT:9}
-			local MD5=$(printf "${GIT}:${CMD}" | md5sum - | cut -d" " -f1)
-			local PREFIX=${CCACHE}/${MD5}
+			local PREFIX=$(md5-dir "${GIT}:${CMD}")
 			local O=${PREFIX}.o U=${PREFIX}.u W=${PREFIX}.w
 			mkdir -p ${U}/ ${O}/ ${W}/
 			mountpoint -q ${O}/ || WORKDIR=${W}/ choverlay_ ${DIR}/ ${U}/ ${O}/
@@ -129,14 +127,11 @@ cchs() {
 # executes a command if not executed before; otherwise, return previous result
 exec-memoized() {
 	local CMD="${@}"
-	local MD5=$(printf "${CMD}" | md5sum - | cut -d" " -f1)
-	local P=${MD5:0:2}
-	local DIR=${CCACHE}/${P}
-	local FP=${DIR}/${MD5}
+	local FP=$(md5-dir "${CMD}")
+	mkdir -p ${FP}/
+
 	local KF=${FP}.k
 	local VF=${FP}.v
-
-	mkdir -p ${DIR}/
 
 	if [ "${CACHE}" != "off" ] && [ -f ${KF} ] && diff <(printf "${CMD}") <(cat ${KF}); then
 		true
@@ -156,6 +151,14 @@ exec-logged() {
 	local RC=${?}
 	echo "END~${RC} ${CMD}" >&2
 	return ${RC}
+}
+
+md5-dir() {
+	local CMD="${@}"
+	local MD5=$(printf "${CMD}" | md5sum - | cut -d" " -f1)
+	local P=${MD5:0:2}
+	local DIR=${CCACHE}/${P}
+	echo ${DIR}/${MD5}
 }
 
 url-dir() {
