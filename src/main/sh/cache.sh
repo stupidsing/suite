@@ -93,7 +93,7 @@ cchs() {
 			local FILE=${DCACHE}/$(url-dir "${URL}")
 			local FILEI=${FILE}.inprogress
 			[ -f ${FILE} ] || exec-logged curl -sL "${URL}" > ${FILEI} && mv ${FILEI} ${FILE}
-			STATE=$(exec-memoized "printf ${DF}")
+			STATE=$(exec-memoized "printf ${FILE}")
 		elif [ "${CMD:0:6}" == "@mkdir" ]; then
 			local NAME=$(cat ${STATE})
 			local DIR=${DCACHE}/$(url-dir "${NAME}")
