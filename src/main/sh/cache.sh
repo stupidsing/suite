@@ -17,7 +17,7 @@ cchs() {
 			STATE=$(exec-memoized "${DIR}${CMD:2}")
 		elif [ "${CMD:0:3}" == "@cd" ]; then
 			local DIR=$(cat ${STATE})
-			STATE=$(exec-memoized "cd ${DIR}/; ${CMD:4}")
+			STATE=$(exec-memoized "cd ${DIR}/ && ${CMD:4}")
 		elif [ "${CMD}" == "@curl" ]; then
 			local URL=$(cat ${STATE})
 			local FILE=${DCACHE}/$(url-dir "${URL}")
@@ -30,7 +30,7 @@ cchs() {
 			STATE=$(exec-memoized "printf ${LINK}")
 		elif [ "${CMD:0:6}" == "@do-cd" ]; then
 			local DIR=$(cat ${STATE})
-			STATE=$(exec-memoized "cd ${DIR}/; ${CMD:7} 1>&2 && echo ${DIR}")
+			STATE=$(exec-memoized "cd ${DIR}/ && ${CMD:7} 1>&2 && echo ${DIR}")
 		elif [ "${CMD:0:9}" == "@do-chmod" ]; then
 			local FILE=$(cat ${STATE})
 			chmod ${CMD:10} ${FILE}
@@ -38,7 +38,7 @@ cchs() {
 		elif [ "${CMD:0:10}" == "@do-git-cd" ]; then
 			local GIT=$(cat ${STATE})
 			local DIR=${GIT:9}
-			STATE=$(exec-memoized "V=${GIT:0:8}; cd ${DIR}/; ${CMD:11} 1>&2 && echo ${GIT}")
+			STATE=$(exec-memoized "V=${GIT:0:8}; cd ${DIR}/ && ${CMD:11} 1>&2 && echo ${GIT}")
 		elif [ "${CMD:0:5}" == "@exec" ]; then
 			local DIR=$(cat ${STATE})
 			local PREFIX=$(md5-dir "${DIR}:${CMD}")
@@ -54,7 +54,7 @@ cchs() {
 		elif [ "${CMD:0:7}" == "@git-cd" ]; then
 			local GIT=$(cat ${STATE})
 			local DIR=${GIT:9}
-			STATE=$(exec-memoized "V=${GIT:0:8}; cd ${DIR}/; ${CMD:8}")
+			STATE=$(exec-memoized "V=${GIT:0:8}; cd ${DIR}/ && ${CMD:8}")
 		elif [ "${CMD:0:10}" == "@git-clone" ]; then
 			local URL=$(cat ${STATE})
 			local BRANCH=${CMD:11}
@@ -79,7 +79,7 @@ cchs() {
 			local O=${PREFIX}.o U=${PREFIX}.u W=${PREFIX}.w
 			mkdir -p ${U}/ ${O}/ ${W}/
 			mountpoint -q ${O}/ || WORKDIR=${W}/ choverlay_ ${DIR}/ ${U}/ ${O}/
-			STATE=$(exec-memoized "V=${GIT:0:8}; cd ${DIR}/; ${CMD:10} 1>&2 && echo ${GIT}")
+			STATE=$(exec-memoized "V=${GIT:0:8}; cd ${DIR}/ && ${CMD:10} 1>&2 && echo ${GIT}")
 			#choverlayx
 		elif [ "${CMD:0:10}" == "@maven-get" ]; then
 			#local REPO=https://repo.maven.apache.org/maven2
