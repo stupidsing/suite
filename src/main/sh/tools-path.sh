@@ -160,6 +160,7 @@ tp_suite() {
 }
 
 tp_leafpad() {
+	tp_apt_i libgtk2.0-dev
 	$(cchs "echo http://savannah.nongnu.org/download/leafpad/leafpad-0.8.17.tar.gz" @curl @tar-zxf @dir "@exec ./configure" "@exec make")/src/leafpad $@
 }
 
