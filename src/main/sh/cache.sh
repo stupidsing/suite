@@ -140,7 +140,6 @@ exec-memoized() {
 	else
 		exec-logged "${CMD}" | tee ${VF} 1>&2 && printf "${CMD}" > ${KF}
 		local RC=${?}
-		[ "${RC}" == "0" ] || rm -f ${KF} ${VF}
 	fi
 
 	printf ${VF}
