@@ -48,8 +48,9 @@ cchs() {
 			local STATE=$(exec-memoized "cd ${O}/; ${CMD:6} 1>&2; echo ${O}")
 			#choverlayx
 		elif [ "${CMD}" == "@docker-build" ]; then
-			local DOCKERNAME=${CMD:13:}-$(cat "${STATE}" | md5sum - | cut -d" " -f1)
-			local STATE=$(exec-memoized "cat ${STATE} | docker build -q -t cchs/${DOCKERNAME} -")
+			local FILE=${STATE}
+			local IMAGE=${CMD:13:}-$(cat ${FILE} | md5sum - | cut -d" " -f1)
+			local STATE=$(exec-memoized "cat ${FILE} | docker build -q -t cchs/${IMAGE} -")
 		elif [ "${CMD:0:7}" == "@git-cd" ]; then
 			local GIT=$(cat ${STATE})
 			local DIR=${GIT:9}
@@ -94,8 +95,8 @@ cchs() {
 			[ -f ${FILE} ] || exec-logged curl -sL "${URL}" > ${FILEI} && mv ${FILEI} ${FILE}
 			local STATE=$(exec-memoized "printf ${DF}")
 		elif [ "${CMD:0:6}" == "@mkdir" ]; then
-			local S=$(cat ${STATE})
-			local DIR=${DCACHE}/$(url-dir "${S}")
+			local NAME=$(cat ${STATE})
+			local DIR=${DCACHE}/$(url-dir "${NAME}")
 			mkdir -p ${DIR}
 			local STATE=$(exec-memoized "printf ${DIR}")
 		elif [ "${CMD:0:5}" == "@tar-" ]; then
