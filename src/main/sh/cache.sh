@@ -136,8 +136,9 @@ exec-memoized() {
 	if [ "${CACHE}" != "off" ] && [ -f ${KF} ] && diff <(printf "${CMD}") <(cat ${KF}); then
 		true
 	else
-		exec-logged "${CMD}" | tee ${VF} 1>&2 && printf "${CMD}" > ${KF}
-		local RC=${?}
+		exec-logged "${CMD}" | tee ${VF} 1>&2
+		local RC=${PIPESTATUS[0]}
+		[ ${RC} == 0 ] && printf "${CMD}" > ${KF}
 	fi
 
 	printf ${VF}
