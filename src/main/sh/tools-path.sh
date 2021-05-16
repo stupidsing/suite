@@ -130,6 +130,11 @@ tp_kubectl() {
 	$(cchs "echo https://storage.googleapis.com/kubernetes-release/release/${VER}/bin/linux/amd64/kubectl" @curl "@do-chmod +x") $@
 }
 
+tp_leafpad() {
+	tp_apt_i libgtk2.0-dev
+	$(cchs "echo http://savannah.nongnu.org/download/leafpad/leafpad-0.8.17.tar.gz" @curl @tar-zxf @dir "@exec ./configure" "@exec make")/src/leafpad $@
+}
+
 tp_minikube() {
 	$(cchs "echo https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64" @curl "@do-chmod +x") $@
 }
@@ -157,11 +162,6 @@ tp_solcjs() {
 
 tp_suite() {
 	$(cchs "echo git@github.com:stupidsing/suite.git" @git-clone "@do-git-cd ./build.sh" "@git-cd pwd")/run.sh $@
-}
-
-tp_leafpad() {
-	tp_apt_i libgtk2.0-dev
-	$(cchs "echo http://savannah.nongnu.org/download/leafpad/leafpad-0.8.17.tar.gz" @curl @tar-zxf @dir "@exec ./configure" "@exec make")/src/leafpad $@
 }
 
 tp_vms_empire() {
