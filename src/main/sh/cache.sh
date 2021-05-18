@@ -46,7 +46,7 @@ cchs() {
 			local O=${PREFIX}.o U=${PREFIX}.u W=${PREFIX}.w
 			mkdir -p ${U}/ ${O}/ ${W}/
 			mountpoint -q ${O}/ || WORKDIR=${W}/ choverlay_ ${DIR}/ ${U}/ ${O}/
-			EX="cd ${O}; ${CMD:6} 1>&2 && echo ${O}"
+			EX="cd ${O}/; ${CMD:6} 1>&2 && echo ${O}"
 			#choverlayx
 		elif [ "${CMD}" == "@docker-build" ]; then
 			local FILE=${STATE}
