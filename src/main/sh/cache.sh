@@ -24,29 +24,29 @@ cchs() {
 			local FILE=${DCACHE}/$(url-dir "${URL}")
 			local FILEI=${FILE}.inprogress
 			[ -f ${FILE} ] || exec-logged "curl -sL '${URL}' > ${FILEI} && mv ${FILEI} ${FILE}"
-			EX="printf ${FILE}"
+			EX="printf %s ${FILE}"
 		elif [ "${CMD}" == "@dir" ]; then
 			local DIR=$(cat ${STATE})
 			local LINK=$(sh -c "readlink -f ${DIR}/*")
-			EX="printf ${LINK}"
+			EX="printf %s ${LINK}"
 		elif [ "${CMD:0:6}" == "@do-cd" ]; then
 			local DIR=$(cat ${STATE})
-			EX="cd ${DIR}/ && ${CMD:7} 1>&2 && echo ${DIR}"
+			EX="cd ${DIR}/ && ${CMD:7} 1>&2 && printf %s ${DIR}"
 		elif [ "${CMD:0:9}" == "@do-chmod" ]; then
 			local FILE=$(cat ${STATE})
 			chmod ${CMD:10} ${FILE}
-			EX="printf ${FILE}"
+			EX="printf %s ${FILE}"
 		elif [ "${CMD:0:10}" == "@do-git-cd" ]; then
 			local GIT=$(cat ${STATE})
 			local DIR=${GIT:9}
-			EX="V=${GIT:0:8}; cd ${DIR}/ && ${CMD:11} 1>&2 && echo ${GIT}"
+			EX="V=${GIT:0:8}; cd ${DIR}/ && ${CMD:11} 1>&2 && printf %s ${GIT}"
 		elif [ "${CMD:0:5}" == "@exec" ]; then
 			local DIR=$(cat ${STATE})
 			local PREFIX=$(md5-dir "${DIR}:${CMD}")
 			local O=${PREFIX}.o U=${PREFIX}.u W=${PREFIX}.w
 			mkdir -p ${U}/ ${O}/ ${W}/
 			mountpoint -q ${O}/ || WORKDIR=${W}/ choverlay_ ${DIR}/ ${U}/ ${O}/
-			EX="cd ${O}/; ${CMD:6} 1>&2 && echo ${O}"
+			EX="cd ${O}/; ${CMD:6} 1>&2 && printf %s ${O}"
 			#choverlayx
 		elif [ "${CMD}" == "@docker-build" ]; then
 			local FILE=${STATE}
@@ -72,7 +72,7 @@ cchs() {
 				touch ${DF}.pulltime
 			fi
 			local COMMIT=$(cd ${DF}/ && git rev-parse HEAD | cut -c1-8)
-			EX="printf ${COMMIT}:${DF}"
+			EX="printf %s ${COMMIT}:${DF}"
 		elif [ "${CMD:0:9}" == "@git-exec" ]; then
 			local GIT=$(cat ${STATE})
 			local DIR=${GIT:9}
@@ -80,7 +80,7 @@ cchs() {
 			local O=${PREFIX}.o U=${PREFIX}.u W=${PREFIX}.w
 			mkdir -p ${U}/ ${O}/ ${W}/
 			mountpoint -q ${O}/ || WORKDIR=${W}/ choverlay_ ${DIR}/ ${U}/ ${O}/
-			EX="V=${GIT:0:8}; cd ${DIR}/ && ${CMD:10} 1>&2 && echo ${GIT}"
+			EX="V=${GIT:0:8}; cd ${DIR}/ && ${CMD:10} 1>&2 && printf %s ${GIT}"
 			#choverlayx
 		elif [ "${CMD:0:10}" == "@maven-get" ]; then
 			#local REPO=https://repo.maven.apache.org/maven2
@@ -94,26 +94,26 @@ cchs() {
 			local FILE=${DCACHE}/$(url-dir "${URL}")
 			local FILEI=${FILE}.inprogress
 			[ -f ${FILE} ] || exec-logged curl -sL "${URL}" > ${FILEI} && mv ${FILEI} ${FILE}
-			EX="printf ${FILE}"
+			EX="printf %s ${FILE}"
 		elif [ "${CMD:0:6}" == "@mkdir" ]; then
 			local NAME=$(cat ${STATE})
 			local DIR=${DCACHE}/$(url-dir "${NAME}")
 			mkdir -p ${DIR}
-			EX="printf ${DIR}"
+			EX="printf %s ${DIR}"
 		elif [ "${CMD:0:5}" == "@tar-" ]; then
 			local OPT=${CMD:5}
 			local FILE=$(cat ${STATE})
 			local DIR=${FILE}.d
 			local DIRI=${DIR}.inprogress
 			[ -d ${DIR} ] || exec-logged "mkdir -p ${DIRI} && tar ${OPT} ${FILE} -C ${DIRI} && mv ${DIRI} ${DIR}"
-			EX="printf ${DIR}"
+			EX="printf %s ${DIR}"
 		elif [ "${CMD:0:6}" == "@unzip" ]; then
 			local FILE=$(cat ${STATE})
 			local DIR=${FILE}.d
 			local DIRI=${DIR}.inprogress
 			local TARGET=${DIRI}/${CMD:7}
 			[ -d ${DIR} ] || exec-logged "mkdir -p ${TARGET} && unzip -d ${TARGET} -q ${FILE} && mv ${DIRI} ${DIR}"
-			EX="printf ${DIR}"
+			EX="printf %s ${DIR}"
 		else
 			EX="cat ${STATE} | ${CMD}"
 		fi
@@ -137,15 +137,15 @@ exec-memoized() {
 	local KF=${FP}.k
 	local VF=${FP}.v
 
-	if [ "${CACHE}" != "off" ] && [ -f ${KF} ] && diff <(printf "${CMD}") <(cat ${KF}); then
+	if [ "${CACHE}" != "off" ] && [ -f ${KF} ] && diff <(printf %s "${CMD}") <(cat ${KF}); then
 		true
 	else
 		exec-logged "${CMD}" | tee ${VF} 1>&2
 		local RC=${PIPESTATUS[0]}
-		[ ${RC} == 0 ] && printf "${CMD}" > ${KF}
+		[ ${RC} == 0 ] && printf %s "${CMD}" > ${KF}
 	fi
 
-	printf ${VF}
+	printf %s ${VF}
 	return ${RC}
 }
 
@@ -160,15 +160,15 @@ exec-logged() {
 
 md5-dir() {
 	local CMD="${@}"
-	local MD5=$(printf "${CMD}" | md5sum - | cut -d" " -f1)
+	local MD5=$(printf %s "${CMD}" | md5sum - | cut -d" " -f1)
 	local P=${MD5:0:2}
 	local DIR=${CCACHE}/${P}
 	echo ${DIR}/${MD5}
 }
 
 url-dir() {
-	local MD5=$(printf "${1}" | md5sum - | cut -d" " -f1)
-	local SHORT=$(printf "${1}" | url-dir-name)
+	local MD5=$(printf %s "${1}" | md5sum - | cut -d" " -f1)
+	local SHORT=$(printf %s "${1}" | url-dir-name)
 	echo ${MD5:0:8}.${SHORT}
 }
 

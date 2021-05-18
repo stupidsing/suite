@@ -115,7 +115,7 @@ tp_jdk8() {
 tp_jdk10() {
 	echo > /tmp/install-certs.sh
 	for P in dl dl-ssl; do
-		echo "cat /dev/null | openssl s_client -showcerts -connect ${P}.google.com:443 -servername ${P}.google.com | openssl x509 | bin/keytool -import -keystore lib/security/cacerts -storepass changeit -noprompt -alias ${P}_google_com" >> /tmp/install-certs.sh
+		echo "cat /dev/null | openssl s_client -showcerts -connect ${P}.google.com:443 -servername ${P}.google.com | openssl x509 | bin/keytool -import -keystore lib/security/cacerts -storepass changeit -noprompt -alias ${P}.google.com" >> /tmp/install-certs.sh
 	done
 	cchs "echo https://download.java.net/openjdk/jdk10/ri/openjdk-10+44_linux-x64_bin_ri.tar.gz" @curl @tar-zxf @dir "@exec sh /tmp/install-certs.sh"
 }
