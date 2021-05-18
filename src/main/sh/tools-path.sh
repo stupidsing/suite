@@ -103,12 +103,12 @@ tp_group_add() {
 }
 
 tp_hkex_securities_list() {
-	tp_apt_i gnumeric
+	tp_apt_i gnumeric &&
 	cchs "curl -sL https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx" "ssconvert -I Gnumeric_Excel:xlsx -T Gnumeric_stf:stf_csv fd://0 fd://1"
 }
 
 tp_jdk8() {
-	tp_apt_i openjdk-8-jdk
+	tp_apt_i openjdk-8-jdk &&
 	echo /usr/lib/jvm/java-8-openjdk-amd64
 }
 
@@ -121,7 +121,7 @@ tp_jdk10() {
 }
 
 tp_jdk11() {
-	tp_apt_i openjdk-11-jdk
+	tp_apt_i openjdk-11-jdk &&
 	echo /usr/lib/jvm/java-11-openjdk-amd64
 }
 
@@ -131,7 +131,7 @@ tp_kubectl() {
 }
 
 tp_leafpad() {
-	tp_apt_i libgtk2.0-dev
+	tp_apt_i libgtk2.0-dev &&
 	$(cchs "echo http://savannah.nongnu.org/download/leafpad/leafpad-0.8.17.tar.gz" @curl @tar-zxf @dir "@exec ./configure" "@exec make")/src/leafpad $@
 }
 
@@ -174,7 +174,7 @@ tp_vscode() {
 }
 
 tp_wdp() {
-	tp_apt_i wine
+	tp_apt_i wine &&
 	wine $(cchs "echo https://stammel.net/spiele/wdp/wdp.exe" @curl)
 }
 '
