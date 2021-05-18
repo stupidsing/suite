@@ -49,7 +49,7 @@ tp_android_sdk_tools() {
 	# "@do-cd JAVA_HOME=$(tp_jdk10) JAVA_OPTS='\''-XX:+IgnoreUnrecognizedVMOptions --add-modules java.se.ee'\''
 	cchs "curl -sL https://developer.android.com/studio" "grep dl.google.com | grep commandlinetools-linux" "head -1" "cut -d\\\" -f2" @curl @unzip "@cd pwd" \
 	"@do-cd [ -f cmdline-tools/tools/bin/sdkmanager ] || (mv cmdline-tools/ tools/ && mkdir cmdline-tools/ && mv tools/ cmdline-tools/)" \
-	"@exec JAVA_HOME=$(tp_jdk8) JAVA_OPTS=-XX:+IgnoreUnrecognizedVMOptions cmdline-tools/tools/bin/sdkmanager \
+	"@exec JAVA_HOME=$(tp_jdk11) JAVA_OPTS=-XX:+IgnoreUnrecognizedVMOptions cmdline-tools/tools/bin/sdkmanager \
 	'\''build-tools;29.0.3'\'' emulator platform-tools '\''platforms;android-27'\'' '\''system-images;android-27;default;x86_64'\''"
 }
 
@@ -117,12 +117,11 @@ tp_jdk10() {
 	for P in dl dl-ssl; do
 		echo "cat /dev/null | openssl s_client -showcerts -connect ${P}.google.com:443 -servername ${P}.google.com | openssl x509 | bin/keytool -import -keystore lib/security/cacerts -storepass changeit -noprompt -alias ${P}.google.com" >> /tmp/install-certs.sh
 	done
-	cchs "echo https://download.java.net/openjdk/jdk10/ri/openjdk-10+44_linux-x64_bin_ri.tar.gz" @curl @tar-zxf @dir "@exec sh /tmp/install-certs.sh"
+	cchs "echo https://download.java.net/java/GA/jdk10/10.0.2/19aef61b38124481863b1413dce1855f/13/openjdk-10.0.2_linux-x64_bin.tar.gz" @curl @tar-zxf @dir "@exec sh /tmp/install-certs.sh"
 }
 
 tp_jdk11() {
-	tp_apt_i openjdk-11-jdk &&
-	echo /usr/lib/jvm/java-11-openjdk-amd64
+	cchs "echo https://download.java.net/java/GA/jdk11/9/GPL/openjdk-11.0.2_linux-x64_bin.tar.gz" @curl @tar-zxf @dir
 }
 
 tp_kubectl() {
