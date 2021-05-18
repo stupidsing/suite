@@ -58,7 +58,7 @@ tp_android_studio() {
 }
 
 tp_apt_i() {
-	PKG=${1} sh -c "dpkg -l \${PKG} > /dev/null || sudo apt install -y --force-yes --no-install-recommends \${PKG}"
+	PKG=${1} sh -c "dpkg -l \${PKG} || sudo apt install -y --force-yes --no-install-recommends \${PKG}" >&2
 }
 
 tp_cdk() {
