@@ -128,6 +128,23 @@ cchs() {
 	cat ${STATE}
 }
 
+choverlay_() {
+	local L0=${1} UPPERDIR=${2} L1=${3}
+	local NAME0=$(echo "${L0}" | sed s#/#_#g)
+	local NAME1=$(echo "${L1}" | sed s#/#_#g)
+	local METAFILE0=/tmp/choverlay.${NAME0}
+	local METAFILE1=/tmp/choverlay.${NAME1}
+	[ -f "${METAFILE0}" ] && local LDS0=$(cat ${METAFILE0}) || local LDS0=${L0}
+	local LDS1=${LDS0}:${UPPERDIR}
+	echo ${LDS1} > ${METAFILE1}
+	if [ "${LOCAL}" ]; then
+		fuse-overlayfs -o lowerdir=${LDS0},upperdir=${UPPERDIR},workdir=${WORKDIR-$(mktemp -d)} ${L1}
+	else
+		sudo mount -t overlay stack_${NAME1} -o lowerdir=${LDS0},upperdir=${UPPERDIR},workdir=${WORKDIR-$(mktemp -d)} ${L1}
+	fi
+	pushd ${L1}/ > /dev/null
+}
+
 # executes a command if not executed before; otherwise, return previous result
 exec-memoized() {
 	local CMD="${@}"
