@@ -171,7 +171,9 @@ exec-logged() {
 	echo "START ${CMD}" >&2
 	sh -c "${CMD}"
 	local RC=${?}
+	echo >&2
 	echo "END~${RC} ${CMD}" >&2
+	echo >&2
 	return ${RC}
 }
 
