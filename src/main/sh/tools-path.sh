@@ -32,7 +32,7 @@ save_tp() {
 
 tp_android_avdmanager() {
 	JAVA_HOME=$(tp_jdk10) \
-	JAVA_OPTS="-XX:+IgnoreUnrecognizedVMOptions --add-modules java.se.ee" \
+	JAVA_OPTS="-XX:+IgnoreUnrecognizedVMOptions" \
 	$(tp_android_sdk_tools)/cmdline-tools/tools/bin/avdmanager $@
 }
 
