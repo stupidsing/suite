@@ -111,6 +111,7 @@ import suite.funp.P2.FunpRoutineIo;
 import suite.funp.P2.FunpSaveRegisters0;
 import suite.funp.P2.FunpSaveRegisters1;
 import suite.funp.P2.FunpTypeAssign;
+import suite.inspect.Dump;
 import suite.inspect.Inspect;
 import suite.lp.Trail;
 import suite.lp.doer.BinderRecursive;
@@ -1046,7 +1047,7 @@ public class P22InferType extends FunpCfg {
 		private FunpMemory getMemory(int scope0) {
 			setReg(false);
 			if (value != null)
-				return fail();
+				return fail("cannot get address of " + Dump.toLine(value));
 			else if (isReg())
 				return fail();
 			else
