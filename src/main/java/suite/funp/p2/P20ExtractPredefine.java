@@ -13,7 +13,7 @@ import suite.funp.P0.Fpt;
 import suite.funp.P0.FunpApply;
 import suite.funp.P0.FunpDefine;
 import suite.funp.P0.FunpDefineRec;
-import suite.funp.P0.FunpDoAssignVar;
+import suite.funp.P0.FunpDoAssignRef;
 import suite.funp.P0.FunpDontCare;
 import suite.funp.P0.FunpField;
 import suite.funp.P0.FunpLambda;
@@ -73,7 +73,7 @@ public class P20ExtractPredefine {
 								;
 							else
 								return fail();
-							return FunpDoAssignVar.of(var, expr_, var);
+							return FunpDoAssignRef.of(FunpReference.of(var), expr_, var);
 						} else
 							return var;
 					})).result();

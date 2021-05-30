@@ -34,7 +34,6 @@ import suite.funp.P0.FunpDefineRec;
 import suite.funp.P0.FunpDeref;
 import suite.funp.P0.FunpDoAsm;
 import suite.funp.P0.FunpDoAssignRef;
-import suite.funp.P0.FunpDoAssignVar;
 import suite.funp.P0.FunpDoEvalIo;
 import suite.funp.P0.FunpDoHeapDel;
 import suite.funp.P0.FunpDoHeapNew;
@@ -367,7 +366,7 @@ public class P0Parse extends FunpCfg {
 			var vn = lc.vn;
 			var var = FunpVariable.of(vn);
 			var while_ = lc.expr;
-			var do_ = FunpDoAssignVar.of(var, ld.expr, FunpDontCare.of());
+			var do_ = FunpDoAssignRef.of(FunpReference.of(var), ld.expr, FunpDontCare.of());
 			return FunpDefine.of( //
 					vn, //
 					p(b), //

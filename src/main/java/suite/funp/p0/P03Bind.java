@@ -10,7 +10,7 @@ import suite.funp.Funp_.Funp;
 import suite.funp.P0.FunpArray;
 import suite.funp.P0.FunpBoolean;
 import suite.funp.P0.FunpDeref;
-import suite.funp.P0.FunpDoAssignVar;
+import suite.funp.P0.FunpDoAssignRef;
 import suite.funp.P0.FunpDontCare;
 import suite.funp.P0.FunpField;
 import suite.funp.P0.FunpIf;
@@ -91,7 +91,7 @@ public class P03Bind {
 					return FunpIf.of(FunpTree.of(FunpOp.EQUAL_, FunpNumber.of(id), FunpTagId.of(ref)), bind, else_);
 				}).result();
 			})).applyIf(FunpVariable.class, f -> f.apply(var -> {
-				return vns.contains(var) ? FunpDoAssignVar.of(f, value, then) : be;
+				return vns.contains(var) ? FunpDoAssignRef.of(FunpReference.of(f), value, then) : be;
 			})).result();
 
 			return result != null ? result : FunpIf.of(FunpTree.of(FunpOp.EQUAL_, be, value), then, else_);
