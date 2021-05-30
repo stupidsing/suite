@@ -17,6 +17,7 @@ import suite.assembler.Amd64.Instruction;
 import suite.funp.P0.FunpDefine;
 import suite.funp.P0.FunpDefineRec;
 import suite.funp.P0.FunpDoAssignRef;
+import suite.funp.P0.FunpDoAssignVar;
 import suite.funp.P0.FunpField;
 import suite.funp.P0.FunpLambda;
 import suite.funp.P0.FunpPredefine;
