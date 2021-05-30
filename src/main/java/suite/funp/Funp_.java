@@ -16,7 +16,7 @@ import suite.assembler.Amd64;
 import suite.assembler.Amd64.Instruction;
 import suite.funp.P0.FunpDefine;
 import suite.funp.P0.FunpDefineRec;
-import suite.funp.P0.FunpDoAssignVar;
+import suite.funp.P0.FunpDoAssignRef;
 import suite.funp.P0.FunpField;
 import suite.funp.P0.FunpLambda;
 import suite.funp.P0.FunpPredefine;
@@ -185,6 +185,7 @@ public class Funp_ extends FunpCfg {
 		return new Switch<String>(n) //
 				.applyIf(FunpDefine.class, f -> c + " (" + f.vn + ")") //
 				.applyIf(FunpDefineRec.class, f -> c + " (" + Read.from2(f.pairs).keys().toJoinedString(", ") + ")") //
+				.applyIf(FunpDoAssignRef.class, f -> c + " (" + describe(f.reference) + ")") //
 				.applyIf(FunpDoAssignVar.class, f -> c + " (" + f.var.vn + ")") //
 				.applyIf(FunpField.class, f -> c + " (" + f.field + ")") //
 				.applyIf(FunpLambda.class, f -> c + " (" + f.vn + ")") //
