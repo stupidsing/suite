@@ -878,9 +878,7 @@ public class P22InferType extends FunpCfg {
 
 		private Funp assignRef(FunpReference reference, Funp value, Funp expr, Funp n) {
 			var value_ = erase(value);
-			return reference.expr instanceof FunpOperand op //
-				? FunpAssignOp.of(op, value_, expr) //
-				: reference.expr instanceof FunpVariable var //
+			return reference.expr instanceof FunpVariable var //
 				? assign(erase(var), value_, expr) //
 				: FunpAssignMem.of(memory(reference, n), value_, expr);
 		}
