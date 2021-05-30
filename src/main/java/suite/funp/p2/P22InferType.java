@@ -56,7 +56,6 @@ import suite.funp.P0.FunpDefineRec;
 import suite.funp.P0.FunpDeref;
 import suite.funp.P0.FunpDoAsm;
 import suite.funp.P0.FunpDoAssignRef;
-import suite.funp.P0.FunpDoAssignVar;
 import suite.funp.P0.FunpDoEvalIo;
 import suite.funp.P0.FunpDoFold;
 import suite.funp.P0.FunpDoHeapDel;
@@ -274,9 +273,6 @@ public class P22InferType extends FunpCfg {
 				return b && opType.test(opResult, tr) ? tr : Funp_.fail(f, "wrong types");
 			})).applyIf(FunpDoAssignRef.class, f -> f.apply((reference, value, expr) -> {
 				unify(f, infer(reference), typeRefOf(infer(value)));
-				return infer(expr);
-			})).applyIf(FunpDoAssignVar.class, f -> f.apply((var, value, expr) -> {
-				unify(f, getVariable(var, false), infer(value));
 				return infer(expr);
 			})).applyIf(FunpDoEvalIo.class, f -> f.apply(expr -> {
 				var t = new Reference();
@@ -620,8 +616,6 @@ public class P22InferType extends FunpCfg {
 				return FunpSaveRegisters0.of(FunpSaveRegisters1.of(fa, saves), saves);
 			})).applyIf(FunpDoAssignRef.class, f -> f.apply((reference, value, expr) -> {
 				return assignRef(reference, value, erase(expr), n);
-			})).applyIf(FunpDoAssignVar.class, f -> f.apply((var, value, expr) -> {
-				return assign(getVariable(var), erase(value), erase(expr));
 			})).applyIf(FunpDoEvalIo.class, f -> f.apply(expr -> {
 				return erase(expr);
 			})).applyIf(FunpDoFold.class, f -> f.apply((init, cont, next) -> {
@@ -859,8 +853,6 @@ public class P22InferType extends FunpCfg {
 					return n.sw( //
 					).applyIf(FunpDoAssignRef.class, f -> f.apply((reference, value, expr) -> {
 						return FunpAssignMem.of(memory(reference, f), erase(value), getAddress(expr));
-					})).applyIf(FunpDoAssignVar.class, f -> f.apply((var, value, expr) -> {
-						return assign(getVariable(var), erase(value), getAddress(expr));
 					})).applyIf(FunpDeref.class, f -> f.apply(pointer -> {
 						return erase(pointer);
 					})).applyIf(FunpField.class, f -> f.apply((ref, field) -> {
@@ -968,10 +960,6 @@ public class P22InferType extends FunpCfg {
 						throw new CompileException(n, "for field '" + pair.k + "'", ex);
 					}
 			return Funp_.fail(n, "field '" + n.field + "' not found");
-		}
-
-		private Funp getVariable(FunpVariable var) {
-			return getVariable(var.vn);
 		}
 
 		private Funp getVariable(String vn) {

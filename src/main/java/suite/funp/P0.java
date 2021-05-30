@@ -194,24 +194,6 @@ public class P0 {
 		}
 	}
 
-	public static class FunpDoAssignVar implements Funp, P2.End {
-		public FunpVariable var;
-		public Funp value;
-		public Funp expr;
-
-		public static FunpDoAssignVar of(FunpVariable var, Funp value, Funp expr) {
-			var f = new FunpDoAssignVar();
-			f.var = var;
-			f.value = value;
-			f.expr = expr;
-			return f;
-		}
-
-		public <R> R apply(FixieFun3<FunpVariable, Funp, Funp, R> fun) {
-			return fun.apply(var, value, expr);
-		}
-	}
-
 	public static class FunpDoEvalIo implements Funp, P2.End {
 		public Funp expr;
 

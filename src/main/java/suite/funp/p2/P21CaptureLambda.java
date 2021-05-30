@@ -21,7 +21,6 @@ import suite.funp.P0.FunpDefine;
 import suite.funp.P0.FunpDefineRec;
 import suite.funp.P0.FunpDeref;
 import suite.funp.P0.FunpDoAssignRef;
-import suite.funp.P0.FunpDoAssignVar;
 import suite.funp.P0.FunpDoHeapNew;
 import suite.funp.P0.FunpField;
 import suite.funp.P0.FunpLambda;
@@ -94,11 +93,7 @@ public class P21CaptureLambda {
 					var lambda = lambdaByFunp.get(n);
 
 					return n.sw( //
-					).doIf(FunpDoAssignVar.class, f -> {
-						infoByVar.get(f.var).setLambda(true, lambda);
-						associate(f.value);
-						associate(f.expr);
-					}).applyIf(FunpReference.class, f -> {
+					).applyIf(FunpReference.class, f -> {
 						if (f.expr instanceof FunpVariable var) {
 							infoByVar.get(var).setLambda(true, lambda);
 							return f;
@@ -155,17 +150,6 @@ public class P21CaptureLambda {
 				).applyIf(FunpDoAssignRef.class, f -> f.apply((lambdaRef, value, expr) -> {
 					if (lambdaRef.expr instanceof FunpVariable var) {
 						var accessor = c(var);
-						var value_ = c(value);
-						var ref = FunpReference.of(accessor);
-						var assign = FunpDoAssignRef.of(ref, value_, c(expr));
-						return FunpTypeAssign.of(var, value_, assign);
-					} else
-						return null;
-				})).applyIf(FunpDoAssignVar.class, f -> f.apply((var, value, expr) -> {
-					var accessor = accessors.get(var);
-					if (accessor instanceof FunpVariable)
-						return FunpDoAssignVar.of(var, c(value), c(expr));
-					else if (accessor != null) {
 						var value_ = c(value);
 						var ref = FunpReference.of(accessor);
 						var assign = FunpDoAssignRef.of(ref, value_, c(expr));

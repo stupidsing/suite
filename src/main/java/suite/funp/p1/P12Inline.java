@@ -20,7 +20,7 @@ import suite.funp.P0.Fdt;
 import suite.funp.P0.FunpApply;
 import suite.funp.P0.FunpDefine;
 import suite.funp.P0.FunpDefineRec;
-import suite.funp.P0.FunpDoAssignVar;
+import suite.funp.P0.FunpDoAssignRef;
 import suite.funp.P0.FunpDontCare;
 import suite.funp.P0.FunpField;
 import suite.funp.P0.FunpIo;
@@ -127,9 +127,6 @@ public class P12Inline {
 					// too dangerous to inline imperative code
 					getCount(f).update(isWithinIo ? 9999 : 0);
 					return null;
-				})).applyIf(FunpDoAssignVar.class, f -> f.apply((var, value, expr) -> {
-					getVariableCount(var).update(9999);
-					return null;
 				})).applyIf(FunpIo.class, f -> f.apply(expr -> {
 					count(expr, true);
 					return n_;
@@ -200,8 +197,9 @@ public class P12Inline {
 					if ((check = n0.cast(FunpTypeCheck.class)) != null)
 						n0 = check.expr;
 
-					if (n0 instanceof FunpDoAssignVar assign) {
-						var vn = assign.var.vn;
+					if (n0 instanceof FunpDoAssignRef assign //
+						&& assign.reference.expr instanceof FunpVariable var) {
+						var vn = var.vn;
 						var n1 = assign.expr;
 						var n2 = check != null ? FunpTypeCheck.of(check.left, check.right, n1) : n1;
 						Fdt fdt = null;
