@@ -19,6 +19,7 @@ NODE_HOME=$(cchs "echo https://nodejs.org/dist/v'${NODE_V}'/node-v'${NODE_V}'-li
 PATH=${GH_HOME}/bin:${GIT_HD:9}/bin:${GOROOT}/bin:${GRADLE_HOME}/bin:${JAVA_HOME}/bin:${M2_HOME}/bin:${NODE_HOME}/bin:${PATH}
 
 save_tp() {
+	echo "# save into ~/.bashrc"
 	echo export ECLIPSE_HOME=${ECLIPSE_HOME}
 	echo export GH_HOME=${GH_HOME}
 	echo export GIT_HD=${GIT_HD}
