@@ -619,7 +619,7 @@ public class P22InferType extends FunpCfg {
 				var fa = FunpDoAsm.of(Read.from2(assigns).mapValue(this::erase).toList(), asm, opResult);
 				return FunpSaveRegisters0.of(FunpSaveRegisters1.of(fa, saves), saves);
 			})).applyIf(FunpDoAssignRef.class, f -> f.apply((reference, value, expr) -> {
-				return FunpAssignMem.of(memory(reference, n), erase(value), erase(expr));
+				return assignRef(reference, value, erase(expr), n);
 			})).applyIf(FunpDoAssignVar.class, f -> f.apply((var, value, expr) -> {
 				return assign(getVariable(var), erase(value), erase(expr));
 			})).applyIf(FunpDoEvalIo.class, f -> f.apply(expr -> {
@@ -882,6 +882,15 @@ public class P22InferType extends FunpCfg {
 					}).nonNullResult();
 				}
 			}.getAddress(expr);
+		}
+
+		private Funp assignRef(FunpReference reference, Funp value, Funp expr, Funp n) {
+			var value_ = erase(value);
+			return reference.expr instanceof FunpOperand op //
+				? FunpAssignOp.of(op, value_, expr) //
+				: reference.expr instanceof FunpVariable var //
+				? assign(erase(var), value_, expr) //
+				: FunpAssignMem.of(memory(reference, n), value_, expr);
 		}
 
 		private Funp assign(Funp var, Funp value, Funp expr) {
