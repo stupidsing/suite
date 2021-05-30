@@ -853,6 +853,37 @@ public class P22InferType extends FunpCfg {
 			return FunpOpLr.of(ps, FunpOp.PLUS__, erase(address), inc);
 		}
 
+		private Funp getAddress(Funp expr) {
+			return new Object() {
+				private Funp getAddress(Funp n) {
+					return n.sw( //
+					).applyIf(FunpDoAssignRef.class, f -> f.apply((reference, value, expr) -> {
+						return FunpAssignMem.of(memory(reference, f), erase(value), getAddress(expr));
+					})).applyIf(FunpDoAssignVar.class, f -> f.apply((var, value, expr) -> {
+						return assign(getVariable(var), erase(value), getAddress(expr));
+					})).applyIf(FunpDeref.class, f -> f.apply(pointer -> {
+						return erase(pointer);
+					})).applyIf(FunpField.class, f -> f.apply((ref, field) -> {
+						return FunpOpLr.of(ps, FunpOp.PLUS__, erase(ref), FunpNumber.ofNumber(getFieldOffset(f).s));
+					})).applyIf(FunpIndex.class, f -> f.apply((ref, index) -> {
+						var type = new Reference();
+						unify(f, typeRefOf(typeArrayOf(null, type)), typeOf(ref));
+						return adjustPointer(ref, index, getTypeSize(type));
+					})).applyIf(FunpMe.class, f -> {
+						return me.getAddress(scope);
+					}).applyIf(FunpVariable.class, f -> f.apply(vn -> {
+						return env.getOrFail(vn).getAddress(scope);
+					})).applyIf(FunpTypeAssign.class, f -> f.apply((left, right, expr) -> {
+						return getAddress(expr);
+					})).applyIf(FunpTypeCheck.class, f -> f.apply((left, right, expr) -> {
+						return getAddress(expr);
+					})).applyIf(Funp.class, f -> {
+						return Funp_.fail(f, "requires pre-definition of a " + f);
+					}).nonNullResult();
+				}
+			}.getAddress(expr);
+		}
+
 		private Funp assign(Funp var, Funp value, Funp expr) {
 			return var //
 					.sw() //
@@ -904,37 +935,6 @@ public class P22InferType extends FunpCfg {
 				return FunpRoutine2.of(frame, expr, lt.is, lt.os, is_, 0);
 			else
 				return FunpRoutineIo.of(frame, expr, lt.is, lt.os, is_, lt.os);
-		}
-
-		private Funp getAddress(Funp expr) {
-			return new Object() {
-				private Funp getAddress(Funp n) {
-					return n.sw( //
-					).applyIf(FunpDoAssignRef.class, f -> f.apply((reference, value, expr) -> {
-						return FunpAssignMem.of(memory(reference, f), erase(value), getAddress(expr));
-					})).applyIf(FunpDoAssignVar.class, f -> f.apply((var, value, expr) -> {
-						return assign(getVariable(var), erase(value), getAddress(expr));
-					})).applyIf(FunpDeref.class, f -> f.apply(pointer -> {
-						return erase(pointer);
-					})).applyIf(FunpField.class, f -> f.apply((ref, field) -> {
-						return FunpOpLr.of(ps, FunpOp.PLUS__, erase(ref), FunpNumber.ofNumber(getFieldOffset(f).s));
-					})).applyIf(FunpIndex.class, f -> f.apply((ref, index) -> {
-						var type = new Reference();
-						unify(f, typeRefOf(typeArrayOf(null, type)), typeOf(ref));
-						return adjustPointer(ref, index, getTypeSize(type));
-					})).applyIf(FunpMe.class, f -> {
-						return me.getAddress(scope);
-					}).applyIf(FunpVariable.class, f -> f.apply(vn -> {
-						return env.getOrFail(vn).getAddress(scope);
-					})).applyIf(FunpTypeAssign.class, f -> f.apply((left, right, expr) -> {
-						return getAddress(expr);
-					})).applyIf(FunpTypeCheck.class, f -> f.apply((left, right, expr) -> {
-						return getAddress(expr);
-					})).applyIf(Funp.class, f -> {
-						return Funp_.fail(f, "requires pre-definition of a " + f);
-					}).nonNullResult();
-				}
-			}.getAddress(expr);
 		}
 
 		private FunpMemory getField(FunpField n) {
