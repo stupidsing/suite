@@ -138,7 +138,7 @@ public class Serialize {
 		var immutableCtor = ctors.min((c0, c1) -> -Integer.compare(c0.getParameterCount(), c1.getParameterCount()));
 
 		return new Serializer<>() {
-			public T read(SerInput si) throws IOException {
+			public T read(SerInput si) {
 				return ex(() -> {
 					Object object;
 					if (defaultCtor != null) {

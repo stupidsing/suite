@@ -61,8 +61,11 @@ cchs() {
 			local BRANCH=${CMD:11}
 			[ "${BRANCH}" ] && local OPTS="-b ${BRANCH}"
 			local DF=${DCACHE}/$(url-dir "${URL}@${BRANCH}")
-			if ! [ -d ${DF} ]; then
-				exec-logged "git clone ${OPTS} ${URL} ${DF} --quiet"
+			if [ "${CACHE}" == "off" ]; then
+				mv ${DF}/ $(mktemp -d)
+			fi
+			if ! [ -d ${DF}/ ]; then
+				exec-logged "git clone ${OPTS} ${URL} ${DF}/ --quiet"
 				touch ${DF}.pulltime
 			fi
 			local TS0=$(date +%s)
