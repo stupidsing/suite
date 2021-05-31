@@ -31,7 +31,7 @@ cchs() {
 			EX="printf %s ${LINK}"
 		elif [ "${CMD:0:6}" == "@do-cd" ]; then
 			local DIR=$(cat ${STATE})
-			EX="cd ${DIR}/ && ${CMD:7} 1>&2 && printf %s ${DIR}"
+			EX="cd ${DIR}/ && (${CMD:7}) 1>&2 && printf %s ${DIR}"
 		elif [ "${CMD:0:9}" == "@do-chmod" ]; then
 			local FILE=$(cat ${STATE})
 			chmod ${CMD:10} ${FILE}
@@ -39,14 +39,14 @@ cchs() {
 		elif [ "${CMD:0:10}" == "@do-git-cd" ]; then
 			local GIT=$(cat ${STATE})
 			local DIR=${GIT:9}
-			EX="V=${GIT:0:8}; cd ${DIR}/ && ${CMD:11} 1>&2 && printf %s ${GIT}"
+			EX="V=${GIT:0:8}; cd ${DIR}/ && (${CMD:11}) 1>&2 && printf %s ${GIT}"
 		elif [ "${CMD:0:5}" == "@exec" ]; then
 			local DIR=$(cat ${STATE})
 			local PREFIX=$(md5-dir "${DIR}:${CMD}")
 			local O=${PREFIX}.o U=${PREFIX}.u W=${PREFIX}.w
 			mkdir -p ${U}/ ${O}/ ${W}/
 			mountpoint -q ${O}/ || WORKDIR=${W}/ choverlay_ ${DIR}/ ${U}/ ${O}/
-			EX="cd ${O}/; ${CMD:6} 1>&2 && printf %s ${O}"
+			EX="cd ${O}/; (${CMD:6}) 1>&2 && printf %s ${O}"
 			#choverlayx
 		elif [ "${CMD}" == "@docker-build" ]; then
 			local FILE=${STATE}
@@ -83,7 +83,7 @@ cchs() {
 			local O=${PREFIX}.o U=${PREFIX}.u W=${PREFIX}.w
 			mkdir -p ${U}/ ${O}/ ${W}/
 			mountpoint -q ${O}/ || WORKDIR=${W}/ choverlay_ ${DIR}/ ${U}/ ${O}/
-			EX="V=${GIT:0:8}; cd ${DIR}/ && ${CMD:10} 1>&2 && printf %s ${GIT}"
+			EX="V=${GIT:0:8}; cd ${DIR}/ && (${CMD:10}) 1>&2 && printf %s ${GIT}"
 			#choverlayx
 		elif [ "${CMD:0:10}" == "@maven-get" ]; then
 			#local REPO=https://repo.maven.apache.org/maven2
