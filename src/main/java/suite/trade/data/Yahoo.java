@@ -165,7 +165,7 @@ public class Yahoo {
 
 	private JsonNode queryL1(String symbol, TimeRange period) {
 		var url = "" //
-				+ "https://query.finance.yahoo.com/v7/finance/chart/" //
+				+ "https://query1.finance.yahoo.com/v7/finance/chart/" //
 				+ encode(symbol) //
 				+ "?period1=" + period.fr.epochSec() //
 				+ "&period2=" + period.to.epochSec() //
