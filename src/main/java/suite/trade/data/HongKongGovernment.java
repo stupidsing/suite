@@ -24,8 +24,10 @@ import suite.trade.Time;
 /*
 To import the Hong Kong Post root CA:
 
-curl -sL http://www1.ecert.gov.hk/root/root_ca_1_pem.crt > /tmp/root_ca_1_pem.crt
-keytool -import -trustcacerts -keystore ${JAVA_HOME}/lib/security/cacerts -storepass changeit -alias hong_kong_post_root -file /tmp/root_ca_1_pem.crt
+curl -sL http://www1.ecert.gov.hk/root/root_ca_3_pem.crt > /tmp/root_ca_3_pem.crt
+keytool -import -trustcacerts -keystore ${JAVA_HOME}/lib/security/cacerts -storepass changeit -alias hong_kong_post_root_ca_3_pem -file /tmp/root_ca_3_pem.crt
+curl -sL http://www1.ecert.gov.hk/root/ecert_ssl_ca_3-17_pem.crt > /tmp/ecert_ssl_ca_3-17_pem.crt
+keytool -import -trustcacerts -keystore ${JAVA_HOME}/lib/security/cacerts -storepass changeit -alias hong_kong_post_ecert_ssl_ca_3-17_pem -file /tmp/ecert_ssl_ca_3-17_pem.crt
  */
 public class HongKongGovernment {
 
