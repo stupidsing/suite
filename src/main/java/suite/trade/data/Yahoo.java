@@ -37,7 +37,7 @@ public class Yahoo {
 	private ObjectMapper om = new ObjectMapper();
 	private QuoteCache<String> quoteCache = new QuoteCache<>(this::quote_);
 
-	// https://l1-query.finance.yahoo.com/v7/finance/chart/0012.HK?period1=0&period2=1497550133&interval=1d&indicators=quote&includeTimestamps=true&includePrePost=true&events=div%7Csplit%7Cearn&corsDomain=finance.yahoo.com
+	// https://query1.finance.yahoo.com/v7/finance/chart/0012.HK?period1=0&period2=1497550133&interval=1d&indicators=quote&includeTimestamps=true&includePrePost=true&events=div%7Csplit%7Cearn&corsDomain=finance.yahoo.com
 	public DataSource dataSourceL1(String symbol, TimeRange period) {
 		var stockHistory = getStockHistory(symbol);
 		var ds = stockHistory.filter(period).toDataSource();
@@ -165,7 +165,7 @@ public class Yahoo {
 
 	private JsonNode queryL1(String symbol, TimeRange period) {
 		var url = "" //
-				+ "https://l1-query.finance.yahoo.com/v7/finance/chart/" //
+				+ "https://query.finance.yahoo.com/v7/finance/chart/" //
 				+ encode(symbol) //
 				+ "?period1=" + period.fr.epochSec() //
 				+ "&period2=" + period.to.epochSec() //
