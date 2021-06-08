@@ -3,7 +3,7 @@
 curl -sL https://raw.githubusercontent.com/stupidsing/suite/master/src/main/sh/cache.sh
 
 ECLIPSE_V=2021-03
-GH_V=1.10.3
+GH_V=1.11.0
 MAVEN_V=3.8.1
 NODE_V=14.17.0
 
@@ -97,6 +97,10 @@ tp_google_java_format() {
 
 tp_gradle() {
 	${GRADLE_HOME}/bin/gradle $@
+}
+
+tp_gradle64() {
+	$(cchs "echo https://services.gradle.org/distributions/gradle-6.4-bin.zip" @curl @unzip @dir)/bin/gradle $@
 }
 
 tp_group_add() {
