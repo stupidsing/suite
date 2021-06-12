@@ -1,10 +1,10 @@
-let error = program => { throw new Error(`cannot parse ${program}`); };
-
 let repeat = (init, when, iterate) => {
 	let value = init;
 	while (when(value)) value = iterate(value);
 	return value;
 };
+
+let error = program => { throw new Error(`cannot parse ${program}`); };
 
 let isAll = pred => list => repeat(
 	({ i: 0, b: true }),
@@ -118,6 +118,8 @@ let parseConstant = program => {
 			? { id: 'string', value: program.substring(1, program.length - 1) }
 		: program.startsWith('"') && program.endsWith('"')
 			? { id: 'string', value: program.substring(1, program.length - 1) }
+		: program.startsWith('`') && program.endsWith('`')
+			? { id: 'backquote', value: program.substring(1, program.length - 1) }
 		: program === 'false'
 			? { id: 'false', value: 'false,' }
 		: program === 'true'
@@ -297,12 +299,16 @@ let parse = program_ => {
 			}()
 		: program.startsWith('return ') && program.endsWith(';')
 			? parse(program.substring(7, program.length - 1))
+		: program.startsWith('throw ') && program.endsWith(';')
+			? ({ id: 'error' })
 		: parseLambda(program);
 };
 
 let stringify = json => JSON.stringify(json,  null, '  ');
 
-let actual = stringify(parse(`console.log(parse(require('fs').readFileSync(0, 'utf8')))`));
+let actual = stringify(parse(`
+console.log(parse(require('fs').readFileSync(0, 'utf8')))
+`));
 
 let expect = stringify({
 	"id": "invoke",
@@ -345,10 +351,11 @@ let expect = stringify({
 	]
 });
 
-let b = actual === expect;
-
-if (!b) throw new Error(`test case failed,
-actual = ${actual}
-expect = ${expect}`);
-
-console.log(stringify(parse(require('fs').readFileSync(0, 'utf8'))));
+actual === expect
+? console.log(stringify(parse(require('fs').readFileSync(0, 'utf8'))))
+: function() {
+	throw new Error(`
+	test case failed,
+	actual = ${actual}
+	expect = ${expect}`);
+}();
