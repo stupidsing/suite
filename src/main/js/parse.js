@@ -1,3 +1,5 @@
+let error = program => { throw new Error(`cannot parse ${program}`); };
+
 let repeat = (init, when, iterate) => {
 	let value = init;
 	while (when(value)) value = iterate(value);
@@ -111,7 +113,9 @@ let parseConstant = program => {
 			? { id: 'false', }
 		: program === 'true'
 			? { id: 'true', }
-		: ({ id: 'var', value: program, });
+		: isIdentifier(program)
+			? ({ id: 'var', value: program, })
+		: error(program);
 };
 
 let parseList = (program, parse) => {
@@ -282,7 +286,7 @@ let parse = program_ => {
 		: parseLambda(program);
 };
 
-let actual = JSON.stringify(parse(`console.log(parse(require('fs').readFileSync(0, 'utf8',)))`),  null, 2);
+let actual = JSON.stringify(parse(`console.log(parse(require('fs').readFileSync(0, 'utf8',)))`),  null, '  ');
 
 let expect = JSON.stringify({
 	"id": "invoke",
@@ -323,7 +327,7 @@ let expect = JSON.stringify({
 		},
 		[]
 	]
-},  null, 2);
+},  null, '  ');
 
 let b = actual === expect;
 
