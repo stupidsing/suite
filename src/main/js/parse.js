@@ -168,13 +168,13 @@ let parseValue = program_ => {
 		: parseConstant(program);
 };
 
-let parseInvokeIndex = program_ => {
+let parseApplyIndex = program_ => {
 	let program = program_.trim();
 	let [expr, field] = splitr(program, '.');
 
 	return false ? {}
 		: expr !== '' && isIdentifier(field)
-			? { id: 'dot', field, expr: parseInvokeIndex(expr) }
+			? { id: 'dot', field, expr: parseApplyIndex(expr) }
 		: program.startsWith('function() {') && program.endsWith('}()')
 			? parse(program.substring(12, program.length - 3).trim())
 		: !program.startsWith('(') && program.endsWith(')')
@@ -183,7 +183,7 @@ let parseInvokeIndex = program_ => {
 				let paramStr = paramStr_.substring(0, paramStr_.length - 1).trim();
 				let parameters = keepsplitl(appendTrailing(paramStr), ',', parse);
 				return {
-					id: 'invoke',
+					id: 'apply',
 					expr: parse(expr),
 					parameters,
 				};
@@ -200,7 +200,7 @@ let parseInvokeIndex = program_ => {
 		: parseValue(program);
 };
 
-let parseDiv = parseAssocLeft_('div', '/', parseInvokeIndex);
+let parseDiv = parseAssocLeft_('div', '/', parseApplyIndex);
 let parseMul = parseAssocRight('mul', '*', parseDiv);
 let parseSub = parseAssocLeft_('sub', '-', parseMul);
 
@@ -304,7 +304,7 @@ console.log(parse(require('fs').readFileSync(0, 'utf8')))
 `));
 
 let expect = stringify({
-	"id": "invoke",
+	"id": "apply",
 	"expr": {
 		"id": "dot",
 		"field": "log",
@@ -312,16 +312,16 @@ let expect = stringify({
 	},
 	"parameters": [
 		{
-			"id": "invoke",
+			"id": "apply",
 			"expr": { "id": "var", "value": "parse" },
 			"parameters": [
 				{
-					"id": "invoke",
+					"id": "apply",
 					"expr": {
 						"id": "dot",
 						"field": "readFileSync",
 						"expr": {
-							"id": "invoke",
+							"id": "apply",
 							"expr": { "id": "var", "value": "require" },
 							"parameters": [
 								{ "id": "string", "value": "fs" },
