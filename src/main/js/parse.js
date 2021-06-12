@@ -109,10 +109,8 @@ let parsePrefix = (id, op, parseValue) => {
 };
 
 let parseConstant = program => {
-	let isNumber_ = isNumber(program);
-
 	return false ? ({})
-		: isNumber_
+		: isNumber(program)
 			? ({ id: 'number', value: program })
 		: program.startsWith("'") && program.endsWith("'")
 			? { id: 'string', value: program.substring(1, program.length - 1) }
@@ -171,10 +169,8 @@ let parseInvokeIndex = program_ => {
 	let program = program_.trim();
 	let [expr, field] = splitr(program, '.');
 
-	let isField = isIdentifier(field);
-
 	return false ? ({})
-		: expr !== '' && isField
+		: expr !== '' && isIdentifier(field)
 			? ({ id: 'dot', field, expr: parseInvokeIndex(expr) })
 		: program.startsWith('function() {') && program.endsWith('}()')
 			? parse(program.substring(12, program.length - 3).trim())
@@ -358,4 +354,4 @@ actual === expect
 	test case failed,
 	actual = ${actual}
 	expect = ${expect}`);
-}();
+}()
