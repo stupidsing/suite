@@ -4,6 +4,12 @@ let repeat = (init, when, iterate) => {
 	return value;
 };
 
+let isAll = pred => list => repeat(
+	({ i: 0, b: true, }),
+	({ i, b, }) => i < list.length && b,
+	({ i, b, }) => ({ i: i + 1, b: b && pred(list[i]), }),
+).b;
+
 let splitl = (s, sep) => {
 	return repeat(
 		({ i: 0, quote: false, bracket: 0, isMatched: false, result: [s, ''], }),
@@ -75,14 +81,7 @@ let parsePrefix = id => op => parseValue => {
 };
 
 let parseConstant = program => {
-	let isNumber = repeat(
-		({ i: 0, isNumber: true, }),
-		({ i, isNumber, }) => i < program.length && isNumber,
-		({ i, isNumber, }) => ({
-			i: i + 1,
-			isNumber: isNumber && '0' <= program[i] && program[i] <= '9',
-		}),
-	).isNumber;
+	let isNumber = isAll(ch => '0' <= ch && ch <= '9')(program);
 
 	return false ? ({})
 		: isNumber
@@ -91,6 +90,10 @@ let parseConstant = program => {
 			? { id: 'string', value: program.substring(1, program.length - 1), }
 		: program.startsWith('"') && program.endsWith('"')
 			? { id: 'string', value: program.substring(1, program.length - 1), }
+		: program === 'false'
+			? { id: 'false', }
+		: program === 'true'
+			? { id: 'true', }
 		: ({ id: 'var', value: program, });
 };
 
@@ -138,19 +141,11 @@ let parseInvokeIndex = program_ => {
 	let program = program_.trim();
 	let [expr, field,] = splitr(program, '.');
 
-	let isField = repeat(
-		({ i: 0, isField: true, }),
-		({ i, isField, }) => i < field.length && isField,
-		({ i, isField, }) => ({
-			i: i + 1,
-			isField: isField && (
-				'0' <= field[i] && field[i] <= '9'
-				|| 'A' <= field[i] && field[i] <= 'Z'
-				|| field[i] === '_'
-				|| 'a' <= field[i] && field[i] <= 'z'
-			),
-		}),
-	).isField;
+	let isField = isAll(ch => false
+		|| '0' <= ch && ch <= '9'
+		|| 'A' <= ch && ch <= 'Z'
+		|| ch === '_'
+		|| 'a' <= ch && ch <= 'z')(field);
 
 	return false ? ({})
 		: expr !== '' && isField
