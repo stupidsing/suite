@@ -265,27 +265,44 @@ let parseLambda = program => {
 
 let parsePair = parseAssocRight('pair', ',', parseLambda);
 
-let parse = program_ => {
-	let program = program_.trim();
+let parse = program => {
+	let [statement_, expr] = splitl(program, ';');
+	let statement = statement_.trim();
 
 	return false ? {}
-		: program.startsWith('let ')
+		: statement.startsWith('let ')
 			? function() {
-				let [varValue_, expr] = splitl(program.substring(4), ';');
-				let [var_, value] = splitl(varValue_, '=');
+				let [var_, value] = splitl(statement.substring(4), '=');
+
+				return value !== ''
+					? {
+						id: 'let',
+						bind: parseBind(var_),
+						value: parse(value),
+						expr: parse(expr),
+					}
+					: {
+						id: 'alloc',
+						bind: parseBind(var_),
+						expr: parse(expr),
+					};
+			}()
+		: statement.startsWith('return ') && expr === ''
+			? parse(statement.substring(7))
+		: statement.startsWith('throw ') && expr === ''
+			? { id: 'error' }
+		: expr !== ''
+			? function() {
+				let [var_, value] = splitl(statement, '=');
 
 				return {
-					id: 'let',
+					id: 'assign',
 					bind: parseBind(var_),
 					value: parse(value),
 					expr: parse(expr),
 				};
 			}()
-		: program.startsWith('return ') && program.endsWith(';')
-			? parse(program.substring(7, program.length - 1))
-		: program.startsWith('throw ') && program.endsWith(';')
-			? { id: 'error' }
-		: parsePair(program);
+		: parsePair(statement);
 };
 
 let stringify = json => JSON.stringify(json,  null, '  ');
