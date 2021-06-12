@@ -109,9 +109,10 @@ let parsePrefix = (id, op, parseValue) => {
 };
 
 let parseConstant = program => {
+	let first = program[0];
 	return false ? {}
-		: isNumber(program)
-			? { id: 'number', value: program }
+		: '0' <= first && first <= '9'
+			? { id: 'number', value: program.charCodeAt(0) - 48 + parseConstant(program.substring(1)).value * 10 }
 		: program.startsWith("'") && program.endsWith("'")
 			? { id: 'string', value: program.substring(1, program.length - 1) }
 		: program.startsWith('"') && program.endsWith('"')
@@ -320,7 +321,7 @@ let expect = stringify({
 			},
 			parameter: {
 				id: 'pair',
-				lhs: { id: 'number', value: '0' },
+				lhs: { id: 'number', value: 0 },
 				rhs: { id: 'string', value: 'utf8' }
 			}
 		}
