@@ -257,9 +257,9 @@ let parseBind = program_ => {
 let parseLambdaParameters = program_ => {
 	let program = program_.trim();
 	return false ? {}
-		: program.startsWith("({") && program.endsWith("})")
+		: program.startsWith('({') && program.endsWith('})')
 			? parseBind(program)
-		: program.startsWith("(") && program.endsWith(")")
+		: program.startsWith('(') && program.endsWith(')')
 			? parseList(program.substring(1, program.length - 1).trim(), parseBind)
 		: parseBind(program);
 };
@@ -298,39 +298,39 @@ let parse = program_ => {
 let stringify = json => JSON.stringify(json,  null, '  ');
 
 let actual = stringify(parse(`
-console.log(parse(require('fs').readFileSync(0, 'utf8')))
+	console.log(parse(require('fs').readFileSync(0, 'utf8')))
 `));
 
 let expect = stringify({
-	"id": "apply",
-	"expr": {
-		"id": "dot",
-		"field": "log",
-		"expr": { "id": "var", "value": "console" }
+	id: 'apply',
+	expr: {
+		id: 'dot',
+		field: 'log',
+		expr: { id: 'var', value: 'console' }
 	},
-	"parameters": [
+	parameters: [
 		{
-			"id": "apply",
-			"expr": { "id": "var", "value": "parse" },
-			"parameters": [
+			id: 'apply',
+			expr: { id: 'var', value: 'parse' },
+			parameters: [
 				{
-					"id": "apply",
-					"expr": {
-						"id": "dot",
-						"field": "readFileSync",
-						"expr": {
-							"id": "apply",
-							"expr": { "id": "var", "value": "require" },
-							"parameters": [
-								{ "id": "string", "value": "fs" },
+					id: 'apply',
+					expr: {
+						id: 'dot',
+						field: 'readFileSync',
+						expr: {
+							id: 'apply',
+							expr: { id: 'var', value: 'require' },
+							parameters: [
+								{ id: 'string', value: 'fs' },
 								[]
 							]
 						}
 					},
-					"parameters": [
-						{ "id": "string", "value": "utf8" },
+					parameters: [
+						{ id: 'string', value: 'utf8' },
 						[
-							{ "id": "number", "value": "0" },
+							{ id: 'number', value: '0' },
 							[]
 						]
 					]
