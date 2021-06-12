@@ -114,12 +114,19 @@ let parseConstant = program => {
 		: ({ id: 'var', value: program, });
 };
 
-let parseMap = program => {
+let parseList = (program, parse) => {
+	return ({
+		id: 'list',
+		values: keepsplitl(program.substring(1, program.length - 1), ',', parse),
+	});
+};
+
+let parseMap = (program, parse) => {
 	return ({
 		id: 'map',
 		kvs: keepsplitl(program.substring(1, program.length - 1), ',', kv => {
 			let [key, value,] = splitl(kv, ':');
-			return ({ key, value: parse(value) });
+			return ({ key, value: parse(value), });
 		}),
 	});
 };
@@ -128,19 +135,13 @@ let parseValue = program_ => {
 	let program = program_.trim();
 	return false ? ({})
 		: program.startsWith('({') && program.endsWith('})')
-			? parseMap(program.substring(1, program.length - 1))
+			? parseMap(program.substring(1, program.length - 1), parse)
 		: program.startsWith('(') && program.endsWith(')')
 			? parse(program.substring(1, program.length - 1))
 		: program.startsWith('[') && program.endsWith(']')
-			? function() {
-				let listStr = program.substring(1, program.length - 1);
-				return ({
-					id: 'list',
-					values: keepsplitl(listStr, ',', parse),
-				});
-			}()
+			? parseList(program, parse)
 		: program.startsWith('{') && program.endsWith('}')
-			? parseMap(program)
+			? parseMap(program, parse)
 			// ? parse(program.substring(1, program.length - 1))
 		: program.startsWith('function() {') && program.endsWith('; }()')
 			? parse(program.substring(12, program.length - 3))
@@ -161,11 +162,14 @@ let parseInvokeIndex = program_ => {
 		: !program.startsWith('(') && program.endsWith(')')
 			? function() {
 				let [expr, paramStr_,] = splitr(program, '(');
-				let paramStr = paramStr_.substring(0, paramStr_.length - 1);
+				let paramStr = paramStr_.substring(0, paramStr_.length - 1).trim();
+				let parameters = paramStr.endsWith(',')
+					? keepsplitl(paramStr, ',', parse)
+					: [parse(paramStr), []];
 				return ({
 					id: 'invoke',
 					expr: parse(expr),
-					parameters: keepsplitl(paramStr, ',', parse),
+					parameters,
 				});
 			}()
 		: !program.startsWith('[') && program.endsWith(']')
@@ -194,7 +198,9 @@ let parseNeg = program_ => {
 let parseAdd = program => {
 	let [left, right,] = splitl(program, '+');
 	let lhs = parseNeg(left);
-	return right === '' ? lhs : left === '' ? ({ id: 'pos', expr: parseAdd(right), }) : ({ id: 'add', lhs, rhs: parseAdd(right), });
+	return right === '' ? lhs : left === ''
+		? ({ id: 'pos', expr: parseAdd(right), })
+		: ({ id: 'add', lhs, rhs: parseAdd(right), });
 };
 
 let parseLt_ = parseAssocRight('lt_', '<', parseAdd);
@@ -221,10 +227,18 @@ let parseIfThenElse = program => {
 let parseBind = program_ => {
 	let program = program_.trim();
 	return false ? ({})
-		: ({
-		id: 'var',
-		v: program,
-	});
+		: program.startsWith('(') && program.endsWith(')')
+			? parseBind(program.substring(1, program.length - 1))
+		: program.startsWith('[') && program.endsWith(']')
+			? parseList(program, parseBind)
+		: program.startsWith('{') && program.endsWith('}')
+			? parseMap(program, parseBind)
+		: isIdentifier(program)
+			? ({
+				id: 'var',
+				v: program,
+			})
+		: parseConstant(program);
 };
 
 let parseLambdaParameters = program_ => {
@@ -268,7 +282,9 @@ let parse = program_ => {
 		: parseLambda(program);
 };
 
-let b = JSON.stringify(parse(`console.log(parse(require('fs').readFileSync(0, 'utf8')))`)) === JSON.stringify({
+let actual = JSON.stringify(parse(`console.log(parse(require('fs').readFileSync(0, 'utf8',)))`),  null, 2);
+
+let expect = JSON.stringify({
 	"id": "invoke",
 	"expr": {
 		"id": "dot",
@@ -307,8 +323,12 @@ let b = JSON.stringify(parse(`console.log(parse(require('fs').readFileSync(0, 'u
 		},
 		[]
 	]
-});
+},  null, 2);
 
-if (!b) throw new Error('test case failed');
+let b = actual === expect;
+
+if (!b) throw new Error(`test case failed,
+actual = ${actual}
+expect = ${expect}`);
 
 console.log(JSON.stringify(parse(require('fs').readFileSync(0, 'utf8')), null, '  '));
