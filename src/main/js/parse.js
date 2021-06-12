@@ -271,7 +271,7 @@ let parseLambda = program => {
 	return right === '' ? parseIfThenElse(left) : ({
 		id: 'lambda',
 		bind: parseLambdaParameters(left),
-		expr: right.startsWith('{') && right.endsWith('}') ? parse(right.substring(1, right.length - 1)) : parse(right),
+		expr: parse(right.startsWith('{') && right.endsWith('}') ? right.substring(1, right.length - 1) : right),
 	});
 };
 
