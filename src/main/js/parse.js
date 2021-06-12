@@ -157,13 +157,13 @@ let parseValue = program_ => {
 		: parseConstant(program);
 };
 
-let parseApplyFieldIndex = program_ => {
+let parseApplyBlockFieldIndex = program_ => {
 	let program = program_.trim();
 	let [expr, field] = splitr(program, '.');
 
 	return false ? {}
 		: expr !== '' && isIdentifier(field)
-			? { id: 'dot', field, expr: parseApplyFieldIndex(expr) }
+			? { id: 'dot', field, expr: parseApplyBlockFieldIndex(expr) }
 		: program.startsWith('function() {') && program.endsWith('}()')
 			? parse(program.substring(12, program.length - 3).trim())
 		: !program.startsWith('(') && program.endsWith(')')
@@ -188,7 +188,7 @@ let parseApplyFieldIndex = program_ => {
 		: parseValue(program);
 };
 
-let parseDiv = parseAssocLeft_('div', '/', parseApplyFieldIndex);
+let parseDiv = parseAssocLeft_('div', '/', parseApplyBlockFieldIndex);
 let parseMul = parseAssocRight('mul', '*', parseDiv);
 let parseSub = parseAssocLeft_('sub', '-', parseMul);
 
