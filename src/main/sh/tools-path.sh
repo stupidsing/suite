@@ -177,6 +177,10 @@ tp_wdp() {
 	tp_apt_i wine &&
 	wine $(cchs "echo https://stammel.net/spiele/wdp/wdp.exe" @curl)
 }
+
+tp_zx() {
+	$(cchs "echo npm-i-zx" @mkdir "@exec npm install zx")/node_modules/.bin/zx $@
+}
 '
 
 #GIT_PIECES=$(cchs "echo git@github.com:stupidsing/pieces.git" @git-clone "@git-cd pwd")
