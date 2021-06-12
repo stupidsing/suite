@@ -239,13 +239,9 @@ let parseIf = program => {
 	}();
 };
 
-let parseBindSingle = program => isIdentifier(program)
-	? { id: 'var', value: program }
-	: parseConstant(program);
-
 let parseBindPair = program => {
 	let [left, right] = splitl(program, ',');
-	let lhs = parseBindSingle(left.trim());
+	let lhs = parseConstant(left.trim());
 	return right === '' ? lhs : { id: 'pair', lhs, rhs: parseBindPair(right) };
 };
 
