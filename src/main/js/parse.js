@@ -29,8 +29,8 @@ let splitl = (s, sep) => {
 			let ch = s[i];
 			let quote1 = ch === "'" || ch === '"' || ch === '`' ? !quote : quote;
 
-			let bracket1 =
-				!quote && (ch === '(' || ch === '[' || ch === '{') ? bracket + 1
+			let bracket1 = false ? ({})
+				: !quote && (ch === '(' || ch === '[' || ch === '{') ? bracket + 1
 				: !quote && (ch === ')' || ch === ']' || ch === '}') ? bracket - 1
 				: bracket;
 
@@ -50,8 +50,8 @@ let splitr = (s, sep) => {
 			let ch = s[j - 1];
 			let quote1 = ch === "'" || ch === '"' || ch === '`' ? !quote : quote;
 
-			let bracket1 =
-				!quote && (ch === '(' || ch === '[' || ch === '{') ? bracket + 1
+			let bracket1 = false ? ({})
+				: !quote && (ch === '(' || ch === '[' || ch === '{') ? bracket + 1
 				: !quote && (ch === ')' || ch === ']' || ch === '}') ? bracket - 1
 				: bracket;
 
