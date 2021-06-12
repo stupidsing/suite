@@ -161,7 +161,6 @@ let parseValue = program_ => {
 			? parseList(program, parse)
 		: program.startsWith('{') && program.endsWith('}')
 			? parseMap(program, parse)
-			// ? parse(program.substring(1, program.length - 1))
 		: parseConstant(program);
 };
 
