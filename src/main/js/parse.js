@@ -262,13 +262,7 @@ let parseLambdaParameters = program_ => {
 		: program.startsWith("({") && program.endsWith("})")
 			? parseBind(program)
 		: program.startsWith("(") && program.endsWith(")")
-			? function() {
-				let paramStr = program.substring(1, program.length - 1).trim();
-				return {
-					id: 'list',
-					values: keepsplitl(appendTrailing(paramStr), ',', parseBind),
-				};
-			}()
+			? parseList(program.substring(1, program.length - 1).trim(), parseBind)
 		: parseBind(program);
 };
 
