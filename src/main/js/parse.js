@@ -60,6 +60,15 @@ let splitr = (s, sep) => {
 	).result;
 };
 
+let keepsplitl = (s, sep, apply) => repeat(
+	({ input: s, values: [], }),
+	({ input, }) => input !== '',
+	({ input, values, }) => {
+		let [left, right,] = splitl(input, sep);
+		return ({ input: right, values: [apply(left), values], });
+	},
+).values;
+
 let parseAssocLeft_ = id => op => parseValue => {
 	let parse = program => {
 		let [left, right,] = splitr(program, op);
@@ -123,17 +132,7 @@ let parseValue = program_ => {
 				let listStr = program.substring(1, program.length - 1);
 				return ({
 					id: 'list',
-					values: repeat(
-						({ input: listStr, values: [], }),
-						({ input, }) => input !== '',
-						({ input, values, }) => {
-							let [left, right,] = splitl(input, ',');
-							return ({
-								input: right,
-								values: [parse(left), values],
-							});
-						},
-					).values,
+					values: keepsplitl(listStr, ',', parse),
 				});
 			}()
 		: program.startsWith('{') && program.endsWith('}')
@@ -161,17 +160,7 @@ let parseInvokeIndex = program_ => {
 				return ({
 					id: 'invoke',
 					expr: parse(expr),
-					parameters: repeat(
-						({ input: paramStr, parameters: [], }),
-						({ input, }) => input !== '',
-						({ input, parameters, }) => {
-							let [left, right,] = splitl(input, ',');
-							return ({
-								input: right,
-								parameters: [parse(left), parameters],
-							});
-						},
-					).parameters,
+					parameters: keepsplitl(paramStr, ',', parse),
 				});
 			}()
 		: !program.startsWith('[') && program.endsWith(']')
