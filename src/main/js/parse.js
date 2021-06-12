@@ -273,6 +273,7 @@ let parse = program_ => {
 			? function() {
 				let [varValue_, expr] = splitl(program.substring(4), ';');
 				let [var_, value] = splitl(varValue_, '=');
+
 				return {
 					id: 'let',
 					bind: parseBind(var_),
