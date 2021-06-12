@@ -129,13 +129,10 @@ let parseList = (program, parse) => ({
 let parseStructInner = (program, parse) => ({
 	id: 'struct',
 	kvs: keepsplitl(appendTrailing(program), ',', kv => {
-		let [key_, value] = splitl(kv, ':');
+		let [key_, value_] = splitl(kv, ':');
 		let key = parseConstant(key_.trim()).value;
-
-		return {
-			key,
-			value: value !== '' ? parse(value) : { id: 'var', value: key },
-		};
+		let value = value_ !== '' ? parse(value_) : { id: 'var', value: key };
+		return { key, value };
 	}),
 });
 
