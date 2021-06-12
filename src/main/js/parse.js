@@ -141,6 +141,8 @@ let parseStructInner = (program, parse) => ({
 
 let parseStruct = (program, parse) => parseStructInner(program.substring(1, program.length - 1).trim(), parse);
 
+let parse;
+
 let parseValue = program_ => {
 	let program = program_.trim();
 
@@ -265,7 +267,7 @@ let parseLambda = program => {
 
 let parsePair = parseAssocRight('pair', ',', parseLambda);
 
-let parse = program => {
+parse = program => {
 	let [statement_, expr] = splitl(program, ';');
 	let statement = statement_.trim();
 
