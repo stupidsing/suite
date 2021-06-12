@@ -227,7 +227,7 @@ let parseEq_ = parseAssocRight('eq_', '===', parseNe_);
 let parseAnd = parseAssocRight('and', '&&', parseEq_);
 let parseOr_ = parseAssocRight('or_', '||', parseAnd);
 
-let parseIfThenElse = program => {
+let parseIf = program => {
 	let [if_, thenElse] = splitl(program, '?');
 	return thenElse === '' ? parseOr_(if_) : function() {
 		let [then, else_] = splitl(thenElse, ':');
@@ -269,7 +269,7 @@ let parseLambdaParameters = program_ => {
 let parseLambda = program => {
 	let [left, right_] = splitl(program, '=>');
 	let right = right_.trim();
-	return right === '' ? parseIfThenElse(left) : {
+	return right === '' ? parseIf(left) : {
 		id: 'lambda',
 		bind: parseLambdaParameters(left),
 		expr: parse(right ),
