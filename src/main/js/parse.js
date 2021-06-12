@@ -20,6 +20,18 @@ let isIdentifier = isAll(ch => false
 	|| ch === ascii('_')
 	|| ascii('a') <= ch && ch <= ascii('z'));
 
+let quoteBracket = (quote, bracket, ch) => {
+	return {
+		quote: quote === '' && (ch === ascii("'") || ch === ascii('"') || ch === ascii('`')) ? ch
+			: quote === ch ? ''
+			: quote,
+		bracket: false ? {}
+			: quote === '' && (ch === ascii('(') || ch === ascii('[') || ch === ascii('{')) ? bracket + 1
+			: quote === '' && (ch === ascii(')') || ch === ascii(']') || ch === ascii('}')) ? bracket - 1
+			: bracket,
+	};
+};
+
 let appendTrailing = s => s + (s === '' || s.endsWith(',') ? '' : ',');
 
 let splitl = (s, sep) => repeat(
@@ -28,15 +40,7 @@ let splitl = (s, sep) => repeat(
 	({ i, quote, bracket, isMatched, result }) => {
 		let j = i + sep.length;
 		let ch = s.charCodeAt(i);
-
-		let quote1 = quote === '' && (ch === ascii("'") || ch === ascii('"') || ch === ascii('`')) ? ch
-			: quote === ch ? ''
-			: quote;
-
-		let bracket1 = false ? {}
-			: quote === '' && (ch === ascii('(') || ch === ascii('[') || ch === ascii('{')) ? bracket + 1
-			: quote === '' && (ch === ascii(')') || ch === ascii(']') || ch === ascii('}')) ? bracket - 1
-			: bracket;
+		let { quote: quote1, bracket: bracket1 } = quoteBracket(quote, bracket, ch);
 
 		return quote || bracket !== 0 || s.substring(i, j) !== sep
 			? { i: i + 1, quote: quote1, bracket: bracket1, isMatched, result }
@@ -50,15 +54,7 @@ let splitr = (s, sep) => repeat(
 	({ j, quote, bracket, isMatched, result }) => {
 		let i = j - sep.length;
 		let ch = s.charCodeAt(j - 1);
-
-		let quote1 = quote === '' && (ch === ascii("'") || ch === ascii('"') || ch === ascii('`')) ? ch
-			: quote === ch ? ''
-			: quote;
-
-		let bracket1 = false ? {}
-			: quote === '' && (ch === ascii('(') || ch === ascii('[') || ch === ascii('{')) ? bracket + 1
-			: quote === '' && (ch === ascii(')') || ch === ascii(']') || ch === ascii('}')) ? bracket - 1
-			: bracket;
+		let { quote: quote1, bracket: bracket1 } = quoteBracket(quote, bracket, ch);
 
 		return quote1 || bracket1 !== 0 || s.substring(i, j) !== sep
 			? { j: j - 1, quote: quote1, bracket: bracket1, isMatched, result }
