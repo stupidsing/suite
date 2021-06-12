@@ -6,17 +6,19 @@ let repeat = (init, when, iterate) => {
 
 let error = message => { throw new Error(message); };
 
+let ascii = s => s.charCodeAt(0);
+
 let isAll = pred => list => repeat(
 	{ i: 0, b: true },
 	({ i, b }) => i < list.length && b,
-	({ i, b }) => ({ i: i + 1, b: b && pred(list[i]) }),
+	({ i, b }) => ({ i: i + 1, b: b && pred(list.charCodeAt(i)) }),
 ).b;
 
 let isIdentifier = isAll(ch => false
-	|| '0' <= ch && ch <= '9'
-	|| 'A' <= ch && ch <= 'Z'
-	|| ch === '_'
-	|| 'a' <= ch && ch <= 'z');
+	|| ascii('0') <= ch && ch <= ascii('9')
+	|| ascii('A') <= ch && ch <= ascii('Z')
+	|| ch === ascii('_')
+	|| ascii('a') <= ch && ch <= ascii('z'));
 
 let appendTrailing = s => s + (s === '' || s.endsWith(',') ? '' : ',');
 
@@ -25,15 +27,15 @@ let splitl = (s, sep) => repeat(
 	({ i, isMatched }) => !isMatched && i + sep.length <= s.length,
 	({ i, quote, bracket, isMatched, result }) => {
 		let j = i + sep.length;
-		let ch = s[i];
+		let ch = s.charCodeAt(i);
 
-		let quote1 = quote === '' && (ch === "'" || ch === '"' || ch === '`') ? ch
+		let quote1 = quote === '' && (ch === ascii("'") || ch === ascii('"') || ch === ascii('`')) ? ch
 			: quote === ch ? ''
 			: quote;
 
 		let bracket1 = false ? {}
-			: quote === '' && (ch === '(' || ch === '[' || ch === '{') ? bracket + 1
-			: quote === '' && (ch === ')' || ch === ']' || ch === '}') ? bracket - 1
+			: quote === '' && (ch === ascii('(') || ch === ascii('[') || ch === ascii('{')) ? bracket + 1
+			: quote === '' && (ch === ascii(')') || ch === ascii(']') || ch === ascii('}')) ? bracket - 1
 			: bracket;
 
 		return quote || bracket !== 0 || s.substring(i, j) !== sep
@@ -47,15 +49,15 @@ let splitr = (s, sep) => repeat(
 	({ j, isMatched }) => !isMatched && sep.length <= j,
 	({ j, quote, bracket, isMatched, result }) => {
 		let i = j - sep.length;
-		let ch = s[j - 1];
+		let ch = s.charCodeAt(j - 1);
 
-		let quote1 = quote === '' && (ch === "'" || ch === '"' || ch === '`') ? ch
+		let quote1 = quote === '' && (ch === ascii("'") || ch === ascii('"') || ch === ascii('`')) ? ch
 			: quote === ch ? ''
 			: quote;
 
 		let bracket1 = false ? {}
-			: quote === '' && (ch === '(' || ch === '[' || ch === '{') ? bracket + 1
-			: quote === '' && (ch === ')' || ch === ']' || ch === '}') ? bracket - 1
+			: quote === '' && (ch === ascii('(') || ch === ascii('[') || ch === ascii('{')) ? bracket + 1
+			: quote === '' && (ch === ascii(')') || ch === ascii(']') || ch === ascii('}')) ? bracket - 1
 			: bracket;
 
 		return quote1 || bracket1 !== 0 || s.substring(i, j) !== sep
