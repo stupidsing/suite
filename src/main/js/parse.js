@@ -20,53 +20,49 @@ let isIdentifier = isAll(ch => false
 
 let appendTrailing = s => s + (s === '' || s.endsWith(',') ? '' : ',');
 
-let splitl = (s, sep) => {
-	return repeat(
-		{ i: 0, quote: '', bracket: 0, isMatched: false, result: [s, ''] },
-		({ i, isMatched }) => !isMatched && i + sep.length <= s.length,
-		({ i, quote, bracket, isMatched, result }) => {
-			let j = i + sep.length;
-			let ch = s[i];
+let splitl = (s, sep) => repeat(
+	{ i: 0, quote: '', bracket: 0, isMatched: false, result: [s, ''] },
+	({ i, isMatched }) => !isMatched && i + sep.length <= s.length,
+	({ i, quote, bracket, isMatched, result }) => {
+		let j = i + sep.length;
+		let ch = s[i];
 
-			let quote1 = quote === '' && (ch === "'" || ch === '"' || ch === '`') ? ch
-				: quote === ch ? ''
-				: quote;
+		let quote1 = quote === '' && (ch === "'" || ch === '"' || ch === '`') ? ch
+			: quote === ch ? ''
+			: quote;
 
-			let bracket1 = false ? {}
-				: quote === '' && (ch === '(' || ch === '[' || ch === '{') ? bracket + 1
-				: quote === '' && (ch === ')' || ch === ']' || ch === '}') ? bracket - 1
-				: bracket;
+		let bracket1 = false ? {}
+			: quote === '' && (ch === '(' || ch === '[' || ch === '{') ? bracket + 1
+			: quote === '' && (ch === ')' || ch === ']' || ch === '}') ? bracket - 1
+			: bracket;
 
-			return quote || bracket !== 0 || s.substring(i, j) !== sep
-				? { i: i + 1, quote: quote1, bracket: bracket1, isMatched, result }
-				: { i: i + 1, quote: quote1, bracket: bracket1, isMatched: true, result: [s.substring(0, i), s.substring(j)] };
-		},
-	).result;
-};
+		return quote || bracket !== 0 || s.substring(i, j) !== sep
+			? { i: i + 1, quote: quote1, bracket: bracket1, isMatched, result }
+			: { i: i + 1, quote: quote1, bracket: bracket1, isMatched: true, result: [s.substring(0, i), s.substring(j)] };
+	},
+).result;
 
-let splitr = (s, sep) => {
-	return repeat(
-		{ j: s.length, quote: '', bracket: 0, isMatched: false, result: ['', s] },
-		({ j, isMatched }) => !isMatched && sep.length <= j,
-		({ j, quote, bracket, isMatched, result }) => {
-			let i = j - sep.length;
-			let ch = s[j - 1];
+let splitr = (s, sep) => repeat(
+	{ j: s.length, quote: '', bracket: 0, isMatched: false, result: ['', s] },
+	({ j, isMatched }) => !isMatched && sep.length <= j,
+	({ j, quote, bracket, isMatched, result }) => {
+		let i = j - sep.length;
+		let ch = s[j - 1];
 
-			let quote1 = quote === '' && (ch === "'" || ch === '"' || ch === '`') ? ch
-				: quote === ch ? ''
-				: quote;
+		let quote1 = quote === '' && (ch === "'" || ch === '"' || ch === '`') ? ch
+			: quote === ch ? ''
+			: quote;
 
-			let bracket1 = false ? {}
-				: quote === '' && (ch === '(' || ch === '[' || ch === '{') ? bracket + 1
-				: quote === '' && (ch === ')' || ch === ']' || ch === '}') ? bracket - 1
-				: bracket;
+		let bracket1 = false ? {}
+			: quote === '' && (ch === '(' || ch === '[' || ch === '{') ? bracket + 1
+			: quote === '' && (ch === ')' || ch === ']' || ch === '}') ? bracket - 1
+			: bracket;
 
-			return quote1 || bracket1 !== 0 || s.substring(i, j) !== sep
-				? { j: j - 1, quote: quote1, bracket: bracket1, isMatched, result }
-				: { j: j - 1, quote: quote1, bracket: bracket1, isMatched: true, result: [s.substring(0, i), s.substring(j)] };
-		},
-	).result;
-};
+		return quote1 || bracket1 !== 0 || s.substring(i, j) !== sep
+			? { j: j - 1, quote: quote1, bracket: bracket1, isMatched, result }
+			: { j: j - 1, quote: quote1, bracket: bracket1, isMatched: true, result: [s.substring(0, i), s.substring(j)] };
+	},
+).result;
 
 let keepsplitl = (s, sep, apply) => repeat(
 	{ input: s, values: [] },
@@ -105,51 +101,41 @@ let parsePrefix = (id, op, parseValue) => {
 	return parse;
 };
 
-let parseConstant = program => {
-	let first = program[0];
-	return false ? {}
-		: '0' <= first && first <= '9'
-			? { id: 'number', value: program.charCodeAt(0) - 48 + parseConstant(program.substring(1)).value * 10 }
-		: program.startsWith("'") && program.endsWith("'")
-			? { id: 'string', value: program.substring(1, program.length - 1) }
-		: program.startsWith('"') && program.endsWith('"')
-			? { id: 'string', value: program.substring(1, program.length - 1) }
-		: program.startsWith('`') && program.endsWith('`')
-			? { id: 'backquote', value: program.substring(1, program.length - 1) }
-		: program === 'false'
-			? { id: 'boolean', value: 'false' }
-		: program === 'true'
-			? { id: 'boolean', value: 'true' }
-		: isIdentifier(program)
-			? { id: 'var', value: program }
-		: error(program);
-};
+let parseConstant = program => false ? {}
+	: '0' <= program[0] && program[0] <= '9'
+		? { id: 'number', value: program.charCodeAt(0) - 48 + parseConstant(program.substring(1)).value * 10 }
+	: program.startsWith("'") && program.endsWith("'")
+		? { id: 'string', value: program.substring(1, program.length - 1) }
+	: program.startsWith('"') && program.endsWith('"')
+		? { id: 'string', value: program.substring(1, program.length - 1) }
+	: program.startsWith('`') && program.endsWith('`')
+		? { id: 'backquote', value: program.substring(1, program.length - 1) }
+	: program === 'false'
+		? { id: 'boolean', value: 'false' }
+	: program === 'true'
+		? { id: 'boolean', value: 'true' }
+	: isIdentifier(program)
+		? { id: 'var', value: program }
+	: error(program);
 
-let parseList = (program, parse) => {
-	let listStr = program.substring(1, program.length - 1).trim();
-	return {
-		id: 'list',
-		values: keepsplitl(appendTrailing(listStr), ',', parse),
-	};
-};
+let parseList = (program, parse) => ({
+	id: 'list',
+	values: keepsplitl(appendTrailing(program.substring(1, program.length - 1).trim()), ',', parse),
+});
 
-let parseStructInner = (program, parse) => {
-	return {
-		id: 'struct',
-		kvs: keepsplitl(appendTrailing(program), ',', kv => {
-			let [key_, value] = splitl(kv, ':');
-			let key = parseConstant(key_.trim()).value;
-			return {
-				key,
-				value: value !== '' ? parse(value) : { id: 'var', value: key },
-			};
-		}),
-	};
-};
+let parseStructInner = (program, parse) => ({
+	id: 'struct',
+	kvs: keepsplitl(appendTrailing(program), ',', kv => {
+		let [key_, value] = splitl(kv, ':');
+		let key = parseConstant(key_.trim()).value;
+		return {
+			key,
+			value: value !== '' ? parse(value) : { id: 'var', value: key },
+		};
+	}),
+});
 
-let parseStruct = (program, parse) => {
-	return parseStructInner(program.substring(1, program.length - 1).trim(), parse);
-};
+let parseStruct = (program, parse) => parseStructInner(program.substring(1, program.length - 1).trim(), parse);
 
 let parseValue = program_ => {
 	let program = program_.trim();
