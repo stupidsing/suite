@@ -135,9 +135,9 @@ let parseList = (program, parse) => {
 	};
 };
 
-let parseMapInner = (program, parse) => {
+let parseStructInner = (program, parse) => {
 	return {
-		id: 'map',
+		id: 'struct',
 		kvs: keepsplitl(appendTrailing(program), ',', kv => {
 			let [key_, value] = splitl(kv, ':');
 			let key = parseConstant(key_.trim()).value;
@@ -149,8 +149,8 @@ let parseMapInner = (program, parse) => {
 	};
 };
 
-let parseMap = (program, parse) => {
-	return parseMapInner(program.substring(1, program.length - 1).trim(), parse);
+let parseStruct = (program, parse) => {
+	return parseStructInner(program.substring(1, program.length - 1).trim(), parse);
 };
 
 let parseValue = program_ => {
@@ -163,7 +163,7 @@ let parseValue = program_ => {
 		: program.startsWith('{') && program.endsWith('}')
 			? function() {
 				let block = program.substring(1, program.length - 1).trim();
-				return block.endsWith(';') ? parse(block) : parseMapInner(block, parse);
+				return block.endsWith(';') ? parse(block) : parseStructInner(block, parse);
 			}()
 		: parseConstant(program);
 };
@@ -248,7 +248,7 @@ let parseBind = program_ => {
 		: program.startsWith('[') && program.endsWith(']')
 			? parseList(program, parseBind)
 		: program.startsWith('{') && program.endsWith('}')
-			? parseMap(program, parseBind)
+			? parseStruct(program, parseBind)
 		: isIdentifier(program)
 			? { id: 'var', value: program }
 		: parseConstant(program);
