@@ -138,20 +138,20 @@ let parseStructInner = (program, parse) => ({
 
 let parseStruct = (program, parse) => parseStructInner(program.substring(1, program.length - 1).trim(), parse);
 
-let parse;
+let parseProgram;
 
 let parseValue = program_ => {
 	let program = program_.trim();
 
 	return false ? {}
 		: program.startsWith('(') && program.endsWith(')')
-			? parse(program.substring(1, program.length - 1))
+			? parseProgram(program.substring(1, program.length - 1))
 		: program.startsWith('[') && program.endsWith(']')
-			? parseList(program, parse)
+			? parseList(program, parseProgram)
 		: program.startsWith('{') && program.endsWith('}')
 			? function() {
 				let block = program.substring(1, program.length - 1).trim();
-				return block.endsWith(';') ? parse(block) : parseStructInner(block, parse);
+				return block.endsWith(';') ? parseProgram(block) : parseStructInner(block, parseProgram);
 			}()
 		: parseConstant(program);
 };
@@ -164,15 +164,15 @@ let parseApplyBlockFieldIndex = program_ => {
 		: expr !== '' && isIdentifier(field)
 			? { id: 'dot', field, expr: parseApplyBlockFieldIndex(expr) }
 		: program.startsWith('function() {') && program.endsWith('}()')
-			? parse(program.substring(12, program.length - 3).trim())
+			? parseProgram(program.substring(12, program.length - 3).trim())
 		: !program.startsWith('(') && program.endsWith(')')
 			? function() {
 				let [expr, paramStr_] = splitr(program, '(');
 				let paramStr = paramStr_.substring(0, paramStr_.length - 1).trim();
 				return {
 					id: 'apply',
-					expr: parse(expr),
-					parameter: parse(paramStr),
+					expr: parseProgram(expr),
+					parameter: parseProgram(paramStr),
 				};
 			}()
 		: !program.startsWith('[') && program.endsWith(']')
@@ -180,8 +180,8 @@ let parseApplyBlockFieldIndex = program_ => {
 				let [expr, index] = splitr(program, '[');
 				return {
 					id: 'index',
-					expr: parse(expr),
-					index: parse(index.substring(0, index.length - 1)),
+					expr: parseProgram(expr),
+					index: parseProgram(index.substring(0, index.length - 1)),
 				};
 			}()
 		: parseValue(program);
@@ -224,9 +224,9 @@ let parseIf = program => {
 
 		return {
 			id: 'if',
-			'if': parse(if_),
-			then: parse(then),
-			'else': parse(else_),
+			'if': parseProgram(if_),
+			then: parseProgram(then),
+			'else': parseProgram(else_),
 		};
 	}();
 };
@@ -258,13 +258,13 @@ let parseLambda = program => {
 	return right === '' ? parseIf(left) : {
 		id: 'lambda',
 		bind: parseBind(left),
-		expr: parse(right),
+		expr: parseProgram(right),
 	};
 };
 
 let parsePair = parseAssocRight('pair', ',', parseLambda);
 
-parse = program => {
+parseProgram = program => {
 	let [statement_, expr] = splitl(program, ';');
 	let statement = statement_.trim();
 
@@ -277,17 +277,17 @@ parse = program => {
 					? {
 						id: 'let',
 						bind: parseBind(var_),
-						value: parse(value),
-						expr: parse(expr),
+						value: parseProgram(value),
+						expr: parseProgram(expr),
 					}
 					: {
 						id: 'alloc',
 						bind: parseBind(var_),
-						expr: parse(expr),
+						expr: parseProgram(expr),
 					};
 			}()
 		: statement.startsWith('return ') && expr === ''
-			? parse(statement.substring(7))
+			? parseProgram(statement.substring(7))
 		: statement.startsWith('throw ') && expr === ''
 			? { id: 'error' }
 		: expr !== ''
@@ -297,8 +297,8 @@ parse = program => {
 				return {
 					id: 'assign',
 					bind: parseBind(var_),
-					value: parse(value),
-					expr: parse(expr),
+					value: parseProgram(value),
+					expr: parseProgram(expr),
 				};
 			}()
 		: parsePair(statement);
@@ -306,7 +306,7 @@ parse = program => {
 
 let stringify = json => JSON.stringify(json,  null, '  ');
 
-let actual = stringify(parse(`
+let actual = stringify(parseProgram(`
 	console.log(parse(require('fs').readFileSync(0, 'utf8')))
 `));
 
@@ -341,7 +341,7 @@ let expect = stringify({
 });
 
 actual === expect
-? console.log(stringify(parse(require('fs').readFileSync(0, 'utf8'))))
+? console.log(stringify(parseProgram(require('fs').readFileSync(0, 'utf8'))))
 : error(`
 test case failed,
 actual = ${actual}
