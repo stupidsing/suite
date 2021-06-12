@@ -119,9 +119,9 @@ let parseConstant = program => {
 		: program.startsWith('`') && program.endsWith('`')
 			? { id: 'backquote', value: program.substring(1, program.length - 1) }
 		: program === 'false'
-			? { id: 'false', value: 'false' }
+			? { id: 'boolean', value: 'false' }
 		: program === 'true'
-			? { id: 'true', value: 'true' }
+			? { id: 'boolean', value: 'true' }
 		: isIdentifier(program)
 			? { id: 'var', value: program }
 		: error(program);
