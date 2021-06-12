@@ -7,7 +7,7 @@ let repeat = (init, when, iterate) => {
 let error = program => { throw new Error(`cannot parse ${program}`); };
 
 let isAll = pred => list => repeat(
-	({ i: 0, b: true }),
+	{ i: 0, b: true },
 	({ i, b }) => i < list.length && b,
 	({ i, b }) => ({ i: i + 1, b: b && pred(list[i]) }),
 ).b;
@@ -25,7 +25,7 @@ let appendTrailing = s => s + (s === '' || s.endsWith(',') ? '' : ',');
 
 let splitl = (s, sep) => {
 	return repeat(
-		({ i: 0, quote: '', bracket: 0, isMatched: false, result: [s, ''] }),
+		{ i: 0, quote: '', bracket: 0, isMatched: false, result: [s, ''] },
 		({ i, isMatched }) => !isMatched && i + sep.length <= s.length,
 		({ i, quote, bracket, isMatched, result }) => {
 			let j = i + sep.length;
@@ -49,7 +49,7 @@ let splitl = (s, sep) => {
 
 let splitr = (s, sep) => {
 	return repeat(
-		({ j: s.length, quote: '', bracket: 0, isMatched: false, result: ['', s] }),
+		{ j: s.length, quote: '', bracket: 0, isMatched: false, result: ['', s] },
 		({ j, isMatched }) => !isMatched && sep.length <= j,
 		({ j, quote, bracket, isMatched, result }) => {
 			let i = j - sep.length;
@@ -72,7 +72,7 @@ let splitr = (s, sep) => {
 };
 
 let keepsplitl = (s, sep, apply) => repeat(
-	({ input: s, values: [] }),
+	{ input: s, values: [] },
 	({ input }) => input !== '',
 	({ input, values }) => {
 		let [left, right] = splitl(input, sep);
@@ -84,7 +84,7 @@ let parseAssocLeft_ = (id, op, parseValue) => {
 	let parse = program => {
 		let [left, right] = splitr(program, op);
 		let rhs = parseValue(right);
-		return left === '' ? rhs : ({ id, lhs: parse(left), rhs });
+		return left === '' ? rhs : { id, lhs: parse(left), rhs };
 	};
 	return parse;
 };
@@ -93,7 +93,7 @@ let parseAssocRight = (id, op, parseValue) => {
 	let parse = program => {
 		let [left, right] = splitl(program, op);
 		let lhs = parseValue(left);
-		return right === '' ? lhs : ({ id, lhs, rhs: parse(right) });
+		return right === '' ? lhs : { id, lhs, rhs: parse(right) };
 	};
 	return parse;
 };
@@ -103,7 +103,7 @@ let parsePrefix = (id, op, parseValue) => {
 		let program = program_.trim();
 		return !program.startsWith(op)
 			? parseValue(program)
-			: ({ id, expr: parse(program.substring(op.length)) });
+			: { id, expr: parse(program.substring(op.length)) };
 	};
 	return parse;
 };
@@ -143,7 +143,7 @@ let parseMapInner = (program, parse) => {
 			let key = parseConstant(key_.trim()).value;
 			return {
 				key,
-				value: value !== '' ? parse(value) : ({ id: 'var', value: key }),
+				value: value !== '' ? parse(value) : { id: 'var', value: key },
 			};
 		}),
 	};
@@ -275,11 +275,11 @@ let parseLambdaParameters = program_ => {
 let parseLambda = program => {
 	let [left, right_] = splitl(program, '=>');
 	let right = right_.trim();
-	return right === '' ? parseIfThenElse(left) : ({
+	return right === '' ? parseIfThenElse(left) : {
 		id: 'lambda',
 		bind: parseLambdaParameters(left),
 		expr: parse(right.startsWith('{') && right.endsWith('}') ? right.substring(1, right.length - 1) : right),
-	});
+	};
 };
 
 let parse = program_ => {
