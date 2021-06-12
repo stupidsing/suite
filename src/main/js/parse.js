@@ -130,7 +130,7 @@ let parseMap = (program, parse,) => {
 		id: 'map',
 		kvs: keepsplitl(program.substring(1, program.length - 1), ',', kv => {
 			let [key, value,] = splitl(kv, ':');
-			return ({ key, value: parse(value), });
+			return ({ key: key.trim(), value: parse(value), });
 		}),
 	});
 };
@@ -147,10 +147,6 @@ let parseValue = program_ => {
 		: program.startsWith('{') && program.endsWith('}')
 			? parseMap(program, parse)
 			// ? parse(program.substring(1, program.length - 1))
-		: program.startsWith('function() {') && program.endsWith('; }()')
-			? parse(program.substring(12, program.length - 3))
-		: program.startsWith('return ') && program.endsWith(';')
-			? parse(program.substring(7, program.length - 1))
 		: parseConstant(program);
 };
 
@@ -163,13 +159,13 @@ let parseInvokeIndex = program_ => {
 	return false ? ({})
 		: expr !== '' && isField
 			? ({ id: 'dot', field, expr: parseInvokeIndex(expr), })
+		: program.startsWith('function() {') && program.endsWith('}()')
+			? parse(program.substring(12, program.length - 3).trim())
 		: !program.startsWith('(') && program.endsWith(')')
 			? function() {
 				let [expr, paramStr_,] = splitr(program, '(');
 				let paramStr = paramStr_.substring(0, paramStr_.length - 1).trim();
-				let parameters = paramStr.endsWith(',')
-					? keepsplitl(paramStr, ',', parse)
-					: [parse(paramStr), []];
+				let parameters = keepsplitl(paramStr + (paramStr.endsWith(',') ? '' : ','), ',', parse);
 				return ({
 					id: 'invoke',
 					expr: parse(expr),
@@ -272,23 +268,28 @@ let parseLambda = program => {
 
 let parse = program_ => {
 	let program = program_.trim();
-	return program.startsWith('let ')
-		? function() {
-			let [varValue_, expr,] = splitl(program.substring(4), ';');
-			let [var_, value,] = splitl(varValue_, '=');
-			return ({
-				id: 'let',
-				bind: parseBind(var_),
-				value: parse(value),
-				expr: parse(expr),
-			});
-		}()
+	return false ? ({})
+		: program.startsWith('let ')
+			? function() {
+				let [varValue_, expr,] = splitl(program.substring(4), ';');
+				let [var_, value,] = splitl(varValue_, '=');
+				return ({
+					id: 'let',
+					bind: parseBind(var_),
+					value: parse(value),
+					expr: parse(expr),
+				});
+			}()
+		: program.startsWith('return ') && program.endsWith(';')
+			? parse(program.substring(7, program.length - 1))
 		: parseLambda(program);
 };
 
-let actual = JSON.stringify(parse(`console.log(parse(require('fs').readFileSync(0, 'utf8',)))`),  null, '  ');
+let stringify = json => JSON.stringify(json,  null, '  ');
 
-let expect = JSON.stringify({
+let actual = stringify(parse(`console.log(parse(require('fs').readFileSync(0, 'utf8')))`));
+
+let expect = stringify({
 	"id": "invoke",
 	"expr": {
 		"id": "dot",
@@ -327,7 +328,7 @@ let expect = JSON.stringify({
 		},
 		[]
 	]
-},  null, '  ');
+});
 
 let b = actual === expect;
 
@@ -335,4 +336,4 @@ if (!b) throw new Error(`test case failed,
 actual = ${actual}
 expect = ${expect}`);
 
-console.log(JSON.stringify(parse(require('fs').readFileSync(0, 'utf8')), null, '  '));
+console.log(stringify(parse(require('fs').readFileSync(0, 'utf8'))));
