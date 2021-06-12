@@ -10,6 +10,14 @@ let isAll = pred => list => repeat(
 	({ i, b, }) => ({ i: i + 1, b: b && pred(list[i]), }),
 ).b;
 
+let isIdentifier = isAll(ch => false
+	|| '0' <= ch && ch <= '9'
+	|| 'A' <= ch && ch <= 'Z'
+	|| ch === '_'
+	|| 'a' <= ch && ch <= 'z');
+
+let isNumber = isAll(ch => '0' <= ch && ch <= '9');
+
 let splitl = (s, sep) => {
 	return repeat(
 		({ i: 0, quote: false, bracket: 0, isMatched: false, result: [s, ''], }),
@@ -81,10 +89,10 @@ let parsePrefix = id => op => parseValue => {
 };
 
 let parseConstant = program => {
-	let isNumber = isAll(ch => '0' <= ch && ch <= '9')(program);
+	let isNumber_ = isNumber(program);
 
 	return false ? ({})
-		: isNumber
+		: isNumber_
 			? ({ id: 'number', value: program, })
 		: program.startsWith("'") && program.endsWith("'")
 			? { id: 'string', value: program.substring(1, program.length - 1), }
@@ -141,11 +149,7 @@ let parseInvokeIndex = program_ => {
 	let program = program_.trim();
 	let [expr, field,] = splitr(program, '.');
 
-	let isField = isAll(ch => false
-		|| '0' <= ch && ch <= '9'
-		|| 'A' <= ch && ch <= 'Z'
-		|| ch === '_'
-		|| 'a' <= ch && ch <= 'z')(field);
+	let isField = isIdentifier(field);
 
 	return false ? ({})
 		: expr !== '' && isField
@@ -253,5 +257,48 @@ let parse = program_ => {
 		}()
 		: parseLambda(program);
 };
+
+let b = JSON.stringify(parse(`console.log(parse(require('fs').readFileSync(0, 'utf8')))`)) === JSON.stringify({
+	"id": "invoke",
+	"expr": {
+		"id": "dot",
+		"field": "log",
+		"expr": { "id": "var", "value": "console" }
+	},
+	"parameters": [
+		{
+			"id": "invoke",
+			"expr": { "id": "var", "value": "parse" },
+			"parameters": [
+				{
+					"id": "invoke",
+					"expr": {
+						"id": "dot",
+						"field": "readFileSync",
+						"expr": {
+							"id": "invoke",
+							"expr": { "id": "var", "value": "require" },
+							"parameters": [
+								{ "id": "string", "value": "fs" },
+								[]
+							]
+						}
+					},
+					"parameters": [
+						{ "id": "string", "value": "utf8" },
+						[
+							{ "id": "number", "value": "0" },
+							[]
+						]
+					]
+				},
+				[]
+			]
+		},
+		[]
+	]
+});
+
+if (!b) throw new Error('test case failed');
 
 console.log(JSON.stringify(parse(require('fs').readFileSync(0, 'utf8')), null, '  '));
