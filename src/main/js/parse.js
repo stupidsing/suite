@@ -232,10 +232,10 @@ let parseIfThenElse = program => {
 	return thenElse === '' ? parseOr_(if_) : function() {
 		let [then, else_] = splitl(thenElse, ':');
 		return {
-			id: 'ifThenElse',
-			if_: parse(if_),
+			id: 'if',
+			'if': parse(if_),
 			then: parse(then),
-			else_: parse(else_),
+			'else': parse(else_),
 		};
 	}();
 };
@@ -272,7 +272,7 @@ let parseLambda = program => {
 	return right === '' ? parseIfThenElse(left) : {
 		id: 'lambda',
 		bind: parseLambdaParameters(left),
-		expr: parse(right),
+		expr: parse(right ),
 	};
 };
 
