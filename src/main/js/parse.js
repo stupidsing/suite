@@ -137,6 +137,24 @@ let parseInvokeIndex = program_ => {
 					).parameters,
 				});
 			}()
+		: program.startsWith('[') && program.endsWith(']')
+			? function() {
+				let listStr = program.substring(1, program.length - 1);
+				return ({
+					id: 'list',
+					values: repeat(
+						({ input: listStr, values: [], }),
+						({ input, }) => input !== '',
+						({ input, values, }) => {
+							let [left, right,] = splitl(input, ',');
+							return ({
+								input: right,
+								values: [parse(left), values],
+							});
+						},
+					).values,
+				});
+			}()
 		: !program.startsWith('[') && program.endsWith(']')
 			? function() {
 				let [expr, index,] = splitr(program, '[');
