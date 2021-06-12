@@ -11,9 +11,9 @@ define-global {
 consult linux.fp ~
 
 define-function !guess () := do
-	let name := address-of predef (array 32 * byte) ~
+	let name := address-of predef (array 64 * byte) ~
 	put-string! "please enter your name: " ~
-	get-string! (name, 32) ~
+	get-string! (name, 64) ~
 	put-string! "Hello, " ~
 	put-string! name ~
 	put-line! () ~

@@ -20,11 +20,8 @@ let splitl = (s, sep) => {
 
 			return quote || bracket !== 0 || s.substring(i, j) !== sep
 				? ({ i: i + 1, quote: quote1, bracket: bracket1, isMatched, result, })
-				: ({ i, quote, bracket, isMatched: true, result: [
-					 s.substring(0, i),
-					 s.substring(j),
-				]});
-		}
+				: ({ i: i + 1, quote: quote1, bracket: bracket1, isMatched: true, result: [s.substring(0, i), s.substring(j),]});
+		},
 	).result;
 };
 
@@ -42,13 +39,11 @@ let splitr = (s, sep) => {
 				: !quote && (ch === ')' || ch === ']' || ch === '}') ? bracket - 1
 				: bracket;
 
-			return quote || bracket !== 0 || s.substring(i, j) !== sep
+			return quote1 || bracket1 !== 0 || s.substring(i, j) !== sep
 				? ({ j: j - 1, quote: quote1, bracket: bracket1, isMatched, result, })
-				: ({ j, quote, bracket, isMatched: true, result: [
-					s.substring(0, i),
-					s.substring(j),
-				]});
-		}).result;
+				: ({ j: j - 1, quote: quote1, bracket: bracket1, isMatched: true, result: [s.substring(0, i), s.substring(j),]});
+		},
+	).result;
 };
 
 let parseAssocLeft_ = id => op => parseValue => {
@@ -86,7 +81,7 @@ let parseTerminal = program => {
 		({ i, isNumber, }) => ({
 			i: i + 1,
 			isNumber: isNumber && '0' <= program[i] && program[i] <= '9',
-		})
+		}),
 	).isNumber;
 
 	return isNumber ? ({ id: 'number', value: program, }) : ({ id: 'var', value: program, });
@@ -105,7 +100,7 @@ let parseValue = program_ => {
 				kvs: splitl(program, ',').map(kv => function() {
 					let [key, value,] = kv.splitl(':');
 					return ({ key, value: parse(value) });
-				}),
+				}()),
 			})
 		: program.startsWith('(') && program.endsWith(')')
 			? parse(program.substring(1, program.length - 1))
@@ -122,22 +117,33 @@ let parseDot = parseAssocLeft_('dot')('.')(parseValue);
 
 let parseInvokeIndex = program_ => {
 	let program = program_.trim();
-	return !program_.startsWith('(') && program_.endsWith(')')
+	return !program.startsWith('(') && program.endsWith(')')
 			? function() {
-				let [expr, parameter,] = splitr(program.substring(1), '(');
+				let [expr, paramStr_,] = splitr(program, '(');
+				let paramStr = paramStr_.substring(0, paramStr_.length - 1);
 				return ({
 					id: 'invoke',
 					expr: parse(expr),
-					parameter: parse(parameter),
+					parameters: repeat(
+						({ input: paramStr, parameters: [], }),
+						({ input, }) => input !== '',
+						({ input, parameters, }) => {
+							let [left, right,] = splitl(input, ',');
+							return ({
+								input: right,
+								parameters: [parse(left), parameters],
+							});
+						},
+					).parameters,
 				});
 			}()
-		: program_.endsWith(']')
+		: !program.startsWith('[') && program.endsWith(']')
 			? function() {
-				let [expr, index,] = splitr(program.substring(1), '[');
+				let [expr, index,] = splitr(program, '[');
 				return ({
 					id: 'index',
 					expr: parse(expr),
-					index: parse(index),
+					index: parse(index.substring(0, index.length - 1)),
 				});
 			}()
 		: parseDot(program);
@@ -214,4 +220,4 @@ let parse = program_ => {
 		: parseLambda(program);
 };
 
-console.log(parse(require('fs').readFileSync(0, 'utf8')));
+console.log(JSON.stringify(parse(require('fs').readFileSync(0, 'utf8')), null, '  '));
