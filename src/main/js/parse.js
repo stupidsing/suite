@@ -120,10 +120,10 @@ let parseValue = program_ => {
 		: program.startsWith('({') && program.endsWith('})')
 			? ({
 				id: 'map',
-				kvs: splitl(program, ',').map(kv => function() {
-					let [key, value,] = kv.splitl(':');
+				kvs: keepsplitl(program.substring(2, program.length - 2), ',', kv => {
+					let [key, value,] = splitl(kv, ':');
 					return ({ key, value: parse(value) });
-				}()),
+				}),
 			})
 		: program.startsWith('(') && program.endsWith(')')
 			? parse(program.substring(1, program.length - 1))
@@ -222,12 +222,28 @@ let parseBind = program_ => {
 	});
 };
 
+let parseLambdaParameters = program_ => {
+	let program = program_.trim();
+	return false ? ({})
+		: program.startsWith("([") && program.endsWith("])")
+			? parseBind(program)
+		: program.startsWith("({") && program.endsWith("})")
+			? parseBind(program)
+		: program.startsWith("(") && program.endsWith(")")
+			? ({
+				id: 'list',
+				values: keepsplitl(program.substring(1, program.length - 1), ',', parseBind),
+			})
+		: parseBind(program);
+};
+
 let parseLambda = program => {
-	let [left, right,] = splitl(program, '=>');
+	let [left, right_,] = splitl(program, '=>');
+	let right = right_.trim();
 	return right === '' ? parseIfThenElse(left) : ({
 		id: 'lambda',
-		bind: parseBind(left),
-		expr: parse(right),
+		bind: parseLambdaParameters(left),
+		expr: right.startsWith('{') && right.endsWith('}') ? parse(right.substring(1, right.length - 1)) : parse(right),
 	});
 };
 
