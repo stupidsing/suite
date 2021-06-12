@@ -181,11 +181,10 @@ let parseApplyIndex = program_ => {
 			? function() {
 				let [expr, paramStr_] = splitr(program, '(');
 				let paramStr = paramStr_.substring(0, paramStr_.length - 1).trim();
-				let parameters = keepsplitl(appendTrailing(paramStr), ',', parse);
 				return {
 					id: 'apply',
 					expr: parse(expr),
-					parameters,
+					parameter: parse(paramStr),
 				};
 			}()
 		: !program.startsWith('[') && program.endsWith(']')
@@ -240,8 +239,19 @@ let parseIf = program => {
 	}();
 };
 
+let parseBindSingle = program => isIdentifier(program)
+	? { id: 'var', value: program }
+	: parseConstant(program);
+
+let parseBindPair = program => {
+	let [left, right] = splitl(program, ',');
+	let lhs = parseBindSingle(left.trim());
+	return right === '' ? lhs : { id: 'pair', lhs, rhs: parseBindPair(right) };
+};
+
 let parseBind = program_ => {
 	let program = program_.trim();
+
 	return false ? {}
 		: program.startsWith('(') && program.endsWith(')')
 			? parseBind(program.substring(1, program.length - 1))
@@ -249,19 +259,7 @@ let parseBind = program_ => {
 			? parseList(program, parseBind)
 		: program.startsWith('{') && program.endsWith('}')
 			? parseStruct(program, parseBind)
-		: isIdentifier(program)
-			? { id: 'var', value: program }
-		: parseConstant(program);
-};
-
-let parseLambdaParameters = program_ => {
-	let program = program_.trim();
-	return false ? {}
-		: program.startsWith('({') && program.endsWith('})')
-			? parseBind(program)
-		: program.startsWith('(') && program.endsWith(')')
-			? parseList(program.substring(1, program.length - 1).trim(), parseBind)
-		: parseBind(program);
+		: parseBindPair(program);
 };
 
 let parseLambda = program => {
@@ -269,10 +267,12 @@ let parseLambda = program => {
 	let right = right_.trim();
 	return right === '' ? parseIf(left) : {
 		id: 'lambda',
-		bind: parseLambdaParameters(left),
-		expr: parse(right ),
+		bind: parseBind(left),
+		expr: parse(right),
 	};
 };
+
+let parsePair = parseAssocRight('pair', ',', parseLambda);
 
 let parse = program_ => {
 	let program = program_.trim();
@@ -292,7 +292,7 @@ let parse = program_ => {
 			? parse(program.substring(7, program.length - 1))
 		: program.startsWith('throw ') && program.endsWith(';')
 			? { id: 'error' }
-		: parseLambda(program);
+		: parsePair(program);
 };
 
 let stringify = json => JSON.stringify(json,  null, '  ');
@@ -308,38 +308,27 @@ let expect = stringify({
 		field: 'log',
 		expr: { id: 'var', value: 'console' }
 	},
-	parameters: [
-		{
+	parameter: {
+		id: 'apply',
+		expr: { id: 'var', value: 'parse' },
+		parameter: {
 			id: 'apply',
-			expr: { id: 'var', value: 'parse' },
-			parameters: [
-				{
+			expr: {
+				id: 'dot',
+				field: 'readFileSync',
+				expr: {
 					id: 'apply',
-					expr: {
-						id: 'dot',
-						field: 'readFileSync',
-						expr: {
-							id: 'apply',
-							expr: { id: 'var', value: 'require' },
-							parameters: [
-								{ id: 'string', value: 'fs' },
-								[]
-							]
-						}
-					},
-					parameters: [
-						{ id: 'string', value: 'utf8' },
-						[
-							{ id: 'number', value: '0' },
-							[]
-						]
-					]
-				},
-				[]
-			]
-		},
-		[]
-	]
+					expr: { id: 'var', value: 'require' },
+					parameter: { id: 'string', value: 'fs' }
+				}
+			},
+			parameter: {
+				id: 'pair',
+				lhs: { id: 'number', value: '0' },
+				rhs: { id: 'string', value: 'utf8' }
+			}
+		}
+	}
 });
 
 actual === expect
