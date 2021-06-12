@@ -18,7 +18,10 @@ let isIdentifier = isAll(ch => false
 	|| ch === '_'
 	|| 'a' <= ch && ch <= 'z');
 
-let isNumber = isAll(ch => '0' <= ch && ch <= '9');
+let isNumber_ = isAll(ch => '0' <= ch && ch <= '9');
+let isNumber = program => program !== '' && isNumber_(program);
+
+let appendTrailing = s => s + (s === '' || s.endsWith(',') ? '' : ',');
 
 let splitl = (s, sep) => {
 	return repeat(
@@ -110,9 +113,9 @@ let parseConstant = program => {
 		: program.startsWith('"') && program.endsWith('"')
 			? { id: 'string', value: program.substring(1, program.length - 1), }
 		: program === 'false'
-			? { id: 'false', }
+			? { id: 'false', value: 'false,' }
 		: program === 'true'
-			? { id: 'true', }
+			? { id: 'true', value: 'true', }
 		: isIdentifier(program)
 			? ({ id: 'var', value: program, })
 		: error(program);
@@ -122,7 +125,7 @@ let parseList = (program, parse) => {
 	let listStr = program.substring(1, program.length - 1).trim();
 	return ({
 		id: 'list',
-		values: keepsplitl(listStr + (listStr.endsWith(',') ? '' : ','), ',', parse),
+		values: keepsplitl(appendTrailing(listStr), ',', parse),
 	});
 };
 
@@ -130,9 +133,13 @@ let parseMap = (program, parse) => {
 	let mapStr = program.substring(1, program.length - 1).trim();
 	return ({
 		id: 'map',
-		kvs: keepsplitl(mapStr + (mapStr.endsWith(',') ? '' : ','), ',', kv => {
-			let [key, value,] = splitl(kv, ':');
-			return ({ key: key.trim(), value: parse(value), });
+		kvs: keepsplitl(appendTrailing(mapStr), ',', kv => {
+			let [key_, value,] = splitl(kv, ':');
+			let key = parseConstant(key_.trim()).value;
+			return ({
+				key,
+				value: value !== '' ? parse(value) : ({ id: 'var', value: key, }),
+			});
 		}),
 	});
 };
@@ -167,7 +174,7 @@ let parseInvokeIndex = program_ => {
 			? function() {
 				let [expr, paramStr_,] = splitr(program, '(');
 				let paramStr = paramStr_.substring(0, paramStr_.length - 1).trim();
-				let parameters = keepsplitl(paramStr + (paramStr.endsWith(',') ? '' : ','), ',', parse);
+				let parameters = keepsplitl(appendTrailing(paramStr), ',', parse);
 				return ({
 					id: 'invoke',
 					expr: parse(expr),
@@ -236,10 +243,7 @@ let parseBind = program_ => {
 		: program.startsWith('{') && program.endsWith('}')
 			? parseMap(program, parseBind)
 		: isIdentifier(program)
-			? ({
-				id: 'var',
-				v: program,
-			})
+			? ({ id: 'var', value: program, })
 		: parseConstant(program);
 };
 
@@ -255,7 +259,7 @@ let parseLambdaParameters = program_ => {
 				let paramStr = program.substring(1, program.length - 1).trim();
 				return ({
 					id: 'list',
-					values: keepsplitl(paramStr + (paramStr.endsWith(',') ? '' : ','), ',', paramBind),
+					values: keepsplitl(appendTrailing(paramStr), ',', paramBind),
 				});
 			}()
 		: parseBind(program);
