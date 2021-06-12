@@ -18,9 +18,6 @@ let isIdentifier = isAll(ch => false
 	|| ch === '_'
 	|| 'a' <= ch && ch <= 'z');
 
-let isNumber_ = isAll(ch => '0' <= ch && ch <= '9');
-let isNumber = program => program !== '' && isNumber_(program);
-
 let appendTrailing = s => s + (s === '' || s.endsWith(',') ? '' : ',');
 
 let splitl = (s, sep) => {
