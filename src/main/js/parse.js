@@ -257,8 +257,6 @@ let parseBind = program_ => {
 let parseLambdaParameters = program_ => {
 	let program = program_.trim();
 	return false ? {}
-		: program.startsWith("([") && program.endsWith("])")
-			? parseBind(program)
 		: program.startsWith("({") && program.endsWith("})")
 			? parseBind(program)
 		: program.startsWith("(") && program.endsWith(")")
