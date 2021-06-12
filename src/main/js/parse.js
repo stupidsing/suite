@@ -69,7 +69,7 @@ let keepsplitl = (s, sep, apply) => repeat(
 	},
 ).values;
 
-let parseAssocLeft_ = id => op => parseValue => {
+let parseAssocLeft_ = (id, op, parseValue,) => {
 	let parse = program => {
 		let [left, right,] = splitr(program, op);
 		let rhs = parseValue(right);
@@ -78,7 +78,7 @@ let parseAssocLeft_ = id => op => parseValue => {
 	return parse;
 };
 
-let parseAssocRight = id => op => parseValue => {
+let parseAssocRight = (id, op, parseValue,) => {
 	let parse = program => {
 		let [left, right,] = splitl(program, op);
 		let lhs = parseValue(left);
@@ -87,7 +87,7 @@ let parseAssocRight = id => op => parseValue => {
 	return parse;
 };
 
-let parsePrefix = id => op => parseValue => {
+let parsePrefix = (id, op, parseValue,) => {
 	let parse = program_ => {
 		let program = program_.trim();
 		return !program.startsWith(op)
@@ -180,9 +180,9 @@ let parseInvokeIndex = program_ => {
 		: parseValue(program);
 };
 
-let parseDiv = parseAssocLeft_('div')('/')(parseInvokeIndex);
-let parseMul = parseAssocRight('mul')('*')(parseDiv);
-let parseSub = parseAssocLeft_('sub')('-')(parseMul);
+let parseDiv = parseAssocLeft_('div', '/', parseInvokeIndex);
+let parseMul = parseAssocRight('mul', '*', parseDiv);
+let parseSub = parseAssocLeft_('sub', '-', parseMul);
 
 let parseNeg = program_ => {
 	let program = program_.trim();
@@ -197,13 +197,13 @@ let parseAdd = program => {
 	return right === '' ? lhs : left === '' ? ({ id: 'pos', expr: parseAdd(right), }) : ({ id: 'add', lhs, rhs: parseAdd(right), });
 };
 
-let parseLt_ = parseAssocRight('lt_')('<')(parseAdd);
-let parseLe_ = parseAssocRight('le_')('<=')(parseLt_);
-let parseNot = parsePrefix('not')('!')(parseLe_);
-let parseNe_ = parseAssocRight('ne_')('!==')(parseNot);
-let parseEq_ = parseAssocRight('eq_')('===')(parseNe_);
-let parseAnd = parseAssocRight('and')('&&')(parseEq_);
-let parseOr_ = parseAssocRight('or_')('||')(parseAnd);
+let parseLt_ = parseAssocRight('lt_', '<', parseAdd);
+let parseLe_ = parseAssocRight('le_', '<=', parseLt_);
+let parseNot = parsePrefix('not', '!', parseLe_);
+let parseNe_ = parseAssocRight('ne_', '!==', parseNot);
+let parseEq_ = parseAssocRight('eq_', '===', parseNe_);
+let parseAnd = parseAssocRight('and', '&&', parseEq_);
+let parseOr_ = parseAssocRight('or_', '||', parseAnd);
 
 let parseIfThenElse = program => {
 	let [if_, thenElse] = splitl(program, '?');
