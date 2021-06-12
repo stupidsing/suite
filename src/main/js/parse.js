@@ -1,6 +1,6 @@
 let error = program => { throw new Error(`cannot parse ${program}`); };
 
-let repeat = (init, when, iterate) => {
+let repeat = (init, when, iterate,) => {
 	let value = init;
 	while (when(value)) value = iterate(value);
 	return value;
@@ -20,7 +20,7 @@ let isIdentifier = isAll(ch => false
 
 let isNumber = isAll(ch => '0' <= ch && ch <= '9');
 
-let splitl = (s, sep) => {
+let splitl = (s, sep,) => {
 	return repeat(
 		({ i: 0, quote: false, bracket: 0, isMatched: false, result: [s, ''], }),
 		({ i, isMatched, }) => !isMatched && i + sep.length <= s.length,
@@ -62,7 +62,7 @@ let splitr = (s, sep) => {
 	).result;
 };
 
-let keepsplitl = (s, sep, apply) => repeat(
+let keepsplitl = (s, sep, apply,) => repeat(
 	({ input: s, values: [], }),
 	({ input, }) => input !== '',
 	({ input, values, }) => {
@@ -118,14 +118,14 @@ let parseConstant = program => {
 		: error(program);
 };
 
-let parseList = (program, parse) => {
+let parseList = (program, parse,) => {
 	return ({
 		id: 'list',
 		values: keepsplitl(program.substring(1, program.length - 1), ',', parse),
 	});
 };
 
-let parseMap = (program, parse) => {
+let parseMap = (program, parse,) => {
 	return ({
 		id: 'map',
 		kvs: keepsplitl(program.substring(1, program.length - 1), ',', kv => {
