@@ -74,7 +74,7 @@ let parsePrefix = id => op => parseValue => {
 	return parse;
 };
 
-let parseTerminal = program => {
+let parseConstant = program => {
 	let isNumber = repeat(
 		({ i: 0, isNumber: true, }),
 		({ i, isNumber, }) => i < program.length && isNumber,
@@ -84,16 +84,19 @@ let parseTerminal = program => {
 		}),
 	).isNumber;
 
-	return isNumber ? ({ id: 'number', value: program, }) : ({ id: 'var', value: program, });
+	return false ? ({})
+		: isNumber
+			? ({ id: 'number', value: program, })
+		: program.startsWith("'") && program.endsWith("'")
+			? { id: 'string', value: program.substring(1, program.length - 1), }
+		: program.startsWith('"') && program.endsWith('"')
+			? { id: 'string', value: program.substring(1, program.length - 1), }
+		: ({ id: 'var', value: program, });
 };
 
 let parseValue = program_ => {
 	let program = program_.trim();
 	return false ? ({})
-		: program.startsWith("'") && program.endsWith("'")
-			? { id: 'string', value: program.substring(1, program.length - 1), }
-		: program.startsWith('"') && program.endsWith('"')
-			? { id: 'string', value: program.substring(1, program.length - 1), }
 		: program.startsWith('({') && program.endsWith('})')
 			? ({
 				id: 'map',
@@ -104,20 +107,55 @@ let parseValue = program_ => {
 			})
 		: program.startsWith('(') && program.endsWith(')')
 			? parse(program.substring(1, program.length - 1))
+		: program.startsWith('[') && program.endsWith(']')
+			? function() {
+				let listStr = program.substring(1, program.length - 1);
+				return ({
+					id: 'list',
+					values: repeat(
+						({ input: listStr, values: [], }),
+						({ input, }) => input !== '',
+						({ input, values, }) => {
+							let [left, right,] = splitl(input, ',');
+							return ({
+								input: right,
+								values: [parse(left), values],
+							});
+						},
+					).values,
+				});
+			}()
 		: program.startsWith('{') && program.endsWith('}')
 			? parse(program.substring(1, program.length - 1))
 		: program.startsWith('function() {') && program.endsWith('; }()')
 			? parse(program.substring(12, program.length - 3))
 		: program.startsWith('return ') && program.endsWith(';')
 			? parse(program.substring(7, program.length - 1))
-		: parseTerminal(program_);
+		: parseConstant(program);
 };
-
-let parseDot = parseAssocLeft_('dot')('.')(parseValue);
 
 let parseInvokeIndex = program_ => {
 	let program = program_.trim();
-	return !program.startsWith('(') && program.endsWith(')')
+	let [expr, field,] = splitr(program, '.');
+
+	let isField = repeat(
+		({ i: 0, isField: true, }),
+		({ i, isField, }) => i < field.length && isField,
+		({ i, isField, }) => ({
+			i: i + 1,
+			isField: isField && (
+				'0' <= field[i] && field[i] <= '9'
+				|| 'A' <= field[i] && field[i] <= 'Z'
+				|| field[i] === '_'
+				|| 'a' <= field[i] && field[i] <= 'z'
+			),
+		}),
+	).isField;
+
+	return false ? ({})
+		: expr !== '' && isField
+			? ({ id: 'dot', field, expr: parseInvokeIndex(expr), })
+		: !program.startsWith('(') && program.endsWith(')')
 			? function() {
 				let [expr, paramStr_,] = splitr(program, '(');
 				let paramStr = paramStr_.substring(0, paramStr_.length - 1);
@@ -137,24 +175,6 @@ let parseInvokeIndex = program_ => {
 					).parameters,
 				});
 			}()
-		: program.startsWith('[') && program.endsWith(']')
-			? function() {
-				let listStr = program.substring(1, program.length - 1);
-				return ({
-					id: 'list',
-					values: repeat(
-						({ input: listStr, values: [], }),
-						({ input, }) => input !== '',
-						({ input, values, }) => {
-							let [left, right,] = splitl(input, ',');
-							return ({
-								input: right,
-								values: [parse(left), values],
-							});
-						},
-					).values,
-				});
-			}()
 		: !program.startsWith('[') && program.endsWith(']')
 			? function() {
 				let [expr, index,] = splitr(program, '[');
@@ -164,7 +184,7 @@ let parseInvokeIndex = program_ => {
 					index: parse(index.substring(0, index.length - 1)),
 				});
 			}()
-		: parseDot(program);
+		: parseValue(program);
 };
 
 let parseDiv = parseAssocLeft_('div')('/')(parseInvokeIndex);
@@ -175,7 +195,7 @@ let parseNeg = program_ => {
 	let program = program_.trim();
 	return program.startsWith('-')
 		? ({ id: 'neg', expr: parseSub(program.substring(1)), })
-		: parseSub(program_);
+		: parseSub(program);
 };
 
 let parseAdd = program => {
@@ -207,7 +227,8 @@ let parseIfThenElse = program => {
 
 let parseBind = program_ => {
 	let program = program_.trim();
-	return ({
+	return false ? ({})
+		: ({
 		id: 'var',
 		v: program,
 	});
