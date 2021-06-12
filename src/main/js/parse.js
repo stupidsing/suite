@@ -135,11 +135,10 @@ let parseList = (program, parse) => {
 	});
 };
 
-let parseMap = (program, parse) => {
-	let mapStr = program.substring(1, program.length - 1).trim();
+let parseMapInner = (program, parse) => {
 	return ({
 		id: 'map',
-		kvs: keepsplitl(appendTrailing(mapStr), ',', kv => {
+		kvs: keepsplitl(appendTrailing(program), ',', kv => {
 			let [key_, value] = splitl(kv, ':');
 			let key = parseConstant(key_.trim()).value;
 			return ({
@@ -150,17 +149,22 @@ let parseMap = (program, parse) => {
 	});
 };
 
+let parseMap = (program, parse) => {
+	return parseMapInner(program.substring(1, program.length - 1).trim(), parse);
+};
+
 let parseValue = program_ => {
 	let program = program_.trim();
 	return false ? ({})
-		: program.startsWith('({') && program.endsWith('})')
-			? parseMap(program.substring(1, program.length - 1), parse)
 		: program.startsWith('(') && program.endsWith(')')
 			? parse(program.substring(1, program.length - 1))
 		: program.startsWith('[') && program.endsWith(']')
 			? parseList(program, parse)
 		: program.startsWith('{') && program.endsWith('}')
-			? parseMap(program, parse)
+			? function() {
+				let block = program.substring(1, program.length - 1).trim();
+				return block.endsWith(';') ? parse(block) : parseMapInner(block, parse);
+			}()
 		: parseConstant(program);
 };
 
