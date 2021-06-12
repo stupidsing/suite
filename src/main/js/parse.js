@@ -35,14 +35,14 @@ let splitl = (s, sep) => {
 				: quote === ch ? ''
 				: quote;
 
-			let bracket1 = false ? ({})
+			let bracket1 = false ? {}
 				: quote === '' && (ch === '(' || ch === '[' || ch === '{') ? bracket + 1
 				: quote === '' && (ch === ')' || ch === ']' || ch === '}') ? bracket - 1
 				: bracket;
 
 			return quote || bracket !== 0 || s.substring(i, j) !== sep
-				? ({ i: i + 1, quote: quote1, bracket: bracket1, isMatched, result })
-				: ({ i: i + 1, quote: quote1, bracket: bracket1, isMatched: true, result: [s.substring(0, i), s.substring(j)]});
+				? { i: i + 1, quote: quote1, bracket: bracket1, isMatched, result }
+				: { i: i + 1, quote: quote1, bracket: bracket1, isMatched: true, result: [s.substring(0, i), s.substring(j)] };
 		},
 	).result;
 };
@@ -59,14 +59,14 @@ let splitr = (s, sep) => {
 				: quote === ch ? ''
 				: quote;
 
-			let bracket1 = false ? ({})
+			let bracket1 = false ? {}
 				: quote === '' && (ch === '(' || ch === '[' || ch === '{') ? bracket + 1
 				: quote === '' && (ch === ')' || ch === ']' || ch === '}') ? bracket - 1
 				: bracket;
 
 			return quote1 || bracket1 !== 0 || s.substring(i, j) !== sep
-				? ({ j: j - 1, quote: quote1, bracket: bracket1, isMatched, result })
-				: ({ j: j - 1, quote: quote1, bracket: bracket1, isMatched: true, result: [s.substring(0, i), s.substring(j)]});
+				? { j: j - 1, quote: quote1, bracket: bracket1, isMatched, result }
+				: { j: j - 1, quote: quote1, bracket: bracket1, isMatched: true, result: [s.substring(0, i), s.substring(j)] };
 		},
 	).result;
 };
@@ -76,7 +76,7 @@ let keepsplitl = (s, sep, apply) => repeat(
 	({ input }) => input !== '',
 	({ input, values }) => {
 		let [left, right] = splitl(input, sep);
-		return ({ input: right, values: [apply(left), values] });
+		return { input: right, values: [apply(left), values] };
 	},
 ).values;
 
@@ -109,9 +109,9 @@ let parsePrefix = (id, op, parseValue) => {
 };
 
 let parseConstant = program => {
-	return false ? ({})
+	return false ? {}
 		: isNumber(program)
-			? ({ id: 'number', value: program })
+			? { id: 'number', value: program }
 		: program.startsWith("'") && program.endsWith("'")
 			? { id: 'string', value: program.substring(1, program.length - 1) }
 		: program.startsWith('"') && program.endsWith('"')
@@ -123,30 +123,30 @@ let parseConstant = program => {
 		: program === 'true'
 			? { id: 'true', value: 'true' }
 		: isIdentifier(program)
-			? ({ id: 'var', value: program })
+			? { id: 'var', value: program }
 		: error(program);
 };
 
 let parseList = (program, parse) => {
 	let listStr = program.substring(1, program.length - 1).trim();
-	return ({
+	return {
 		id: 'list',
 		values: keepsplitl(appendTrailing(listStr), ',', parse),
-	});
+	};
 };
 
 let parseMapInner = (program, parse) => {
-	return ({
+	return {
 		id: 'map',
 		kvs: keepsplitl(appendTrailing(program), ',', kv => {
 			let [key_, value] = splitl(kv, ':');
 			let key = parseConstant(key_.trim()).value;
-			return ({
+			return {
 				key,
 				value: value !== '' ? parse(value) : ({ id: 'var', value: key }),
-			});
+			};
 		}),
-	});
+	};
 };
 
 let parseMap = (program, parse) => {
@@ -155,7 +155,7 @@ let parseMap = (program, parse) => {
 
 let parseValue = program_ => {
 	let program = program_.trim();
-	return false ? ({})
+	return false ? {}
 		: program.startsWith('(') && program.endsWith(')')
 			? parse(program.substring(1, program.length - 1))
 		: program.startsWith('[') && program.endsWith(']')
@@ -172,9 +172,9 @@ let parseInvokeIndex = program_ => {
 	let program = program_.trim();
 	let [expr, field] = splitr(program, '.');
 
-	return false ? ({})
+	return false ? {}
 		: expr !== '' && isIdentifier(field)
-			? ({ id: 'dot', field, expr: parseInvokeIndex(expr) })
+			? { id: 'dot', field, expr: parseInvokeIndex(expr) }
 		: program.startsWith('function() {') && program.endsWith('}()')
 			? parse(program.substring(12, program.length - 3).trim())
 		: !program.startsWith('(') && program.endsWith(')')
@@ -182,20 +182,20 @@ let parseInvokeIndex = program_ => {
 				let [expr, paramStr_] = splitr(program, '(');
 				let paramStr = paramStr_.substring(0, paramStr_.length - 1).trim();
 				let parameters = keepsplitl(appendTrailing(paramStr), ',', parse);
-				return ({
+				return {
 					id: 'invoke',
 					expr: parse(expr),
 					parameters,
-				});
+				};
 			}()
 		: !program.startsWith('[') && program.endsWith(']')
 			? function() {
 				let [expr, index] = splitr(program, '[');
-				return ({
+				return {
 					id: 'index',
 					expr: parse(expr),
 					index: parse(index.substring(0, index.length - 1)),
-				});
+				};
 			}()
 		: parseValue(program);
 };
@@ -207,7 +207,7 @@ let parseSub = parseAssocLeft_('sub', '-', parseMul);
 let parseNeg = program_ => {
 	let program = program_.trim();
 	return program.startsWith('-')
-		? ({ id: 'neg', expr: parseSub(program.substring(1)) })
+		? { id: 'neg', expr: parseSub(program.substring(1)) }
 		: parseSub(program);
 };
 
@@ -215,8 +215,8 @@ let parseAdd = program => {
 	let [left, right] = splitl(program, '+');
 	let lhs = parseNeg(left);
 	return right === '' ? lhs : left === ''
-		? ({ id: 'pos', expr: parseAdd(right) })
-		: ({ id: 'add', lhs, rhs: parseAdd(right) });
+		? { id: 'pos', expr: parseAdd(right) }
+		: { id: 'add', lhs, rhs: parseAdd(right) };
 };
 
 let parseLt_ = parseAssocRight('lt_', '<', parseAdd);
@@ -231,18 +231,18 @@ let parseIfThenElse = program => {
 	let [if_, thenElse] = splitl(program, '?');
 	return thenElse === '' ? parseOr_(if_) : function() {
 		let [then, else_] = splitl(thenElse, ':');
-		return ({
+		return {
 			id: 'ifThenElse',
 			if_: parse(if_),
 			then: parse(then),
 			else_: parse(else_),
-		});
+		};
 	}();
 };
 
 let parseBind = program_ => {
 	let program = program_.trim();
-	return false ? ({})
+	return false ? {}
 		: program.startsWith('(') && program.endsWith(')')
 			? parseBind(program.substring(1, program.length - 1))
 		: program.startsWith('[') && program.endsWith(']')
@@ -250,13 +250,13 @@ let parseBind = program_ => {
 		: program.startsWith('{') && program.endsWith('}')
 			? parseMap(program, parseBind)
 		: isIdentifier(program)
-			? ({ id: 'var', value: program })
+			? { id: 'var', value: program }
 		: parseConstant(program);
 };
 
 let parseLambdaParameters = program_ => {
 	let program = program_.trim();
-	return false ? ({})
+	return false ? {}
 		: program.startsWith("([") && program.endsWith("])")
 			? parseBind(program)
 		: program.startsWith("({") && program.endsWith("})")
@@ -264,10 +264,10 @@ let parseLambdaParameters = program_ => {
 		: program.startsWith("(") && program.endsWith(")")
 			? function() {
 				let paramStr = program.substring(1, program.length - 1).trim();
-				return ({
+				return {
 					id: 'list',
 					values: keepsplitl(appendTrailing(paramStr), ',', parseBind),
-				});
+				};
 			}()
 		: parseBind(program);
 };
@@ -284,22 +284,22 @@ let parseLambda = program => {
 
 let parse = program_ => {
 	let program = program_.trim();
-	return false ? ({})
+	return false ? {}
 		: program.startsWith('let ')
 			? function() {
 				let [varValue_, expr] = splitl(program.substring(4), ';');
 				let [var_, value] = splitl(varValue_, '=');
-				return ({
+				return {
 					id: 'let',
 					bind: parseBind(var_),
 					value: parse(value),
 					expr: parse(expr),
-				});
+				};
 			}()
 		: program.startsWith('return ') && program.endsWith(';')
 			? parse(program.substring(7, program.length - 1))
 		: program.startsWith('throw ') && program.endsWith(';')
-			? ({ id: 'error' })
+			? { id: 'error' }
 		: parseLambda(program);
 };
 
