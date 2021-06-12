@@ -114,17 +114,21 @@ let parseConstant = program => {
 		: ({ id: 'var', value: program, });
 };
 
+let parseMap = program => {
+	return ({
+		id: 'map',
+		kvs: keepsplitl(program.substring(1, program.length - 1), ',', kv => {
+			let [key, value,] = splitl(kv, ':');
+			return ({ key, value: parse(value) });
+		}),
+	});
+};
+
 let parseValue = program_ => {
 	let program = program_.trim();
 	return false ? ({})
 		: program.startsWith('({') && program.endsWith('})')
-			? ({
-				id: 'map',
-				kvs: keepsplitl(program.substring(2, program.length - 2), ',', kv => {
-					let [key, value,] = splitl(kv, ':');
-					return ({ key, value: parse(value) });
-				}),
-			})
+			? parseMap(program.substring(1, program.length - 1))
 		: program.startsWith('(') && program.endsWith(')')
 			? parse(program.substring(1, program.length - 1))
 		: program.startsWith('[') && program.endsWith(']')
@@ -136,7 +140,8 @@ let parseValue = program_ => {
 				});
 			}()
 		: program.startsWith('{') && program.endsWith('}')
-			? parse(program.substring(1, program.length - 1))
+			? parseMap(program)
+			// ? parse(program.substring(1, program.length - 1))
 		: program.startsWith('function() {') && program.endsWith('; }()')
 			? parse(program.substring(12, program.length - 3))
 		: program.startsWith('return ') && program.endsWith(';')
