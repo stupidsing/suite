@@ -4,7 +4,7 @@ let repeat = (init, when, iterate) => {
 	return value;
 };
 
-let error = program => { throw new Error(`cannot parse ${program}`); };
+let error = message => { throw new Error(message); };
 
 let isAll = pred => list => repeat(
 	{ i: 0, b: true },
@@ -118,7 +118,7 @@ let parseConstant = program => {
 			? { id: 'boolean', value: 'true' }
 		: isIdentifier(program)
 			? { id: 'var', value: program }
-		: error(program);
+		: error(`cannot parse ${program}`);
 };
 
 let parseList = (program, parse) => ({
@@ -343,9 +343,7 @@ let expect = stringify({
 
 actual === expect
 ? console.log(stringify(parse(require('fs').readFileSync(0, 'utf8'))))
-: function() {
-	throw new Error(`
-	test case failed,
-	actual = ${actual}
-	expect = ${expect}`);
-}()
+: error(`
+test case failed,
+actual = ${actual}
+expect = ${expect}`)
