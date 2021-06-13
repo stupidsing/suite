@@ -190,24 +190,7 @@ let parseApplyBlockFieldIndex = program_ => {
 let parseDiv = parseAssocLeft_('div', '/', parseApplyBlockFieldIndex);
 let parseMul = parseAssocRight('mul', '*', parseDiv);
 let parseSub = parseAssocLeft_('sub', '-', parseMul);
-
-let parseNeg = program_ => {
-	let program = program_.trim();
-
-	return program.startsWith('-')
-		? { id: 'neg', expr: parseSub(program.substring(1)) }
-		: parseSub(program);
-};
-
-let parseAdd = program => {
-	let [left, right] = splitl(program, '+');
-	let lhs = parseNeg(left);
-
-	return right === '' ? lhs : left === ''
-		? { id: 'pos', expr: parseAdd(right) }
-		: { id: 'add', lhs, rhs: parseAdd(right) };
-};
-
+let parseAdd = parseAssocRight('add', '+', parseSub);
 let parseLt_ = parseAssocRight('lt_', '<', parseAdd);
 let parseLe_ = parseAssocRight('le_', '<=', parseLt_);
 let parseNot = parsePrefix('not', '!', parseLe_);
