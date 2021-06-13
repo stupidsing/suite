@@ -50,19 +50,21 @@ let splitl = (s, sep) => {
 	return f(0, '', 0);
 };
 
-let splitr = (s, sep) => repeat(
-	{ j: s.length, quote: '', bracket: 0, isMatched: false, result: ['', s] },
-	({ j, isMatched }) => !isMatched && sep.length <= j,
-	({ j, quote, bracket, isMatched, result }) => {
+let splitr = (s, sep) => {
+	let f;
+	f = (j, quote, bracket) => {
 		let i = j - sep.length;
-		let ch = s.charCodeAt(j - 1);
-		let { quote: quote1, bracket: bracket1 } = quoteBracket(quote, bracket, ch);
+		return sep.length <= j ? function() {
+			let ch = s.charCodeAt(j - 1);
+			let { quote: quote1, bracket: bracket1 } = quoteBracket(quote, bracket, ch);
 
-		return quote1 || bracket1 !== 0 || s.substring(i, j) !== sep
-			? { j: j - 1, quote: quote1, bracket: bracket1, isMatched, result }
-			: { j: j - 1, quote: quote1, bracket: bracket1, isMatched: true, result: [s.substring(0, i), s.substring(j)] };
-	},
-).result;
+			return quote1 || bracket1 !== 0 || s.substring(i, j) !== sep
+				? f(j - 1, quote1, bracket1)
+				: [s.substring(0, i), s.substring(j)];
+		}() : ['', s];
+	};
+	return f(s.length, '', 0);
+};
 
 let keepsplitl = (s, sep, apply) => {
 	let f;
