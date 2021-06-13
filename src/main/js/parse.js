@@ -2,7 +2,11 @@ let error = message => { throw new Error(message); };
 
 let ascii = s => s.charCodeAt(0);
 
-let contains = (es, e) => 0 < es.length && (es[0] === e || contains(es[1], e));
+let contains = (list, e) => {
+	let f;
+	f = es => 0 < es.length && (es[0] === e || contains(es[1], e));
+	return f(list);
+};
 
 let repeat = (init, when, iterate) => {
 	let f;
@@ -10,8 +14,10 @@ let repeat = (init, when, iterate) => {
 	return f(init);
 };
 
-let fold = (init, list, f) => {
-	return 0 < list.length ? fold(f(init, list[0]), list[1], f) : init;
+let fold = (init, list, op) => {
+	let f;
+	f = (init, list) => 0 < list.length ? f(op(init, list[0]), list[1]) : init;
+	return f(init, list);
 };
 
 let isAll = pred => list => {
@@ -20,11 +26,13 @@ let isAll = pred => list => {
 	return f(0);
 };
 
-let isIdentifier = isAll(ch => false
+let isIdentifier_ = isAll(ch => false
 	|| ascii('0') <= ch && ch <= ascii('9')
 	|| ascii('A') <= ch && ch <= ascii('Z')
 	|| ch === ascii('_')
 	|| ascii('a') <= ch && ch <= ascii('z'));
+
+let isIdentifier = s => 0 < s.length && isIdentifier_(s);
 
 let quoteBracket = (quote, bracket, ch) => {
 	return {
@@ -38,7 +46,7 @@ let quoteBracket = (quote, bracket, ch) => {
 	};
 };
 
-let appendTrailing = s => s + (s === '' || s.endsWith(',') ? '' : ',');
+let appendTrailingComma = s => s + (s === '' || s.endsWith(',') ? '' : ',');
 
 let splitl = (s, sep) => {
 	let f;
@@ -114,11 +122,20 @@ let parsePrefix = (id, op, parseValue) => {
 	return parse;
 };
 
+let parseNumber = program => {
+	return program !== '' ? function() {
+		let last = program.charCodeAt(program.length - 1);
+		return ascii('0') <= last && last <= ascii('9')
+			? parseNumber(program.substring(0, program.length - 1)) * 10 + last - ascii('0')
+			: error(`invalid number ${program}`);
+	}() : 0;
+};
+
 let parseConstant = program => {
-	let last = program[program.length - 1];
+	let first = program.charCodeAt(0);
 	return false ? {}
-		: '0' <= last && last <= '9'
-			? { id: 'number', value: parseConstant(program.substring(0, program.length - 1)).value * 10 + last.charCodeAt(0) - 48 }
+		: ascii('0') <= first && first <= ascii('9')
+			? { id: 'number', value: parseNumber(program) }
 		: program.startsWith("'") && program.endsWith("'")
 			? { id: 'string', value: program.substring(1, program.length - 1) }
 		: program.startsWith('"') && program.endsWith('"')
@@ -136,12 +153,12 @@ let parseConstant = program => {
 
 let parseList = (program, parse) => ({
 	id: 'list',
-	values: keepsplitl(appendTrailing(program.substring(1, program.length - 1).trim()), ',', parse),
+	values: keepsplitl(appendTrailingComma(program.substring(1, program.length - 1).trim()), ',', parse),
 });
 
 let parseStructInner = (program, parse) => ({
 	id: 'struct',
-	kvs: keepsplitl(appendTrailing(program), ',', kv => {
+	kvs: keepsplitl(appendTrailingComma(program), ',', kv => {
 		let [key_, value_] = splitl(kv, ':');
 		let key = parseConstant(key_.trim()).value;
 		let value = value_ !== null ? parse(value_) : { id: 'var', value: key };
@@ -178,6 +195,12 @@ let parseApplyBlockFieldIndex = program_ => {
 			? { id: 'dot', field, expr: parseApplyBlockFieldIndex(expr) }
 		: program.startsWith('function() {') && program.endsWith('}()')
 			? parseProgram(program.substring(12, program.length - 3).trim())
+		: program.endsWith('()')
+			? {
+				id: 'apply',
+				expr: parseProgram(program.substring(0, program.length - 2)),
+				parameter: { id: 'empty' },
+			}
 		: program.endsWith(')')
 			? function() {
 				let [expr, paramStr_] = splitr(program, '(');
@@ -305,32 +328,21 @@ parseProgram = program => {
 		: parsePair(statement);
 };
 
-let rewrite;
-
-rewrite = f => ast0 => {
-	return ast0.id === null ? ast0 : function() {
-		let ast1 = f(ast0.id)(ast0);
-		return ast1 === null
-			? Object.fromEntries(Object.entries(ast0).map(([k, v]) => [k, rewrite(v)]))
-			: ast1;
-	}();
-};
-
 let getBindVariables;
 
 getBindVariables = (vs, ast) =>  {
 	return false ? {}
 		: ast.id === 'list' ? fold(vs, ast.values, mergeBind)
-		: ast.id === 'var' ? [ast.value, vs]
 		: ast.id === 'pair' ? getBindVariables(getBindVariables(vs, ast.lhs), ast.rhs)
 		: ast.id === 'struct' ? fold(vs, ast.kvs, (vs_, kv) => mergeBind(vs_, kv.value))
+		: ast.id === 'var' ? [ast.value, vs]
 		: vs;
 };
 
 let checkVariables;
 
 checkVariables = (vs, ast) => {
-	let f = id => false ? {}
+	let f = id => id === undefined ? (ast => true)
 		: id === 'alloc' ? (({ v, expr }) => {
 			return checkVariables([v, vs], expr);
 		})
@@ -345,10 +357,26 @@ checkVariables = (vs, ast) => {
 			return checkVariables(vs, value) && checkVariables(vs1, expr);
 		})
 		: id === 'var' ? (({ value: v }) => {
-			return contains(vs, v);
+			return contains(vs, v) || error(`undefined variable ${v}`);
 		})
-		: (({}) => true);
+		: (ast => {
+			let kvs = Object.entries(ast);
+			let g;
+			g = i => i < kvs.length ? checkVariables(vs, kvs[i][1]) && g(i + 1) : true;
+			return g(0);
+		});
 	return f(ast.id)(ast);
+};
+
+let rewrite;
+
+rewrite = f => ast0 => {
+	return ast0.id === null ? ast0 : function() {
+		let ast1 = f(ast0.id)(ast0);
+		return ast1 === null
+			? Object.fromEntries(Object.entries(ast0).map(([k, v]) => [k, rewrite(v)]))
+			: ast1;
+	}();
 };
 
 let stringify = json => JSON.stringify(json,  null, '  ');
@@ -388,8 +416,10 @@ let expect = stringify({
 });
 
 actual === expect
-? console.log(stringify(parseProgram(require('fs').readFileSync(0, 'utf8'))))
-: error(`
+? function() {
+	let ast = parseProgram(require('fs').readFileSync(0, 'utf8'));
+	return console.log(stringify(ast));
+}() : error(`
 test case failed,
 actual = ${actual}
 expect = ${expect}`)
