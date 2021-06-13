@@ -34,19 +34,21 @@ let quoteBracket = (quote, bracket, ch) => {
 
 let appendTrailing = s => s + (s === '' || s.endsWith(',') ? '' : ',');
 
-let splitl = (s, sep) => repeat(
-	{ i: 0, quote: '', bracket: 0, isMatched: false, result: [s, ''] },
-	({ i, isMatched }) => !isMatched && i + sep.length <= s.length,
-	({ i, quote, bracket, isMatched, result }) => {
+let splitl = (s, sep) => {
+	let f;
+	f = (i, quote, bracket) => {
 		let j = i + sep.length;
-		let ch = s.charCodeAt(i);
-		let { quote: quote1, bracket: bracket1 } = quoteBracket(quote, bracket, ch);
+		return j <= s.length ? function() {
+			let ch = s.charCodeAt(i);
+			let { quote: quote1, bracket: bracket1 } = quoteBracket(quote, bracket, ch);
 
-		return quote || bracket !== 0 || s.substring(i, j) !== sep
-			? { i: i + 1, quote: quote1, bracket: bracket1, isMatched, result }
-			: { i: i + 1, quote: quote1, bracket: bracket1, isMatched: true, result: [s.substring(0, i), s.substring(j)] };
-	},
-).result;
+			return quote || bracket !== 0 || s.substring(i, j) !== sep
+				? f(i + 1, quote1, bracket1)
+				: [s.substring(0, i), s.substring(j)];
+		}() : [s, null];
+	};
+	return f(0, '', 0);
+};
 
 let splitr = (s, sep) => repeat(
 	{ j: s.length, quote: '', bracket: 0, isMatched: false, result: ['', s] },
@@ -64,7 +66,7 @@ let splitr = (s, sep) => repeat(
 
 let keepsplitl = (s, sep, apply) => {
 	let f;
-	f = input => input !== '' ? function() {
+	f = input => input !== null ? function() {
 		let [left, right] = splitl(input, sep);
 		return [apply(left), f(right)];
 	}() : [];
@@ -86,7 +88,7 @@ let parseAssocRight = (id, op, parseValue) => {
 	parse = program => {
 		let [left, right] = splitl(program, op);
 		let lhs = parseValue(left);
-		return right === '' ? lhs : { id, lhs, rhs: parse(right) };
+		return right === null ? lhs : { id, lhs, rhs: parse(right) };
 	};
 	return parse;
 };
@@ -131,7 +133,7 @@ let parseStructInner = (program, parse) => ({
 	kvs: keepsplitl(appendTrailing(program), ',', kv => {
 		let [key_, value_] = splitl(kv, ':');
 		let key = parseConstant(key_.trim()).value;
-		let value = value_ !== '' ? parse(value_) : { id: 'var', value: key };
+		let value = value_ !== null ? parse(value_) : { id: 'var', value: key };
 		return { key, value };
 	}),
 });
@@ -203,7 +205,7 @@ let parseApp = parseAssocLeft_('app', '|>', parseOr_);
 let parseIf = program => {
 	let [if_, thenElse] = splitl(program, '?');
 
-	return thenElse === '' ? parseApp(if_) : function() {
+	return thenElse === null ? parseApp(if_) : function() {
 		let [then, else_] = splitl(thenElse, ':');
 
 		return {
@@ -219,7 +221,7 @@ let parseBindPair = program => {
 	let [left, right] = splitl(program, ',');
 	let lhs = parseConstant(left.trim());
 
-	return right === '' ? lhs : { id: 'pair', lhs, rhs: parseBindPair(right) };
+	return right === null ? lhs : { id: 'pair', lhs, rhs: parseBindPair(right) };
 };
 
 let parseBind = program_ => {
@@ -236,13 +238,12 @@ let parseBind = program_ => {
 };
 
 let parseLambda = program => {
-	let [left, right_] = splitl(program, '=>');
-	let right = right_.trim();
+	let [left, right] = splitl(program, '=>');
 
-	return right === '' ? parseIf(left) : {
+	return right === null ? parseIf(left) : {
 		id: 'lambda',
 		bind: parseBind(left),
-		expr: parseProgram(right),
+		expr: parseProgram(right.trim()),
 	};
 };
 
@@ -257,7 +258,7 @@ parseProgram = program => {
 			? function() {
 				let [var_, value] = splitl(statement.substring(4), '=');
 
-				return value !== ''
+				return value !== null
 					? {
 						id: 'let',
 						bind: parseBind(var_),
@@ -274,7 +275,7 @@ parseProgram = program => {
 			? parseProgram(statement.substring(7))
 		: statement.startsWith('throw ') && expr === ''
 			? { id: 'error' }
-		: expr !== ''
+		: expr !== null
 			? function() {
 				let [var_, value] = splitl(statement, '=');
 
