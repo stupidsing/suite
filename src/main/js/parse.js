@@ -2,6 +2,8 @@ let error = message => { throw new Error(message); };
 
 let ascii = s => s.charCodeAt(0);
 
+let contains = (es, e) => 0 < es.length && (es[0] === e || contains(es[1], e));
+
 let repeat = (init, when, iterate) => {
 	let f;
 	f = value => when(value) ? f(iterate(value)) : value;
@@ -172,24 +174,24 @@ let parseApplyBlockFieldIndex = program_ => {
 			? { id: 'dot', field, expr: parseApplyBlockFieldIndex(expr) }
 		: program.startsWith('function() {') && program.endsWith('}()')
 			? parseProgram(program.substring(12, program.length - 3).trim())
-		: !program.startsWith('(') && program.endsWith(')')
+		: program.endsWith(')')
 			? function() {
 				let [expr, paramStr_] = splitr(program, '(');
 				let paramStr = paramStr_.substring(0, paramStr_.length - 1).trim();
-				return {
+				return expr !== null ? {
 					id: 'apply',
 					expr: parseProgram(expr),
 					parameter: parseProgram(paramStr),
-				};
+				} : parseValue(program);
 			}()
-		: !program.startsWith('[') && program.endsWith(']')
+		: program.endsWith(']')
 			? function() {
 				let [expr, index] = splitr(program, '[');
-				return {
+				return expr !== null ? {
 					id: 'index',
 					expr: parseProgram(expr),
 					index: parseProgram(index.substring(0, index.length - 1)),
-				};
+				} : parseValue(program);
 			}()
 		: parseValue(program);
 };
@@ -294,6 +296,15 @@ parseProgram = program => {
 				};
 			}()
 		: parsePair(statement);
+};
+
+let rewrite;
+
+rewrite = f => ast0 => {
+	let ast1 = f(ast0);
+	return ast1 === null
+		? Object.fromEntries(Object.entries(ast0).map(([k, v]) => [k, rewrite(v)]))
+		: ast1;
 };
 
 let stringify = json => JSON.stringify(json,  null, '  ');
