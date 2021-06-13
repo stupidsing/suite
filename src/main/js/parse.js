@@ -213,11 +213,12 @@ let parseNe_ = parseAssocRight('ne_', '!==', parseNot);
 let parseEq_ = parseAssocRight('eq_', '===', parseNe_);
 let parseAnd = parseAssocRight('and', '&&', parseEq_);
 let parseOr_ = parseAssocRight('or_', '||', parseAnd);
+let parseApp = parseAssocLeft_('app', '|>', parseOr_);
 
 let parseIf = program => {
 	let [if_, thenElse] = splitl(program, '?');
 
-	return thenElse === '' ? parseOr_(if_) : function() {
+	return thenElse === '' ? parseApp(if_) : function() {
 		let [then, else_] = splitl(thenElse, ':');
 
 		return {
