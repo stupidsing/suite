@@ -76,23 +76,23 @@ let keepsplitl = (s, sep, apply) => {
 };
 
 let parseAssocLeft_ = (id, op, parseValue) => {
-	let parse;
-	parse = program => {
+	let f;
+	f = program => {
 		let [left, right] = splitr(program, op);
 		let rhs = parseValue(right);
-		return left === null ? rhs : { id, lhs: parse(left), rhs };
+		return left === null ? rhs : { id, lhs: f(left), rhs };
 	};
-	return parse;
+	return f;
 };
 
 let parseAssocRight = (id, op, parseValue) => {
-	let parse;
-	parse = program => {
+	let f;
+	f = program => {
 		let [left, right] = splitl(program, op);
 		let lhs = parseValue(left);
-		return right === null ? lhs : { id, lhs, rhs: parse(right) };
+		return right === null ? lhs : { id, lhs, rhs: f(right) };
 	};
-	return parse;
+	return f;
 };
 
 let parsePrefix = (id, op, parseValue) => {
@@ -193,8 +193,10 @@ let parseApplyBlockFieldIndex = program_ => {
 
 let parseDiv = parseAssocLeft_('div', '/', parseApplyBlockFieldIndex);
 let parseMul = parseAssocRight('mul', '*', parseDiv);
-let parseSub = parseAssocLeft_('sub', '-', parseMul);
-let parseAdd = parseAssocRight('add', '+', parseSub);
+let parseNeg = parseMul;
+let parseSub = parseAssocLeft_('sub', '-', parseNeg);
+let parsePos = parseSub;
+let parseAdd = parseAssocRight('add', '+', parsePos);
 let parseLt_ = parseAssocRight('lt_', '<', parseAdd);
 let parseLe_ = parseAssocRight('le_', '<=', parseLt_);
 let parseNot = parsePrefix('not', '!', parseLe_);
