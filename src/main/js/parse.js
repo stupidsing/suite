@@ -83,7 +83,7 @@ let splitr = (s, sep) => {
 
 let keepsplitl = (s, sep, apply) => {
 	let f;
-	f = input => input !== null ? function() {
+	f = input => input !== '' ? function() {
 		let [left, right] = splitl(input, sep);
 		return [apply(left), f(right)];
 	}() : [];
