@@ -1,7 +1,6 @@
 let repeat = (init, when, iterate) => {
-	let value = init;
-	while (when(value)) value = iterate(value);
-	return value;
+	let f = value => when(value) ? f(iterate(value)) : value;
+	return f(init);
 };
 
 let error = message => { throw new Error(message); };
