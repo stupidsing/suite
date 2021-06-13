@@ -10,6 +10,10 @@ let repeat = (init, when, iterate) => {
 	return f(init);
 };
 
+let fold = (init, list, f) => {
+	return 0 < list.length ? fold(f(init, list[0]), list[1], f) : init;
+};
+
 let isAll = pred => list => {
 	let f;
 	f = i => i < list.length ? pred(list.charCodeAt(i)) && f(i + 1) : true;
@@ -274,11 +278,12 @@ parseProgram = program => {
 						value: parseProgram(value),
 						expr: parseProgram(expr),
 					}
-					: {
+					: isIdentifier(var_) ? {
 						id: 'alloc',
-						bind: parseBind(var_),
+						v: var_,
 						expr: parseProgram(expr),
-					};
+					}
+					: error(`cannot parse ${var_}`);
 			}()
 		: statement.startsWith('return ') && expr === ''
 			? parseProgram(statement.substring(7))
@@ -301,10 +306,41 @@ parseProgram = program => {
 let rewrite;
 
 rewrite = f => ast0 => {
-	let ast1 = f(ast0);
-	return ast1 === null
-		? Object.fromEntries(Object.entries(ast0).map(([k, v]) => [k, rewrite(v)]))
-		: ast1;
+	return ast0.id === null ? ast0 : function() {
+		let ast1 = f(ast0);
+		return ast1 === null
+			? Object.fromEntries(Object.entries(ast0).map(([k, v]) => [k, rewrite(v)]))
+			: ast1;
+	}();
+};
+
+let getBindVariables;
+
+getBindVariables = (vs, ast) =>  {
+	return false ? true
+		: ast.id === 'list' ? fold(vs, ast.values, mergeBind)
+		: ast.id === 'var' ? [ast.value, vs]
+		: ast.id === 'pair' ? getBindVariables(getBindVariables(vs, ast.lhs), ast.rhs)
+		: ast.id === 'struct' ? fold(vs, ast.kvs, (vs_, kv) => mergeBind(vs_, kv.value))
+		: vs;
+};
+
+let checkVariables = (vs, ast) => {
+	return false ? true
+		: ast.id === 'alloc' ? (({ v, expr }) => {
+			return checkVariables([v, vs], expr);
+		})(ast)
+		: ast.id === 'lambda' ? (({ bind, value, expr }) => {
+			return checkVariables(getBindVariables(vs, bind), expr);
+		})(ast)
+		: ast.id === 'let' ? (({ bind, value, expr }) => {
+			let vs1 = getBindVariables(vs, bind);
+			return checkVariables(vs, value) && checkVariables(vs1, expr);
+		})(ast)
+		: ast.id === 'var' ? (({ value: v }) => {
+			return contains(vs, v);
+		})(ast)
+		: true;
 };
 
 let stringify = json => JSON.stringify(json,  null, '  ');
