@@ -131,7 +131,7 @@ let parseConstant = program => {
 			? { id: 'boolean', value: 'true' }
 		: isIdentifier(program)
 			? { id: 'var', value: program }
-		: error(`cannot parse ${program}`);
+		: error(`cannot parse "${program}"`);
 };
 
 let parseList = (program, parse) => ({
@@ -270,6 +270,7 @@ parseProgram = program => {
 		: statement.startsWith('let ')
 			? function() {
 				let [var_, value] = splitl(statement.substring(4), '=');
+				let v = var_.trim();
 
 				return value !== null
 					? {
@@ -280,10 +281,10 @@ parseProgram = program => {
 					}
 					: isIdentifier(var_) ? {
 						id: 'alloc',
-						v: var_,
+						v,
 						expr: parseProgram(expr),
 					}
-					: error(`cannot parse ${var_}`);
+					: error(`cannot parse let variable "${v}"`);
 			}()
 		: statement.startsWith('return ') && expr === ''
 			? parseProgram(statement.substring(7))
@@ -292,13 +293,14 @@ parseProgram = program => {
 		: expr !== null
 			? function() {
 				let [var_, value] = splitl(statement, '=');
+				let v = var_.trim();
 
-				return {
+				return isIdentifier(v) ? {
 					id: 'assign',
-					bind: parseBind(var_),
+					v,
 					value: parseProgram(value),
 					expr: parseProgram(expr),
-				};
+				} : error(`cannot parse assign variable "${v}"`);
 			}()
 		: parsePair(statement);
 };
@@ -307,7 +309,7 @@ let rewrite;
 
 rewrite = f => ast0 => {
 	return ast0.id === null ? ast0 : function() {
-		let ast1 = f(ast0);
+		let ast1 = f(ast0.id)(ast0);
 		return ast1 === null
 			? Object.fromEntries(Object.entries(ast0).map(([k, v]) => [k, rewrite(v)]))
 			: ast1;
@@ -317,7 +319,7 @@ rewrite = f => ast0 => {
 let getBindVariables;
 
 getBindVariables = (vs, ast) =>  {
-	return false ? true
+	return false ? {}
 		: ast.id === 'list' ? fold(vs, ast.values, mergeBind)
 		: ast.id === 'var' ? [ast.value, vs]
 		: ast.id === 'pair' ? getBindVariables(getBindVariables(vs, ast.lhs), ast.rhs)
@@ -325,22 +327,28 @@ getBindVariables = (vs, ast) =>  {
 		: vs;
 };
 
-let checkVariables = (vs, ast) => {
-	return false ? true
-		: ast.id === 'alloc' ? (({ v, expr }) => {
+let checkVariables;
+
+checkVariables = (vs, ast) => {
+	let f = id => false ? {}
+		: id === 'alloc' ? (({ v, expr }) => {
 			return checkVariables([v, vs], expr);
-		})(ast)
-		: ast.id === 'lambda' ? (({ bind, value, expr }) => {
+		})
+		: id === 'assign' ? (({ v, expr }) => {
+			return contains(vs, v) && checkVariables(vs, expr);
+		})
+		: id === 'lambda' ? (({ bind, expr }) => {
 			return checkVariables(getBindVariables(vs, bind), expr);
-		})(ast)
-		: ast.id === 'let' ? (({ bind, value, expr }) => {
+		})
+		: id === 'let' ? (({ bind, value, expr }) => {
 			let vs1 = getBindVariables(vs, bind);
 			return checkVariables(vs, value) && checkVariables(vs1, expr);
-		})(ast)
-		: ast.id === 'var' ? (({ value: v }) => {
+		})
+		: id === 'var' ? (({ value: v }) => {
 			return contains(vs, v);
-		})(ast)
-		: true;
+		})
+		: (({}) => true);
+	return f(ast.id)(ast);
 };
 
 let stringify = json => JSON.stringify(json,  null, '  ');
