@@ -42,11 +42,12 @@ let splitl = (s, sep) => {
 			let ch = s.charCodeAt(i);
 			let { quote: quote1, bracket: bracket1 } = quoteBracket(quote, bracket, ch);
 
-			return quote || bracket !== 0 || s.substring(i, j) !== sep
+			return quote || bracket !== 0 || s.substring(i, j) !== sep || i === 0
 				? f(i + 1, quote1, bracket1)
 				: [s.substring(0, i), s.substring(j)];
 		}() : [s, null];
 	};
+
 	return f(0, '', 0);
 };
 
@@ -54,11 +55,11 @@ let splitr = (s, sep) => {
 	let f;
 	f = (j, quote, bracket) => {
 		let i = j - sep.length;
-		return sep.length <= j ? function() {
+		return 0 <= i ? function() {
 			let ch = s.charCodeAt(j - 1);
 			let { quote: quote1, bracket: bracket1 } = quoteBracket(quote, bracket, ch);
 
-			return quote1 || bracket1 !== 0 || s.substring(i, j) !== sep
+			return quote1 || bracket1 !== 0 || s.substring(i, j) !== sep || i === 0
 				? f(j - 1, quote1, bracket1)
 				: [s.substring(0, i), s.substring(j)];
 		}() : [null, s];
@@ -77,7 +78,8 @@ let keepsplitl = (s, sep, apply) => {
 
 let parseAssocLeft_ = (id, op, parseValue) => {
 	let f;
-	f = program => {
+	f = program_ => {
+		let program = program_.trim();
 		let [left, right] = splitr(program, op);
 		let rhs = parseValue(right);
 		return left === null ? rhs : { id, lhs: f(left), rhs };
@@ -87,7 +89,8 @@ let parseAssocLeft_ = (id, op, parseValue) => {
 
 let parseAssocRight = (id, op, parseValue) => {
 	let f;
-	f = program => {
+	f = program_ => {
+		let program = program_.trim();
 		let [left, right] = splitl(program, op);
 		let lhs = parseValue(left);
 		return right === null ? lhs : { id, lhs, rhs: f(right) };
@@ -193,9 +196,9 @@ let parseApplyBlockFieldIndex = program_ => {
 
 let parseDiv = parseAssocLeft_('div', '/', parseApplyBlockFieldIndex);
 let parseMul = parseAssocRight('mul', '*', parseDiv);
-let parseNeg = parseMul;
+let parseNeg = parsePrefix('neg', '-', parseMul);
 let parseSub = parseAssocLeft_('sub', '-', parseNeg);
-let parsePos = parseSub;
+let parsePos = parsePrefix('pos', '+', parseSub);
 let parseAdd = parseAssocRight('add', '+', parsePos);
 let parseLt_ = parseAssocRight('lt_', '<', parseAdd);
 let parseLe_ = parseAssocRight('le_', '<=', parseLt_);
