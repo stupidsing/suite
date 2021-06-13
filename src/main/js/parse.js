@@ -4,7 +4,7 @@ let ascii = s => s.charCodeAt(0);
 
 let contains = (list, e) => {
 	let f;
-	f = es => 0 < es.length && (es[0] === e || contains(es[1], e));
+	f = es => 0 < es.length && (es[0] === e || f(es[1], e));
 	return f(list);
 };
 
@@ -87,7 +87,7 @@ let keepsplitl = (s, sep, apply) => {
 		let [left, right] = splitl(input, sep);
 		return [apply(left), f(right)];
 	}() : [];
-	return f;
+	return f(s);
 };
 
 let parseAssocLeft_ = (id, op, parseValue) => {
@@ -123,12 +123,14 @@ let parsePrefix = (id, op, parseValue) => {
 };
 
 let parseNumber = program => {
-	return program !== '' ? function() {
-		let last = program.charCodeAt(program.length - 1);
-		return ascii('0') <= last && last <= ascii('9')
-			? parseNumber(program.substring(0, program.length - 1)) * 10 + last - ascii('0')
+	let f;
+	f = i => 0 <= i ? function() {
+		let ch = program.charCodeAt(i);
+		return ascii('0') <= ch && ch <= ascii('9')
+			? f(i - 1) * 10 + ch - ascii('0')
 			: error(`invalid number ${program}`);
 	}() : 0;
+	return f(program.length - 1);
 };
 
 let parseConstant = program => {
@@ -328,13 +330,13 @@ parseProgram = program => {
 		: parsePair(statement);
 };
 
-let getBindVariables;
+let mergeBindVariables;
 
-getBindVariables = (vs, ast) =>  {
+mergeBindVariables = (vs, ast) =>  {
 	return false ? {}
-		: ast.id === 'list' ? fold(vs, ast.values, mergeBind)
-		: ast.id === 'pair' ? getBindVariables(getBindVariables(vs, ast.lhs), ast.rhs)
-		: ast.id === 'struct' ? fold(vs, ast.kvs, (vs_, kv) => mergeBind(vs_, kv.value))
+		: ast.id === 'list' ? fold(vs, ast.values, mergeBindVariables)
+		: ast.id === 'pair' ? mergeBindVariables(mergeBindVariables(vs, ast.lhs), ast.rhs)
+		: ast.id === 'struct' ? fold(vs, ast.kvs, (vs_, kv) => mergeBindVariables(vs_, kv.value))
 		: ast.id === 'var' ? [ast.value, vs]
 		: vs;
 };
@@ -346,14 +348,14 @@ checkVariables = (vs, ast) => {
 		: id === 'alloc' ? (({ v, expr }) => {
 			return checkVariables([v, vs], expr);
 		})
-		: id === 'assign' ? (({ v, expr }) => {
-			return contains(vs, v) && checkVariables(vs, expr);
+		: id === 'assign' ? (({ v, value, expr }) => {
+			return contains(vs, v) && checkVariables(vs, value) && checkVariables(vs, expr);
 		})
 		: id === 'lambda' ? (({ bind, expr }) => {
-			return checkVariables(getBindVariables(vs, bind), expr);
+			return checkVariables(mergeBindVariables(vs, bind), expr);
 		})
 		: id === 'let' ? (({ bind, value, expr }) => {
-			let vs1 = getBindVariables(vs, bind);
+			let vs1 = mergeBindVariables(vs, bind);
 			return checkVariables(vs, value) && checkVariables(vs1, expr);
 		})
 		: id === 'var' ? (({ value: v }) => {
