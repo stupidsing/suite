@@ -1,17 +1,18 @@
-let repeat = (init, when, iterate) => {
-	let f = value => when(value) ? f(iterate(value)) : value;
-	return f(init);
-};
-
 let error = message => { throw new Error(message); };
 
 let ascii = s => s.charCodeAt(0);
 
-let isAll = pred => list => repeat(
-	{ i: 0, b: true },
-	({ i, b }) => i < list.length && b,
-	({ i, b }) => ({ i: i + 1, b: b && pred(list.charCodeAt(i)) }),
-).b;
+let repeat = (init, when, iterate) => {
+	let f;
+	f = value => when(value) ? f(iterate(value)) : value;
+	return f(init);
+};
+
+let isAll = pred => list => {
+	let f;
+	f = i => i < list.length ? pred(list.charCodeAt(i)) && f(i + 1) : true;
+	return f(0);
+};
 
 let isIdentifier = isAll(ch => false
 	|| ascii('0') <= ch && ch <= ascii('9')
@@ -61,17 +62,18 @@ let splitr = (s, sep) => repeat(
 	},
 ).result;
 
-let keepsplitl = (s, sep, apply) => repeat(
-	{ input: s, values: [] },
-	({ input }) => input !== '',
-	({ input, values }) => {
+let keepsplitl = (s, sep, apply) => {
+	let f;
+	f = input => input !== '' ? function() {
 		let [left, right] = splitl(input, sep);
-		return { input: right, values: [apply(left), values] };
-	},
-).values;
+		return [apply(left), f(right)];
+	}() : [];
+	return f;
+};
 
 let parseAssocLeft_ = (id, op, parseValue) => {
-	let parse = program => {
+	let parse;
+	parse = program => {
 		let [left, right] = splitr(program, op);
 		let rhs = parseValue(right);
 		return left === '' ? rhs : { id, lhs: parse(left), rhs };
@@ -80,7 +82,8 @@ let parseAssocLeft_ = (id, op, parseValue) => {
 };
 
 let parseAssocRight = (id, op, parseValue) => {
-	let parse = program => {
+	let parse;
+	parse = program => {
 		let [left, right] = splitl(program, op);
 		let lhs = parseValue(left);
 		return right === '' ? lhs : { id, lhs, rhs: parse(right) };
