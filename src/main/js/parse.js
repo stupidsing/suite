@@ -61,7 +61,7 @@ let splitr = (s, sep) => {
 			return quote1 || bracket1 !== 0 || s.substring(i, j) !== sep
 				? f(j - 1, quote1, bracket1)
 				: [s.substring(0, i), s.substring(j)];
-		}() : ['', s];
+		}() : [null, s];
 	};
 	return f(s.length, '', 0);
 };
@@ -80,7 +80,7 @@ let parseAssocLeft_ = (id, op, parseValue) => {
 	parse = program => {
 		let [left, right] = splitr(program, op);
 		let rhs = parseValue(right);
-		return left === '' ? rhs : { id, lhs: parse(left), rhs };
+		return left === null ? rhs : { id, lhs: parse(left), rhs };
 	};
 	return parse;
 };
@@ -165,7 +165,7 @@ let parseApplyBlockFieldIndex = program_ => {
 	let [expr, field] = splitr(program, '.');
 
 	return false ? {}
-		: expr !== '' && isIdentifier(field)
+		: expr !== null && isIdentifier(field)
 			? { id: 'dot', field, expr: parseApplyBlockFieldIndex(expr) }
 		: program.startsWith('function() {') && program.endsWith('}()')
 			? parseProgram(program.substring(12, program.length - 3).trim())
