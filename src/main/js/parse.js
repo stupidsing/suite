@@ -532,7 +532,10 @@ let inferType = (vts, ast) => {
 			: id === 'div'
 				? inferMathOp
 			: id === 'dot'
-				? (({ field, expr }) => f(vts, expr)[field])
+				? (({ field, expr }) => function() {
+					let t = f(vts, expr)[field];
+					return t !== undefined ? t : error(`field ${field} not found`);
+				}())
 			: id === 'empty'
 				? (({}) => ['list',  newRef()])
 			: id === 'eq_'
