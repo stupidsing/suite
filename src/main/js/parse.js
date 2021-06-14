@@ -412,7 +412,7 @@ let newRef = () => {
 	return { ref: refCount };
 };
 
-let solveBind = (a, b) => {
+let tryBind = (a, b) => {
 	let f;
 	f = (a, b) => function() {
 		let refa = a.ref;
@@ -444,8 +444,10 @@ let solveBind = (a, b) => {
 					})
 			: a === b;
 	}();
-	return f(a, b) || error(`cannot bind type ${a} to ${b}`);
+	return f(a, b);
 };
+
+let solveBind = (a, b) => tryBind(a, b) || error(`cannot bind type ${a} to ${b}`);
 
 let lookup = (vts, v) => {
 	let f;
@@ -479,7 +481,7 @@ let inferType = (vts, ast) => {
 			return true
 				&& solveBind(f(vts, lhs), t)
 				&& solveBind(f(vts, rhs), t)
-				&& (t === 'number' || t === 'string' || error(`cannot compare values with type ${t}`))
+				&& (tryBind(t, 'number') || tryBind(t, 'string') || error(`cannot compare values with type ${t}`))
 				&& 'boolean';
 		}();
 
