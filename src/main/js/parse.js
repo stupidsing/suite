@@ -479,7 +479,14 @@ let inferType = (vts, ast) => {
 			&& solveBind(f(vts, rhs), 'number')
 			&& 'boolean';
 
-		let inferEqOp = ({ lhs, rhs }) => solveBind(f(vts, lhs), f(vts, rhs)) && 'boolean';
+		let inferEqOp = ({ lhs, rhs }) => true
+			&& solveBind(f(vts, lhs), f(vts, rhs))
+			&& 'boolean';
+
+		let inferLogicalOp = ({ lhs, rhs }) => true
+			&& solveBind(f(vts, lhs), 'boolean')
+			&& solveBind(f(vts, rhs), 'boolean')
+			&& 'boolean';
 
 		let inferMathOp = ({ lhs, rhs }) => true
 			&& solveBind(f(vts, lhs), 'number')
@@ -489,6 +496,8 @@ let inferType = (vts, ast) => {
 		let g = false ? {}
 			: id === 'add'
 				? inferMathOp
+			: id === 'and'
+				? inferLogicalOp
 			: id === 'apply'
 				? (({ parameter, expr }) => {
 					let te = f(vts, expr);
@@ -559,6 +568,8 @@ let inferType = (vts, ast) => {
 				? (({}) => 'map')
 			: id === 'number'
 				? (({}) => id)
+			: id === 'or_'
+				? inferLogicalOp
 			: id === 'pair'
 				? (({ lhs, rhs }) => ['pair', f(vts, lhs), f(vts, rhs)])
 			: id === 'string'
