@@ -20,6 +20,14 @@ let fold = (init, list, op) => {
 	return f(init, list);
 };
 
+let zip = (lhs, rhs) => {
+	let f;
+	f = (lhs, rhs) => lhs.length !== 0 || rhs.length !== 0
+			? [[lhs[0], rhs[0]], f(lhs[1], rhs[1])]
+			: [];
+	return f(lhs, rhs);
+};
+
 let isAll = pred => list => {
 	let f;
 	f = i => i < list.length ? pred(list.charCodeAt(i)) && f(i + 1) : true;
@@ -346,15 +354,17 @@ parseProgram = program => {
 		: parsePair(statement);
 };
 
-let mergeBindVariables;
-
-mergeBindVariables = (vs, ast) => {
+let mergeBindVariables = (vs, ast) => {
+	let f;
+	f = (vs, ast) => {
 	return false ? {}
-		: ast.id === 'list' ? fold(vs, ast.values, mergeBindVariables)
-		: ast.id === 'pair' ? mergeBindVariables(mergeBindVariables(vs, ast.lhs), ast.rhs)
-		: ast.id === 'struct' ? fold(vs, ast.kvs, (vs_, kv) => mergeBindVariables(vs_, kv.value))
+		: ast.id === 'list' ? fold(vs, ast.values, f)
+		: ast.id === 'pair' ? f(f(vs, ast.lhs), ast.rhs)
+		: ast.id === 'struct' ? fold(vs, ast.kvs, (vs_, kv) => f(vs_, kv.value))
 		: ast.id === 'var' ? [ast.value, vs]
 		: vs;
+	};
+	return f(vs, ast);
 };
 
 let checkVariables;
@@ -384,17 +394,6 @@ checkVariables = (vs, ast) => {
 			return g(0);
 		});
 	return f(ast.id)(ast);
-};
-
-let rewrite;
-
-rewrite = f => ast0 => {
-	return ast0.id === undefined ? ast0 : function() {
-		let ast1 = f(ast0.id)(ast0);
-		return ast1 === undefined
-			? Object.fromEntries(Object.entries(ast0).map(([k, v]) => [k, rewrite(v)]))
-			: ast1;
-	}();
 };
 
 let refs = new Map();
@@ -451,63 +450,115 @@ let solveBind = (a, b) => {
 let lookup = (vts, v) => {
 	let f;
 	f = vts => {
-		let vt = vts[0];
-		return vt !== undefined ? (vt[0] === v ? vt[1] : f(vts[1], v)) : error(`undefined variable ${v}`);
+		let [v_, t, vts_] = vts;
+		return v_ !== undefined ? (v_ === v ? t : f(vts_, v)) : error(`undefined variable ${v}`);
 	};
-	return f(vts);
+	return f(vts, v);
+};
+
+let defineBindTypes = (vs, ast) => {
+	let f;
+	f = (vs, ast) => {
+	return false ? {}
+		: ast.id === 'list' ? fold(vs, ast.values, f)
+		: ast.id === 'pair' ? f(f(vs, ast.lhs), ast.rhs)
+		: ast.id === 'struct' ? fold(vs, ast.kvs, (vs_, kv) => f(vs_, kv.value))
+		: ast.id === 'var' ? [ast.value, newRef(), vs]
+		: error(`cannot destructure ${ast}`);
+	};
+	return f(vs, ast);
 };
 
 let inferType = (vts, ast) => {
-	let id = ast.id;
-	let f = false ? {}
-		: id === 'apply'
-			? (({ parameter, expr }) => {
-				let te = inferType(expr);
-				let tp = inferType(parameter);
-				let tr = newRef();
-				let dummy = solveBind(te, ['lambda', tp, tr]) || error('cannot bind lambda type');
-				return tr;
-			})
-		: id === 'backquote'
-			? (({}) => 'string')
-		: id === 'boolean'
-			? (({}) => id)
-		: id === 'dot'
-			? (({ field, expr }) => inferType(expr)[field])
-		: id === 'empty'
-			? (({}) => ['list',  newRef()])
-		: id === 'index'
-			? (({ index, expr }) => {
-				let dummy0 = solveBind(f(index), 'number') || error('index ${ast} is not a number');
-				let t = newRef();
-				let dummy1 = solveBind(f(expr), ['list', t]) || error('${ast} is not a list');
-				return t;
-			})
-		: id === 'list'
-			? (({ values }) => zzzzzzzzzzzzzzzzzzzzzzzzzz['list',  newRef()])
-		: id === 'new-map'
-			? (({}) => 'map')
-		: id === 'number'
-			? (({}) => id)
-		: id === 'string'
-			? (({}) => id)
-		: id === 'struct'
-			? (({ kvs }) => {
-				let struct;
-				struct = {};
-				let g;
-				g = kvs => kvs.length === 2 ? function() {
-					let { key, value } = kvs[0];
-					struct[key] = f(value);
-					return g(kvs[1]);
-				}() : {};
-				let dummy = g(kvs);
-				return struct;
-			})
-		: id === 'vs'
-			? (({ value }) => lookup(vts, value))
-		: error(`cannot infer type for ${ast}`);
-	return f(ast.id)(ast);
+	let f;
+	f = (vts, ast) => function() {
+		let id = ast.id;
+
+		let g = false ? {}
+			: id === 'apply'
+				? (({ parameter, expr }) => {
+					let te = f(vts, expr);
+					let tp = f(vts, parameter);
+					let tr = newRef();
+					let dummy = solveBind(te, ['lambda', tp, tr]) || error(`cannot bind lambda type for ${ast}`);
+					return tr;
+				})
+			: id === 'assign'
+				? (({ v, value, expr }) => {
+					let tvar = f(vts, v);
+					let tvalue = f(vts, value);
+					let dummy = solveBind(tvar, tvalue);
+					return f(vts, expr);
+				})
+			: id === 'backquote'
+				? (({}) => 'string')
+			: id === 'boolean'
+				? (({}) => id)
+			: id === 'dot'
+				? (({ field, expr }) => f(vts, expr)[field])
+			: id === 'empty'
+				? (({}) => ['list',  newRef()])
+			: id === 'index'
+				? (({ index, expr }) => {
+					let t = newRef();
+					let dummy0 = solveBind(f(vts, index), 'number') || error('index ${ast} is not a number');
+					let dummy1 = solveBind(f(vts, expr), ['list', t]) || error('${ast} is not a list');
+					return t;
+				})
+			: id === 'let'
+				? (({ bind, value, expr }) => {
+					let vts1 = defineBindTypes(vts, bind);
+					let tb = f(vts1, bind);
+					let tv = f(vts1, value);
+					let dummy = solveBind(tb, tv) || error('cannot infer type for bind expression ${bind}');
+					return f(vts1, expr);
+				})
+			: id === 'list'
+				? (({ values }) => {
+					let g;
+					g = (vts, values) => values.length === 2 ? function() {
+						let [head, tail] = values;
+						return [f(vts, head), g(vts, tail)];
+					}() : [];
+					return g(ast, values);
+				})
+			: id === 'new-map'
+				? (({}) => 'map')
+			: id === 'number'
+				? (({}) => id)
+			: id === 'pair'
+				? (({ lhs, rhs }) => ['pair', f(vts, lhs), f(vts, rhs)])
+			: id === 'string'
+				? (({}) => id)
+			: id === 'struct'
+				? (({ kvs }) => {
+					let g;
+					g = (struct, kvs) => kvs.length === 2 ? function() {
+						let { key, value } = kvs[0];
+						struct[key] = f(vts, value);
+						return g(kvs[1]);
+					}() : {};
+					let dummy = g({}, kvs);
+					return struct;
+				})
+			: id === 'vs'
+				? (({ value }) => lookup(vts, value))
+			: (({}) => error(`cannot infer type for ${ast}`));
+
+		return g(ast);
+	}();
+	return f(vts, ast);
+};
+
+let rewrite;
+
+rewrite = f => ast0 => {
+	return ast0.id === undefined ? ast0 : function() {
+		let ast1 = f(ast0.id)(ast0);
+		return ast1 === undefined
+			? Object.fromEntries(Object.entries(ast0).map(([k, v]) => [k, rewrite(v)]))
+			: ast1;
+	}();
 };
 
 let stringify = json => JSON.stringify(json, undefined, '  ');
@@ -549,7 +600,7 @@ let expect = stringify({
 actual === expect
 ? function() {
 	let ast = parseProgram(require('fs').readFileSync(0, 'utf8'));
-	return checkVariables([
+	let dummy0 = checkVariables([
 		'JSON', [
 			'Object', [
 				'console', [
@@ -557,7 +608,8 @@ actual === expect
 				]
 			]
 		]
-	], ast) && console.log(stringify(ast));
+	], ast);
+	return console.log(stringify(ast));
 }() : error(`
 test case failed,
 actual = ${actual}
