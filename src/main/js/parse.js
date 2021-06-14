@@ -474,10 +474,14 @@ let inferType = (vts, ast) => {
 	f = (vts, ast) => function() {
 		let id = ast.id;
 
-		let inferCmpOp = ({ lhs, rhs }) => true
-			&& solveBind(f(vts, lhs), 'number')
-			&& solveBind(f(vts, rhs), 'number')
-			&& 'boolean';
+		let inferCmpOp = ({ lhs, rhs }) => function() {
+			let t = newRef();
+			return true
+				&& solveBind(f(vts, lhs), t)
+				&& solveBind(f(vts, rhs), t)
+				&& (t === 'number' || t === 'string' || error(`cannot compare values with type ${t}`))
+				&& 'boolean';
+		}();
 
 		let inferEqOp = ({ lhs, rhs }) => true
 			&& solveBind(f(vts, lhs), f(vts, rhs))
