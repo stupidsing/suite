@@ -266,21 +266,23 @@ let parseBindPair = program => {
 	return right === null ? lhs : { id: 'pair', lhs, rhs: parseBindPair(right) };
 };
 
-let parseBind;
+let parseBind = program => {
+	let f;
+	f = program_ => {
+		let program = program_.trim();
 
-parseBind = program_ => {
-	let program = program_.trim();
-
-	return false ? {}
-		: program === '()'
-			? { id: 'empty' }
-		: program.startsWith('(') && program.endsWith(')')
-			? parseBind(program.substring(1, program.length - 1))
-		: program.startsWith('[') && program.endsWith(']')
-			? parseList(program, parseBind)
-		: program.startsWith('{') && program.endsWith('}')
-			? parseStruct(program, parseBind)
-		: parseBindPair(program);
+		return false ? {}
+			: program === '()'
+				? { id: 'empty' }
+			: program.startsWith('(') && program.endsWith(')')
+				? f(program.substring(1, program.length - 1))
+			: program.startsWith('[') && program.endsWith(']')
+				? parseList(program, f)
+			: program.startsWith('{') && program.endsWith('}')
+				? parseStruct(program, f)
+			: parseBindPair(program);
+	};
+	return f(program);
 };
 
 let parseLambda = program => {
