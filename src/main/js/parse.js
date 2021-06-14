@@ -262,7 +262,9 @@ let parseBindPair = program => {
 	return right === null ? lhs : { id: 'pair', lhs, rhs: parseBindPair(right) };
 };
 
-let parseBind = program_ => {
+let parseBind;
+
+parseBind = program_ => {
 	let program = program_.trim();
 
 	return false ? {}
@@ -420,7 +422,19 @@ let expect = stringify({
 actual === expect
 ? function() {
 	let ast = parseProgram(require('fs').readFileSync(0, 'utf8'));
-	return console.log(stringify(ast));
+	return checkVariables([
+		'JSON', [
+			'Object', [
+				'console', [
+					'null', [
+						'require', [
+							'undefined', []
+						]
+					]
+				]
+			]
+		]
+	], ast) && console.log(stringify(ast));
 }() : error(`
 test case failed,
 actual = ${actual}
