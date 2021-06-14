@@ -501,6 +501,8 @@ let inferType = (vts, ast) => {
 		let g = false ? {}
 			: id === 'add'
 				? inferMathOp
+			: id === 'alloc'
+				? (({ v, expr }) => f([v, newRef(), vts], expr))
 			: id === 'and'
 				? inferLogicalOp
 			: id === 'apply'
