@@ -452,7 +452,7 @@ let lookup = (vts, v) => {
 	let f;
 	f = vts => {
 		let vt = vts[0];
-		return vt[0] === v ? vt[1] : f(vts[1], v);
+		return vt !== undefined ? (vt[0] === v ? vt[1] : f(vts[1], v)) : error(`undefined variable ${v}`);
 	};
 	return f(vts);
 };
