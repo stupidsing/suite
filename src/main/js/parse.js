@@ -498,12 +498,21 @@ let inferType = (vts, ast) => {
 				? (({ field, expr }) => f(vts, expr)[field])
 			: id === 'empty'
 				? (({}) => ['list',  newRef()])
+			: id === 'error'
+				? (({}) => newRef())
 			: id === 'index'
 				? (({ index, expr }) => {
 					let t = newRef();
 					let dummy0 = solveBind(f(vts, index), 'number') || error('index ${ast} is not a number');
 					let dummy1 = solveBind(f(vts, expr), ['list', t]) || error('${ast} is not a list');
 					return t;
+				})
+			: id === 'lambda'
+				? (({ bind, expr }) => {
+					let vts1 = defineBindTypes(vts, bind);
+					let tb = f(vts1, bind);
+					let te = f(vts1, expr);
+					return ['lambda', tb, te];
 				})
 			: id === 'let'
 				? (({ bind, value, expr }) => {
@@ -541,9 +550,9 @@ let inferType = (vts, ast) => {
 					let dummy = g({}, kvs);
 					return struct;
 				})
-			: id === 'vs'
+			: id === 'var'
 				? (({ value }) => lookup(vts, value))
-			: (({}) => error(`cannot infer type for ${ast}`));
+			: (({}) => error(`cannot infer type for ${id}`));
 
 		return g(ast);
 	}();
