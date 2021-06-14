@@ -59,7 +59,7 @@ let splitl = (s, sep) => {
 			return quote || bracket !== 0 || s.substring(i, j) !== sep || i === 0
 				? f(i + 1, quote1, bracket1)
 				: [s.substring(0, i), s.substring(j)];
-		}() : [s, null];
+		}() : [s, undefined];
 	};
 
 	return f(0, '', 0);
@@ -76,7 +76,7 @@ let splitr = (s, sep) => {
 			return quote1 || bracket1 !== 0 || s.substring(i, j) !== sep || i === 0
 				? f(j - 1, quote1, bracket1)
 				: [s.substring(0, i), s.substring(j)];
-		}() : [null, s];
+		}() : [undefined, s];
 	};
 	return f(s.length, '', 0);
 };
@@ -96,7 +96,7 @@ let parseAssocLeft_ = (id, op, parseValue) => {
 		let program = program_.trim();
 		let [left, right] = splitr(program, op);
 		let rhs = parseValue(right);
-		return left === null ? rhs : { id, lhs: f(left), rhs };
+		return left === undefined ? rhs : { id, lhs: f(left), rhs };
 	};
 	return f;
 };
@@ -107,7 +107,7 @@ let parseAssocRight = (id, op, parseValue) => {
 		let program = program_.trim();
 		let [left, right] = splitl(program, op);
 		let lhs = parseValue(left);
-		return right === null ? lhs : { id, lhs, rhs: f(right) };
+		return right === undefined ? lhs : { id, lhs, rhs: f(right) };
 	};
 	return f;
 };
@@ -146,8 +146,6 @@ let parseConstant = program => {
 			? { id: 'backquote', value: program.substring(1, program.length - 1) }
 		: program === 'false'
 			? { id: 'boolean', value: 'false' }
-		: program === 'null'
-			? { id: 'empty' }
 		: program === 'true'
 			? { id: 'boolean', value: 'true' }
 		: program === 'undefined'
@@ -167,7 +165,7 @@ let parseStructInner = (program, parse) => ({
 	kvs: keepsplitl(appendTrailingComma(program), ',', kv => {
 		let [key_, value_] = splitl(kv, ':');
 		let key = parseConstant(key_.trim()).value;
-		let value = value_ !== null ? parse(value_) : { id: 'var', value: key };
+		let value = value_ !== undefined ? parse(value_) : { id: 'var', value: key };
 		return { key, value };
 	}),
 });
@@ -197,7 +195,7 @@ let parseApplyBlockFieldIndex = program_ => {
 	let [expr, field] = splitr(program, '.');
 
 	return false ? {}
-		: expr !== null && isIdentifier(field)
+		: expr !== undefined && isIdentifier(field)
 			? { id: 'dot', field, expr: parseApplyBlockFieldIndex(expr) }
 		: program.startsWith('function() {') && program.endsWith('}()')
 			? parseProgram(program.substring(12, program.length - 3).trim())
@@ -211,7 +209,7 @@ let parseApplyBlockFieldIndex = program_ => {
 			? function() {
 				let [expr, paramStr_] = splitr(program, '(');
 				let paramStr = paramStr_.substring(0, paramStr_.length - 1).trim();
-				return expr !== null ? {
+				return expr !== undefined ? {
 					id: 'apply',
 					expr: parseProgram(expr),
 					parameter: parseProgram(paramStr),
@@ -220,7 +218,7 @@ let parseApplyBlockFieldIndex = program_ => {
 		: program.endsWith(']')
 			? function() {
 				let [expr, index] = splitr(program, '[');
-				return expr !== null ? {
+				return expr !== undefined ? {
 					id: 'index',
 					expr: parseProgram(expr),
 					index: parseProgram(index.substring(0, index.length - 1)),
@@ -247,7 +245,7 @@ let parseApp = parseAssocLeft_('app', '|>', parseOr_);
 let parseIf = program => {
 	let [if_, thenElse] = splitl(program, '?');
 
-	return thenElse === null ? parseApp(if_) : function() {
+	return thenElse === undefined ? parseApp(if_) : function() {
 		let [then, else_] = splitl(thenElse, ':');
 
 		return {
@@ -263,7 +261,7 @@ let parseBindPair = program => {
 	let [left, right] = splitl(program, ',');
 	let lhs = parseConstant(left.trim());
 
-	return right === null ? lhs : { id: 'pair', lhs, rhs: parseBindPair(right) };
+	return right === undefined ? lhs : { id: 'pair', lhs, rhs: parseBindPair(right) };
 };
 
 let parseBind = program => {
@@ -288,7 +286,7 @@ let parseBind = program => {
 let parseLambda = program => {
 	let [left, right] = splitl(program, '=>');
 
-	return right === null ? parseIf(left) : {
+	return right === undefined ? parseIf(left) : {
 		id: 'lambda',
 		bind: parseBind(left),
 		expr: parseProgram(right.trim()),
@@ -307,7 +305,7 @@ parseProgram = program => {
 				let [var_, value] = splitl(statement.substring(4), '=');
 				let v = var_.trim();
 
-				return value !== null
+				return value !== undefined
 					? {
 						id: 'let',
 						bind: parseBind(var_),
@@ -325,7 +323,7 @@ parseProgram = program => {
 			? parseProgram(statement.substring(7))
 		: statement.startsWith('throw ') && expr === ''
 			? { id: 'error' }
-		: expr !== null
+		: expr !== undefined
 			? function() {
 				let [var_, value] = splitl(statement, '=');
 				let v = var_.trim();
@@ -383,15 +381,24 @@ checkVariables = (vs, ast) => {
 let rewrite;
 
 rewrite = f => ast0 => {
-	return ast0.id === null ? ast0 : function() {
+	return ast0.id === undefined ? ast0 : function() {
 		let ast1 = f(ast0.id)(ast0);
-		return ast1 === null
+		return ast1 === undefined
 			? Object.fromEntries(Object.entries(ast0).map(([k, v]) => [k, rewrite(v)]))
 			: ast1;
 	}();
 };
 
-let stringify = json => JSON.stringify(json, null, '  ');
+let refCount;
+
+refCount = 0;
+
+let newRef = () => {
+	refCount = refCount + 1;
+	return { ref: refCount };
+};
+
+let stringify = json => JSON.stringify(json, undefined, '  ');
 
 let actual = stringify(parseProgram(`
 	console.log(parse(require('fs').readFileSync(0, 'utf8')))
