@@ -16,7 +16,7 @@ let repeat = (init, when, iterate) => {
 
 let fold = (init, list, op) => {
 	let f;
-	f = (init, list) => 0 < list.length ? f(op(init, list[0]), list[1]) : init;
+	f = (init, list) => list.length === 2 ? f(op(init, list[0]), list[1]) : init;
 	return f(init, list);
 };
 
