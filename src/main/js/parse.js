@@ -448,6 +448,68 @@ let solveBind = (a, b) => {
 	return f(a, b);
 };
 
+let lookup = (vts, v) => {
+	let f;
+	f = vts => {
+		let vt = vts[0];
+		return vt[0] === v ? vt[1] : f(vts[1], v);
+	};
+	return f(vts);
+};
+
+let inferType = (vts, ast) => {
+	let id = ast.id;
+	let f = false ? {}
+		: id === 'apply'
+			? (({ parameter, expr }) => {
+				let te = inferType(expr);
+				let tp = inferType(parameter);
+				let tr = newRef();
+				let dummy = solveBind(te, ['lambda', tp, tr]) || error('cannot bind lambda type');
+				return tr;
+			})
+		: id === 'backquote'
+			? (({}) => 'string')
+		: id === 'boolean'
+			? (({}) => id)
+		: id === 'dot'
+			? (({ field, expr }) => inferType(expr)[field])
+		: id === 'empty'
+			? (({}) => ['list',  newRef()])
+		: id === 'index'
+			? (({ index, expr }) => {
+				let dummy0 = solveBind(f(index), 'number') || error('index ${ast} is not a number');
+				let t = newRef();
+				let dummy1 = solveBind(f(expr), ['list', t]) || error('${ast} is not a list');
+				return t;
+			})
+		: id === 'list'
+			? (({ values }) => zzzzzzzzzzzzzzzzzzzzzzzzzz['list',  newRef()])
+		: id === 'new-map'
+			? (({}) => 'map')
+		: id === 'number'
+			? (({}) => id)
+		: id === 'string'
+			? (({}) => id)
+		: id === 'struct'
+			? (({ kvs }) => {
+				let struct;
+				struct = {};
+				let g;
+				g = kvs => kvs.length === 2 ? function() {
+					let { key, value } = kvs[0];
+					struct[key] = f(value);
+					return g(kvs[1]);
+				}() : {};
+				let dummy = g(kvs);
+				return struct;
+			})
+		: id === 'vs'
+			? (({ value }) => lookup(vts, value))
+		: error(`cannot infer type for ${ast}`);
+	return f(ast.id)(ast);
+};
+
 let stringify = json => JSON.stringify(json, undefined, '  ');
 
 let actual = stringify(parseProgram(`
