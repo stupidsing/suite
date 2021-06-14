@@ -340,7 +340,7 @@ parseProgram = program => {
 
 let mergeBindVariables;
 
-mergeBindVariables = (vs, ast) =>  {
+mergeBindVariables = (vs, ast) => {
 	return false ? {}
 		: ast.id === 'list' ? fold(vs, ast.values, mergeBindVariables)
 		: ast.id === 'pair' ? mergeBindVariables(mergeBindVariables(vs, ast.lhs), ast.rhs)
@@ -389,7 +389,7 @@ rewrite = f => ast0 => {
 	}();
 };
 
-let stringify = json => JSON.stringify(json,  null, '  ');
+let stringify = json => JSON.stringify(json, null, '  ');
 
 let actual = stringify(parseProgram(`
 	console.log(parse(require('fs').readFileSync(0, 'utf8')))
