@@ -505,6 +505,13 @@ let inferType = (vts, ast) => {
 				? (({ v, expr }) => f([v, newRef(), vts], expr))
 			: id === 'and'
 				? inferLogicalOp
+			: id === 'app'
+				? (({ lhs, rhs }) => {
+					let te = f(vts, lhs);
+					let tp = f(vts, rhs);
+					let tr = newRef();
+					return solveBind(te, ['lambda', tp, tr]) && tr;
+				})
 			: id === 'apply'
 				? (({ parameter, expr }) => {
 					let te = f(vts, expr);
