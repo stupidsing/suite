@@ -146,6 +146,8 @@ let parseConstant = program => {
 			? { id: 'backquote', value: program.substring(1, program.length - 1) }
 		: program === 'false'
 			? { id: 'boolean', value: 'false' }
+		: program === 'new Map'
+			? { id: 'new-map' }
 		: program === 'true'
 			? { id: 'boolean', value: 'true' }
 		: program === 'undefined'
@@ -190,13 +192,29 @@ let parseValue = program_ => {
 		: parseConstant(program);
 };
 
-let parseApplyBlockFieldIndex = program_ => {
+let parseLvalue = program_ => {
 	let program = program_.trim();
 	let [expr, field] = splitr(program, '.');
 
 	return false ? {}
 		: expr !== undefined && isIdentifier(field)
 			? { id: 'dot', field, expr: parseApplyBlockFieldIndex(expr) }
+		: program.endsWith(']')
+			? function() {
+				let [expr, index] = splitr(program, '[');
+				return expr !== undefined ? {
+					id: 'index',
+					expr: parseProgram(expr),
+					index: parseProgram(index.substring(0, index.length - 1)),
+				} : parseValue(program);
+			}()
+		: parseValue(program);
+};
+
+let parseApplyBlockFieldIndex = program_ => {
+	let program = program_.trim();
+
+	return false ? {}
 		: program.startsWith('function() {') && program.endsWith('}()')
 			? parseProgram(program.substring(12, program.length - 3).trim())
 		: program.endsWith('()')
@@ -215,16 +233,7 @@ let parseApplyBlockFieldIndex = program_ => {
 					parameter: parseProgram(paramStr),
 				} : parseValue(program);
 			}()
-		: program.endsWith(']')
-			? function() {
-				let [expr, index] = splitr(program, '[');
-				return expr !== undefined ? {
-					id: 'index',
-					expr: parseProgram(expr),
-					index: parseProgram(index.substring(0, index.length - 1)),
-				} : parseValue(program);
-			}()
-		: parseValue(program);
+		: parseLvalue(program);
 };
 
 let parseDiv = parseAssocLeft_('div', '/', parseApplyBlockFieldIndex);
@@ -326,14 +335,13 @@ parseProgram = program => {
 		: expr !== undefined
 			? function() {
 				let [var_, value] = splitl(statement, '=');
-				let v = var_.trim();
 
-				return isIdentifier(v) ? {
+				return {
 					id: 'assign',
-					v,
+					v: parseLvalue(var_),
 					value: parseProgram(value),
 					expr: parseProgram(expr),
-				} : error(`cannot parse assign variable "${v}"`);
+				};
 			}()
 		: parsePair(statement);
 };
@@ -389,13 +397,55 @@ rewrite = f => ast0 => {
 	}();
 };
 
+let refs = new Map();
 let refCount;
 
 refCount = 0;
 
+let setRef = (ref, target) => {
+	let dummy = refs.set(ref, target);
+	return true;
+};
+
+
 let newRef = () => {
 	refCount = refCount + 1;
 	return { ref: refCount };
+};
+
+let solveBind = (a, b) => {
+	let f;
+	f = (a, b) => function() {
+		let refa = a.ref;
+		let refb = b.ref;
+		return false ? true
+			: refa !== undefined && refs.get(refa) !== undefined
+				? f(refs.get(refa), b)
+			: refb !== undefined && refs.get(refb) !== undefined
+				? f(a, refs.get(refb))
+			: refa !== undefined && refb !== undefined
+				? (refa < refb ? setRef(refa, b) : setRef(refb, a))
+			: refa !== undefined
+				? setRef(refa, b)
+			: refb !== undefined
+				? setRef(refb, a)
+			: a.length === 0 && b.length === 0
+				? true
+			: a.length !== undefined && b.length !== undefined
+				? f(a[0], b[0]) && f(a.slice(1), b.slice(1))
+			: a.id === 'map' && b.id === 'map'
+				? true
+					&& Object.keys(a).reduce((b, k) => {
+						let dummy = b[k] !== undefined || function() { b[k] = newRef(); return b[k]; }();
+						return b && f(a[k], b[k]);
+					}, true)
+					&& Object.keys(b).reduce((b, k) => {
+						let dummy = a[k] !== undefined || function() { a[k] = newRef(); return a[k]; }();
+						return b && f(a[k], b[k]);
+					})
+			: a === b;
+	}();
+	return f(a, b);
 };
 
 let stringify = json => JSON.stringify(json, undefined, '  ');
