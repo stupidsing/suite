@@ -474,7 +474,21 @@ let inferType = (vts, ast) => {
 	f = (vts, ast) => function() {
 		let id = ast.id;
 
+		let inferCmpOp = ({ lhs, rhs }) => true
+			&& solveBind(f(vts, lhs), 'number')
+			&& solveBind(f(vts, rhs), 'number')
+			&& 'boolean';
+
+		let inferEqOp = ({ lhs, rhs }) => solveBind(f(vts, lhs), f(vts, rhs)) && 'boolean';
+
+		let inferMathOp = ({ lhs, rhs }) => true
+			&& solveBind(f(vts, lhs), 'number')
+			&& solveBind(f(vts, rhs), 'number')
+			&& 'number';
+
 		let g = false ? {}
+			: id === 'add'
+				? inferMathOp
 			: id === 'apply'
 				? (({ parameter, expr }) => {
 					let te = f(vts, expr);
@@ -492,16 +506,14 @@ let inferType = (vts, ast) => {
 				? (({}) => 'string')
 			: id === 'boolean'
 				? (({}) => id)
+			: id === 'div'
+				? inferMathOp
 			: id === 'dot'
 				? (({ field, expr }) => f(vts, expr)[field])
 			: id === 'empty'
 				? (({}) => ['list',  newRef()])
-			: id === 'eq'
-				? (({ lhs, rhs }) => {
-					let tlhs = f(vts, lhs);
-					let trhs = f(vts, rhs);
-					return solveBind(tlhs, trhs) && 'boolean';
-				})
+			: id === 'eq_'
+				? inferEqOp
 			: id === 'error'
 				? (({}) => newRef())
 			: id === 'index'
@@ -519,6 +531,8 @@ let inferType = (vts, ast) => {
 					let te = f(vts1, expr);
 					return ['lambda', tb, te];
 				})
+			: id === 'le_'
+				? inferCmpOp
 			: id === 'let'
 				? (({ bind, value, expr }) => {
 					let vts1 = defineBindTypes(vts, bind);
@@ -535,6 +549,12 @@ let inferType = (vts, ast) => {
 					}() : [];
 					return g(ast, values);
 				})
+			: id === 'lt_'
+				? inferCmpOp
+			: id === 'mul'
+				? inferMathOp
+			: id === 'ne_'
+				? inferEqOp
 			: id === 'new-map'
 				? (({}) => 'map')
 			: id === 'number'
@@ -554,6 +574,8 @@ let inferType = (vts, ast) => {
 					let dummy = g({}, kvs);
 					return struct;
 				})
+			: id === 'sub'
+				? inferMathOp
 			: id === 'var'
 				? (({ value }) => lookup(vts, value))
 			: (({}) => error(`cannot infer type for ${id}`));
