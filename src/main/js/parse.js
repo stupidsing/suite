@@ -491,8 +491,7 @@ let inferType = (vts, ast) => {
 
 		let inferLogicalOp = ({ lhs, rhs }) => true
 			&& solveBind(f(vts, lhs), 'boolean')
-			&& solveBind(f(vts, rhs), 'boolean')
-			&& 'boolean';
+			&& f(vts, rhs);
 
 		let inferMathOp = ({ lhs, rhs }) => true
 			&& solveBind(f(vts, lhs), 'number')
