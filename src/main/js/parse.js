@@ -268,6 +268,8 @@ parseBind = program_ => {
 	let program = program_.trim();
 
 	return false ? {}
+		: program === '()'
+			? { id: 'empty' }
 		: program.startsWith('(') && program.endsWith(')')
 			? parseBind(program.substring(1, program.length - 1))
 		: program.startsWith('[') && program.endsWith(']')
