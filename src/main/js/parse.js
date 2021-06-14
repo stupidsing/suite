@@ -444,7 +444,7 @@ let solveBind = (a, b) => {
 					})
 			: a === b;
 	}();
-	return f(a, b);
+	return f(a, b) || error(`cannot bind type ${a} to ${b}`);
 };
 
 let lookup = (vts, v) => {
@@ -480,15 +480,13 @@ let inferType = (vts, ast) => {
 					let te = f(vts, expr);
 					let tp = f(vts, parameter);
 					let tr = newRef();
-					let dummy = solveBind(te, ['lambda', tp, tr]) || error(`cannot bind lambda type for ${ast}`);
-					return tr;
+					return solveBind(te, ['lambda', tp, tr]) && tr;
 				})
 			: id === 'assign'
 				? (({ v, value, expr }) => {
 					let tvar = f(vts, v);
 					let tvalue = f(vts, value);
-					let dummy = solveBind(tvar, tvalue);
-					return f(vts, expr);
+					return solveBind(tvar, tvalue) && f(vts, expr);
 				})
 			: id === 'backquote'
 				? (({}) => 'string')
@@ -498,14 +496,21 @@ let inferType = (vts, ast) => {
 				? (({ field, expr }) => f(vts, expr)[field])
 			: id === 'empty'
 				? (({}) => ['list',  newRef()])
+			: id === 'eq'
+				? (({ lhs, rhs }) => {
+					let tlhs = f(vts, lhs);
+					let trhs = f(vts, rhs);
+					return solveBind(tlhs, trhs) && 'boolean';
+				})
 			: id === 'error'
 				? (({}) => newRef())
 			: id === 'index'
 				? (({ index, expr }) => {
 					let t = newRef();
-					let dummy0 = solveBind(f(vts, index), 'number') || error('index ${ast} is not a number');
-					let dummy1 = solveBind(f(vts, expr), ['list', t]) || error('${ast} is not a list');
-					return t;
+					return true
+						&& solveBind(f(vts, index), 'number')
+						&& solveBind(f(vts, expr), ['list', t])
+						&& t;
 				})
 			: id === 'lambda'
 				? (({ bind, expr }) => {
@@ -519,8 +524,7 @@ let inferType = (vts, ast) => {
 					let vts1 = defineBindTypes(vts, bind);
 					let tb = f(vts1, bind);
 					let tv = f(vts1, value);
-					let dummy = solveBind(tb, tv) || error('cannot infer type for bind expression ${bind}');
-					return f(vts1, expr);
+					return solveBind(tb, tv) && f(vts1, expr);
 				})
 			: id === 'list'
 				? (({ values }) => {
