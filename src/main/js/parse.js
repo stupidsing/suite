@@ -146,8 +146,12 @@ let parseConstant = program => {
 			? { id: 'backquote', value: program.substring(1, program.length - 1) }
 		: program === 'false'
 			? { id: 'boolean', value: 'false' }
+		: program === 'null'
+			? { id: 'empty' }
 		: program === 'true'
 			? { id: 'boolean', value: 'true' }
+		: program === 'undefined'
+			? { id: 'empty' }
 		: isIdentifier(program)
 			? { id: 'var', value: program }
 		: error(`cannot parse "${program}"`);
@@ -428,11 +432,7 @@ actual === expect
 		'JSON', [
 			'Object', [
 				'console', [
-					'null', [
-						'require', [
-							'undefined', []
-						]
-					]
+					'require', []
 				]
 			]
 		]
