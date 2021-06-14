@@ -432,14 +432,14 @@ let solveBind = (a, b) => {
 				? true
 			: a.length !== undefined && b.length !== undefined
 				? f(a[0], b[0]) && f(a.slice(1), b.slice(1))
-			: a.id === 'map' && b.id === 'map'
+			: a.id === 'struct' && b.id === 'struct'
 				? true
 					&& Object.keys(a).reduce((b, k) => {
-						let dummy = b[k] !== undefined || function() { b[k] = newRef(); return b[k]; }();
+						let dummy = b.fixed !== true && b[k] !== undefined || function() { b[k] = newRef(); return b[k]; }();
 						return b && f(a[k], b[k]);
 					}, true)
 					&& Object.keys(b).reduce((b, k) => {
-						let dummy = a[k] !== undefined || function() { a[k] = newRef(); return a[k]; }();
+						let dummy = a.fixed !== true && a[k] !== undefined || function() { a[k] = newRef(); return a[k]; }();
 						return b && f(a[k], b[k]);
 					})
 			: a === b;
@@ -571,7 +571,7 @@ let inferType = (vts, ast) => {
 						struct[key] = f(vts, value);
 						return g(kvs[1]);
 					}() : {};
-					let dummy = g({}, kvs);
+					let dummy = g({ id: 'struct' }, kvs);
 					return struct;
 				})
 			: id === 'sub'
