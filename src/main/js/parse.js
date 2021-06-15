@@ -4,7 +4,7 @@ let ascii = s => s.charCodeAt(0);
 
 let contains = (list, e) => {
 	let f;
-	f = es => 0 < es.length && (es[0] === e || f(es[1], e));
+	f = es => 0 < es.length && (es[0] === e || f(es[1]));
 	return f(list);
 };
 
@@ -273,9 +273,9 @@ let parseIf = program => {
 
 		return {
 			id: 'if',
-			'if': parseProgram(if_),
+			if_: parseProgram(if_),
 			then: parseProgram(then),
-			'else': parseProgram(else_),
+			else_: parseProgram(else_),
 		};
 	}();
 };
@@ -418,7 +418,9 @@ let setRef = (ref, target) => {
 
 let newRef = () => {
 	refCount = refCount + 1;
-	return { ref: refCount };
+	let ref = { ref: refCount };
+	let dummy = refs.set(refCount, ref);
+	return ref;
 };
 
 let tryBind = (a, b) => {
@@ -427,9 +429,9 @@ let tryBind = (a, b) => {
 		let refa = a.ref;
 		let refb = b.ref;
 		return false ? true
-			: refa !== undefined && refs.get(refa) !== undefined
+			: refa !== undefined && refs.get(refa) !== a
 				? f(refs.get(refa), b)
-			: refb !== undefined && refs.get(refb) !== undefined
+			: refb !== undefined && refs.get(refb) !== b
 				? f(a, refs.get(refb))
 			: refa !== undefined && refb !== undefined
 				? (refa < refb ? setRef(refa, b) : setRef(refb, a))
@@ -443,7 +445,7 @@ let tryBind = (a, b) => {
 				? true
 			: a.length !== undefined && b.length !== undefined
 				? f(a[0], b[0]) && f(a.slice(1), b.slice(1))
-			: true
+			: typeof a === 'object' && typeof b === 'object'
 					&& Object.keys(a).reduce((b, k) => {
 						let dummy = b.fixed !== true && b[k] !== undefined || function() { b[k] = newRef(); return b[k]; }();
 						return b && f(a[k], b[k]);
@@ -480,6 +482,8 @@ let defineBindTypes = (vs, ast) => {
 	return f(vs, ast);
 };
 
+let typeString = ['list', 'string'];
+
 let inferType = (vts, ast) => {
 	let f;
 	f = (vts, ast) => function() {
@@ -490,7 +494,7 @@ let inferType = (vts, ast) => {
 			return true
 				&& solveBind(f(vts, lhs), t)
 				&& solveBind(f(vts, rhs), t)
-				&& (tryBind(t, 'number') || tryBind(t, 'string') || error(`cannot compare values with type ${t}`))
+				&& (tryBind(t, 'number') || tryBind(t, typeString) || error(`cannot compare values with type ${t}`))
 				&& 'boolean';
 		}();
 
@@ -535,14 +539,17 @@ let inferType = (vts, ast) => {
 					return solveBind(tvar, tvalue) && f(vts, expr);
 				})
 			: id === 'backquote'
-				? (({}) => 'string')
+				? (({}) => typeString)
 			: id === 'boolean'
 				? (({}) => id)
 			: id === 'div'
 				? inferMathOp
 			: id === 'dot'
-				? (({ field, expr }) => field === 'charCodeAt'
-					?  solveBind(f(vts, expr), 'string') && ['lambda', 'number', 'number']
+				? (({ field, expr }) => false ? {}
+					:field === 'charCodeAt'
+						?  solveBind(f(vts, expr), typeString) && ['lambda', 'number', 'number']
+					:field === 'length'
+						?  solveBind(f(vts, expr), ['list', newRef()]) && 'number'
 					: function() {
 						let t = f(vts, expr)[field];
 						return t !== undefined ? t : error(`field ${field} not found`);
@@ -553,6 +560,12 @@ let inferType = (vts, ast) => {
 				? inferEqOp
 			: id === 'error'
 				? (({}) => newRef())
+			: id === 'if'
+				? (({ if_, then, else_ }) => {
+					let tt = f(vts, then);
+					let te = f(vts, else_);
+					return solveBind(if_, 'boolean') && solveBind(tt, te) && tt;
+				})
 			: id === 'index'
 				? (({ index, expr }) => {
 					let t = newRef();
@@ -601,7 +614,7 @@ let inferType = (vts, ast) => {
 			: id === 'pair'
 				? (({ lhs, rhs }) => ['pair', f(vts, lhs), f(vts, rhs)])
 			: id === 'string'
-				? (({}) => id)
+				? (({}) => typeString)
 			: id === 'struct'
 				? (({ kvs }) => {
 					let g;
@@ -616,7 +629,7 @@ let inferType = (vts, ast) => {
 			: id === 'sub'
 				? inferMathOp
 			: id === 'typeof'
-				? (({}) => 'string')
+				? (({}) => typeString)
 			: id === 'var'
 				? (({ value }) => lookup(vts, value))
 			:
@@ -686,7 +699,8 @@ actual === expect
 			]
 		]
 	], ast);
-	return console.log(stringify(ast));
+	return true
+		&& console.log('ast', stringify(ast));
 }() : error(`
 test case failed,
 actual = ${actual}
