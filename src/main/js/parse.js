@@ -162,7 +162,8 @@ let parseConstant = program => {
 			? { id: 'empty' }
 		: isIdentifier(program)
 			? { id: 'var', value: program }
-		: error(`cannot parse "${program}"`);
+		:
+			error(`cannot parse "${program}"`);
 };
 
 let parseList = (program, parse) => ({
@@ -188,6 +189,8 @@ let parseValue = program_ => {
 	let program = program_.trim();
 
 	return false ? {}
+		: program.startsWith('typeof ') && expr === ''
+			? { id: 'typeof', expr: program(statement.substring(7)) }
 		: program.startsWith('(') && program.endsWith(')')
 			? parseProgram(program.substring(1, program.length - 1))
 		: program.startsWith('[') && program.endsWith(']')
@@ -197,7 +200,8 @@ let parseValue = program_ => {
 				let block = program.substring(1, program.length - 1).trim();
 				return block.endsWith(';') ? parseProgram(block) : parseStructInner(block, parseProgram);
 			}()
-		: parseConstant(program);
+		:
+			parseConstant(program);
 };
 
 let parseLvalue = program_ => {
@@ -216,7 +220,8 @@ let parseLvalue = program_ => {
 					index: parseProgram(index.substring(0, index.length - 1)),
 				} : parseValue(program);
 			}()
-		: parseValue(program);
+		:
+			parseValue(program);
 };
 
 let parseApplyBlockFieldIndex = program_ => {
@@ -241,7 +246,8 @@ let parseApplyBlockFieldIndex = program_ => {
 					parameter: parseProgram(paramStr),
 				} : parseValue(program);
 			}()
-		: parseLvalue(program);
+		:
+			parseLvalue(program);
 };
 
 let parseDiv = parseAssocLeft_('div', '/', parseApplyBlockFieldIndex);
@@ -295,7 +301,8 @@ let parseBind = program => {
 				? parseList(program, f)
 			: program.startsWith('{') && program.endsWith('}')
 				? parseStruct(program, f)
-			: parseBindPair(program);
+			:
+				parseBindPair(program);
 	};
 	return f(program);
 };
@@ -334,7 +341,8 @@ parseProgram = program => {
 						v,
 						expr: parseProgram(expr),
 					}
-					: error(`cannot parse let variable "${v}"`);
+					:
+						error(`cannot parse let variable "${v}"`);
 			}()
 		: statement.startsWith('return ') && expr === ''
 			? parseProgram(statement.substring(7))
@@ -351,7 +359,8 @@ parseProgram = program => {
 					expr: parseProgram(expr),
 				};
 			}()
-		: parsePair(statement);
+		:
+			parsePair(statement);
 };
 
 let mergeBindVariables = (vs, ast) => {
@@ -428,12 +437,13 @@ let tryBind = (a, b) => {
 				? setRef(refa, b)
 			: refb !== undefined
 				? setRef(refb, a)
+			: typeof a === 'string' && typeof b === 'string'
+				? a === b
 			: a.length === 0 && b.length === 0
 				? true
 			: a.length !== undefined && b.length !== undefined
 				? f(a[0], b[0]) && f(a.slice(1), b.slice(1))
-			: a.id === 'struct' && b.id === 'struct'
-				? true
+			: true
 					&& Object.keys(a).reduce((b, k) => {
 						let dummy = b.fixed !== true && b[k] !== undefined || function() { b[k] = newRef(); return b[k]; }();
 						return b && f(a[k], b[k]);
@@ -441,8 +451,7 @@ let tryBind = (a, b) => {
 					&& Object.keys(b).reduce((b, k) => {
 						let dummy = a.fixed !== true && a[k] !== undefined || function() { a[k] = newRef(); return a[k]; }();
 						return b && f(a[k], b[k]);
-					})
-			: a === b;
+					});
 	}();
 	return f(a, b);
 };
@@ -604,9 +613,12 @@ let inferType = (vts, ast) => {
 				})
 			: id === 'sub'
 				? inferMathOp
+			: id === 'typeof'
+				? (({}) => 'string')
 			: id === 'var'
 				? (({ value }) => lookup(vts, value))
-			: (({}) => error(`cannot infer type for ${id}`));
+			:
+				(({}) => error(`cannot infer type for ${id}`));
 
 		return g(ast);
 	}();
