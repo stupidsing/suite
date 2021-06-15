@@ -541,10 +541,12 @@ let inferType = (vts, ast) => {
 			: id === 'div'
 				? inferMathOp
 			: id === 'dot'
-				? (({ field, expr }) => function() {
-					let t = f(vts, expr)[field];
-					return t !== undefined ? t : error(`field ${field} not found`);
-				}())
+				? (({ field, expr }) => field === 'charCodeAt'
+					?  solveBind(f(vts, expr), 'string') && ['lambda', 'number', 'number']
+					: function() {
+						let t = f(vts, expr)[field];
+						return t !== undefined ? t : error(`field ${field} not found`);
+					}())
 			: id === 'empty'
 				? (({}) => ['list',  newRef()])
 			: id === 'eq_'
