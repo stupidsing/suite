@@ -699,8 +699,10 @@ actual === expect
 			]
 		]
 	], ast);
+	let type = newRef();
 	return true
-		&& console.log('ast', stringify(ast));
+		&& console.log('ast', stringify(ast))
+		&& console.log('type', stringify(type));
 }() : error(`
 test case failed,
 actual = ${actual}
