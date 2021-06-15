@@ -189,8 +189,8 @@ let parseValue = program_ => {
 	let program = program_.trim();
 
 	return false ? {}
-		: program.startsWith('typeof ') && expr === ''
-			? { id: 'typeof', expr: program(statement.substring(7)) }
+		: program.startsWith('typeof ')
+			? { id: 'typeof', expr: parseValue(program.substring(7)) }
 		: program.startsWith('(') && program.endsWith(')')
 			? parseProgram(program.substring(1, program.length - 1))
 		: program.startsWith('[') && program.endsWith(']')
