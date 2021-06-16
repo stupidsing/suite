@@ -4,9 +4,21 @@ let ascii = s => s.charCodeAt(0);
 
 let dump = ast => {
 	let f;
-	f = ast.id !== undefined
-		? Object.entries(ast).filter(([k, v]) => k !== 'id').map(([k, v]) => `${k}:${f(v)}`).reduce((a, b) => a + b, '')
-		: JSON.stringify(ast);
+	f = ast => false ? ''
+		: ast.id !== undefined
+			? ast.id
+				+ '('
+				+ Object
+					.entries(ast)
+					.filter(([k, v]) => k !== 'id')
+					.map(([k, v]) => `${k}:${f(v)} `)
+					.reduce((a, b) => a + b, '')
+					.trim()
+				+ ')'
+		: typeof ast === 'string'
+			? ast
+		:
+			JSON.stringify(ast);
 	return f(ast);
 };
 
@@ -454,13 +466,13 @@ let tryBind = (a, b) => {
 			: a.length !== undefined && b.length !== undefined
 				? f(a[0], b[0]) && f(a.slice(1), b.slice(1))
 			: typeof a === 'object' && typeof b === 'object'
-					&& Object.keys(a).reduce((b, k) => {
+					&& Object.keys(a).reduce((r, k) => {
 						let dummy = b.completed !== true && b[k] !== undefined || function() { b[k] = newRef(); return b[k]; }();
-						return b && f(a[k], b[k]);
+						return r && f(a[k], b[k]);
 					}, true)
-					&& Object.keys(b).reduce((b, k) => {
+					&& Object.keys(b).reduce((r, k) => {
 						let dummy = a.completed !== true && a[k] !== undefined || function() { a[k] = newRef(); return a[k]; }();
-						return b && f(a[k], b[k]);
+						return r && f(a[k], b[k]);
 					});
 	}();
 	return f(a, b);
@@ -559,8 +571,10 @@ let inferType = (vts, ast) => {
 					:field === 'length'
 						?  solveBind(f(vts, expr), ['list', newRef()]) && 'number'
 					: function() {
-						let t = f(vts, expr)[field];
-						return t !== undefined ? t : error(`field ${field} not found`);
+						let tr = newRef();
+						let to = {};
+						to[field] = tr;
+						return solveBind(f(vts, expr), to) && tr;
 					}())
 			: id === 'empty'
 				? (({}) => ['list',  newRef()])
@@ -572,7 +586,7 @@ let inferType = (vts, ast) => {
 				? (({ if_, then, else_ }) => {
 					let tt = f(vts, then);
 					let te = f(vts, else_);
-					return solveBind(if_, 'boolean') && solveBind(tt, te) && tt;
+					return solveBind(f(vts, if_), 'boolean') && solveBind(tt, te) && tt;
 				})
 			: id === 'index'
 				? (({ index, expr }) => {
@@ -708,9 +722,9 @@ actual === expect
 		]
 	], ast);
 	let type = newRef();
-	return true
-		&& console.log('ast', stringify(ast))
-		&& console.log('type', stringify(type));
+	let dummy1 = console.log(`ast :: ${stringify(ast)}`);
+	let dummy2 = console.log(`type :: ${stringify(type)}`);
+	return true;
 }() : error(`
 test case failed,
 actual = ${actual}
