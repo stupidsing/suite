@@ -2,6 +2,14 @@ let error = message => { throw new Error(message); };
 
 let ascii = s => s.charCodeAt(0);
 
+let dump = ast => {
+	let f;
+	f = ast.id !== undefined
+		? Object.entries(ast).filter(([k, v]) => k !== 'id').map(([k, v]) => `${k}:${f(v)}`).reduce((a, b) => a + b, '')
+		: JSON.stringify(ast);
+	return f(ast);
+};
+
 let contains = (list, e) => {
 	let f;
 	f = es => 0 < es.length && (es[0] === e || f(es[1]));
@@ -447,18 +455,18 @@ let tryBind = (a, b) => {
 				? f(a[0], b[0]) && f(a.slice(1), b.slice(1))
 			: typeof a === 'object' && typeof b === 'object'
 					&& Object.keys(a).reduce((b, k) => {
-						let dummy = b.fixed !== true && b[k] !== undefined || function() { b[k] = newRef(); return b[k]; }();
+						let dummy = b.completed !== true && b[k] !== undefined || function() { b[k] = newRef(); return b[k]; }();
 						return b && f(a[k], b[k]);
 					}, true)
 					&& Object.keys(b).reduce((b, k) => {
-						let dummy = a.fixed !== true && a[k] !== undefined || function() { a[k] = newRef(); return a[k]; }();
+						let dummy = a.completed !== true && a[k] !== undefined || function() { a[k] = newRef(); return a[k]; }();
 						return b && f(a[k], b[k]);
 					});
 	}();
 	return f(a, b);
 };
 
-let solveBind = (a, b) => tryBind(a, b) || error(`cannot bind type ${a} to ${b}`);
+let solveBind = (a, b) => tryBind(a, b) || error(`cannot bind type ${dump(a)} to ${dump(b)}`);
 
 let lookup = (vts, v) => {
 	let f;
