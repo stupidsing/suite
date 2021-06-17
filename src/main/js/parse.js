@@ -340,47 +340,49 @@ let parseLambda = program => {
 let parsePair = parseAssocRight('pair', ',', parseLambda);
 
 parseProgram = program => {
-	let [statement_, expr] = splitl(program, ';');
-	let statement = statement_.trim();
+	let [statement_, expr_] = splitl(program, ';');
 
-	return false ? {}
-		: statement.startsWith('let ')
-			? function() {
-				let [var_, value] = splitl(statement.substring(4), '=');
-				let v = var_.trim();
+	return expr_ === undefined ? parsePair(statement_) : function() {
+		let statement = statement_.trim();
+		let expr = expr_.trim();
 
-				return value !== undefined
-					? {
-						id: 'let',
-						bind: parseBind(var_),
+		return false ? {}
+			: statement.startsWith('let ')
+				? function() {
+					let [var_, value] = splitl(statement.substring(4), '=');
+					let v = var_.trim();
+	
+					return value !== undefined
+						? {
+							id: 'let',
+							bind: parseBind(var_),
+							value: parseProgram(value),
+							expr: parseProgram(expr),
+						}
+						: isIdentifier(var_) ? {
+							id: 'alloc',
+							v,
+							expr: parseProgram(expr),
+						}
+						:
+							error(`cannot parse let variable "${v}"`);
+				}()
+			: statement.startsWith('return ') && expr === ''
+				? parseProgram(statement.substring(7))
+			: statement.startsWith('throw ') && expr === ''
+				? { id: 'error' }
+			:
+				function() {
+					let [var_, value] = splitl(statement, '=');
+	
+					return {
+						id: 'assign',
+						v: parseLvalue(var_),
 						value: parseProgram(value),
 						expr: parseProgram(expr),
-					}
-					: isIdentifier(var_) ? {
-						id: 'alloc',
-						v,
-						expr: parseProgram(expr),
-					}
-					:
-						error(`cannot parse let variable "${v}"`);
-			}()
-		: statement.startsWith('return ') && expr === ''
-			? parseProgram(statement.substring(7))
-		: statement.startsWith('throw ') && expr === ''
-			? { id: 'error' }
-		: expr !== undefined
-			? function() {
-				let [var_, value] = splitl(statement, '=');
-
-				return {
-					id: 'assign',
-					v: parseLvalue(var_),
-					value: parseProgram(value),
-					expr: parseProgram(expr),
-				};
-			}()
-		:
-			parsePair(statement);
+					};
+				}();
+	}();
 };
 
 let mergeBindVariables = (vs, ast) => {
@@ -709,7 +711,7 @@ let expect = stringify({
 	}
 });
 
-actual === expect
+return actual === expect
 ? function() {
 	let ast = parseProgram(require('fs').readFileSync(0, 'utf8'));
 	let dummy0 = checkVariables([
@@ -728,4 +730,4 @@ actual === expect
 }() : error(`
 test case failed,
 actual = ${actual}
-expect = ${expect}`)
+expect = ${expect}`);
