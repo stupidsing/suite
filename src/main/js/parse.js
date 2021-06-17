@@ -211,6 +211,15 @@ let parseValue = program_ => {
 	return false ? {}
 		: program.startsWith('typeof ')
 			? { id: 'typeof', expr: parseValue(program.substring(7)) }
+		: program.startsWith('try {') && program.endsWith('}')
+			? function() {
+				let [try_, catch_] = splitl(program.substring(4), 'catch (e)');
+				return {
+					id: 'try',
+					expr: parseProgram(try_),
+					catch_: { id: 'lambda', bind: { id: 'var', value: 'e' }, expr: parseProgram(catch_) }
+				};
+			}()
 		: program.startsWith('(') && program.endsWith(')')
 			? parseProgram(program.substring(1, program.length - 1))
 		: program.startsWith('[') && program.endsWith(']')
@@ -401,30 +410,34 @@ let mergeBindVariables = (vs, ast) => {
 let checkVariables;
 
 checkVariables = (vs, ast) => {
-	let f = id => id === undefined ? (ast => true)
-		: id === 'alloc' ? (({ v, expr }) => {
-			return checkVariables([v, vs], expr);
-		})
-		: id === 'assign' ? (({ v, value, expr }) => {
-			return contains(vs, v) && checkVariables(vs, value) && checkVariables(vs, expr);
-		})
-		: id === 'lambda' ? (({ bind, expr }) => {
-			return checkVariables(mergeBindVariables(vs, bind), expr);
-		})
-		: id === 'let' ? (({ bind, value, expr }) => {
-			let vs1 = mergeBindVariables(vs, bind);
-			return checkVariables(vs, value) && checkVariables(vs1, expr);
-		})
-		: id === 'var' ? (({ value: v }) => {
-			return contains(vs, v) || error(`undefined variable ${v}`);
-		})
-		: (ast => {
-			let kvs = Object.entries(ast);
-			let g;
-			g = i => i < kvs.length ? checkVariables(vs, kvs[i][1]) && g(i + 1) : true;
-			return g(0);
-		});
-	return f(ast.id)(ast);
+	let f = ast => function() {
+		let id = ast.id;
+
+		return id === undefined ? (ast => true)
+			: id === 'alloc' ? (({ v, expr }) => {
+				return f([v, vs], expr);
+			})
+			: id === 'assign' ? (({ v, value, expr }) => {
+				return contains(vs, v) && f(vs, value) && f(vs, expr);
+			})
+			: id === 'lambda' ? (({ bind, expr }) => {
+				return f(mergeBindVariables(vs, bind), expr);
+			})
+			: id === 'let' ? (({ bind, value, expr }) => {
+				let vs1 = mergeBindVariables(vs, bind);
+				return function() { try { return f(vs, value); } catch (e) { throw `in binding ${dump(bind)}: ${e}`; } }() && f(vs1, expr);
+			})
+			: id === 'var' ? (({ value: v }) => {
+				return contains(vs, v) || error(`undefined variable ${v}`);
+			})
+			: (ast => {
+				let kvs = Object.entries(ast);
+				let g;
+				g = i => i < kvs.length ? f(vs, kvs[i][1]) && g(i + 1) : true;
+				return g(0);
+			});
+	}();
+	return f(ast);
 };
 
 let refs = new Map();
@@ -569,9 +582,9 @@ let inferType = (vts, ast) => {
 			: id === 'dot'
 				? (({ field, expr }) => false ? {}
 					:field === 'charCodeAt'
-						?  solveBind(f(vts, expr), typeString) && ['lambda', 'number', 'number']
+						? solveBind(f(vts, expr), typeString) && ['lambda', 'number', 'number']
 					:field === 'length'
-						?  solveBind(f(vts, expr), ['list', newRef()]) && 'number'
+						? solveBind(f(vts, expr), ['list', newRef()]) && 'number'
 					: function() {
 						let tr = newRef();
 						let to = {};
@@ -579,7 +592,7 @@ let inferType = (vts, ast) => {
 						return solveBind(f(vts, expr), to) && tr;
 					}())
 			: id === 'empty'
-				? (({}) => ['list',  newRef()])
+				? (({}) => ['list', newRef()])
 			: id === 'eq_'
 				? inferEqOp
 			: id === 'error'
@@ -611,7 +624,7 @@ let inferType = (vts, ast) => {
 				? (({ bind, value, expr }) => {
 					let vts1 = defineBindTypes(vts, bind);
 					let tb = f(vts1, bind);
-					let tv = f(vts1, value);
+					let tv = function() { try { return f(vts1, value); } catch (e) { throw `in binding ${dump(bind)}: ${e}`; } }();
 					return solveBind(tb, tv) && f(vts1, expr);
 				})
 			: id === 'list'
@@ -652,6 +665,8 @@ let inferType = (vts, ast) => {
 				})
 			: id === 'sub'
 				? inferMathOp
+			: id === 'try'
+				? (({ try_, catch_ }) => solveBind(f(vts, catch_), newRef()) && f(vts, try_))
 			: id === 'typeof'
 				? (({}) => typeString)
 			: id === 'var'
