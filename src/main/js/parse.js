@@ -425,7 +425,9 @@ checkVariables = (vs, ast) => {
 			})
 			: id === 'let' ? (({ bind, value, expr }) => {
 				let vs1 = mergeBindVariables(vs, bind);
-				return function() { try { return f(vs, value); } catch (e) { throw `in binding ${dump(bind)}: ${e}`; } }() && f(vs1, expr);
+				return function() {
+					try { return f(vs, value); } catch (e) { throw `in binding ${dump(bind)}: ${e}`; }
+				}() && f(vs1, expr);
 			})
 			: id === 'var' ? (({ value: v }) => {
 				return contains(vs, v) || error(`undefined variable ${v}`);
@@ -624,7 +626,9 @@ let inferType = (vts, ast) => {
 				? (({ bind, value, expr }) => {
 					let vts1 = defineBindTypes(vts, bind);
 					let tb = f(vts1, bind);
-					let tv = function() { try { return f(vts1, value); } catch (e) { throw `in binding ${dump(bind)}: ${e}`; } }();
+					let tv = function() {
+						try { return f(vts1, value); } catch (e) { throw `in binding ${dump(bind)}: ${e}`; }
+					}();
 					return solveBind(tb, tv) && f(vts1, expr);
 				})
 			: id === 'list'
