@@ -25,8 +25,8 @@ let dump = v => {
 			? function() {
 				let join = Object
 					.entries(v)
-					.filter(([k, v]) => k !== 'id')
-					.map(([k, v]) => `${k}:${f([v, vs], v)} `)
+					.filter(([k, v_]) => k !== 'id')
+					.map(([k, v_]) => `${k}:${f([v, vs], v_)} `)
 					.reduce((a, b) => a + b, '')
 					.trim();
 				return `${v.id}(${join})`;
