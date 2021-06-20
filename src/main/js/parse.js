@@ -648,9 +648,9 @@ let inferType = (vts, ast) => {
 				? inferMathOp
 			: id === 'dot'
 				? (({ field, expr }) => false ? {}
-					:field === 'charCodeAt'
+					: field === 'charCodeAt'
 						? doBind(ast, f(vts, expr), typeString) && ['lambda', 'number', 'number']
-					:field === 'length'
+					: field === 'length'
 						? doBind(ast, f(vts, expr), ['array', newRef()]) && 'number'
 					: function() {
 						let tr = newRef();
