@@ -2,36 +2,10 @@ let error = message => { throw new Error(message); };
 
 let ascii = s => s.charCodeAt(0);
 
-let dump = ast => {
-	let f;
-	f = ast => false ? ''
-		: ast.id !== undefined
-			? ast.id
-				+ '('
-				+ Object
-					.entries(ast)
-					.filter(([k, v]) => k !== 'id')
-					.map(([k, v]) => `${k}:${f(v)} `)
-					.reduce((a, b) => a + b, '')
-					.trim()
-				+ ')'
-		: typeof ast === 'string'
-			? ast
-		:
-			JSON.stringify(ast);
-	return f(ast);
-};
-
 let contains = (list, e) => {
 	let f;
 	f = es => 0 < es.length && (es[0] === e || f(es[1]));
 	return f(list);
-};
-
-let repeat = (init, when, iterate) => {
-	let f;
-	f = value => when(value) ? f(iterate(value)) : value;
-	return f(init);
 };
 
 let fold = (init, list, op) => {
@@ -40,12 +14,26 @@ let fold = (init, list, op) => {
 	return f(init, list);
 };
 
-let zip = (lhs, rhs) => {
+let dump = v => {
 	let f;
-	f = (lhs, rhs) => lhs.length !== 0 || rhs.length !== 0
-			? [[lhs[0], rhs[0]], f(lhs[1], rhs[1])]
-			: [];
-	return f(lhs, rhs);
+	f = (vs, v) => false ? ''
+		: contains(vs, v)
+			? '<recurse>'
+		: v.id !== undefined
+			? function() {
+				let join = Object
+					.entries(v)
+					.filter(([k, v]) => k !== 'id')
+					.map(([k, v]) => `${k}:${f([v, vs], v)} `)
+					.reduce((a, b) => a + b, '')
+					.trim();
+				return `${v.id}(${join})`;
+			}()
+		: typeof v === 'string'
+			? v
+		:
+			JSON.stringify(v);
+	return f([], v);
 };
 
 let isAll = pred => list => {
@@ -426,7 +414,12 @@ checkVariables = (vs, ast) => {
 			: id === 'let' ? (({ bind, value, expr }) => {
 				let vs1 = mergeBindVariables(vs, bind);
 				return function() {
-					try { return f(vs, value); } catch (e) { throw `in bind of ${dump(bind)}\n${e}`; }
+					try {
+						return f(vs, value);
+					} catch (e) {
+						e.message = `in bind of ${dump(bind)}\n${e.message}`;
+						throw e;
+					}
 				}() && f(vs1, expr);
 			})
 			: id === 'var' ? (({ value: v }) => {
@@ -446,6 +439,35 @@ let refs = new Map();
 let refCount;
 
 refCount = 0;
+
+let dumpRef = v => {
+	let f;
+	f = (vs, v) => false ? ''
+		: contains(vs, v)
+			? '<recurse>'
+		: typeof v === 'string'
+			? v
+		: v.length !== undefined
+			? function() {
+				let join = v.map(e => f([v, vs], e)).join(', ');
+				return `[${join}]`;
+			}()
+		: v.ref !== undefined
+			? (refs.get(v.ref) !== v ? f([v, vs], refs.get(v.ref)) : `.${v.ref}`)
+		: typeof v === 'object'
+			? function() {
+				let join = Object
+					.entries(v)
+					.filter(([k, v]) => k !== 'id')
+					.map(([k, v]) => `${k}:${f(vs, v)} `)
+					.reduce((a, b) => a + b, '')
+					.trim();
+				return `${v.id}(${join})`;
+			}()
+		:
+			JSON.stringify(v);
+	return f([], v);
+};
 
 let setRef = (ref, target) => {
 	let dummy = refs.set(ref, target);
@@ -471,17 +493,19 @@ let tryBind = (a, b) => {
 			: refb !== undefined && refs.get(refb) !== b
 				? f(a, refs.get(refb))
 			: refa !== undefined && refb !== undefined
-				? (refa < refb ? setRef(refa, b) : setRef(refb, a))
+				? (refa < refb ? setRef(refb, a) : setRef(refa, b))
 			: refa !== undefined
 				? setRef(refa, b)
 			: refb !== undefined
 				? setRef(refb, a)
 			: typeof a === 'string' && typeof b === 'string'
 				? a === b
+			: 0 < a.length && 0 < b.length
+				? f(a[0], b[0]) && f(a.slice(1), b.slice(1))
 			: a.length === 0 && b.length === 0
 				? true
-			: a.length !== undefined && b.length !== undefined
-				? f(a[0], b[0]) && f(a.slice(1), b.slice(1))
+			: a.length === 0 || b.length === 0
+				? false
 			: typeof a === 'object' && typeof b === 'object'
 					&& Object.keys(a).reduce((r, k) => {
 						let dummy = b.completed !== true && b[k] !== undefined || function() { b[k] = newRef(); return b[k]; }();
@@ -495,7 +519,7 @@ let tryBind = (a, b) => {
 	return f(a, b);
 };
 
-let doBind = (ast, a, b) => tryBind(a, b) || error(`cannot bind type ${dump(a)} to ${dump(b)} in ${dump(ast)}`);
+let doBind = (ast, a, b) => tryBind(a, b) || error(`cannot bind type ${dumpRef(a)} to ${dumpRef(b)} in ${dump(ast)}`);
 
 let lookup = (vts, v) => {
 	let f;
@@ -627,18 +651,19 @@ let inferType = (vts, ast) => {
 					let vts1 = defineBindTypes(vts, bind);
 					let tb = f(vts1, bind);
 					let tv = function() {
-						try { return f(vts1, value); } catch (e) { throw `in bind of ${dump(bind)}\n${e}`; }
+						try {
+							return f(vts1, value);
+						} catch (e) {
+							e.message = `in bind of ${dump(bind)}\n${e.message}`;
+							throw e;
+						}
 					}();
 					return doBind(ast, tb, tv) && f(vts1, expr);
 				})
 			: id === 'list'
 				? (({ values }) => {
-					let g;
-					g = (vts, values) => values.length === 2 ? function() {
-						let [head, tail] = values;
-						return [f(vts, head), g(vts, tail)];
-					}() : [];
-					return g(ast, values);
+					let te = newRef();
+					return fold(true, values, (b, value) => b && doBind(ast, f(vts, value), te)) && ['list', te];
 				})
 			: id === 'lt_'
 				? inferCmpOp
@@ -659,13 +684,13 @@ let inferType = (vts, ast) => {
 			: id === 'struct'
 				? (({ kvs }) => {
 					let g;
-					g = (struct, kvs) => kvs.length === 2 ? function() {
+					g = kvs => kvs.length === 2 ? function() {
+						let type = g(kvs[1]);
 						let { key, value } = kvs[0];
-						struct[key] = f(vts, value);
-						return g(kvs[1]);
-					}() : {};
-					let dummy = g({ id: 'struct' }, kvs);
-					return struct;
+						type[key] = f(vts, value);
+						return type;
+					}() : { id: 'struct' };
+					return g(kvs);
 				})
 			: id === 'sub'
 				? inferMathOp
@@ -683,15 +708,15 @@ let inferType = (vts, ast) => {
 	return f(vts, ast);
 };
 
-let rewrite;
-
-rewrite = f => ast0 => {
-	return ast0.id === undefined ? ast0 : function() {
-		let ast1 = f(ast0.id)(ast0);
+let rewrite = r => ast => {
+	let f;
+	f = ast0 => ast0.id === undefined ? ast0 : function() {
+		let ast1 = r(ast0.id)(ast0);
 		return ast1 === undefined
-			? Object.fromEntries(Object.entries(ast0).map(([k, v]) => [k, rewrite(v)]))
+			? Object.fromEntries(Object.entries(ast0).map(([k, v]) => [k, f(v)]))
 			: ast1;
 	}();
+	return f(ast);
 };
 
 let stringify = json => JSON.stringify(json, undefined, '  ');
@@ -745,7 +770,7 @@ return actual === expect
 		], ast);
 		let type = newRef();
 		let dummy1 = console.log(`ast :: ${stringify(ast)}`);
-		let dummy2 = console.log(`type :: ${stringify(type)}`);
+		let dummy2 = console.log(`type :: ${dumpRef(type)}`);
 		return true;
 	} catch (e) {
 		return console.error(e);
