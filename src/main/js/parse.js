@@ -84,7 +84,7 @@ let splitl = (s, sep) => {
 			let ch = s.charCodeAt(i);
 			let { quote: quote1, bracket: bracket1 } = quoteBracket(quote, bracket, ch);
 
-			return quote || bracket !== 0 || s.substring(i, j) !== sep || i === 0
+			return quote !== '' || bracket !== 0 || s.substring(i, j) !== sep || i === 0
 				? f(i + 1, quote1, bracket1)
 				: [s.substring(0, i), s.substring(j)];
 		}() : [s, undefined];
@@ -101,7 +101,7 @@ let splitr = (s, sep) => {
 			let ch = s.charCodeAt(j - 1);
 			let { quote: quote1, bracket: bracket1 } = quoteBracket(quote, bracket, ch);
 
-			return quote1 || bracket1 !== 0 || s.substring(i, j) !== sep || i === 0
+			return quote1 !== '' || bracket1 !== 0 || s.substring(i, j) !== sep || i === 0
 				? f(j - 1, quote1, bracket1)
 				: [s.substring(0, i), s.substring(j)];
 		}() : [undefined, s];
@@ -495,7 +495,7 @@ let tryBind = (a, b) => {
 	return f(a, b);
 };
 
-let doBind = (a, b) => tryBind(a, b) || error(`cannot bind type ${dump(a)} to ${dump(b)}`);
+let doBind = (ast, a, b) => tryBind(a, b) || error(`cannot bind type ${dump(a)} to ${dump(b)} in ${dump(ast)}`);
 
 let lookup = (vts, v) => {
 	let f;
@@ -519,7 +519,7 @@ let defineBindTypes = (vs, ast) => {
 	return f(vs, ast);
 };
 
-let typeString = ['list', 'string'];
+let typeString = ['list', 'char'];
 
 let inferType = (vts, ast) => {
 	let f;
@@ -529,23 +529,23 @@ let inferType = (vts, ast) => {
 		let inferCmpOp = ({ lhs, rhs }) => function() {
 			let t = newRef();
 			return true
-				&& doBind(f(vts, lhs), t)
-				&& doBind(f(vts, rhs), t)
+				&& doBind(ast, f(vts, lhs), t)
+				&& doBind(ast, f(vts, rhs), t)
 				&& (tryBind(t, 'number') || tryBind(t, typeString) || error(`cannot compare values with type ${t}`))
 				&& 'boolean';
 		}();
 
 		let inferEqOp = ({ lhs, rhs }) => true
-			&& doBind(f(vts, lhs), f(vts, rhs))
+			&& doBind(ast, f(vts, lhs), f(vts, rhs))
 			&& 'boolean';
 
 		let inferLogicalOp = ({ lhs, rhs }) => true
-			&& doBind(f(vts, lhs), 'boolean')
+			&& doBind(ast, f(vts, lhs), 'boolean')
 			&& f(vts, rhs);
 
 		let inferMathOp = ({ lhs, rhs }) => true
-			&& doBind(f(vts, lhs), 'number')
-			&& doBind(f(vts, rhs), 'number')
+			&& doBind(ast, f(vts, lhs), 'number')
+			&& doBind(ast, f(vts, rhs), 'number')
 			&& 'number';
 
 		let g = false ? {}
@@ -560,20 +560,20 @@ let inferType = (vts, ast) => {
 					let te = f(vts, lhs);
 					let tp = f(vts, rhs);
 					let tr = newRef();
-					return doBind(te, ['lambda', tp, tr]) && tr;
+					return doBind(ast, te, ['lambda', tp, tr]) && tr;
 				})
 			: id === 'apply'
 				? (({ parameter, expr }) => {
 					let te = f(vts, expr);
 					let tp = f(vts, parameter);
 					let tr = newRef();
-					return doBind(te, ['lambda', tp, tr]) && tr;
+					return doBind(ast, te, ['lambda', tp, tr]) && tr;
 				})
 			: id === 'assign'
 				? (({ v, value, expr }) => {
 					let tvar = f(vts, v);
 					let tvalue = f(vts, value);
-					return doBind(tvar, tvalue) && f(vts, expr);
+					return doBind(ast, tvar, tvalue) && f(vts, expr);
 				})
 			: id === 'backquote'
 				? (({}) => typeString)
@@ -584,14 +584,14 @@ let inferType = (vts, ast) => {
 			: id === 'dot'
 				? (({ field, expr }) => false ? {}
 					:field === 'charCodeAt'
-						? doBind(f(vts, expr), typeString) && ['lambda', 'number', 'number']
+						? doBind(ast, f(vts, expr), typeString) && ['lambda', 'number', 'number']
 					:field === 'length'
-						? doBind(f(vts, expr), ['list', newRef()]) && 'number'
+						? doBind(ast, f(vts, expr), ['list', newRef()]) && 'number'
 					: function() {
 						let tr = newRef();
 						let to = {};
 						to[field] = tr;
-						return doBind(f(vts, expr), to) && tr;
+						return doBind(ast, f(vts, expr), to) && tr;
 					}())
 			: id === 'empty'
 				? (({}) => ['list', newRef()])
@@ -603,14 +603,14 @@ let inferType = (vts, ast) => {
 				? (({ if_, then, else_ }) => {
 					let tt = f(vts, then);
 					let te = f(vts, else_);
-					return doBind(f(vts, if_), 'boolean') && doBind(tt, te) && tt;
+					return doBind(ast, f(vts, if_), 'boolean') && doBind(ast, tt, te) && tt;
 				})
 			: id === 'index'
 				? (({ index, expr }) => {
 					let t = newRef();
 					return true
-						&& doBind(f(vts, index), 'number')
-						&& doBind(f(vts, expr), ['list', t])
+						&& doBind(ast, f(vts, index), 'number')
+						&& doBind(ast, f(vts, expr), ['list', t])
 						&& t;
 				})
 			: id === 'lambda'
@@ -629,7 +629,7 @@ let inferType = (vts, ast) => {
 					let tv = function() {
 						try { return f(vts1, value); } catch (e) { throw `in bind of ${dump(bind)}\n${e}`; }
 					}();
-					return doBind(tb, tv) && f(vts1, expr);
+					return doBind(ast, tb, tv) && f(vts1, expr);
 				})
 			: id === 'list'
 				? (({ values }) => {
@@ -670,7 +670,7 @@ let inferType = (vts, ast) => {
 			: id === 'sub'
 				? inferMathOp
 			: id === 'try'
-				? (({ try_, catch_ }) => doBind(f(vts, catch_), newRef()) && f(vts, try_))
+				? (({ try_, catch_ }) => doBind(ast, f(vts, catch_), newRef()) && f(vts, try_))
 			: id === 'typeof'
 				? (({}) => typeString)
 			: id === 'var'
