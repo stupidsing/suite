@@ -174,8 +174,8 @@ let parseConstant = program => {
 			error(`cannot parse "${program}"`);
 };
 
-let parseList = (program, parse) => ({
-	id: 'list',
+let parseArray = (program, parse) => ({
+	id: 'array',
 	values: keepsplitl(appendTrailingComma(program.substring(1, program.length - 1).trim()), ',', parse),
 });
 
@@ -211,7 +211,7 @@ let parseValue = program_ => {
 		: program.startsWith('(') && program.endsWith(')')
 			? parseProgram(program.substring(1, program.length - 1))
 		: program.startsWith('[') && program.endsWith(']')
-			? parseList(program, parseProgram)
+			? parseArray(program, parseProgram)
 		: program.startsWith('{') && program.endsWith('}')
 			? function() {
 				let block = program.substring(1, program.length - 1).trim();
@@ -315,7 +315,7 @@ let parseBind = program => {
 			: program.startsWith('(') && program.endsWith(')')
 				? f(program.substring(1, program.length - 1))
 			: program.startsWith('[') && program.endsWith(']')
-				? parseList(program, f)
+				? parseArray(program, f)
 			: program.startsWith('{') && program.endsWith('}')
 				? parseStruct(program, f)
 			:
@@ -386,7 +386,7 @@ let mergeBindVariables = (vs, ast) => {
 	let f;
 	f = (vs, ast) => {
 	return false ? {}
-		: ast.id === 'list' ? fold(vs, ast.values, f)
+		: ast.id === 'array' ? fold(vs, ast.values, f)
 		: ast.id === 'pair' ? f(f(vs, ast.lhs), ast.rhs)
 		: ast.id === 'struct' ? fold(vs, ast.kvs, (vs_, kv) => f(vs_, kv.value))
 		: ast.id === 'var' ? [ast.value, vs]
@@ -532,7 +532,7 @@ let defineBindTypes = (vs, ast) => {
 	let f;
 	f = (vs, ast) => {
 	return false ? {}
-		: ast.id === 'list' ? fold(vs, ast.values, f)
+		: ast.id === 'array' ? fold(vs, ast.values, f)
 		: ast.id === 'pair' ? f(f(vs, ast.lhs), ast.rhs)
 		: ast.id === 'struct' ? fold(vs, ast.kvs, (vs_, kv) => f(vs_, kv.value))
 		: ast.id === 'var' ? [ast.value, newRef(), vs]
@@ -541,7 +541,7 @@ let defineBindTypes = (vs, ast) => {
 	return f(vs, ast);
 };
 
-let typeString = ['list', 'char'];
+let typeString = ['array', 'char'];
 
 let inferType = (vts, ast) => {
 	let f;
@@ -591,6 +591,11 @@ let inferType = (vts, ast) => {
 					let tr = newRef();
 					return doBind(ast, te, ['lambda', tp, tr]) && tr;
 				})
+			: id === 'array'
+				? (({ values }) => {
+					let te = newRef();
+					return fold(true, values, (b, value) => b && doBind(ast, f(vts, value), te)) && ['array', te];
+				})
 			: id === 'assign'
 				? (({ v, value, expr }) => {
 					let tvar = f(vts, v);
@@ -608,7 +613,7 @@ let inferType = (vts, ast) => {
 					:field === 'charCodeAt'
 						? doBind(ast, f(vts, expr), typeString) && ['lambda', 'number', 'number']
 					:field === 'length'
-						? doBind(ast, f(vts, expr), ['list', newRef()]) && 'number'
+						? doBind(ast, f(vts, expr), ['array', newRef()]) && 'number'
 					: function() {
 						let tr = newRef();
 						let to = {};
@@ -616,7 +621,7 @@ let inferType = (vts, ast) => {
 						return doBind(ast, f(vts, expr), to) && tr;
 					}())
 			: id === 'empty'
-				? (({}) => ['list', newRef()])
+				? (({}) => ['array', newRef()])
 			: id === 'eq_'
 				? inferEqOp
 			: id === 'error'
@@ -632,7 +637,7 @@ let inferType = (vts, ast) => {
 					let t = newRef();
 					return true
 						&& doBind(ast, f(vts, index), 'number')
-						&& doBind(ast, f(vts, expr), ['list', t])
+						&& doBind(ast, f(vts, expr), ['array', t])
 						&& t;
 				})
 			: id === 'lambda'
@@ -657,11 +662,6 @@ let inferType = (vts, ast) => {
 						}
 					}();
 					return doBind(ast, tb, tv) && f(vts1, expr);
-				})
-			: id === 'list'
-				? (({ values }) => {
-					let te = newRef();
-					return fold(true, values, (b, value) => b && doBind(ast, f(vts, value), te)) && ['list', te];
 				})
 			: id === 'lt_'
 				? inferCmpOp
