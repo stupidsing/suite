@@ -466,6 +466,19 @@ let refCount;
 
 refCount = 0;
 
+let setRef = (ref, target) => {
+	let dummy = refs.set(ref, target);
+	return true;
+};
+
+
+let newRef = () => {
+	refCount = refCount + 1;
+	let ref = { ref: refCount };
+	let dummy = refs.set(refCount, ref);
+	return setRef(refCount, ref) && ref;
+};
+
 let dumpRef = v => {
 	let f;
 	f = (vs, v) => false ? ''
@@ -493,19 +506,6 @@ let dumpRef = v => {
 		:
 			JSON.stringify(v);
 	return f(nil, v);
-};
-
-let setRef = (ref, target) => {
-	let dummy = refs.set(ref, target);
-	return true;
-};
-
-
-let newRef = () => {
-	refCount = refCount + 1;
-	let ref = { ref: refCount };
-	let dummy = refs.set(refCount, ref);
-	return ref;
 };
 
 let tryBind = (a, b) => {
@@ -654,8 +654,9 @@ let inferType = (vts, ast) => {
 						? doBind(ast, f(vts, expr), ['array', newRef()]) && 'number'
 					: function() {
 						let tr = newRef();
-						let to = { id: 'struct' };
-						to[field] = tr;
+						let kvs = {};
+						kvs[field] = tr;
+						let to = { id: 'struct', kvs };
 						return doBind(ast, f(vts, expr), to) && tr;
 					}())
 			: id === 'element'
