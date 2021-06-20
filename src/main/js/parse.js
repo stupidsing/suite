@@ -1,16 +1,18 @@
+let ascii = s => s.charCodeAt(0);
+
 let error = message => { throw new Error(message); };
 
-let ascii = s => s.charCodeAt(0);
+let nil = undefined;
 
 let contains = (list, e) => {
 	let f;
-	f = es => es[0] !== undefined && (es[0] === e || f(es[1]));
+	f = es => es !== nil && (es[0] === e || f(es[1]));
 	return f(list);
 };
 
 let fold = (init, list, op) => {
 	let f;
-	f = (init, list) => list[0] !== undefined ? f(op(init, list[0]), list[1]) : init;
+	f = (init, list) => list !== nil ? f(op(init, list[0]), list[1]) : init;
 	return f(init, list);
 };
 
@@ -33,7 +35,7 @@ let dump = v => {
 			? v
 		:
 			JSON.stringify(v);
-	return f([], v);
+	return f(undefined, v);
 };
 
 let isAll = pred => s => {
@@ -102,7 +104,7 @@ let keepsplitl = (s, sep, apply) => {
 	f = input => input !== '' ? function() {
 		let [left, right] = splitl(input, sep);
 		return [apply(left), f(right)];
-	}() : [];
+	}() : nil;
 	return f(s);
 };
 
@@ -265,7 +267,7 @@ let parseApplyBlockFieldIndex = program_ => {
 			? {
 				id: 'apply',
 				expr: parseProgram(program.substring(0, program.length - 2)),
-				parameter: { id: 'array', values: [] },
+				parameter: { id: 'array', values: nil },
 			}
 		: program.endsWith(')')
 			? function() {
@@ -315,7 +317,7 @@ let parseBindPair = program => {
 	let [left, right] = splitl(program, ',');
 	let lhs = parseConstant(left.trim());
 
-	return right === undefined ? lhs : { id: 'tuple', values: [lhs, [parseBindPair(right), []]] };
+	return right === undefined ? lhs : { id: 'tuple', values: [lhs, [parseBindPair(right), nil]] };
 };
 
 let parseBind = program => {
@@ -325,7 +327,7 @@ let parseBind = program => {
 
 		return false ? {}
 			: program === '()'
-				? { id: 'array', values: [] }
+				? { id: 'array', values: nil }
 			: program.startsWith('(') && program.endsWith(')')
 				? f(program.substring(1, program.length - 1))
 			: program.startsWith('[') && program.endsWith(']')
@@ -354,7 +356,7 @@ let parsePair = program_ => {
 		let program = program_.trim();
 		let [left, right] = splitl(program, ',');
 		let lhs = parseLambda(left);
-		return right === undefined ? lhs : { id: 'tuple', values: [lhs, [f(right), []]] };
+		return right === undefined ? lhs : { id: 'tuple', values: [lhs, [f(right), nil]] };
 	};
 	return f(program_);
 };
@@ -487,7 +489,7 @@ let dumpRef = v => {
 			}()
 		:
 			JSON.stringify(v);
-	return f([], v);
+	return f(nil, v);
 };
 
 let setRef = (ref, target) => {
@@ -727,10 +729,10 @@ let inferType = (vts, ast) => {
 			: id === 'tuple'
 				? (({ values }) => {
 					let h;
-					h = values => values.length === 2 ? function() {
+					h = values => values !== nil ? function() {
 						let [head, tail] = values;
 						return [f(vts, head), h(tail)];
-					}() : [];
+					}() : nil;
 					return ['tuple', h(values)];
 				})
 			: id === 'typeof'
@@ -787,7 +789,7 @@ let expect = stringify({
 			},
 			parameter: {
 				id: 'tuple',
-				values: [{ id: 'number', value: 0 }, [{ id: 'string', value: 'utf8' },[]]]
+				values: [{ id: 'number', value: 0 }, [{ id: 'string', value: 'utf8' }, nil]]
 			}
 		}
 	}
@@ -801,8 +803,7 @@ return actual === expect
 			'JSON', [
 				'Object', [
 					'console', [
-						'require', [
-						]
+						'require', nil
 					]
 				]
 			]
