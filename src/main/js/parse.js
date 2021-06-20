@@ -313,7 +313,7 @@ let parseBindPair = program => {
 	let [left, right] = splitl(program, ',');
 	let lhs = parseConstant(left.trim());
 
-	return right === undefined ? lhs : { id: 'pair', lhs, rhs: parseBindPair(right) };
+	return right === undefined ? lhs : { id: 'tuple', values: [lhs, [parseBindPair(right), []]] };
 };
 
 let parseBind = program => {
@@ -346,7 +346,16 @@ let parseLambda = program => {
 	};
 };
 
-let parsePair = parseAssocRight('pair', ',', parseLambda);
+let parsePair = program_ => {
+	let f;
+	f = program_ => {
+		let program = program_.trim();
+		let [left, right] = splitl(program, ',');
+		let lhs = parseLambda(left);
+		return right === undefined ? lhs : { id: 'tuple', values: [lhs, [f(right), []]] };
+	};
+	return f(program_);
+};
 
 parseProgram = program => {
 	let [statement_, expr_] = splitl(program, ';');
@@ -399,8 +408,8 @@ let mergeBindVariables = (vs, ast) => {
 	f = (vs, ast) => {
 	return false ? {}
 		: ast.id === 'array' ? fold(vs, ast.values, f)
-		: ast.id === 'pair' ? f(f(vs, ast.lhs), ast.rhs)
 		: ast.id === 'struct' ? fold(vs, ast.kvs, (vs_, kv) => f(vs_, kv.value))
+		: ast.id === 'tuple' ? fold(vs, ast.values, f)
 		: ast.id === 'var' ? [ast.value, vs]
 		: vs;
 	};
@@ -547,8 +556,8 @@ let defineBindTypes = (vs, ast) => {
 	f = (vs, ast) => {
 	return false ? {}
 		: ast.id === 'array' ? fold(vs, ast.values, f)
-		: ast.id === 'pair' ? f(f(vs, ast.lhs), ast.rhs)
 		: ast.id === 'struct' ? fold(vs, ast.kvs, (vs_, kv) => f(vs_, kv.value))
+		: ast.id === 'tuple' ? fold(vs, ast.values, f)
 		: ast.id === 'var' ? [ast.value, newRef(), vs]
 		: error(`cannot destructure ${ast}`);
 	};
@@ -698,8 +707,6 @@ let inferType = (vts, ast) => {
 				? (({}) => id)
 			: id === 'or_'
 				? inferLogicalOp
-			: id === 'pair'
-				? (({ lhs, rhs }) => ['pair', f(vts, lhs), f(vts, rhs)])
 			: id === 'string'
 				? (({}) => typeString)
 			: id === 'struct'
@@ -777,9 +784,8 @@ let expect = stringify({
 				}
 			},
 			parameter: {
-				id: 'pair',
-				lhs: { id: 'number', value: 0 },
-				rhs: { id: 'string', value: 'utf8' }
+				id: 'tuple',
+				values: [{ id: 'number', value: 0 }, [{ id: 'string', value: 'utf8' },[]]]
 			}
 		}
 	}
