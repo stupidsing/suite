@@ -395,9 +395,7 @@ let mergeBindVariables = (vs, ast) => {
 	return f(vs, ast);
 };
 
-let checkVariables;
-
-checkVariables = (vs, ast) => {
+let checkVariables = (vs, ast) => {
 	let f = ast => function() {
 		let id = ast.id;
 
@@ -759,7 +757,7 @@ return actual === expect
 ? function() {
 	try {
 		let ast = parseProgram(require('fs').readFileSync(0, 'utf8'));
-		let dummy0 = checkVariables([
+		let b = checkVariables([
 			'JSON', [
 				'Object', [
 					'console', [
@@ -771,7 +769,7 @@ return actual === expect
 		let type = newRef();
 		let dummy1 = console.log(`ast :: ${stringify(ast)}`);
 		let dummy2 = console.log(`type :: ${dumpRef(type)}`);
-		return true;
+		return b;
 	} catch (e) {
 		return console.error(e);
 	}
