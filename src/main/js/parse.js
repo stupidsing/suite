@@ -654,7 +654,7 @@ let inferType = (vts, ast) => {
 						? doBind(ast, f(vts, expr), ['array', newRef()]) && 'number'
 					: function() {
 						let tr = newRef();
-						let to = {};
+						let to = { id: 'struct' };
 						to[field] = tr;
 						return doBind(ast, f(vts, expr), to) && tr;
 					}())
