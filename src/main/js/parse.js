@@ -235,18 +235,20 @@ let parseLvalue = program_ => {
 			? { id: 'dot', field, expr: parseApplyBlockFieldIndex(expr) }
 		: program.endsWith(']')
 			? function() {
-				let [expr, index] = splitr(program, '[');
+				let [expr, index_] = splitr(program, '[');
+				let index = index_.substring(0, index_.length - 1);
 				return expr === undefined ? parseValue(program)
 					: index === '0' || index === '1' || index === '2'
 						? {
 							id: 'element',
+							expr: parseProgram(expr),
 							index,
 						}
 					:
 						{
 							id: 'index',
 							expr: parseProgram(expr),
-							index: parseProgram(index.substring(0, index.length - 1)),
+							index: parseProgram(index),
 						};
 			}()
 		:
@@ -644,7 +646,7 @@ let inferType = (vts, ast) => {
 						return doBind(ast, f(vts, expr), to) && tr;
 					}())
 			: id === 'element'
-				? (({ index }) => {
+				? (({ index, expr }) => {
 					let te = newRef();
 					return false ? {}
 					: index === '0' ? doBind(ast, f(vts, expr), ['tuple', [te, newRef()]]) && te
