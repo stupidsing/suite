@@ -35,7 +35,7 @@ let dump = v => {
 			? v
 		:
 			JSON.stringify(v);
-	return f(undefined, v);
+	return f(nil, v);
 };
 
 let isAll = pred => s => {
@@ -548,10 +548,10 @@ let doBind = (ast, a, b) => tryBind(a, b) || error(`cannot bind type ${dumpRef(a
 
 let lookup = (vts, v) => {
 	let f;
-	f = vts => {
+	f = vts => vts !== nil ? function() {
 		let [v_, t, vts_] = vts;
-		return v_ !== undefined ? (v_ === v ? t : f(vts_, v)) : error(`undefined variable ${v}`);
-	};
+		return v_ === v ? t : f(vts_, v);
+	}() : error(`undefined variable ${v}`);
 	return f(vts, v);
 };
 
