@@ -694,6 +694,15 @@ let inferType = (vts, ast) => {
 				? inferMathOp
 			: id === 'try'
 				? (({ try_, catch_ }) => doBind(ast, f(vts, catch_), newRef()) && f(vts, try_))
+			: id === 'tuple'
+				? (({ values }) => {
+					let h;
+					h = (vts, value) => values.length === 2 ? function() {
+						let [head, tail] = values;
+						return [f(vts, head), h(vts, tail)];
+					}() : [];
+					return ['tuple', h(ast, values)];
+				})
 			: id === 'typeof'
 				? (({}) => typeString)
 			: id === 'var'
