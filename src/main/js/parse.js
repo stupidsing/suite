@@ -36,9 +36,9 @@ let dump = v => {
 	return f([], v);
 };
 
-let isAll = pred => list => {
+let isAll = pred => s => {
 	let f;
-	f = i => i < list.length ? pred(list.charCodeAt(i)) && f(i + 1) : true;
+	f = i => i < s.length ? pred(s.charCodeAt(i)) && f(i + 1) : true;
 	return f(0);
 };
 
