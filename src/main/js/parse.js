@@ -2,7 +2,7 @@ let ascii = s => s.charCodeAt(0);
 
 let error = message => { throw new Error(message); };
 
-let nil = undefined;
+let nil = [];
 
 let contains = (list, e) => {
 	let f;
@@ -166,6 +166,8 @@ let parseConstant = program => {
 			? { id: 'boolean', value: 'false' }
 		: program === 'new Map'
 			? { id: 'new-map' }
+		: program === 'nil'
+			? { id: 'nil' }
 		: program === 'true'
 			? { id: 'boolean', value: 'true' }
 		: program === 'undefined'
@@ -412,6 +414,7 @@ let mergeBindVariables = (vs, ast) => {
 	f = (vs, ast) => {
 	return false ? {}
 		: ast.id === 'array' ? fold(vs, ast.values, f)
+		: ast.id === 'nil' ? vs
 		: ast.id === 'struct' ? fold(vs, ast.kvs, (vs_, kv) => f(vs_, kv.value))
 		: ast.id === 'tuple' ? fold(vs, ast.values, f)
 		: ast.id === 'var' ? [ast.value, vs]
@@ -468,8 +471,6 @@ let dumpRef = v => {
 	f = (vs, v) => false ? ''
 		: contains(vs, v)
 			? '<recurse>'
-		: v === nil
-			? 'nil'
 		: typeof v === 'string'
 			? v
 		: v.length !== undefined
@@ -562,6 +563,7 @@ let defineBindTypes = (vs, ast) => {
 	f = (vs, ast) => {
 	return false ? {}
 		: ast.id === 'array' ? fold(vs, ast.values, f)
+		: ast.id === 'nil' ? vs
 		: ast.id === 'struct' ? fold(vs, ast.kvs, (vs_, kv) => f(vs_, kv.value))
 		: ast.id === 'tuple' ? fold(vs, ast.values, f)
 		: ast.id === 'var' ? [ast.value, newRef(), vs]
@@ -707,6 +709,8 @@ let inferType = (vts, ast) => {
 				? inferEqOp
 			: id === 'new-map'
 				? (({}) => 'map')
+			: id === 'nil'
+				? (({}) => newRef())
 			: id === 'number'
 				? (({}) => id)
 			: id === 'or_'
