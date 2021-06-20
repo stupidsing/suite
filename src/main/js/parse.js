@@ -720,11 +720,11 @@ let inferType = (vts, ast) => {
 			: id === 'tuple'
 				? (({ values }) => {
 					let h;
-					h = (vts, value) => values.length === 2 ? function() {
+					h = values => values.length === 2 ? function() {
 						let [head, tail] = values;
-						return [f(vts, head), h(vts, tail)];
+						return [f(vts, head), h(tail)];
 					}() : [];
-					return ['tuple', h(ast, values)];
+					return ['tuple', h(values)];
 				})
 			: id === 'typeof'
 				? (({}) => typeString)
