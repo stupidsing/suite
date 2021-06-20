@@ -772,7 +772,8 @@ return actual === expect
 			'JSON', [
 				'Object', [
 					'console', [
-						'require', []
+						'require', [
+						]
 					]
 				]
 			]
