@@ -498,12 +498,14 @@ let tryBind = (a, b) => {
 				? setRef(refb, a)
 			: typeof a === 'string' && typeof b === 'string'
 				? a === b
-			: 0 < a.length && 0 < b.length
-				? f(a[0], b[0]) && f(a.slice(1), b.slice(1))
-			: a.length === 0 && b.length === 0
-				? true
-			: a.length === 0 || b.length === 0
-				? false
+			: a.length !== undefined && b.length !== undefined
+				? (a.length === b.length
+					? function() {
+						let g;
+						g = index => index === a.length || tryBind(a[index], b[index]) && g(index + 1);
+						return g(0);
+					}()
+					: false)
 			: typeof a === 'object' && typeof b === 'object'
 					&& Object.keys(a).reduce((r, k) => {
 						let dummy = b.completed !== true && b[k] !== undefined || function() { b[k] = newRef(); return b[k]; }();
