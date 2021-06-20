@@ -179,6 +179,11 @@ let parseArray = (program, parse) => ({
 	values: keepsplitl(appendTrailingComma(program.substring(1, program.length - 1).trim()), ',', parse),
 });
 
+let parseTuple = (program, parse) => ({
+	id: 'tuple',
+	values: keepsplitl(appendTrailingComma(program.substring(1, program.length - 1).trim()), ',', parse),
+});
+
 let parseStructInner = (program, parse) => ({
 	id: 'struct',
 	kvs: keepsplitl(appendTrailingComma(program), ',', kv => {
@@ -211,7 +216,7 @@ let parseValue = program_ => {
 		: program.startsWith('(') && program.endsWith(')')
 			? parseProgram(program.substring(1, program.length - 1))
 		: program.startsWith('[') && program.endsWith(']')
-			? parseArray(program, parseProgram)
+			? parseTuple(program, parseProgram)
 		: program.startsWith('{') && program.endsWith('}')
 			? function() {
 				let block = program.substring(1, program.length - 1).trim();
@@ -231,11 +236,18 @@ let parseLvalue = program_ => {
 		: program.endsWith(']')
 			? function() {
 				let [expr, index] = splitr(program, '[');
-				return expr !== undefined ? {
-					id: 'index',
-					expr: parseProgram(expr),
-					index: parseProgram(index.substring(0, index.length - 1)),
-				} : parseValue(program);
+				return expr === undefined ? parseValue(program)
+					: index === '0' || index === '1' || index === '2'
+						? {
+							id: 'element',
+							index,
+						}
+					:
+						{
+							id: 'index',
+							expr: parseProgram(expr),
+							index: parseProgram(index.substring(0, index.length - 1)),
+						};
 			}()
 		:
 			parseValue(program);
@@ -622,6 +634,15 @@ let inferType = (vts, ast) => {
 						to[field] = tr;
 						return doBind(ast, f(vts, expr), to) && tr;
 					}())
+			: id === 'element'
+				? (({ index }) => {
+					let te = newRef();
+					return false ? {}
+					: index === '0' ? doBind(ast, f(vts, expr), ['tuple', [te, newRef()]]) && te
+					: index === '1' ? doBind(ast, f(vts, expr), ['tuple', [newRef(), [te, newRef()]]]) && te
+					: index === '2' ? doBind(ast, f(vts, expr), ['tuple', [newRef(), [newRef(), [te, newRef()]]]]) && te
+					: {};
+				})
 			: id === 'empty'
 				? (({}) => ['array', newRef()])
 			: id === 'eq_'
