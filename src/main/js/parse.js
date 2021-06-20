@@ -206,8 +206,6 @@ let parseValue = program_ => {
 	let program = program_.trim();
 
 	return false ? {}
-		: program.startsWith('typeof ')
-			? { id: 'typeof', expr: parseValue(program.substring(7)) }
 		: program.startsWith('try {') && program.endsWith('}')
 			? function() {
 				let [try_, catch_] = splitl(program.substring(4), 'catch (e)');
@@ -217,6 +215,8 @@ let parseValue = program_ => {
 					catch_: { id: 'lambda', bind: { id: 'var', value: 'e' }, expr: parseProgram(catch_) }
 				};
 			}()
+		: program.startsWith('typeof ')
+			? { id: 'typeof', expr: parseValue(program.substring(7)) }
 		: program.startsWith('(') && program.endsWith(')')
 			? parseProgram(program.substring(1, program.length - 1))
 		: program.startsWith('[') && program.endsWith(']')
