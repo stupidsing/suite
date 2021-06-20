@@ -468,6 +468,8 @@ let dumpRef = v => {
 	f = (vs, v) => false ? ''
 		: contains(vs, v)
 			? '<recurse>'
+		: v === nil
+			? 'nil'
 		: typeof v === 'string'
 			? v
 		: v.length !== undefined
