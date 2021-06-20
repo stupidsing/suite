@@ -74,9 +74,9 @@ let splitl = (s, sep) => {
 			let ch = s.charCodeAt(i);
 			let { quote: quote1, bracket: bracket1 } = quoteBracket(quote, bracket, ch);
 
-			return quote !== 0 || bracket !== 0 || s.substring(i, j) !== sep || i === 0
+			return quote !== 0 || bracket !== 0 || s.slice(i, j) !== sep || i === 0
 				? f(i + 1, quote1, bracket1)
-				: [s.substring(0, i), s.substring(j)];
+				: [s.slice(0, i), s.slice(j)];
 		}() : [s, undefined];
 	};
 
@@ -91,9 +91,9 @@ let splitr = (s, sep) => {
 			let ch = s.charCodeAt(j - 1);
 			let { quote: quote1, bracket: bracket1 } = quoteBracket(quote, bracket, ch);
 
-			return quote1 !== 0 || bracket1 !== 0 || s.substring(i, j) !== sep || i === 0
+			return quote1 !== 0 || bracket1 !== 0 || s.slice(i, j) !== sep || i === 0
 				? f(j - 1, quote1, bracket1)
-				: [s.substring(0, i), s.substring(j)];
+				: [s.slice(0, i), s.slice(j)];
 		}() : [undefined, s];
 	};
 	return f(s.length, 0, 0);
@@ -135,7 +135,7 @@ let parsePrefix = (id, op, parseValue) => {
 		let program = program_.trim();
 		return !program.startsWith(op)
 			? parseValue(program)
-			: { id, expr: parse(program.substring(op.length)) };
+			: { id, expr: parse(program.slice(op.length)) };
 	};
 	return parse;
 };
@@ -157,11 +157,11 @@ let parseConstant = program => {
 		: ascii('0') <= first && first <= ascii('9')
 			? { id: 'number', value: parseNumber(program) }
 		: program.startsWith("'") && program.endsWith("'")
-			? { id: 'string', value: program.substring(1, program.length - 1) }
+			? { id: 'string', value: program.slice(1, program.length - 1) }
 		: program.startsWith('"') && program.endsWith('"')
-			? { id: 'string', value: program.substring(1, program.length - 1) }
+			? { id: 'string', value: program.slice(1, program.length - 1) }
 		: program.startsWith('`') && program.endsWith('`')
-			? { id: 'backquote', value: program.substring(1, program.length - 1) }
+			? { id: 'backquote', value: program.slice(1, program.length - 1) }
 		: program === 'false'
 			? { id: 'boolean', value: 'false' }
 		: program === 'new Map'
@@ -180,12 +180,12 @@ let parseConstant = program => {
 
 let parseArray = (program, parse) => ({
 	id: 'array',
-	values: keepsplitl(appendTrailingComma(program.substring(1, program.length - 1).trim()), ',', parse),
+	values: keepsplitl(appendTrailingComma(program.slice(1, program.length - 1).trim()), ',', parse),
 });
 
 let parseTuple = (program, parse) => ({
 	id: 'tuple',
-	values: keepsplitl(appendTrailingComma(program.substring(1, program.length - 1).trim()), ',', parse),
+	values: keepsplitl(appendTrailingComma(program.slice(1, program.length - 1).trim()), ',', parse),
 });
 
 let parseStructInner = (program, parse) => ({
@@ -198,7 +198,7 @@ let parseStructInner = (program, parse) => ({
 	}),
 });
 
-let parseStruct = (program, parse) => parseStructInner(program.substring(1, program.length - 1).trim(), parse);
+let parseStruct = (program, parse) => parseStructInner(program.slice(1, program.length - 1).trim(), parse);
 
 let parseProgram;
 
@@ -208,7 +208,7 @@ let parseValue = program_ => {
 	return false ? {}
 		: program.startsWith('try {') && program.endsWith('}')
 			? function() {
-				let [try_, catch_] = splitl(program.substring(4), 'catch (e)');
+				let [try_, catch_] = splitl(program.slice(4), 'catch (e)');
 				return {
 					id: 'try',
 					expr: parseProgram(try_),
@@ -216,14 +216,14 @@ let parseValue = program_ => {
 				};
 			}()
 		: program.startsWith('typeof ')
-			? { id: 'typeof', expr: parseValue(program.substring(7)) }
+			? { id: 'typeof', expr: parseValue(program.slice(7)) }
 		: program.startsWith('(') && program.endsWith(')')
-			? parseProgram(program.substring(1, program.length - 1))
+			? parseProgram(program.slice(1, program.length - 1))
 		: program.startsWith('[') && program.endsWith(']')
 			? parseTuple(program, parseProgram)
 		: program.startsWith('{') && program.endsWith('}')
 			? function() {
-				let block = program.substring(1, program.length - 1).trim();
+				let block = program.slice(1, program.length - 1).trim();
 				return block.endsWith(';') ? parseProgram(block) : parseStructInner(block, parseProgram);
 			}()
 		:
@@ -240,7 +240,7 @@ let parseLvalue = program_ => {
 		: program.endsWith(']')
 			? function() {
 				let [expr, index_] = splitr(program, '[');
-				let index = index_.substring(0, index_.length - 1);
+				let index = index_.slice(0, index_.length - 1);
 				return expr === undefined ? parseValue(program)
 					: index === '0' || index === '1' || index === '2'
 						? {
@@ -264,17 +264,17 @@ let parseApplyBlockFieldIndex = program_ => {
 
 	return false ? {}
 		: program.startsWith('function() {') && program.endsWith('}()')
-			? parseProgram(program.substring(12, program.length - 3).trim())
+			? parseProgram(program.slice(12, program.length - 3).trim())
 		: program.endsWith('()')
 			? {
 				id: 'apply',
-				expr: parseProgram(program.substring(0, program.length - 2)),
+				expr: parseProgram(program.slice(0, program.length - 2)),
 				parameter: { id: 'array', values: nil },
 			}
 		: program.endsWith(')')
 			? function() {
 				let [expr, paramStr_] = splitr(program, '(');
-				let paramStr = paramStr_.substring(0, paramStr_.length - 1).trim();
+				let paramStr = paramStr_.slice(0, paramStr_.length - 1).trim();
 				return expr !== undefined ? {
 					id: 'apply',
 					expr: parseProgram(expr),
@@ -331,7 +331,7 @@ let parseBind = program => {
 			: program === '()'
 				? { id: 'array', values: nil }
 			: program.startsWith('(') && program.endsWith(')')
-				? f(program.substring(1, program.length - 1))
+				? f(program.slice(1, program.length - 1))
 			: program.startsWith('[') && program.endsWith(']')
 				? parseArray(program, f)
 			: program.startsWith('{') && program.endsWith('}')
@@ -373,7 +373,7 @@ parseProgram = program => {
 		return false ? {}
 			: statement.startsWith('let ')
 				? function() {
-					let [var_, value] = splitl(statement.substring(4), '=');
+					let [var_, value] = splitl(statement.slice(4), '=');
 					let v = var_.trim();
 	
 					return value !== undefined
@@ -392,7 +392,7 @@ parseProgram = program => {
 							error(`cannot parse let variable "${v}"`);
 				}()
 			: statement.startsWith('return ') && expr === ''
-				? parseProgram(statement.substring(7))
+				? parseProgram(statement.slice(7))
 			: statement.startsWith('throw ') && expr === ''
 				? { id: 'error' }
 			:
@@ -603,7 +603,14 @@ let inferType = (vts, ast) => {
 
 		let g = false ? {}
 			: id === 'add'
-				? inferMathOp
+				? (({ lhs, rhs }) => {
+					let t = newRef();
+					return true
+						&& doBind(ast, f(vts, lhs), t)
+						&& doBind(ast, f(vts, rhs), t)
+						&& (tryBind(t, 'number') || tryBind(t, typeString) || error(`cannot add values with type ${t}`))
+						&& t;
+				})
 			: id === 'alloc'
 				? (({ v, expr }) => f([v, newRef(), vts], expr))
 			: id === 'and'
