@@ -4,13 +4,13 @@ let ascii = s => s.charCodeAt(0);
 
 let contains = (list, e) => {
 	let f;
-	f = es => 0 < es.length && (es[0] === e || f(es[1]));
+	f = es => es[0] !== undefined && (es[0] === e || f(es[1]));
 	return f(list);
 };
 
 let fold = (init, list, op) => {
 	let f;
-	f = (init, list) => list.length === 2 ? f(op(init, list[0]), list[1]) : init;
+	f = (init, list) => list[0] !== undefined ? f(op(init, list[0]), list[1]) : init;
 	return f(init, list);
 };
 
@@ -167,7 +167,7 @@ let parseConstant = program => {
 		: program === 'true'
 			? { id: 'boolean', value: 'true' }
 		: program === 'undefined'
-			? { id: 'empty' }
+			? { id: 'undefined' }
 		: isIdentifier(program)
 			? { id: 'var', value: program }
 		:
@@ -265,7 +265,7 @@ let parseApplyBlockFieldIndex = program_ => {
 			? {
 				id: 'apply',
 				expr: parseProgram(program.substring(0, program.length - 2)),
-				parameter: { id: 'empty' },
+				parameter: { id: 'array', values: [] },
 			}
 		: program.endsWith(')')
 			? function() {
@@ -325,7 +325,7 @@ let parseBind = program => {
 
 		return false ? {}
 			: program === '()'
-				? { id: 'empty' }
+				? { id: 'array', values: [] }
 			: program.startsWith('(') && program.endsWith(')')
 				? f(program.substring(1, program.length - 1))
 			: program.startsWith('[') && program.endsWith(']')
@@ -654,8 +654,6 @@ let inferType = (vts, ast) => {
 					: index === '2' ? doBind(ast, f(vts, expr), ['tuple', [newRef(), [newRef(), [te, newRef()]]]]) && te
 					: {};
 				})
-			: id === 'empty'
-				? (({}) => ['array', newRef()])
 			: id === 'eq_'
 				? inferEqOp
 			: id === 'error'
@@ -737,6 +735,8 @@ let inferType = (vts, ast) => {
 				})
 			: id === 'typeof'
 				? (({}) => typeString)
+			: id === 'undefined'
+				? (({}) => newRef())
 			: id === 'var'
 				? (({ value }) => lookup(vts, value))
 			:
