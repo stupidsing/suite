@@ -54,12 +54,12 @@ let isIdentifier = s => 0 < s.length && isIdentifier_(s);
 
 let quoteBracket = (quote, bracket, ch) => {
 	return {
-		quote: quote === '' && (ch === ascii("'") || ch === ascii('"') || ch === ascii('`')) ? ch
-			: quote === ch ? ''
+		quote: quote === 0 && (ch === ascii("'") || ch === ascii('"') || ch === ascii('`')) ? ch
+			: quote === ch ? 0
 			: quote,
-		bracket: false ? {}
-			: quote === '' && (ch === ascii('(') || ch === ascii('[') || ch === ascii('{')) ? bracket + 1
-			: quote === '' && (ch === ascii(')') || ch === ascii(']') || ch === ascii('}')) ? bracket - 1
+		bracket: false ? nil
+			: quote === 0 && (ch === ascii('(') || ch === ascii('[') || ch === ascii('{')) ? bracket + 1
+			: quote === 0 && (ch === ascii(')') || ch === ascii(']') || ch === ascii('}')) ? bracket - 1
 			: bracket,
 	};
 };
@@ -74,13 +74,13 @@ let splitl = (s, sep) => {
 			let ch = s.charCodeAt(i);
 			let { quote: quote1, bracket: bracket1 } = quoteBracket(quote, bracket, ch);
 
-			return quote !== '' || bracket !== 0 || s.substring(i, j) !== sep || i === 0
+			return quote !== 0 || bracket !== 0 || s.substring(i, j) !== sep || i === 0
 				? f(i + 1, quote1, bracket1)
 				: [s.substring(0, i), s.substring(j)];
 		}() : [s, undefined];
 	};
 
-	return f(0, '', 0);
+	return f(0, 0, 0);
 };
 
 let splitr = (s, sep) => {
@@ -91,12 +91,12 @@ let splitr = (s, sep) => {
 			let ch = s.charCodeAt(j - 1);
 			let { quote: quote1, bracket: bracket1 } = quoteBracket(quote, bracket, ch);
 
-			return quote1 !== '' || bracket1 !== 0 || s.substring(i, j) !== sep || i === 0
+			return quote1 !== 0 || bracket1 !== 0 || s.substring(i, j) !== sep || i === 0
 				? f(j - 1, quote1, bracket1)
 				: [s.substring(0, i), s.substring(j)];
 		}() : [undefined, s];
 	};
-	return f(s.length, '', 0);
+	return f(s.length, 0, 0);
 };
 
 let keepsplitl = (s, sep, apply) => {
