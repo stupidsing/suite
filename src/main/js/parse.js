@@ -479,6 +479,30 @@ let newRef = () => {
 	return setRef(refCount, ref) && ref;
 };
 
+let cloneRef = v => {
+	let refs = new Map();
+
+	let f;
+	f = (vs, v) => false ? ''
+		: contains(vs, v)
+			? '<recurse>'
+		: typeof v === 'string'
+			? v
+		: v.length !== undefined
+			? v.map(v_ => f([v, vs], v_))
+		: v.ref !== undefined
+			? (refs.get(v.ref) !== v ? f([v, vs], refs.get(v.ref)) : function() {
+				let v1 = newRef();
+				let dummy = refs.set(v.ref, v1);
+				return v1;
+			}())
+		: typeof v === 'object'
+			? Object.fromEntries(Object.entries(v).map(([k, v_]) => [k, f([v, vs], v_)]))
+		:
+			JSON.stringify(v);
+	return f(nil, v);
+};
+
 let dumpRef = v => {
 	let f;
 	f = (vs, v) => false ? ''
