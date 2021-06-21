@@ -739,14 +739,20 @@ let inferType = (vts, ast) => {
 				? inferMathOp
 			: id === 'ne_'
 				? inferEqOp
+			: id === 'neg'
+				? (({ expr }) => doBind(ast, f(vts, expr), 'number') && 'number')
 			: id === 'new-map'
 				? (({}) => 'map')
 			: id === 'nil'
 				? (({}) => newRef())
+			: id === 'not'
+				? (({ expr }) => doBind(ast, f(vts, expr), 'boolean') && 'boolean')
 			: id === 'number'
 				? (({}) => id)
 			: id === 'or_'
 				? inferLogicalOp
+			: id === 'pos'
+				? (({ expr }) => doBind(ast, f(vts, expr), 'number') && 'number')
 			: id === 'string'
 				? (({}) => typeString)
 			: id === 'struct'
