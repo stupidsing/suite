@@ -155,7 +155,7 @@ let parseConstant = program => {
 	let first = program.charCodeAt(0);
 	return false ? {}
 		: ascii('0') <= first && first <= ascii('9')
-			? { id: 'number', value: parseNumber(program) }
+			? { id: 'number', value: program, i: parseNumber(program) }
 		: program.startsWith("'") && program.endsWith("'")
 			? { id: 'string', value: program.slice(1, program.length - 1) }
 		: program.startsWith('"') && program.endsWith('"')
@@ -479,30 +479,6 @@ let newRef = () => {
 	return setRef(refCount, ref) && ref;
 };
 
-let cloneRef = v => {
-	let refs = new Map();
-
-	let f;
-	f = (vs, v) => false ? ''
-		: contains(vs, v)
-			? '<recurse>'
-		: typeof v === 'string'
-			? v
-		: v.length !== undefined
-			? v.map(v_ => f([v, vs], v_))
-		: v.ref !== undefined
-			? (refs.get(v.ref) !== v ? f([v, vs], refs.get(v.ref)) : function() {
-				let v1 = newRef();
-				let dummy = refs.set(v.ref, v1);
-				return v1;
-			}())
-		: typeof v === 'object'
-			? Object.fromEntries(Object.entries(v).map(([k, v_]) => [k, f([v, vs], v_)]))
-		:
-			JSON.stringify(v);
-	return f(nil, v);
-};
-
 let dumpRef = v => {
 	let f;
 	f = (vs, v) => false ? ''
@@ -529,6 +505,33 @@ let dumpRef = v => {
 			}()
 		:
 			JSON.stringify(v);
+	return f(nil, v);
+};
+
+let cloneRef = v => {
+	let refs = new Map();
+
+	let f;
+	f = (vs, v) => false ? ''
+		: contains(vs, v)
+			? '<recurse>'
+		: typeof v === 'string'
+			? v
+		: v.length !== undefined
+			? v.map(v_ => f([v, vs], v_))
+		: v.ref !== undefined
+			? function() {
+				let w = refs.get(v.ref);
+				return w !== undefined ? w : function() {
+					let w1 = newRef();
+					let dummy = refs.set(v.ref, w1);
+					return w1;
+				}();
+			}()
+		: typeof v === 'object'
+			? Object.fromEntries(Object.entries(v).map(([k, v_]) => [k, f([v, vs], v_)]))
+		:
+			error(`cannot clone ${dumpRef(v)}`);
 	return f(nil, v);
 };
 
@@ -784,7 +787,7 @@ let inferType = (vts, ast) => {
 			: id === 'undefined'
 				? (({}) => newRef())
 			: id === 'var'
-				? (({ value }) => lookup(vts, value))
+				? (({ value }) => cloneRef(lookup(vts, value)))
 			:
 				(({}) => error(`cannot infer type for ${id}`));
 
@@ -833,7 +836,7 @@ let expect = stringify({
 			},
 			parameter: {
 				id: 'tuple',
-				values: [{ id: 'number', value: 0 }, [{ id: 'string', value: 'utf8' }, nil]]
+				values: [{ id: 'number', value: '0', i: 0 }, [{ id: 'string', value: 'utf8' }, nil]]
 			}
 		}
 	}
