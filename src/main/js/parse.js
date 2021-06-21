@@ -333,7 +333,7 @@ let parseBind = program => {
 			: program.startsWith('(') && program.endsWith(')')
 				? f(program.slice(1, program.length - 1))
 			: program.startsWith('[') && program.endsWith(']')
-				? parseArray(program, f)
+				? parseTuple(program, f)
 			: program.startsWith('{') && program.endsWith('}')
 				? parseStruct(program, f)
 			:
