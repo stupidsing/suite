@@ -691,11 +691,11 @@ let inferType = (vts, ast) => {
 			: id === 'element'
 				? (({ index, expr }) => {
 					let te = newRef();
-					return (false ? false
-						: index === '0' ? doBind(ast, f(vts, expr), ['tuple', [te, newRef()]])
-						: index === '1' ? doBind(ast, f(vts, expr), ['tuple', [newRef(), [te, newRef()]]])
-						: index === '2' ? doBind(ast, f(vts, expr), ['tuple', [newRef(), [newRef(), [te, newRef()]]]])
-						: false) && te;
+					return doBind(ast, f(vts, expr), ((false ? {}
+						: index === '0' ? ['tuple', [te, newRef()]]
+						: index === '1' ? ['tuple', [newRef(), [te, newRef()]]]
+						: index === '2' ? ['tuple', [newRef(), [newRef(), [te, newRef()]]]]
+						: {}))) && te;
 				})
 			: id === 'eq_'
 				? inferEqOp
