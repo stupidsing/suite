@@ -31,7 +31,7 @@ let dump = v => {
 				return `${v.id}(${join})`;
 			}()
 		: typeof v === 'string'
-			? v
+			? v.toString()
 		:
 			JSON.stringify(v);
 	return f(nil, v);
@@ -448,7 +448,7 @@ let checkVariables = (vs, ast) => {
 					try {
 						return f(vs, value);
 					} catch (e) {
-						e.message = `in bind-clause of ${dump(bind)}\n${e.message}`;
+						e.message = `in value clause of ${dump(bind)}\n${e.message}`;
 						throw e;
 					}
 				}() && f(mergeBindVariables(vs, bind), expr))
@@ -506,25 +506,27 @@ let dumpRef = v => {
 				return `${id !== undefined ? id : ''}(${join})`;
 			}()
 		: typeof v === 'string'
-			? v
+			? v.toString()
 		:
 			JSON.stringify(v);
 	return f(nil, v);
 };
 
 let cloneRef = v => {
-	let refs = new Map();
+	let fromTos = new Map();
 
 	let f;
 	f = (vs, v) => false ? ''
 		: contains(vs, v)
 			? '<recurse>'
+		: v.ref !== undefined && refs.get(v.ref) !== v
+			? f([v, vs], refs.get(v.ref))
 		: v.ref !== undefined
 			? function() {
-				let w = refs.get(v.ref);
+				let w = fromTos.get(v.ref);
 				return w !== undefined ? w : function() {
 					let w1 = newRef();
-					let dummy = refs.set(v.ref, w1);
+					let dummy = fromTos.set(v.ref, w1);
 					return w1;
 				}();
 			}()
@@ -707,7 +709,7 @@ let inferType = (vts, ast) => {
 						try {
 							return f(vts, then);
 						} catch (e) {
-							e.message = `in then-clause of ${dump(if_)}\n${e.message}`;
+							e.message = `in then clause of ${dump(if_)}\n${e.message}`;
 							throw e;
 						}
 					}();
@@ -740,7 +742,7 @@ let inferType = (vts, ast) => {
 						try {
 							return f(vts, value);
 						} catch (e) {
-							e.message = `in bind-clause of ${dump(bind)}\n${e.message}`;
+							e.message = `in value clause of ${dump(bind)}\n${e.message}`;
 							throw e;
 						}
 					}();
