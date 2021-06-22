@@ -675,9 +675,16 @@ let inferType = (vts, ast) => {
 				})
 			: id === 'assign'
 				? (({ v, value, expr }) => {
-					let tvar = f(vts, v);
-					let tvalue = f(vts, value);
-					return doBind(ast, tvar, tvalue) && f(vts, expr);
+					return function() {
+						try {
+							let tvar = f(vts, v);
+							let tvalue = f(vts, value);
+							return doBind({ id: 'assign', v, value }, tvar, tvalue);
+						} catch (e) {
+							e.message = `in assignment clause of ${dump(v)}\n${e.message}`;
+							throw e;
+						}
+					}() && f(vts, expr);
 				})
 			: id === 'backquote'
 				? (({}) => typeString)
@@ -753,16 +760,16 @@ let inferType = (vts, ast) => {
 			: id === 'let'
 				? (({ bind, value, expr }) => {
 					let vts1 = defineBindTypes(vts, bind);
-					let tb = f(vts1, bind);
-					let tv = function() {
+					return function() {
 						try {
-							return f(vts, value);
+							let tb = f(vts1, bind);
+							let tv = f(vts, value);
+							return doBind({ id: 'let', bind, value }, tb, tv);
 						} catch (e) {
 							e.message = `in value clause of ${dump(bind)}\n${e.message}`;
 							throw e;
 						}
-					}();
-					return doBind(ast, tb, tv) && f(vts1, expr);
+					}() && f(vts1, expr);
 				})
 			: id === 'lt_'
 				? inferCmpOp
