@@ -230,6 +230,8 @@ let parseValue = program_ => {
 			parseConstant(program);
 };
 
+let parseApplyBlockFieldIndex;
+
 let parseLvalue = program_ => {
 	let program = program_.trim();
 	let [expr, field] = splitr(program, '.');
@@ -259,7 +261,7 @@ let parseLvalue = program_ => {
 			parseValue(program);
 };
 
-let parseApplyBlockFieldIndex = program_ => {
+parseApplyBlockFieldIndex = program_ => {
 	let program = program_.trim();
 
 	return false ? {}
@@ -766,8 +768,8 @@ let inferType = (vts, ast) => {
 						let { key, value } = kvs[0];
 						type[key] = f(vts, value);
 						return type;
-					}() : { id: 'struct' };
-					return g(kvs);
+					}() : {};
+					return { id: 'struct', values: g(kvs) };
 				})
 			: id === 'sub'
 				? inferMathOp
