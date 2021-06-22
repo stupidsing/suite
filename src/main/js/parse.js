@@ -445,7 +445,7 @@ let checkVariables = (vs, ast) => {
 					try {
 						return f(vs, value);
 					} catch (e) {
-						e.message = `in bind of ${dump(bind)}\n${e.message}`;
+						e.message = `in bind-clause of ${dump(bind)}\n${e.message}`;
 						throw e;
 					}
 				}() && f(vs1, expr);
@@ -571,7 +571,7 @@ let tryBind = (a, b) => {
 					&& Object.keys(b).reduce((r, k) => {
 						let dummy = a.completed !== true && a[k] !== undefined || function() { a[k] = newRef(); return a[k]; }();
 						return r && f(a[k], b[k]);
-					});
+					}, true);
 	}();
 	return f(a, b);
 };
@@ -703,7 +703,15 @@ let inferType = (vts, ast) => {
 				? (({}) => newRef())
 			: id === 'if'
 				? (({ if_, then, else_ }) => {
-					let tt = f(vts, then);
+					let tt = function() {
+						try {
+							return f(vts, then);
+						} catch (e) {
+							e.message = `in then-clause of ${dump(if_)}\n${e.message}`;
+							throw e;
+						}
+					}();
+
 					let te = f(vts, else_);
 					return doBind(ast, f(vts, if_), 'boolean') && doBind(ast, tt, te) && tt;
 				})
@@ -732,7 +740,7 @@ let inferType = (vts, ast) => {
 						try {
 							return f(vts1, value);
 						} catch (e) {
-							e.message = `in bind of ${dump(bind)}\n${e.message}`;
+							e.message = `in bind-clause of ${dump(bind)}\n${e.message}`;
 							throw e;
 						}
 					}();
@@ -747,7 +755,7 @@ let inferType = (vts, ast) => {
 			: id === 'neg'
 				? (({ expr }) => doBind(ast, f(vts, expr), 'number') && 'number')
 			: id === 'new-map'
-				? (({}) => 'map')
+				? (({}) => ['lambda', ['array', newRef()], 'map'])
 			: id === 'nil'
 				? (({}) => newRef())
 			: id === 'not'
@@ -769,12 +777,12 @@ let inferType = (vts, ast) => {
 						type[key] = f(vts, value);
 						return type;
 					}() : {};
-					return { id: 'struct', values: g(kvs) };
+					return { id: 'struct', kvs: g(kvs) };
 				})
 			: id === 'sub'
 				? inferMathOp
 			: id === 'try'
-				? (({ try_, catch_ }) => doBind(ast, f(vts, catch_), newRef()) && f(vts, try_))
+				? (({ expr, catch_ }) => doBind(ast, f(vts, catch_), newRef()) && f(vts, expr))
 			: id === 'tuple'
 				? (({ values }) => {
 					let h;
