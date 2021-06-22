@@ -75,7 +75,7 @@ let splitl = (s, sep) => {
 
 			return quote !== 0 || bracket !== 0 || s.slice(i, j) !== sep || i === 0
 				? f(i + 1, quote1, bracket1)
-				: [s.slice(0, i), s.slice(j)];
+				: [s.slice(0, i), s.slice(j, undefined)];
 		}() : [s, undefined];
 	};
 
@@ -92,7 +92,7 @@ let splitr = (s, sep) => {
 
 			return quote1 !== 0 || bracket1 !== 0 || s.slice(i, j) !== sep || i === 0
 				? f(j - 1, quote1, bracket1)
-				: [s.slice(0, i), s.slice(j)];
+				: [s.slice(0, i), s.slice(j, undefined)];
 		}() : [undefined, s];
 	};
 	return f(s.length, 0, 0);
@@ -135,7 +135,7 @@ let parsePrefix = (id, op, parseValue) => {
 		let program = program_.trim();
 		return !program.startsWith(op)
 			? parseValue(program)
-			: { id, expr: f(program.slice(op.length)) };
+			: { id, expr: f(program.slice(op.length, undefined)) };
 	};
 	return f;
 };
@@ -164,6 +164,8 @@ let parseConstant = program => {
 			? { id: 'backquote', value: program.slice(1, program.length - 1) }
 		: program === 'false'
 			? { id: 'boolean', value: 'false' }
+		: program === 'new Error'
+			? { id: 'new-error' }
 		: program === 'new Map'
 			? { id: 'new-map' }
 		: program === 'nil'
@@ -210,7 +212,7 @@ let parseValue = program_ => {
 		return false ? {}
 			: program.startsWith('try {') && program.endsWith('}')
 				? function() {
-					let [try_, catch_] = splitl(program.slice(4), 'catch (e)');
+					let [try_, catch_] = splitl(program.slice(4, undefined), 'catch (e)');
 					return {
 						id: 'try',
 						expr: parseProgram(try_),
@@ -218,7 +220,7 @@ let parseValue = program_ => {
 					};
 				}()
 			: program.startsWith('typeof ')
-				? { id: 'typeof', expr: f(program.slice(7)) }
+				? { id: 'typeof', expr: f(program.slice(7, undefined)) }
 			: program.startsWith('(') && program.endsWith(')')
 				? parseProgram(program.slice(1, program.length - 1))
 			: program.startsWith('[') && program.endsWith(']')
@@ -383,7 +385,7 @@ parseProgram = program => {
 		return false ? {}
 			: statement.startsWith('let ')
 				? function() {
-					let [var_, value] = splitl(statement.slice(4), '=');
+					let [var_, value] = splitl(statement.slice(4, undefined), '=');
 					let v = var_.trim();
 	
 					return value !== undefined
@@ -402,9 +404,9 @@ parseProgram = program => {
 							error(`cannot parse let variable "${v}"`);
 				}()
 			: statement.startsWith('return ') && expr === ''
-				? parseProgram(statement.slice(7))
+				? parseProgram(statement.slice(7, undefined))
 			: statement.startsWith('throw ') && expr === ''
-				? { id: 'error' }
+				? { id: 'throw', expr: parseProgram(statement.slice(6, undefined)) }
 			:
 				function() {
 					let [var_, value] = splitl(statement, '=');
@@ -471,11 +473,16 @@ let refCount;
 
 refCount = 0;
 
+let finalRef = v => {
+	let f;
+	f = v => v.ref !== undefined && refs.get(v.ref) !== v ? f(refs.get(v.ref)) : v;
+	return f(v);
+};
+
 let setRef = (ref, target) => {
 	let dummy = refs.set(ref, target);
 	return true;
 };
-
 
 let newRef = () => {
 	refCount = refCount + 1;
@@ -490,7 +497,7 @@ let dumpRef = v => {
 		: contains(vs, v)
 			? '<recurse>'
 		: v.ref !== undefined
-			? (refs.get(v.ref) !== v ? f([v, vs], refs.get(v.ref)) : `.${v.ref}`)
+			? (refs.get(v.ref) !== v ? f([v, vs], refs.get(v.ref)) : `_${v.ref}`)
 		: v.length === 0
 			? ''
 		: v.length === 2
@@ -500,10 +507,10 @@ let dumpRef = v => {
 				let id = v.id;
 				let join = Object
 					.entries(v)
-					.filter(([k, v]) => k !== 'id')
-					.map(([k, v]) => `${k}:${f(vs, v)}`)
+					.filter(([k, v_]) => k !== 'id')
+					.map(([k, v_]) => `${k}:${f([v, vs], v_)}`)
 					.join(' ');
-				return `${id !== undefined ? id : ''}(${join})`;
+				return id !== undefined ? `${id}(${join})` : `{${join}}`;
 			}()
 		: typeof v === 'string'
 			? v.toString()
@@ -572,7 +579,7 @@ let tryBind = (a, b) => {
 	return f(a, b);
 };
 
-let doBind = (ast, a, b) => tryBind(a, b) || error(`cannot bind type ${dumpRef(a)} to ${dumpRef(b)} in ${dump(ast)}`);
+let doBind = (ast, a, b) => tryBind(a, b) || error(`cannot bind type\nfr: ${dumpRef(a)}\nto: ${dumpRef(b)}\nin ${dump(ast)}`);
 
 let lookup = (vts, v) => {
 	let f;
@@ -600,6 +607,7 @@ let defineBindTypes = (vs, ast) => {
 let typeArrayOf = type => ({ id: 'array', of: type });
 let typeBoolean = ({ id: 'boolean' });
 let typeLambdaOf = (in_, out) => ({ id: 'lambda', in_, out });
+let typeNever = { id: 'never' };
 let typeNumber = ({ id: 'number' });
 let typeString = typeArrayOf({ id: 'char' });
 let typeStructOf = kvs => ({ id: 'struct', kvs });
@@ -681,10 +689,18 @@ let inferType = (vts, ast) => {
 				? (({ field, expr }) => false ? {}
 					: field === 'charCodeAt'
 						? doBind(ast, f(vts, expr), typeString) && typeLambdaOf(typeNumber, typeNumber)
+					: field === 'endsWith'
+						? doBind(ast, f(vts, expr), typeString) && typeLambdaOf(typeString, typeBoolean)
 					: field === 'length'
 						? doBind(ast, f(vts, expr), typeArrayOf(newRef())) && typeNumber
+					: field === 'slice'
+						? doBind(ast, f(vts, expr), typeArrayOf(newRef())) && typeLambdaOf(typeTupleOf([typeNumber, [typeNumber, nil]]), typeString)
+					: field === 'startsWith'
+						? doBind(ast, f(vts, expr), typeString) && typeLambdaOf(typeString, typeBoolean)
 					: field === 'toString'
-						? typeLambdaOf(f(vts, expr), typeString)
+						? doBind(ast, f(vts, expr), newRef()) && typeLambdaOf(typeArrayOf(typeNever), typeString)
+					: field === 'trim'
+						? doBind(ast, f(vts, expr), typeString) && typeLambdaOf(typeArrayOf(typeNever), typeString)
 					: function() {
 						let tr = newRef();
 						let kvs = {};
@@ -703,8 +719,6 @@ let inferType = (vts, ast) => {
 				})
 			: id === 'eq_'
 				? inferEqOp
-			: id === 'error'
-				? (({}) => newRef())
 			: id === 'if'
 				? (({ if_, then, else_ }) => {
 					let tt = function() {
@@ -758,6 +772,8 @@ let inferType = (vts, ast) => {
 				? inferEqOp
 			: id === 'neg'
 				? (({ expr }) => doBind(ast, f(vts, expr), typeNumber) && typeNumber)
+			: id === 'new-error'
+				? (({}) => typeLambdaOf(typeString, { id: 'error' }))
 			: id === 'new-map'
 				? (({}) => typeLambdaOf(typeArrayOf(newRef()), { id: 'map' }))
 			: id === 'nil'
@@ -785,6 +801,8 @@ let inferType = (vts, ast) => {
 				})
 			: id === 'sub'
 				? inferMathOp
+			: id === 'throw'
+				? (({}) => newRef())
 			: id === 'try'
 				? (({ expr, catch_ }) => doBind(ast, f(vts, catch_), newRef()) && f(vts, expr))
 			: id === 'tuple'
