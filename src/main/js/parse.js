@@ -130,13 +130,14 @@ let parseAssocRight = (id, op, parseValue) => {
 };
 
 let parsePrefix = (id, op, parseValue) => {
-	let parse = program_ => {
+	let f;
+	f = program_ => {
 		let program = program_.trim();
 		return !program.startsWith(op)
 			? parseValue(program)
-			: { id, expr: parse(program.slice(op.length)) };
+			: { id, expr: f(program.slice(op.length)) };
 	};
-	return parse;
+	return f;
 };
 
 let parseNumber = program => {
@@ -202,31 +203,35 @@ let parseStruct = (program, parse) => parseStructInner(program.slice(1, program.
 let parseProgram;
 
 let parseValue = program_ => {
-	let program = program_.trim();
+	let f;
+	f = program_ => {
+		let program = program_.trim();
 
-	return false ? {}
-		: program.startsWith('try {') && program.endsWith('}')
-			? function() {
-				let [try_, catch_] = splitl(program.slice(4), 'catch (e)');
-				return {
-					id: 'try',
-					expr: parseProgram(try_),
-					catch_: { id: 'lambda', bind: { id: 'var', value: 'e' }, expr: parseProgram(catch_) }
-				};
-			}()
-		: program.startsWith('typeof ')
-			? { id: 'typeof', expr: parseValue(program.slice(7)) }
-		: program.startsWith('(') && program.endsWith(')')
-			? parseProgram(program.slice(1, program.length - 1))
-		: program.startsWith('[') && program.endsWith(']')
-			? parseTuple(program, parseProgram)
-		: program.startsWith('{') && program.endsWith('}')
-			? function() {
-				let block = program.slice(1, program.length - 1).trim();
-				return block.endsWith(';') ? parseProgram(block) : parseStructInner(block, parseProgram);
-			}()
-		:
-			parseConstant(program);
+		return false ? {}
+			: program.startsWith('try {') && program.endsWith('}')
+				? function() {
+					let [try_, catch_] = splitl(program.slice(4), 'catch (e)');
+					return {
+						id: 'try',
+						expr: parseProgram(try_),
+						catch_: { id: 'lambda', bind: { id: 'var', value: 'e' }, expr: parseProgram(catch_) }
+					};
+				}()
+			: program.startsWith('typeof ')
+				? { id: 'typeof', expr: f(program.slice(7)) }
+			: program.startsWith('(') && program.endsWith(')')
+				? parseProgram(program.slice(1, program.length - 1))
+			: program.startsWith('[') && program.endsWith(']')
+				? parseTuple(program, parseProgram)
+			: program.startsWith('{') && program.endsWith('}')
+				? function() {
+					let block = program.slice(1, program.length - 1).trim();
+					return block.endsWith(';') ? parseProgram(block) : parseStructInner(block, parseProgram);
+				}()
+			:
+				parseConstant(program);
+	};
+	return f(program_);
 };
 
 let parseApplyBlockFieldIndex;
@@ -317,10 +322,14 @@ let parseIf = program => {
 };
 
 let parseBindPair = program => {
-	let [left, right] = splitl(program, ',');
-	let lhs = parseConstant(left.trim());
+	let f;
+	f = program => {
+		let [left, right] = splitl(program, ',');
+		let lhs = parseConstant(left.trim());
 
-	return right === undefined ? lhs : { id: 'tuple', values: [lhs, [parseBindPair(right), nil]] };
+		return right === undefined ? lhs : { id: 'tuple', values: [lhs, [f(right), nil]] };
+	};
+	return f(program);
 };
 
 let parseBind = program => {
@@ -729,7 +738,7 @@ let inferType = (vts, ast) => {
 					let tb = f(vts1, bind);
 					let tv = function() {
 						try {
-							return f(vts1, value);
+							return f(vts, value);
 						} catch (e) {
 							e.message = `in bind-clause of ${dump(bind)}\n${e.message}`;
 							throw e;
@@ -860,7 +869,7 @@ return actual === expect
 			'JSON', newRef(), [
 				'Object', newRef(), [
 					'console', newRef(), [
-						'require', newRef(), []
+						'require', newRef(), nil
 					]
 				]
 			]
