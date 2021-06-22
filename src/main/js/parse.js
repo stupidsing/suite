@@ -819,63 +819,78 @@ let rewrite = r => ast => {
 	return f(ast);
 };
 
+let process = program => {
+	let ast = parseProgram(program);
+	let b = checkVariables([
+		'JSON', [
+			'Object', [
+				'console', [
+					'require', nil
+				]
+			]
+		]
+	], ast);
+	let type = inferType([
+		'JSON', newRef(), [
+			'Object', newRef(), [
+				'console', newRef(), [
+					'require', newRef(), nil
+				]
+			]
+		]
+	], ast);
+	return { b, ast, type };
+};
+
 let stringify = json => JSON.stringify(json, undefined, '  ');
 
-let actual = stringify(parseProgram(`
+let actual = stringify(process(`
+	let parse = ast => ast;
 	console.log(parse(require('fs').readFileSync(0, 'utf8')))
-`));
+`).ast);
 
 let expect = stringify({
-	id: 'apply',
-	expr: {
-		id: 'dot',
-		field: 'log',
-		expr: { id: 'var', value: 'console' }
+	id: 'let',
+	bind: { id: 'var', value: 'parse' },
+	value: {
+		id: 'lambda',
+		bind: { id: 'var', value: 'ast' },
+		expr: { id: 'var', value: 'ast' },
 	},
-	parameter: {
+	expr: {
 		id: 'apply',
-		expr: { id: 'var', value: 'parse' },
+		expr: {
+			id: 'dot',
+			field: 'log',
+			expr: { id: 'var', value: 'console' },
+		},
 		parameter: {
 			id: 'apply',
-			expr: {
-				id: 'dot',
-				field: 'readFileSync',
-				expr: {
-					id: 'apply',
-					expr: { id: 'var', value: 'require' },
-					parameter: { id: 'string', value: 'fs' }
-				}
-			},
+			expr: { id: 'var', value: 'parse' },
 			parameter: {
-				id: 'tuple',
-				values: [{ id: 'number', value: '0', i: 0 }, [{ id: 'string', value: 'utf8' }, nil]]
-			}
-		}
-	}
+				id: 'apply',
+				expr: {
+					id: 'dot',
+					field: 'readFileSync',
+					expr: {
+						id: 'apply',
+						expr: { id: 'var', value: 'require' },
+						parameter: { id: 'string', value: 'fs' },
+					},
+				},
+				parameter: {
+					id: 'tuple',
+					values: [{ id: 'number', value: '0', i: 0 }, [{ id: 'string', value: 'utf8' }, nil]],
+				},
+			},
+		},
+	},
 });
 
 return actual === expect
 ? function() {
 	try {
-		let ast = parseProgram(require('fs').readFileSync(0, 'utf8'));
-		let b = checkVariables([
-			'JSON', [
-				'Object', [
-					'console', [
-						'require', nil
-					]
-				]
-			]
-		], ast);
-		let type = inferType([
-			'JSON', newRef(), [
-				'Object', newRef(), [
-					'console', newRef(), [
-						'require', newRef(), nil
-					]
-				]
-			]
-		], ast);
+		let { b, ast, type } = process(require('fs').readFileSync(0, 'utf8'));
 		let dummy1 = console.log(`ast :: ${stringify(ast)}`);
 		let dummy2 = console.log(`type :: ${dumpRef(type)}`);
 		return b;
