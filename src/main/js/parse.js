@@ -494,7 +494,7 @@ let dumpRef = v => {
 		: v.length === 0
 			? ''
 		: v.length === 2
-			? `${dumpRef(v[0])}:${dumpRef(v[1])}`
+			? `${f(vs, v[0])}:${f(vs, v[1])}`
 		: typeof v === 'object'
 			? function() {
 				let id = v.id;
