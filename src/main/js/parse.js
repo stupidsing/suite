@@ -555,7 +555,9 @@ let tryBind = (a, b) => {
 				? setRef(refa, b)
 			: refb !== undefined
 				? setRef(refb, a)
-			: typeof a === 'object' && typeof b === 'object' ? true
+			: a === b
+				? true
+			: typeof a === 'object' && typeof b === 'object'
 					&& Object.keys(a).reduce((r, k) => {
 						let dummy = b.completed !== true && b[k] !== undefined || function() { b[k] = newRef(); return b[k]; }();
 						return r && f(a[k], b[k]);
@@ -563,9 +565,7 @@ let tryBind = (a, b) => {
 					&& Object.keys(b).reduce((r, k) => {
 						let dummy = a.completed !== true && a[k] !== undefined || function() { a[k] = newRef(); return a[k]; }();
 						return r && f(a[k], b[k]);
-					}, true)
-			:
-				a === b;
+					}, true);
 	}();
 	return f(a, b);
 };
