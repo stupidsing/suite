@@ -683,6 +683,8 @@ let inferType = (vts, ast) => {
 						? doBind(ast, f(vts, expr), typeString) && typeLambdaOf(typeNumber, typeNumber)
 					: field === 'length'
 						? doBind(ast, f(vts, expr), typeArrayOf(newRef())) && typeNumber
+					: field === 'toString'
+						? typeLambdaOf(f(vts, expr), typeString)
 					: function() {
 						let tr = newRef();
 						let kvs = {};
