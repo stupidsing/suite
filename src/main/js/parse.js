@@ -815,8 +815,8 @@ let inferType = (vts, ast) => {
 			: id === 'tuple'
 				? (({ values }) => {
 					let h;
-					h = values => values !== nil ? function() {
-						let [head, tail] = values;
+					h = vs => vs !== nil ? function() {
+						let [head, tail] = vs;
 						return [f(vts, head), h(tail)];
 					}() : nil;
 					return typeTupleOf(h(values));
