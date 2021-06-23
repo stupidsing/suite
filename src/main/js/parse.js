@@ -250,7 +250,7 @@ let parseLvalue = program_ => {
 				let [expr, index_] = splitr(program, '[');
 				let index = index_.slice(0, index_.length - 1);
 				return expr === undefined ? parseValue(program)
-					: index === '0' || index === '1' || index === '2'
+					: index === '0' || index === '1'
 						? {
 							id: 'element',
 							expr: parseProgram(expr),
@@ -584,24 +584,24 @@ let doBind = (ast, a, b) => tryBind(a, b) || error(`cannot bind type\nfr: ${dump
 let lookup = (vts, v) => {
 	let f;
 	f = vts => vts !== nil ? function() {
-		let [v_, t, vts_] = vts;
+		let [[v_, t], vts_] = vts;
 		return v_ === v ? t : f(vts_, v);
 	}() : error(`undefined variable ${v}`);
 	return f(vts, v);
 };
 
-let defineBindTypes = (vs, ast) => {
+let defineBindTypes = (vts, ast) => {
 	let f;
-	f = (vs, ast) => {
-	return false ? vs
-		: ast.id === 'array' ? fold(vs, ast.values, f)
-		: ast.id === 'nil' ? vs
-		: ast.id === 'struct' ? fold(vs, ast.kvs, (vs_, kv) => f(vs_, kv.value))
-		: ast.id === 'tuple' ? fold(vs, ast.values, f)
-		: ast.id === 'var' ? [ast.value, newRef(), vs]
+	f = (vts, ast) => {
+	return false ? vts
+		: ast.id === 'array' ? fold(vts, ast.values, f)
+		: ast.id === 'nil' ? vts
+		: ast.id === 'struct' ? fold(vts, ast.kvs, (vts_, kv) => f(vts_, kv.value))
+		: ast.id === 'tuple' ? fold(vts, ast.values, f)
+		: ast.id === 'var' ? [[ast.value, newRef()], vts]
 		: error(`cannot destructure ${ast}`);
 	};
-	return f(vs, ast);
+	return f(vts, ast);
 };
 
 let typeArrayOf = type => ({ id: 'array', of: type });
@@ -651,7 +651,7 @@ let inferType = (vts, ast) => {
 						&& t;
 				})
 			: id === 'alloc'
-				? (({ v, expr }) => f([v, newRef(), vts], expr))
+				? (({ v, expr }) => f([[v, newRef()], vts], expr))
 			: id === 'and'
 				? inferLogicalOp
 			: id === 'app'
@@ -721,7 +721,6 @@ let inferType = (vts, ast) => {
 					return doBind(ast, f(vts, expr), ((false ? {}
 						: index === '0' ? typeTupleOf([te, newRef()])
 						: index === '1' ? typeTupleOf([newRef(), [te, newRef()]])
-						: index === '2' ? typeTupleOf([newRef(), [newRef(), [te, newRef()]]])
 						: {}))) && te;
 				})
 			: id === 'eq_'
@@ -858,10 +857,10 @@ let process = program => {
 		]
 	], ast);
 	let type = inferType([
-		'JSON', newRef(), [
-			'Object', newRef(), [
-				'console', newRef(), [
-					'require', newRef(), nil
+		['JSON', newRef()], [
+			['Object', newRef()], [
+				['console', newRef()], [
+					['require', newRef()], nil
 				]
 			]
 		]
