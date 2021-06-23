@@ -567,14 +567,14 @@ let tryBind = (a, b) => {
 			: a === b
 				? true
 			: typeof a === 'object' && typeof b === 'object'
-					&& Object.keys(a).reduce((r, k) => {
-						let dummy = b.completed !== true && b[k] !== undefined || function() { b[k] = newRef(); return b[k]; }();
-						return r && f(a[k], b[k]);
-					}, true)
-					&& Object.keys(b).reduce((r, k) => {
-						let dummy = a.completed !== true && a[k] !== undefined || function() { a[k] = newRef(); return a[k]; }();
-						return r && f(a[k], b[k]);
-					}, true);
+				&& Object.keys(a).reduce((r, k) => {
+					let dummy = b.completed !== true && b[k] !== undefined || function() { b[k] = newRef(); return b[k]; }();
+					return r && f(a[k], b[k]);
+				}, true)
+				&& Object.keys(b).reduce((r, k) => {
+					let dummy = a.completed !== true && a[k] !== undefined || function() { a[k] = newRef(); return a[k]; }();
+					return r && f(a[k], b[k]);
+				}, true);
 	}();
 	return f(a, b);
 };
