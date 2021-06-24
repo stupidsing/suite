@@ -183,13 +183,18 @@ let parseConstant = program => {
 
 let parseArray = (program, parse) => ({
 	id: 'array',
-	values: keepsplitl(appendTrailingComma(program.slice(1, program.length - 1).trim()), ',', parse),
+	values: keepsplitl(appendTrailingComma(program), ',', parse),
 });
 
 let parseTuple = (program, parse) => ({
 	id: 'tuple',
-	values: keepsplitl(appendTrailingComma(program.slice(1, program.length - 1).trim()), ',', parse),
+	values: keepsplitl(appendTrailingComma(program), ',', parse),
 });
+
+let parseArrayTuple = (program_, parse) => {
+	let program = program_.slice(1, program_.length - 1).trim();
+	return (program.endsWith(',') ? parseArray : parseTuple)(program, parse);
+};
 
 let parseStructInner = (program, parse) => ({
 	id: 'struct',
@@ -225,7 +230,7 @@ parseValue = program_ => {
 		: program.startsWith('(') && program.endsWith(')')
 			? parseProgram(program.slice(1, program.length - 1))
 		: program.startsWith('[') && program.endsWith(']')
-			? parseTuple(program, parseProgram)
+			? parseArrayTuple(program, parseProgram)
 		: program.startsWith('{') && program.endsWith('}')
 			? function() {
 				let block = program.slice(1, program.length - 1).trim();
@@ -342,7 +347,7 @@ parseBind = program_ => {
 		: program.startsWith('(') && program.endsWith(')')
 			? parseBind(program.slice(1, program.length - 1))
 		: program.startsWith('[') && program.endsWith(']')
-			? parseTuple(program, parseBind)
+			? parseArrayTuple(program, parseBind)
 		: program.startsWith('{') && program.endsWith('}')
 			? parseStruct(program, parseBind)
 		:
