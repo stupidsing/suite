@@ -56,7 +56,7 @@ let quoteBracket = (quote, bracket, ch) => {
 		quote: quote === 0 && (ch === ascii("'") || ch === ascii('"') || ch === ascii('`')) ? ch
 			: quote === ch ? 0
 			: quote,
-		bracket: false ? nil
+		bracket: false ? 0
 			: quote === 0 && (ch === ascii('(') || ch === ascii('[') || ch === ascii('{')) ? bracket + 1
 			: quote === 0 && (ch === ascii(')') || ch === ascii(']') || ch === ascii('}')) ? bracket - 1
 			: bracket,
