@@ -419,49 +419,6 @@ parseProgram = program => {
 	}();
 };
 
-let mergeBindVariables;
-
-mergeBindVariables = (vs, ast) => false ? vs
-	: ast.id === 'array' ? fold(vs, ast.values, mergeBindVariables)
-	: ast.id === 'nil' ? vs
-	: ast.id === 'struct' ? fold(vs, ast.kvs, (vs_, kv) => mergeBindVariables(vs_, kv.value))
-	: ast.id === 'tuple' ? fold(vs, ast.values, mergeBindVariables)
-	: ast.id === 'var' ? [ast.value, vs]
-	: error(`cannot destructure ${ast}`);
-
-let checkVariables = (vs, ast) => {
-	let checkVariables_;
-	checkVariables_ = ast => {
-		let check = id => id === undefined ? (ast => true)
-			: id === 'alloc'
-				? (({ v, expr }) => checkVariables_([v, vs], expr))
-			: id === 'assign'
-				? (({ v, value, expr }) => contains(vs, v) && checkVariables_(vs, value) && checkVariables_(vs, expr))
-			: id === 'lambda'
-				? (({ bind, expr }) => checkVariables_(mergeBindVariables(vs, bind), expr))
-			: id === 'let'
-				? (({ bind, value, expr }) => function() {
-					try {
-						return checkVariables_(vs, value);
-					} catch (e) {
-						e.message = `in value clause of ${dump(bind)}\n${e.message}`;
-						throw e;
-					}
-				}() && checkVariables_(mergeBindVariables(vs, bind), expr))
-			: id === 'var'
-				? (({ value: v }) => contains(vs, v) || error(`undefined variable ${v}`))
-			:
-				(ast => {
-					let kvs = Object.entries(ast);
-					let checkKvs;
-					checkKvs = i => i < kvs.length ? checkVariables_(vs, kvs[i][1]) && checkKvs(i + 1) : true;
-					return checkKvs(0);
-				});
-		return check(ast.id)(ast);
-	};
-	return checkVariables_(ast);
-};
-
 let refs = new Map();
 let refCount;
 
@@ -843,16 +800,6 @@ let rewrite = r => ast => {
 let process = program => {
 	let ast = parseProgram(program);
 
-	let b = checkVariables([
-		'JSON', [
-			'Object', [
-				'console', [
-					'require', nil
-				]
-			]
-		]
-	], ast);
-
 	let type = inferType([
 		['JSON', newRef()], [
 			['Object', newRef()], [
@@ -863,7 +810,7 @@ let process = program => {
 		]
 	], ast);
 
-	return { b, ast, type };
+	return { ast, type };
 };
 
 let stringify = json => JSON.stringify(json, undefined, '  ');
@@ -914,10 +861,10 @@ let expect = stringify({
 return actual === expect
 ? function() {
 	try {
-		let { b, ast, type } = process(require('fs').readFileSync(0, 'utf8'));
+		let { ast, type } = process(require('fs').readFileSync(0, 'utf8'));
 		let dummy1 = console.log(`ast :: ${stringify(ast)}`);
 		let dummy2 = console.log(`type :: ${dumpRef(type)}`);
-		return b;
+		return true;
 	} catch (e) {
 		return console.error(e);
 	}
