@@ -327,13 +327,16 @@ let parseIf = program => {
 	}();
 };
 
-let parseBindPair;
+let parsePair;
 
-parseBindPair = program => {
-	let [left, right] = splitl(program, ',');
-	let lhs = parseConstant(left.trim());
-
-	return right === undefined ? lhs : { id: 'tuple', values: [lhs, [parseBindPair(right), nil]] };
+parsePair = (program, parse) => {
+	let parsePair_;
+	parsePair_ = program => {
+		let [left, right] = splitl(program, ',');
+		let lhs = parse(left.trim());
+		return right === undefined ? lhs : { id: 'tuple', values: [lhs, [parsePair_(right), nil]] };
+	};
+	return parsePair_(program);
 };
 
 let parseBind;
@@ -351,7 +354,7 @@ parseBind = program_ => {
 		: program.startsWith('{') && program.endsWith('}')
 			? parseStruct(program, parseBind)
 		:
-			parseBindPair(program);
+			parsePair(program, parseConstant);
 };
 
 let parseLambda = program => {
@@ -364,19 +367,10 @@ let parseLambda = program => {
 	};
 };
 
-let parsePair;
-
-parsePair = program_ => {
-	let program = program_.trim();
-	let [left, right] = splitl(program, ',');
-	let lhs = parseLambda(left);
-	return right === undefined ? lhs : { id: 'tuple', values: [lhs, [parsePair(right), nil]] };
-};
-
 parseProgram = program => {
 	let [statement_, expr_] = splitl(program, ';');
 
-	return expr_ === undefined ? parsePair(statement_) : function() {
+	return expr_ === undefined ? parsePair(statement_, parseLambda) : function() {
 		let statement = statement_.trim();
 		let expr = expr_.trim();
 
@@ -545,15 +539,13 @@ let lookup = (vts, v) => {
 
 let defineBindTypes;
 
-defineBindTypes = (vts, ast) => {
-return false ? vts
+defineBindTypes = (vts, ast) => false ? vts
 	: ast.id === 'array' ? fold(vts, ast.values, defineBindTypes)
 	: ast.id === 'nil' ? vts
 	: ast.id === 'struct' ? fold(vts, ast.kvs, (vts_, kv) => defineBindTypes(vts_, kv.value))
 	: ast.id === 'tuple' ? fold(vts, ast.values, defineBindTypes)
 	: ast.id === 'var' ? [[ast.value, newRef()], vts]
 	: error(`cannot destructure ${ast}`);
-};
 
 let typeArrayOf = type => ({ id: 'array', of: type });
 let typeBoolean = ({ id: 'boolean' });
@@ -751,7 +743,14 @@ inferType = (vts, ast) => {
 				inferKvs = kvs => 0 < kvs.length ? function() {
 					let { key, value } = kvs[0];
 					let type = inferKvs(kvs[1]);
-					type[key] = inferType(vts, value);
+					type[key] = function() {
+						try {
+							return inferType(vts, value);
+						} catch (e) {
+							e.message = `in value clause of ${key}\n${e.message}`;
+							throw e;
+						}
+					}();
 					return type;
 				}() : {};
 				return typeStructOf(inferKvs(kvs));
