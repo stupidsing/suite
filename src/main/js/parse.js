@@ -197,7 +197,7 @@ let parseStructInner = (program, parse) => ({
 		let [key_, value_] = splitl(kv, ':');
 		let key = parseConstant(key_.trim()).value;
 		let value = value_ !== undefined ? parse(value_) : { id: 'var', value: key };
-		return { key, value };
+		return { key: '.' + key, value };
 	}),
 });
 
@@ -243,7 +243,7 @@ let parseLvalue = program_ => {
 
 	return false ? {}
 		: expr !== undefined && isIdentifier(field)
-			? { id: 'dot', field, expr: parseApplyBlockFieldIndex(expr) }
+			? { id: 'dot', field: '.' + field, expr: parseApplyBlockFieldIndex(expr) }
 		: program.endsWith(']')
 			? function() {
 				let [expr, index_] = splitr(program, '[');
@@ -880,7 +880,7 @@ let expect = stringify({
 		id: 'apply',
 		expr: {
 			id: 'dot',
-			field: 'log',
+			field: '.log',
 			expr: { id: 'var', value: 'console' },
 		},
 		parameter: {
@@ -890,7 +890,7 @@ let expect = stringify({
 				id: 'apply',
 				expr: {
 					id: 'dot',
-					field: 'readFileSync',
+					field: '.readFileSync',
 					expr: {
 						id: 'apply',
 						expr: { id: 'var', value: 'require' },
