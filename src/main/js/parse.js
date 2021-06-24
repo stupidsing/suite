@@ -102,7 +102,7 @@ let keepsplitl = (s, sep, apply) => {
 	let keepsplitl_;
 	keepsplitl_ = input => input !== '' ? function() {
 		let [left, right] = splitl(input, sep);
-		return [apply(left), keepsplitl_(right)];
+		return [apply(left), keepsplitl_(right),];
 	}() : nil;
 	return keepsplitl_(s);
 };
@@ -193,16 +193,16 @@ let parseTuple = (program, parse) => ({
 
 let parseArrayTuple = (program_, parse) => {
 	let program = program_.slice(1, program_.length - 1).trim();
-	return (program.endsWith(',') ? parseArray : parseTuple)(program, parse);
+	return (program.length === 0 || program.endsWith(',') ? parseArray : parseTuple)(program, parse);
 };
 
 let parseStructInner = (program, parse) => ({
 	id: 'struct',
 	kvs: keepsplitl(appendTrailingComma(program), ',', kv => {
 		let [key_, value_] = splitl(kv, ':');
-		let key = parseConstant(key_.trim()).value;
-		let value = value_ !== undefined ? parse(value_) : { id: 'var', value: key };
-		return { key: '.' + key, value };
+		let field = parseConstant(key_.trim()).value;
+		let value = value_ !== undefined ? parse(value_) : { id: 'var', value: field };
+		return { key: '.' + field, value };
 	}),
 });
 
