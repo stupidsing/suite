@@ -5,20 +5,20 @@ let error = message => { throw new Error(message); };
 let nil = [];
 
 let contains = (list, e) => {
-	let f;
-	f = es => es !== nil && (es[0] === e || f(es[1]));
-	return f(list);
+	let contains_;
+	contains_ = es => es !== nil && (es[0] === e || contains_(es[1]));
+	return contains_(list);
 };
 
 let fold = (init, list, op) => {
-	let f;
-	f = (init, list) => list !== nil ? f(op(init, list[0]), list[1]) : init;
-	return f(init, list);
+	let fold_;
+	fold_ = (init, list) => list !== nil ? fold_(op(init, list[0]), list[1]) : init;
+	return fold_(init, list);
 };
 
 let dump = v => {
-	let f;
-	f = (vs, v) => false ? ''
+	let dump_;
+	dump_ = (vs, v) => false ? ''
 		: contains(vs, v)
 			? '<recurse>'
 		: v.id !== undefined
@@ -26,7 +26,7 @@ let dump = v => {
 				let join = Object
 					.entries(v)
 					.filter(([k, v_]) => k !== 'id')
-					.map(([k, v_]) => `${k}:${f([v, vs], v_)}`)
+					.map(([k, v_]) => `${k}:${dump_([v, vs], v_)}`)
 					.join(' ');
 				return `${v.id}(${join})`;
 			}()
@@ -34,13 +34,13 @@ let dump = v => {
 			? v.toString()
 		:
 			JSON.stringify(v);
-	return f(nil, v);
+	return dump_(nil, v);
 };
 
 let isAll = pred => s => {
-	let f;
-	f = i => i < s.length ? pred(s.charCodeAt(i)) && f(i + 1) : true;
-	return f(0);
+	let isAll_;
+	isAll_ = i => i < s.length ? pred(s.charCodeAt(i)) && isAll_(i + 1) : true;
+	return isAll_(0);
 };
 
 let isIdentifier_ = isAll(ch => false
@@ -66,89 +66,89 @@ let quoteBracket = (quote, bracket, ch) => {
 let appendTrailingComma = s => s + (s === '' || s.endsWith(',') ? '' : ',');
 
 let splitl = (s, sep) => {
-	let f;
-	f = (i, quote, bracket) => {
+	let splitl_;
+	splitl_ = (i, quote, bracket) => {
 		let j = i + sep.length;
 		return j <= s.length ? function() {
 			let ch = s.charCodeAt(i);
 			let { quote: quote1, bracket: bracket1 } = quoteBracket(quote, bracket, ch);
 
 			return quote !== 0 || bracket !== 0 || s.slice(i, j) !== sep || i === 0
-				? f(i + 1, quote1, bracket1)
+				? splitl_(i + 1, quote1, bracket1)
 				: [s.slice(0, i), s.slice(j, undefined)];
 		}() : [s, undefined];
 	};
 
-	return f(0, 0, 0);
+	return splitl_(0, 0, 0);
 };
 
 let splitr = (s, sep) => {
-	let f;
-	f = (j, quote, bracket) => {
+	let splitr_;
+	splitr_ = (j, quote, bracket) => {
 		let i = j - sep.length;
 		return 0 <= i ? function() {
 			let ch = s.charCodeAt(j - 1);
 			let { quote: quote1, bracket: bracket1 } = quoteBracket(quote, bracket, ch);
 
 			return quote1 !== 0 || bracket1 !== 0 || s.slice(i, j) !== sep || i === 0
-				? f(j - 1, quote1, bracket1)
+				? splitr_(j - 1, quote1, bracket1)
 				: [s.slice(0, i), s.slice(j, undefined)];
 		}() : [undefined, s];
 	};
-	return f(s.length, 0, 0);
+	return splitr_(s.length, 0, 0);
 };
 
 let keepsplitl = (s, sep, apply) => {
-	let f;
-	f = input => input !== '' ? function() {
+	let keepsplitl_;
+	keepsplitl_ = input => input !== '' ? function() {
 		let [left, right] = splitl(input, sep);
-		return [apply(left), f(right)];
+		return [apply(left), keepsplitl_(right)];
 	}() : nil;
-	return f(s);
+	return keepsplitl_(s);
 };
 
 let parseAssocLeft_ = (id, op, parseValue) => {
-	let f;
-	f = program_ => {
+	let parseAssocLeft__;
+	parseAssocLeft__ = program_ => {
 		let program = program_.trim();
 		let [left, right] = splitr(program, op);
 		let rhs = parseValue(right);
-		return left === undefined ? rhs : { id, lhs: f(left), rhs };
+		return left === undefined ? rhs : { id, lhs: parseAssocLeft__(left), rhs };
 	};
-	return f;
+	return parseAssocLeft__;
 };
 
 let parseAssocRight = (id, op, parseValue) => {
-	let f;
-	f = program_ => {
+	let parseAssocRight_;
+	parseAssocRight_ = program_ => {
 		let program = program_.trim();
 		let [left, right] = splitl(program, op);
 		let lhs = parseValue(left);
-		return right === undefined ? lhs : { id, lhs, rhs: f(right) };
+		return right === undefined ? lhs : { id, lhs, rhs: parseAssocRight_(right) };
 	};
-	return f;
+	return parseAssocRight_;
 };
 
 let parsePrefix = (id, op, parseValue) => {
-	let f;
-	f = program_ => {
+	let parsePrefix_;
+	parsePrefix_ = program_ => {
 		let program = program_.trim();
 		return !program.startsWith(op)
 			? parseValue(program)
-			: { id, expr: f(program.slice(op.length, undefined)) };
+			: { id, expr: parsePrefix_(program.slice(op.length, undefined)) };
 	};
-	return f;
+	return parsePrefix_;
 };
 
 let parseNumber = program => {
-	let f;
-	f = i => 0 <= i ? function() {
+	let parseNumber_;
+	parseNumber_ = i => 0 <= i ? function() {
 		let ch = program.charCodeAt(i);
 		return ascii('0') <= ch && ch <= ascii('9')
-			? f(i - 1) * 10 + ch - ascii('0')
+			? parseNumber_(i - 1) * 10 + ch - ascii('0')
 			: error(`invalid number ${program}`);
 	}() : 0;
-	return f(program.length - 1);
+	return parseNumber_(program.length - 1);
 };
 
 let parseConstant = program => {
@@ -425,36 +425,36 @@ mergeBindVariables = (vs, ast) => false ? vs
 	: error(`cannot destructure ${ast}`);
 
 let checkVariables = (vs, ast) => {
-	let f;
-	f = ast => {
-		let g = id => id === undefined ? (ast => true)
+	let checkVariables_;
+	checkVariables_ = ast => {
+		let check = id => id === undefined ? (ast => true)
 			: id === 'alloc'
-				? (({ v, expr }) => f([v, vs], expr))
+				? (({ v, expr }) => checkVariables_([v, vs], expr))
 			: id === 'assign'
-				? (({ v, value, expr }) => contains(vs, v) && f(vs, value) && f(vs, expr))
+				? (({ v, value, expr }) => contains(vs, v) && checkVariables_(vs, value) && checkVariables_(vs, expr))
 			: id === 'lambda'
-				? (({ bind, expr }) => f(mergeBindVariables(vs, bind), expr))
+				? (({ bind, expr }) => checkVariables_(mergeBindVariables(vs, bind), expr))
 			: id === 'let'
 				? (({ bind, value, expr }) => function() {
 					try {
-						return f(vs, value);
+						return checkVariables_(vs, value);
 					} catch (e) {
 						e.message = `in value clause of ${dump(bind)}\n${e.message}`;
 						throw e;
 					}
-				}() && f(mergeBindVariables(vs, bind), expr))
+				}() && checkVariables_(mergeBindVariables(vs, bind), expr))
 			: id === 'var'
 				? (({ value: v }) => contains(vs, v) || error(`undefined variable ${v}`))
 			:
 				(ast => {
 					let kvs = Object.entries(ast);
-					let h;
-					h = i => i < kvs.length ? f(vs, kvs[i][1]) && h(i + 1) : true;
-					return h(0);
+					let checkKvs;
+					checkKvs = i => i < kvs.length ? checkVariables_(vs, kvs[i][1]) && checkKvs(i + 1) : true;
+					return checkKvs(0);
 				});
-		return g(ast.id)(ast);
+		return check(ast.id)(ast);
 	};
-	return f(ast);
+	return checkVariables_(ast);
 };
 
 let refs = new Map();
@@ -479,23 +479,23 @@ let newRef = () => {
 };
 
 let dumpRef = v => {
-	let f;
-	f = (vs, v) => false ? ''
+	let dumpRef_;
+	dumpRef_ = (vs, v) => false ? ''
 		: contains(vs, v)
 			? '<recurse>'
 		: v.ref !== undefined
-			? (refs.get(v.ref) !== v ? f([v, vs], refs.get(v.ref)) : `_${v.ref}`)
+			? (refs.get(v.ref) !== v ? dumpRef_([v, vs], refs.get(v.ref)) : `_${v.ref}`)
 		: v.length === 0
 			? ''
 		: v.length === 2
-			? `${f(vs, v[0])}:${f(vs, v[1])}`
+			? `${dumpRef_(vs, v[0])}:${dumpRef_(vs, v[1])}`
 		: typeof v === 'object'
 			? function() {
 				let id = v.id;
 				let join = Object
 					.entries(v)
 					.filter(([k, v_]) => k !== 'id')
-					.map(([k, v_]) => `${k}:${f([v, vs], v_)}`)
+					.map(([k, v_]) => `${k}:${dumpRef_([v, vs], v_)}`)
 					.join(' ');
 				return id !== undefined ? `${id}(${join})` : `{${join}}`;
 			}()
@@ -503,18 +503,18 @@ let dumpRef = v => {
 			? v.toString()
 		:
 			JSON.stringify(v);
-	return f(nil, v);
+	return dumpRef_(nil, v);
 };
 
 let cloneRef = v => {
 	let fromTos = new Map();
 
-	let f;
-	f = (vs, v) => false ? ''
+	let cloneRef_;
+	cloneRef_ = (vs, v) => false ? ''
 		: contains(vs, v)
 			? '<recurse>'
 		: v.ref !== undefined && refs.get(v.ref) !== v
-			? f([v, vs], refs.get(v.ref))
+			? cloneRef_([v, vs], refs.get(v.ref))
 		: v.ref !== undefined
 			? function() {
 				let w = fromTos.get(v.ref);
@@ -527,12 +527,12 @@ let cloneRef = v => {
 		: typeof v === 'string'
 			? v
 		: v.length !== undefined
-			? v.map(v_ => f([v, vs], v_))
+			? v.map(v_ => cloneRef_([v, vs], v_))
 		: typeof v === 'object'
-			? Object.fromEntries(Object.entries(v).map(([k, v_]) => [k, f([v, vs], v_)]))
+			? Object.fromEntries(Object.entries(v).map(([k, v_]) => [k, cloneRef_([v, vs], v_)]))
 		:
 			error(`cannot clone ${dumpRef(v)}`);
-	return f(nil, v);
+	return cloneRef_(nil, v);
 };
 
 let tryBind;
@@ -555,9 +555,9 @@ tryBind = (a, b) => function() {
 			? true
 		: a.length !== undefined
 			? (a.length === b.length && function() {
-				let f;
-				f = index => index === a.length || tryBind(a[index], b[index]) && f(index + 1);
-				return f(0);
+				let tryBindList;
+				tryBindList = index => index === a.length || tryBind(a[index], b[index]) && tryBindList(index + 1);
+				return tryBindList(0);
 			}())
 		: typeof a === 'object' && typeof b === 'object'
 			&& Object.keys(a).reduce((r, k) => {
@@ -573,12 +573,12 @@ tryBind = (a, b) => function() {
 let doBind = (ast, a, b) => tryBind(a, b) || error(`cannot bind type\nfr: ${dumpRef(a)}\nto: ${dumpRef(b)}\nin ${dump(ast)}`);
 
 let lookup = (vts, v) => {
-	let f;
-	f = vts => vts !== nil ? function() {
+	let lookup_;
+	lookup_ = vts => vts !== nil ? function() {
 		let [[v_, t], vts_] = vts;
-		return v_ === v ? t : f(vts_, v);
+		return v_ === v ? t : lookup_(vts_, v);
 	}() : error(`undefined variable ${v}`);
-	return f(vts, v);
+	return lookup_(vts, v);
 };
 
 let defineBindTypes;
@@ -785,14 +785,14 @@ inferType = (vts, ast) => {
 			? (({}) => typeString)
 		: id === 'struct'
 			? (({ kvs }) => {
-				let g;
-				g = kvs => 0 < kvs.length ? function() {
+				let inferKvs;
+				inferKvs = kvs => 0 < kvs.length ? function() {
 					let { key, value } = kvs[0];
-					let type = g(kvs[1]);
+					let type = inferKvs(kvs[1]);
 					type[key] = inferType(vts, value);
 					return type;
 				}() : {};
-				return typeStructOf(g(kvs));
+				return typeStructOf(inferKvs(kvs));
 			})
 		: id === 'sub'
 			? inferMathOp
@@ -802,12 +802,12 @@ inferType = (vts, ast) => {
 			? (({ expr, catch_ }) => doBind(ast, inferType(vts, catch_), newRef()) && inferType(vts, expr))
 		: id === 'tuple'
 			? (({ values }) => {
-				let g;
-				g = vs => vs !== nil ? function() {
+				let inferValues;
+				inferValues = vs => vs !== nil ? function() {
 					let [head, tail] = vs;
-					return [inferType(vts, head), g(tail)];
+					return [inferType(vts, head), inferValues(tail)];
 				}() : nil;
-				return typeTupleOf(g(values));
+				return typeTupleOf(inferValues(values));
 			})
 		: id === 'typeof'
 			? (({}) => typeString)
@@ -825,14 +825,14 @@ inferType = (vts, ast) => {
 };
 
 let rewrite = r => ast => {
-	let f;
-	f = ast0 => ast0.id === undefined ? ast0 : function() {
+	let rewrite_;
+	rewrite_ = ast0 => ast0.id === undefined ? ast0 : function() {
 		let ast1 = r(ast0.id)(ast0);
 		return ast1 === undefined
-			? Object.fromEntries(Object.entries(ast0).map(([k, v]) => [k, f(v)]))
+			? Object.fromEntries(Object.entries(ast0).map(([k, v]) => [k, rewrite_(v)]))
 			: ast1;
 	}();
-	return f(ast);
+	return rewrite_(ast);
 };
 
 let process = program => {
