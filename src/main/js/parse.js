@@ -683,19 +683,19 @@ inferType = (vts, ast) => {
 			? inferMathOp
 		: id === 'dot'
 			? (({ field, expr }) => false ? {}
-				: field === 'charCodeAt'
+				: field === '.charCodeAt'
 					? doBind(ast, inferType(vts, expr), typeString) && typeLambdaOf(typeNumber, typeNumber)
-				: field === 'endsWith'
+				: field === '.endsWith'
 					? doBind(ast, inferType(vts, expr), typeString) && typeLambdaOf(typeString, typeBoolean)
-				: field === 'length'
+				: field === '.length'
 					? doBind(ast, inferType(vts, expr), typeArrayOf(newRef())) && typeNumber
-				: field === 'slice'
+				: field === '.slice'
 					? doBind(ast, inferType(vts, expr), typeArrayOf(newRef())) && typeLambdaOf(typeTupleOf([typeNumber, [typeNumber, nil]]), typeString)
-				: field === 'startsWith'
+				: field === '.startsWith'
 					? doBind(ast, inferType(vts, expr), typeString) && typeLambdaOf(typeString, typeBoolean)
-				: field === 'toString'
+				: field === '.toString'
 					? doBind(ast, inferType(vts, expr), newRef()) && typeLambdaOf(typeArrayOf(typeNever), typeString)
-				: field === 'trim'
+				: field === '.trim'
 					? doBind(ast, inferType(vts, expr), typeString) && typeLambdaOf(typeArrayOf(typeNever), typeString)
 				: function() {
 					let tr = newRef();
