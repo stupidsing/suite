@@ -814,7 +814,10 @@ inferType = (vts, ast) => {
 		: id === 'undefined'
 			? (({}) => newRef())
 		: id === 'var'
-			? (({ value }) => cloneRef(lookup(vts, value)))
+			? (({ value }) => {
+				let t = finalRef(lookup(vts, value));
+				return t.id !== 'lambda' ? cloneRef(t) : cloneRef(t);
+			})
 		:
 			(({}) => error(`cannot infer type for ${id}`));
 
