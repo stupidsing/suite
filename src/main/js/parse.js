@@ -183,12 +183,12 @@ let parseConstant = program => {
 
 let parseArray = (program, parse) => ({
 	id: 'array',
-	values: keepsplitl(appendTrailingComma(program), ',', parse),
+	values: keepsplitl(program, ',', parse),
 });
 
 let parseTuple = (program, parse) => ({
 	id: 'tuple',
-	values: keepsplitl(appendTrailingComma(program), ',', parse),
+	values: keepsplitl(program + ',', ',', parse),
 });
 
 let parseArrayTuple = (program_, parse) => {
