@@ -102,7 +102,7 @@ let keepsplitl = (s, sep, apply) => {
 	let keepsplitl_;
 	keepsplitl_ = input => input !== '' ? function() {
 		let [left, right] = splitl(input, sep);
-		return [apply(left), keepsplitl_(right),];
+		return [apply(left), ...[keepsplitl_(right)],];
 	}() : nil;
 	return keepsplitl_(s);
 };
@@ -187,10 +187,17 @@ let parseArray = (program, parse) => {
 		let program = program_.trim();
 
 		return false ? {}
+			: program.startsWith('...') && program.endsWith(',')
+				? parse(program.slice(3, program.length - 1))
 			: program !== ''
 				? function() {
-					let [head, tail] = splitl(program, ',');
-					return { id: 'cons', head: parse(head), tail: parseArray_(tail) };
+					let [head, tail_] = splitl(program, ',');
+					let tail = tail_.trim();
+					return {
+						id: 'cons',
+						head: parse(head),
+						tail: tail.startsWith('...[') && tail.endsWith('],') ? parse(tail.slice(4, tail.length - 2)) : parseArray_(tail)
+					};
 				}()
 			:
 				{ id: 'nil' };
