@@ -187,8 +187,6 @@ let parseArray = (program, parse) => {
 		let program = program_.trim();
 
 		return false ? {}
-			: program.startsWith('[...') && program.endsWith('],')
-				? parse(program.slice(4, program.length - 2))
 			: program !== ''
 				? function() {
 					let [head, tail] = splitl(program, ',');
