@@ -644,7 +644,7 @@ inferType = (vts, ast) => {
 				: field === '.length'
 					? doBind(ast, inferType(vts, expr), typeArrayOf(newRef())) && typeNumber
 				: field === '.slice'
-					? doBind(ast, inferType(vts, expr), typeArrayOf(newRef())) && typeLambdaOf(typeTupleOf([typeNumber, [typeNumber, nil]]), typeString)
+					? doBind(ast, inferType(vts, expr), typeArrayOf(newRef())) && typeLambdaOf(typeTupleOf([typeNumber, [typeNumber, nil,],]), typeString)
 				: field === '.startsWith'
 					? doBind(ast, inferType(vts, expr), typeString) && typeLambdaOf(typeString, typeBoolean)
 				: field === '.toString'
@@ -726,7 +726,7 @@ inferType = (vts, ast) => {
 		: id === 'new-map'
 			? (({}) => typeLambdaOf(typeArrayOf(newRef()), { id: 'map' }))
 		: id === 'nil'
-			? (({}) => newRef())
+			? (({}) => typeArrayOf(newRef()))
 		: id === 'not'
 			? (({ expr }) => doBind(ast, inferType(vts, expr), typeBoolean) && typeBoolean)
 		: id === 'number'
@@ -766,7 +766,7 @@ inferType = (vts, ast) => {
 				let inferValues;
 				inferValues = vs => vs !== nil ? function() {
 					let [head, tail] = vs;
-					return [inferType(vts, head), inferValues(tail)];
+					return [inferType(vts, head), inferValues(tail),];
 				}() : nil;
 				return typeTupleOf(inferValues(values));
 			})
