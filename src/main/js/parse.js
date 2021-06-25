@@ -193,7 +193,7 @@ let parseTuple = (program, parse) => ({
 
 let parseArrayTuple = (program_, parse) => {
 	let program = program_.slice(1, program_.length - 1).trim();
-	return (program.length === 0 || program.endsWith(',') ? parseArray : parseTuple)(program, parse);
+	return (program === '' || program.endsWith(',') ? parseArray : parseTuple)(program, parse);
 };
 
 let parseStructInner = (program, parse) => ({
