@@ -525,16 +525,18 @@ let cloneRef = v => {
 	let cloneRef_;
 
 	cloneRef_ = v => false ? ''
-		: v.ref !== undefined && fromTos.has(v.ref)
-			? fromTos.get(v.ref)
-		: v.ref !== undefined && refs.get(v.ref) !== v
-			? cloneRef_(refs.get(v.ref))
 		: v.ref !== undefined
-			? function() {
-				let v1 = newRef();
-				let dummy = fromTos.set(v.ref, v1);
-				return v1;
-			}()
+                        ? (false ? ''
+                                : refs.get(v.ref) !== v
+                                        ? cloneRef_(refs.get(v.ref))
+                                : fromTos.has(v.ref)
+                                        ? fromTos.get(v.ref)
+                                : function() {
+                                        let v1 = newRef();
+                                        let dummy = fromTos.set(v.ref, v1);
+                                        return v1;
+                                }()
+                        )
 		: typeof v === 'string'
 			? v
 		: v.length !== undefined
