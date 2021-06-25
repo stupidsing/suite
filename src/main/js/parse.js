@@ -680,10 +680,8 @@ inferType = (vts, ast) => {
 		: id === 'element'
 			? (({ index, expr }) => {
 				let te = newRef();
-				return doBind(ast, inferType(vts, expr), ((false ? {}
-					: index === '0' ? typeTupleOf([te, newRef()])
-					: index === '1' ? typeTupleOf([newRef(), [te, newRef()]])
-					: {}))) && te;
+				let tl = typeArrayOf(te);
+				return doBind(ast, inferType(vts, expr), tl) && (index === '0' ? te : index === '1' ? tl : {});
 			})
 		: id === 'eq_'
 			? inferEqOp
