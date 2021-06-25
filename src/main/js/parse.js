@@ -533,12 +533,9 @@ let cloneRef = v => {
 			? cloneRef_([v, vs], refs.get(v.ref))
 		: v.ref !== undefined
 			? function() {
-				let w = fromTos.get(v.ref);
-				return w !== undefined ? w : function() {
-					let w1 = newRef();
-					let dummy = fromTos.set(v.ref, w1);
-					return w1;
-				}();
+				let w1 = newRef();
+				let dummy = fromTos.set(v.ref, w1);
+				return w1;
 			}()
 		: typeof v === 'string'
 			? v
