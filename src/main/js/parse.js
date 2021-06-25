@@ -525,15 +525,14 @@ let cloneRef = v => {
 	cloneRef_ = v => false ? ''
 		: v.ref !== undefined
                         ? (false ? ''
-                                : refs.get(v.ref) !== v
-                                        ? cloneRef_(refs.get(v.ref))
                                 : fromTos.has(v.ref)
                                         ? fromTos.get(v.ref)
-                                : function() {
-                                        let v1 = newRef();
-                                        let dummy = fromTos.set(v.ref, v1);
-                                        return v1;
-                                }()
+                                :
+					function() {
+						let v1 = newRef();
+						let dummy = fromTos.set(v.ref, v1);
+						return tryBind(v1, cloneRef_(refs.get(v.ref))) ? v1 : error('clone reference failed');
+					}()
                         )
 		: typeof v === 'string'
 			? v
@@ -543,6 +542,7 @@ let cloneRef = v => {
 			? Object.fromEntries(Object.entries(v).map(([k, v_]) => [k, cloneRef_(v_)]))
 		:
 			error(`cannot clone ${dumpRef(v)}`);
+
 	return cloneRef_(v);
 };
 
