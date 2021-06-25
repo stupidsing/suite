@@ -32,10 +32,8 @@ let dump = v => {
 					.join(' ');
 				return `${v.id}(${join})`;
 			}()
-		: typeof v === 'string'
-			? v.toString()
 		:
-			JSON.stringify(v);
+			v.toString();
 	return dump_(nil, v);
 };
 
