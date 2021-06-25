@@ -28,7 +28,7 @@ let dump = v => {
 				let join = Object
 					.entries(v)
 					.filter(([k, v_]) => k !== 'id')
-					.map(([k, v_]) => `${k}:${dump_([v, vs], v_)}`)
+					.map(([k, v_]) => `${k}:${dump_([v, vs,], v_)}`)
 					.join(' ');
 				return `${v.id}(${join})`;
 			}()
@@ -461,7 +461,7 @@ let dumpRef = v => {
 		: contains(vs, v)
 			? '<recurse>'
 		: v.ref !== undefined
-			? (refs.get(v.ref) !== v ? dumpRef_([v, vs], refs.get(v.ref)) : `_${v.ref}`)
+			? (refs.get(v.ref) !== v ? dumpRef_([v, vs,], refs.get(v.ref)) : `_${v.ref}`)
 		: v.length === 0
 			? ''
 		: v.length === 2
@@ -472,7 +472,7 @@ let dumpRef = v => {
 				let join = Object
 					.entries(v)
 					.filter(([k, v_]) => k !== 'id')
-					.map(([k, v_]) => `${k}:${dumpRef_([v, vs], v_)}`)
+					.map(([k, v_]) => `${k}:${dumpRef_([v, vs,], v_)}`)
 					.join(' ');
 				return id !== undefined ? `${id}(${join})` : `{${join}}`;
 			}()
