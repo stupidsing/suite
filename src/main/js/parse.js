@@ -524,13 +524,11 @@ let cloneRef = v => {
 	let fromTos = new Map();
 	let cloneRef_;
 
-	cloneRef_ = (vs, v) => false ? ''
-		: contains(vs, v)
-			? '<recurse>'
+	cloneRef_ = v => false ? ''
 		: v.ref !== undefined && fromTos.has(v.ref)
 			? fromTos.get(v.ref)
 		: v.ref !== undefined && refs.get(v.ref) !== v
-			? cloneRef_([v, vs], refs.get(v.ref))
+			? cloneRef_(refs.get(v.ref))
 		: v.ref !== undefined
 			? function() {
 				let v1 = newRef();
@@ -540,12 +538,12 @@ let cloneRef = v => {
 		: typeof v === 'string'
 			? v
 		: v.length !== undefined
-			? v.map(v_ => cloneRef_([v, vs], v_))
+			? v.map(v_ => cloneRef_(v_))
 		: typeof v === 'object'
-			? Object.fromEntries(Object.entries(v).map(([k, v_]) => [k, cloneRef_([v, vs], v_)]))
+			? Object.fromEntries(Object.entries(v).map(([k, v_]) => [k, cloneRef_(v_)]))
 		:
 			error(`cannot clone ${dumpRef(v)}`);
-	return cloneRef_(nil, v);
+	return cloneRef_(v);
 };
 
 let lookup = (vts, v) => {
