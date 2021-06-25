@@ -299,7 +299,7 @@ parseApplyBlockFieldIndex = program_ => {
 			? {
 				id: 'apply',
 				expr: parseProgram(program.slice(0, program.length - 2)),
-				parameter: { id: 'array', values: nil },
+				parameter: { id: 'never' },
 			}
 		: program.endsWith(')')
 			? function() {
@@ -364,7 +364,7 @@ parseBind = program_ => {
 
 	return false ? {}
 		: program === '()'
-			? { id: 'array', values: nil }
+			? { id: 'never' }
 		: program.startsWith('(') && program.endsWith(')')
 			? parseBind(program.slice(1, program.length - 1))
 		: program.startsWith('[') && program.endsWith(']')
@@ -555,11 +555,12 @@ let defineBindTypes;
 
 defineBindTypes = (vts, ast) => false ? vts
 	: ast.id === 'array' ? fold(vts, ast.values, defineBindTypes)
+	: ast.id === 'never' ? vts
 	: ast.id === 'nil' ? vts
 	: ast.id === 'struct' ? fold(vts, ast.kvs, (vts_, kv) => defineBindTypes(vts_, kv.value))
 	: ast.id === 'tuple' ? fold(vts, ast.values, defineBindTypes)
 	: ast.id === 'var' ? [[ast.value, newRef()], vts]
-	: error(`cannot destructure ${ast}`);
+	: error(`cannot destructure ${dump(ast)}`);
 
 let typeArrayOf = type => ({ id: 'array', of: type });
 let typeBoolean = ({ id: 'boolean' });
@@ -667,9 +668,9 @@ inferType = (vts, ast) => {
 				: field === '.startsWith'
 					? doBind(ast, inferType(vts, expr), typeString) && typeLambdaOf(typeString, typeBoolean)
 				: field === '.toString'
-					? doBind(ast, inferType(vts, expr), newRef()) && typeLambdaOf(typeArrayOf(typeNever), typeString)
+					? doBind(ast, inferType(vts, expr), newRef()) && typeLambdaOf(typeNever, typeString)
 				: field === '.trim'
-					? doBind(ast, inferType(vts, expr), typeString) && typeLambdaOf(typeArrayOf(typeNever), typeString)
+					? doBind(ast, inferType(vts, expr), typeString) && typeLambdaOf(typeNever, typeString)
 				: function() {
 					let tr = newRef();
 					let kvs = {};
@@ -743,7 +744,7 @@ inferType = (vts, ast) => {
 		: id === 'new-error'
 			? (({}) => typeLambdaOf(typeString, { id: 'error' }))
 		: id === 'new-map'
-			? (({}) => typeLambdaOf(typeArrayOf(newRef()), { id: 'map' }))
+			? (({}) => typeLambdaOf(typeNever, { id: 'map' }))
 		: id === 'nil'
 			? (({}) => typeArrayOf(newRef()))
 		: id === 'not'
