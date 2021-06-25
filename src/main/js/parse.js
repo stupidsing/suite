@@ -745,6 +745,8 @@ inferType = (vts, ast) => {
 			? inferEqOp
 		: id === 'neg'
 			? (({ expr }) => doBind(ast, inferType(vts, expr), typeNumber) && typeNumber)
+		: id === 'never'
+			? (({}) => typeNever)
 		: id === 'new-error'
 			? (({}) => typeLambdaOf(typeString, { id: 'error' }))
 		: id === 'new-map'
