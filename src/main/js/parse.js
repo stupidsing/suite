@@ -181,10 +181,24 @@ let parseConstant = program => {
 			error(`cannot parse "${program}"`);
 };
 
-let parseArray = (program, parse) => ({
-	id: 'array',
-	values: keepsplitl(program, ',', parse),
-});
+let parseArray = (program, parse) => {
+	let parseArray_;
+	parseArray_ = program_ => {
+		let program = program_.trim();
+
+		return false ? {}
+			: program.startsWith('[...') && program.endsWith('],')
+				? parse(program.slice(4, program.length - 2))
+			: program !== ''
+				? function() {
+					let [head, tail] = splitl(program, ',');
+					return { id: 'cons', head: parse(head), tail: parseArray_(tail) };
+				}()
+			:
+				{ id: 'nil' };
+	};
+	return parseArray_(program);
+};
 
 let parseTuple = (program, parse) => ({
 	id: 'tuple',
@@ -633,6 +647,11 @@ inferType = (vts, ast) => {
 			? (({}) => typeString)
 		: id === 'boolean'
 			? (({}) => typeBoolean)
+		: id === 'cons'
+			? (({ head, tail }) => {
+				let tl = typeArrayOf(inferType(vts, head));
+				return doBind(ast, inferType(vts, tail), tl) && tl;
+			})
 		: id === 'div'
 			? inferMathOp
 		: id === 'dot'
