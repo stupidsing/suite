@@ -4,6 +4,8 @@ let error = message => { throw new Error(message); };
 
 let nil = [];
 
+let stringify = json => JSON.stringify(json, undefined, '  ');
+
 let contains = (list, e) => {
 	let contains_;
 	contains_ = es => es !== nil && (es[0] === e || contains_(es[1]));
@@ -398,7 +400,7 @@ parseProgram = program => {
 				? function() {
 					let [var_, value] = splitl(statement.slice(4, undefined), '=');
 					let v = var_.trim();
-	
+
 					return value !== undefined
 						? {
 							id: 'let',
@@ -421,7 +423,7 @@ parseProgram = program => {
 			:
 				function() {
 					let [var_, value] = splitl(statement, '=');
-	
+
 					return {
 						id: 'assign',
 						v: parseLvalue(var_),
@@ -833,8 +835,6 @@ let process = program => {
 
 	return { ast, type };
 };
-
-let stringify = json => JSON.stringify(json, undefined, '  ');
 
 let actual = stringify(process(`
 	let parse = ast => ast;
