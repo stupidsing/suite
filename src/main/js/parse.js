@@ -277,7 +277,7 @@ let parseLvalue = program_ => {
 						? {
 							id: 'element',
 							expr: parseProgram(expr),
-							i: index,
+							index,
 						}
 					:
 						{
@@ -677,10 +677,10 @@ inferType = (vts, ast) => {
 					return doBind(ast, inferType(vts, expr), to) && tr;
 				}())
 		: id === 'element'
-			? (({ i, expr }) => {
+			? (({ index, expr }) => {
 				let te = newRef();
 				let tl = typeArrayOf(te);
-				return doBind(ast, inferType(vts, expr), tl) && (i === '0' ? te : i === '1' ? tl : {});
+				return doBind(ast, inferType(vts, expr), tl) && (index === '0' ? te : index === '1' ? tl : {});
 			})
 		: id === 'eq_'
 			? inferEqOp
