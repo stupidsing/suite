@@ -527,6 +527,8 @@ let cloneRef = v => {
 	cloneRef_ = (vs, v) => false ? ''
 		: contains(vs, v)
 			? '<recurse>'
+		: v.ref !== undefined && fromTos.has(v.ref)
+			? fromTos.get(v.ref)
 		: v.ref !== undefined && refs.get(v.ref) !== v
 			? cloneRef_([v, vs], refs.get(v.ref))
 		: v.ref !== undefined
