@@ -522,8 +522,8 @@ let doBind = (ast, a, b) => tryBind(a, b) || error(`cannot bind type\nfr: ${dump
 
 let cloneRef = v => {
 	let fromTos = new Map();
-
 	let cloneRef_;
+
 	cloneRef_ = (vs, v) => false ? ''
 		: contains(vs, v)
 			? '<recurse>'
