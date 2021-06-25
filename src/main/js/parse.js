@@ -538,7 +538,7 @@ let cloneRef = v => {
 		: typeof v === 'string'
 			? v
 		: v.length !== undefined
-			? v.map(v_ => cloneRef_(v_))
+			? v.map(cloneRef_)
 		: typeof v === 'object'
 			? Object.fromEntries(Object.entries(v).map(([k, v_]) => [k, cloneRef_(v_)]))
 		:
