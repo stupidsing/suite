@@ -483,35 +483,6 @@ let dumpRef = v => {
 	return dumpRef_(nil, v);
 };
 
-let cloneRef = v => {
-	let fromTos = new Map();
-
-	let cloneRef_;
-	cloneRef_ = (vs, v) => false ? ''
-		: contains(vs, v)
-			? '<recurse>'
-		: v.ref !== undefined && refs.get(v.ref) !== v
-			? cloneRef_([v, vs], refs.get(v.ref))
-		: v.ref !== undefined
-			? function() {
-				let w = fromTos.get(v.ref);
-				return w !== undefined ? w : function() {
-					let w1 = newRef();
-					let dummy = fromTos.set(v.ref, w1);
-					return w1;
-				}();
-			}()
-		: typeof v === 'string'
-			? v
-		: v.length !== undefined
-			? v.map(v_ => cloneRef_([v, vs], v_))
-		: typeof v === 'object'
-			? Object.fromEntries(Object.entries(v).map(([k, v_]) => [k, cloneRef_([v, vs], v_)]))
-		:
-			error(`cannot clone ${dumpRef(v)}`);
-	return cloneRef_(nil, v);
-};
-
 let tryBind;
 
 tryBind = (a, b) => function() {
@@ -548,6 +519,35 @@ tryBind = (a, b) => function() {
 }();
 
 let doBind = (ast, a, b) => tryBind(a, b) || error(`cannot bind type\nfr: ${dumpRef(a)}\nto: ${dumpRef(b)}\nin ${dump(ast)}`);
+
+let cloneRef = v => {
+	let fromTos = new Map();
+
+	let cloneRef_;
+	cloneRef_ = (vs, v) => false ? ''
+		: contains(vs, v)
+			? '<recurse>'
+		: v.ref !== undefined && refs.get(v.ref) !== v
+			? cloneRef_([v, vs], refs.get(v.ref))
+		: v.ref !== undefined
+			? function() {
+				let w = fromTos.get(v.ref);
+				return w !== undefined ? w : function() {
+					let w1 = newRef();
+					let dummy = fromTos.set(v.ref, w1);
+					return w1;
+				}();
+			}()
+		: typeof v === 'string'
+			? v
+		: v.length !== undefined
+			? v.map(v_ => cloneRef_([v, vs], v_))
+		: typeof v === 'object'
+			? Object.fromEntries(Object.entries(v).map(([k, v_]) => [k, cloneRef_([v, vs], v_)]))
+		:
+			error(`cannot clone ${dumpRef(v)}`);
+	return cloneRef_(nil, v);
+};
 
 let lookup = (vts, v) => {
 	let lookup_;
