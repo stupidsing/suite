@@ -458,22 +458,24 @@ let dumpRef = v => {
 			? '<recurse>'
 		: v.ref !== undefined
 			? (refs.get(v.ref) !== v ? dumpRef_([v, vs,], refs.get(v.ref)) : `_${v.ref}`)
+		: typeof v === 'object'
+			? (false ? ''
+				: v.length === 0
+					? ''
+				: v.length === 2
+					? `${dumpRef_(vs, head(v))}:${dumpRef_(vs, tail(v))}`
+				: function() {
+					let id = v.id;
+					let join = Object
+						.entries(v)
+						.filter(([k, v_]) => k !== 'id')
+						.map(([k, v_]) => `${k}:${dumpRef_([v, vs,], v_)}`)
+						.join(' ');
+					return id !== undefined ? `${id}(${join})` : `{${join}}`;
+				}()
+			)
 		: typeof v === 'string'
 			? v.toString()
-		: v.length === 0
-			? ''
-		: v.length === 2
-			? `${dumpRef_(vs, head(v))}:${dumpRef_(vs, tail(v))}`
-		: typeof v === 'object'
-			? function() {
-				let id = v.id;
-				let join = Object
-					.entries(v)
-					.filter(([k, v_]) => k !== 'id')
-					.map(([k, v_]) => `${k}:${dumpRef_([v, vs,], v_)}`)
-					.join(' ');
-				return id !== undefined ? `${id}(${join})` : `{${join}}`;
-			}()
 		:
 			JSON.stringify(v, undefined, undefined);
 	return dumpRef_(nil, v);
@@ -529,14 +531,13 @@ let cloneRef = v => {
 				let dummy = fromTos.set(v.ref, v1);
 				return doBind('clone reference', v1, cloneRef_(refs.get(v.ref))) && v1;
 			}())
-		: typeof v === 'string'
-			? v
-		: v.length !== undefined
-			? v.map(cloneRef_)
 		: typeof v === 'object'
-			? Object.fromEntries(Object.entries(v).map(([k, v_]) => [k, cloneRef_(v_)]))
+			? (v.length !== undefined
+				? v.map(cloneRef_)
+				: Object.fromEntries(Object.entries(v).map(([k, v_]) => [k, cloneRef_(v_)]))
+			)
 		:
-			error(`cannot clone ${dumpRef(v)}`);
+			v;
 
 	return cloneRef_(v);
 };
