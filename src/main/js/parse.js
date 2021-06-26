@@ -684,8 +684,8 @@ inferType = (vts, ast) => {
 				: field === '.map'
 					? function() {
 						let ti = newRef();
-						let te = newRef();
-						return doBind(ast, inferType(vts, expr), typeArrayOf(ti)) && typeLambdaOf(typeLambdaOf(ti, te), typeArrayOf(te));
+						let to = newRef();
+						return doBind(ast, inferType(vts, expr), typeArrayOf(ti)) && typeLambdaOf(typeLambdaOf(ti, to), typeArrayOf(to));
 					}()
 				: field === '.slice'
 					? doBind(ast, inferType(vts, expr), typeArrayOf(newRef())) && typeLambdaOf(typeTupleOf(cons(typeNumber, cons(typeNumber, nil))), typeString)
