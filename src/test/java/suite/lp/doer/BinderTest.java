@@ -13,6 +13,7 @@ import suite.node.Dict;
 import suite.node.Int;
 import suite.node.Node;
 import suite.node.Reference;
+import suite.node.Tree;
 
 public class BinderTest {
 
@@ -37,6 +38,15 @@ public class BinderTest {
 
 		bind(ref0, Atom.NIL);
 		assertEquals(Atom.NIL, map1.get(key0).finalNode());
+	}
+
+	@Test
+	public void testRecurse() {
+		var ref0 = new Reference();
+		var ref1 = new Reference();
+		ref0.bound(Tree.ofAnd(Int.of(0), ref0));
+		ref1.bound(Tree.ofAnd(Int.of(0), ref1));
+		assertTrue(bind(ref0, ref1));
 	}
 
 	@Test
