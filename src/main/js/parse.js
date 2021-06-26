@@ -527,20 +527,24 @@ let cloneRef = v => {
 	let fromTos = new Map();
 	let cloneRef_;
 
-	cloneRef_ = v => false ? ''
-		: v.ref !== undefined
-			? (fromTos.has(v.ref) ? fromTos.get(v.ref) : function() {
-				let v1 = newRef();
-				let dummy = fromTos.set(v.ref, v1);
-				return doBind('clone reference', v1, cloneRef_(refs.get(v.ref))) && v1;
-			}())
-		: typeof v === 'object'
-			? (v.length !== undefined
-				? v.map(cloneRef_)
-				: Object.fromEntries(Object.entries(v).map(([k, v_]) => [k, cloneRef_(v_)]))
-			)
-		:
-			v;
+	cloneRef_ = v => {
+		let { ref } = v;
+		let vlist = any(v);
+		return false ? {}
+			: ref !== undefined
+				? (fromTos.has(ref) ? fromTos.get(ref) : function() {
+					let v1 = newRef();
+					let dummy = fromTos.set(ref, v1);
+					return doBind('clone reference', v1, cloneRef_(refs.get(ref))) && v1;
+				}())
+			: typeof v === 'object'
+				? (vlist.length !== undefined
+					? any(vlist.map(cloneRef_))
+					: Object.fromEntries(Object.entries(v).map(([k, v_]) => [k, cloneRef_(v_)]))
+				)
+			:
+				v;
+	};
 
 	return cloneRef_(v);
 };
