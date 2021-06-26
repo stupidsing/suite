@@ -22,21 +22,20 @@ public class Binder {
 	}
 
 	public static boolean bind(Node n0, Node n1, Trail trail) {
-		n0 = n0.finalNode();
-		n1 = n1.finalNode();
-
 		if (n0 == n1)
 			return true;
 
 		if (n0 instanceof Reference ref) {
-			trail.addBind(ref, n1);
-			return true;
+			var oldn0 = ref0.node;
+			var finaln1 = n1.finalNode();
+			trail.addDirectedBind(ref0, finaln1);
+			return bind(oldn0, finaln1, trail);
 		} else if (n1 instanceof Reference ref) {
-			trail.addBind(ref, n0);
-			return true;
-		}
-
-		if (n0 instanceof Dict d0 && n1 instanceof Dict d1) {
+			var oldn1 = ref1.node;
+			var finaln0 = n0.finalNode();
+			trail.addDirectedBind(ref1, finaln0);
+			return bind(finaln0, oldn1, trail);
+		} else if (n0 instanceof Dict d0 && n1 instanceof Dict d1) {
 			bind(d0.reference, d1.reference, trail);
 
 			var map0 = d0.getMap();

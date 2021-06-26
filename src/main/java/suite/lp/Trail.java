@@ -3,12 +3,13 @@ package suite.lp;
 import java.util.ArrayList;
 import java.util.List;
 
+import primal.adt.Pair;
 import suite.node.Node;
 import suite.node.Reference;
 
 public class Trail {
 
-	private List<Reference> boundReferences = new ArrayList<>();
+	private List<Pair<Reference, Node>> boundReferences = new ArrayList<>();
 
 	public void addBind(Reference reference, Node target) {
 		if (target instanceof Reference reference1)
@@ -21,7 +22,7 @@ public class Trail {
 	}
 
 	public void addDirectedBind(Reference reference, Node target) {
-		boundReferences.add(reference);
+		boundReferences.add(Pair.of(reference, reference.node));
 		reference.bound(target);
 	}
 
@@ -35,8 +36,10 @@ public class Trail {
 
 	public void unwind(int pointInTime) {
 		var i = boundReferences.size();
-		while (pointInTime < i)
-			boundReferences.remove(--i).unbound();
+		while (pointInTime < i) {
+			var boundReference = boundReferences.remove(--i);
+			boundReference.k.bound(boundReference.v);
+		}
 	}
 
 }
