@@ -603,7 +603,7 @@ inferType = (vts, ast) => {
 				return true
 					&& doBind(ast, inferType(vts, lhs), t)
 					&& doBind(ast, inferType(vts, rhs), t)
-					&& (tryBind(t, typeNumber) || tryBind(t, typeString) || error(`cannot add values with type ${t}`))
+					&& (tryBind(t, typeNumber) || tryBind(t, typeString) || error(`cannot add values with type ${dumpRef(t)}`))
 					&& t;
 			})
 		: id === 'alloc'
