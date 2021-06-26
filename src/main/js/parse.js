@@ -486,34 +486,36 @@ let tryBind;
 tryBind = (a, b) => function() {
 	let refa = a.ref;
 	let refb = b.ref;
-	return false ? true
-		: refa !== undefined && refs.get(refa) !== a
-			? tryBind(refs.get(refa), b)
-		: refb !== undefined && refs.get(refb) !== b
-			? tryBind(a, refs.get(refb))
-		: refa !== undefined && refb !== undefined
-			? (refa < refb ? setRef(refb, a) : setRef(refa, b))
-		: refa !== undefined
-			? setRef(refa, b)
-		: refb !== undefined
-			? setRef(refb, a)
+	return false ? false
 		: a === b
 			? true
-		: a.length !== undefined
-			? (a.length === b.length && function() {
+		: refa !== undefined
+			? function() {
+				let olda = refs.get(refa);
+				return setRef(refa, b) && tryBind(olda, b) || !setRef(refa, olda);
+			}()
+		: refb !== undefined
+			? function() {
+				let oldb = refs.get(refb);
+				return setRef(refb, a) && tryBind(a, oldb) || !setRef(refb, oldb);
+			}()
+		: typeof a === 'object' && typeof b === 'object'
+			&& (a.length !== undefined && a.length === b.length
+			? function() {
 				let tryBindList;
 				tryBindList = index => index === a.length || tryBind(a[index], b[index]) && tryBindList(index + 1);
 				return tryBindList(0);
-			}())
-		: typeof a === 'object' && typeof b === 'object'
-			&& Object.keys(a).reduce((r, k) => {
-				let dummy = b.completed !== true && b[k] !== undefined || function() { b[k] = newRef(); return b[k]; }();
-				return r && tryBind(a[k], b[k]);
-			}, true)
-			&& Object.keys(b).reduce((r, k) => {
-				let dummy = a.completed !== true && a[k] !== undefined || function() { a[k] = newRef(); return a[k]; }();
-				return r && tryBind(a[k], b[k]);
-			}, true);
+			}()
+			: true
+				&& Object.keys(a).reduce((r, k) => {
+					let dummy = b.completed !== true && b[k] !== undefined || function() { b[k] = newRef(); return b[k]; }();
+					return r && tryBind(a[k], b[k]);
+				}, true)
+				&& Object.keys(b).reduce((r, k) => {
+					let dummy = a.completed !== true && a[k] !== undefined || function() { a[k] = newRef(); return a[k]; }();
+					return r && tryBind(a[k], b[k]);
+				}, true)
+			);
 }();
 
 let doBind = (ast, a, b) => tryBind(a, b) || error(`cannot bind type\nfr: ${dumpRef(a)}\nto: ${dumpRef(b)}\nin ${dump(ast)}`);
