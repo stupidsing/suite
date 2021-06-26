@@ -525,11 +525,11 @@ let cloneRef = v => {
 
 	cloneRef_ = v => false ? ''
 		: v.ref !== undefined
-                        ? (fromTos.has(v.ref) ? fromTos.get(v.ref) : function() {
-                                let v1 = newRef();
-                                let dummy = fromTos.set(v.ref, v1);
-                                return tryBind(v1, cloneRef_(refs.get(v.ref))) ? v1 : error('clone reference failed');
-                        }())
+			? (fromTos.has(v.ref) ? fromTos.get(v.ref) : function() {
+				let v1 = newRef();
+				let dummy = fromTos.set(v.ref, v1);
+				return doBind('clone reference', v1, cloneRef_(refs.get(v.ref))) && v1;
+			}())
 		: typeof v === 'string'
 			? v
 		: v.length !== undefined
