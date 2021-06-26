@@ -521,7 +521,8 @@ tryBind = (a, b) => function() {
 			);
 }();
 
-let doBind = (ast, a, b) => tryBind(a, b) || error(`in ${dump(ast)}:\ncannot bind type\nfr: ${dumpRef(a)}\nto: ${dumpRef(b)}`);
+let doBind_ = (msg, a, b) => tryBind(a, b) || error(`in ${msg}:\ncannot bind type\nfr: ${dumpRef(a)}\nto: ${dumpRef(b)}`);
+let doBind = (ast, a, b) => doBind_(dump(ast), a, b);
 
 let cloneRef = v => {
 	let fromTos = new Map();
@@ -535,7 +536,7 @@ let cloneRef = v => {
 				? (fromTos.has(ref) ? fromTos.get(ref) : function() {
 					let v1 = newRef();
 					let dummy = fromTos.set(ref, v1);
-					return doBind('clone reference', v1, cloneRef_(refs.get(ref))) && v1;
+					return doBind_('clone reference', v1, cloneRef_(refs.get(ref))) && v1;
 				}())
 			: typeof v === 'object'
 				? (vlist.length !== undefined
@@ -685,7 +686,7 @@ inferType = (vts, ast) => {
 						return doBind(ast, inferType(vts, expr), typeArrayOf(ti)) && typeLambdaOf(typeLambdaOf(ti, te), typeArrayOf(te));
 					}()
 				: field === '.slice'
-					? doBind(ast, inferType(vts, expr), typeArrayOf(newRef())) && typeLambdaOf(typeTupleOf([typeNumber, [typeNumber, nil,],]), typeString)
+					? doBind(ast, inferType(vts, expr), typeArrayOf(newRef())) && typeLambdaOf(typeTupleOf(cons(typeNumber, cons(typeNumber, nil))), typeString)
 				: field === '.startsWith'
 					? doBind(ast, inferType(vts, expr), typeString) && typeLambdaOf(typeString, typeBoolean)
 				: field === '.toString'
