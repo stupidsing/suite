@@ -455,31 +455,34 @@ let newRef = () => {
 
 let dumpRef = v => {
 	let dumpRef_;
-	dumpRef_ = (vs, v) => false ? ''
-		: contains(vs, v)
-			? '<recurse>'
-		: v.ref !== undefined
-			? (refs.get(v.ref) !== v ? dumpRef_(cons(v, vs), refs.get(v.ref)) : `_${v.ref}`)
-		: typeof v === 'object'
-			? (false ? ''
-				: any(v).length === 0
-					? ''
-				: any(v).length === 2
-					? `${dumpRef_(vs, head(v))}:${dumpRef_(vs, tail(v))}`
-				: function() {
-					let id = v.id;
-					let join = Object
-						.entries(v)
-						.filter(([k, v_]) => k !== 'id')
-						.map(([k, v_]) => `${k}:${dumpRef_(cons(v, vs), v_)}`)
-						.join(' ');
-					return id !== undefined ? `${id}(${join})` : `{${join}}`;
-				}()
-			)
-		: typeof v === 'string'
-			? v.toString()
-		:
-			JSON.stringify(v, undefined, undefined);
+	dumpRef_ = (vs, v) => {
+		let listv = any(v);
+		return false ? ''
+			: contains(vs, v)
+				? '<recurse>'
+			: v.ref !== undefined
+				? (refs.get(v.ref) !== v ? dumpRef_(cons(v, vs), refs.get(v.ref)) : `_${v.ref}`)
+			: typeof v === 'object'
+				? (false ? ''
+					: listv.length === 0
+						? ''
+					: listv.length === 2
+						? `${dumpRef_(vs, head(listv))}:${dumpRef_(vs, any(tail(listv)))}`
+					: function() {
+						let id = v.id;
+						let join = Object
+							.entries(v)
+							.filter(([k, v_]) => k !== 'id')
+							.map(([k, v_]) => `${k}:${dumpRef_(cons(v, vs), v_)}`)
+							.join(' ');
+						return id !== undefined ? `${id}(${join})` : `{${join}}`;
+					}()
+				)
+			: typeof v === 'string'
+				? v.toString()
+			:
+				JSON.stringify(v, undefined, undefined);
+	};
 	return dumpRef_(nil, v);
 };
 
