@@ -5,6 +5,8 @@ let cons = (head, tail) => [head, ...[tail],];
 let error = message => { throw new Error(message); };
 let get = (m, k) => any(m)[any(k)];
 let head = list =>  list[0];
+let isEmpty = list => list === nil;
+let isNotEmpty = list => list !== nil;
 let set = (m, k, v) => { any(m)[any(k)] = any(v); return v; };
 let tail = list =>  list[1];
 let nil = [];
@@ -13,13 +15,13 @@ let stringify = json => JSON.stringify(json, undefined, '  ');
 
 let contains = (es, e) => {
 	let contains_;
-	contains_ = es => es !== nil && (head(es) === e || contains_(tail(es)));
+	contains_ = es => isNotEmpty(es) && (head(es) === e || contains_(tail(es)));
 	return contains_(es);
 };
 
 let fold = (init, es, op) => {
 	let fold_;
-	fold_ = (init, es) => es !== nil ? fold_(op(init, head(es)), tail(es)) : init;
+	fold_ = (init, es) => isNotEmpty(es) ? fold_(op(init, head(es)), tail(es)) : init;
 	return fold_(init, es);
 };
 
@@ -558,7 +560,7 @@ let cloneRef = v => {
 
 let lookup = (vts, v) => {
 	let lookup_;
-	lookup_ = vts => vts !== nil ? function() {
+	lookup_ = vts => isNotEmpty(vts) ? function() {
 		let [v_, t] = head(vts);
 		return v_ === v ? t : lookup_(tail(vts));
 	}() : error(`undefined variable ${v}`);
@@ -827,7 +829,7 @@ inferType = (vts, ast) => {
 		: id === 'tuple'
 			? (({ values }) => {
 				let inferValues;
-				inferValues = vs => vs !== nil ? [inferType(vts, head(vs)), ...[inferValues(tail(vs))],] : nil;
+				inferValues = vs => isNotEmpty(vs) ? [inferType(vts, head(vs)), ...[inferValues(tail(vs))],] : nil;
 				return typeTupleOf(inferValues(values));
 			})
 		: id === 'typeof'
