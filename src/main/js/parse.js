@@ -458,12 +458,13 @@ let newRef = () => {
 let dumpRef = v => {
 	let dumpRef_;
 	dumpRef_ = (vs, v) => {
+		let { ref } = v;
 		let listv = any(v);
 		return false ? ''
 			: contains(vs, v)
 				? '<recurse>'
-			: v.ref !== undefined
-				? (refs.get(v.ref) !== v ? dumpRef_(cons(v, vs), refs.get(v.ref)) : `_${v.ref}`)
+			: ref !== undefined
+				? (refs.get(ref) !== v ? dumpRef_(cons(v, vs), refs.get(ref)) : `_${ref}`)
 			: typeof v === 'object'
 				? (false ? ''
 					: listv.length === 0
