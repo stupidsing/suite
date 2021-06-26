@@ -1,3 +1,4 @@
+let any = Object.assign;
 let ascii = s => s.charCodeAt(0);
 let cons = (head, tail) => [head, ...[tail],];
 let error = message => { throw new Error(message); };
@@ -457,19 +458,19 @@ let dumpRef = v => {
 		: contains(vs, v)
 			? '<recurse>'
 		: v.ref !== undefined
-			? (refs.get(v.ref) !== v ? dumpRef_([v, vs,], refs.get(v.ref)) : `_${v.ref}`)
+			? (refs.get(v.ref) !== v ? dumpRef_(cons(v, vs), refs.get(v.ref)) : `_${v.ref}`)
 		: typeof v === 'object'
 			? (false ? ''
-				: v.length === 0
+				: any(v).length === 0
 					? ''
-				: v.length === 2
+				: any(v).length === 2
 					? `${dumpRef_(vs, head(v))}:${dumpRef_(vs, tail(v))}`
 				: function() {
 					let id = v.id;
 					let join = Object
 						.entries(v)
 						.filter(([k, v_]) => k !== 'id')
-						.map(([k, v_]) => `${k}:${dumpRef_([v, vs,], v_)}`)
+						.map(([k, v_]) => `${k}:${dumpRef_(cons(v, vs), v_)}`)
 						.join(' ');
 					return id !== undefined ? `${id}(${join})` : `{${join}}`;
 				}()
@@ -484,6 +485,8 @@ let dumpRef = v => {
 let tryBind;
 
 tryBind = (a, b) => function() {
+	let a_ = any(a);
+	let b_ = any(b);
 	let refa = a.ref;
 	let refb = b.ref;
 	return false ? false
@@ -500,20 +503,20 @@ tryBind = (a, b) => function() {
 				return setRef(refb, a) && tryBind(a, oldb) || !setRef(refb, oldb);
 			}()
 		: typeof a === 'object' && typeof b === 'object'
-			&& (a.length !== undefined && a.length === b.length
+			&& (a_.length !== undefined && a_.length === b_.length
 			? function() {
 				let tryBindList;
-				tryBindList = index => index === a.length || tryBind(a[index], b[index]) && tryBindList(index + 1);
+				tryBindList = index => index === a_.length || tryBind(a_[index], b_[index]) && tryBindList(index + 1);
 				return tryBindList(0);
 			}()
 			: true
 				&& Object.keys(a).reduce((r, k) => {
-					let dummy = b.completed !== true && b[k] !== undefined || function() { b[k] = newRef(); return b[k]; }();
-					return r && tryBind(a[k], b[k]);
+					let dummy = b.completed !== true && b_[k] !== undefined || function() { b_[k] = newRef(); return b_[k]; }();
+					return r && tryBind(a_[k], b_[k]);
 				}, true)
 				&& Object.keys(b).reduce((r, k) => {
-					let dummy = a.completed !== true && a[k] !== undefined || function() { a[k] = newRef(); return a[k]; }();
-					return r && tryBind(a[k], b[k]);
+					let dummy = a.completed !== true && a_[k] !== undefined || function() { a_[k] = newRef(); return a_[k]; }();
+					return r && tryBind(a_[k], b_[k]);
 				}, true)
 			);
 }();
@@ -662,8 +665,21 @@ inferType = (vts, ast) => {
 					? doBind(ast, inferType(vts, expr), typeString) && typeLambdaOf(typeNumber, typeNumber)
 				: field === '.endsWith'
 					? doBind(ast, inferType(vts, expr), typeString) && typeLambdaOf(typeString, typeBoolean)
+				: field === '.filter'
+					? function() {
+						let ti = newRef();
+						return doBind(ast, inferType(vts, expr), typeArrayOf(ti)) && typeLambdaOf(typeLambdaOf(ti, typeBoolean), typeArrayOf(ti));
+					}()
+				: field === '.join'
+					? doBind(ast, inferType(vts, expr), typeArrayOf(typeString)) && typeLambdaOf(typeString, typeString)
 				: field === '.length'
 					? doBind(ast, inferType(vts, expr), typeArrayOf(newRef())) && typeNumber
+				: field === '.map'
+					? function() {
+						let ti = newRef();
+						let te = newRef();
+						return doBind(ast, inferType(vts, expr), typeArrayOf(ti)) && typeLambdaOf(typeLambdaOf(ti, te), typeArrayOf(te));
+					}()
 				: field === '.slice'
 					? doBind(ast, inferType(vts, expr), typeArrayOf(newRef())) && typeLambdaOf(typeTupleOf([typeNumber, [typeNumber, nil,],]), typeString)
 				: field === '.startsWith'
