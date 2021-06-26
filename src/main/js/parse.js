@@ -503,8 +503,8 @@ tryBind = (a, b) => function() {
 				return setRef(refb, a) && tryBind(a, oldb) || !setRef(refb, oldb);
 			}()
 		: typeof a === 'object' && typeof b === 'object'
-			&& (a_.length !== undefined && a_.length === b_.length
-			? function() {
+			&& (a_.length !== undefined
+			? a_.length === b_.length && function() {
 				let tryBindList;
 				tryBindList = index => index === a_.length || tryBind(a_[index], b_[index]) && tryBindList(index + 1);
 				return tryBindList(0);
