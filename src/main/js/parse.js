@@ -1,4 +1,4 @@
-let any = Object.assign;
+let any = v => Object.assign(v);
 let ascii = s => s.charCodeAt(0);
 let cons = (head, tail) => [head, ...[tail],];
 let error = message => { throw new Error(message); };
@@ -548,10 +548,10 @@ let cloneRef = v => {
 let lookup = (vts, v) => {
 	let lookup_;
 	lookup_ = vts => vts !== nil ? function() {
-		let [[v_, t], vts_] = vts;
-		return v_ === v ? t : lookup_(vts_, v);
+		let [v_, t] = head(vts);
+		return v_ === v ? t : lookup_(tail(vts));
 	}() : error(`undefined variable ${v}`);
-	return lookup_(vts, v);
+	return lookup_(vts);
 };
 
 let defineBindTypes;
