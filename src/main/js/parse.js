@@ -467,7 +467,7 @@ let dumpRef = v => {
 				? (refs.get(ref) !== v ? dumpRef_(cons(v, vs), refs.get(ref)) : `_${ref}`)
 			: typeof v === 'object'
 				? (false ? ''
-					: listv.length === 0
+					: isEmpty(listv)
 						? ''
 					: listv.length === 2
 						? `${dumpRef_(vs, head(listv))}:${dumpRef_(vs, any(tail(listv)))}`
