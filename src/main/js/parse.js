@@ -847,17 +847,33 @@ let rewrite = r => ast => {
 	return rewrite_(ast);
 };
 
+let typeConsole = typeStructOf({
+	'.error': typeLambdaOf(newRef(), typeNever),
+	'.log': typeLambdaOf(newRef(), typeNever),
+});
+
+let typeJSON = typeStructOf({
+	'.stringify': typeLambdaOf(typeTupleOf(cons(newRef(), cons(newRef(), cons(newRef(), nil)))), typeString),
+});
+
+let typeObject = typeStructOf({
+	'.assign': typeLambdaOf(newRef(), newRef()),
+	'.entries': typeLambdaOf(newRef(), typeArrayOf(newRef())),
+	'.fromEntries': typeLambdaOf(typeArrayOf(newRef()), newRef()),
+});
+
+let typeRequire = typeLambdaOf(typeString, newRef());
+
 let process = program => {
 	let ast = parseProgram(program);
 
 	let type = inferType(
-		cons(['JSON', newRef()],
-			cons(['Object', newRef()],
-				cons(['console', newRef()],
-					cons(['require', newRef()], nil)
-				)
-			)
-		),
+		[
+			['JSON', newRef()],
+			['Object', typeObject],
+			['console', typeConsole],
+			['require', typeRequire],
+		].reduce((l, vt) => cons(vt, l), nil),
 		ast
 	);
 
