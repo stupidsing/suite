@@ -1,15 +1,15 @@
 let any = v => Object.assign(v);
 
 let ascii = s => s.charCodeAt(0);
-let cons = (head, tail) => [head, ...[tail],];
+let cons = (head, tail) => [head, ...tail,];
 let error = message => { throw new Error(message); };
 let get = (m, k) => any(m)[any(k)];
 let head = list => list[0];
 let isEmpty = list => list.length === 0;
-let isNotEmpty = list => list.length === 2;
+let isNotEmpty = list => 0 < list.length;
 let nil = [];
 let set = (m, k, v) => { any(m)[any(k)] = any(v); return v; };
-let tail = list => list[1];
+let tail = list => list.slice(1, undefined);
 
 let stringify = json => JSON.stringify(json, undefined, '  ');
 
@@ -150,6 +150,31 @@ let parseNumber = program => {
 	return parseNumber_(program.length - 1);
 };
 
+let parseApplyBlockFieldIndex;
+
+let parseBackquote;
+
+parseBackquote = program => {
+	let index = program.indexOf('${');
+
+	return 0 <= index ? function() {
+		let remains = program.slice(index + 2, undefined);
+		let [expr_, right] = splitl(remains, '}');
+
+		let exprToString = {
+			id: 'apply',
+			arg: { id: 'never' },
+			expr: { id: 'dot', field: '.toString', expr: parseApplyBlockFieldIndex(expr_) },
+		};
+
+		return {
+			id: 'add',
+			lhs: { id: 'string', value: program.slice(0, index) },
+			rhs: { id: 'add', lhs: exprToString, rhs: parseBackquote(right) },
+		};
+	}() : { id: 'string', value: program };
+};
+
 let parseConstant = program => {
 	let first = program.charCodeAt(0);
 
@@ -161,7 +186,7 @@ let parseConstant = program => {
 		: program.startsWith('"') && program.endsWith('"')
 			? { id: 'string', value: program.slice(1, program.length - 1) }
 		: program.startsWith('`') && program.endsWith('`')
-			? { id: 'backquote', value: program.slice(1, program.length - 1) }
+			? parseBackquote(program.slice(1, program.length - 1))
 		: program === 'false'
 			? { id: 'boolean', value: 'false' }
 		: program === 'new Error'
@@ -192,7 +217,7 @@ let parseArray = (program, parse) => {
 				return {
 					id: 'cons',
 					head: parse(head),
-					tail: tail.startsWith('...[') && tail.endsWith('],') ? parse(tail.slice(4, tail.length - 2)) : parseArray_(tail)
+					tail: tail.startsWith('...') && tail.endsWith(',') ? parse(tail.slice(3, tail.length - 1)) : parseArray_(tail)
 				};
 			}()
 		:
@@ -255,8 +280,6 @@ parseValue = program_ => {
 			parseConstant(program);
 };
 
-let parseApplyBlockFieldIndex;
-
 let parseLvalue = program_ => {
 	let program = program_.trim();
 	let [expr, field] = splitr(program, '.');
@@ -269,7 +292,7 @@ let parseLvalue = program_ => {
 				let [expr, index_] = splitr(program, '[');
 				let index = index_.slice(0, index_.length - 1);
 				return expr === undefined ? parseValue(program)
-					: index === '0' || index === '1'
+					: index === '0'
 						? {
 							id: 'element',
 							expr: parseProgram(expr),
@@ -466,7 +489,7 @@ let dumpRef = v => {
 				? (false ? ''
 					: isEmpty(listv)
 						? ''
-					: listv.length === 2
+					: isNotEmpty(listv)
 						? `${dumpRef_(vs, head(listv))}:${dumpRef_(vs, any(tail(listv)))}`
 					: function() {
 						let id = v.id;
@@ -667,8 +690,6 @@ inferType = (vts, ast) => {
 					}
 				}() && inferType(vts, expr);
 			})
-		: id === 'backquote'
-			? (({}) => typeString)
 		: id === 'boolean'
 			? (({}) => typeBoolean)
 		: id === 'cons'
@@ -733,7 +754,7 @@ inferType = (vts, ast) => {
 			? (({ index, expr }) => {
 				let te = newRef();
 				let tl = typeArrayOf(te);
-				return doBind(ast, inferType(vts, expr), tl) && (index === '0' ? te : index === '1' ? tl : {});
+				return doBind(ast, inferType(vts, expr), tl) && (index === '0' ? te : {});
 			})
 		: id === 'eq_'
 			? inferEqOp
@@ -837,7 +858,7 @@ inferType = (vts, ast) => {
 		: id === 'tuple'
 			? (({ values }) => {
 				let inferValues;
-				inferValues = vs => isNotEmpty(vs) ? [inferType(vts, head(vs)), ...[inferValues(tail(vs))],] : nil;
+				inferValues = vs => isNotEmpty(vs) ? [inferType(vts, head(vs)), ...inferValues(tail(vs)),] : nil;
 				return typeTupleOf(inferValues(values));
 			})
 		: id === 'typeof'
