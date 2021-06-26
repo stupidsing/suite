@@ -851,7 +851,6 @@ let typeConsole = typeStructOf({
 });
 
 let typeJSON = typeStructOf({
-	'.stringify': typeLambdaOf(typeTupleOf(cons(newRef(), cons(newRef(), cons(newRef(), nil)))), typeString),
 });
 
 let typeObject = typeStructOf({
@@ -867,7 +866,7 @@ let process = program => {
 
 	let type = inferType(
 		[
-			['JSON', newRef()],
+			['JSON', typeJSON],
 			['Object', typeObject],
 			['console', typeConsole],
 			['require', typeRequire],
