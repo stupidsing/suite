@@ -1,5 +1,7 @@
 let ascii = s => s.charCodeAt(0);
 
+let cons = (head, tail) => [head, ...[tail],];
+
 let error = message => { throw new Error(message); };
 
 let nil = [];
@@ -102,7 +104,7 @@ let keepsplitl = (s, sep, apply) => {
 	let keepsplitl_;
 	keepsplitl_ = input => input !== '' ? function() {
 		let [left, right] = splitl(input, sep);
-		return [apply(left), ...[keepsplitl_(right)],];
+		return cons(apply(left), keepsplitl_(right));
 	}() : nil;
 	return keepsplitl_(s);
 };
@@ -186,21 +188,18 @@ let parseArray = (program, parse) => {
 	parseArray_ = program_ => {
 		let program = program_.trim();
 
-		return false ? {}
-			: program.startsWith('...') && program.endsWith(',')
-				? parse(program.slice(3, program.length - 1))
-			: program !== ''
-				? function() {
-					let [head, tail_] = splitl(program, ',');
-					let tail = tail_.trim();
-					return {
-						id: 'cons',
-						head: parse(head),
-						tail: tail.startsWith('...[') && tail.endsWith('],') ? parse(tail.slice(4, tail.length - 2)) : parseArray_(tail)
-					};
-				}()
-			:
-				{ id: 'nil' };
+		return program !== ''
+			? function() {
+				let [head, tail_] = splitl(program, ',');
+				let tail = tail_.trim();
+				return {
+					id: 'cons',
+					head: parse(head),
+					tail: tail.startsWith('...[') && tail.endsWith('],') ? parse(tail.slice(4, tail.length - 2)) : parseArray_(tail)
+				};
+			}()
+		:
+			{ id: 'nil' };
 	};
 	return parseArray_(program);
 };
@@ -353,7 +352,7 @@ parsePair = (program, parse) => {
 	parsePair_ = program => {
 		let [left, right] = splitl(program, ',');
 		let lhs = parse(left.trim());
-		return right === undefined ? lhs : { id: 'tuple', values: [lhs, [parsePair_(right), nil]] };
+		return right === undefined ? lhs : { id: 'tuple', values: cons(lhs, cons(parsePair_(right), nil)) };
 	};
 	return parsePair_(program);
 };
@@ -784,10 +783,7 @@ inferType = (vts, ast) => {
 		: id === 'tuple'
 			? (({ values }) => {
 				let inferValues;
-				inferValues = vs => vs !== nil ? function() {
-					let [head, tail] = vs;
-					return [inferType(vts, head), inferValues(tail),];
-				}() : nil;
+				inferValues = vs => vs !== nil ? [inferType(vts, vs[0]), ...[inferValues(vs[1])],] : nil;
 				return typeTupleOf(inferValues(values));
 			})
 		: id === 'typeof'
