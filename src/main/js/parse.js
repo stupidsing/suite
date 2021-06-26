@@ -4,7 +4,7 @@ let ascii = s => s.charCodeAt(0);
 let cons = (head, tail) => [head, ...[tail],];
 let error = message => { throw new Error(message); };
 let head = list =>  list[0];
-let set = (m, k, v) => { any(m)[any(k)] = any(v); return true; };
+let set = (m, k, v) => { any(m)[any(k)] = any(v); return v; };
 let tail = list =>  list[1];
 let nil = [];
 
@@ -703,9 +703,8 @@ inferType = (vts, ast) => {
 					? doBind(ast, inferType(vts, expr), typeString) && typeLambdaOf(typeNever, typeString)
 				:
 					function() {
-						let tr = newRef();
 						let kvs = {};
-						let dummy = set(kvs, field, tr);
+						let tr = set(kvs, field, newRef());
 						let to = typeStructOf(kvs);
 						return doBind(ast, inferType(vts, expr), to) && tr;
 					}()
