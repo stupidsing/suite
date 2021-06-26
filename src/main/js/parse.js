@@ -521,7 +521,7 @@ tryBind = (a, b) => function() {
 			);
 }();
 
-let doBind_ = (msg, a, b) => tryBind(a, b) || error(`in ${msg}:\ncannot bind type\nfr: ${dumpRef(a)}\nto: ${dumpRef(b)}`);
+let doBind_ = (msg, a, b) => tryBind(a, b) || error(`in ${msg}:\ncannot bind types between\nfr: ${dumpRef(a)}\nto: ${dumpRef(b)}`);
 let doBind = (ast, a, b) => doBind_(dump(ast), a, b);
 
 let cloneRef = v => {
