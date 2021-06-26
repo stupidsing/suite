@@ -423,7 +423,7 @@ parseProgram = program => {
 
 					return {
 						id: 'assign',
-						v: parseLvalue(var_),
+						var_: parseLvalue(var_),
 						value: parseProgram(value),
 						expr: parseProgram(expr),
 					};
@@ -632,14 +632,14 @@ inferType = (vts, ast) => {
 				return fold(true, values, (b, value) => b && doBind(ast, inferType(vts, value), te)) && typeArrayOf(te);
 			})
 		: id === 'assign'
-			? (({ v, value, expr }) => {
+			? (({ var_, value, expr }) => {
 				return function() {
 					try {
-						let tvar = inferType(vts, v);
+						let tvar = inferType(vts, var_);
 						let tvalue = inferType(vts, value);
-						return doBind({ id: 'assign', v, value }, tvar, tvalue);
+						return doBind({ id: 'assign', var_, value }, tvar, tvalue);
 					} catch (e) {
-						e.message = `in assignment clause of ${dump(v)}\n${e.message}`;
+						e.message = `in assignment clause of ${dump(var_)}\n${e.message}`;
 						throw e;
 					}
 				}() && inferType(vts, expr);
