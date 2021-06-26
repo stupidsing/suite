@@ -55,17 +55,15 @@ let isIdentifier_ = isAll(ch => false
 
 let isIdentifier = s => 0 < s.length && isIdentifier_(s);
 
-let quoteBracket = (quote, bracket, ch) => {
-	return {
-		quote: quote === 0 && (ch === ascii("'") || ch === ascii('"') || ch === ascii('`')) ? ch
-			: quote === ch ? 0
-			: quote,
-		bracket: false ? 0
-			: quote === 0 && (ch === ascii('(') || ch === ascii('[') || ch === ascii('{')) ? bracket + 1
-			: quote === 0 && (ch === ascii(')') || ch === ascii(']') || ch === ascii('}')) ? bracket - 1
-			: bracket,
-	};
-};
+let quoteBracket = (quote, bracket, ch) => ({
+	quote: quote === 0 && (ch === ascii("'") || ch === ascii('"') || ch === ascii('`')) ? ch
+		: quote === ch ? 0
+		: quote,
+	bracket: false ? 0
+		: quote === 0 && (ch === ascii('(') || ch === ascii('[') || ch === ascii('{')) ? bracket + 1
+		: quote === 0 && (ch === ascii(')') || ch === ascii(']') || ch === ascii('}')) ? bracket - 1
+		: bracket,
+});
 
 let appendTrailingComma = s => s + (s === '' || s.endsWith(',') ? '' : ',');
 
@@ -801,7 +799,7 @@ inferType = (vts, ast) => {
 						try {
 							return inferType(vts, value);
 						} catch (e) {
-							e.message = `in value clause of ${key}\n${e.message}`;
+							e.message = `in field ${key}\n${e.message}`;
 							throw e;
 						}
 					}());
