@@ -353,7 +353,7 @@ parsePair = (program, parse) => {
 	parsePair_ = program => {
 		let [left, right] = splitl(program, ',');
 		let lhs = parse(left.trim());
-		return right === undefined ? lhs : { id: 'tuple', values: cons(lhs, cons(parsePair_(right), nil)) };
+		return right === undefined ? lhs : { id: 'pair', lhs, rhs: parsePair_(right) };
 	};
 	return parsePair_(program);
 };
@@ -496,12 +496,14 @@ tryBind = (a, b) => function() {
 		: refa !== undefined
 			? function() {
 				let olda = refs.get(refa);
-				return setRef(refa, b) && tryBind(olda, b) || !setRef(refa, olda);
+				let finalb = finalRef(b);
+				return setRef(refa, finalb) && tryBind(olda, finalb) || !setRef(refa, olda);
 			}()
 		: refb !== undefined
 			? function() {
 				let oldb = refs.get(refb);
-				return setRef(refb, a) && tryBind(a, oldb) || !setRef(refb, oldb);
+				let finala = finalRef(a);
+				return setRef(refb, finala) && tryBind(finala, oldb) || !setRef(refb, oldb);
 			}()
 		: typeof a === 'object' && typeof b === 'object'
 			&& (a_.length !== undefined
@@ -566,6 +568,7 @@ defineBindTypes = (vts, ast) => false ? vts
 	: ast.id === 'array' ? fold(vts, ast.values, defineBindTypes)
 	: ast.id === 'never' ? vts
 	: ast.id === 'nil' ? vts
+	: ast.id === 'pair' ? defineBindTypes(defineBindTypes(vts, ast.lhs), ast.rhs)
 	: ast.id === 'struct' ? fold(vts, ast.kvs, (vts_, kv) => defineBindTypes(vts_, kv.value))
 	: ast.id === 'tuple' ? fold(vts, ast.values, defineBindTypes)
 	: ast.id === 'var' ? cons([ast.value, newRef()], vts)
@@ -577,6 +580,7 @@ let typeLambdaOf = (in_, out) => ({ id: 'lambda', in_, out });
 let typeMap = newRef();
 let typeNever = { id: 'never' };
 let typeNumber = ({ id: 'number' });
+let typePairOf = (lhs, rhs) => ({ id: 'pair', lhs, rhs });
 let typeString = typeArrayOf({ id: 'char' });
 let typeStructOf = kvs => ({ id: 'struct', kvs });
 let typeTupleOf = types => ({ id: 'tuple', types });
@@ -690,12 +694,12 @@ inferType = (vts, ast) => {
 					? function() {
 						let te = newRef();
 						let tr = newRef();
-						let treducer = typeLambdaOf(typeTupleOf(cons(tr, cons(te, nil))), tr);
+						let treducer = typeLambdaOf(typePairOf(tr, te), tr);
 						return doBind(ast, inferType(vts, expr), typeArrayOf(te))
-							&& typeLambdaOf(typeTupleOf(cons(treducer, cons(tr, nil))), tr);
+							&& typeLambdaOf(typePairOf(treducer, tr), tr);
 					}()
 				: field === '.slice'
-					? doBind(ast, inferType(vts, expr), typeArrayOf(newRef())) && typeLambdaOf(typeTupleOf(cons(typeNumber, cons(typeNumber, nil))), typeString)
+					? doBind(ast, inferType(vts, expr), typeArrayOf(newRef())) && typeLambdaOf(typePairOf(typeNumber, typeNumber), typeString)
 				: field === '.startsWith'
 					? doBind(ast, inferType(vts, expr), typeString) && typeLambdaOf(typeString, typeBoolean)
 				: field === '.toString'
@@ -785,6 +789,8 @@ inferType = (vts, ast) => {
 			? (({}) => typeNumber)
 		: id === 'or_'
 			? inferLogicalOp
+		: id === 'pair'
+			? (({ lhs, rhs }) => typePairOf(inferType(vts, lhs), inferType(vts, rhs)))
 		: id === 'pos'
 			? (({ expr }) => doBind(ast, inferType(vts, expr), typeNumber) && typeNumber)
 		: id === 'string'
@@ -851,12 +857,14 @@ let typeConsole = typeStructOf({
 });
 
 let typeJSON = typeStructOf({
+	'.stringify': typeLambdaOf(typePairOf(newRef(), typePairOf(newRef(), newRef())), typeString),
 });
 
 let typeObject = typeStructOf({
 	'.assign': typeLambdaOf(newRef(), newRef()),
 	'.entries': typeLambdaOf(newRef(), typeArrayOf(newRef())),
 	'.fromEntries': typeLambdaOf(typeArrayOf(newRef()), newRef()),
+	'.keys': typeLambdaOf(typeStructOf({}), typeArrayOf(typeString)),
 });
 
 let typeRequire = typeLambdaOf(typeString, newRef());
@@ -912,8 +920,9 @@ let expect = stringify({
 					},
 				},
 				parameter: {
-					id: 'tuple',
-					values: [{ id: 'number', value: '0', i: 0 }, [{ id: 'string', value: 'utf8' }, nil]],
+					id: 'pair',
+					lhs: { id: 'number', value: '0', i: 0 },
+					rhs: { id: 'string', value: 'utf8' },
 				},
 			},
 		},
