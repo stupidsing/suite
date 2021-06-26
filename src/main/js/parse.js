@@ -693,13 +693,15 @@ inferType = (vts, ast) => {
 					? doBind(ast, inferType(vts, expr), newRef()) && typeLambdaOf(typeNever, typeString)
 				: field === '.trim'
 					? doBind(ast, inferType(vts, expr), typeString) && typeLambdaOf(typeNever, typeString)
-				: function() {
-					let tr = newRef();
-					let kvs = {};
-					kvs[field] = tr;
-					let to = typeStructOf(kvs);
-					return doBind(ast, inferType(vts, expr), to) && tr;
-				}())
+				:
+					function() {
+						let tr = newRef();
+						let kvs = {};
+						kvs[field] = tr;
+						let to = typeStructOf(kvs);
+						return doBind(ast, inferType(vts, expr), to) && tr;
+					}()
+			)
 		: id === 'element'
 			? (({ index, expr }) => {
 				let te = newRef();
