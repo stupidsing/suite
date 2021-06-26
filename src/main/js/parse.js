@@ -517,7 +517,7 @@ tryBind = (a, b) => function() {
 			);
 }();
 
-let doBind = (ast, a, b) => tryBind(a, b) || error(`cannot bind type\nfr: ${dumpRef(a)}\nto: ${dumpRef(b)}\nin ${dump(ast)}`);
+let doBind = (ast, a, b) => tryBind(a, b) || error(`in ${dump(ast)}:\ncannot bind type\nfr: ${dumpRef(a)}\nto: ${dumpRef(b)}`);
 
 let cloneRef = v => {
 	let fromTos = new Map();
