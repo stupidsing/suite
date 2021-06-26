@@ -4,11 +4,11 @@ let ascii = s => s.charCodeAt(0);
 let cons = (head, tail) => [head, ...[tail],];
 let error = message => { throw new Error(message); };
 let get = (m, k) => any(m)[any(k)];
-let head = list =>  list[0];
-let isEmpty = list => list === nil;
-let isNotEmpty = list => list !== nil;
+let head = list => list[0];
+let isEmpty = list => list.length === 0;
+let isNotEmpty = list => list.length === 2;
 let set = (m, k, v) => { any(m)[any(k)] = any(v); return v; };
-let tail = list =>  list[1];
+let tail = list => list[1];
 let nil = [];
 
 let stringify = json => JSON.stringify(json, undefined, '  ');
