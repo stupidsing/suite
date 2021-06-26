@@ -820,7 +820,7 @@ inferType = (vts, ast) => {
 		: id === 'var'
 			? (({ value }) => {
 				let t = finalRef(lookup(vts, value));
-				return t.id !== 'lambda' ? cloneRef(t) : cloneRef(t);
+				return t.id !== 'lambda' ? t : cloneRef(t);
 			})
 		:
 			(({}) => error(`cannot infer type for ${id}`));
@@ -842,15 +842,16 @@ let rewrite = r => ast => {
 let process = program => {
 	let ast = parseProgram(program);
 
-	let type = inferType([
-		['JSON', newRef()], [
-			['Object', newRef()], [
-				['console', newRef()], [
-					['require', newRef()], nil
-				]
-			]
-		]
-	], ast);
+	let type = inferType(
+		cons(['JSON', newRef()],
+			cons(['Object', newRef()],
+				cons(['console', newRef()],
+					cons(['require', newRef()], nil)
+				)
+			)
+		),
+		ast
+	);
 
 	return { ast, type };
 };
