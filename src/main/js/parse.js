@@ -13,17 +13,11 @@ let nil = [];
 
 let stringify = json => JSON.stringify(json, undefined, '  ');
 
-let contains = (es, e) => {
-	let contains_;
-	contains_ = es => isNotEmpty(es) && (head(es) === e || contains_(tail(es)));
-	return contains_(es);
-};
+let contains;
+contains = (es, e) => isNotEmpty(es) && (head(es) === e || contains(tail(es), e));
 
-let fold = (init, es, op) => {
-	let fold_;
-	fold_ = (init, es) => isNotEmpty(es) ? fold_(op(init, head(es)), tail(es)) : init;
-	return fold_(init, es);
-};
+let fold;
+fold = (init, es, op) => isNotEmpty(es) ? fold(op(init, head(es)), tail(es), op) : init;
 
 let dump = v => {
 	let dump_;
