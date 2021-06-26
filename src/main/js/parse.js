@@ -1,8 +1,10 @@
 let any = v => Object.assign(v);
+
 let ascii = s => s.charCodeAt(0);
 let cons = (head, tail) => [head, ...[tail],];
 let error = message => { throw new Error(message); };
 let head = list =>  list[0];
+let set = (m, k, v) => { any(m)[any(k)] = any(v); return true; };
 let tail = list =>  list[1];
 let nil = [];
 
@@ -567,7 +569,7 @@ defineBindTypes = (vts, ast) => false ? vts
 	: ast.id === 'nil' ? vts
 	: ast.id === 'struct' ? fold(vts, ast.kvs, (vts_, kv) => defineBindTypes(vts_, kv.value))
 	: ast.id === 'tuple' ? fold(vts, ast.values, defineBindTypes)
-	: ast.id === 'var' ? [[ast.value, newRef()], vts]
+	: ast.id === 'var' ? cons([ast.value, newRef()], vts)
 	: error(`cannot destructure ${dump(ast)}`);
 
 let typeArrayOf = type => ({ id: 'array', of: type });
@@ -618,7 +620,7 @@ inferType = (vts, ast) => {
 					&& t;
 			})
 		: id === 'alloc'
-			? (({ v, expr }) => inferType([[v, newRef()], vts], expr))
+			? (({ v, expr }) => inferType(cons([v, newRef()], vts), expr))
 		: id === 'and'
 			? inferLogicalOp
 		: id === 'app'
@@ -697,7 +699,7 @@ inferType = (vts, ast) => {
 					function() {
 						let tr = newRef();
 						let kvs = {};
-						kvs[field] = tr;
+						let dummy = set(kvs, field, tr);
 						let to = typeStructOf(kvs);
 						return doBind(ast, inferType(vts, expr), to) && tr;
 					}()
@@ -787,14 +789,14 @@ inferType = (vts, ast) => {
 				inferKvs = kvs => 0 < kvs.length ? function() {
 					let { key, value } = head(kvs);
 					let type = inferKvs(tail(kvs));
-					type[key] = function() {
+					let dummy = set(type, key, function() {
 						try {
 							return inferType(vts, value);
 						} catch (e) {
 							e.message = `in value clause of ${key}\n${e.message}`;
 							throw e;
 						}
-					}();
+					}());
 					return type;
 				}() : {};
 				return typeStructOf(inferKvs(kvs));
