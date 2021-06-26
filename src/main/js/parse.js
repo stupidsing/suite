@@ -11,16 +11,16 @@ let nil = [];
 
 let stringify = json => JSON.stringify(json, undefined, '  ');
 
-let contains = (list, e) => {
+let contains = (es, e) => {
 	let contains_;
 	contains_ = es => es !== nil && (head(es) === e || contains_(tail(es)));
-	return contains_(list);
+	return contains_(es);
 };
 
-let fold = (init, list, op) => {
+let fold = (init, es, op) => {
 	let fold_;
-	fold_ = (init, list) => list !== nil ? fold_(op(init, head(list)), tail(list)) : init;
-	return fold_(init, list);
+	fold_ = (init, es) => es !== nil ? fold_(op(init, head(es)), tail(es)) : init;
+	return fold_(init, es);
 };
 
 let dump = v => {
