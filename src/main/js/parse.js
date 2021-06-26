@@ -459,6 +459,8 @@ let dumpRef = v => {
 			? '<recurse>'
 		: v.ref !== undefined
 			? (refs.get(v.ref) !== v ? dumpRef_([v, vs,], refs.get(v.ref)) : `_${v.ref}`)
+		: typeof v === 'string'
+			? v.toString()
 		: v.length === 0
 			? ''
 		: v.length === 2
@@ -473,8 +475,6 @@ let dumpRef = v => {
 					.join(' ');
 				return id !== undefined ? `${id}(${join})` : `{${join}}`;
 			}()
-		: typeof v === 'string'
-			? v.toString()
 		:
 			JSON.stringify(v, undefined, undefined);
 	return dumpRef_(nil, v);
