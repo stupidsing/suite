@@ -3,6 +3,7 @@ let any = v => Object.assign(v);
 let ascii = s => s.charCodeAt(0);
 let cons = (head, tail) => [head, ...[tail],];
 let error = message => { throw new Error(message); };
+let get = (m, k) => any(m)[any(k)];
 let head = list =>  list[0];
 let set = (m, k, v) => { any(m)[any(k)] = any(v); return v; };
 let tail = list =>  list[1];
@@ -511,12 +512,12 @@ tryBind = (a, b) => function() {
 			}()
 			: true
 				&& Object.keys(a).reduce((r, k) => {
-					let dummy = b.completed !== true && b_[k] !== undefined || function() { b_[k] = newRef(); return b_[k]; }();
-					return r && tryBind(a_[k], b_[k]);
+					let dummy = b.completed !== true && get(b, k) !== undefined || set(b, k, newRef());
+					return r && tryBind(get(a, k), get(b, k));
 				}, true)
 				&& Object.keys(b).reduce((r, k) => {
-					let dummy = a.completed !== true && a_[k] !== undefined || function() { a_[k] = newRef(); return a_[k]; }();
-					return r && tryBind(a_[k], b_[k]);
+					let dummy = a.completed !== true && get(a, k) !== undefined || set(a, k, newRef());
+					return r && tryBind(get(a, k), get(b, k));
 				}, true)
 			);
 }();
