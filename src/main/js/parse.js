@@ -449,7 +449,7 @@ let newRef = () => {
 	refCount = refCount + 1;
 	let ref = { ref: refCount };
 	let dummy = refs.set(refCount, ref);
-	return setRef(refCount, ref) && ref;
+	return ref;
 };
 
 let dumpRef = v => {
