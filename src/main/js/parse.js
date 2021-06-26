@@ -687,6 +687,14 @@ inferType = (vts, ast) => {
 						let to = newRef();
 						return doBind(ast, inferType(vts, expr), typeArrayOf(ti)) && typeLambdaOf(typeLambdaOf(ti, to), typeArrayOf(to));
 					}()
+				: field === '.reduce'
+					? function() {
+						let te = newRef();
+						let tr = newRef();
+						let treducer = typeLambdaOf(typeTupleOf(cons(tr, cons(te, nil))), tr);
+						return doBind(ast, inferType(vts, expr), typeArrayOf(te))
+							&& typeLambdaOf(typeTupleOf(cons(treducer, cons(tr, nil))), tr);
+					}()
 				: field === '.slice'
 					? doBind(ast, inferType(vts, expr), typeArrayOf(newRef())) && typeLambdaOf(typeTupleOf(cons(typeNumber, cons(typeNumber, nil))), typeString)
 				: field === '.startsWith'
