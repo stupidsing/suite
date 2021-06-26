@@ -33,7 +33,7 @@ let dump = v => {
 				let join = Object
 					.entries(v)
 					.filter(([k, v_]) => k !== 'id')
-					.map(([k, v_]) => `${k}:${dump_([v, vs,], v_)}`)
+					.map(([k, v_]) => `${k}:${dump_(cons(v, vs), v_)}`)
 					.join(' ');
 				return `${v.id}(${join})`;
 			}()
@@ -680,6 +680,8 @@ inferType = (vts, ast) => {
 						let ti = newRef();
 						return doBind(ast, inferType(vts, expr), typeArrayOf(ti)) && typeLambdaOf(typeLambdaOf(ti, typeBoolean), typeArrayOf(ti));
 					}()
+				: field === '.indexOf'
+					? doBind(ast, inferType(vts, expr), typeString) && typeLambdaOf(typeString, typeNumber)
 				: field === '.join'
 					? doBind(ast, inferType(vts, expr), typeArrayOf(typeString)) && typeLambdaOf(typeString, typeString)
 				: field === '.length'
