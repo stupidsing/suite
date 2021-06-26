@@ -476,7 +476,7 @@ let dumpRef = v => {
 		: typeof v === 'string'
 			? v.toString()
 		:
-			JSON.stringify(v);
+			JSON.stringify(v, undefined, undefined);
 	return dumpRef_(nil, v);
 };
 
@@ -565,6 +565,7 @@ defineBindTypes = (vts, ast) => false ? vts
 let typeArrayOf = type => ({ id: 'array', of: type });
 let typeBoolean = ({ id: 'boolean' });
 let typeLambdaOf = (in_, out) => ({ id: 'lambda', in_, out });
+let typeMap = newRef();
 let typeNever = { id: 'never' };
 let typeNumber = ({ id: 'number' });
 let typeString = typeArrayOf({ id: 'char' });
@@ -744,7 +745,7 @@ inferType = (vts, ast) => {
 		: id === 'new-error'
 			? (({}) => typeLambdaOf(typeString, { id: 'error' }))
 		: id === 'new-map'
-			? (({}) => typeLambdaOf(typeNever, { id: 'map' }))
+			? (({}) => typeLambdaOf(typeNever, typeMap))
 		: id === 'nil'
 			? (({}) => typeArrayOf(newRef()))
 		: id === 'not'
