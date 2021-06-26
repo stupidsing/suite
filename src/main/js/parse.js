@@ -1,22 +1,21 @@
 let ascii = s => s.charCodeAt(0);
-
 let cons = (head, tail) => [head, ...[tail],];
-
 let error = message => { throw new Error(message); };
-
+let head = list =>  list[0];
+let tail = list =>  list[1];
 let nil = [];
 
 let stringify = json => JSON.stringify(json, undefined, '  ');
 
 let contains = (list, e) => {
 	let contains_;
-	contains_ = es => es !== nil && (es[0] === e || contains_(es[1]));
+	contains_ = es => es !== nil && (head(es) === e || contains_(tail(es)));
 	return contains_(list);
 };
 
 let fold = (init, list, op) => {
 	let fold_;
-	fold_ = (init, list) => list !== nil ? fold_(op(init, list[0]), list[1]) : init;
+	fold_ = (init, list) => list !== nil ? fold_(op(init, head(list)), tail(list)) : init;
 	return fold_(init, list);
 };
 
@@ -464,7 +463,7 @@ let dumpRef = v => {
 		: v.length === 0
 			? ''
 		: v.length === 2
-			? `${dumpRef_(vs, v[0])}:${dumpRef_(vs, v[1])}`
+			? `${dumpRef_(vs, head(v))}:${dumpRef_(vs, tail(v))}`
 		: typeof v === 'object'
 			? function() {
 				let id = v.id;
@@ -762,8 +761,8 @@ inferType = (vts, ast) => {
 			? (({ kvs }) => {
 				let inferKvs;
 				inferKvs = kvs => 0 < kvs.length ? function() {
-					let { key, value } = kvs[0];
-					let type = inferKvs(kvs[1]);
+					let { key, value } = head(kvs);
+					let type = inferKvs(tail(kvs));
 					type[key] = function() {
 						try {
 							return inferType(vts, value);
@@ -785,7 +784,7 @@ inferType = (vts, ast) => {
 		: id === 'tuple'
 			? (({ values }) => {
 				let inferValues;
-				inferValues = vs => vs !== nil ? [inferType(vts, vs[0]), ...[inferValues(vs[1])],] : nil;
+				inferValues = vs => vs !== nil ? [inferType(vts, head(vs)), ...[inferValues(tail(vs))],] : nil;
 				return typeTupleOf(inferValues(values));
 			})
 		: id === 'typeof'
