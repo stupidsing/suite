@@ -580,7 +580,6 @@ defineBindTypes = (vts, ast) => false ? vts
 let typeArrayOf = type => ({ id: 'array', of: type });
 let typeBoolean = ({ id: 'boolean' });
 let typeLambdaOf = (in_, out) => ({ id: 'lambda', in_, out });
-let typeMap = newRef();
 let typeNever = { id: 'never' };
 let typeNumber = ({ id: 'number' });
 let typePairOf = (lhs, rhs) => ({ id: 'pair', lhs, rhs });
@@ -588,6 +587,12 @@ let typeString = typeArrayOf({ id: 'char' });
 let typeStructOf = kvs => ({ id: 'struct', kvs });
 let typeStructCompletedOf = kvs => ({ id: 'struct', kvs, completed: true });
 let typeTupleOf = types => ({ id: 'tuple', types });
+
+let typeMap = typeStructCompletedOf({
+	has: typeLambdaOf(newRef(), typeBoolean),
+	get: typeLambdaOf(newRef(), newRef()),
+	set: typeLambdaOf(typePairOf(newRef(), newRef()), typeNever),
+});
 
 let inferType;
 
