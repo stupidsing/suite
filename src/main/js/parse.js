@@ -589,9 +589,9 @@ let typeStructCompletedOf = kvs => ({ id: 'struct', kvs, completed: true });
 let typeTupleOf = types => ({ id: 'tuple', types });
 
 let typeMap = typeStructCompletedOf({
-	has: typeLambdaOf(newRef(), typeBoolean),
-	get: typeLambdaOf(newRef(), newRef()),
-	set: typeLambdaOf(typePairOf(newRef(), newRef()), typeNever),
+	'.get': typeLambdaOf(newRef(), newRef()),
+	'.has': typeLambdaOf(newRef(), typeBoolean),
+	'.set': typeLambdaOf(typePairOf(newRef(), newRef()), typeNever),
 });
 
 let inferType;
