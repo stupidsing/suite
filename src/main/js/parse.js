@@ -489,8 +489,8 @@ let dumpRef = v => {
 let tryBind;
 
 tryBind = (a, b) => function() {
-	let a_ = any(a);
-	let b_ = any(b);
+	let lista = any(a);
+	let listb = any(b);
 	let refa = a.ref;
 	let refb = b.ref;
 	return false ? false
@@ -509,10 +509,10 @@ tryBind = (a, b) => function() {
 				return setRef(refb, finala) && tryBind(finala, oldb) || !setRef(refb, oldb);
 			}()
 		: typeof a === 'object' && typeof b === 'object'
-			&& (a_.length !== undefined
-			? a_.length === b_.length && function() {
+			&& (lista.length !== undefined
+			? lista.length === listb.length && function() {
 				let tryBindList;
-				tryBindList = index => index === a_.length || tryBind(a_[index], b_[index]) && tryBindList(index + 1);
+				tryBindList = index => index === lista.length || tryBind(lista[index], listb[index]) && tryBindList(index + 1);
 				return tryBindList(0);
 			}()
 			: true
