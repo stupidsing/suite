@@ -7,9 +7,9 @@ let get = (m, k) => any(m)[any(k)];
 let head = list => list[0];
 let isEmpty = list => list.length === 0;
 let isNotEmpty = list => list.length === 2;
+let nil = [];
 let set = (m, k, v) => { any(m)[any(k)] = any(v); return v; };
 let tail = list => list[1];
-let nil = [];
 
 let stringify = json => JSON.stringify(json, undefined, '  ');
 
