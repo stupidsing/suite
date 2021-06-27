@@ -701,7 +701,11 @@ inferType = (vts, ast) => {
 							&& typeLambdaOf(typePairOf(treducer, tr), tr);
 					}()
 				: field === '.slice'
-					? doBind(ast, inferType(vts, expr), typeArrayOf(newRef())) && typeLambdaOf(typePairOf(typeNumber, typeNumber), typeString)
+					? function() {
+						let te = newRef();
+						let tl = typeArrayOf(te);
+						return doBind(ast, inferType(vts, expr), tl) && typeLambdaOf(typePairOf(typeNumber, typeNumber), tl);
+					}()
 				: field === '.startsWith'
 					? doBind(ast, inferType(vts, expr), typeString) && typeLambdaOf(typeString, typeBoolean)
 				: field === '.toString'
