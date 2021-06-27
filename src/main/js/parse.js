@@ -439,12 +439,17 @@ parseProgram = program => {
 				? { id: 'throw', expr: parseProgram(statement.slice(6, undefined)) }
 			:
 				function() {
-					let [var_, value] = splitl(statement, '=');
+					let [lhs, rhs] = splitl(statement, '=');
 
-					return {
+					return rhs !== undefined ? {
 						id: 'assign',
-						var_: parseLvalue(var_),
-						value: parseProgram(value),
+						var_: parseLvalue(lhs),
+						value: parseProgram(rhs),
+						expr: parseProgram(expr),
+					} : {
+						id: 'let',
+						bind: { id: 'var', value: 'dummy' },
+						value: parseProgram(lhs),
 						expr: parseProgram(expr),
 					};
 				}();
@@ -464,14 +469,14 @@ finalRef = v => {
 ;
 
 let setRef = (ref, target) => {
-	let dummy = refs.set(ref, target);
+	refs.set(ref, target);
 	return true;
 };
 
 let newRef = () => {
 	refCount = refCount + 1;
 	let ref = { ref: refCount };
-	let dummy = refs.set(refCount, ref);
+	refs.set(refCount, ref);
 	return ref;
 };
 
@@ -564,7 +569,7 @@ let cloneRef = v => {
 			: ref !== undefined
 				? (fromTos.has(ref) ? fromTos.get(ref) : function() {
 					let v1 = newRef();
-					let dummy = fromTos.set(ref, v1);
+					fromTos.set(ref, v1);
 					return doBind_('clone reference', v1, cloneRef_(refs.get(ref))) && v1;
 				}())
 			: typeof v === 'object'
@@ -837,7 +842,7 @@ inferType = (vts, ast) => {
 				inferKvs = kvs => 0 < kvs.length ? function() {
 					let { key, value } = head(kvs);
 					let type = inferKvs(tail(kvs));
-					let dummy = set(type, key, function() {
+					set(type, key, function() {
 						try {
 							return inferType(vts, value);
 						} catch (e) {
@@ -969,8 +974,8 @@ return actual === expect
 ? function() {
 	try {
 		let { ast, type } = process(require('fs').readFileSync(0, 'utf8'));
-		let dummy1 = console.log(`ast :: ${stringify(ast)}`);
-		let dummy2 = console.log(`type :: ${dumpRef(type)}`);
+		console.log(`ast :: ${stringify(ast)}`);
+		console.log(`type :: ${dumpRef(type)}`);
 		return true;
 	} catch (e) {
 		return console.error(e);
