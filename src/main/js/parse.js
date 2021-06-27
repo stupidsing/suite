@@ -435,7 +435,10 @@ refCount = 0;
 
 let finalRef;
 
-finalRef = v => v.ref !== undefined && refs.get(v.ref) !== v ? finalRef(refs.get(v.ref)) : v;
+finalRef = v => {
+	let ref = v.ref;
+	return ref !== undefined && refs.get(ref) !== v ? finalRef(refs.get(ref)) : v;}
+;
 
 let setRef = (ref, target) => {
 	let dummy = refs.set(ref, target);
