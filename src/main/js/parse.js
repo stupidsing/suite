@@ -465,8 +465,8 @@ let finalRef;
 
 finalRef = v => {
 	let ref = v.ref;
-	return ref !== undefined && refs.get(ref) !== v ? finalRef(refs.get(ref)) : v;}
-;
+	return ref !== undefined && refs.get(ref) !== v ? finalRef(refs.get(ref)) : v;
+};
 
 let setRef = (ref, target) => {
 	refs.set(ref, target);
