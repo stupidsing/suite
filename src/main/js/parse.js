@@ -586,6 +586,7 @@ let typeNumber = ({ id: 'number' });
 let typePairOf = (lhs, rhs) => ({ id: 'pair', lhs, rhs });
 let typeString = typeArrayOf({ id: 'char' });
 let typeStructOf = kvs => ({ id: 'struct', kvs });
+let typeStructCompletedOf = kvs => ({ id: 'struct', kvs, completed: true });
 let typeTupleOf = types => ({ id: 'tuple', types });
 
 let inferType;
@@ -860,16 +861,16 @@ let rewrite = r => ast => {
 	return rewrite_(ast);
 };
 
-let typeConsole = typeStructOf({
+let typeConsole = typeStructCompletedOf({
 	'.error': typeLambdaOf(newRef(), typeNever),
 	'.log': typeLambdaOf(newRef(), typeNever),
 });
 
-let typeJSON = typeStructOf({
+let typeJSON = typeStructCompletedOf({
 	'.stringify': typeLambdaOf(typePairOf(newRef(), typePairOf(newRef(), newRef())), typeString),
 });
 
-let typeObject = typeStructOf({
+let typeObject = typeStructCompletedOf({
 	'.assign': typeLambdaOf(newRef(), newRef()),
 	'.entries': typeLambdaOf(newRef(), typeArrayOf(newRef())),
 	'.fromEntries': typeLambdaOf(typeArrayOf(newRef()), newRef()),
