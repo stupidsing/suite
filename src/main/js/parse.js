@@ -296,7 +296,7 @@ parseApplyBlockFieldIndex = program_ => {
 			? {
 				id: 'apply',
 				expr: parseProgram(program.slice(0, program.length - 2)),
-				parameter: { id: 'never' },
+				arg: { id: 'never' },
 			}
 		: program.endsWith(')')
 			? function() {
@@ -305,7 +305,7 @@ parseApplyBlockFieldIndex = program_ => {
 				return expr !== undefined ? {
 					id: 'apply',
 					expr: parseProgram(expr),
-					parameter: parseProgram(paramStr),
+					arg: parseProgram(paramStr),
 				} : parseValue(program);
 			}()
 		:
@@ -637,9 +637,9 @@ inferType = (vts, ast) => {
 				return doBind(ast, te, typeLambdaOf(tp, tr)) && tr;
 			})
 		: id === 'apply'
-			? (({ parameter, expr }) => {
+			? (({ arg, expr }) => {
 				let te = inferType(vts, expr);
-				let tp = inferType(vts, parameter);
+				let tp = inferType(vts, arg);
 				let tr = newRef();
 				return doBind(ast, te, typeLambdaOf(tp, tr)) && tr;
 			})
@@ -914,10 +914,10 @@ let expect = stringify({
 			field: '.log',
 			expr: { id: 'var', value: 'console' },
 		},
-		parameter: {
+		arg: {
 			id: 'apply',
 			expr: { id: 'var', value: 'parse' },
-			parameter: {
+			arg: {
 				id: 'apply',
 				expr: {
 					id: 'dot',
@@ -925,10 +925,10 @@ let expect = stringify({
 					expr: {
 						id: 'apply',
 						expr: { id: 'var', value: 'require' },
-						parameter: { id: 'string', value: 'fs' },
+						arg: { id: 'string', value: 'fs' },
 					},
 				},
-				parameter: {
+				arg: {
 					id: 'pair',
 					lhs: { id: 'number', value: '0', i: 0 },
 					rhs: { id: 'string', value: 'utf8' },
