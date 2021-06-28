@@ -18,7 +18,7 @@ public class RbTreeTest {
 		var rs = Suite.newRuleSet(List.of("auto.sl", "rbt.sl"));
 		var gs = "" //
 				+ "rbt-insert-list (6, 7, 8, 9, 10, 1, 2, 3, 4, 5,) ()/.t \n" //
-				+ ", rbt-get .t 8" //
+				+ ", rbt-get .t 8 \n" //
 				+ ", rbt-member .t 4";
 
 		for (var builder : List.of(new InterpretedProverBuilder(), new SewingProverBuilder2()))
