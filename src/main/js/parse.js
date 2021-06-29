@@ -1,6 +1,7 @@
 let any = v => Object.assign(v);
 
 let ascii = s => s.charCodeAt(0);
+let asList = any;
 let cons = (head, tail) => [head, ...tail,];
 let error = message => { throw new Error(message); };
 let get = (m, k) => any(m)[any(k)];
@@ -484,7 +485,7 @@ let dumpRef = v => {
 	let dumpRef_;
 	dumpRef_ = (vs, v) => {
 		let { ref } = v;
-		let listv = any(v);
+		let listv = asList(v);
 		return false ? ''
 			: contains(vs, v)
 				? '<recurse>'
@@ -517,8 +518,8 @@ let dumpRef = v => {
 let tryBind;
 
 tryBind = (a, b) => function() {
-	let lista = any(a);
-	let listb = any(b);
+	let lista = asList(a);
+	let listb = asList(b);
 	let refa = a.ref;
 	let refb = b.ref;
 	return false ? false
@@ -564,7 +565,7 @@ let cloneRef = v => {
 
 	cloneRef_ = v => {
 		let { ref } = v;
-		let vlist = any(v);
+		let vlist = asList(v);
 		return false ? {}
 			: ref !== undefined
 				? (fromTos.has(ref) ? fromTos.get(ref) : function() {
@@ -574,7 +575,7 @@ let cloneRef = v => {
 				}())
 			: typeof v === 'object'
 				? (vlist.length !== undefined
-					? any(vlist.map(cloneRef_))
+					? asList(vlist.map(cloneRef_))
 					: Object.fromEntries(Object.entries(v).map(([k, v_]) => [k, cloneRef_(v_)]))
 				)
 			:
