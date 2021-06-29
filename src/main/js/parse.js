@@ -903,8 +903,8 @@ let typeJSON = typeStructCompletedOf({
 
 let typeObject = typeStructCompletedOf({
 	'.assign': typeLambdaOf(newRef(), newRef()),
-	'.entries': typeLambdaOf(newRef(), typeArrayOf(newRef())),
-	'.fromEntries': typeLambdaOf(typeArrayOf(newRef()), newRef()),
+	'.entries': typeLambdaOf(newRef(), typeArrayOf(typeTupleOf(typeString, newRef()))),
+	'.fromEntries': typeLambdaOf(typeArrayOf(typeTupleOf(typeString, newRef())), newRef()),
 	'.keys': typeLambdaOf(typeStructOf({}), typeArrayOf(typeString)),
 });
 
