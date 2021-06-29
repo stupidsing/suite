@@ -8,7 +8,7 @@ let head = list => list[0];
 let isEmpty = list => list.length === 0;
 let isNotEmpty = list => 0 < list.length;
 let nil = [];
-let set = (m, k, v) => { any(m)[any(k)] = any(v); return v; };
+let set = (m, k, v) => { any(m)[any(k)] = v; return v; };
 let tail = list => list.slice(1, undefined);
 
 let stringify = json => JSON.stringify(json, undefined, '  ');
