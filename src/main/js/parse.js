@@ -8,7 +8,7 @@ let asList = v => {
 
 let asObject = v => {
 	let object = any(v);
-	let id = object.id;
+	let { id } = object;
 	return object;
 };
 
