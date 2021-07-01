@@ -557,14 +557,12 @@ tryBind = (a, b) => function() {
 			}()
 			: true
 				&& Object.keys(a).reduce((r, k) => {
-					let b_k;
-					b_k = get(b, k);
+					let b_k = get(b, k);
 					let s = b_k !== undefined || b.completed !== true && function() { b_k = newRef(); set(b, k, b_k); return true; }();
 					return r && s && tryBind(get(a, k), b_k);
 				}, true)
 				&& Object.keys(b).reduce((r, k) => {
-					let a_k;
-					a_k = get(a, k);
+					let a_k = get(a, k);
 					let s = a_k !== undefined || a.completed !== true && function() { a_k = newRef(); set(a, k, a_k); return true; }();
 					return r && s && tryBind(a_k, get(b, k));
 				}, true)
