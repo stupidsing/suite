@@ -622,6 +622,7 @@ defineBindTypes = (vts, ast) => false ? vts
 let typeArrayOf = type => ({ id: 'array', of: type });
 let typeBoolean = ({ id: 'boolean' });
 let typeLambdaOf = (in_, out) => ({ id: 'lambda', generic: true, in_, out });
+let typeLambdaOfFixed = (in_, out) => ({ id: 'lambda', in_, out });
 let typeNever = { id: 'never' };
 let typeNumber = ({ id: 'number' });
 let typePairOf = (lhs, rhs) => ({ id: 'pair', lhs, rhs });
@@ -630,10 +631,10 @@ let typeStructOf = kvs => ({ id: 'struct', kvs });
 let typeStructOfCompleted = kvs => { set(kvs, 'completed', true); return ({ id: 'struct', kvs }); };
 let typeTupleOf = types => ({ id: 'tuple', types });
 
-let typeMap = typeStructOfCompleted({
-	'.get': typeLambdaOf(newRef(), newRef()),
-	'.has': typeLambdaOf(newRef(), typeBoolean),
-	'.set': typeLambdaOf(typePairOf(newRef(), newRef()), typeNever),
+let typeMapOf = (tk, tv) => typeStructOfCompleted({
+	'.get': typeLambdaOfFixed(tk, tv),
+	'.has': typeLambdaOfFixed(tk, typeBoolean),
+	'.set': typeLambdaOfFixed(typePairOf(tk, tv), typeNever),
 });
 
 let inferType;
@@ -835,7 +836,7 @@ inferType = (vts, ast) => {
 		: id === 'new-error'
 			? (({}) => typeLambdaOf(typeString, { id: 'error' }))
 		: id === 'new-map'
-			? (({}) => typeLambdaOf(typeNever, typeMap))
+			? (({}) => typeLambdaOf(typeNever, typeMapOf(newRef(), newRef())))
 		: id === 'nil'
 			? (({}) => typeArrayOf(newRef()))
 		: id === 'not'
