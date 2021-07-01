@@ -557,12 +557,16 @@ tryBind = (a, b) => function() {
 			}()
 			: true
 				&& Object.keys(a).reduce((r, k) => {
-					let dummy = b.completed !== true && get(b, k) !== undefined || set(b, k, newRef());
-					return r && tryBind(get(a, k), get(b, k));
+					let b_k;
+					b_k = get(b, k);
+					let s = b_k !== undefined || b.completed !== true && function() { b_k = newRef(); set(b, k, b_k); return true; }();
+					return r && s && tryBind(get(a, k), b_k);
 				}, true)
 				&& Object.keys(b).reduce((r, k) => {
-					let dummy = a.completed !== true && get(a, k) !== undefined || set(a, k, newRef());
-					return r && tryBind(get(a, k), get(b, k));
+					let a_k;
+					a_k = get(a, k);
+					let s = a_k !== undefined || a.completed !== true && function() { a_k = newRef(); set(a, k, a_k); return true; }();
+					return r && s && tryBind(a_k, get(b, k));
 				}, true)
 			);
 }();
@@ -625,7 +629,7 @@ let typeNumber = ({ id: 'number' });
 let typePairOf = (lhs, rhs) => ({ id: 'pair', lhs, rhs });
 let typeString = typeArrayOf({ id: 'char' });
 let typeStructOf = kvs => ({ id: 'struct', kvs });
-let typeStructCompletedOf = kvs => ({ id: 'struct', kvs, completed: true });
+let typeStructCompletedOf = kvs => { set(kvs, 'completed', true); return ({ id: 'struct', kvs }); };
 let typeTupleOf = types => ({ id: 'tuple', types });
 
 let typeMap = typeStructCompletedOf({
