@@ -20,10 +20,16 @@ import suite.node.io.BaseOp;
 public class SewingGeneralizerImpl implements GeneralizerFactory {
 
 	private String variablePrefix;
+	private Node cut;
 	private VariableMapper<Atom> vm = new VariableMapper<>();
 
 	public static Node generalize(Node node) {
 		return new SewingGeneralizerImpl(ProverConstant.variablePrefix).g(node).g().node;
+	}
+
+	public SewingGeneralizerImpl(String variablePrefix, Node cut) {
+		this(variablePrefix);
+		this.cut = cut;
 	}
 
 	public SewingGeneralizerImpl(String variablePrefix) {
@@ -46,7 +52,7 @@ public class SewingGeneralizerImpl implements GeneralizerFactory {
 
 			if (node0 instanceof Atom atom) {
 				var name = atom.name;
-				if (ProverConstant.isCut(node0) || name.startsWith(variablePrefix)) {
+				if (node0 == cut || name.startsWith(variablePrefix)) {
 					var index = vm.computeIndex(atom);
 					fun = env -> env.get(index);
 				} else if (ProverConstant.isWildcard(name))
