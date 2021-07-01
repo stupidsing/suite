@@ -627,10 +627,10 @@ let typeNumber = ({ id: 'number' });
 let typePairOf = (lhs, rhs) => ({ id: 'pair', lhs, rhs });
 let typeString = typeArrayOf({ id: 'char' });
 let typeStructOf = kvs => ({ id: 'struct', kvs });
-let typeStructCompletedOf = kvs => { set(kvs, 'completed', true); return ({ id: 'struct', kvs }); };
+let typeStructOfCompleted = kvs => { set(kvs, 'completed', true); return ({ id: 'struct', kvs }); };
 let typeTupleOf = types => ({ id: 'tuple', types });
 
-let typeMap = typeStructCompletedOf({
+let typeMap = typeStructOfCompleted({
 	'.get': typeLambdaOf(newRef(), newRef()),
 	'.has': typeLambdaOf(newRef(), typeBoolean),
 	'.set': typeLambdaOf(typePairOf(newRef(), newRef()), typeNever),
@@ -906,16 +906,16 @@ let rewrite = r => ast => {
 	return rewrite_(ast);
 };
 
-let typeConsole = typeStructCompletedOf({
+let typeConsole = typeStructOfCompleted({
 	'.error': typeLambdaOf(newRef(), typeNever),
 	'.log': typeLambdaOf(newRef(), typeNever),
 });
 
-let typeJSON = typeStructCompletedOf({
+let typeJSON = typeStructOfCompleted({
 	'.stringify': typeLambdaOf(typePairOf(newRef(), typePairOf(newRef(), newRef())), typeString),
 });
 
-let typeObject = typeStructCompletedOf({
+let typeObject = typeStructOfCompleted({
 	'.assign': typeLambdaOf(newRef(), newRef()),
 	'.entries': typeLambdaOf(typeStructOf({}), typeArrayOf(typeTupleOf(typeString, newRef()))),
 	'.fromEntries': typeLambdaOf(typeArrayOf(typeTupleOf(typeString, newRef())), typeStructOf({})),
