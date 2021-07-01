@@ -621,7 +621,7 @@ defineBindTypes = (vts, ast) => false ? vts
 
 let typeArrayOf = type => ({ id: 'array', of: type });
 let typeBoolean = ({ id: 'boolean' });
-let typeLambdaOf = (in_, out) => ({ id: 'lambda', in_, out });
+let typeLambdaOf = (in_, out) => ({ id: 'lambda', generic: true, in_, out });
 let typeNever = { id: 'never' };
 let typeNumber = ({ id: 'number' });
 let typePairOf = (lhs, rhs) => ({ id: 'pair', lhs, rhs });
@@ -887,7 +887,7 @@ inferType = (vts, ast) => {
 		: id === 'var'
 			? (({ value }) => {
 				let t = finalRef(lookup(vts, value));
-				return t.id !== 'lambda' ? t : cloneRef(t);
+				return t.generic !== true ? t : cloneRef(t);
 			})
 		:
 			(({}) => error(`cannot infer type for ${id}`));
