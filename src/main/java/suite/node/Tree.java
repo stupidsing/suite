@@ -50,7 +50,7 @@ public abstract class Tree extends Node {
 	}
 
 	public static Streamlet<Node> read(Node node0, Fun<Node, Tree> fun) {
-		return new Streamlet<>(() -> Puller.of(new Source<Node>() {
+		return new Streamlet<>(() -> Puller.of(new Source<>() {
 			private Node node = node0;
 
 			public Node g() {
