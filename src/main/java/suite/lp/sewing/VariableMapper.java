@@ -37,10 +37,6 @@ public class VariableMapper<K> {
 					.toJoinedString(", ");
 		}
 
-		public Node getVariable(K variable) {
-			return env.refs[indices.get(variable)];
-		}
-
 		private String display(K key) {
 			return key instanceof Node node ? Formatter.display(node) : key.toString();
 		}
