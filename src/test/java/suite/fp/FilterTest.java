@@ -68,7 +68,7 @@ public class FilterTest {
 					System.gc();
 					System.out.println("Dump heap to check memory now");
 					System.out.println("""
-							jmap -histo """ + Get.pid() + """
+							jmap -histo""" + " " + Get.pid() + " " + """
 							| tee " + Tmp.path("jmap")
 							| less
 							""");
