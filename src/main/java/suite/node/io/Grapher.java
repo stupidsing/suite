@@ -153,12 +153,12 @@ public class Grapher {
 				var gn1 = g1.gns.get(pair.t1);
 
 				if (gn0.type == ReadType.TERM //
-						&& gn0.terminal instanceof Reference //
-						&& Binder.bind(gn0.terminal, mapi1.get(pair.t1).key, trail))
+						&& gn0.terminal instanceof Reference ref //
+						&& Binder.bindReference(ref, mapi1.get(pair.t1).key, trail))
 					;
 				else if (gn1.type == ReadType.TERM //
-						&& gn1.terminal instanceof Reference //
-						&& Binder.bind(gn1.terminal, mapi0.get(pair.t0).key, trail))
+						&& gn1.terminal instanceof Reference ref //
+						&& Binder.bindReference(ref, mapi0.get(pair.t0).key, trail))
 					;
 				else if (gn0.type == gn1.type && Equals.ab(gn0.terminal, gn1.terminal) && gn0.op == gn1.op) {
 					var children0 = gn0.children;
