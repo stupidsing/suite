@@ -32,7 +32,7 @@ public class SewingBinderImpl extends SewingClonerImpl implements BinderFactory 
 			return compileBindInt(n);
 		}).applyIf(Reference.class, n -> {
 			var index = mapper().computeIndex(n);
-			return (be, n_) -> Binder.bind(n_, be.env.get(index), be.trail);
+			return (be, n_) -> Binder.bindReference(be.env.refs[index], n_, be.trail);
 		}).applyIf(Str.class, n -> {
 			return compileBindStr(n);
 		}).applyTree((op, l, r) -> {
