@@ -227,7 +227,7 @@ let parseArray = (program, parse) => {
 				return {
 					id: 'cons',
 					head: parse(head),
-					tail: tail.startsWith('...') && tail.endsWith(',') ? parse(tail.slice(3, tail.length - 1)) : parseArray_(tail)
+					tail: tail.startsWith('...') && tail.endsWith(',') ? parse(tail.slice(3, -1)) : parseArray_(tail)
 				};
 			}()
 		:
@@ -242,7 +242,7 @@ let parseTuple = (program, parse) => ({
 });
 
 let parseArrayTuple = (program_, parse) => {
-	let program = program_.slice(1, program_.length - 1).trim();
+	let program = program_.slice(1, -1).trim();
 	return (program === '' || program.endsWith(',') ? parseArray : parseTuple)(program, parse);
 };
 
