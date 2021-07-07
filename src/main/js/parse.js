@@ -69,15 +69,15 @@ let isQuote = ch => ch === ascii("'") || ch === ascii('"') || ch === ascii('`');
 let quoteBracket = (qb, ch) => {
 	let qb0 = head(qb);
 
-	return false ? ''
+	return false ? nil
 		: ch === ascii('{') && qb0 === ascii('`')
 			? cons(ch, qb)
 		: ch === ascii('}') && qb0 === ascii('`')
 			? cons(ch, qb)
-		: isQuote(ch)
-			? (qb0 === ch ? tail(qb) : cons(ch, qb))
 		: isQuote(qb0)
-			? qb
+			? (qb0 !== ch ? qb : tail(qb))
+		: isQuote(ch)
+			? cons(ch, qb)
 		: ch === ascii('(')
 			? (qb0 === ascii(')') ? tail(qb) : cons(ch, qb))
 		: ch === ascii(')')
@@ -95,36 +95,47 @@ let quoteBracket = (qb, ch) => {
 };
 
 let splitl = (s, sep) => {
-	let splitl_;
-	splitl_ = (i, qb) => {
-		let j = i + sep.length;
-		return j <= s.length ? function() {
+	let i = 0;
+	let j;
+	let qb = nil;
+	let qb1;
+
+	while (function() {
+		j = i + sep.length;
+		return j <= s.length && function() {
 			let ch = s.charCodeAt(i);
-			let qb1 = quoteBracket(qb, ch);
+			qb1 = quoteBracket(qb, ch);
+			return isNotEmpty(qb) || s.slice(i, j) !== sep || i === 0;
+		}();
+	}()) (function() {
+		i = i + 1;
+		qb = qb1;
+		return true;
+	}());
 
-			return isNotEmpty(qb) || s.slice(i, j) !== sep || i === 0
-				? splitl_(i + 1, qb1)
-				: [s.slice(0, i), s.slice(j, undefined)];
-		}() : [s, undefined];
-	};
-
-	return splitl_(0, nil);
+	return j <= s.length ? [s.slice(0, i), s.slice(j, undefined)] : [s, undefined];
 };
 
 let splitr = (s, sep) => {
-	let splitr_;
-	splitr_ = (j, qb) => {
-		let i = j - sep.length;
-		return 0 <= i ? function() {
-			let ch = s.charCodeAt(j - 1);
-			let qb1 = quoteBracket(qb, ch);
+	let i;
+	let j = s.length;
+	let qb = nil;
+	let qb1;
 
-			return isNotEmpty(qb1) || s.slice(i, j) !== sep || i === 0
-				? splitr_(j - 1, qb1)
-				: [s.slice(0, i), s.slice(j, undefined)];
-		}() : [undefined, s];
-	};
-	return splitr_(s.length, nil);
+	while (function() {
+		i = j - sep.length;
+		return 0 <= i && function() {
+			let ch = s.charCodeAt(j - 1);
+			qb1 = quoteBracket(qb, ch);
+			return isNotEmpty(qb1) || s.slice(i, j) !== sep || i === 0;
+		}();
+	}()) (function() {
+		j = j - 1;
+		qb = qb1;
+		return true;
+	}());
+
+	return 0 <= i ? [s.slice(0, i), s.slice(j, undefined)] : [undefined, s];
 };
 
 let keepsplitl = (s, sep, apply) => {
@@ -471,6 +482,16 @@ parseProgram = program => {
 				? parseProgram(statement.slice(7, undefined))
 			: statement.startsWith('throw ') && expr === ''
 				? { id: 'throw', expr: parseProgram(statement.slice(6, undefined)) }
+			: statement.startsWith('while ')
+				? function() {
+					let [cond, loop] = splitl(statement.slice(6, undefined), ' ');
+					return {
+						id: 'while',
+						cond: parseProgram(cond),
+						loop: parseProgram(loop),
+						expr: parseProgram(expr),
+					};
+				}()
 			:
 				function() {
 					let [lhs, rhs] = splitl(statement, '=');
@@ -911,6 +932,12 @@ inferType = (vts, ast) => {
 			? (({ value }) => {
 				let t = finalRef(lookup(vts, value));
 				return t.generic !== true ? t : cloneRef(t);
+			})
+		: id === 'while'
+			? (({ cond, loop, expr }) => {
+				doBind(ast, inferType(vts, cond), typeBoolean);
+				doBind(ast, inferType(vts, loop), newRef());
+				return inferType(vts, expr);
 			})
 		:
 			(({}) => error(`cannot infer type for ${id}`));
