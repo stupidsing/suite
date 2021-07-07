@@ -74,8 +74,6 @@ let quoteBracket = (quote, bracket, ch) => ({
 		: bracket,
 });
 
-let appendTrailingComma = s => s + (s === '' || s.endsWith(',') ? '' : ',');
-
 let splitl = (s, sep) => {
 	let splitl_;
 	splitl_ = (i, quote, bracket) => {
@@ -194,11 +192,11 @@ let parseConstant = program => {
 		: ascii('0') <= first && first <= ascii('9')
 			? { id: 'number', value: program, i: parseNumber(program) }
 		: program.startsWith("'") && program.endsWith("'")
-			? { id: 'string', value: program.slice(1, program.length - 1) }
+			? { id: 'string', value: program.slice(1, -1) }
 		: program.startsWith('"') && program.endsWith('"')
-			? { id: 'string', value: program.slice(1, program.length - 1) }
+			? { id: 'string', value: program.slice(1, -1) }
 		: program.startsWith('`') && program.endsWith('`')
-			? parseBackquote(program.slice(1, program.length - 1))
+			? parseBackquote(program.slice(1, -1))
 		: program === 'false'
 			? { id: 'boolean', value: 'false' }
 		: program === 'new Error'
@@ -248,17 +246,21 @@ let parseArrayTuple = (program_, parse) => {
 	return (program === '' || program.endsWith(',') ? parseArray : parseTuple)(program, parse);
 };
 
-let parseStructInner = (program, parse) => ({
-	id: 'struct',
-	kvs: keepsplitl(appendTrailingComma(program), ',', kv => {
-		let [key_, value_] = splitl(kv, ':');
-		let field = parseConstant(key_.trim()).value;
-		let value = value_ !== undefined ? parse(value_) : { id: 'var', value: field };
-		return { key: '.' + field, value };
-	}),
-});
+let parseStructInner = (program, parse) => {
+	let appendTrailingComma = s => s + (s === '' || s.endsWith(',') ? '' : ',');
 
-let parseStruct = (program, parse) => parseStructInner(program.slice(1, program.length - 1).trim(), parse);
+	return {
+		id: 'struct',
+		kvs: keepsplitl(appendTrailingComma(program), ',', kv => {
+			let [key_, value_] = splitl(kv, ':');
+			let field = parseConstant(key_.trim()).value;
+			let value = value_ !== undefined ? parse(value_) : { id: 'var', value: field };
+			return { key: '.' + field, value };
+		}),
+	};
+};
+
+let parseStruct = (program, parse) => parseStructInner(program.slice(1, -1).trim(), parse);
 
 let parseProgram;
 
@@ -280,12 +282,12 @@ parseValue = program_ => {
 		: program.startsWith('typeof ')
 			? { id: 'typeof', expr: parseValue(program.slice(7, undefined)) }
 		: program.startsWith('(') && program.endsWith(')')
-			? parseProgram(program.slice(1, program.length - 1))
+			? parseProgram(program.slice(1, -1))
 		: program.startsWith('[') && program.endsWith(']')
 			? parseArrayTuple(program, parseProgram)
 		: program.startsWith('{') && program.endsWith('}')
 			? function() {
-				let block = program.slice(1, program.length - 1).trim();
+				let block = program.slice(1, -1).trim();
 				return block.endsWith(';') ? parseProgram(block) : parseStructInner(block, parseProgram);
 			}()
 		:
@@ -302,7 +304,7 @@ let parseLvalue = program_ => {
 		: program.endsWith(']')
 			? function() {
 				let [expr, index_] = splitr(program, '[');
-				let index = index_.slice(0, index_.length - 1);
+				let index = index_.slice(0, -1);
 				return expr === undefined ? parseValue(program)
 					: index === '0'
 						? {
@@ -326,17 +328,17 @@ parseApplyBlockFieldIndex = program_ => {
 
 	return false ? {}
 		: program.startsWith('function() {') && program.endsWith('}()')
-			? parseProgram(program.slice(12, program.length - 3).trim())
+			? parseProgram(program.slice(12, -3).trim())
 		: program.endsWith('()')
 			? {
 				id: 'apply',
-				expr: parseProgram(program.slice(0, program.length - 2)),
+				expr: parseProgram(program.slice(0, -2)),
 				arg: { id: 'never' },
 			}
 		: program.endsWith(')')
 			? function() {
 				let [expr, paramStr_] = splitr(program, '(');
-				let paramStr = paramStr_.slice(0, paramStr_.length - 1).trim();
+				let paramStr = paramStr_.slice(0, -1).trim();
 				return expr !== undefined ? {
 					id: 'apply',
 					expr: parseProgram(expr),
@@ -398,7 +400,7 @@ parseBind = program_ => {
 		: program === '()'
 			? { id: 'never' }
 		: program.startsWith('(') && program.endsWith(')')
-			? parseBind(program.slice(1, program.length - 1))
+			? parseBind(program.slice(1, -1))
 		: program.startsWith('[') && program.endsWith(']')
 			? parseArrayTuple(program, parseBind)
 		: program.startsWith('{') && program.endsWith('}')
