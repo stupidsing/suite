@@ -64,47 +64,67 @@ let isIdentifier_ = isAll(ch => false
 
 let isIdentifier = s => 0 < s.length && isIdentifier_(s);
 
-let quoteBracket = (quote, bracket, ch) => ({
-	quote: quote === 0 && (ch === ascii("'") || ch === ascii('"') || ch === ascii('`')) ? ch
-		: quote === ch ? 0
-		: quote,
-	bracket: false ? 0
-		: quote === 0 && (ch === ascii('(') || ch === ascii('[') || ch === ascii('{')) ? bracket + 1
-		: quote === 0 && (ch === ascii(')') || ch === ascii(']') || ch === ascii('}')) ? bracket - 1
-		: bracket,
-});
+let isQuote = ch => ch === ascii("'") || ch === ascii('"') || ch === ascii('`');
+
+let quoteBracket = (qb, ch) => {
+	let qb0 = head(qb);
+
+	return false ? ''
+		: ch === ascii('{') && qb0 === ascii('`')
+			? cons(ch, qb)
+		: ch === ascii('}') && qb0 === ascii('`')
+			? cons(ch, qb)
+		: isQuote(ch)
+			? (qb0 === ch ? tail(qb) : cons(ch, qb))
+		: isQuote(qb0)
+			? qb
+		: ch === ascii('(')
+			? (qb0 === ascii(')') ? tail(qb) : cons(ch, qb))
+		: ch === ascii(')')
+			? (qb0 === ascii('(') ? tail(qb) : cons(ch, qb))
+		: ch === ascii('[')
+			? (qb0 === ascii(']') ? tail(qb) : cons(ch, qb))
+		: ch === ascii(']')
+			? (qb0 === ascii('[') ? tail(qb) : cons(ch, qb))
+		: ch === ascii('{')
+			? (qb0 === ascii('}') ? tail(qb) : cons(ch, qb))
+		: ch === ascii('}')
+			? (qb0 === ascii('{') ? tail(qb) : cons(ch, qb))
+		:
+			qb;
+};
 
 let splitl = (s, sep) => {
 	let splitl_;
-	splitl_ = (i, quote, bracket) => {
+	splitl_ = (i, qb) => {
 		let j = i + sep.length;
 		return j <= s.length ? function() {
 			let ch = s.charCodeAt(i);
-			let { quote: quote1, bracket: bracket1 } = quoteBracket(quote, bracket, ch);
+			let qb1 = quoteBracket(qb, ch);
 
-			return quote !== 0 || bracket !== 0 || s.slice(i, j) !== sep || i === 0
-				? splitl_(i + 1, quote1, bracket1)
+			return isNotEmpty(qb) || s.slice(i, j) !== sep || i === 0
+				? splitl_(i + 1, qb1)
 				: [s.slice(0, i), s.slice(j, undefined)];
 		}() : [s, undefined];
 	};
 
-	return splitl_(0, 0, 0);
+	return splitl_(0, nil);
 };
 
 let splitr = (s, sep) => {
 	let splitr_;
-	splitr_ = (j, quote, bracket) => {
+	splitr_ = (j, qb) => {
 		let i = j - sep.length;
 		return 0 <= i ? function() {
 			let ch = s.charCodeAt(j - 1);
-			let { quote: quote1, bracket: bracket1 } = quoteBracket(quote, bracket, ch);
+			let qb1 = quoteBracket(qb, ch);
 
-			return quote1 !== 0 || bracket1 !== 0 || s.slice(i, j) !== sep || i === 0
-				? splitr_(j - 1, quote1, bracket1)
+			return isNotEmpty(qb1) || s.slice(i, j) !== sep || i === 0
+				? splitr_(j - 1, qb1)
 				: [s.slice(0, i), s.slice(j, undefined)];
 		}() : [undefined, s];
 	};
-	return splitr_(s.length, 0, 0);
+	return splitr_(s.length, nil);
 };
 
 let keepsplitl = (s, sep, apply) => {
