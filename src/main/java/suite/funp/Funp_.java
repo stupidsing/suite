@@ -42,6 +42,7 @@ import suite.node.io.SwitchNode;
 import suite.node.parser.IterativeParser;
 import suite.node.util.Singleton;
 import suite.object.CastDefaults;
+import suite.object.MetadataDefaults;
 import suite.object.SwitchDefaults;
 import suite.util.Switch;
 
@@ -54,7 +55,10 @@ public class Funp_ extends FunpCfg {
 
 	public boolean isOptimize;
 
-	public interface Funp extends CastDefaults<Funp>, SwitchDefaults<Funp> {
+	public interface Funp extends CastDefaults<Funp>, MetadataDefaults<FunpMetadata>, SwitchDefaults<Funp> {
+	}
+
+	public static class FunpMetadata {
 	}
 
 	public static class CompileException extends RuntimeException {

@@ -2,8 +2,9 @@ package suite.node;
 
 import suite.node.io.Formatter;
 import suite.node.util.Comparer;
+import suite.object.MetadataDefaults;
 
-public abstract class Node implements Comparable<Node> {
+public abstract class Node implements Comparable<Node>, MetadataDefaults<Node> {
 
 	public Node finalNode() {
 		return this;
