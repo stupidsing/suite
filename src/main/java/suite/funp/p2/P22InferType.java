@@ -113,7 +113,7 @@ import suite.funp.P2.FunpTypeAssign;
 import suite.inspect.Dump;
 import suite.inspect.Inspect;
 import suite.lp.Trail;
-import suite.lp.doer.BinderRecursive;
+import suite.lp.doer.Binder;
 import suite.lp.doer.Cloner;
 import suite.node.Atom;
 import suite.node.Dict;
@@ -1142,8 +1142,7 @@ public class P22InferType extends FunpCfg {
 	}
 
 	private boolean unify(Node type0, Node type1) {
-		return new BinderRecursive(new Trail()).bind(type0, type1);
-		// return Binder.bind(type0, type1, new Trail());
+		return Binder.bind(type0, type1, new Trail());
 	}
 
 	private Node typeOf(Funp n) {
