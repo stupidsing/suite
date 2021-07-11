@@ -70,7 +70,7 @@ public class Binder {
 	private static boolean bindRef(Reference n0, Node n1, Trail trail) {
 		var oldn0 = n0.node;
 		var finaln1 = n1.finalNode();
-		trail.addDirectedBind(n0, finaln1);
+		trail.addBind(n0, finaln1);
 		return bind(oldn0, finaln1, trail);
 	}
 

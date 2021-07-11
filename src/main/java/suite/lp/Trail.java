@@ -12,16 +12,6 @@ public class Trail {
 	private List<Pair<Reference, Node>> boundReferences = new ArrayList<>();
 
 	public void addBind(Reference reference, Node target) {
-		if (target instanceof Reference reference1)
-			if (reference.getId() < reference1.getId())
-				addDirectedBind(reference1, reference);
-			else
-				addDirectedBind(reference, reference1);
-		else
-			addDirectedBind(reference, target);
-	}
-
-	public void addDirectedBind(Reference reference, Node target) {
 		boundReferences.add(Pair.of(reference, reference.node));
 		reference.bound(target);
 	}
