@@ -54,11 +54,11 @@ public class Binder {
 			return i0.number == i1.number;
 		else if (n0 instanceof Str s0 && n1 instanceof Str s1)
 			return Equals.ab(s0.value, s1.value);
-		else if (n0 instanceof Tree t0 && n1 instanceof Tree t1) {
+		else if (n0 instanceof Tree t0 && n1 instanceof Tree t1)
 			return t0.getOperator() == t1.getOperator() //
 					&& bind(t0.getLeft(), t1.getLeft(), trail) //
 					&& bind(t0.getRight(), t1.getRight(), trail);
-		} else if (n0 instanceof Tuple t0 && n1 instanceof Tuple t1) {
+		else if (n0 instanceof Tuple t0 && n1 instanceof Tuple t1) {
 			var nodes0 = t0.nodes;
 			var nodes1 = t1.nodes;
 			var b = nodes0.length == nodes1.length;
