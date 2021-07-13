@@ -28,24 +28,19 @@ public class Binder {
 		if (n0 == n1)
 			return true;
 
-		var clazz0 = n0.getClass();
-		var clazz1 = n1.getClass();
-
-		if (clazz0 == Reference.class) {
-			trail.addBind((Reference) n0, n1);
+		if (n0 instanceof Reference ref) {
+			trail.addBind(ref, n1);
 			return true;
-		} else if (clazz1 == Reference.class) {
-			trail.addBind((Reference) n1, n0);
+		} else if (n1 instanceof Reference ref) {
+			trail.addBind(ref, n0);
 			return true;
 		}
 
-		if (clazz0 == Dict.class && clazz1 == Dict.class) {
-			var dict0 = (Dict) n0;
-			var dict1 = (Dict) n1;
-			bind(dict0.reference, dict1.reference, trail);
+		if (n0 instanceof Dict d0 && n1 instanceof Dict d1) {
+			bind(d0.reference, d1.reference, trail);
 
-			var map0 = dict0.getMap();
-			var map1 = dict1.getMap();
+			var map0 = d0.getMap();
+			var map1 = d1.getMap();
 			var b = true;
 
 			for (var key : Union.of(map0.keySet(), map1.keySet())) {
@@ -55,19 +50,17 @@ public class Binder {
 			}
 
 			return b;
-		} else if (clazz0 == Int.class && clazz1 == Int.class)
-			return Int.num(n0) == Int.num(n1);
-		else if (clazz0 == Str.class && clazz1 == Str.class)
-			return Equals.ab(Str.str(n0), Str.str(n1));
-		else if (Tree.class.isAssignableFrom(clazz0) && Tree.class.isAssignableFrom(clazz1)) {
-			var t0 = (Tree) n0;
-			var t1 = (Tree) n1;
+		} else if (n0 instanceof Int i0 && n1 instanceof Int i1)
+			return i0.number == i1.number;
+		else if (n0 instanceof Str s0 && n1 instanceof Str s1)
+			return Equals.ab(s0.value, s1.value);
+		else if (n0 instanceof Tree t0 && n1 instanceof Tree t1) {
 			return t0.getOperator() == t1.getOperator() //
 					&& bind(t0.getLeft(), t1.getLeft(), trail) //
 					&& bind(t0.getRight(), t1.getRight(), trail);
-		} else if (clazz0 == Tuple.class && clazz1 == Tuple.class) {
-			var nodes0 = Tuple.t(n0);
-			var nodes1 = Tuple.t(n1);
+		} else if (n0 instanceof Tuple t0 && n1 instanceof Tuple t1) {
+			var nodes0 = t0.nodes;
+			var nodes1 = t1.nodes;
 			var b = nodes0.length == nodes1.length;
 			if (b)
 				for (var i = 0; i < nodes0.length; i++)
