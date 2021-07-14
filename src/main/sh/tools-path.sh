@@ -5,7 +5,7 @@ curl -sL https://raw.githubusercontent.com/stupidsing/suite/master/src/main/sh/c
 ECLIPSE_V=2021-06
 GH_V=1.12.1
 MAVEN_V=3.8.1
-NODE_V=14.17.0
+NODE_V=14.17.3
 
 echo '
 ECLIPSE_HOME=$(cchs "echo http://ftp.jaist.ac.jp/pub/eclipse/technology/epp/downloads/release/'${ECLIPSE_V}'/R/eclipse-java-'${ECLIPSE_V}'-R-linux-gtk-x86_64.tar.gz" @curl @tar-zxf @dir)
