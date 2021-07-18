@@ -980,8 +980,8 @@ let typeJSON = typeStructOfCompleted({
 
 let typeObject = typeStructOfCompleted({
 	'.assign': typeLambdaOf(newRef(), newRef()),
-	'.entries': typeLambdaOf(typeStructOf({}), typeArrayOf(typeTupleOf(typeString, newRef()))),
-	'.fromEntries': typeLambdaOf(typeArrayOf(typeTupleOf(typeString, newRef())), typeStructOf({})),
+	'.entries': typeLambdaOf(typeStructOf({}), typeArrayOf(typeTupleOf(cons(typeString, cons(newRef(), nil))))),
+	'.fromEntries': typeLambdaOf(typeArrayOf(typeTupleOf(cons(typeString, cons(newRef(), nil)))), typeStructOf({})),
 	'.keys': typeLambdaOf(typeStructOf({}), typeArrayOf(typeString)),
 });
 
@@ -990,12 +990,14 @@ let typeRequire = typeLambdaOf(typeString, newRef());
 let process = program => {
 	let ast = parseProgram(program);
 
-	let vts = [
-		['JSON', typeJSON],
-		['Object', typeObject],
-		['console', typeConsole],
-		['require', typeRequire],
-	].reduce((l, vt) => cons(vt, l), nil);
+	let vts = Object
+		.entries({
+			JSON: typeJSON,
+			Object: typeObject,
+			console: typeConsole,
+			require: typeRequire,
+		})
+		.reduce((l, vt) => cons(vt, l), nil);
 
 	let type = inferType(vts, ast);
 
