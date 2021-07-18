@@ -1,16 +1,18 @@
-let fake = Object.assign;
+let assume = Object.assign;
 
-let fakeList = v => {
-	let list = fake(v);
+let assumeList = v => {
+	let list = assume(v);
 	let first = list[0];
 	return list;
 };
 
-let fakeObject = v => {
-	let object = fake(v);
+let assumeObject = v => {
+	let object = assume(v);
 	let { id } = object;
 	return object;
 };
+
+let fake = Object.assign;
 
 let ascii = s => s.charCodeAt(0);
 let error = message => { throw new Error(message); };
@@ -540,7 +542,7 @@ let dumpRef = v => {
 	let dumpRef_;
 	dumpRef_ = (vs, v) => {
 		let { ref } = v;
-		let listv = fakeList(v);
+		let listv = assumeList(v);
 		return false ? ''
 			: contains(vs, v)
 				? '<recurse>'
@@ -551,7 +553,7 @@ let dumpRef = v => {
 					: isEmpty(listv)
 						? ''
 					: isNotEmpty(listv)
-						? `${dumpRef_(vs, head(listv))}:${dumpRef_(vs, fakeObject(tail(listv)))}`
+						? `${dumpRef_(vs, head(listv))}:${dumpRef_(vs, assumeObject(tail(listv)))}`
 					: function() {
 						let id = v.id;
 						let join = Object
@@ -573,8 +575,8 @@ let dumpRef = v => {
 let tryBind;
 
 tryBind = (a, b) => function() {
-	let lista = fakeList(a);
-	let listb = fakeList(b);
+	let lista = assumeList(a);
+	let listb = assumeList(b);
 	let refa = a.ref;
 	let refb = b.ref;
 	return false ? false
@@ -622,7 +624,7 @@ let cloneRef = v => {
 
 	cloneRef_ = v => {
 		let { ref } = v;
-		let vlist = fakeList(v);
+		let vlist = assumeList(v);
 		return false ? {}
 			: ref !== undefined
 				? (fromTos.has(ref) ? fromTos.get(ref) : function() {
@@ -632,7 +634,7 @@ let cloneRef = v => {
 				}())
 			: typeof v === 'object'
 				? (vlist.length !== undefined
-					? fakeObject(vlist.map(cloneRef_))
+					? assumeObject(vlist.map(cloneRef_))
 					: Object.fromEntries(Object.entries(v).map(([k, v_]) => [k, cloneRef_(v_)]))
 				)
 			:
@@ -978,15 +980,14 @@ let typeRequire = typeLambdaOf(typeString, newRef());
 let process = program => {
 	let ast = parseProgram(program);
 
-	let type = inferType(
-		[
-			['JSON', typeJSON],
-			['Object', typeObject],
-			['console', typeConsole],
-			['require', typeRequire],
-		].reduce((l, vt) => cons(vt, l), nil),
-		ast
-	);
+	let vts = [
+		['JSON', typeJSON],
+		['Object', typeObject],
+		['console', typeConsole],
+		['require', typeRequire],
+	].reduce((l, vt) => cons(vt, l), nil);
+
+	let type = inferType(vts, ast);
 
 	return { ast, type };
 };
