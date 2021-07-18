@@ -820,7 +820,10 @@ inferType = (vts, ast) => {
 						let kvs = {};
 						let tr = set(kvs, field, newRef());
 						let to = typeStructOf(kvs);
-						return doBind(ast, inferType(vts, expr), to) && tr;
+						return doBind(ast, inferType(vts, expr), to) && function() {
+							let t = finalRef(tr);
+							return t.generic !== true ? t : cloneRef(t);
+						}();
 					}()
 			)
 		: id === 'element'
