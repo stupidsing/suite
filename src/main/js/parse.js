@@ -1,13 +1,13 @@
-let assume = Object.assign;
+let assumeAny = Object.assign;
 
 let assumeList = v => {
-	let list = assume(v);
+	let list = assumeAny(v);
 	let first = list[0];
 	return list;
 };
 
 let assumeObject = v => {
-	let object = assume(v);
+	let object = assumeAny(v);
 	let { id } = object;
 	return object;
 };
