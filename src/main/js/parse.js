@@ -453,6 +453,13 @@ let parseLambda = program => {
 	};
 };
 
+let dummyCount = 0;
+
+let newDummy = () => {
+	dummyCount = dummyCount + 1;
+	return `dummy${dummyCount}`;
+};
+
 parseProgram = program => {
 	let [statement_, expr_] = splitl(program, ';');
 
@@ -506,7 +513,7 @@ parseProgram = program => {
 						expr: parseProgram(expr),
 					} : {
 						id: 'let',
-						bind: { id: 'var', value: 'dummy' },
+						bind: { id: 'var', value: newDummy() },
 						value: parseProgram(lhs),
 						expr: parseProgram(expr),
 					};
