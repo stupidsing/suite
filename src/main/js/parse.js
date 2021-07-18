@@ -934,7 +934,7 @@ inferType = (vts, ast) => {
 		: id === 'tuple'
 			? (({ values }) => {
 				let inferValues;
-				inferValues = vs => isNotEmpty(vs) ? [inferType(vts, head(vs)), ...inferValues(tail(vs)),] : nil;
+				inferValues = vs => isNotEmpty(vs) ? cons(inferType(vts, head(vs)), inferValues(tail(vs))) : nil;
 				return typeTupleOf(inferValues(values));
 			})
 		: id === 'typeof'
