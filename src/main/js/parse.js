@@ -1,4 +1,5 @@
-let any = v => Object.assign(v);
+let any = Object.assign;
+let anyKey = k => k !== '' && any(k);
 
 let asList = v => {
 	let list = any(v);
@@ -15,12 +16,12 @@ let asObject = v => {
 let ascii = s => s.charCodeAt(0);
 let cons = (head, tail) => [head, ...tail,];
 let error = message => { throw new Error(message); };
-let get = (m, k) => any(m)[any(k)];
+let get = (m, k) => any(m)[anyKey(k)];
 let head = list => list[0];
 let isEmpty = list => list.length === 0;
 let isNotEmpty = list => 0 < list.length;
 let nil = [];
-let set = (m, k, v) => { any(m)[any(k)] = v; return v; };
+let set = (m, k, v) => { any(m)[anyKey(k)] = v; return v; };
 let tail = list => list.slice(1, undefined);
 
 let stringify = json => JSON.stringify(json, undefined, '  ');
