@@ -1,14 +1,14 @@
-let any = Object.assign;
-let anyKey = k => k !== '' && any(k);
+let fake = Object.assign;
+let anyKey = k => k !== '' && fake(k);
 
-let asList = v => {
-	let list = any(v);
+let fakeList = v => {
+	let list = fake(v);
 	let first = list[0];
 	return list;
 };
 
-let asObject = v => {
-	let object = any(v);
+let fakeObject = v => {
+	let object = fake(v);
 	let { id } = object;
 	return object;
 };
@@ -16,12 +16,12 @@ let asObject = v => {
 let ascii = s => s.charCodeAt(0);
 let cons = (head, tail) => [head, ...tail,];
 let error = message => { throw new Error(message); };
-let get = (m, k) => any(m)[anyKey(k)];
+let get = (m, k) => fake(m)[anyKey(k)];
 let head = list => list[0];
 let isEmpty = list => list.length === 0;
 let isNotEmpty = list => 0 < list.length;
 let nil = [];
-let set = (m, k, v) => { any(m)[anyKey(k)] = v; return v; };
+let set = (m, k, v) => { fake(m)[anyKey(k)] = v; return v; };
 let tail = list => list.slice(1, undefined);
 
 let stringify = json => JSON.stringify(json, undefined, '  ');
@@ -540,7 +540,7 @@ let dumpRef = v => {
 	let dumpRef_;
 	dumpRef_ = (vs, v) => {
 		let { ref } = v;
-		let listv = asList(v);
+		let listv = fakeList(v);
 		return false ? ''
 			: contains(vs, v)
 				? '<recurse>'
@@ -551,7 +551,7 @@ let dumpRef = v => {
 					: isEmpty(listv)
 						? ''
 					: isNotEmpty(listv)
-						? `${dumpRef_(vs, head(listv))}:${dumpRef_(vs, asObject(tail(listv)))}`
+						? `${dumpRef_(vs, head(listv))}:${dumpRef_(vs, fakeObject(tail(listv)))}`
 					: function() {
 						let id = v.id;
 						let join = Object
@@ -573,8 +573,8 @@ let dumpRef = v => {
 let tryBind;
 
 tryBind = (a, b) => function() {
-	let lista = asList(a);
-	let listb = asList(b);
+	let lista = fakeList(a);
+	let listb = fakeList(b);
 	let refa = a.ref;
 	let refb = b.ref;
 	return false ? false
@@ -622,7 +622,7 @@ let cloneRef = v => {
 
 	cloneRef_ = v => {
 		let { ref } = v;
-		let vlist = asList(v);
+		let vlist = fakeList(v);
 		return false ? {}
 			: ref !== undefined
 				? (fromTos.has(ref) ? fromTos.get(ref) : function() {
@@ -632,7 +632,7 @@ let cloneRef = v => {
 				}())
 			: typeof v === 'object'
 				? (vlist.length !== undefined
-					? asObject(vlist.map(cloneRef_))
+					? fakeObject(vlist.map(cloneRef_))
 					: Object.fromEntries(Object.entries(v).map(([k, v_]) => [k, cloneRef_(v_)]))
 				)
 			:
