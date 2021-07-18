@@ -1,5 +1,4 @@
 let fake = Object.assign;
-let anyKey = k => k !== '' && fake(k);
 
 let fakeList = v => {
 	let list = fake(v);
@@ -24,8 +23,8 @@ let isNotEmpty = list => 0 < list.length;
 let nil = [];
 let tail = list => list.slice(1, undefined);
 
-let get = (m, k) => fake(m)[anyKey(k)];
-let set = (m, k, v) => { fake(m)[anyKey(k)] = v; return v; };
+let get = (m, k) => fake(m)[k !== '' && fake(k)];
+let set = (m, k, v) => { fake(m)[k !== '' && fake(k)] = v; return v; };
 
 let contains;
 contains = (es, e) => isNotEmpty(es) && (head(es) === e || contains(tail(es), e));
