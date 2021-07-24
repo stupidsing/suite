@@ -1,3 +1,7 @@
+// cat src/main/js/parse.js | node src/main/js/parse.js
+// parsing a javascript subset and inference variable types.
+// able to parse myself.
+
 let assumeAny = Object.assign;
 
 let assumeList = v => {
@@ -199,7 +203,7 @@ let parseApplyBlockFieldIndex;
 let parseBackquote;
 
 parseBackquote = program => {
-	let index = program.indexOf('${');
+	let index = program.indexOf('${', 0);
 
 	return 0 <= index ? function() {
 		let remains = program.slice(index + 2, undefined);
@@ -784,7 +788,7 @@ inferType = (vts, ast) => {
 						return doBind(ast, inferType(vts, expr), typeArrayOf(ti)) && typeLambdaOf(typeLambdaOf(ti, typeBoolean), typeArrayOf(ti));
 					}()
 				: field === '.indexOf'
-					? doBind(ast, inferType(vts, expr), typeString) && typeLambdaOf(typeString, typeNumber)
+					? doBind(ast, inferType(vts, expr), typeString) && typeLambdaOf(typePairOf(typeString, typeNumber), typeNumber)
 				: field === '.join'
 					? doBind(ast, inferType(vts, expr), typeArrayOf(typeString)) && typeLambdaOf(typeString, typeString)
 				: field === '.length'
@@ -987,7 +991,7 @@ let typeObject = typeStructOfCompleted({
 
 let typeRequire = typeLambdaOf(typeString, newRef());
 
-let process = program => {
+let process_ = program => {
 	let ast = parseProgram(program);
 
 	let vts = Object
@@ -1002,6 +1006,21 @@ let process = program => {
 	let type = inferType(vts, ast);
 
 	return { ast, type };
+};
+
+let process = program_ => {
+	let program = program_;
+	let pos0;
+	let posx;
+	while (function() {
+		pos0 = program.indexOf('\/\/ ', 0);
+		posx = 0 <= pos0 ? program.indexOf('\n', pos0) : -1;
+		return 0 <= posx;
+	}()) (function() {
+		program = program.slice(0, pos0) + program.slice(posx, undefined);
+		return true;
+	}());
+	return process_(program);
 };
 
 let actual = stringify(process(`
