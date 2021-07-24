@@ -25,7 +25,7 @@ public class Atom extends Node {
 	}
 
 	public static Atom temp() {
-		return Atom.of("a$" + Get.temp());
+		return Atom.of("a$" + (Get.temp() + 1000000000));
 	}
 
 }

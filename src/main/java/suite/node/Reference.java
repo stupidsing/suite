@@ -8,7 +8,7 @@ import suite.lp.doer.ProverConstant;
 public class Reference extends Node {
 
 	public Node node = this;
-	private int id = Get.temp();
+	private int id = Get.temp() + 1000000000;
 
 	public static Reference of(Node node) {
 		var reference = new Reference();

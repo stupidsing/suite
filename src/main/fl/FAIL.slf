@@ -1,0 +1,5 @@
+use external STANDARD_FAIL ~
+
+define snoc := es => e =>
+	es ++ (e;)
+~
