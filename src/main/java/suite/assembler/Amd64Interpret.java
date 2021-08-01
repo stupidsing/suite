@@ -220,9 +220,9 @@ public class Amd64Interpret extends Amd64Cfg {
 				case LEA -> assign.f(address((OpMem) op1));
 				case LOG -> {
 					if (op0 instanceof OpRemark opRemark)
-						Log_.info(opRemark.remark + " = " + Format.hex8(source1));
+						Log_.infof("%s = %08x", opRemark.remark, source1);
 					else
-						Log_.info("value = " + Format.hex8(source0));
+						Log_.infof("value = %08x", source0);
 				}
 				case MOV -> assign.f(source1);
 				case MOVSB -> movsb();
@@ -409,11 +409,12 @@ public class Amd64Interpret extends Amd64Cfg {
 	private String state(int eip, Instruction instruction) {
 		return Build.string(sb -> {
 			for (var i = 0; i < 8; i++)
-				sb.append((i % 2 == 0 ? "\n" : " ") //
-						+ amd64.regByName.inverse().get(amd64.reg32[i]) //
-						+ ":" + Format.hex8(regs[i]));
+				sb.append(String.format("%s%s:%08x", //
+						i % 2 == 0 ? "\n" : " ", //
+						amd64.regByName.inverse().get(amd64.reg32[i]), //
+						regs[i]));
 			sb.append("\nCMP = " + c);
-			sb.append("\n[" + Format.hex8(eip) + "] INSTRUCTION = " + dump.dump(instruction));
+			sb.append(String.format("\n[%08x] INSTRUCTION = %s", eip, dump.dump(instruction)));
 		});
 	}
 
