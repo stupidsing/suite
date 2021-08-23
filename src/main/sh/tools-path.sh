@@ -169,6 +169,10 @@ tp_suite() {
 	$(cchs "echo git@github.com:stupidsing/suite.git" @git-clone "@do-git-cd ./build.sh" "@git-cd pwd")/run.sh $@
 }
 
+tp_visualvm() {
+	$(cchs "echo https://github.com/oracle/visualvm/releases/download/2.1/visualvm_21.zip" @curl @unzip @dir)/bin/visualvm
+}
+
 tp_vms_empire() {
 	$(cchs "echo git@gitlab.com:esr/vms-empire.git" @git-clone "@do-git-cd make" "@git-cd pwd")/vms-empire $@
 }
