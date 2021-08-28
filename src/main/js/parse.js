@@ -29,8 +29,8 @@ let isNotEmpty = list => 0 < list.length;
 let nil = [];
 let tail = list => list.slice(1, undefined);
 
-let get = (m, k) => fake(m)[k !== '' && fake(k)];
-let set = (m, k, v) => { fake(m)[k !== '' && fake(k)] = v; return v; };
+let getp = (m, k) => fake(m)[k !== '' && fake(k)];
+let setp = (m, k, v) => { fake(m)[k !== '' && fake(k)] = v; return v; };
 
 let contains;
 contains = (es, e) => isNotEmpty(es) && (head(es) === e || contains(tail(es), e));
@@ -614,14 +614,14 @@ tryBind = (a, b) => function() {
 			}()
 			: true
 				&& Object.keys(a).reduce((r, k) => {
-					let b_k = get(b, k);
-					let s = b_k !== undefined || b.completed !== true && function() { b_k = newRef(); set(b, k, b_k); return true; }();
-					return r && s && tryBind(get(a, k), b_k);
+					let b_k = getp(b, k);
+					let s = b_k !== undefined || b.completed !== true && function() { b_k = newRef(); setp(b, k, b_k); return true; }();
+					return r && s && tryBind(getp(a, k), b_k);
 				}, true)
 				&& Object.keys(b).reduce((r, k) => {
-					let a_k = get(a, k);
-					let s = a_k !== undefined || a.completed !== true && function() { a_k = newRef(); set(a, k, a_k); return true; }();
-					return r && s && tryBind(a_k, get(b, k));
+					let a_k = getp(a, k);
+					let s = a_k !== undefined || a.completed !== true && function() { a_k = newRef(); setp(a, k, a_k); return true; }();
+					return r && s && tryBind(a_k, getp(b, k));
 				}, true)
 			);
 }();
@@ -685,7 +685,7 @@ let typeNumber = ({ id: 'number' });
 let typePairOf = (lhs, rhs) => ({ id: 'pair', lhs, rhs });
 let typeString = typeArrayOf({ id: 'char' });
 let typeStructOf = kvs => ({ id: 'struct', kvs });
-let typeStructOfCompleted = kvs => { set(kvs, 'completed', true); return ({ id: 'struct', kvs }); };
+let typeStructOfCompleted = kvs => { setp(kvs, 'completed', true); return ({ id: 'struct', kvs }); };
 let typeTupleOf = types => ({ id: 'tuple', types });
 
 let typeMapOf = (tk, tv) => typeStructOfCompleted({
@@ -822,7 +822,7 @@ inferType = (vts, ast) => {
 				:
 					function() {
 						let kvs = {};
-						let tr = set(kvs, field, newRef());
+						let tr = setp(kvs, field, newRef());
 						let to = typeStructOf(kvs);
 						return doBind(ast, inferType(vts, expr), to) && function() {
 							let t = finalRef(tr);
@@ -917,7 +917,7 @@ inferType = (vts, ast) => {
 				inferKvs = kvs => 0 < kvs.length ? function() {
 					let { key, value } = head(kvs);
 					let type = inferKvs(tail(kvs));
-					set(type, key, function() {
+					setp(type, key, function() {
 						try {
 							return inferType(vts, value);
 						} catch (e) {
