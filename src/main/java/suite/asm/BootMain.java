@@ -32,8 +32,8 @@ public class BootMain {
 
 			Read.each(disk1).collect(To.file(image));
 
-			System.out.println("cat " + image + " | dd bs=512 count=1 | ~/udis86/udcli/udcli -16 | less");
-			System.out.println("cat " + image + " | dd bs=512 skip=1 | ~/udis86/udcli/udcli -32 | less");
+			System.out.println("cat " + image + " | dd bs=512 count=1 | tp_udcli -16 | less");
+			System.out.println("cat " + image + " | dd bs=512 skip=1 | tp_udcli -32 | less");
 			System.out.println("qemu-system-x86_64 " + image);
 			return true;
 		} else
