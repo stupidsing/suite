@@ -52,7 +52,7 @@ tp_android_sdk_tools() {
 	cchs "curl -sL https://developer.android.com/studio" "grep dl.google.com | grep commandlinetools-linux" "head -1" "cut -d\\\" -f2" @curl @unzip "@cd pwd" \
 	"@do-cd [ -f cmdline-tools/tools/bin/sdkmanager ] || (mv cmdline-tools/ tools/ && mkdir cmdline-tools/ && mv tools/ cmdline-tools/)" \
 	"@exec JAVA_HOME=$(tp_jdk11) JAVA_OPTS=-XX:+IgnoreUnrecognizedVMOptions cmdline-tools/tools/bin/sdkmanager \
-	'\''build-tools;29.0.3'\'' emulator platform-tools '\''platforms;android-30'\'' '\''system-images;android-27;default;x86_64'\''"
+	'\''build-tools;29.0.3'\'' emulator platform-tools '\''platforms;android-30'\'' '\''system-images;android-30;default;x86_64'\''"
 }
 
 tp_android_studio() {
