@@ -45,6 +45,7 @@ evalscripts(['fun', 'render',])
 
 		let login = ({ username, password, }) => {
 			console.log('login()', username);
+			let getBody = response => { if (response.ok) return response.json(); else throw response.statusText; };
 
 			return Promise
 			.resolve()
@@ -56,27 +57,21 @@ evalscripts(['fun', 'render',])
 				headers: { 'Content-Type': 'application/json', },
 				method: 'POST',
 			}))
-			.then(response => {
-				if (response.ok) return response.json(); else throw response.statusText;
-			})
+			.then(getBody)
 			.then(json => json.token)
 			.then(token => fetch('../token', {
 				...fetchBase,
 				headers: { Authorization: token, },
 				method: 'PATCH',
 			}))
-			.then(response => {
-				if (response.ok) return response.json(); else throw response.statusText;
-			})
+			.then(getBody)
 			.then(json => json.token)
 			.then(token => fetch('../api', {
 				...fetchBase,
 				headers: { Authorization: token, },
 				method: 'GET',
 			})
-			.then(response => {
-				if (response.ok) return response.text(); else throw response.statusText;
-			})
+			.then(getBody)
 			.then(message => {
 				setMessage('login success');
 				console.log('login() = ', message);
