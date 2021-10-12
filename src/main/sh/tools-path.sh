@@ -100,10 +100,6 @@ tp_gradle() {
 	${GRADLE_HOME}/bin/gradle $@
 }
 
-tp_gradle64() {
-	$(cchs "echo https://services.gradle.org/distributions/gradle-6.4-bin.zip" @curl @unzip @dir)/bin/gradle $@
-}
-
 tp_group_add() {
 	G=${1} sh -c "groups | grep \${G} > /dev/null || sudo adduser \${USER} \${G}"
 }
