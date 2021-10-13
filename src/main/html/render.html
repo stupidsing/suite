@@ -45,33 +45,29 @@ evalscripts(['fun', 'render',])
 
 		let login = ({ username, password, }) => {
 			console.log('login()', username);
-			let getBody = response => { if (response.ok) return response.json(); else throw response.statusText; };
+			let fetchBody = (url, opts) => fetch(url, { ...fetchBase, opts }).then(response => {
+				if (response.ok) return response.json(); else throw response.statusText;
+			});
 
 			return Promise
 			.resolve()
 			.then(overlay)
-			.then(() => fetch('../token', {
-				...fetchBase,
+			.then(() => fetchBody('../token', {
 				mode: 'no-cors',
 				body: JSON.stringify({ username, password, }),
 				headers: { 'Content-Type': 'application/json', },
 				method: 'POST',
 			}))
-			.then(getBody)
 			.then(json => json.token)
-			.then(token => fetch('../token', {
-				...fetchBase,
+			.then(token => fetchBody('../token', {
 				headers: { Authorization: token, },
 				method: 'PATCH',
 			}))
-			.then(getBody)
 			.then(json => json.token)
-			.then(token => fetch('../api', {
-				...fetchBase,
+			.then(token => fetchBody('../api', {
 				headers: { Authorization: token, },
 				method: 'GET',
 			})
-			.then(getBody)
 			.then(message => {
 				setMessage('login success');
 				console.log('login() = ', message);
