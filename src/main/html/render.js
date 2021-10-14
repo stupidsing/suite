@@ -367,7 +367,7 @@ loadedmodule = globalThis.render = evalscript('fun.js').then(({ read, }) => {
 			cudf);
 	};
 
-	let rd_span_component = (initf, publicf, privatef, xhtml) => vm => {
+	let rd_span_component = (initf, deinitf, publicf, privatef, xhtml) => vm => {
 		let span = document.createElement('span');
 		let cudf_;
 		let vm_ = null;
@@ -400,6 +400,7 @@ loadedmodule = globalThis.render = evalscript('fun.js').then(({ read, }) => {
 				change(vm_ => initf(vm));
 			},
 			deinit: cudf => {
+				change(vm_ => deinitf(vm));
 				change(vm_ => null);
 				cudf.delete();
 			},

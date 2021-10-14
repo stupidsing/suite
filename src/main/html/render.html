@@ -84,6 +84,7 @@ evalscripts(['fun', 'render',])
 		return rd.span_component(
 			vm => ({ username: 'ywsing', password: '' }),
 			({}) => ({}),
+			({}) => ({}),
 			({ change, changeAsync, }) => ({
 				setUsername: username => change(vm => ({ ...vm, username, })),
 				setPassword: password => change(vm => ({ ...vm, password, })),
@@ -103,6 +104,7 @@ evalscripts(['fun', 'render',])
 
 	let componentNotification = rd.span_component(
 		vm => ({ message: '', }),
+		({}) => ({}),
 		({ change, }) => ({
 			setMessage: message => change(vm => ({ ...vm, message, })),
 		}),
@@ -123,6 +125,7 @@ evalscripts(['fun', 'render',])
 
 	let componentOverlay = rd.span_component(
 		vm => ({ count: 0, }),
+		({}) => ({}),
 		({ change, }) => ({
 			enable: () => change(vm => ({ ...vm, count: vm.count + 1, })),
 			disable: () => change(vm => ({ ...vm, count: vm.count - 1, })),
@@ -137,6 +140,7 @@ evalscripts(['fun', 'render',])
 		let cl = componentLogin(co.enable, co.disable, cn.setMessage)(vm);
 		return rd.span_component(
 			vm => true,
+			({}) => ({}),
 			({}) => ({}),
 			({}) => ({ cl, cn, co, }),
 			`
