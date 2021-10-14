@@ -387,7 +387,7 @@ parseApplyBlockFieldIndex = program_ => {
 			parseLvalue(program);
 };
 
-let parseApp = [parseApplyBlockFieldIndex,]
+let parseIf = [parseApplyBlockFieldIndex,]
 	.map(p => parseAssocLeft_('div', '/', p))
 	.map(p => parseAssocRight('mul', '*', p))
 	.map(p => parsePrefix('neg', '-', p))
@@ -402,26 +402,23 @@ let parseApp = [parseApplyBlockFieldIndex,]
 	.map(p => parseAssocRight('and', '&&', p))
 	.map(p => parseAssocRight('or_', '||', p))
 	.map(p => parseAssocLeft_('app', '|>', p))
+	.map(p => program => {
+		let [if_, thenElse] = splitl(program, '?');
+
+		return thenElse === undefined ? p(if_) : function() {
+			let [then, else_] = splitl(thenElse, ':');
+
+			return {
+				id: 'if',
+				if_: parseProgram(if_),
+				then: parseProgram(then),
+				else_: parseProgram(else_),
+			};
+		}();
+	})
 	[0];
 
-let parseIf = program => {
-	let [if_, thenElse] = splitl(program, '?');
-
-	return thenElse === undefined ? parseApp(if_) : function() {
-		let [then, else_] = splitl(thenElse, ':');
-
-		return {
-			id: 'if',
-			if_: parseProgram(if_),
-			then: parseProgram(then),
-			else_: parseProgram(else_),
-		};
-	}();
-};
-
-let parsePair;
-
-parsePair = (program, parse) => {
+let parsePair = (program, parse) => {
 	let parsePair_;
 	parsePair_ = program => {
 		let [left, right] = splitl(program, ',');
