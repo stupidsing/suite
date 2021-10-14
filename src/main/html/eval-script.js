@@ -2,7 +2,7 @@
 
 let loadedmodule = null;
 
-let { addevalscript, addevalscripts, evalscript, evalscripts, loadsrcscript, } = (() => {
+let { addevalscript, evalscript, } = (() => {
 	let cache = {};
 
 	let loadsrcscript = url => new Promise((resolve, reject) => {
@@ -45,16 +45,5 @@ let { addevalscript, addevalscripts, evalscript, evalscripts, loadsrcscript, } =
 
 	let addevalscript = scr => async ns => ({ ...ns, [scr]: await evalscript(scr + '.js'), });
 
-	let addevalscripts = scrs => async ns => {
-		for (let scr of scrs) ns = await addevalscript(scr)(ns);
-		return ns;
-	};
-
-	let evalscripts = scrs => {
-		let r = Promise.resolve({});
-		for (let scr of scrs) r = r.then(addevalscript(scr));
-		return r;
-	};
-
-	return { addevalscript, addevalscripts, evalscript, evalscripts, loadsrcscript, };
+	return { addevalscript, evalscript, };
 })();

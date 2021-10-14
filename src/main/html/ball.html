@@ -12,8 +12,9 @@
 	<script type='text/javascript'>
 'use strict';
 
-evalscripts(['frp', 'fun'])
-.then(({ frp, fun: { rand, range, read, }, }) => {
+(async () => {
+	let frp = await evalscript('frp.js');
+	let { rand, range, read, } = await evalscript('fun.js');
 	let width = window.innerWidth;
 	let height = window.innerHeight;
 
@@ -100,7 +101,6 @@ evalscripts(['frp', 'fun'])
 	});
 
 	frp.mouse.move.wire(d => console.log('mouse ' + d.x + ',' + d.y));
-})
-.catch(console.error);
+})().catch(console.error);
 	</script>
 </html>

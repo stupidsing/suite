@@ -51,10 +51,13 @@ let sizep = usp.get('size');
 let size = +sizep || 7;
 let nStoneTypes = +colorsp || 5;
 
-Promise
-.all([].map(loadsrcscript))
-.then(addevalscripts(['five-in-a-row', 'frp', 'fun', 'pq', 'render',]))
-.then(({ ['five-in-a-row']: fiveinarow, fun: { rand, range, }, render: { rd, renderAgain, }, }) => {
+(async () => {
+	let fiveinarow = await evalscript('five-in-a-row.js');
+	let frp = await evalscript('frp.js');
+	let { rand, range, } = await evalscript('fun.js');
+	let pq = await evalscript('pq.js');
+	let { rd, renderAgain, } = await evalscript('render.js');
+
 	let cc = ((sizex, sizey) => {
 		let startx = 0, endx = startx + sizex;
 
@@ -173,7 +176,6 @@ Promise
 	for (let [k, v] of Object.entries(gameInstance.handle)) handle[k] = v;
 
 	gameInstance.vw.init();
-})
-.catch(console.error);
+})().catch(console.error);
 	</script>
 </html>

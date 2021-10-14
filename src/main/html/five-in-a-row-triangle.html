@@ -18,10 +18,13 @@ file:///home/ywsing/suite/src/main/html/five-in-a-row-triangle.html
 	<script type='text/javascript'>
 'use strict';
 
-Promise
-.all([].map(loadsrcscript))
-.then(addevalscripts(['five-in-a-row', 'frp', 'fun', 'pq', 'render',]))
-.then(({ ['five-in-a-row']: fiveinarow, fun: { rand, range, }, render: { rd, renderAgain, }, }) => {
+(async () => {
+	let fiveinarow = await evalscript('five-in-a-row.js');
+	let frp = await evalscript('frp.js');
+	let { rand, range, } = await evalscript('fun.js');
+	let pq = await evalscript('pq.js');
+	let { rd, renderAgain, } = await evalscript('render.js');
+
     let view = rd.parse({ ...fiveinarow, }, `
         <span style='display: flex; flex-direction:column; font-size: 36px;'>
             <rd_map v='vm.board'>
@@ -119,7 +122,6 @@ Promise
             })).list()),
         },
     }));
-})
-.catch(console.error);
+})().catch(console.error);
 	</script>
 </html>

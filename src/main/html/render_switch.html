@@ -13,8 +13,10 @@ file:///home/ywsing/suite/src/main/html/render.html
 	<script type='text/javascript'>
 'use strict';
 
-evalscripts(['fun', 'render',])
-.then(({ fun: { lens, read, }, render: { rd, renderAgain, }, }) => {
+(async () => {
+	let { lens, read, } = await evalscript('fun.js');
+	let { rd, renderAgain, } = await evalscript('render.js');
+
 	let view = rd.parse({}, `
 		<span>
 			<rd_switch>
@@ -36,7 +38,6 @@ evalscripts(['fun', 'render',])
 	setTimeout(() => renderAgain(view, vm => ({ ...vm, k: 'a', v: { a: 0, }, })), 1 * 1000);
 	setTimeout(() => renderAgain(view, vm => ({ ...vm, k: 'b', v: { b: 'zero', }, })), 2 * 1000);
 	setTimeout(() => renderAgain(view, vm => ({ ...vm, k: 'c', v: { c: 'ZERO', }, })), 3 * 1000);
-})
-.catch(console.error);
+})().catch(console.error);
 	</script>
 </html>

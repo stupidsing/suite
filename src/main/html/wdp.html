@@ -63,11 +63,9 @@ let icons = [ '', '🐵', '💂', '🍋', '🌲', '💖', '🐬', '🍊', '🍇'
 icons[castle] = '🏰';
 // 😂
 
-Promise
-.all([].map(loadsrcscript))
-.then(addevalscripts(['frp', 'fun', 'render',]))
-.then(ns => {
-	let { fun: { rand, }, render: { renderAgain, }, } = ns;
+let gamefp = (async () => {
+	let { rand, } = await evalscript('fun.js');
+	let { renderAgain, } = await evalscript('render.js');
 
 	let gamef = (cc, view) => {
 		let freeze = false; // if we are accepting game inputs
@@ -287,9 +285,14 @@ Promise
 		return { handle, vw, };
 	};
 
-	return { ...ns, gamef, };
-})
-.then(({ fun: { rand, range, }, gamef, render: { rd, renderAgain, }, }) => {
+	return gamef;
+})();
+
+(async () => {
+	let gamef = await gamefp;
+	let { rand, range, } = await evalscript('fun.js');
+	let { rd, renderAgain, } = await evalscript('render.js');
+
 	let cc = ((sizex, sizey) => {
 		let startx = 0, endx = startx + sizex;
 
@@ -408,7 +411,6 @@ Promise
 	for (let [k, v] of Object.entries(gameInstance.handle)) handle[k] = v;
 
 	gameInstance.vw.init();
-})
-.catch(console.error);
+})().catch(console.error);
 	</script>
 </html>

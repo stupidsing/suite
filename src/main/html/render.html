@@ -25,8 +25,9 @@ file:///home/ywsing/suite/src/main/html/render.html
 	<script type='text/javascript'>
 'use strict';
 
-evalscripts(['fun', 'render',])
-.then(({ fun: { lens, read, }, render: { rd, renderAgain, }, }) => {
+(async () => {
+	let { lens, read, } = await evalscript('fun.js');
+	let { rd, renderAgain, } = await evalscript('render.js');
 	let view;
 
 	let component = (path, publicf, privatef, xhtml) => {
@@ -270,7 +271,6 @@ evalscripts(['fun', 'render',])
 
 	eventSource.addEventListener('close', ev => eventSource.close());
 	eventSource.addEventListener('number', ev => renderAgain(view, vm => ({ ...vm, sse: [...vm.sse, JSON.parse(ev.data).i,], })));
-})
-.catch(console.error);
+})().catch(console.error);
 	</script>
 </html>
