@@ -13,6 +13,9 @@ getLatestTimestamp() {
 (
 	SOURCETIME=$(getLatestTimestamp "${BASE}/pom.xml" "${BASE}/src/main/")
 	TARGETTIME=$(getLatestTimestamp "${JAR}")
-	[ ${SOURCETIME} -le ${TARGETTIME} ] ||
-	{ cd ${BASE} && mvn dependency:build-classpath -Dmdep.outputFile=target/classpath && mvn -Dmaven.test.skip=true install; }
+	[ ${SOURCETIME} -le ${TARGETTIME} ] || {
+		cd ${BASE} &&
+		mvn dependency:build-classpath -Dmdep.outputFile=target/classpath &&
+		mvn -Dmaven.test.skip=true install
+	}
 )
