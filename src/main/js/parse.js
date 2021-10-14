@@ -387,20 +387,22 @@ parseApplyBlockFieldIndex = program_ => {
 			parseLvalue(program);
 };
 
-let parseDiv = parseAssocLeft_('div', '/', parseApplyBlockFieldIndex);
-let parseMul = parseAssocRight('mul', '*', parseDiv);
-let parseNeg = parsePrefix('neg', '-', parseMul);
-let parseSub = parseAssocLeft_('sub', '-', parseNeg);
-let parsePos = parsePrefix('pos', '+', parseSub);
-let parseAdd = parseAssocRight('add', '+', parsePos);
-let parseLt_ = parseAssocRight('lt_', '<', parseAdd);
-let parseLe_ = parseAssocRight('le_', '<=', parseLt_);
-let parseNot = parsePrefix('not', '!', parseLe_);
-let parseNe_ = parseAssocRight('ne_', '!==', parseNot);
-let parseEq_ = parseAssocRight('eq_', '===', parseNe_);
-let parseAnd = parseAssocRight('and', '&&', parseEq_);
-let parseOr_ = parseAssocRight('or_', '||', parseAnd);
-let parseApp = parseAssocLeft_('app', '|>', parseOr_);
+let parseApp = [parseApplyBlockFieldIndex,]
+	.map(p => parseAssocLeft_('div', '/', p))
+	.map(p => parseAssocRight('mul', '*', p))
+	.map(p => parsePrefix('neg', '-', p))
+	.map(p => parseAssocLeft_('sub', '-', p))
+	.map(p => parsePrefix('pos', '+', p))
+	.map(p => parseAssocRight('add', '+', p))
+	.map(p => parseAssocRight('lt_', '<', p))
+	.map(p => parseAssocRight('le_', '<=', p))
+	.map(p => parsePrefix('not', '!', p))
+	.map(p => parseAssocRight('ne_', '!==', p))
+	.map(p => parseAssocRight('eq_', '===', p))
+	.map(p => parseAssocRight('and', '&&', p))
+	.map(p => parseAssocRight('or_', '||', p))
+	.map(p => parseAssocLeft_('app', '|>', p))
+	[0];
 
 let parseIf = program => {
 	let [if_, thenElse] = splitl(program, '?');
