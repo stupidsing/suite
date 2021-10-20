@@ -44,7 +44,7 @@ tp_android_bundletool() {
 
 tp_android_emulator() {
 	# sudo adduser ${USER} kvm
-	ANDROID_SDK_ROOT=${ANDROID_HOME} $(tp_android_sdk_tools)/emulator/emulator $@
+	ANDROID_SDK_ROOT=$(tp_android_sdk_tools) $(tp_android_sdk_tools)/emulator/emulator $@
 }
 
 tp_android_sdk_tools() {
