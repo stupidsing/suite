@@ -2,7 +2,7 @@
 
 let loadedmodule = null;
 
-let { addevalscript, evalscript, } = (() => {
+let evalscript = (() => {
 	let cache = {};
 
 	let loadsrcscript = url => new Promise((resolve, reject) => {
@@ -18,7 +18,7 @@ let { addevalscript, evalscript, } = (() => {
 		document.head.appendChild(script);
 	});
 
-	let evalscript = async url => {
+	return async url => {
 		let r = cache[url];
 
 		if (r != null)
@@ -42,8 +42,4 @@ let { addevalscript, evalscript, } = (() => {
 				throw response.statusText;
 		}
 	};
-
-	let addevalscript = scr => async ns => ({ ...ns, [scr]: await evalscript(scr + '.js'), });
-
-	return { addevalscript, evalscript, };
 })();
