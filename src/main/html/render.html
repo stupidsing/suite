@@ -44,12 +44,12 @@ file:///home/ywsing/suite/src/main/html/render.html
 	let componentLogin = (overlay, unoverlay, setMessage) => {
 		let fetchBase = { cache: 'no-cache', credentials: 'omit', redirect: 'follow', referrer: 'no-referrer', };
 
+		let fetchBody = (url, opts) => fetch(url, { ...fetchBase, ...opts }).then(response => {
+			if (response.ok) return response.json(); else throw response.statusText;
+		});
+
 		let login = ({ username, password, }) => {
 			console.log('login()', username);
-			let fetchBody = (url, opts) => fetch(url, { ...fetchBase, opts }).then(response => {
-				if (response.ok) return response.json(); else throw response.statusText;
-			});
-
 			return Promise
 			.resolve()
 			.then(overlay)
@@ -264,7 +264,7 @@ file:///home/ywsing/suite/src/main/html/render.html
 
 	globalThis.messager = b => renderAgain(view, vm => ({ ...vm, isPopup: b, }));
 
-	let eventSource = new EventSource('/sse');
+	let eventSource = new EventSource('sse');
 
 	eventSource.onError = console.error;
 	eventSource.onMessage = console.info;
