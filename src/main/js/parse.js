@@ -241,6 +241,8 @@ let parseConstant = program => {
 			? { id: 'new-error' }
 		: program === 'new Map'
 			? { id: 'new-map' }
+		: program === 'new Promise'
+			? { id: 'new-promise' }
 		: program === 'nil'
 			? { id: 'nil' }
 		: program === 'true'
@@ -677,15 +679,18 @@ defineBindTypes = (vts, ast) => false ? vts
 
 let typeArrayOf = type => ({ id: 'array', of: type });
 let typeBoolean = ({ id: 'boolean' });
+let typeError = ({ id: 'error' });
 let typeLambdaOf = (in_, out) => ({ id: 'lambda', generic: true, in_, out });
 let typeLambdaOfFixed = (in_, out) => ({ id: 'lambda', in_, out });
 let typeNever = { id: 'never' };
 let typeNumber = ({ id: 'number' });
 let typePairOf = (lhs, rhs) => ({ id: 'pair', lhs, rhs });
+let typePromiseOf = out => ({ id: 'promise', out });
 let typeString = typeArrayOf({ id: 'char' });
 let typeStructOf = kvs => ({ id: 'struct', kvs });
 let typeStructOfCompleted = kvs => { setp(kvs, 'completed', true); return ({ id: 'struct', kvs }); };
 let typeTupleOf = types => ({ id: 'tuple', types });
+let typeVoid = typeStructOfCompleted({});
 
 let typeMapOf = (tk, tv) => typeStructOfCompleted({
 	'.get': typeLambdaOfFixed(tk, tv),
@@ -814,6 +819,12 @@ inferType = (vts, ast) => {
 					}()
 				: field === '.startsWith'
 					? doBind(ast, inferType(vts, expr), typeString) && typeLambdaOf(typeString, typeBoolean)
+				: field === '.then'
+					? function() {
+						let ti = newRef();
+						let to = newRef();
+						return doBind(ast, inferType(vts, expr), typePromiseOf(ti)) && typeLambdaOf(ti, typePromiseOf(to));
+					}()
 				: field === '.toString'
 					? doBind(ast, inferType(vts, expr), newRef()) && typeLambdaOf(typeNever, typeString)
 				: field === '.trim'
@@ -893,9 +904,16 @@ inferType = (vts, ast) => {
 		: id === 'never'
 			? (({}) => typeNever)
 		: id === 'new-error'
-			? (({}) => typeLambdaOf(typeString, { id: 'error' }))
+			? (({}) => typeLambdaOf(typeString, typeError))
 		: id === 'new-map'
 			? (({}) => typeLambdaOf(typeNever, typeMapOf(newRef(), newRef())))
+		: id === 'new-promise'
+			? (({}) => {
+				let tr = newRef();
+				let tres = typeLambdaOf(tr, typeNever);
+				let trej = typeLambdaOf(typeError, typeNever);
+				return typeLambdaOf(typeLambdaOf(typePairOf(tres, trej), typeVoid), typePromiseOf(tr));
+			})
 		: id === 'nil'
 			? (({}) => typeArrayOf(newRef()))
 		: id === 'not'
@@ -986,6 +1004,11 @@ let typeObject = typeStructOfCompleted({
 	'.entries': typeLambdaOf(typeStructOf({}), typeArrayOf(typeTupleOf(cons(typeString, cons(newRef(), nil))))),
 	'.fromEntries': typeLambdaOf(typeArrayOf(typeTupleOf(cons(typeString, cons(newRef(), nil)))), typeStructOf({})),
 	'.keys': typeLambdaOf(typeStructOf({}), typeArrayOf(typeString)),
+});
+
+let typePromise = typeStructOfCompleted({
+	'.reject': typeLambdaOf(typeError, typePromiseOf(newRef())),
+	'.resolve': function() { let t = newRef(); return typeLambdaOf(t, typePromiseOf(t)); }(),
 });
 
 let typeRequire = typeLambdaOf(typeString, newRef());
