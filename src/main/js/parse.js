@@ -390,6 +390,7 @@ parseApplyBlockFieldIndex = program_ => {
 };
 
 let parseIf = [parseApplyBlockFieldIndex,]
+	.map(p => parsePrefix('await', 'await ', p))
 	.map(p => parseAssocLeft_('div', '/', p))
 	.map(p => parseAssocRight('mul', '*', p))
 	.map(p => parsePrefix('neg', '-', p))
@@ -451,11 +452,20 @@ parseBind = program_ => {
 let parseLambda = program => {
 	let [left, right] = splitl(program, '=>');
 
-	return right === undefined ? parseIf(left) : {
-		id: 'lambda',
-		bind: parseBind(left),
-		expr: parseProgram(right.trim()),
-	};
+	return right === undefined
+			? parseIf(left)
+		: left.startsWith('async ')
+			? {
+				id: 'lambda-async',
+				bind: parseBind(left.slice(6, undefined)),
+				expr: parseProgram(right.trim()),
+			}
+		:
+			{
+				id: 'lambda',
+				bind: parseBind(left),
+				expr: parseProgram(right.trim()),
+			};
 };
 
 let dummyCount = 0;
@@ -771,6 +781,11 @@ inferType = (vts, ast) => {
 					}
 				}() && inferType(vts, expr);
 			})
+		: id === 'await'
+			? (({ expr }) => {
+				let t = newRef();
+				return doBind(ast, inferType(vts, expr), typePromiseOf(t)) && t;
+			})
 		: id === 'boolean'
 			? (({}) => typeBoolean)
 		: id === 'cons'
@@ -876,6 +891,13 @@ inferType = (vts, ast) => {
 				let tb = inferType(vts1, bind);
 				let te = inferType(vts1, expr);
 				return typeLambdaOf(tb, te);
+			})
+		: id === 'lambda-async'
+			? (({ bind, expr }) => {
+				let vts1 = defineBindTypes(vts, bind);
+				let tb = inferType(vts1, bind);
+				let te = inferType(vts1, expr);
+				return typeLambdaOf(tb, typePromiseOf(te));
 			})
 		: id === 'le_'
 			? inferCmpOp
