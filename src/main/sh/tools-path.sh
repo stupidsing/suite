@@ -4,7 +4,7 @@ curl -sL https://raw.githubusercontent.com/stupidsing/suite/master/src/main/sh/c
 
 ECLIPSE_V=2021-09
 GH_V=2.3.0
-MAVEN_V=3.8.3
+MAVEN_V=3.8.4
 NODE_V=16.11.1
 
 echo '
@@ -14,7 +14,7 @@ GIT_HD=$(cchs "echo git@github.com:stupidsing/home-data.git" @git-clone "@git-cd
 GOROOT=$(cchs "echo https://dl.google.com/go/go1.17.2.linux-amd64.tar.gz" @curl @tar-zxf @dir)
 GRADLE_HOME=$(cchs "echo https://services.gradle.org/distributions/gradle-7.3-bin.zip" @curl @unzip @dir)
 JAVA_HOME=$(cchs "curl -sL https://jdk.java.net/17/" "grep https://download.java.net/ | grep -v sha256 | grep linux-x64 | grep \\.tar\\.gz" "cut -d\\\" -f2" @curl @tar-zxf @dir)
-M2_HOME=$(cchs "echo https://apache.website-solution.net/maven/maven-3/'${MAVEN_V}'/binaries/apache-maven-'${MAVEN_V}'-bin.tar.gz" @curl @tar-zxf @dir)
+M2_HOME=$(cchs "echo https://dlcdn.apache.org/maven/maven-3/'${MAVEN_V}'/binaries/apache-maven-'${MAVEN_V}'-bin.tar.gz" @curl @tar-zxf @dir)
 NODE_HOME=$(cchs "echo https://nodejs.org/dist/v'${NODE_V}'/node-v'${NODE_V}'-linux-x64.tar.xz" @curl @tar-xf @dir)
 TERMINATOR_HOME=$(cchs "echo https://github.com/gnome-terminator/terminator.git" @git-clone "@git-cd pwd")
 PATH=${GH_HOME}/bin:${GIT_HD:9}/bin:${GOROOT}/bin:${GRADLE_HOME}/bin:${JAVA_HOME}/bin:${M2_HOME}/bin:${NODE_HOME}/bin:${PATH}
