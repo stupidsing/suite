@@ -27,6 +27,7 @@ public class JdkUtilTest {
 	private String className = "HelloWorld";
 
 	private String source = "" //
+			+ "package primal.jdk;" //
 			+ "public class " + className + " implements Runnable {" //
 			+ "	public void run() {" //
 			+ "		System.out.println(\"TEST\");" //
@@ -44,13 +45,11 @@ public class JdkUtilTest {
 		try (var jdkLoadClassUtil = new JdkLoadClassUtil(srcDir, binDir)) {
 			jdkLoadClassUtil.newInstance(Runnable.class, className, source).run();
 		}
-
-		new JdkUnsafeLoadClassUtil(srcDir, binDir).newInstance(Runnable.class, className, source).run();
 	}
 
 	@Test
 	public void test1() throws IOException {
-		var pkgName = "suite.jdk";
+		var pkgName = UnsafeUtil.class.getPackageName();
 		var clazz = compile(Runnable.class, pkgName + "." + className, source);
 		New.clazz(clazz).run();
 	}

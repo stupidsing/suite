@@ -108,7 +108,7 @@ public class FunCreator<I> extends FunFactory {
 
 		private CreateClass(FunExpr expr0) {
 			var interfaceClass = lambdaClass.interfaceClass;
-			var clsName = interfaceClass.getName() + "_" + Get.temp();
+			var clsName = UnsafeUtil.class.getPackageName() + "." + interfaceClass.getSimpleName() + "_" + Get.temp();
 			var methodName = lambdaClass.methodName;
 
 			var localTypes = new ArrayList<Type>();
@@ -132,10 +132,12 @@ public class FunCreator<I> extends FunFactory {
 				var il = new InstructionList();
 				try {
 					il.append(InstructionFactory.createLoad(Type.OBJECT, 0));
-					il.append(factory.createInvoke(superClass.getName(), "<init>", Type.VOID, Type.NO_ARGS, Const.INVOKESPECIAL));
+					il.append(factory.createInvoke(superClass.getName(), "<init>", Type.VOID, Type.NO_ARGS,
+							Const.INVOKESPECIAL));
 					il.append(InstructionFactory.createReturn(Type.VOID));
 
-					var mg = new MethodGen(ACC_PUBLIC, Type.VOID, Type.NO_ARGS, new String[] {}, "<init>", clsName, il, cp);
+					var mg = new MethodGen(ACC_PUBLIC, Type.VOID, Type.NO_ARGS, new String[] {}, "<init>", clsName, il,
+							cp);
 					mg.setMaxStack();
 					mg.setMaxLocals();
 					m0 = mg.getMethod();
