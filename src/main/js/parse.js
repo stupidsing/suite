@@ -798,64 +798,67 @@ inferType = (vts, isAsync, ast) => {
 		: id === 'div'
 			? inferMathOp
 		: id === 'dot'
-			? (({ field, expr }) => false ? {}
-				: field === '.charCodeAt'
-					? doBind(ast, infer(expr), typeString) && typeLambdaOf(typeNumber, typeNumber)
-				: field === '.endsWith'
-					? doBind(ast, infer(expr), typeString) && typeLambdaOf(typeString, typeBoolean)
-				: field === '.filter'
-					? function() {
-						let ti = newRef();
-						return doBind(ast, infer(expr), typeArrayOf(ti)) && typeLambdaOf(typeLambdaOf(ti, typeBoolean), typeArrayOf(ti));
-					}()
-				: field === '.indexOf'
-					? doBind(ast, infer(expr), typeString) && typeLambdaOf(typePairOf(typeString, typeNumber), typeNumber)
-				: field === '.join'
-					? doBind(ast, infer(expr), typeArrayOf(typeString)) && typeLambdaOf(typeString, typeString)
-				: field === '.length'
-					? doBind(ast, infer(expr), typeArrayOf(newRef())) && typeNumber
-				: field === '.map'
-					? function() {
-						let ti = newRef();
-						let to = newRef();
-						return doBind(ast, infer(expr), typeArrayOf(ti)) && typeLambdaOf(typeLambdaOf(ti, to), typeArrayOf(to));
-					}()
-				: field === '.reduce'
-					? function() {
-						let te = newRef();
-						let tr = newRef();
-						let treducer = typeLambdaOf(typePairOf(tr, te), tr);
-						return doBind(ast, infer(expr), typeArrayOf(te))
-							&& typeLambdaOf(typePairOf(treducer, tr), tr);
-					}()
-				: field === '.slice'
-					? function() {
-						let te = newRef();
-						let tl = typeArrayOf(te);
-						return doBind(ast, infer(expr), tl) && typeLambdaOf(typePairOf(typeNumber, typeNumber), tl);
-					}()
-				: field === '.startsWith'
-					? doBind(ast, infer(expr), typeString) && typeLambdaOf(typeString, typeBoolean)
-				: field === '.then'
-					? function() {
-						let ti = newRef();
-						let to = newRef();
-						return doBind(ast, infer(expr), typePromiseOf(ti)) && typeLambdaOf(ti, typePromiseOf(to));
-					}()
-				: field === '.toString'
-					? doBind(ast, infer(expr), newRef()) && typeLambdaOf(typeNever, typeString)
-				: field === '.trim'
-					? doBind(ast, infer(expr), typeString) && typeLambdaOf(typeNever, typeString)
-				:
-					function() {
-						let kvs = {};
-						let tr = setp(kvs, field, newRef());
-						let to = typeStructOf(kvs);
-						return doBind(ast, infer(expr), to) && function() {
-							let t = finalRef(tr);
-							return t.generic !== true ? t : cloneRef(t);
+			? (({ field, expr }) => {
+				let ts = infer(expr);
+				return false ? {}
+					: field === '.charCodeAt'
+						? doBind(ast, ts, typeString) && typeLambdaOf(typeNumber, typeNumber)
+					: field === '.endsWith'
+						? doBind(ast, ts, typeString) && typeLambdaOf(typeString, typeBoolean)
+					: field === '.filter'
+						? function() {
+							let ti = newRef();
+							return doBind(ast, ts, typeArrayOf(ti)) && typeLambdaOf(typeLambdaOf(ti, typeBoolean), typeArrayOf(ti));
+						}()
+					: field === '.indexOf'
+						? doBind(ast, ts, typeString) && typeLambdaOf(typePairOf(typeString, typeNumber), typeNumber)
+					: field === '.join'
+						? doBind(ast, ts, typeArrayOf(typeString)) && typeLambdaOf(typeString, typeString)
+					: field === '.length'
+						? doBind(ast, ts, typeArrayOf(newRef())) && typeNumber
+					: field === '.map'
+						? function() {
+							let ti = newRef();
+							let to = newRef();
+							return doBind(ast, ts, typeArrayOf(ti)) && typeLambdaOf(typeLambdaOf(ti, to), typeArrayOf(to));
+						}()
+					: field === '.reduce'
+						? function() {
+							let te = newRef();
+							let tr = newRef();
+							let treducer = typeLambdaOf(typePairOf(tr, te), tr);
+							return doBind(ast, ts, typeArrayOf(te))
+								&& typeLambdaOf(typePairOf(treducer, tr), tr);
+						}()
+					: field === '.slice'
+						? function() {
+							let te = newRef();
+							let tl = typeArrayOf(te);
+							return doBind(ast, ts, tl) && typeLambdaOf(typePairOf(typeNumber, typeNumber), tl);
+						}()
+					: field === '.startsWith'
+						? doBind(ast, ts, typeString) && typeLambdaOf(typeString, typeBoolean)
+					: field === '.then'
+						? function() {
+							let ti = newRef();
+							let to = newRef();
+							return doBind(ast, ts, typePromiseOf(ti)) && typeLambdaOf(ti, typePromiseOf(to));
+						}()
+					: field === '.toString'
+						? doBind(ast, ts, newRef()) && typeLambdaOf(typeNever, typeString)
+					: field === '.trim'
+						? doBind(ast, ts, typeString) && typeLambdaOf(typeNever, typeString)
+					:
+						function() {
+							let kvs = {};
+							let tr = setp(kvs, field, newRef());
+							let to = typeStructOf(kvs);
+							return doBind(ast, ts, to) && function() {
+								let t = finalRef(tr);
+								return t.generic !== true ? t : cloneRef(t);
+							}();
 						}();
-					}()
+				}
 			)
 		: id === 'element'
 			? (({ index, expr }) => {
