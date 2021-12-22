@@ -15,7 +15,7 @@ public class GeneratePasswordTest {
 
 	@Test
 	public void test() {
-		var length = 10;
+		var length = 12;
 		var nCaps = 1;
 		var nDigits = 2;
 		var nSymbols = 1;
