@@ -72,6 +72,13 @@ tp_cordova() {
 	$(cchs "echo npm-i-cordova" @mkdir "@exec npm install cordova")/node_modules/.bin/cordova $@
 }
 
+tp_dot_plantuml() {
+	local V=1.2021.16
+	local PLANTUML=$(cchs "echo https://github.com/plantuml/plantuml/releases/download/v${V}/plantuml-${V}.jar" @curl)
+	tp_apt_i graphviz &&
+	/usr/bin/dot java -jar ${PLANTUML} -pipe
+}
+
 tp_eclipse() {
 	${ECLIPSE_HOME}/eclipse $@
 }
