@@ -48,38 +48,32 @@ file:///home/ywsing/suite/src/main/html/render.html
 			if (response.ok) return response.json(); else throw response.statusText;
 		});
 
-		let login = ({ username, password, }) => {
+		let login = async ({ username, password, }) => {
 			console.log('login()', username);
-			return Promise
-			.resolve()
-			.then(overlay)
-			.then(() => fetchBody('../token', {
-				mode: 'no-cors',
-				body: JSON.stringify({ username, password, }),
-				headers: { 'Content-Type': 'application/json', },
-				method: 'POST',
-			}))
-			.then(json => json.token)
-			.then(token => fetchBody('../token', {
-				headers: { Authorization: token, },
-				method: 'PATCH',
-			}))
-			.then(json => json.token)
-			.then(token => fetchBody('../api', {
-				headers: { Authorization: token, },
-				method: 'GET',
-			})
-			.then(message => {
+			overlay();
+			try {
+				let { token: token0 } = await fetchBody('../token', {
+					mode: 'no-cors',
+					body: JSON.stringify({ username, password, }),
+					headers: { 'Content-Type': 'application/json', },
+					method: 'POST',
+				});
+				let { token: token1 } = await fetchBody('../token', {
+					headers: { Authorization: token0, },
+					method: 'PATCH',
+				});
+				let message = await fetchBody('../api', {
+					headers: { Authorization: token, },
+					method: 'GET',
+				});
 				setMessage('login success');
 				console.log('login() = ', message);
-				return token;
-			}))
-			.catch(error => {
+				return token1;
+			} catch (error) {
 				setMessage('login failed');
 				console.error('login()', error);
 				return 'error';
-			})
-			.finally(unoverlay);
+			} finally { unoverlay(); }
 		};
 
 		return rd.span_component(
@@ -89,7 +83,7 @@ file:///home/ywsing/suite/src/main/html/render.html
 			({ change, changeAsync, }) => ({
 				setUsername: username => change(vm => ({ ...vm, username, })),
 				setPassword: password => change(vm => ({ ...vm, password, })),
-				handleLogin: () => changeAsync(vm => login(vm).then(token => ({ ...vm, username: '', password: '', token, }))),
+				handleLogin: () => changeAsync(async vm => ({ ...vm, username: '', password: '', token: login(vm), })),
 			}),
 			`
 				<font face='Monospac821 BT, Monaco, Consolas'>
