@@ -26,6 +26,7 @@ public class GenerateNameTest {
 		var name = name0 + " " + name1;
 
 		System.out.println(name0.substring(0, 3).toLowerCase() + "_" + name1.substring(0, 3).toLowerCase() + "@mailnesia.com");
+		System.out.println(name0 + "_" + name1);
 		System.out.println(name);
 		System.out.println(biz);
 		System.out.println(street + ", " + city);
