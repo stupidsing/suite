@@ -24,12 +24,16 @@ public class GenerateNameTest {
 		var street = getRandom(repo1 + "/street-addresses.txt");
 		var city = getRandom(repo1 + "/city-details.txt");
 		var name = name0 + " " + name1;
+		var shortName0 = name0.substring(0, 3);
+		var shortName1 = name1.substring(0, 3);
 
-		System.out.println(name0.substring(0, 3).toLowerCase() + "_" + name1.substring(0, 3).toLowerCase() + "@mailnesia.com");
-		System.out.println(name0 + "_" + name1);
-		System.out.println(name);
-		System.out.println(biz);
-		System.out.println(street + ", " + city);
+		System.out.println("" //
+				+ " " + shortName0.toLowerCase() + "_" + shortName1.toLowerCase() + "@pointless.online" //
+				+ " " + shortName0 + "_" + shortName1 //
+				+ " " + name0 //
+				+ " " + name1 //
+				+ " " + biz //
+				+ " " + street + ", " + city);
 	}
 
 	@Test
