@@ -28,10 +28,9 @@ public class GenerateNameTest {
 		var shortName1 = name1.substring(0, 3);
 
 		System.out.println("" //
+				+ " " + name //
 				+ " " + shortName0.toLowerCase() + "_" + shortName1.toLowerCase() + "@pointless.online" //
 				+ " " + shortName0 + "_" + shortName1 //
-				+ " " + name0 //
-				+ " " + name1 //
 				+ " " + biz //
 				+ " " + street + ", " + city);
 	}
