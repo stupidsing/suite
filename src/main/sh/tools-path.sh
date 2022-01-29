@@ -160,8 +160,13 @@ tp_rocksndiamonds() {
 	$(cchs "echo https://www.artsoft.org/RELEASES/unix/rocksndiamonds/rocksndiamonds-4.1.3.0.tar.gz" @curl @tar-zxf @dir "@exec make")/rocksndiamonds
 }
 
+tp_sgt_puzzles() {
+	# apt-get build-dep -y sgt-puzzles
+	$(cchs "echo https://www.chiark.greenend.org.uk/~sgtatham/puzzles/puzzles.tar.gz" @curl @tar-zxf @dir "@exec ./configure" "@exec make")/${1} $@
+}
+
 tp_slant() {
-	$(cchs "echo https://www.chiark.greenend.org.uk/~sgtatham/puzzles/puzzles.tar.gz" @curl @tar-zxf @dir "@exec ./configure" "@exec make")/slant $@
+	tp_sgt_puzzles slant
 }
 
 tp_solcjs() {
