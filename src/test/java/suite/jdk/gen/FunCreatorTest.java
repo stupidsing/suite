@@ -172,7 +172,7 @@ public class FunCreatorTest {
 	@Test
 	public void testRunnable() {
 		var pfe = new PrintlnFunExpr();
-		pfe.expression = f.object(1).cast_(String.class);
+		pfe.expression = f.object("testRunnable");
 
 		var fc = FunCreator.of(Runnable.class);
 		fc.create(() -> pfe).apply(void_).run();
