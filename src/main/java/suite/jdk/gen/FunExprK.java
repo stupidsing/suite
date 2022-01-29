@@ -19,10 +19,6 @@ public class FunExprK {
 	}
 
 	public static class Declare0ParameterFunExpr extends DeclareParameterFunExpr {
-		public <R> R apply(FixieFun0<R> fun) {
-			return fun.apply();
-		}
-
 		public <R> R apply(FixieFun1<FunExpr, R> fun) {
 			return fun.apply(do_);
 		}
