@@ -136,8 +136,7 @@ public class FunCreator<I> extends FunFactory {
 							Const.INVOKESPECIAL));
 					il.append(InstructionFactory.createReturn(Type.VOID));
 
-					var mg = new MethodGen(ACC_PUBLIC, Type.VOID, Type.NO_ARGS, new String[] {}, "<init>", clsName, il,
-							cp);
+					var mg = new MethodGen(ACC_PUBLIC, Type.VOID, Type.NO_ARGS, new String[] {}, "<init>", clsName, il, cp);
 					mg.setMaxStack();
 					mg.setMaxLocals();
 					m0 = mg.getMethod();
