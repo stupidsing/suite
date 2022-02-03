@@ -115,8 +115,8 @@ public class FunCreator<I> extends FunFactory {
 			localTypes.add(ObjectType.getInstance(clsName));
 			localTypes.addAll(parameterTypes);
 
-			var cp = new ConstantPoolGen();
-			var factory = new InstructionFactory(cp);
+			var cpg = new ConstantPoolGen();
+			var factory = new InstructionFactory(cpg);
 
 			var fe = new FunExpand();
 			FunRewrite fr;
@@ -132,11 +132,10 @@ public class FunCreator<I> extends FunFactory {
 				var il = new InstructionList();
 				try {
 					il.append(InstructionFactory.createLoad(Type.OBJECT, 0));
-					il.append(factory.createInvoke(superClass.getName(), "<init>", Type.VOID, Type.NO_ARGS,
-							Const.INVOKESPECIAL));
+					il.append(factory.createInvoke(superClass.getName(), "<init>", Type.VOID, Type.NO_ARGS, Const.INVOKESPECIAL));
 					il.append(InstructionFactory.createReturn(Type.VOID));
 
-					var mg = new MethodGen(ACC_PUBLIC, Type.VOID, Type.NO_ARGS, new String[] {}, "<init>", clsName, il, cp);
+					var mg = new MethodGen(ACC_PUBLIC, Type.VOID, Type.NO_ARGS, new String[] {}, "<init>", clsName, il, cpg);
 					mg.setMaxStack();
 					mg.setMaxLocals();
 					m0 = mg.getMethod();
@@ -146,7 +145,7 @@ public class FunCreator<I> extends FunFactory {
 			}
 
 			{
-				var visit = (fgb = new FunGenerateBytecode(clsName, fr.fti, cp)).visit(expr2, returnType);
+				var visit = (fgb = new FunGenerateBytecode(clsName, fr.fti, cpg)).visit(expr2, returnType);
 				var il = visit.instructionList();
 				var paramTypes = parameterTypes.toArray(new Type[0]);
 
@@ -156,7 +155,7 @@ public class FunCreator<I> extends FunFactory {
 					Log_.info("expr2 = " + expr2);
 					Log_.info("class = " + clsName + " implements " + interfaceClass.getName());
 					Log_.info("fields = " + fieldTypes);
-					var constantPool = cp.getConstantPool();
+					var constantPool = cpg.getConstantPool();
 					var instructions = il.getInstructions();
 
 					for (var i = 0; i < instructions.length; i++) {
@@ -174,7 +173,7 @@ public class FunCreator<I> extends FunFactory {
 				}
 
 				try {
-					var mg = new MethodGen(ACC_PUBLIC, returnType, paramTypes, null, methodName, clsName, il, cp);
+					var mg = new MethodGen(ACC_PUBLIC, returnType, paramTypes, null, methodName, clsName, il, cpg);
 					mg.setMaxStack();
 					mg.setMaxLocals();
 					m1 = mg.getMethod();
@@ -184,20 +183,20 @@ public class FunCreator<I> extends FunFactory {
 			}
 
 			String[] ifs = { interfaceClass.getName(), };
-			var cg = new ClassGen(clsName, superClass.getName(), ".java", ACC_PUBLIC | ACC_SUPER, ifs, cp);
+			var cg = new ClassGen(clsName, superClass.getName(), ".java", ACC_PUBLIC | ACC_SUPER, ifs, cpg);
 
 			for (var e : fieldStaticTypeValues.entrySet())
-				cg.addField(new FieldGen(ACC_PUBLIC | ACC_STATIC, e.getValue().k, e.getKey(), cp).getField());
+				cg.addField(new FieldGen(ACC_PUBLIC | ACC_STATIC, e.getValue().k, e.getKey(), cpg).getField());
 			for (var e : fieldTypes.entrySet())
-				cg.addField(new FieldGen(ACC_PUBLIC, e.getValue(), e.getKey(), cp).getField());
+				cg.addField(new FieldGen(ACC_PUBLIC, e.getValue(), e.getKey(), cpg).getField());
 			for (var e : ftvs.entrySet())
-				cg.addField(new FieldGen(ACC_PUBLIC, e.getValue().k, e.getKey(), cp).getField());
+				cg.addField(new FieldGen(ACC_PUBLIC, e.getValue().k, e.getKey(), cpg).getField());
 
 			cg.addMethod(m0);
 			cg.addMethod(m1);
 
 			var bytes = cg.getJavaClass().getBytes();
-			var array = new Object[cp.getSize()];
+			var array = new Object[cpg.getSize()];
 
 			ReadInt.from2(fgb.constants).sink((i, object) -> array[i] = object);
 
