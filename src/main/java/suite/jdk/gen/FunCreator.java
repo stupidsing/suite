@@ -102,7 +102,6 @@ public class FunCreator<I> extends FunFactory {
 	}
 
 	public class CreateClass {
-		public final String className;
 		public final Class<? extends I> clazz;
 		public final Map<String, Pair<Type, Object>> fieldTypeValues;
 
@@ -200,7 +199,6 @@ public class FunCreator<I> extends FunFactory {
 
 			ReadInt.from2(fgb.constants).sink((i, object) -> array[i] = object);
 
-			className = clsName;
 			clazz = new UnsafeUtil().defineClass(interfaceClass, clsName, bytes, array);
 			fieldTypeValues = ftvs;
 

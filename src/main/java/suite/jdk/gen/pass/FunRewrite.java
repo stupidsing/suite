@@ -114,7 +114,6 @@ public class FunRewrite extends FunFactory {
 				var fieldValues1 = Read.from2(fieldValues);
 
 				var e4 = new NewFunExpr();
-				e4.className = cc.className;
 				e4.fieldValues = Streamlet2.concat(fieldValues0, fieldValues1).toMap();
 				e4.implementationClass = cc.clazz;
 				e4.interfaceClass = interfaceClass;

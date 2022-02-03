@@ -8,7 +8,6 @@ import java.nio.ByteOrder;
 import java.util.List;
 
 import primal.Verbs.Build;
-import primal.Verbs.Format;
 import primal.adt.Pair;
 import primal.fp.Funs.Sink;
 import primal.os.Log_;

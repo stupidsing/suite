@@ -216,12 +216,11 @@ public class FunExprM {
 	}
 
 	public static class NewFunExpr extends FunExpr {
-		public String className;
 		public Map<String, FunExpr> fieldValues;
 		public Class<?> implementationClass, interfaceClass;
 
-		public <R> R apply(FixieFun4<String, Map<String, FunExpr>, Class<?>, Class<?>, R> fun) {
-			return fun.apply(className, fieldValues, implementationClass, interfaceClass);
+		public <R> R apply(FixieFun3<Map<String, FunExpr>, Class<?>, Class<?>, R> fun) {
+			return fun.apply(fieldValues, implementationClass, interfaceClass);
 		}
 	}
 

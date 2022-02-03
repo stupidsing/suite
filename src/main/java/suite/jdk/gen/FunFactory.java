@@ -217,7 +217,6 @@ public class FunFactory {
 
 	public FunExpr new_(Class<?> clazz) {
 		var expr = new NewFunExpr();
-		expr.className = clazz.getName();
 		expr.fieldValues = new HashMap<>();
 		expr.implementationClass = clazz;
 		expr.interfaceClass = clazz;

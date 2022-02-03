@@ -11,7 +11,6 @@ import java.util.Arrays;
 import primal.Nouns.Buffer;
 import primal.Nouns.Utf8;
 import primal.Verbs.DeleteFile;
-import primal.Verbs.Format;
 import primal.Verbs.WriteFile;
 import primal.adt.Pair;
 import primal.fp.Funs.Source;

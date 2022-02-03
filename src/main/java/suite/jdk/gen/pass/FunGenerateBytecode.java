@@ -204,7 +204,7 @@ public class FunGenerateBytecode {
 				list.add(InstructionFactory.createLoad(fti.typeOf(e1), e1.index));
 			}).doIf(NewFunExpr.class, e1 -> {
 				var implClass = e1.implementationClass;
-				var implClassName = e1.className;
+				var implClassName = implClass.getName();
 				var classIndex = cpg.addClass(implClassName);
 				list.add(new NEW(classIndex));
 				list.add(InstructionFactory.createDup(1));
