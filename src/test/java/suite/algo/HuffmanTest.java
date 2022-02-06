@@ -3,7 +3,6 @@ package suite.algo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -15,7 +14,7 @@ public class HuffmanTest {
 
 	@Test
 	public void test0() {
-		test(Collections.emptyList());
+		test(List.of());
 	}
 
 	@Test
