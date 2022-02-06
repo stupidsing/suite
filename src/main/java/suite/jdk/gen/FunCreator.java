@@ -194,7 +194,7 @@ public class FunCreator<I> extends FunFactory {
 
 			var bytes = cg.getJavaClass().getBytes();
 
-			clazz = new UnsafeUtil().defineClass(interfaceClass, clsName, bytes, null);
+			clazz = new UnsafeUtil().defineClass(interfaceClass, clsName, bytes);
 			fieldTypeValues = ftvs;
 
 			for (var e : fieldStaticTypeValues.entrySet())
