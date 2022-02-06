@@ -30,7 +30,8 @@ import suite.jdk.gen.FunExprL.ObjectFunExpr;
 import suite.jdk.gen.FunExprM.AssignLocalFunExpr;
 import suite.jdk.gen.FunExprM.CastFunExpr;
 import suite.jdk.gen.FunExprM.FieldStaticFunExpr;
-import suite.jdk.gen.FunExprM.NewFunExpr;
+import suite.jdk.gen.FunExprM.InvokeMethodFunExpr;
+import suite.jdk.gen.FunExprM.PopulateFieldsFunExpr;
 import suite.jdk.gen.FunExprM.ProfileFunExpr;
 import suite.jdk.gen.FunExpression.FunExpr;
 import suite.jdk.gen.FunFactory;
@@ -113,11 +114,18 @@ public class FunRewrite extends FunFactory {
 				var fieldValues0 = Read.from2(cc.fieldTypeValues).mapValue(tv -> objectField(tv.v, tv.k));
 				var fieldValues1 = Read.from2(fieldValues);
 
-				var e4 = new NewFunExpr();
-				e4.fieldValues = Streamlet2.concat(fieldValues0, fieldValues1).toMap();
-				e4.implementationClass = cc.clazz;
-				e4.interfaceClass = interfaceClass;
-				return e4;
+				var e4 = new InvokeMethodFunExpr();
+				e4.clazz = Class.class;
+				e4.methodName = "newInstance";
+				e4.object = objectField(cc.clazz, Type.getType(Class.class));
+				e4.parameters = List.of();
+
+				var e5 = new PopulateFieldsFunExpr();
+				e5.object = e4;
+				e5.fieldValues = Streamlet2.concat(fieldValues0, fieldValues1).toMap();
+				e5.implementationClass = cc.clazz;
+				e5.interfaceClass = interfaceClass;
+				return e5;
 			} else
 				return null;
 		})).applyIf(DeclareLocalFunExpr.class, e1 -> e1.apply((var, value, do_) -> {

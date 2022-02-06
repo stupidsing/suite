@@ -30,6 +30,7 @@ import suite.jdk.gen.FunExprM.InstanceOfFunExpr;
 import suite.jdk.gen.FunExprM.InvokeMethodFunExpr;
 import suite.jdk.gen.FunExprM.LocalFunExpr;
 import suite.jdk.gen.FunExprM.NewFunExpr;
+import suite.jdk.gen.FunExprM.PopulateFieldsFunExpr;
 import suite.jdk.gen.FunExprM.PrintlnFunExpr;
 import suite.jdk.gen.FunExprM.ProfileFunExpr;
 import suite.jdk.gen.FunExprM.SeqFunExpr;
@@ -92,6 +93,8 @@ public class FunTypeInformation {
 			return Type.getType(e1.interfaceClass);
 		}).applyIf(PlaceholderFunExpr.class, e1 -> {
 			return typeOf(placeholderResolver.apply(e1));
+		}).applyIf(PopulateFieldsFunExpr.class, e1 -> {
+			return Type.getType(e1.interfaceClass);
 		}).applyIf(PrintlnFunExpr.class, e1 -> {
 			return Type.VOID;
 		}).applyIf(ProfileFunExpr.class, e1 -> {

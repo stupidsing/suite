@@ -230,6 +230,16 @@ public class FunExprM {
 		}
 	}
 
+	public static class PopulateFieldsFunExpr extends FunExpr {
+		public FunExpr object;
+		public Map<String, FunExpr> fieldValues;
+		public Class<?> implementationClass, interfaceClass;
+
+		public <R> R apply(FixieFun4<FunExpr, Map<String, FunExpr>, Class<?>, Class<?>, R> fun) {
+			return fun.apply(object, fieldValues, implementationClass, interfaceClass);
+		}
+	}
+
 	public static class PrintlnFunExpr extends FunExpr {
 		public FunExpr expression;
 

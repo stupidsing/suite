@@ -45,6 +45,7 @@ import suite.jdk.gen.FunExprM.InvokeMethodFunExpr;
 import suite.jdk.gen.FunExprM.LocalFunExpr;
 import suite.jdk.gen.FunExprM.NewFunExpr;
 import suite.jdk.gen.FunExprM.NullFunExpr;
+import suite.jdk.gen.FunExprM.PopulateFieldsFunExpr;
 import suite.jdk.gen.FunExprM.PrintlnFunExpr;
 import suite.jdk.gen.FunExprM.ProfileFunExpr;
 import suite.jdk.gen.FunExprM.SeqFunExpr;
@@ -205,10 +206,19 @@ public class FunGenerateBytecode {
 			}).doIf(NewFunExpr.class, e1 -> {
 				var implClass = e1.implementationClass;
 				var implClassName = implClass.getName();
+
 				var classIndex = cpg.addClass(implClassName);
 				list.add(new NEW(classIndex));
 				list.add(InstructionFactory.createDup(1));
 				list.add(factory.createInvoke(implClassName, "<init>", Type.VOID, Type.NO_ARGS, Const.INVOKESPECIAL));
+
+				constants.put(classIndex, implClass);
+			}).doIf(NullFunExpr.class, e1 -> {
+				list.add(InstructionFactory.createNull(Type.OBJECT));
+			}).doIf(PopulateFieldsFunExpr.class, e1 -> {
+				var implClassName = e1.implementationClass.getName();
+
+				visit_(e1.object);
 
 				for (var e : e1.fieldValues.entrySet()) {
 					var value = e.getValue();
@@ -216,10 +226,6 @@ public class FunGenerateBytecode {
 					visit_(value);
 					list.add(factory.createPutField(implClassName, e.getKey(), fti.typeOf(value)));
 				}
-
-				constants.put(classIndex, implClass);
-			}).doIf(NullFunExpr.class, e1 -> {
-				list.add(InstructionFactory.createNull(Type.OBJECT));
 			}).doIf(PrintlnFunExpr.class, e1 -> {
 				var name = PrintStream.class.getName();
 				var sys = System.class.getName();
