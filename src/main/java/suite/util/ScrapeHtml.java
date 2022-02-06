@@ -2,7 +2,6 @@ package suite.util;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -71,7 +70,7 @@ public class ScrapeHtml {
 						})) //
 						.toList();
 			else
-				attrs = Collections.emptyList();
+				attrs = List.of();
 			attrByName = Read.from(attrs).fold(PerMap.empty(), (m, p) -> m.put(p.k, p.v));
 			this.p0 = p0;
 			this.p1 = p1;
