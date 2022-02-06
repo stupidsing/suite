@@ -178,7 +178,7 @@ public class RayTracer {
 			} else {
 				color = R3.origin;
 
-				// account light sources
+				// account for light sources
 				for (var lightSource : lightSources) {
 					var lightDir = R3.sub(lightSource.source(), hitPoint);
 					var lightDot = R3.dot(lightDir, normal);
@@ -220,7 +220,7 @@ public class RayTracer {
 
 	private static double negligible(double d) {
 		if (0d < d)
-			return negligibleAdvance;
+			return +negligibleAdvance;
 		else if (d < 0d)
 			return -negligibleAdvance;
 		else
