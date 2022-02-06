@@ -140,12 +140,12 @@ public class RayTracer {
 			if ((reflective || transparency < 0d) && 0 < depth) {
 				var cos = -dot / ray.dir.mag();
 
-				// account reflection
+				// account for reflection
 				var reflectDir = R3.add(ray.dir, normal.scale(-2d * dot));
 				var reflectPoint = R3.add(hitPoint, negligible(normal));
 				var reflectColor = traceRay(depth - 1, new Ray(reflectPoint, reflectDir));
 
-				// account refraction
+				// account for refraction
 				var eta = isInside ? glassRefractiveIndex / airRefractiveIndex : airRefractiveIndex / glassRefractiveIndex;
 				var k = 1d - eta * eta * (1d - cos * cos);
 				R3 refractColor;
