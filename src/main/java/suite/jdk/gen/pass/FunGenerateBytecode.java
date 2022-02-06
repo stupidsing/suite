@@ -21,7 +21,6 @@ import primal.MoreVerbs.Read;
 import primal.Verbs.Equals;
 import primal.primitive.adt.Ints.IntsBuilder;
 import primal.primitive.adt.map.IntIntMap;
-import primal.primitive.adt.map.IntObjMap;
 import suite.jdk.gen.FunExprM.ArrayFunExpr;
 import suite.jdk.gen.FunExprM.ArrayLengthFunExpr;
 import suite.jdk.gen.FunExprM.AssignLocalFunExpr;
@@ -58,8 +57,6 @@ public class FunGenerateBytecode {
 	private InstructionFactory factory;
 	private ConstantPoolGen cpg;
 	private FunTypeInformation fti;
-
-	public final IntObjMap<Object> constants = new IntObjMap<>();
 
 	public FunGenerateBytecode(String className, FunTypeInformation fti, ConstantPoolGen cpg) {
 		this.className = className;
@@ -211,8 +208,6 @@ public class FunGenerateBytecode {
 				list.add(new NEW(classIndex));
 				list.add(InstructionFactory.createDup(1));
 				list.add(factory.createInvoke(implClassName, "<init>", Type.VOID, Type.NO_ARGS, Const.INVOKESPECIAL));
-
-				constants.put(classIndex, implClass);
 			}).doIf(NullFunExpr.class, e1 -> {
 				list.add(InstructionFactory.createNull(Type.OBJECT));
 			}).doIf(PopulateFieldsFunExpr.class, e1 -> {

@@ -33,7 +33,6 @@ import primal.fp.Funs.Source;
 import primal.fp.Funs2.BinOp;
 import primal.jdk.UnsafeUtil;
 import primal.os.Log_;
-import primal.primitive.IntMoreVerbs.ReadInt;
 import suite.jdk.gen.FunExprM.FieldStaticFunExpr;
 import suite.jdk.gen.FunExpression.FunExpr;
 import suite.jdk.gen.pass.FunExpand;
@@ -119,7 +118,6 @@ public class FunCreator<I> extends FunFactory {
 
 			var fe = new FunExpand();
 			FunRewrite fr;
-			FunGenerateBytecode fgb;
 
 			var expr1 = isExpand ? fe.expand(expr0, 3) : expr0;
 			var expr2 = (fr = new FunRewrite(fieldTypes, localTypes, expr1.cast_(interfaceClass))).expr;
@@ -144,7 +142,7 @@ public class FunCreator<I> extends FunFactory {
 			}
 
 			{
-				var visit = (fgb = new FunGenerateBytecode(clsName, fr.fti, cpg)).visit(expr2, returnType);
+				var visit = new FunGenerateBytecode(clsName, fr.fti, cpg).visit(expr2, returnType);
 				var il = visit.instructionList();
 				var paramTypes = parameterTypes.toArray(new Type[0]);
 
@@ -195,11 +193,8 @@ public class FunCreator<I> extends FunFactory {
 			cg.addMethod(m1);
 
 			var bytes = cg.getJavaClass().getBytes();
-			var array = new Object[cpg.getSize()];
 
-			ReadInt.from2(fgb.constants).sink((i, object) -> array[i] = object);
-
-			clazz = new UnsafeUtil().defineClass(interfaceClass, clsName, bytes, array);
+			clazz = new UnsafeUtil().defineClass(interfaceClass, clsName, bytes, null);
 			fieldTypeValues = ftvs;
 
 			for (var e : fieldStaticTypeValues.entrySet())
