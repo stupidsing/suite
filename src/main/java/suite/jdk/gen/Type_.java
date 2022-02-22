@@ -6,6 +6,7 @@ import static primal.statics.Rethrow.ex;
 import java.util.Arrays;
 
 import org.apache.bcel.Const;
+import org.apache.bcel.generic.ArrayType;
 import org.apache.bcel.generic.BasicType;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.Type;
@@ -17,7 +18,22 @@ public class Type_ {
 	public static Class<?> classOf(Type type) {
 		String className;
 
-		if (type instanceof ObjectType type_)
+		if (type instanceof ArrayType type_)
+			if (type_.getElementType() instanceof BasicType elementType_)
+				return switch (Const.getTypeName(elementType_.getType())) {
+				case "byte" -> byte[].class;
+				case "boolean" -> boolean[].class;
+				case "char" -> char[].class;
+				case "double" -> double[].class;
+				case "float" -> float[].class;
+				case "int" -> int[].class;
+				case "long" -> long[].class;
+				case "short" -> short[].class;
+				default -> throw new RuntimeException();
+				};
+			else
+				return Object[].class;
+		else if (type instanceof ObjectType type_)
 			className = type_.getClassName();
 		else if (type instanceof BasicType type_)
 			className = Const.getTypeName(type_.getType());
