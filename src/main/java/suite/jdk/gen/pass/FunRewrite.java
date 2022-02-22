@@ -3,6 +3,7 @@ package suite.jdk.gen.pass;
 import static primal.statics.Fail.fail;
 import static primal.statics.Rethrow.ex;
 
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -115,9 +116,9 @@ public class FunRewrite extends FunFactory {
 				var fieldValues1 = Read.from2(fieldValues);
 
 				var e4 = new InvokeMethodFunExpr();
-				e4.clazz = Class.class;
+				e4.clazz = Constructor.class;
 				e4.methodName = "newInstance";
-				e4.object = objectField(cc.clazz, Type.getType(Class.class));
+				e4.object = objectField(cc.clazz.getConstructors()[0], Type.getType(Constructor.class));
 				e4.parameters = List.of();
 
 				var e5 = new PopulateFieldsFunExpr();
