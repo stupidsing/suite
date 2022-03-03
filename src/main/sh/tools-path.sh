@@ -8,6 +8,7 @@ MAVEN_V=3.8.4
 NODE_V=16.13.1
 
 echo '
+AWS_DIST=$(cchs "echo https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" @curl @unzip "@exec ./aws/install -i . -b .")/aws/dist
 ECLIPSE_HOME=$(cchs "echo http://ftp.jaist.ac.jp/pub/eclipse/technology/epp/downloads/release/'${ECLIPSE_V}'/R/eclipse-java-'${ECLIPSE_V}'-R-linux-gtk-x86_64.tar.gz" @curl @tar-zxf @dir)
 GH_HOME=$(cchs "echo https://github.com/cli/cli/releases/download/v'${GH_V}'/gh_'${GH_V}'_linux_amd64.tar.gz" @curl @tar-zxf @dir)
 GIT_HD=$(cchs "echo git@github.com:stupidsing/home-data.git" @git-clone "@git-cd pwd")
@@ -17,7 +18,7 @@ JAVA_HOME=$(cchs "curl -sL https://jdk.java.net/17/" "grep https://download.java
 M2_HOME=$(cchs "echo https://dlcdn.apache.org/maven/maven-3/'${MAVEN_V}'/binaries/apache-maven-'${MAVEN_V}'-bin.tar.gz" @curl @tar-zxf @dir)
 NODE_HOME=$(cchs "echo https://nodejs.org/dist/v'${NODE_V}'/node-v'${NODE_V}'-linux-x64.tar.xz" @curl @tar-xf @dir)
 TERMINATOR_HOME=$(cchs "echo https://github.com/gnome-terminator/terminator.git" @git-clone "@git-cd pwd")
-PATH=${GH_HOME}/bin:${GIT_HD:9}/bin:${GOROOT}/bin:${GRADLE_HOME}/bin:${JAVA_HOME}/bin:${M2_HOME}/bin:${NODE_HOME}/bin:${PATH}
+PATH=${AWS_DIST}/aws:${GH_HOME}/bin:${GIT_HD:9}/bin:${GOROOT}/bin:${GRADLE_HOME}/bin:${JAVA_HOME}/bin:${M2_HOME}/bin:${NODE_HOME}/bin:${PATH}
 
 save_tp() {
 	echo "# save into ~/.bashrc"
