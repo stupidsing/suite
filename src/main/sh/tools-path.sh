@@ -18,10 +18,11 @@ JAVA_HOME=$(cchs "curl -sL https://jdk.java.net/17/" "grep https://download.java
 M2_HOME=$(cchs "echo https://dlcdn.apache.org/maven/maven-3/'${MAVEN_V}'/binaries/apache-maven-'${MAVEN_V}'-bin.tar.gz" @curl @tar-zxf @dir)
 NODE_HOME=$(cchs "echo https://nodejs.org/dist/v'${NODE_V}'/node-v'${NODE_V}'-linux-x64.tar.xz" @curl @tar-xf @dir)
 TERMINATOR_HOME=$(cchs "echo https://github.com/gnome-terminator/terminator.git" @git-clone "@git-cd pwd")
-PATH=${AWS_DIST}/aws:${GH_HOME}/bin:${GIT_HD:9}/bin:${GOROOT}/bin:${GRADLE_HOME}/bin:${JAVA_HOME}/bin:${M2_HOME}/bin:${NODE_HOME}/bin:${PATH}
+PATH=${AWS_DIST}:${GH_HOME}/bin:${GIT_HD:9}/bin:${GOROOT}/bin:${GRADLE_HOME}/bin:${JAVA_HOME}/bin:${M2_HOME}/bin:${NODE_HOME}/bin:${PATH}
 
 save_tp() {
 	echo "# save into ~/.bashrc"
+	echo export AWS_DIST=${AWS_DIST}
 	echo export ECLIPSE_HOME=${ECLIPSE_HOME}
 	echo export GH_HOME=${GH_HOME}
 	echo export GIT_HD=${GIT_HD}
@@ -31,7 +32,7 @@ save_tp() {
 	echo export M2_HOME=${M2_HOME}
 	echo export NODE_HOME=${NODE_HOME}
 	echo
-	echo PATH='${GH_HOME}/bin:${GIT_HD:9}/bin:${GOROOT}/bin:${GRADLE_HOME}/bin:${JAVA_HOME}/bin:${M2_HOME}/bin:${NODE_HOME}/bin:${PATH}'
+	echo PATH='${AWS_DIST}:${GH_HOME}/bin:${GIT_HD:9}/bin:${GOROOT}/bin:${GRADLE_HOME}/bin:${JAVA_HOME}/bin:${M2_HOME}/bin:${NODE_HOME}/bin:${PATH}'
 }
 
 tp_android_avdmanager() {
