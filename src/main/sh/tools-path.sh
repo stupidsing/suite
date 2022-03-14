@@ -4,7 +4,7 @@ curl -sL https://raw.githubusercontent.com/stupidsing/suite/master/src/main/sh/c
 
 ECLIPSE_V=2021-12
 GH_V=2.5.2
-MAVEN_V=3.8.4
+MAVEN_V=3.8.5
 NODE_V=16.13.1
 
 echo '
