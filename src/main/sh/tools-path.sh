@@ -36,11 +36,9 @@ save_tp() {
 }
 
 tp_android_avdmanager() {
-	JAVA_HOME=$(tp_jdk10) \
-	ANDROID_SDK_ROOT=$(tp_android_sdk_tools)
-	ANDROID_SDK_ROOT=${ANDROID_SDK_ROOT} \
-	JAVA_OPTS="-XX:+IgnoreUnrecognizedVMOptions" \
-	${ANDROID_SDK_ROOT}/cmdline-tools/tools/bin/avdmanager $@
+	#JAVA_HOME=$(tp_jdk10)
+	local ANDROID_SDK_ROOT=$(tp_android_sdk_tools)
+	ANDROID_SDK_ROOT=${ANDROID_SDK_ROOT} JAVA_OPTS="-XX:+IgnoreUnrecognizedVMOptions" ${ANDROID_SDK_ROOT}/cmdline-tools/tools/bin/avdmanager $@
 }
 
 tp_android_bundletool() {
@@ -49,7 +47,8 @@ tp_android_bundletool() {
 
 tp_android_emulator() {
 	# sudo adduser ${USER} kvm
-	$(tp_android_sdk_tools)/emulator/emulator $@
+	local ANDROID_SDK_ROOT=$(tp_android_sdk_tools)
+	ANDROID_SDK_ROOT=${ANDROID_SDK_ROOT} ${ANDROID_SDK_ROOT}/emulator/emulator $@
 }
 
 tp_android_sdk_tools() {
