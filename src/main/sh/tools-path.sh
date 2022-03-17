@@ -37,8 +37,10 @@ save_tp() {
 
 tp_android_avdmanager() {
 	JAVA_HOME=$(tp_jdk10) \
+	ANDROID_SDK_ROOT=$(tp_android_sdk_tools)
+	ANDROID_SDK_ROOT=${ANDROID_SDK_ROOT} \
 	JAVA_OPTS="-XX:+IgnoreUnrecognizedVMOptions" \
-	$(tp_android_sdk_tools)/cmdline-tools/tools/bin/avdmanager $@
+	${ANDROID_SDK_ROOT}/cmdline-tools/tools/bin/avdmanager $@
 }
 
 tp_android_bundletool() {
