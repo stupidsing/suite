@@ -12,9 +12,14 @@ public class Solution {
 		Scanner in = new Scanner(new BufferedReader(new InputStreamReader(System.in)));
 		int t = in.nextInt();
 		for (int c = 1; c <= t; c++) {
-			int m = in.nextInt();
-			int n = in.nextInt();
-			String out = "" + (m + n);
+			String out;
+
+			{
+				int m = in.nextInt();
+				int n = in.nextInt();
+				out = "" + (m + n);
+			}
+
 			System.out.println("Case #" + c + ": " + out);
 			System.out.flush();
 		}
