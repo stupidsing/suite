@@ -41,19 +41,17 @@ fold = (init, es, op) => isNotEmpty(es) ? fold(op(init, head(es)), tail(es), op)
 let dump = v => {
 	let dump_;
 	dump_ = (vs, v) => false ? ''
-		: contains(vs, v)
-			? '<recurse>'
-		: v.id !== undefined
-			? function() {
-				let join = Object
-					.entries(v)
-					.filter(([k, v_]) => k !== 'id')
-					.map(([k, v_]) => `${k}:${dump_(cons(v, vs), v_)}`)
-					.join(' ');
-				return `${v.id}(${join})`;
-			}()
-		:
-			v.toString();
+		: contains(vs, v) ?
+			'<recurse>'
+		: v.id !== undefined ? function() {
+			let join = Object
+				.entries(v)
+				.filter(([k, v_]) => k !== 'id')
+				.map(([k, v_]) => `${k}:${dump_(cons(v, vs), v_)}`)
+				.join(' ');
+			return `${v.id}(${join})`;
+		}()
+		: v.toString();
 	return dump_(nil, v);
 };
 
@@ -77,28 +75,27 @@ let quoteBracket = (qb, ch) => {
 	let qb0 = head(qb);
 
 	return false ? nil
-	: ch === ascii('{') && qb0 === ascii('`')
-		? cons(ch, qb)
-	: ch === ascii('}') && qb0 === ascii('`')
-		? cons(ch, qb)
-	: isQuote(qb0)
-		? (qb0 !== ch ? qb : tail(qb))
-	: isQuote(ch)
-		? cons(ch, qb)
-	: ch === ascii('(')
-		? (qb0 === ascii(')') ? tail(qb) : cons(ch, qb))
-	: ch === ascii(')')
-		? (qb0 === ascii('(') ? tail(qb) : cons(ch, qb))
-	: ch === ascii('[')
-		? (qb0 === ascii(']') ? tail(qb) : cons(ch, qb))
-	: ch === ascii(']')
-		? (qb0 === ascii('[') ? tail(qb) : cons(ch, qb))
-	: ch === ascii('{')
-		? (qb0 === ascii('}') ? tail(qb) : cons(ch, qb))
-	: ch === ascii('}')
-		? (qb0 === ascii('{') ? tail(qb) : cons(ch, qb))
-	:
-		qb;
+	: ch === ascii('{') && qb0 === ascii('`') ?
+		cons(ch, qb)
+	: ch === ascii('}') && qb0 === ascii('`') ?
+		cons(ch, qb)
+	: isQuote(qb0) ?
+		(qb0 !== ch ? qb : tail(qb))
+	: isQuote(ch) ?
+		cons(ch, qb)
+	: ch === ascii('(') ?
+		(qb0 === ascii(')') ? tail(qb) : cons(ch, qb))
+	: ch === ascii(')') ?
+		(qb0 === ascii('(') ? tail(qb) : cons(ch, qb))
+	: ch === ascii('[') ?
+		(qb0 === ascii(']') ? tail(qb) : cons(ch, qb))
+	: ch === ascii(']') ?
+		(qb0 === ascii('[') ? tail(qb) : cons(ch, qb))
+	: ch === ascii('{') ?
+		(qb0 === ascii('}') ? tail(qb) : cons(ch, qb))
+	: ch === ascii('}') ?
+		(qb0 === ascii('{') ? tail(qb) : cons(ch, qb))
+	: qb;
 };
 
 let splitl = (s, sep) => {
@@ -227,30 +224,30 @@ let parseConstant = program => {
 	let first = program.charCodeAt(0);
 
 	return false ? {}
-	: ascii('0') <= first && first <= ascii('9')
-		? { id: 'number', value: program, i: parseNumber(program) }
-	: program.startsWith("'") && program.endsWith("'")
-		? { id: 'string', value: program.slice(1, -1) }
-	: program.startsWith('"') && program.endsWith('"')
-		? { id: 'string', value: program.slice(1, -1) }
-	: program.startsWith('`') && program.endsWith('`')
-		? parseBackquote(program.slice(1, -1))
-	: program === 'false'
-		? { id: 'boolean', value: 'false' }
-	: program === 'new Error'
-		? { id: 'new-error' }
-	: program === 'new Map'
-		? { id: 'new-map' }
-	: program === 'new Promise'
-		? { id: 'new-promise' }
-	: program === 'nil'
-		? { id: 'nil' }
-	: program === 'true'
-		? { id: 'boolean', value: 'true' }
-	: program === 'undefined'
-		? { id: 'undefined' }
-	: isIdentifier(program)
-		? { id: 'var', value: program }
+	: ascii('0') <= first && first <= ascii('9') ?
+		{ id: 'number', value: program, i: parseNumber(program) }
+	: program.startsWith("'") && program.endsWith("'") ?
+		{ id: 'string', value: program.slice(1, -1) }
+	: program.startsWith('"') && program.endsWith('"') ?
+		{ id: 'string', value: program.slice(1, -1) }
+	: program.startsWith('`') && program.endsWith('`') ?
+		parseBackquote(program.slice(1, -1))
+	: program === 'false' ?
+		{ id: 'boolean', value: 'false' }
+	: program === 'new Error' ?
+		{ id: 'new-error' }
+	: program === 'new Map' ?
+		{ id: 'new-map' }
+	: program === 'new Promise' ?
+		{ id: 'new-promise' }
+	: program === 'nil' ?
+		{ id: 'nil' }
+	: program === 'true' ?
+		{ id: 'boolean', value: 'true' }
+	: program === 'undefined' ?
+		{ id: 'undefined' }
+	: isIdentifier(program) ?
+		{ id: 'var', value: program }
 	:
 		error(`cannot parse "${program}"`);
 };
@@ -260,18 +257,16 @@ let parseArray = (program, parse) => {
 	parseArray_ = program_ => {
 		let program = program_.trim();
 
-		return program !== ''
-			? function() {
-				let [head, tail_] = splitl(program, ',');
-				let tail = tail_.trim();
-				return {
-					id: 'cons',
-					head: parse(head),
-					tail: tail.startsWith('...') && tail.endsWith(',') ? parse(tail.slice(3, -1)) : parseArray_(tail)
-				};
-			}()
-		:
-			{ id: 'nil' };
+		return program !== '' ? function() {
+			let [head, tail_] = splitl(program, ',');
+			let tail = tail_.trim();
+			return {
+				id: 'cons',
+				head: parse(head),
+				tail: tail.startsWith('...') && tail.endsWith(',') ? parse(tail.slice(3, -1)) : parseArray_(tail)
+			};
+		}()
+		: { id: 'nil' };
 	};
 	return parseArray_(program);
 };
