@@ -483,56 +483,53 @@ parseProgram = program => {
 		let expr = expr_.trim();
 
 		return false ? {}
-		: statement.startsWith('let ')
-			? function() {
-				let [var_, value] = splitl(statement.slice(4, undefined), '=');
-				let v = var_.trim();
+		: statement.startsWith('let ') ? function() {
+			let [var_, value] = splitl(statement.slice(4, undefined), '=');
+			let v = var_.trim();
 
-				return value !== undefined
-					? {
-						id: 'let',
-						bind: parseBind(var_),
-						value: parseProgram(value),
-						expr: parseProgram(expr),
-					}
-					: isIdentifier(var_) ? {
-						id: 'alloc',
-						v,
-						expr: parseProgram(expr),
-					}
-					:
-						error(`cannot parse let variable "${v}"`);
-			}()
-		: statement.startsWith('return ') && expr === ''
-			? parseProgram(statement.slice(7, undefined))
-		: statement.startsWith('throw ') && expr === ''
-			? { id: 'throw', expr: parseProgram(statement.slice(6, undefined)) }
-		: statement.startsWith('while ')
-			? function() {
-				let [cond, loop] = splitl(statement.slice(6, undefined), ' ');
-				return {
-					id: 'while',
-					cond: parseProgram(cond),
-					loop: parseProgram(loop),
-					expr: parseProgram(expr),
-				};
-			}()
-		:
-			function() {
-				let [lhs, rhs] = splitl(statement, '=');
-
-				return rhs !== undefined ? {
-					id: 'assign',
-					var_: parseLvalue(lhs),
-					value: parseProgram(rhs),
-					expr: parseProgram(expr),
-				} : {
+			return value !== undefined
+				? {
 					id: 'let',
-					bind: { id: 'var', value: newDummy() },
-					value: parseProgram(lhs),
+					bind: parseBind(var_),
+					value: parseProgram(value),
 					expr: parseProgram(expr),
-				};
-			}();
+				}
+				: isIdentifier(var_) ? {
+					id: 'alloc',
+					v,
+					expr: parseProgram(expr),
+				}
+				:
+					error(`cannot parse let variable "${v}"`);
+		}()
+		: statement.startsWith('return ') && expr === '' ?
+			parseProgram(statement.slice(7, undefined))
+		: statement.startsWith('throw ') && expr === '' ?
+			{ id: 'throw', expr: parseProgram(statement.slice(6, undefined)) }
+		: statement.startsWith('while ') ? function() {
+			let [cond, loop] = splitl(statement.slice(6, undefined), ' ');
+			return {
+				id: 'while',
+				cond: parseProgram(cond),
+				loop: parseProgram(loop),
+				expr: parseProgram(expr),
+			};
+		}()
+		: function() {
+			let [lhs, rhs] = splitl(statement, '=');
+
+			return rhs !== undefined ? {
+				id: 'assign',
+				var_: parseLvalue(lhs),
+				value: parseProgram(rhs),
+				expr: parseProgram(expr),
+			} : {
+				id: 'let',
+				bind: { id: 'var', value: newDummy() },
+				value: parseProgram(lhs),
+				expr: parseProgram(expr),
+			};
+		}();
 	}();
 };
 
