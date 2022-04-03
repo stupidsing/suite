@@ -520,6 +520,18 @@ parseProgram = program => {
 	}();
 };
 
+let formatProgram = ast => {
+	let id = ast.id;
+
+	let f = false ? (({}) => '')
+	: id === 'number' ? ((i) =>
+		`${i}`
+	)
+	: error(`cannot format ${id}`);
+
+	return f(ast);
+};
+
 let refs = new Map();
 let refCount;
 
