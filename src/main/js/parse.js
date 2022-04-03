@@ -453,7 +453,7 @@ let parseLambda = program => {
 	let [left, right] = splitl(program, '=>');
 
 	return right === undefined
-			? parseIf(left)
+		? parseIf(left)
 	: left.startsWith('async ')
 		? {
 			id: 'lambda-async',
