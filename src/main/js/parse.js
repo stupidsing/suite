@@ -566,30 +566,28 @@ let dumpRef = v => {
 		let { ref } = v;
 		let listv = assumeList(v);
 		return false ? ''
-			: contains(vs, v)
-				? '<recurse>'
-			: ref !== undefined
-				? (refs.get(ref) !== v ? dumpRef_(cons(v, vs), refs.get(ref)) : `_${ref}`)
-			: typeof v === 'object'
-				? (false ? ''
-					: isEmpty(listv)
-						? ''
-					: isNotEmpty(listv)
-						? `${dumpRef_(vs, head(listv))}:${dumpRef_(vs, assumeObject(tail(listv)))}`
-					: function() {
-						let id = v.id;
-						let join = Object
-							.entries(v)
-							.filter(([k, v_]) => k !== 'id')
-							.map(([k, v_]) => `${k}:${dumpRef_(cons(v, vs), v_)}`)
-							.join(' ');
-						return id !== undefined ? `${id}(${join})` : `{${join}}`;
-					}()
-				)
-			: typeof v === 'string'
-				? v.toString()
-			:
-				JSON.stringify(v, undefined, undefined);
+			: contains(vs, v) ?
+				'<recurse>'
+			: ref !== undefined ?
+				(refs.get(ref) !== v ? dumpRef_(cons(v, vs), refs.get(ref)) : `_${ref}`)
+			: typeof v === 'object' ? (false ? ''
+				: isEmpty(listv) ?
+					''
+				: isNotEmpty(listv) ?
+					`${dumpRef_(vs, head(listv))}:${dumpRef_(vs, assumeObject(tail(listv)))}`
+				: function() {
+					let id = v.id;
+					let join = Object
+						.entries(v)
+						.filter(([k, v_]) => k !== 'id')
+						.map(([k, v_]) => `${k}:${dumpRef_(cons(v, vs), v_)}`)
+						.join(' ');
+					return id !== undefined ? `${id}(${join})` : `{${join}}`;
+				}()
+			)
+			: typeof v === 'string' ?
+				v.toString()
+			: JSON.stringify(v, undefined, undefined);
 	};
 	return dumpRef_(nil, v);
 };
@@ -602,20 +600,18 @@ tryBind = (a, b) => function() {
 	let refa = a.ref;
 	let refb = b.ref;
 	return false ? false
-	: a === b
-		? true
-	: refa !== undefined
-		? function() {
-			let olda = refs.get(refa);
-			let finalb = finalRef(b);
-			return setRef(refa, finalb) && tryBind(olda, finalb) || !setRef(refa, olda);
-		}()
-	: refb !== undefined
-		? function() {
-			let oldb = refs.get(refb);
-			let finala = finalRef(a);
-			return setRef(refb, finala) && tryBind(finala, oldb) || !setRef(refb, oldb);
-		}()
+	: a === b ?
+		true
+	: refa !== undefined ? function() {
+		let olda = refs.get(refa);
+		let finalb = finalRef(b);
+		return setRef(refa, finalb) && tryBind(olda, finalb) || !setRef(refa, olda);
+	}()
+	: refb !== undefined ? function() {
+		let oldb = refs.get(refb);
+		let finala = finalRef(a);
+		return setRef(refb, finala) && tryBind(finala, oldb) || !setRef(refb, oldb);
+	}()
 	: typeof a === 'object' && typeof b === 'object'
 		&& (lista.length !== undefined
 		? lista.length === listb.length && function() {
