@@ -339,54 +339,49 @@ let parseLvalue = program_ => {
 	let [expr, field] = splitr(program, '.');
 
 	return false ? {}
-	: expr !== undefined && isIdentifier(field)
-		? { id: 'dot', field: '.' + field, expr: parseApplyBlockFieldIndex(expr) }
-	: program.endsWith(']')
-		? function() {
-			let [expr, index_] = splitr(program, '[');
-			let index = index_.slice(0, -1);
-			return expr === undefined ? parseValue(program)
-				: index === '0'
-					? {
-						id: 'element',
-						expr: parseProgram(expr),
-						index,
-					}
-				:
-					{
-						id: 'index',
-						expr: parseProgram(expr),
-						index: parseProgram(index),
-					};
-		}()
-	:
-		parseValue(program);
+	: expr !== undefined && isIdentifier(field) ?
+		{ id: 'dot', field: '.' + field, expr: parseApplyBlockFieldIndex(expr) }
+	: program.endsWith(']') ? function() {
+		let [expr, index_] = splitr(program, '[');
+		let index = index_.slice(0, -1);
+		return expr === undefined ? parseValue(program)
+			: index === '0'
+				? {
+					id: 'element',
+					expr: parseProgram(expr),
+					index,
+				}
+			:
+				{
+					id: 'index',
+					expr: parseProgram(expr),
+					index: parseProgram(index),
+				};
+	}()
+	: parseValue(program);
 };
 
 parseApplyBlockFieldIndex = program_ => {
 	let program = program_.trim();
 
 	return false ? {}
-	: program.startsWith('function() {') && program.endsWith('}()')
-		? parseProgram(program.slice(12, -3).trim())
-	: program.endsWith('()')
-		? {
+	: program.startsWith('function() {') && program.endsWith('}()') ?
+		parseProgram(program.slice(12, -3).trim())
+	: program.endsWith('()') ? {
+		id: 'apply',
+		expr: parseProgram(program.slice(0, -2)),
+		arg: { id: 'never' },
+	}
+	: program.endsWith(')') ? function() {
+		let [expr, paramStr_] = splitr(program, '(');
+		let paramStr = paramStr_.slice(0, -1).trim();
+		return expr !== undefined ? {
 			id: 'apply',
-			expr: parseProgram(program.slice(0, -2)),
-			arg: { id: 'never' },
-		}
-	: program.endsWith(')')
-		? function() {
-			let [expr, paramStr_] = splitr(program, '(');
-			let paramStr = paramStr_.slice(0, -1).trim();
-			return expr !== undefined ? {
-				id: 'apply',
-				expr: parseProgram(expr),
-				arg: parseProgram(paramStr),
-			} : parseValue(program);
-		}()
-	:
-		parseLvalue(program);
+			expr: parseProgram(expr),
+			arg: parseProgram(paramStr),
+		} : parseValue(program);
+	}()
+	: parseLvalue(program);
 };
 
 let parseIf = [parseApplyBlockFieldIndex,]
@@ -437,14 +432,14 @@ parseBind = program_ => {
 	let program = program_.trim();
 
 	return false ? {}
-	: program === '()'
-		? { id: 'never' }
-	: program.startsWith('(') && program.endsWith(')')
-		? parseBind(program.slice(1, -1))
-	: program.startsWith('[') && program.endsWith(']')
-		? parseArrayTuple(program, parseBind)
-	: program.startsWith('{') && program.endsWith('}')
-		? parseStruct(program, parseBind)
+	: program === '()' ?
+		{ id: 'never' }
+	: program.startsWith('(') && program.endsWith(')') ?
+		parseBind(program.slice(1, -1))
+	: program.startsWith('[') && program.endsWith(']') ?
+		parseArrayTuple(program, parseBind)
+	: program.startsWith('{') && program.endsWith('}') ?
+		parseStruct(program, parseBind)
 	:
 		parsePair(program, parseConstant);
 };
@@ -452,10 +447,10 @@ parseBind = program_ => {
 let parseLambda = program => {
 	let [left, right] = splitl(program, '=>');
 
-	return right === undefined
-		? parseIf(left)
-	: left.startsWith('async ')
-		? {
+	return right === undefined ?
+		parseIf(left)
+	: left.startsWith('async ') ?
+		{
 			id: 'lambda-async',
 			bind: parseBind(left.slice(6, undefined)),
 			expr: parseProgram(right.trim()),
