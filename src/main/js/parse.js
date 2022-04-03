@@ -310,28 +310,25 @@ parseValue = program_ => {
 	let program = program_.trim();
 
 	return false ? {}
-	: program.startsWith('try {') && program.endsWith('}')
-		? function() {
-			let [try_, catch_] = splitl(program.slice(4, undefined), 'catch (e)');
-			return {
-				id: 'try',
-				expr: parseProgram(try_),
-				catch_: { id: 'lambda', bind: { id: 'var', value: 'e' }, expr: parseProgram(catch_) }
-			};
-		}()
-	: program.startsWith('typeof ')
-		? { id: 'typeof', expr: parseValue(program.slice(7, undefined)) }
-	: program.startsWith('(') && program.endsWith(')')
-		? parseProgram(program.slice(1, -1))
-	: program.startsWith('[') && program.endsWith(']')
-		? parseArrayTuple(program, parseProgram)
-	: program.startsWith('{') && program.endsWith('}')
-		? function() {
-			let block = program.slice(1, -1).trim();
-			return block.endsWith(';') ? parseProgram(block) : parseStructInner(block, parseProgram);
-		}()
-	:
-		parseConstant(program);
+	: program.startsWith('try {') && program.endsWith('}') ? function() {
+		let [try_, catch_] = splitl(program.slice(4, undefined), 'catch (e)');
+		return {
+			id: 'try',
+			expr: parseProgram(try_),
+			catch_: { id: 'lambda', bind: { id: 'var', value: 'e' }, expr: parseProgram(catch_) }
+		};
+	}()
+	: program.startsWith('typeof ') ?
+		{ id: 'typeof', expr: parseValue(program.slice(7, undefined)) }
+	: program.startsWith('(') && program.endsWith(')') ?
+		parseProgram(program.slice(1, -1))
+	: program.startsWith('[') && program.endsWith(']') ?
+		parseArrayTuple(program, parseProgram)
+	: program.startsWith('{') && program.endsWith('}') ? function() {
+		let block = program.slice(1, -1).trim();
+		return block.endsWith(';') ? parseProgram(block) : parseStructInner(block, parseProgram);
+	}()
+	: parseConstant(program);
 };
 
 let parseLvalue = program_ => {
