@@ -337,8 +337,8 @@ let parseLvalue = program_ => {
 		let [expr, index_] = splitr(program, '[');
 		let index = index_.slice(0, -1);
 		return expr === undefined ? parseValue(program)
-			: index === '0'
-				? {
+			: index === '0' ?
+				{
 					id: 'element',
 					expr: parseProgram(expr),
 					index,
