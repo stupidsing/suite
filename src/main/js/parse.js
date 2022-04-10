@@ -499,10 +499,13 @@ formatProgram = ast => {
 
 	let f = false ? (({}) => '')
 	: id === 'add' ? (({ lhs, rhs }) =>
-		`${formatProgram(lhs)} + ${formatProgram(rhs)}`
+		`(${formatProgram(lhs)}) + (${formatProgram(rhs)})`
 	)
 	: id === 'number' ? ((i) =>
 		`${i}`
+	)
+	: id === 'string' ? (({ value }) =>
+		`'${value}'`
 	)
 	: id === 'undefined' ? (({}) =>
 		`${id}`
