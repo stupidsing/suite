@@ -818,9 +818,9 @@ inferType = (vts, isAsync, ast) => {
 		return doBind(ast, te, typeLambdaOf(tp, tr)) && tr;
 	})
 	: id === 'array' ? (({ values }) => {
-				let te = newRef();
-				return fold(true, values, (b, value) => b && doBind(ast, infer(value), te)) && typeArrayOf(te);
-			})
+		let te = newRef();
+		return fold(true, values, (b, value) => b && doBind(ast, infer(value), te)) && typeArrayOf(te);
+	})
 	: id === 'assign' ? (({ var_, value, expr }) => {
 		return function() {
 			try {
