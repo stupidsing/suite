@@ -75,26 +75,16 @@ let quoteBracket = (qb, ch) => {
 	let qb0 = head(qb);
 
 	return false ? nil
-	: ch === ascii('{') && qb0 === ascii('`') ?
-		cons(ch, qb)
-	: ch === ascii('}') && qb0 === ascii('`') ?
-		cons(ch, qb)
-	: isQuote(qb0) ?
-		(qb0 !== ch ? qb : tail(qb))
-	: isQuote(ch) ?
-		cons(ch, qb)
-	: ch === ascii('(') ?
-		(qb0 === ascii(')') ? tail(qb) : cons(ch, qb))
-	: ch === ascii(')') ?
-		(qb0 === ascii('(') ? tail(qb) : cons(ch, qb))
-	: ch === ascii('[') ?
-		(qb0 === ascii(']') ? tail(qb) : cons(ch, qb))
-	: ch === ascii(']') ?
-		(qb0 === ascii('[') ? tail(qb) : cons(ch, qb))
-	: ch === ascii('{') ?
-		(qb0 === ascii('}') ? tail(qb) : cons(ch, qb))
-	: ch === ascii('}') ?
-		(qb0 === ascii('{') ? tail(qb) : cons(ch, qb))
+	: ch === ascii('{') && qb0 === ascii('`') ? cons(ch, qb)
+	: ch === ascii('}') && qb0 === ascii('`') ? cons(ch, qb)
+	: isQuote(qb0) ? (qb0 === ch ? tail(qb) : qb)
+	: isQuote(ch) ? cons(ch, qb)
+	: ch === ascii('(') ? (qb0 === ascii(')') ? tail(qb) : cons(ch, qb))
+	: ch === ascii(')') ? (qb0 === ascii('(') ? tail(qb) : cons(ch, qb))
+	: ch === ascii('[') ? (qb0 === ascii(']') ? tail(qb) : cons(ch, qb))
+	: ch === ascii(']') ? (qb0 === ascii('[') ? tail(qb) : cons(ch, qb))
+	: ch === ascii('{') ? (qb0 === ascii('}') ? tail(qb) : cons(ch, qb))
+	: ch === ascii('}') ? (qb0 === ascii('{') ? tail(qb) : cons(ch, qb))
 	: qb;
 };
 
