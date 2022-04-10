@@ -337,18 +337,16 @@ let parseLvalue = program_ => {
 		let [expr, index_] = splitr(program, '[');
 		let index = index_.slice(0, -1);
 		return expr === undefined ? parseValue(program)
-			: index === '0' ?
-				{
-					id: 'element',
-					expr: parseProgram(expr),
-					index,
-				}
-			:
-				{
-					id: 'index',
-					expr: parseProgram(expr),
-					index: parseProgram(index),
-				};
+		: index === '0' ? {
+			id: 'element',
+			expr: parseProgram(expr),
+			index,
+		}
+		: {
+			id: 'index',
+			expr: parseProgram(expr),
+			index: parseProgram(index),
+		};
 	}()
 	: parseValue(program);
 };
@@ -441,18 +439,16 @@ let parseLambda = program => {
 
 	return right === undefined ?
 		parseIf(left)
-	: left.startsWith('async ') ?
-		{
-			id: 'lambda-async',
-			bind: parseBind(left.slice(6, undefined)),
-			expr: parseProgram(right.trim()),
-		}
-	:
-		{
-			id: 'lambda',
-			bind: parseBind(left),
-			expr: parseProgram(right.trim()),
-		};
+	: left.startsWith('async ') ? {
+		id: 'lambda-async',
+		bind: parseBind(left.slice(6, undefined)),
+		expr: parseProgram(right.trim()),
+	}
+	: {
+		id: 'lambda',
+		bind: parseBind(left),
+		expr: parseProgram(right.trim()),
+	};
 };
 
 let dummyCount = 0;
@@ -474,20 +470,18 @@ parseProgram = program => {
 			let [var_, value] = splitl(statement.slice(4, undefined), '=');
 			let v = var_.trim();
 
-			return value !== undefined
-				? {
-					id: 'let',
-					bind: parseBind(var_),
-					value: parseProgram(value),
-					expr: parseProgram(expr),
-				}
-				: isIdentifier(var_) ? {
-					id: 'alloc',
-					v,
-					expr: parseProgram(expr),
-				}
-				:
-					error(`cannot parse let variable "${v}"`);
+			return value !== undefined ? {
+				id: 'let',
+				bind: parseBind(var_),
+				value: parseProgram(value),
+				expr: parseProgram(expr),
+			}
+			: isIdentifier(var_) ? {
+				id: 'alloc',
+				v,
+				expr: parseProgram(expr),
+			}
+			: error(`cannot parse let variable "${v}"`);
 		}()
 		: statement.startsWith('return ') && expr === '' ?
 			parseProgram(statement.slice(7, undefined))
@@ -510,7 +504,8 @@ parseProgram = program => {
 				var_: parseLvalue(lhs),
 				value: parseProgram(rhs),
 				expr: parseProgram(expr),
-			} : {
+			}
+			: {
 				id: 'let',
 				bind: { id: 'var', value: newDummy() },
 				value: parseProgram(lhs),
@@ -520,7 +515,9 @@ parseProgram = program => {
 	}();
 };
 
-let formatProgram = ast => {
+let formatProgram;
+
+formatProgram = ast => {
 	let id = ast.id;
 
 	let f = false ? (({}) => '')
