@@ -214,32 +214,19 @@ let parseConstant = program => {
 	let first = program.charCodeAt(0);
 
 	return false ? {}
-	: ascii('0') <= first && first <= ascii('9') ?
-		{ id: 'number', value: program, i: parseNumber(program) }
-	: program.startsWith("'") && program.endsWith("'") ?
-		{ id: 'string', value: program.slice(1, -1) }
-	: program.startsWith('"') && program.endsWith('"') ?
-		{ id: 'string', value: program.slice(1, -1) }
-	: program.startsWith('`') && program.endsWith('`') ?
-		parseBackquote(program.slice(1, -1))
-	: program === 'false' ?
-		{ id: 'boolean', value: 'false' }
-	: program === 'new Error' ?
-		{ id: 'new-error' }
-	: program === 'new Map' ?
-		{ id: 'new-map' }
-	: program === 'new Promise' ?
-		{ id: 'new-promise' }
-	: program === 'nil' ?
-		{ id: 'nil' }
-	: program === 'true' ?
-		{ id: 'boolean', value: 'true' }
-	: program === 'undefined' ?
-		{ id: 'undefined' }
-	: isIdentifier(program) ?
-		{ id: 'var', value: program }
-	:
-		error(`cannot parse "${program}"`);
+	: ascii('0') <= first && first <= ascii('9') ? { id: 'number', value: program, i: parseNumber(program) }
+	: program.startsWith("'") && program.endsWith("'") ? { id: 'string', value: program.slice(1, -1) }
+	: program.startsWith('"') && program.endsWith('"') ? { id: 'string', value: program.slice(1, -1) }
+	: program.startsWith('`') && program.endsWith('`') ? parseBackquote(program.slice(1, -1))
+	: program === 'false' ? { id: 'boolean', value: 'false' }
+	: program === 'new Error' ? { id: 'new-error' }
+	: program === 'new Map' ? { id: 'new-map' }
+	: program === 'new Promise' ? { id: 'new-promise' }
+	: program === 'nil' ? { id: 'nil' }
+	: program === 'true' ? { id: 'boolean', value: 'true' }
+	: program === 'undefined' ? { id: 'undefined' }
+	: isIdentifier(program) ? { id: 'var', value: program }
+	: error(`cannot parse "${program}"`);
 };
 
 let parseArray = (program, parse) => {
