@@ -147,10 +147,6 @@ tp_leafpad() {
 	$(cchs "echo http://savannah.nongnu.org/download/leafpad/leafpad-0.8.17.tar.gz" @curl @tar-zxf @dir "@exec ./configure" "@exec make")/src/leafpad $@
 }
 
-tp_minikube() {
-	$(cchs "echo https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64" @curl "@do-chmod +x") $@
-}
-
 tp_minions() {
 	$(cchs "echo https://github.com/blahgeek/Minions.git" @git-clone "@do-git-cd cargo build --release" "@git-cd pwd")/target/release/minions
 }
@@ -196,11 +192,6 @@ tp_vms_empire() {
 tp_vscode() {
 	#(cchs "echo https://code.visualstudio.com/sha/download?build=stable&os=linux-deb-x64" @curl)
 	$(cchs "echo https://az764295.vo.msecnd.net/stable/26076a4de974ead31f97692a0d32f90d735645c0/code-stable-1576682093.tar.gz" @curl @tar-zxf @dir)/bin/code $@
-}
-
-tp_wdp() {
-	tp_apt_i wine &&
-	wine $(cchs "echo https://stammel.net/spiele/wdp/wdp.exe" @curl)
 }
 
 tp_zx() {
