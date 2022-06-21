@@ -1,23 +1,24 @@
 package suite.node;
 
 import primal.Verbs.Get;
-import suite.node.util.Singleton;
+import suite.node.util.AtomContext;
 
 public class Atom extends Node {
 
-	public final String name;
-
+	public static AtomContext atomContext = new AtomContext();
 	public static Atom NIL = of("");
 	public static Atom NULL = of("null");
 	public static Atom TRUE = of("true");
 	public static Atom FALSE = of("false");
+
+	public final String name;
 
 	public static String name(Node node) {
 		return ((Atom) node).name;
 	}
 
 	public static Atom of(String name) {
-		return Singleton.me.atomContext.findAtom(name, Atom::new);
+		return atomContext.findAtom(name, Atom::new);
 	}
 
 	private Atom(String name) {

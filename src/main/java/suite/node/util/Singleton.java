@@ -10,7 +10,6 @@ public class Singleton {
 
 	public static final Singleton me = new Singleton();
 
-	public final AtomContext atomContext = Ioc.of(AtomContext.class);
 	public final Inspect inspect = Ioc.of(Inspect.class);
 	public final Mapify mapify = Ioc.of(Mapify.class);
 	public final Nodify nodify = Ioc.of(Nodify.class);
