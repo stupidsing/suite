@@ -3,7 +3,7 @@ package suite.node;
 import suite.node.io.Formatter;
 import suite.node.util.Comparer;
 
-public abstract class Node implements Comparable<Node> {
+public abstract class Node extends primal.node.Node implements Comparable<Node> {
 
 	public Node finalNode() {
 		return this;
