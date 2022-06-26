@@ -946,7 +946,7 @@ inferType = (vts, isAsync, ast) => {
 	: id === 'throw' ? (({}) =>
 		newRef()
 	)
-	: id === 'try'? (({ expr, catch_ }) =>
+	: id === 'try' ? (({ expr, catch_ }) =>
 		doBind(ast, infer(catch_), newRef()) && infer(expr)
 	)
 	: id === 'tuple' ? (({ values }) => {
