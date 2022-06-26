@@ -980,6 +980,61 @@ inferType = (vts, isAsync, ast) => {
 	return f(ast);
 };
 
+let generate;
+
+generate = (ast) => {
+	let id = ast.id;
+
+	let f = false ? (({}) => error('FIXME'))
+	: id === 'add' ? (({ lhs, rhs }) => error('FIXME'))
+	: id === 'alloc' ? (({ v, expr }) => error('FIXME'))
+	: id === 'and' ? (({ lhs, rhs }) => error('FIXME'))
+	: id === 'app' ? (({ lhs, rhs }) => error('FIXME'))
+	: id === 'apply' ? (({ arg, expr }) => error('FIXME'))
+	: id === 'array' ? (({ values }) => error('FIXME'))
+	: id === 'assign' ? (({ var_, value, expr }) => error('FIXME'))
+	: id === 'await' ? (({ expr }) => error('FIXME'))
+	: id === 'boolean' ? (({}) => error('FIXME'))
+	: id === 'cons' ? (({ head, tail }) => error('FIXME'))
+	: id === 'div' ? (({ lhs, rhs }) => error('FIXME'))
+	: id === 'dot' ? (({ field, expr }) => error('FIXME'))
+	: id === 'element' ? (({ index, expr }) => error('FIXME'))
+	: id === 'eq_' ? (({ lhs, rhs }) => error('FIXME'))
+	: id === 'if' ? (({ if_, then, else_ }) => error('FIXME'))
+	: id === 'index' ? (({ index, expr }) => error('FIXME'))
+	: id === 'lambda-async' ? (({ bind, expr }) => error('FIXME'))
+	: id === 'lambda' ? (({ bind, expr }) => error('FIXME'))
+	: id === 'le_' ? (({ lhs, rhs }) => error('FIXME'))
+	: id === 'let' ? (({ bind, value, expr }) => error('FIXME'))
+	: id === 'lt_' ? (({ lhs, rhs }) => error('FIXME'))
+	: id === 'mul' ? (({ lhs, rhs }) => error('FIXME'))
+	: id === 'ne_' ? (({ lhs, rhs }) => error('FIXME'))
+	: id === 'neg' ? (({ expr }) => error('FIXME'))
+	: id === 'never' ? (({}) => error('FIXME'))
+	: id === 'new-error' ? (({}) => error('FIXME'))
+	: id === 'new-map' ? (({}) => error('FIXME'))
+	: id === 'new-promise' ? (({}) => error('FIXME'))
+	: id === 'nil' ? (({}) => error('FIXME'))
+	: id === 'not' ? (({ expr }) => error('FIXME'))
+	: id === 'number' ? (({}) => error('FIXME'))
+	: id === 'or_' ? (({ lhs, rhs }) => error('FIXME'))
+	: id === 'pair' ? (({ lhs, rhs }) => error('FIXME'))
+	: id === 'pos' ? (({ expr }) => error('FIXME'))
+	: id === 'string' ? (({}) => error('FIXME'))
+	: id === 'struct' ? (({ kvs }) => error('FIXME'))
+	: id === 'sub' ? (({ lhs, rhs }) => error('FIXME'))
+	: id === 'throw' ? (({}) => error('FIXME'))
+	: id === 'try' ? (({ expr, catch_ }) => error('FIXME'))
+	: id === 'tuple' ? (({ values }) => error('FIXME'))
+	: id === 'typeof' ? (({}) => error('FIXME'))
+	: id === 'undefined' ? (({}) => error('FIXME'))
+	: id === 'var' ? (({ value }) => error('FIXME'))
+	: id === 'while' ? (({ cond, loop, expr }) => error('FIXME'))
+	: error(`cannot generate for ${id}`);
+
+	return f(ast);
+};
+
 let rewrite = r => ast => {
 	let rewrite_;
 	rewrite_ = ast0 => ast0.id === undefined ? ast0 : function() {
