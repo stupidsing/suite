@@ -103,8 +103,16 @@ tp_geth() {
 	$(cchs "echo git@github.com:ethereum/go-ethereum.git" @git-clone "@do-git-cd make geth" "@git-cd pwd")/build/bin/geth $@
 }
 
+tp_gnumeric() {
+	tp_apt_i gnumeric && gnumeric $@
+}
+
 tp_google_java_format() {
 	java -jar $(cchs "echo https://github.com/google/google-java-format/releases/download/google-java-format-1.8/google-java-format-1.8-all-deps.jar" @curl) $@
+}
+
+tp_gpicview() {
+	tp_apt_i gpicview && gpicview $@
 }
 
 tp_gradle() {
@@ -158,6 +166,10 @@ tp_mirrormagic() {
 tp_rocksndiamonds() {
 	# https://www.artsoft.org/rocksndiamonds/news/
 	$(cchs "echo https://www.artsoft.org/RELEASES/unix/rocksndiamonds/rocksndiamonds-4.1.3.0.tar.gz" @curl @tar-zxf @dir "@exec make")/rocksndiamonds
+}
+
+tp_scite() {
+	tp_apt_i scite && scite $@
 }
 
 tp_sgt_puzzles() {
