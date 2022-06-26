@@ -1152,9 +1152,7 @@ return actual === expect
 		console.log(`ast :: ${stringify(ast)}`);
 		console.log(`type :: ${dumpRef(type)}`);
 		return true;
-	} catch (e) {
-		return console.error(e);
-	}
+	} catch (e) { return console.error(e); }
 }() : error(`
 test case failed,
 actual = ${actual}
