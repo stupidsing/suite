@@ -980,6 +980,38 @@ inferType = (vts, isAsync, ast) => {
 	return f(ast);
 };
 
+let typeConsole = typeStructOfCompleted({
+	'.error': typeLambdaOf(newRef(), typeNever),
+	'.log': typeLambdaOf(newRef(), typeNever),
+});
+
+let typeJSON = typeStructOfCompleted({
+	'.stringify': typeLambdaOf(typePairOf(newRef(), typePairOf(newRef(), newRef())), typeString),
+});
+
+let typeObject = typeStructOfCompleted({
+	'.assign': typeLambdaOf(newRef(), newRef()),
+	'.entries': typeLambdaOf(typeStructOf({}), typeArrayOf(typeTupleOf(cons(typeString, cons(newRef(), nil))))),
+	'.fromEntries': typeLambdaOf(typeArrayOf(typeTupleOf(cons(typeString, cons(newRef(), nil)))), typeStructOf({})),
+	'.keys': typeLambdaOf(typeStructOf({}), typeArrayOf(typeString)),
+});
+
+let typePromise = typeStructOfCompleted({
+	'.reject': typeLambdaOf(typeError, typePromiseOf(newRef())),
+	'.resolve': function() { let t = newRef(); return typeLambdaOf(t, typePromiseOf(t)); }(),
+});
+
+let typeRequire = typeLambdaOf(typeString, newRef());
+
+let predefinedTypes = Object
+	.entries({
+		JSON: typeJSON,
+		Object: typeObject,
+		console: typeConsole,
+		require: typeRequire,
+	})
+	.reduce((l, vt) => cons(vt, l), nil);
+
 let generate;
 
 generate = (ast) => {
@@ -1046,42 +1078,10 @@ let rewrite = r => ast => {
 	return rewrite_(ast);
 };
 
-let typeConsole = typeStructOfCompleted({
-	'.error': typeLambdaOf(newRef(), typeNever),
-	'.log': typeLambdaOf(newRef(), typeNever),
-});
-
-let typeJSON = typeStructOfCompleted({
-	'.stringify': typeLambdaOf(typePairOf(newRef(), typePairOf(newRef(), newRef())), typeString),
-});
-
-let typeObject = typeStructOfCompleted({
-	'.assign': typeLambdaOf(newRef(), newRef()),
-	'.entries': typeLambdaOf(typeStructOf({}), typeArrayOf(typeTupleOf(cons(typeString, cons(newRef(), nil))))),
-	'.fromEntries': typeLambdaOf(typeArrayOf(typeTupleOf(cons(typeString, cons(newRef(), nil)))), typeStructOf({})),
-	'.keys': typeLambdaOf(typeStructOf({}), typeArrayOf(typeString)),
-});
-
-let typePromise = typeStructOfCompleted({
-	'.reject': typeLambdaOf(typeError, typePromiseOf(newRef())),
-	'.resolve': function() { let t = newRef(); return typeLambdaOf(t, typePromiseOf(t)); }(),
-});
-
-let typeRequire = typeLambdaOf(typeString, newRef());
-
 let process_ = program => {
 	let ast = parseProgram(program);
 
-	let vts = Object
-		.entries({
-			JSON: typeJSON,
-			Object: typeObject,
-			console: typeConsole,
-			require: typeRequire,
-		})
-		.reduce((l, vt) => cons(vt, l), nil);
-
-	let type = inferType(vts, false, ast);
+	let type = inferType(predefinedTypes, false, ast);
 
 	return { ast, type };
 };
