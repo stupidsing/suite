@@ -1014,7 +1014,7 @@ let predefinedTypes = Object
 
 let generate;
 
-generate = (ast) => {
+generate = ast => {
 	let id = ast.id;
 
 	let f = false ? (({}) => error('FIXME'))
