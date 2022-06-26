@@ -802,18 +802,16 @@ inferType = (vts, isAsync, ast) => {
 		let te = newRef();
 		return fold(true, values, (b, value) => b && doBind(ast, infer(value), te)) && typeArrayOf(te);
 	})
-	: id === 'assign' ? (({ var_, value, expr }) => {
-		return function() {
-			try {
-				let tvar = infer(var_);
-				let tvalue = infer(value);
-				return doBind({ id: 'assign', var_, value }, tvar, tvalue);
-			} catch (e) {
-				e.message = `in assignment clause of ${dump(var_)}\n${e.message}`;
-				throw e;
-			}
-		}() && infer(expr);
-	})
+	: id === 'assign' ? (({ var_, value, expr }) => function() {
+		try {
+			let tvar = infer(var_);
+			let tvalue = infer(value);
+			return doBind({ id: 'assign', var_, value }, tvar, tvalue);
+		} catch (e) {
+			e.message = `in assignment clause of ${dump(var_)}\n${e.message}`;
+			throw e;
+		}
+	}() && infer(expr))
 	: id === 'await' ? (({ expr }) => {
 		let t = newRef();
 		return isAsync ? doBind(ast, infer(expr), typePromiseOf(t)) && t : error(`await not inside async`);
