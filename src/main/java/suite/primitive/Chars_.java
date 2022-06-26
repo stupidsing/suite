@@ -7,9 +7,9 @@ import primal.fp.Funs.Source;
 import primal.primitive.adt.Chars;
 import primal.primitive.adt.Chars.CharsBuilder;
 import primal.primitive.adt.Chars.WriteChar;
-import primal.primitive.puller.ChrPuller;
-import primal.primitive.streamlet.ChrStreamlet;
 import primal.puller.Puller;
+import primal.puller.primitive.ChrPuller;
+import primal.streamlet.primitive.ChrStreamlet;
 
 public class Chars_ {
 

@@ -7,9 +7,9 @@ import primal.fp.Funs.Source;
 import primal.primitive.adt.Ints;
 import primal.primitive.adt.Ints.IntsBuilder;
 import primal.primitive.adt.Ints.WriteChar;
-import primal.primitive.puller.IntPuller;
-import primal.primitive.streamlet.IntStreamlet;
 import primal.puller.Puller;
+import primal.puller.primitive.IntPuller;
+import primal.streamlet.primitive.IntStreamlet;
 
 public class Ints_ {
 

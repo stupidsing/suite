@@ -17,8 +17,8 @@ import primal.primitive.IntMoreVerbs.ReadInt;
 import primal.primitive.IntPrim;
 import primal.primitive.adt.map.ObjIntMap;
 import primal.primitive.adt.pair.IntObjPair;
-import primal.primitive.streamlet.IntObjStreamlet;
 import primal.puller.Puller;
+import primal.streamlet.primitive.IntObjStreamlet;
 import suite.adt.PriorityQueue;
 
 /**

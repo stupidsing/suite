@@ -31,12 +31,12 @@ import primal.primitive.adt.Bytes;
 import primal.primitive.adt.Floats;
 import primal.primitive.adt.Ints;
 import primal.primitive.adt.map.ObjIntMap;
-import primal.primitive.puller.IntPuller;
-import primal.primitive.streamlet.FltStreamlet;
-import primal.primitive.streamlet.IntStreamlet;
 import primal.puller.Puller;
 import primal.puller.Puller2;
+import primal.puller.primitive.IntPuller;
 import primal.streamlet.Streamlet;
+import primal.streamlet.primitive.FltStreamlet;
+import primal.streamlet.primitive.IntStreamlet;
 import suite.primitive.Bytes_;
 import suite.util.To;
 

@@ -8,7 +8,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import primal.primitive.adt.Bytes;
-import primal.primitive.puller.IntPuller;
+import primal.puller.primitive.IntPuller;
 import suite.assembler.Amd64.Insn;
 
 public class Amd64AssembleTest {

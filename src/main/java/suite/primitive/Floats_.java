@@ -7,9 +7,9 @@ import primal.fp.Funs.Source;
 import primal.primitive.adt.Floats;
 import primal.primitive.adt.Floats.FloatsBuilder;
 import primal.primitive.adt.Floats.WriteChar;
-import primal.primitive.puller.FltPuller;
-import primal.primitive.streamlet.FltStreamlet;
 import primal.puller.Puller;
+import primal.puller.primitive.FltPuller;
+import primal.streamlet.primitive.FltStreamlet;
 
 public class Floats_ {
 

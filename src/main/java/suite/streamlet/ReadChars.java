@@ -2,8 +2,8 @@ package suite.streamlet;
 
 import primal.primitive.ChrPrim;
 import primal.primitive.ChrPrim.ChrSource;
-import primal.primitive.puller.ChrPuller;
-import primal.primitive.streamlet.ChrStreamlet;
+import primal.puller.primitive.ChrPuller;
+import primal.streamlet.primitive.ChrStreamlet;
 
 public class ReadChars {
 

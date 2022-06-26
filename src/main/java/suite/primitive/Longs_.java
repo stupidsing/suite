@@ -7,9 +7,9 @@ import primal.fp.Funs.Source;
 import primal.primitive.adt.Longs;
 import primal.primitive.adt.Longs.LongsBuilder;
 import primal.primitive.adt.Longs.WriteChar;
-import primal.primitive.puller.LngPuller;
-import primal.primitive.streamlet.LngStreamlet;
 import primal.puller.Puller;
+import primal.puller.primitive.LngPuller;
+import primal.streamlet.primitive.LngStreamlet;
 
 public class Longs_ {
 

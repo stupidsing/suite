@@ -12,7 +12,7 @@ import primal.primitive.IntMoreVerbs.ReadInt;
 import primal.primitive.IntPrim.Int_Obj;
 import primal.primitive.IntPrim.Obj_Int;
 import primal.primitive.adt.map.IntObjMap;
-import primal.primitive.streamlet.IntObjStreamlet;
+import primal.streamlet.primitive.IntObjStreamlet;
 import suite.BindArrayUtil.Pattern;
 import suite.math.sym.Sym.Ring;
 import suite.node.Int;

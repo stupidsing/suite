@@ -1,7 +1,7 @@
 package suite.util;
 
 import primal.primitive.IntMoreVerbs.ReadInt;
-import primal.primitive.streamlet.IntStreamlet;
+import primal.streamlet.primitive.IntStreamlet;
 
 public class Streamlet_ {
 

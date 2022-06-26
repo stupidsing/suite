@@ -7,9 +7,9 @@ import primal.fp.Funs.Source;
 import primal.primitive.adt.Doubles;
 import primal.primitive.adt.Doubles.DoublesBuilder;
 import primal.primitive.adt.Doubles.WriteChar;
-import primal.primitive.puller.DblPuller;
-import primal.primitive.streamlet.DblStreamlet;
 import primal.puller.Puller;
+import primal.puller.primitive.DblPuller;
+import primal.streamlet.primitive.DblStreamlet;
 
 public class Doubles_ {
 
