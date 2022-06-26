@@ -2,6 +2,9 @@
 // parsing a javascript subset and inference variable types.
 // able to parse myself.
 
+// [a, b,] is an array.
+// [a, b] is a tuple.
+
 let assumeAny = Object.assign;
 
 let assumeList = v => {
@@ -476,7 +479,8 @@ parseProgram = program => {
 		: function() {
 			let [lhs, rhs] = splitl(statement, '=');
 
-			return rhs !== undefined ? {
+			return rhs !== undefined
+			? {
 				id: 'assign',
 				var_: parseLvalue(lhs),
 				value: parseProgram(rhs),
