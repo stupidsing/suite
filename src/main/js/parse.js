@@ -502,18 +502,10 @@ formatProgram = ast => {
 	let id = ast.id;
 
 	let f = false ? (({}) => '')
-	: id === 'add' ? (({ lhs, rhs }) =>
-		`(${formatProgram(lhs)}) + (${formatProgram(rhs)})`
-	)
-	: id === 'number' ? ((i) =>
-		`${i}`
-	)
-	: id === 'string' ? (({ value }) =>
-		`'${value}'`
-	)
-	: id === 'undefined' ? (({}) =>
-		`${id}`
-	)
+	: id === 'add' ? (({ lhs, rhs }) => `(${formatProgram(lhs)}) + (${formatProgram(rhs)})`)
+	: id === 'number' ? ((i) => `${i}`)
+	: id === 'string' ? (({ value }) => `'${value}'`)
+	: id === 'undefined' ? (({}) => `${id}`)
 	: error(`cannot format ${id}`);
 
 	return f(ast);
