@@ -21,7 +21,7 @@ import suite.ansi.Keyboard;
 import suite.ansi.Keyboard.VK;
 import suite.ansi.LibcJna;
 import suite.ansi.Termios;
-import suite.persistent.PerRope.IRopeList;
+import suite.persistent.PerRope.PerRopeList;
 import suite.primitive.Coord;
 
 // mvn compile exec:java -Dexec.mainClass=suite.sample.DevMain -Dexec.args="${COLUMNS} ${LINES}"
@@ -47,7 +47,7 @@ public class DevMain {
 	private void run() {
 		// var input = ReadString.from("src/main/java/suite/dev/DevMain.java");
 		var input = ReadString.from("src/main/il/buddy-allocator.il");
-		var inputText = text(IRopeList.of(input));
+		var inputText = text(PerRopeList.of(input));
 
 		try (var termios = new Termios(libc);) {
 			try {
@@ -144,9 +144,9 @@ public class DevMain {
 							char ch_;
 							while ((ch_ = text.at(ix)) == ' ' || ch_ == '\t')
 								ix++;
-							return st.splice(0, IRopeList.of("\n").concat.apply(text.subList(i0, ix)));
+							return st.splice(0, PerRopeList.of("\n").concat.apply(text.subList(i0, ix)));
 						} else
-							return st.splice(0, IRopeList.of(Character.toString(ch)));
+							return st.splice(0, PerRopeList.of(Character.toString(ch)));
 					else
 						return st;
 				}))).apply((st, undo, redo, text, oc, cc) -> oc.map((ox, oy) -> cc.map((cx, cy) -> {
@@ -220,12 +220,12 @@ public class DevMain {
 			this.cursorCoord = cursorCoord;
 		}
 
-		private EditSt splice(int deletes, IRopeList<Character> s) {
+		private EditSt splice(int deletes, PerRopeList<Character> s) {
 			var index = text.index(cursorCoord.x, cursorCoord.y);
 			return splice(index, index + deletes, s);
 		}
 
-		private EditSt splice(int i0, int ix, IRopeList<Character> s) {
+		private EditSt splice(int i0, int ix, PerRopeList<Character> s) {
 			var cursorIndex0 = text.index(cursorCoord.x, cursorCoord.y);
 			int cursorIndex1;
 			if (cursorIndex0 < i0)
@@ -265,7 +265,7 @@ public class DevMain {
 		}
 	}
 
-	private Text text(IRopeList<Character> text) {
+	private Text text(PerRopeList<Character> text) {
 		var starts = new IntsBuilder();
 		var ends = new IntsBuilder();
 		var p0 = IntMutable.of(-1);
@@ -286,11 +286,11 @@ public class DevMain {
 	}
 
 	private class Text {
-		private IRopeList<Character> chars;
+		private PerRopeList<Character> chars;
 		private int[] starts;
 		private int[] ends;
 
-		private Text(IRopeList<Character> chars, int[] starts, int[] ends) {
+		private Text(PerRopeList<Character> chars, int[] starts, int[] ends) {
 			this.chars = chars;
 			this.starts = starts;
 			this.ends = ends;
@@ -305,7 +305,7 @@ public class DevMain {
 			}));
 		}
 
-		private Text splice(int i0, int ix, IRopeList<Character> s) {
+		private Text splice(int i0, int ix, PerRopeList<Character> s) {
 			var ix_ = min(ix, length());
 			return text(chars.left(i0).concat.apply(s.concat.apply(chars.right(ix_))));
 		}
@@ -356,7 +356,7 @@ public class DevMain {
 			return c(index - start(y), y);
 		}
 
-		private IRopeList<Character> subList(int i0, int ix) {
+		private PerRopeList<Character> subList(int i0, int ix) {
 			return chars.subList.apply(i0, ix);
 		}
 
@@ -381,7 +381,7 @@ public class DevMain {
 		}
 	}
 
-	private IRopeList<Character> empty = IRopeList.of("");
+	private PerRopeList<Character> empty = PerRopeList.of("");
 
 	private static Coord c(int x, int y) {
 		return Coord.of(x, y);

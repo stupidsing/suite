@@ -26,36 +26,36 @@ public class PerRope<T> {
 
 	public final int depth;
 	public final int weight;
-	public final IRopeList<T> ts;
+	public final PerRopeList<T> ts;
 	public final List<PerRope<T>> ropes;
 
-	public static class IRopeList<T> {
+	public static class PerRopeList<T> {
 		public int size;
 		public Int_Obj<T> get;
-		public IntInt_Obj<IRopeList<T>> subList;
-		public Iterate<IRopeList<T>> concat;
+		public IntInt_Obj<PerRopeList<T>> subList;
+		public Iterate<PerRopeList<T>> concat;
 
-		public static IRopeList<Character> of(String s) {
+		public static PerRopeList<Character> of(String s) {
 			return ropeList(PerRope.of(ropeList(s)));
 		}
 
-		public IRopeList(int size, Int_Obj<T> get, IntInt_Obj<IRopeList<T>> subList, Iterate<IRopeList<T>> concat) {
+		public PerRopeList(int size, Int_Obj<T> get, IntInt_Obj<PerRopeList<T>> subList, Iterate<PerRopeList<T>> concat) {
 			this.size = size;
 			this.get = get;
 			this.subList = subList;
 			this.concat = concat;
 		}
 
-		public IRopeList<T> left(int p) {
+		public PerRopeList<T> left(int p) {
 			return subList.apply(0, p);
 		}
 
-		public IRopeList<T> right(int p) {
+		public PerRopeList<T> right(int p) {
 			return subList.apply(p, size);
 		}
 	}
 
-	public static <T> PerRope<T> of(IRopeList<T> ts) {
+	public static <T> PerRope<T> of(PerRopeList<T> ts) {
 		var rope = new PerRope<T>(ts.left(0));
 		var size = ts.size;
 		var p = 0;
@@ -67,8 +67,8 @@ public class PerRope<T> {
 		return rope;
 	}
 
-	private static IRopeList<Character> ropeList(String s) {
-		return new IRopeList<>( //
+	private static PerRopeList<Character> ropeList(String s) {
+		return new PerRopeList<>( //
 				s.length(), //
 				s::charAt, //
 				(i0, ix) -> ropeList(s.substring(i0, ix)), //
@@ -79,8 +79,8 @@ public class PerRope<T> {
 		};
 	}
 
-	private static <T> IRopeList<T> ropeList(PerRope<T> rope) {
-		class W extends IRopeList<T> {
+	private static <T> PerRopeList<T> ropeList(PerRope<T> rope) {
+		class W extends PerRopeList<T> {
 			private PerRope<T> rope_ = rope;
 
 			private W() {
@@ -95,7 +95,7 @@ public class PerRope<T> {
 	}
 
 	// minBranchFactor <= ts.size() && ts.size() < maxBranchFactor
-	public PerRope(IRopeList<T> ts) {
+	public PerRope(PerRopeList<T> ts) {
 		this.depth = 0;
 		this.weight = ts.size;
 		this.ts = ts;

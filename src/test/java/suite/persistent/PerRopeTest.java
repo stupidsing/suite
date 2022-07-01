@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import primal.Verbs.ReadString;
 import primal.primitive.ChrVerbs.NewChr;
-import suite.persistent.PerRope.IRopeList;
+import suite.persistent.PerRope.PerRopeList;
 
 public class PerRopeTest {
 
@@ -17,12 +17,12 @@ public class PerRopeTest {
 	public void test() {
 		var length = 1024;
 		var s = new String(NewChr.array(length, c -> (char) c));
-		var rope = new PerRope<>(IRopeList.of(""));
+		var rope = new PerRope<>(PerRopeList.of(""));
 		var p = 0;
 
 		while (p < length) {
 			var p1 = min(length, p + 32 + new Random().nextInt(16));
-			rope = PerRope.meld(rope, new PerRope<>(IRopeList.of(s.substring(p, p1))));
+			rope = PerRope.meld(rope, new PerRope<>(PerRopeList.of(s.substring(p, p1))));
 			p = p1;
 		}
 
@@ -43,7 +43,7 @@ public class PerRopeTest {
 
 	@Test
 	public void testFile() {
-		var inputText = IRopeList.of(ReadString.from("src/main/java/suite/sample/DevMain.java"));
+		var inputText = PerRopeList.of(ReadString.from("src/main/java/suite/sample/DevMain.java"));
 		inputText.right(inputText.size);
 	}
 
