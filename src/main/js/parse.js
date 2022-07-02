@@ -496,19 +496,59 @@ parseProgram = program => {
 	}();
 };
 
-let formatProgram;
+let format;
 
-formatProgram = ast => {
+format = ast => {
 	let id = ast.id;
 
 	let f = false ? (({}) => '')
-	: id === 'add' ? (({ lhs, rhs }) => `(${formatProgram(lhs)}) + (${formatProgram(rhs)})`)
+	: id === 'add' ? (({ lhs, rhs }) => `${format(lhs)} + ${format(rhs)}`)
+	: id === 'alloc' ? (({ v, expr }) => error('FIXME'))
+	: id === 'and' ? (({ lhs, rhs }) => error('FIXME'))
+	: id === 'app' ? (({ lhs, rhs }) => error('FIXME'))
+	: id === 'apply' ? (({ arg, expr }) => error('FIXME'))
+	: id === 'array' ? (({ values }) => error('FIXME'))
+	: id === 'assign' ? (({ var_, value, expr }) => error('FIXME'))
+	: id === 'await' ? (({ expr }) => error('FIXME'))
+	: id === 'boolean' ? (({ value }) => error('FIXME'))
+	: id === 'cons' ? (({ head, tail }) => error('FIXME'))
+	: id === 'div' ? (({ lhs, rhs }) => error('FIXME'))
+	: id === 'dot' ? (({ field, expr }) => error('FIXME'))
+	: id === 'element' ? (({ index, expr }) => error('FIXME'))
+	: id === 'eq_' ? (({ lhs, rhs }) => error('FIXME'))
+	: id === 'if' ? (({ if_, then, else_ }) => error('FIXME'))
+	: id === 'index' ? (({ index, expr }) => error('FIXME'))
+	: id === 'lambda-async' ? (({ bind, expr }) => error('FIXME'))
+	: id === 'lambda' ? (({ bind, expr }) => error('FIXME'))
+	: id === 'le_' ? (({ lhs, rhs }) => error('FIXME'))
+	: id === 'let' ? (({ bind, value, expr }) => error('FIXME'))
+	: id === 'lt_' ? (({ lhs, rhs }) => error('FIXME'))
+	: id === 'mul' ? (({ lhs, rhs }) => error('FIXME'))
+	: id === 'ne_' ? (({ lhs, rhs }) => error('FIXME'))
+	: id === 'neg' ? (({ expr }) => error('FIXME'))
+	: id === 'never' ? (({}) => error('FIXME'))
+	: id === 'new-error' ? (({}) => error('FIXME'))
+	: id === 'new-map' ? (({}) => error('FIXME'))
+	: id === 'new-promise' ? (({}) => error('FIXME'))
+	: id === 'nil' ? (({}) => error('FIXME'))
+	: id === 'not' ? (({ expr }) => error('FIXME'))
 	: id === 'number' ? ((i) => `${i}`)
+	: id === 'or_' ? (({ lhs, rhs }) => error('FIXME'))
+	: id === 'pair' ? (({ lhs, rhs }) => error('FIXME'))
+	: id === 'pos' ? (({ expr }) => error('FIXME'))
 	: id === 'string' ? (({ value }) => `'${value}'`)
+	: id === 'struct' ? (({ kvs }) => error('FIXME'))
+	: id === 'sub' ? (({ lhs, rhs }) => error('FIXME'))
+	: id === 'throw' ? (({ expr }) => error('FIXME'))
+	: id === 'try' ? (({ expr, catch_ }) => error('FIXME'))
+	: id === 'tuple' ? (({ values }) => error('FIXME'))
+	: id === 'typeof' ? (({ expr }) => error('FIXME'))
 	: id === 'undefined' ? (({}) => `${id}`)
+	: id === 'var' ? (({ value }) => error('FIXME'))
+	: id === 'while' ? (({ cond, loop, expr }) => error('FIXME'))
 	: error(`cannot format ${id}`);
 
-	return f(ast);
+	return `(${f(ast)})`;
 };
 
 let refs = new Map();
