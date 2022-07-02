@@ -277,7 +277,7 @@ let parseStructInner = (program, parse) => {
 
 let parseStruct = (program, parse) => parseStructInner(program.slice(1, -1).trim(), parse);
 
-let parseProgram;
+let parse;
 
 let parseValue;
 
@@ -289,19 +289,19 @@ parseValue = program_ => {
 		let [try_, catch_] = splitl(program.slice(4, undefined), 'catch (e)');
 		return {
 			id: 'try',
-			expr: parseProgram(try_),
-			catch_: { id: 'lambda', bind: { id: 'var', value: 'e' }, expr: parseProgram(catch_) }
+			expr: parse(try_),
+			catch_: { id: 'lambda', bind: { id: 'var', value: 'e' }, expr: parse(catch_) }
 		};
 	}()
 	: program.startsWith('typeof ') ?
 		{ id: 'typeof', expr: parseValue(program.slice(7, undefined)) }
 	: program.startsWith('(') && program.endsWith(')') ?
-		parseProgram(program.slice(1, -1))
+		parse(program.slice(1, -1))
 	: program.startsWith('[') && program.endsWith(']') ?
-		parseArrayTuple(program, parseProgram)
+		parseArrayTuple(program, parse)
 	: program.startsWith('{') && program.endsWith('}') ? function() {
 		let block = program.slice(1, -1).trim();
-		return block.endsWith(';') ? parseProgram(block) : parseStructInner(block, parseProgram);
+		return block.endsWith(';') ? parse(block) : parseStructInner(block, parse);
 	}()
 	: parseConstant(program);
 };
@@ -319,13 +319,13 @@ let parseLvalue = program_ => {
 		return expr === undefined ? parseValue(program)
 		: index === '0' ? {
 			id: 'element',
-			expr: parseProgram(expr),
+			expr: parse(expr),
 			index,
 		}
 		: {
 			id: 'index',
-			expr: parseProgram(expr),
-			index: parseProgram(index),
+			expr: parse(expr),
+			index: parse(index),
 		};
 	}()
 	: parseValue(program);
@@ -336,10 +336,10 @@ parseApplyBlockFieldIndex = program_ => {
 
 	return false ? {}
 	: program.startsWith('function() {') && program.endsWith('}()') ?
-		parseProgram(program.slice(12, -3).trim())
+		parse(program.slice(12, -3).trim())
 	: program.endsWith('()') ? {
 		id: 'apply',
-		expr: parseProgram(program.slice(0, -2)),
+		expr: parse(program.slice(0, -2)),
 		arg: { id: 'never' },
 	}
 	: program.endsWith(')') ? function() {
@@ -347,8 +347,8 @@ parseApplyBlockFieldIndex = program_ => {
 		let paramStr = paramStr_.slice(0, -1).trim();
 		return expr !== undefined ? {
 			id: 'apply',
-			expr: parseProgram(expr),
-			arg: parseProgram(paramStr),
+			expr: parse(expr),
+			arg: parse(paramStr),
 		} : parseValue(program);
 	}()
 	: parseLvalue(program);
@@ -378,9 +378,9 @@ let parseIf = [parseApplyBlockFieldIndex,]
 
 			return {
 				id: 'if',
-				if_: parseProgram(if_),
-				then: parseProgram(then),
-				else_: parseProgram(else_),
+				if_: parse(if_),
+				then: parse(then),
+				else_: parse(else_),
 			};
 		}();
 	})
@@ -422,12 +422,12 @@ let parseLambda = program => {
 	: left.startsWith('async ') ? {
 		id: 'lambda-async',
 		bind: parseBind(left.slice(6, undefined)),
-		expr: parseProgram(right.trim()),
+		expr: parse(right.trim()),
 	}
 	: {
 		id: 'lambda',
 		bind: parseBind(left),
-		expr: parseProgram(right.trim()),
+		expr: parse(right.trim()),
 	};
 };
 
@@ -438,7 +438,7 @@ let newDummy = () => {
 	return `dummy${dummyCount}`;
 };
 
-parseProgram = program => {
+parse = program => {
 	let [statement_, expr_] = splitl(program, ';');
 
 	return expr_ === undefined ? parsePair(statement_, parseLambda) : function() {
@@ -453,27 +453,27 @@ parseProgram = program => {
 			return value !== undefined ? {
 				id: 'let',
 				bind: parseBind(var_),
-				value: parseProgram(value),
-				expr: parseProgram(expr),
+				value: parse(value),
+				expr: parse(expr),
 			}
 			: isIdentifier(var_) ? {
 				id: 'alloc',
 				v,
-				expr: parseProgram(expr),
+				expr: parse(expr),
 			}
 			: error(`cannot parse let variable "${v}"`);
 		}()
 		: statement.startsWith('return ') && expr === '' ?
-			parseProgram(statement.slice(7, undefined))
+			parse(statement.slice(7, undefined))
 		: statement.startsWith('throw ') && expr === '' ?
-			{ id: 'throw', expr: parseProgram(statement.slice(6, undefined)) }
+			{ id: 'throw', expr: parse(statement.slice(6, undefined)) }
 		: statement.startsWith('while ') ? function() {
 			let [cond, loop] = splitl(statement.slice(6, undefined), ' ');
 			return {
 				id: 'while',
-				cond: parseProgram(cond),
-				loop: parseProgram(loop),
-				expr: parseProgram(expr),
+				cond: parse(cond),
+				loop: parse(loop),
+				expr: parse(expr),
 			};
 		}()
 		: function() {
@@ -483,14 +483,14 @@ parseProgram = program => {
 			? {
 				id: 'assign',
 				var_: parseLvalue(lhs),
-				value: parseProgram(rhs),
-				expr: parseProgram(expr),
+				value: parse(rhs),
+				expr: parse(expr),
 			}
 			: {
 				id: 'let',
 				bind: { id: 'var', value: newDummy() },
-				value: parseProgram(lhs),
-				expr: parseProgram(expr),
+				value: parse(lhs),
+				expr: parse(expr),
 			};
 		}();
 	}();
@@ -1109,7 +1109,7 @@ let rewrite = r => ast => {
 };
 
 let process_ = program => {
-	let ast = parseProgram(program);
+	let ast = parse(program);
 
 	let type = inferType(predefinedTypes, false, ast);
 
