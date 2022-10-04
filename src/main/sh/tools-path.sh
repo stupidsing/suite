@@ -95,6 +95,14 @@ tp_eksctl() {
 	$(cchs "echo https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" @curl @tar-zxf)/eksctl $@
 }
 
+tp_enigma() {
+	(
+		tp_apt_i libncurses5-dev
+		cd $(cchs "echo https://www.chiark.greenend.org.uk/~sgtatham/enigma/enigma-1.04.tar.gz" @curl @tar-zxf @dir "@exec ./configure --datadir=share" "@exec make" "@exec mkdir share" "@exec rsync -avz levels/ share/enigma/")
+		./enigma
+	)
+}
+
 tp_geckodriver() {
 	cchs "echo https://github.com/mozilla/geckodriver/releases/download/v0.26.0/geckodriver-v0.26.0-linux64.tar.gz" @curl @tar-zxf @dir
 }
