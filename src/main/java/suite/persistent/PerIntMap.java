@@ -86,8 +86,8 @@ public class PerIntMap<V> {
 		var k4 = key >>> 6 & 63;
 		var k5 = key >>> 0 & 63;
 		var bl1 = Bl.get(bl0, k0);
-		var Bl2 = Bl.get(bl1, k1);
-		var bl3 = Bl.get(Bl2, k2);
+		var bl2 = Bl.get(bl1, k1);
+		var bl3 = Bl.get(bl2, k2);
 		var bl4 = Bl.get(bl3, k3);
 		var bl5 = Bl.get(bl4, k4);
 		var v0 = Bl.get(bl5, k5);
@@ -95,7 +95,7 @@ public class PerIntMap<V> {
 		var new5 = Bl.update(bl5, k5, v1);
 		var new4 = Bl.update(bl4, k4, new5);
 		var new3 = Bl.update(bl3, k3, new4);
-		var new2 = Bl.update(Bl2, k2, new3);
+		var new2 = Bl.update(bl2, k2, new3);
 		var new1 = Bl.update(bl1, k1, new2);
 		var new0 = Bl.update(bl0, k0, new1);
 		return new PerIntMap<>(new0);
