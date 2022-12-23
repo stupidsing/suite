@@ -187,7 +187,7 @@ tp_scite() {
 
 tp_sgt_puzzles() {
 	# apt-get build-dep -y sgt-puzzles
-	$(cchs "echo https://www.chiark.greenend.org.uk/~sgtatham/puzzles/puzzles.tar.gz" @curl @tar-zxf @dir "@exec ./configure" "@exec make")/${1} $@
+	$(cchs "echo https://www.chiark.greenend.org.uk/~sgtatham/puzzles/puzzles.tar.gz" @curl @tar-zxf @dir "@exec cmake ." "@exec cmake --build .")/${1} $@
 }
 
 tp_slant() {
