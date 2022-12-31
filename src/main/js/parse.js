@@ -1042,6 +1042,61 @@ let predefinedTypes = Object
 	})
 	.reduce((l, vt) => cons(vt, l), nil);
 
+let reduce;
+
+reduce = ast => {
+	let id = ast.id;
+
+	let f = false ? (({}) => ast)
+	: id === 'add' ? (({ lhs, rhs }) => ({ id, lhs: reduce(lhs), rhs: reduce(rhs) }))
+	: id === 'alloc' ? (({ v, expr }) => ({ id, v, expr: reduce(expr) }))
+	: id === 'and' ? (({ lhs, rhs }) => ({ id, lhs: reduce(lhs), rhs: reduce(rhs) }))
+	: id === 'app' ? (({ lhs, rhs }) => ({ id, lhs: reduce(lhs), rhs: reduce(rhs) }))
+	: id === 'apply' ? (({ arg, expr }) => ({ id, arg: reduce(arg), expr: reduce(expr) }))
+	: id === 'array' ? (({ values }) => ({ id,  values: values.map(reduce) }))
+	: id === 'assign' ? (({ var_, value, expr }) => ({ id, var_, value: reduce(value), expr: reduce(expr) }))
+	: id === 'await' ? (({ expr }) => ({ id, expr: reduce(expr) }))
+	: id === 'boolean' ? (({ value }) => ast)
+	: id === 'cons' ? (({ head, tail }) => ({ id, head: reduce(head), tail: reduce(tail) }))
+	: id === 'div' ? (({ lhs, rhs }) => ({ id, lhs: reduce(lhs), rhs: reduce(rhs) }))
+	: id === 'dot' ? (({ field, expr }) => ({ id, field, expr: reduce(expr) }))
+	: id === 'element' ? (({ index, expr }) => ({ id, index, expr: reduce(expr) }))
+	: id === 'eq_' ? (({ lhs, rhs }) => ({ id, lhs: reduce(lhs), rhs: reduce(rhs) }))
+	: id === 'if' ? (({ if_, then, else_ }) => ({ id, if_: reduce(if_), then: reduce(then), else_: reduce(else_) }))
+	: id === 'index' ? (({ index, expr }) => ({ id, index: reduce(index), expr: reduce(expr) }))
+	: id === 'lambda-async' ? (({ bind, expr }) => ({ id, bind, expr: reduce(expr) }))
+	: id === 'lambda' ? (({ bind, expr }) => ({ id, bind, expr: reduce(expr) }))
+	: id === 'le_' ? (({ lhs, rhs }) => ({ id, lhs: reduce(lhs), rhs: reduce(rhs) }))
+	: id === 'let' ? (({ bind, value, expr }) => ({ id, bind, value: reduce(value), expr: reduce(expr) }))
+	: id === 'lt_' ? (({ lhs, rhs }) => ({ id, lhs: reduce(lhs), rhs: reduce(rhs) }))
+	: id === 'mul' ? (({ lhs, rhs }) => ({ id, lhs: reduce(lhs), rhs: reduce(rhs) }))
+	: id === 'ne_' ? (({ lhs, rhs }) => ({ id, lhs: reduce(lhs), rhs: reduce(rhs) }))
+	: id === 'neg' ? (({ expr }) => ({ id, expr: reduce(expr) }))
+	: id === 'never' ? (({}) => ast)
+	: id === 'new-error' ? (({}) => ast)
+	: id === 'new-map' ? (({}) => ast)
+	: id === 'new-promise' ? (({}) => ast)
+	: id === 'nil' ? (({}) => ast)
+	: id === 'not' ? (({ expr }) => ({ id, expr: reduce(expr) }))
+	: id === 'number' ? (({ value, i }) => ast)
+	: id === 'or_' ? (({ lhs, rhs }) => ({ id, lhs: reduce(lhs), rhs: reduce(rhs) }))
+	: id === 'pair' ? (({ lhs, rhs }) => ({ id, lhs: reduce(lhs), rhs: reduce(rhs) }))
+	: id === 'pos' ? (({ expr }) => ({ id, expr: reduce(expr) }))
+	: id === 'string' ? (({ value }) => ast)
+	: id === 'struct' ? (({ kvs }) => ({ id, kvs: kvs.map(({ key, value }) => ({ key, value: reduce(value) })) }))
+	: id === 'sub' ? (({ lhs, rhs }) => ({ id, lhs: reduce(lhs), rhs: reduce(rhs) }))
+	: id === 'throw' ? (({ expr }) => ({ id, expr: reduce(expr) }))
+	: id === 'try' ? (({ expr, catch_ }) => ({ id, expr: reduce(expr), catch_: reduce(catch_) }))
+	: id === 'tuple' ? (({ values }) => ({ id, values: values.map(reduce) }))
+	: id === 'typeof' ? (({ expr }) => ({ id, expr: reduce(expr) }))
+	: id === 'undefined' ? (({}) => ast)
+	: id === 'var' ? (({ value }) => ast)
+	: id === 'while' ? (({ cond, loop, expr }) => ({ id, cond: reduce(cond), loop: reduce(loop), expr: reduce(expr) }))
+	: error(`cannot reduce for ${id}`);
+
+	return f(ast);
+};
+
 let generate;
 
 generate = ast => {
@@ -1109,7 +1164,7 @@ let rewrite = r => ast => {
 };
 
 let process_ = program => {
-	let ast = parse(program);
+	let ast = reduce(parse(program));
 
 	let type = inferType(predefinedTypes, false, ast);
 
@@ -1146,31 +1201,31 @@ let expect = stringify({
 	},
 	expr: {
 		id: 'apply',
-		expr: {
-			id: 'dot',
-			field: '.log',
-			expr: { id: 'var', value: 'console' },
-		},
 		arg: {
 			id: 'apply',
-			expr: { id: 'var', value: 'parse' },
 			arg: {
 				id: 'apply',
-				expr: {
-					id: 'dot',
-					field: '.readFileSync',
-					expr: {
-						id: 'apply',
-						expr: { id: 'var', value: 'require' },
-						arg: { id: 'string', value: 'fs' },
-					},
-				},
 				arg: {
 					id: 'pair',
 					lhs: { id: 'number', value: '0', i: 0 },
 					rhs: { id: 'string', value: 'utf8' },
 				},
+				expr: {
+					id: 'dot',
+					field: '.readFileSync',
+					expr: {
+						id: 'apply',
+						arg: { id: 'string', value: 'fs' },
+						expr: { id: 'var', value: 'require' },
+					},
+				},
 			},
+			expr: { id: 'var', value: 'parse' },
+		},
+		expr: {
+			id: 'dot',
+			field: '.log',
+			expr: { id: 'var', value: 'console' },
 		},
 	},
 });
