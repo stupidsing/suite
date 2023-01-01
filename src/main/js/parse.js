@@ -499,7 +499,7 @@ parse = program => {
 let format;
 
 format = ast => {
-	let id = ast.id;
+	let { id } = ast;
 
 	let f = false ? (({}) => '')
 	: id === 'add' ? (({ lhs, rhs }) => `${format(lhs)} + ${format(rhs)}`)
@@ -778,7 +778,7 @@ let inferDot = (ast, field, ts) => {
 let inferType;
 
 inferType = (vts, isAsync, ast) => {
-	let id = ast.id;
+	let { id } = ast;
 
 	let infer = ast_ => inferType(vts, isAsync, ast_);
 
@@ -1045,7 +1045,7 @@ let predefinedTypes = Object
 let reduce;
 
 reduce = ast => {
-	let id = ast.id;
+	let { id } = ast;
 
 	let f = false ? (({}) => ast)
 	: id === 'add' ? (({ lhs, rhs }) => ({ id, lhs: reduce(lhs), rhs: reduce(rhs) }))
@@ -1100,7 +1100,7 @@ reduce = ast => {
 let generate;
 
 generate = ast => {
-	let id = ast.id;
+	let { id } = ast;
 
 	let f = false ? (({}) => error('FIXME'))
 	: id === 'add' ? (({ lhs, rhs }) => error('FIXME'))
