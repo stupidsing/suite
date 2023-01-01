@@ -1026,6 +1026,7 @@ let predefinedTypes = Object
 	.entries({
 		JSON: typeJSON,
 		Object: typeObject,
+		Promise: typePromise,
 		console: typeConsole,
 		require: typeRequire,
 	})
@@ -1084,17 +1085,25 @@ let rewrite = (rf, ast) => {
 	return f(ast);
 };
 
-let reduce;
+let reduceAsync;
 
-reduce = ast => {
+reduceAsync = ast => {
+	return ast;
+};
+
+let reduceNe;
+
+reduceNe = ast => {
 	let { id } = ast;
 
 	let f = false ? (({}) => ast)
-	: id === 'ne_' ? (({ lhs, rhs }) => ({ id: 'not', expr: { id: 'eq_', lhs: reduce(lhs), rhs: reduce(rhs) } }))
-	: (({}) => rewrite(reduce, ast));
+	: id === 'ne_' ? (({ lhs, rhs }) => ({ id: 'not', expr: { id: 'eq_', lhs: reduceNe(lhs), rhs: reduceNe(rhs) } }))
+	: (({}) => rewrite(reduceNe, ast));
 
 	return f(ast);
 };
+
+let reduces = ast => reduceAsync(reduceNe(ast));
 
 let generate;
 
@@ -1151,7 +1160,7 @@ generate = ast => {
 };
 
 let process_ = program => {
-	let ast = reduce(parse(program));
+	let ast = reduces(parse(program));
 
 	let type = inferType(predefinedTypes, false, ast);
 
