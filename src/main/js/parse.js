@@ -1152,17 +1152,6 @@ generate = ast => {
 	return f(ast);
 };
 
-let rewrite = r => ast => {
-	let rewrite_;
-	rewrite_ = ast0 => ast0.id === undefined ? ast0 : function() {
-		let ast1 = r(ast0.id)(ast0);
-		return ast1 === undefined
-			? Object.fromEntries(Object.entries(ast0).map(([k, v]) => [k, rewrite_(v)]))
-			: ast1;
-	}();
-	return rewrite_(ast);
-};
-
 let process_ = program => {
 	let ast = reduce(parse(program));
 
