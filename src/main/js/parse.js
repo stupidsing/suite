@@ -317,11 +317,6 @@ let parseLvalue = program_ => {
 		let [expr, index_] = splitr(program, '[');
 		let index = index_.slice(0, -1);
 		return expr === undefined ? parseValue(program)
-		: index === '0' ? {
-			id: 'element',
-			expr: parse(expr),
-			index,
-		}
 		: {
 			id: 'index',
 			expr: parse(expr),
@@ -514,7 +509,6 @@ format = ast => {
 	: id === 'cons' ? (({ head, tail }) => error('FIXME'))
 	: id === 'div' ? (({ lhs, rhs }) => error('FIXME'))
 	: id === 'dot' ? (({ field, expr }) => error('FIXME'))
-	: id === 'element' ? (({ index, expr }) => error('FIXME'))
 	: id === 'eq_' ? (({ lhs, rhs }) => error('FIXME'))
 	: id === 'if' ? (({ if_, then, else_ }) => error('FIXME'))
 	: id === 'index' ? (({ index, expr }) => error('FIXME'))
@@ -860,11 +854,6 @@ inferType = (vts, isAsync, ast) => {
 	: id === 'dot' ? (({ field, expr }) =>
 		inferDot(ast, field, infer(expr))
 	)
-	: id === 'element' ? (({ index, expr }) => {
-		let te = newRef();
-		let tl = typeArrayOf(te);
-		return doBind(ast, infer(expr), tl) && (index === '0' ? te : {});
-	})
 	: id === 'eq_' ?
 		inferEqOp
 	: id === 'if' ? (({ if_, then, else_ }) => {
@@ -1059,7 +1048,6 @@ let rewrite = (rf, ast) => {
 	: id === 'cons' ? (({ head, tail }) => ({ id, head: rf(head), tail: rf(tail) }))
 	: id === 'div' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
 	: id === 'dot' ? (({ field, expr }) => ({ id, field, expr: rf(expr) }))
-	: id === 'element' ? (({ index, expr }) => ({ id, index, expr: rf(expr) }))
 	: id === 'eq_' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
 	: id === 'if' ? (({ if_, then, else_ }) => ({ id, if_: rf(if_), then: rf(then), else_: rf(else_) }))
 	: id === 'index' ? (({ index, expr }) => ({ id, index: rf(index), expr: rf(expr) }))
@@ -1126,7 +1114,6 @@ generate = ast => {
 	: id === 'cons' ? (({ head, tail }) => error('FIXME'))
 	: id === 'div' ? (({ lhs, rhs }) => error('FIXME'))
 	: id === 'dot' ? (({ field, expr }) => error('FIXME'))
-	: id === 'element' ? (({ index, expr }) => error('FIXME'))
 	: id === 'eq_' ? (({ lhs, rhs }) => error('FIXME'))
 	: id === 'if' ? (({ if_, then, else_ }) => error('FIXME'))
 	: id === 'index' ? (({ index, expr }) => error('FIXME'))
