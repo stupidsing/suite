@@ -217,7 +217,7 @@ let parseConstant = program => {
 	let first = program.charCodeAt(0);
 
 	return false ? {}
-	: ascii('0') <= first && first <= ascii('9') ? { id: 'number', value: program, i: parseNumber(program) }
+	: ascii('0') <= first && first <= ascii('9') ? { id: 'number', i: parseNumber(program) }
 	: program.startsWith("'") && program.endsWith("'") ? { id: 'string', value: program.slice(1, -1) }
 	: program.startsWith('"') && program.endsWith('"') ? { id: 'string', value: program.slice(1, -1) }
 	: program.startsWith('`') && program.endsWith('`') ? parseBackquote(program.slice(1, -1))
@@ -532,7 +532,7 @@ format = ast => {
 	: id === 'new-promise' ? (({}) => error('FIXME'))
 	: id === 'nil' ? (({}) => error('FIXME'))
 	: id === 'not' ? (({ expr }) => error('FIXME'))
-	: id === 'number' ? ((i) => `${i}`)
+	: id === 'number' ? (({ i }) => `${i}`)
 	: id === 'or_' ? (({ lhs, rhs }) => error('FIXME'))
 	: id === 'pair' ? (({ lhs, rhs }) => error('FIXME'))
 	: id === 'pos' ? (({ expr }) => error('FIXME'))
@@ -1078,7 +1078,7 @@ reduce = ast => {
 	: id === 'new-promise' ? (({}) => ast)
 	: id === 'nil' ? (({}) => ast)
 	: id === 'not' ? (({ expr }) => ({ id, expr: reduce(expr) }))
-	: id === 'number' ? (({ value, i }) => ast)
+	: id === 'number' ? (({ i }) => ast)
 	: id === 'or_' ? (({ lhs, rhs }) => ({ id, lhs: reduce(lhs), rhs: reduce(rhs) }))
 	: id === 'pair' ? (({ lhs, rhs }) => ({ id, lhs: reduce(lhs), rhs: reduce(rhs) }))
 	: id === 'pos' ? (({ expr }) => ({ id, expr: reduce(expr) }))
@@ -1133,7 +1133,7 @@ generate = ast => {
 	: id === 'new-promise' ? (({}) => error('FIXME'))
 	: id === 'nil' ? (({}) => error('FIXME'))
 	: id === 'not' ? (({ expr }) => error('FIXME'))
-	: id === 'number' ? (({ value, i }) => error('FIXME'))
+	: id === 'number' ? (({ i }) => error('FIXME'))
 	: id === 'or_' ? (({ lhs, rhs }) => error('FIXME'))
 	: id === 'pair' ? (({ lhs, rhs }) => error('FIXME'))
 	: id === 'pos' ? (({ expr }) => error('FIXME'))
@@ -1196,7 +1196,7 @@ let expect = stringify({
 				id: 'apply',
 				arg: {
 					id: 'pair',
-					lhs: { id: 'number', value: '0', i: 0 },
+					lhs: { id: 'number', i: 0 },
 					rhs: { id: 'string', value: 'utf8' },
 				},
 				expr: {
