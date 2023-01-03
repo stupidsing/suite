@@ -200,9 +200,9 @@ parseBackquote = program => {
 		let [expr_, right] = splitl(remains, '}');
 
 		let exprToString = {
-			id: 'apply',
-			arg: { id: 'never' },
-			expr: { id: 'dot', field: '.toString', expr: parseApplyBlockFieldIndex(expr_) },
+			id: 'app',
+			lhs: { id: 'dot', field: '.toString', expr: parseApplyBlockFieldIndex(expr_) },
+			rhs: { id: 'never' },
 		};
 
 		return {
@@ -333,17 +333,17 @@ parseApplyBlockFieldIndex = program_ => {
 	: program.startsWith('function() {') && program.endsWith('}()') ?
 		parse(program.slice(12, -3).trim())
 	: program.endsWith('()') ? {
-		id: 'apply',
-		expr: parse(program.slice(0, -2)),
-		arg: { id: 'never' },
+		id: 'app',
+		lhs: parse(program.slice(0, -2)),
+		rhs: { id: 'never' },
 	}
 	: program.endsWith(')') ? function() {
 		let [expr, paramStr_] = splitr(program, '(');
 		let paramStr = paramStr_.slice(0, -1).trim();
 		return expr !== undefined ? {
-			id: 'apply',
-			expr: parse(expr),
-			arg: parse(paramStr),
+			id: 'app',
+			lhs: parse(expr),
+			rhs: parse(paramStr),
 		} : parseValue(program);
 	}()
 	: parseLvalue(program);
@@ -501,7 +501,6 @@ format = ast => {
 	: id === 'alloc' ? (({ v, expr }) => error('FIXME'))
 	: id === 'and' ? (({ lhs, rhs }) => error('FIXME'))
 	: id === 'app' ? (({ lhs, rhs }) => error('FIXME'))
-	: id === 'apply' ? (({ arg, expr }) => error('FIXME'))
 	: id === 'array' ? (({ values }) => error('FIXME'))
 	: id === 'assign' ? (({ var_, value, expr }) => error('FIXME'))
 	: id === 'await' ? (({ expr }) => error('FIXME'))
@@ -818,12 +817,6 @@ inferType = (vts, isAsync, ast) => {
 		let tr = newRef();
 		return doBind(ast, te, typeLambdaOf(tp, tr)) && tr;
 	})
-	: id === 'apply' ? (({ arg, expr }) => {
-		let te = infer(expr);
-		let tp = infer(arg);
-		let tr = newRef();
-		return doBind(ast, te, typeLambdaOf(tp, tr)) && tr;
-	})
 	: id === 'array' ? (({ values }) => {
 		let te = newRef();
 		return fold(true, values, (b, value) => b && doBind(ast, infer(value), te)) && typeArrayOf(te);
@@ -1041,7 +1034,6 @@ let rewrite = (rf, ast) => {
 	: id === 'alloc' ? (({ v, expr }) => ({ id, v, expr: rf(expr) }))
 	: id === 'and' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
 	: id === 'app' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
-	: id === 'apply' ? (({ arg, expr }) => ({ id, arg: rf(arg), expr: rf(expr) }))
 	: id === 'array' ? (({ values }) => ({ id,  values: values.map(rf) }))
 	: id === 'assign' ? (({ var_, value, expr }) => ({ id, var_, value: rf(value), expr: rf(expr) }))
 	: id === 'await' ? (({ expr }) => ({ id, expr: rf(expr) }))
@@ -1086,11 +1078,11 @@ let rewrite = (rf, ast) => {
 };
 
 let resolveAst = { id: 'dot', field: '.resolve', expr: { id: 'var',  value: 'Promise' } };
-let resolve = ast => ({ id: 'apply', arg: ast, expr: resolveAst });
+let resolve = ast => ({ id: 'app', lhs: resolveAst, rhs: ast });
 
 let unresolve = ast => {
-	let { id, arg, expr } = ast;
-	return id === 'apply' && expr === resolveAst ? arg : undefined;
+	let { id, lhs, rhs } = ast;
+	return id === 'app' && lhs === resolveAst ? rhs : undefined;
 };
 
 let reduceAsync;
@@ -1098,7 +1090,7 @@ let reduceAsync;
 reduceAsync = ast => {
 	let { id } = ast;
 
-	let reduceOp = ({ lhs, rhs }) => {
+	let reduceBinOp = ({ lhs, rhs }) => {
 		let pl = reduceAsync(lhs);
 		let pr = reduceAsync(rhs);
 		let l = unresolve(pl);
@@ -1108,30 +1100,30 @@ reduceAsync = ast => {
 		let e;
 		e = resolve({ id, lhs: vl, rhs: vr });
 		e = l !== undefined ? e : {
-			id: 'apply',
-			arg: { id: 'lambda', bind: vl, expr: e },
-			expr: { id: 'dot', field: '.then', expr: pl },
+			id: 'app',
+			lhs: { id: 'dot', field: '.then', expr: pl },
+			rhs: { id: 'lambda', bind: vl, expr: e },
 		};
 		e = r !== undefined ? e : {
-			id: 'apply',
-			arg: { id: 'lambda', bind: vr, expr: e },
-			expr: { id: 'dot', field: '.then', expr: pr },
+			id: 'app',
+			lhs: { id: 'dot', field: '.then', expr: pr },
+			rhs: { id: 'lambda', bind: vr, expr: e },
 		};
 		return e;
 	};
 
 	let f = false ? (({}) => ast)
-	: id === 'add' ? reduceOp
-	: id === 'and' ? reduceOp
-	: id === 'app' ? reduceOp
-	: id === 'div' ? reduceOp
-	: id === 'eq_' ? reduceOp
-	: id === 'le_' ? reduceOp
-	: id === 'lt_' ? reduceOp
-	: id === 'mul' ? reduceOp
-	: id === 'ne_' ? reduceOp
-	: id === 'or_' ? reduceOp
-	: id === 'sub' ? reduceOp
+	: id === 'add' ? reduceBinOp
+	: id === 'and' ? reduceBinOp
+	: id === 'app' ? reduceBinOp
+	: id === 'div' ? reduceBinOp
+	: id === 'eq_' ? reduceBinOp
+	: id === 'le_' ? reduceBinOp
+	: id === 'lt_' ? reduceBinOp
+	: id === 'mul' ? reduceBinOp
+	: id === 'ne_' ? reduceBinOp
+	: id === 'or_' ? reduceBinOp
+	: id === 'sub' ? reduceBinOp
 	: id === 'await' ? (({ expr }) => expr)
 	: id === 'lambda-async' ? (({ bind, expr }) => ({ id: 'lambda', bind, expr: reduceAsync(expr) }))
 	: (({}) => resolve(rewrite(ast_ => unresolve(reduceAsync(ast_)), ast)));
@@ -1163,7 +1155,6 @@ generate = ast => {
 	: id === 'alloc' ? (({ v, expr }) => error('FIXME'))
 	: id === 'and' ? (({ lhs, rhs }) => error('FIXME'))
 	: id === 'app' ? (({ lhs, rhs }) => error('FIXME'))
-	: id === 'apply' ? (({ arg, expr }) => error('FIXME'))
 	: id === 'array' ? (({ values }) => error('FIXME'))
 	: id === 'assign' ? (({ var_, value, expr }) => error('FIXME'))
 	: id === 'await' ? (({ expr }) => error('FIXME'))
@@ -1244,32 +1235,32 @@ let expect = stringify({
 		expr: { id: 'var', value: 'ast' },
 	},
 	expr: {
-		id: 'apply',
-		arg: {
-			id: 'apply',
-			arg: {
-				id: 'apply',
-				arg: {
+		id: 'app',
+		lhs: {
+			id: 'dot',
+			field: '.log',
+			expr: { id: 'var', value: 'console' },
+		},
+		rhs: {
+			id: 'app',
+			lhs: { id: 'var', value: 'parse' },
+			rhs: {
+				id: 'app',
+				lhs: {
+					id: 'dot',
+					field: '.readFileSync',
+					expr: {
+						id: 'app',
+						lhs: { id: 'var', value: 'require' },
+						rhs: { id: 'string', value: 'fs' },
+					},
+				},
+				rhs: {
 					id: 'pair',
 					lhs: { id: 'number', i: 0 },
 					rhs: { id: 'string', value: 'utf8' },
 				},
-				expr: {
-					id: 'dot',
-					field: '.readFileSync',
-					expr: {
-						id: 'apply',
-						arg: { id: 'string', value: 'fs' },
-						expr: { id: 'var', value: 'require' },
-					},
-				},
 			},
-			expr: { id: 'var', value: 'parse' },
-		},
-		expr: {
-			id: 'dot',
-			field: '.log',
-			expr: { id: 'var', value: 'console' },
 		},
 	},
 });
