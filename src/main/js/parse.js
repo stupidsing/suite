@@ -1088,6 +1088,11 @@ let rewrite = (rf, ast) => {
 let resolveAst = { id: 'dot', field: '.resolve', expr: { id: 'var',  value: 'Promise' } };
 let resolve = ast => ({ id: 'apply', arg: ast, expr: resolveAst });
 
+let unresolve = ast => {
+	let { id, arg, expr } = ast;
+	return id === 'apply' && expr === resolveAst ? arg : undefined;
+};
+
 let reduceAsync;
 
 reduceAsync = ast => {
@@ -1095,15 +1100,14 @@ reduceAsync = ast => {
 
 	let f = false ? (({}) => ast)
 	: id === 'add' ? (({ lhs, rhs }) => {
-		let l = reduceAsync(lhs);
-		let r = reduceAsync(rhs);
-		let pl = undefined;
-		let pr = undefined;
+		let pl = reduceAsync(lhs);
+		let pr = reduceAsync(rhs);
+		let l = unresolve(pl);
+		let r = unresolve(pr);
 		let vl = l !== undefined ? l : { id: 'var', v: newDummy() };
 		let vr = r !== undefined ? r : { id: 'var', v: newDummy() };
-		let plain = { id, lhs: vl, rhs: vr };
 		let e;
-		e = resolve(plain);
+		e = resolve({ id, lhs: vl, rhs: vr });
 		e = l !== undefined ? e : {
 			id: 'apply',
 			arg: { id: 'lambda', bind: vl, expr: e },
@@ -1114,13 +1118,10 @@ reduceAsync = ast => {
 			arg: { id: 'lambda', bind: vr, expr: e },
 			expr: { id: 'dot', field: '.then', expr: pr },
 		};
-		return l !== undefined && r !== undefined ? plain : undefined;
+		return e;
 	})
-	: id === 'await' ? (({ expr }) => undefined)
-	: function() {
-		let ast_ = rewrite(a => reduceAsync(a), ast);
-		return (({}) => ast_);
-	}();
+	: id === 'await' ? (({ expr }) => expr)
+	: (({}) => resolve(rewrite(ast_ => unresolve(reduceAsync(ast_)), ast)));
 
 	return f(ast);
 };
@@ -1137,7 +1138,7 @@ reduceNe = ast => {
 	return f(ast);
 };
 
-let reduces = ast => reduceAsync(reduceNe(ast));
+let reduces = ast => unresolve(reduceAsync(reduceNe(ast)));
 
 let generate;
 
