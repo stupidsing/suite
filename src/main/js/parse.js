@@ -1103,10 +1103,10 @@ promisifyAsync = ast => {
 
 	let reduceBinOp = ({ lhs, rhs }) => {
 		let pl = promisifyAsync(lhs);
-		let pr = promisifyAsync(rhs);
 		let l = unpromisify(pl);
-		let r = unpromisify(pr);
 		let vl = l !== undefined ? l : { id: 'var', v: newDummy() };
+		let pr = promisifyAsync(rhs);
+		let r = unpromisify(pr);
 		let vr = r !== undefined ? r : { id: 'var', v: newDummy() };
 		let p;
 		p = promisify({ id, lhs: vl, rhs: vr });
