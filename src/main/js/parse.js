@@ -1098,8 +1098,7 @@ let reduceAsync;
 reduceAsync = ast => {
 	let { id } = ast;
 
-	let f = false ? (({}) => ast)
-	: id === 'add' ? (({ lhs, rhs }) => {
+	let reduceOp = ({ lhs, rhs }) => {
 		let pl = reduceAsync(lhs);
 		let pr = reduceAsync(rhs);
 		let l = unresolve(pl);
@@ -1119,8 +1118,12 @@ reduceAsync = ast => {
 			expr: { id: 'dot', field: '.then', expr: pr },
 		};
 		return e;
-	})
+	};
+
+	let f = false ? (({}) => ast)
+	: id === 'add' ? reduceOp
 	: id === 'await' ? (({ expr }) => expr)
+	: id === 'lambda-async' ? (({ bind, expr }) => ({ id: 'lambda', bind, expr: reduceAsync(expr) }))
 	: (({}) => resolve(rewrite(ast_ => unresolve(reduceAsync(ast_)), ast)));
 
 	return f(ast);
