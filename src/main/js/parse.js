@@ -1129,6 +1129,7 @@ promisifyAsync = ast => {
 	: id === 'and' ? reduceBinOp
 	: id === 'app' ? reduceBinOp
 	: id === 'await' ? (({ expr }) => expr)
+	: id === 'cons' ? reduceBinOp
 	: id === 'div' ? reduceBinOp
 	: id === 'eq_' ? reduceBinOp
 	: id === 'le_' ? reduceBinOp
