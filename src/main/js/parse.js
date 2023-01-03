@@ -242,8 +242,8 @@ let parseArray = (program, parse) => {
 			let tail = tail_.trim();
 			return {
 				id: 'cons',
-				head: parse(head),
-				tail: tail.startsWith('...') && tail.endsWith(',') ? parse(tail.slice(3, -1)) : parseArray_(tail)
+				lhs: parse(head),
+				rhs: tail.startsWith('...') && tail.endsWith(',') ? parse(tail.slice(3, -1)) : parseArray_(tail)
 			};
 		}()
 		: { id: 'nil' };
@@ -505,7 +505,7 @@ format = ast => {
 	: id === 'assign' ? (({ var_, value, expr }) => error('FIXME'))
 	: id === 'await' ? (({ expr }) => error('FIXME'))
 	: id === 'boolean' ? (({ value }) => error('FIXME'))
-	: id === 'cons' ? (({ head, tail }) => error('FIXME'))
+	: id === 'cons' ? (({ lhs, rhs }) => error('FIXME'))
 	: id === 'div' ? (({ lhs, rhs }) => error('FIXME'))
 	: id === 'dot' ? (({ field, expr }) => error('FIXME'))
 	: id === 'eq_' ? (({ lhs, rhs }) => error('FIXME'))
@@ -838,9 +838,9 @@ inferType = (vts, isAsync, ast) => {
 	: id === 'boolean' ? (({}) =>
 		typeBoolean
 	)
-	: id === 'cons' ? (({ head, tail }) => {
-		let tl = typeArrayOf(infer(head));
-		return doBind(ast, infer(tail), tl) && tl;
+	: id === 'cons' ? (({ lhs, rhs }) => {
+		let tl = typeArrayOf(infer(lhs));
+		return doBind(ast, infer(rhs), tl) && tl;
 	})
 	: id === 'div' ?
 		inferMathOp
@@ -1038,7 +1038,7 @@ let rewrite = (rf, ast) => {
 	: id === 'assign' ? (({ var_, value, expr }) => ({ id, var_, value: rf(value), expr: rf(expr) }))
 	: id === 'await' ? (({ expr }) => ({ id, expr: rf(expr) }))
 	: id === 'boolean' ? (({ value }) => ast)
-	: id === 'cons' ? (({ head, tail }) => ({ id, head: rf(head), tail: rf(tail) }))
+	: id === 'cons' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
 	: id === 'div' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
 	: id === 'dot' ? (({ field, expr }) => ({ id, field, expr: rf(expr) }))
 	: id === 'eq_' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
@@ -1175,7 +1175,7 @@ generate = ast => {
 	: id === 'assign' ? (({ var_, value, expr }) => error('FIXME'))
 	: id === 'await' ? (({ expr }) => error('FIXME'))
 	: id === 'boolean' ? (({ value }) => error('FIXME'))
-	: id === 'cons' ? (({ head, tail }) => error('FIXME'))
+	: id === 'cons' ? (({ lhs, rhs }) => error('FIXME'))
 	: id === 'div' ? (({ lhs, rhs }) => error('FIXME'))
 	: id === 'dot' ? (({ field, expr }) => error('FIXME'))
 	: id === 'eq_' ? (({ lhs, rhs }) => error('FIXME'))
