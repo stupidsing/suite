@@ -1092,12 +1092,12 @@ promisifyAsync = ast => {
 	let reduceOp = ({ expr }) => {
 		let pe = promisifyAsync(expr);
 		let e = unpromisify(pe);
-		let vu = e !== undefined ? e : { id: 'var', v: newDummy() };
-		let p = promisify({ id, expr: vu });
+		let ve = e !== undefined ? e : { id: 'var', v: newDummy() };
+		let p = promisify({ id, expr: ve });
 		return e !== undefined ? p : {
 			id: 'app',
 			lhs: { id: 'dot', field: '.then', expr: pe },
-			rhs: { id: 'lambda', bind: vu, expr: p },
+			rhs: { id: 'lambda', bind: ve, expr: p },
 		};
 	};
 
