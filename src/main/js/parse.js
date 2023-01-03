@@ -1029,7 +1029,6 @@ let rewrite = (rf, ast) => {
 	let { id } = ast;
 
 	let f = false ? (({}) => ast)
-	: id === 'ne_' ? (({ lhs, rhs }) => ({ id: 'not', expr: { id: 'eq_', lhs: rf(lhs), rhs: rf(rhs) } }))
 	: id === 'add' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
 	: id === 'alloc' ? (({ v, expr }) => ({ id, v, expr: rf(expr) }))
 	: id === 'and' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
