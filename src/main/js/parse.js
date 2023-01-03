@@ -1122,6 +1122,16 @@ reduceAsync = ast => {
 
 	let f = false ? (({}) => ast)
 	: id === 'add' ? reduceOp
+	: id === 'and' ? reduceOp
+	: id === 'app' ? reduceOp
+	: id === 'div' ? reduceOp
+	: id === 'eq_' ? reduceOp
+	: id === 'le_' ? reduceOp
+	: id === 'lt_' ? reduceOp
+	: id === 'mul' ? reduceOp
+	: id === 'ne_' ? reduceOp
+	: id === 'or_' ? reduceOp
+	: id === 'sub' ? reduceOp
 	: id === 'await' ? (({ expr }) => expr)
 	: id === 'lambda-async' ? (({ bind, expr }) => ({ id: 'lambda', bind, expr: reduceAsync(expr) }))
 	: (({}) => resolve(rewrite(ast_ => unresolve(reduceAsync(ast_)), ast)));
