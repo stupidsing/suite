@@ -1077,56 +1077,72 @@ let rewrite = (rf, ast) => {
 	return f(ast);
 };
 
-let resolveAst = { id: 'dot', field: '.resolve', expr: { id: 'var',  value: 'Promise' } };
-let resolve = ast => ({ id: 'app', lhs: resolveAst, rhs: ast });
+let promiseResolve = { id: 'dot', field: '.resolve', expr: { id: 'var',  value: 'Promise' } };
+let promisify = ast => ({ id: 'app', lhs: promiseResolve, rhs: ast });
 
-let unresolve = ast => {
+let unpromisify = ast => {
 	let { id, lhs, rhs } = ast;
-	return id === 'app' && lhs === resolveAst ? rhs : undefined;
+	return id === 'app' && lhs === promiseResolve ? rhs : undefined;
 };
 
-let reduceAsync;
+let promisifyAsync;
 
-reduceAsync = ast => {
+promisifyAsync = ast => {
 	let { id } = ast;
 
+	let reduceOp = ({ expr }) => {
+		let pe = promisifyAsync(expr);
+		let e = unpromisify(pe);
+		let vu = e !== undefined ? e : { id: 'var', v: newDummy() };
+		let p = promisify({ id, expr: vu });
+		return e !== undefined ? p : {
+			id: 'app',
+			lhs: { id: 'dot', field: '.then', expr: pe },
+			rhs: { id: 'lambda', bind: vu, expr: p },
+		};
+	};
+
 	let reduceBinOp = ({ lhs, rhs }) => {
-		let pl = reduceAsync(lhs);
-		let pr = reduceAsync(rhs);
-		let l = unresolve(pl);
-		let r = unresolve(pr);
+		let pl = promisifyAsync(lhs);
+		let pr = promisifyAsync(rhs);
+		let l = unpromisify(pl);
+		let r = unpromisify(pr);
 		let vl = l !== undefined ? l : { id: 'var', v: newDummy() };
 		let vr = r !== undefined ? r : { id: 'var', v: newDummy() };
-		let e;
-		e = resolve({ id, lhs: vl, rhs: vr });
-		e = l !== undefined ? e : {
+		let p;
+		p = promisify({ id, lhs: vl, rhs: vr });
+		p = l !== undefined ? p : {
 			id: 'app',
 			lhs: { id: 'dot', field: '.then', expr: pl },
-			rhs: { id: 'lambda', bind: vl, expr: e },
+			rhs: { id: 'lambda', bind: vl, expr: p },
 		};
-		e = r !== undefined ? e : {
+		p = r !== undefined ? p : {
 			id: 'app',
 			lhs: { id: 'dot', field: '.then', expr: pr },
-			rhs: { id: 'lambda', bind: vr, expr: e },
+			rhs: { id: 'lambda', bind: vr, expr: p },
 		};
-		return e;
+		return p;
 	};
 
 	let f = false ? (({}) => ast)
 	: id === 'add' ? reduceBinOp
 	: id === 'and' ? reduceBinOp
 	: id === 'app' ? reduceBinOp
+	: id === 'await' ? (({ expr }) => expr)
 	: id === 'div' ? reduceBinOp
 	: id === 'eq_' ? reduceBinOp
 	: id === 'le_' ? reduceBinOp
 	: id === 'lt_' ? reduceBinOp
 	: id === 'mul' ? reduceBinOp
 	: id === 'ne_' ? reduceBinOp
+	: id === 'neg' ? reduceOp
+	: id === 'not' ? reduceOp
 	: id === 'or_' ? reduceBinOp
+	: id === 'pos' ? reduceOp
 	: id === 'sub' ? reduceBinOp
-	: id === 'await' ? (({ expr }) => expr)
-	: id === 'lambda-async' ? (({ bind, expr }) => ({ id: 'lambda', bind, expr: reduceAsync(expr) }))
-	: (({}) => resolve(rewrite(ast_ => unresolve(reduceAsync(ast_)), ast)));
+	: id === 'typeof' ? reduceOp
+	: id === 'lambda-async' ? (({ bind, expr }) => ({ id: 'lambda', bind, expr: promisifyAsync(expr) }))
+	: (({}) => promisify(rewrite(ast_ => unpromisify(promisifyAsync(ast_)), ast)));
 
 	return f(ast);
 };
@@ -1143,7 +1159,7 @@ reduceNe = ast => {
 	return f(ast);
 };
 
-let reduces = ast => unresolve(reduceAsync(reduceNe(ast)));
+let reduces = ast => unpromisify(promisifyAsync(reduceNe(ast)));
 
 let generate;
 
