@@ -290,7 +290,7 @@ parseValue = program_ => {
 		return {
 			id: 'try',
 			expr: parse(try_),
-			catch_: { id: 'lambda', bind: { id: 'var', value: 'e' }, expr: parse(catch_) }
+			catch_: { id: 'lambda', bind: { id: 'var', value: 'e' }, expr: parse(catch_) },
 		};
 	}()
 	: program.startsWith('typeof ') ?
