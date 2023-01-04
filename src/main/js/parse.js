@@ -201,7 +201,7 @@ parseBackquote = program => {
 
 		let exprToString = {
 			id: 'app',
-			lhs: { id: 'dot', field: '.toString', expr: parseApplyBlockFieldIndex(expr_) },
+			lhs: { id: 'dot', expr: parseApplyBlockFieldIndex(expr_), field: '.toString' },
 			rhs: { id: 'never' },
 		};
 
@@ -312,7 +312,7 @@ let parseLvalue = program_ => {
 
 	return false ? {}
 	: expr !== undefined && isIdentifier(field) ?
-		{ id: 'dot', field: '.' + field, expr: parseApplyBlockFieldIndex(expr) }
+		{ id: 'dot', expr: parseApplyBlockFieldIndex(expr), field: '.' + field }
 	: program.endsWith(']') ? function() {
 		let [expr, index_] = splitr(program, '[');
 		let index = index_.slice(0, -1);
@@ -507,7 +507,7 @@ format = ast => {
 	: id === 'boolean' ? (({ value }) => error('FIXME'))
 	: id === 'cons' ? (({ lhs, rhs }) => error('FIXME'))
 	: id === 'div' ? (({ lhs, rhs }) => error('FIXME'))
-	: id === 'dot' ? (({ field, expr }) => error('FIXME'))
+	: id === 'dot' ? (({ expr, field }) => error('FIXME'))
 	: id === 'eq_' ? (({ lhs, rhs }) => error('FIXME'))
 	: id === 'if' ? (({ if_, then, else_ }) => error('FIXME'))
 	: id === 'index' ? (({ index, expr }) => error('FIXME'))
@@ -844,7 +844,7 @@ inferType = (vts, isAsync, ast) => {
 	})
 	: id === 'div' ?
 		inferMathOp
-	: id === 'dot' ? (({ field, expr }) =>
+	: id === 'dot' ? (({ expr, field }) =>
 		inferDot(ast, field, infer(expr))
 	)
 	: id === 'eq_' ?
@@ -1039,7 +1039,7 @@ let rewrite = (rf, ast) => {
 	: id === 'boolean' ? (({ value }) => ast)
 	: id === 'cons' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
 	: id === 'div' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
-	: id === 'dot' ? (({ field, expr }) => ({ id, field, expr: rf(expr) }))
+	: id === 'dot' ? (({ expr, field }) => ({ id, expr: rf(expr), field }))
 	: id === 'eq_' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
 	: id === 'if' ? (({ if_, then, else_ }) => ({ id, if_: rf(if_), then: rf(then), else_: rf(else_) }))
 	: id === 'index' ? (({ index, expr }) => ({ id, index: rf(index), expr: rf(expr) }))
@@ -1076,7 +1076,7 @@ let rewrite = (rf, ast) => {
 	return f(ast);
 };
 
-let promiseResolve = { id: 'dot', field: '.resolve', expr: { id: 'var',  value: 'Promise' } };
+let promiseResolve = { id: 'dot', expr: { id: 'var',  value: 'Promise' }, field: '.resolve' };
 let promisify = ast => ({ id: 'app', lhs: promiseResolve, rhs: ast });
 
 let unpromisify = ast => {
@@ -1096,7 +1096,7 @@ promisifyAsync = ast => {
 		let p = promisify({ id, expr: ve });
 		return e !== undefined ? p : {
 			id: 'app',
-			lhs: { id: 'dot', field: '.then', expr: pe },
+			lhs: { id: 'dot', expr: pe, field: '.then' },
 			rhs: { id: 'lambda', bind: ve, expr: p },
 		};
 	};
@@ -1112,12 +1112,12 @@ promisifyAsync = ast => {
 		p = promisify({ id, lhs: vl, rhs: vr });
 		p = l !== undefined ? p : {
 			id: 'app',
-			lhs: { id: 'dot', field: '.then', expr: pl },
+			lhs: { id: 'dot', expr: pl, field: '.then' },
 			rhs: { id: 'lambda', bind: vl, expr: p },
 		};
 		p = r !== undefined ? p : {
 			id: 'app',
-			lhs: { id: 'dot', field: '.then', expr: pr },
+			lhs: { id: 'dot', expr: pr, field: '.then' },
 			rhs: { id: 'lambda', bind: vr, expr: p },
 		};
 		return p;
@@ -1177,7 +1177,7 @@ generate = ast => {
 	: id === 'boolean' ? (({ value }) => error('FIXME'))
 	: id === 'cons' ? (({ lhs, rhs }) => error('FIXME'))
 	: id === 'div' ? (({ lhs, rhs }) => error('FIXME'))
-	: id === 'dot' ? (({ field, expr }) => error('FIXME'))
+	: id === 'dot' ? (({ expr, field }) => error('FIXME'))
 	: id === 'eq_' ? (({ lhs, rhs }) => error('FIXME'))
 	: id === 'if' ? (({ if_, then, else_ }) => error('FIXME'))
 	: id === 'index' ? (({ index, expr }) => error('FIXME'))
@@ -1254,8 +1254,8 @@ let expect = stringify({
 		id: 'app',
 		lhs: {
 			id: 'dot',
-			field: '.log',
 			expr: { id: 'var', value: 'console' },
+			field: '.log',
 		},
 		rhs: {
 			id: 'app',
@@ -1264,12 +1264,12 @@ let expect = stringify({
 				id: 'app',
 				lhs: {
 					id: 'dot',
-					field: '.readFileSync',
 					expr: {
 						id: 'app',
 						lhs: { id: 'var', value: 'require' },
 						rhs: { id: 'string', value: 'fs' },
 					},
+					field: '.readFileSync',
 				},
 				rhs: {
 					id: 'pair',
