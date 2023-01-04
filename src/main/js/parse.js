@@ -43,7 +43,7 @@ fold = (init, es, op) => isNotEmpty(es) ? fold(op(init, head(es)), tail(es), op)
 
 let dump = v => {
 	let dump_;
-	dump_ = (vs, v) => false ? ''
+	dump_ = (vs, v) => false ? undefined
 		: contains(vs, v) ?
 			'<recurse>'
 		: v.id !== undefined ? function() {
@@ -77,7 +77,7 @@ let isQuote = ch => ch === ascii("'") || ch === ascii('"') || ch === ascii('`');
 let quoteBracket = (qb, ch) => {
 	let qb0 = head(qb);
 
-	return false ? nil
+	return false ? undefined
 	: ch === ascii('{') && qb0 === ascii('`') ? cons(ch, qb)
 	: ch === ascii('}') && qb0 === ascii('`') ? cons(ch, qb)
 	: isQuote(qb0) ? (qb0 === ch ? tail(qb) : qb)
@@ -216,7 +216,7 @@ parseBackquote = program => {
 let parseConstant = program => {
 	let first = program.charCodeAt(0);
 
-	return false ? {}
+	return false ? undefined
 	: ascii('0') <= first && first <= ascii('9') ? { id: 'number', i: parseNumber(program) }
 	: program.startsWith("'") && program.endsWith("'") ? { id: 'string', value: program.slice(1, -1) }
 	: program.startsWith('"') && program.endsWith('"') ? { id: 'string', value: program.slice(1, -1) }
@@ -284,7 +284,7 @@ let parseValue;
 parseValue = program_ => {
 	let program = program_.trim();
 
-	return false ? {}
+	return false ? undefined
 	: program.startsWith('try {') && program.endsWith('}') ? function() {
 		let [try_, catch_] = splitl(program.slice(4, undefined), 'catch (e)');
 		return {
@@ -310,7 +310,7 @@ let parseLvalue = program_ => {
 	let program = program_.trim();
 	let [expr, field] = splitr(program, '.');
 
-	return false ? {}
+	return false ? undefined
 	: expr !== undefined && isIdentifier(field) ?
 		{ id: 'dot', expr: parseApplyBlockFieldIndex(expr), field: '.' + field }
 	: program.endsWith(']') ? function() {
@@ -329,7 +329,7 @@ let parseLvalue = program_ => {
 parseApplyBlockFieldIndex = program_ => {
 	let program = program_.trim();
 
-	return false ? {}
+	return false ? undefined
 	: program.startsWith('function() {') && program.endsWith('}()') ?
 		parse(program.slice(12, -3).trim())
 	: program.endsWith('()') ? {
@@ -396,7 +396,7 @@ let parseBind;
 parseBind = program_ => {
 	let program = program_.trim();
 
-	return false ? {}
+	return false ? undefined
 	: program === '()' ?
 		{ id: 'never' }
 	: program.startsWith('(') && program.endsWith(')') ?
@@ -440,7 +440,7 @@ parse = program => {
 		let statement = statement_.trim();
 		let expr = expr_.trim();
 
-		return false ? {}
+		return false ? undefined
 		: statement.startsWith('let ') ? function() {
 			let [var_, value] = splitl(statement.slice(4, undefined), '=');
 			let v = var_.trim();
@@ -496,7 +496,7 @@ let format;
 format = ast => {
 	let { id } = ast;
 
-	let f = false ? (({}) => '')
+	let f = false ? undefined
 	: id === 'add' ? (({ lhs, rhs }) => `${format(lhs)} + ${format(rhs)}`)
 	: id === 'alloc' ? (({ v, expr }) => error('FIXME'))
 	: id === 'and' ? (({ lhs, rhs }) => error('FIXME'))
@@ -573,12 +573,12 @@ let dumpRef = v => {
 	dumpRef_ = (vs, v) => {
 		let { ref } = v;
 		let listv = assumeList(v);
-		return false ? ''
+		return false ? undefined
 		: contains(vs, v) ?
 			'<recurse>'
 		: ref !== undefined ?
 			(refs.get(ref) !== v ? dumpRef_(cons(v, vs), refs.get(ref)) : `_${ref}`)
-		: typeof v === 'object' ? (false ? ''
+		: typeof v === 'object' ? (false ? undefined
 			: isEmpty(listv) ?
 				''
 			: isNotEmpty(listv) ?
@@ -608,7 +608,7 @@ tryBind = (a, b) => function() {
 	let refa = a.ref;
 	let refb = b.ref;
 
-	return false ? false
+	return false ? undefined
 	: a === b ?
 		true
 	: refa !== undefined ? function() {
@@ -652,7 +652,7 @@ let cloneRef = v => {
 	cloneRef_ = v => {
 		let { ref } = v;
 		let vlist = assumeList(v);
-		return false ? {}
+		return false ? undefined
 		: ref !== undefined
 			? (fromTos.has(ref) ? fromTos.get(ref) : function() {
 				let v1 = newRef();
@@ -682,7 +682,7 @@ let lookup = (vts, v) => {
 
 let defineBindTypes;
 
-defineBindTypes = (vts, ast) => false ? vts
+defineBindTypes = (vts, ast) => false ? undefined
 	: ast.id === 'array' ? fold(vts, ast.values, defineBindTypes)
 	: ast.id === 'never' ? vts
 	: ast.id === 'nil' ? vts
@@ -714,7 +714,7 @@ let typeMapOf = (tk, tv) => typeStructOfCompleted({
 });
 
 let inferDot = (ast, ts, field) => {
-	return false ? {}
+	return false ? undefined
 	: field === '.charCodeAt' ?
 		doBind(ast, ts, typeString) && typeLambdaOf(typeNumber, typeNumber)
 	: field === '.endsWith' ?
@@ -797,7 +797,7 @@ inferType = (vts, isAsync, ast) => {
 		&& doBind(ast, infer(rhs), typeNumber)
 		&& typeNumber;
 
-	let f = false ? (({}) => {})
+	let f = false ? undefined
 	: id === 'add' ? (({ lhs, rhs }) => {
 		let t = newRef();
 		return true
@@ -1028,7 +1028,7 @@ let predefinedTypes = Object
 let rewrite = (rf, ast) => {
 	let { id } = ast;
 
-	let f = false ? (({}) => ast)
+	let f = false ? undefined
 	: id === 'add' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
 	: id === 'alloc' ? (({ v, expr }) => ({ id, v, expr: rf(expr) }))
 	: id === 'and' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
@@ -1123,7 +1123,7 @@ promisifyAsync = ast => {
 		return p;
 	};
 
-	let f = false ? (({}) => ast)
+	let f = false ? undefined
 	: id === 'add' ? reduceBinOp
 	: id === 'and' ? reduceBinOp
 	: id === 'app' ? reduceBinOp
@@ -1152,7 +1152,7 @@ let reduceNe;
 reduceNe = ast => {
 	let { id } = ast;
 
-	let f = false ? (({}) => ast)
+	let f = false ? undefined
 	: id === 'ne_' ? (({ lhs, rhs }) => ({ id: 'not', expr: { id: 'eq_', lhs: reduceNe(lhs), rhs: reduceNe(rhs) } }))
 	: (({}) => rewrite(reduceNe, ast));
 
@@ -1166,7 +1166,7 @@ let generate;
 generate = ast => {
 	let { id } = ast;
 
-	let f = false ? (({}) => error('FIXME'))
+	let f = false ? undefined
 	: id === 'add' ? (({ lhs, rhs }) => error('FIXME'))
 	: id === 'alloc' ? (({ v, expr }) => error('FIXME'))
 	: id === 'and' ? (({ lhs, rhs }) => error('FIXME'))
