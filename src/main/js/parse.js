@@ -1215,11 +1215,11 @@ generate = ast => {
 };
 
 let process_ = program => {
-	let ast = reduces(parse(program));
+	let ast = parse(program);
 
 	let type = inferType(predefinedTypes, false, ast);
 
-	return { ast, type };
+	return { ast: reduces(ast), type };
 };
 
 let process = program_ => {
