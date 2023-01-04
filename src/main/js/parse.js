@@ -713,7 +713,7 @@ let typeMapOf = (tk, tv) => typeStructOfCompleted({
 	'.set': typeLambdaOfFixed(typePairOf(tk, tv), typeNever),
 });
 
-let inferDot = (ast, field, ts) => {
+let inferDot = (ast, ts, field) => {
 	return false ? {}
 	: field === '.charCodeAt' ?
 		doBind(ast, ts, typeString) && typeLambdaOf(typeNumber, typeNumber)
@@ -845,7 +845,7 @@ inferType = (vts, isAsync, ast) => {
 	: id === 'div' ?
 		inferMathOp
 	: id === 'dot' ? (({ expr, field }) =>
-		inferDot(ast, field, infer(expr))
+		inferDot(ast, infer(expr), field)
 	)
 	: id === 'eq_' ?
 		inferEqOp
