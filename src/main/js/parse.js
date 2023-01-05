@@ -1033,7 +1033,7 @@ let rewrite = (rf, ast) => {
 	: id === 'alloc' ? (({ v, expr }) => ({ id, v, expr: rf(expr) }))
 	: id === 'and' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
 	: id === 'app' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
-	: id === 'array' ? (({ values }) => ({ id,  values: values.map(rf) }))
+	: id === 'array' ? (({ values }) => ({ id, values: values.map(rf) }))
 	: id === 'assign' ? (({ var_, value, expr }) => ({ id, var_, value: rf(value), expr: rf(expr) }))
 	: id === 'await' ? (({ expr }) => ({ id, expr: rf(expr) }))
 	: id === 'boolean' ? (({ value }) => ast)
@@ -1076,7 +1076,7 @@ let rewrite = (rf, ast) => {
 	return f(ast);
 };
 
-let promiseResolve = { id: 'dot', expr: { id: 'var',  value: 'Promise' }, field: '.resolve' };
+let promiseResolve = { id: 'dot', expr: { id: 'var', value: 'Promise' }, field: '.resolve' };
 let promisify = ast => ({ id: 'app', lhs: promiseResolve, rhs: ast });
 
 let unpromisify = ast => {
@@ -1131,6 +1131,23 @@ promisifyAsync = ast => {
 	: id === 'cons' ? reduceBinOp
 	: id === 'div' ? reduceBinOp
 	: id === 'eq_' ? reduceBinOp
+	: id === 'if' ? (({ if_, then, else_ }) => {
+		let pi = promisifyAsync(if_);
+		let i = unpromisify(pi);
+		let vi = i !== undefined ? i : { id: 'var', v: newDummy() };
+		let pt = promisifyAsync(then);
+		let t = unpromisify(pt);
+		let pe = promisifyAsync(else_);
+		let e = unpromisify(pe);
+		return false ? undefined
+		: i !== undefined && t !== undefined && e !== undefined ? promisify({ id, if_: vi, then: t, else_: e })
+		: i !== undefined ? { id, if_: vi, then: promisifyAsync(then), else_: promisifyAsync(else_) }
+		: {
+			id: 'app',
+			lhs: { id: 'dot', expr: pi, field: '.then' },
+			rhs: { id: 'lambda', bind: vi, expr: { id, if_: vi, then: promisifyAsync(then), else_: promisifyAsync(else_) } },
+		};
+	})
 	: id === 'le_' ? reduceBinOp
 	: id === 'lt_' ? reduceBinOp
 	: id === 'mul' ? reduceBinOp
