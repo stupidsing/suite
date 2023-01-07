@@ -228,7 +228,7 @@ let parseConstant = program => {
 	: program === 'nil' ? { id: 'nil' }
 	: program === 'true' ? { id: 'boolean', val: 'true' }
 	: program === 'undefined' ? { id: 'undefined' }
-	: isIdentifier(program) ? { id: 'var', value: program }
+	: isIdentifier(program) ? { id: 'var', vn: program }
 	: error(`cannot parse "${program}"`);
 };
 
@@ -268,8 +268,8 @@ let parseStructInner = (program, parse) => {
 		id: 'struct',
 		kvs: keepsplitl(appendTrailingComma(program), ',', kv => {
 			let [key_, value_] = splitl(kv, ':');
-			let field = parseConstant(key_.trim()).value;
-			let value = value_ !== undefined ? parse(value_) : { id: 'var', value: field };
+			let field = parseConstant(key_.trim()).vn;
+			let value = value_ !== undefined ? parse(value_) : { id: 'var', vn: field };
 			return { key: '.' + field, value };
 		}),
 	};
@@ -290,7 +290,7 @@ parseValue = program_ => {
 		return {
 			id: 'try',
 			expr: parse(try_),
-			catch_: { id: 'lambda', bind: { id: 'var', value: 'e' }, expr: parse(catch_) },
+			catch_: { id: 'lambda', bind: { id: 'var', vn: 'e' }, expr: parse(catch_) },
 		};
 	}()
 	: program.startsWith('typeof ') ?
@@ -487,7 +487,7 @@ parse = program => {
 			}
 			: {
 				id: 'let',
-				bind: { id: 'var', value: newDummy() },
+				bind: { id: 'var', vn: newDummy() },
 				value: parse(lhs),
 				expr: parse(expr),
 			};
@@ -542,7 +542,7 @@ format = ast => {
 	: id === 'tuple' ? (({ values }) => error('FIXME'))
 	: id === 'typeof' ? (({ expr }) => `typeof ${format(expr)}`)
 	: id === 'undefined' ? (({}) => `${id}`)
-	: id === 'var' ? (({ value }) => value)
+	: id === 'var' ? (({ vn }) => vn)
 	: id === 'while' ? (({ cond, loop, expr }) => error('FIXME'))
 	: error(`cannot format ${id}`);
 
@@ -694,7 +694,7 @@ defineBindTypes = (vts, ast) => false ? undefined
 	: ast.id === 'pair' ? defineBindTypes(defineBindTypes(vts, ast.lhs), ast.rhs)
 	: ast.id === 'struct' ? fold(vts, ast.kvs, (vts_, kv) => defineBindTypes(vts_, kv.value))
 	: ast.id === 'tuple' ? fold(vts, ast.values, defineBindTypes)
-	: ast.id === 'var' ? cons([ast.value, newRef()], vts)
+	: ast.id === 'var' ? cons([ast.vn, newRef()], vts)
 	: error(`cannot destructure ${dump(ast)}`);
 
 let typeArrayOf = type => ({ id: 'array', of: type });
@@ -986,8 +986,8 @@ inferType = (vts, isAsync, ast) => {
 	: id === 'undefined' ? (({}) =>
 		newRef()
 	)
-	: id === 'var' ? (({ value }) => {
-		let t = finalRef(lookup(vts, value));
+	: id === 'var' ? (({ vn }) => {
+		let t = finalRef(lookup(vts, vn));
 		return t.generic !== true ? t : cloneRef(t);
 	})
 	: id === 'while' ? (({ cond, loop, expr }) => {
@@ -1080,14 +1080,14 @@ let rewrite = (rf, ast) => {
 	: id === 'tuple' ? (({ values }) => ({ id, values: values.map(rf) }))
 	: id === 'typeof' ? (({ expr }) => ({ id, expr: rf(expr) }))
 	: id === 'undefined' ? (({}) => ast)
-	: id === 'var' ? (({ value }) => ast)
+	: id === 'var' ? (({ vn }) => ast)
 	: id === 'while' ? (({ cond, loop, expr }) => ({ id, cond: rf(cond), loop: rf(loop), expr: rf(expr) }))
 	: error(`cannot rewrite for ${id}`);
 
 	return f(ast);
 };
 
-let promiseResolve = { id: 'dot', expr: { id: 'var', value: 'Promise' }, field: '.resolve' };
+let promiseResolve = { id: 'dot', expr: { id: 'var', vn: 'Promise' }, field: '.resolve' };
 let promisify = ast => ({ id: 'app', lhs: promiseResolve, rhs: ast });
 
 let unpromisify = ast => {
@@ -1103,7 +1103,7 @@ reduceAsync = ast => {
 	let reduceOp = ({ expr }) => {
 		let pe = reduceAsync(expr);
 		let e = unpromisify(pe);
-		let ve = e ?? { id: 'var', value: newDummy() };
+		let ve = e ?? { id: 'var', vn: newDummy() };
 		let p = promisify({ id, expr: ve });
 		return e !== undefined ? p : {
 			id: 'app',
@@ -1115,10 +1115,10 @@ reduceAsync = ast => {
 	let reduceBinOp = ({ lhs, rhs }) => {
 		let pl = reduceAsync(lhs);
 		let l = unpromisify(pl);
-		let vl = l ?? { id: 'var', value: newDummy() };
+		let vl = l ?? { id: 'var', vn: newDummy() };
 		let pr = reduceAsync(rhs);
 		let r = unpromisify(pr);
-		let vr = r ?? { id: 'var', value: newDummy() };
+		let vr = r ?? { id: 'var', vn: newDummy() };
 		let p;
 		p = promisify({ id, lhs: vl, rhs: vr });
 		p = l !== undefined ? p : {
@@ -1146,7 +1146,7 @@ reduceAsync = ast => {
 	: id === 'if' ? (({ if_, then, else_ }) => {
 		let pi = reduceAsync(if_);
 		let i = unpromisify(pi);
-		let vi = i ?? { id: 'var', value: newDummy() };
+		let vi = i ?? { id: 'var', vn: newDummy() };
 		let pt = reduceAsync(then);
 		let t = unpromisify(pt);
 		let pe = reduceAsync(else_);
@@ -1237,7 +1237,7 @@ generate = ast => {
 	: id === 'tuple' ? (({ values }) => error('FIXME'))
 	: id === 'typeof' ? (({ expr }) => error('FIXME'))
 	: id === 'undefined' ? (({}) => error('FIXME'))
-	: id === 'var' ? (({ value }) => error('FIXME'))
+	: id === 'var' ? (({ vn }) => error('FIXME'))
 	: id === 'while' ? (({ cond, loop, expr }) => error('FIXME'))
 	: error(`cannot generate for ${id}`);
 
@@ -1272,29 +1272,29 @@ let actual = stringify(process(`
 
 let expect = stringify({
 	id: 'let',
-	bind: { id: 'var', value: 'parse' },
+	bind: { id: 'var', vn: 'parse' },
 	value: {
 		id: 'lambda',
-		bind: { id: 'var', value: 'ast' },
-		expr: { id: 'var', value: 'ast' },
+		bind: { id: 'var', vn: 'ast' },
+		expr: { id: 'var', vn: 'ast' },
 	},
 	expr: {
 		id: 'app',
 		lhs: {
 			id: 'dot',
-			expr: { id: 'var', value: 'console' },
+			expr: { id: 'var', vn: 'console' },
 			field: '.log',
 		},
 		rhs: {
 			id: 'app',
-			lhs: { id: 'var', value: 'parse' },
+			lhs: { id: 'var', vn: 'parse' },
 			rhs: {
 				id: 'app',
 				lhs: {
 					id: 'dot',
 					expr: {
 						id: 'app',
-						lhs: { id: 'var', value: 'require' },
+						lhs: { id: 'var', vn: 'require' },
 						rhs: { id: 'string', val: 'fs' },
 					},
 					field: '.readFileSync',
