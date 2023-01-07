@@ -1161,6 +1161,20 @@ reduceAsync = ast => {
 		};
 	})
 	: id === 'le_' ? reduceBinOp
+	: id === 'let' ? (({ bind, value, expr }) => {
+		let pv = reduceAsync(value);
+		let v = unpromisify(pv);
+		let pe = reduceAsync(expr);
+		let e = unpromisify(pe);
+		return false ? undefined
+		: e !== undefined && v !== undefined ? promisify({ id, bind, value: v, expr: e })
+		: e === undefined && v !== undefined ? { id, bind, value: v, expr: pe }
+		: {
+			id: 'app',
+			lhs: { id: 'dot', expr: pv, field: '.then' },
+			rhs: { id: 'lambda', bind, expr: pe },
+		};
+	})
 	: id === 'lt_' ? reduceBinOp
 	: id === 'mul' ? reduceBinOp
 	: id === 'ne_' ? reduceBinOp
