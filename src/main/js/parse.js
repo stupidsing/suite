@@ -2,6 +2,7 @@
 // parsing a javascript subset and inference variable types.
 // able to parse myself.
 
+// a, b is a pair.
 // [a, b,] is an array.
 // [a, b] is a tuple.
 
