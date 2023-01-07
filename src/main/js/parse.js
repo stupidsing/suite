@@ -538,12 +538,12 @@ format = ast => {
 	: id === 'struct' ? (({ kvs }) => `${kvs.map(({ key, value }) => `${key}: ${format(value)}`).join(', ')}`)
 	: id === 'sub' ? (({ lhs, rhs }) => `${format(lhs)} - ${format(rhs)}`)
 	: id === 'throw' ? (({ expr }) => `throw ${format(expr)}`)
-	: id === 'try' ? (({ expr, catch_ }) => `try { ${format(expr)}; } catch (e) { ${format(catch_)}; }`)
+	: id === 'try' ? (({ expr, catch_ }) => `try { ${format(expr)}; } catch (e) { return ${format(catch_)}; }`)
 	: id === 'tuple' ? (({ values }) => error('FIXME'))
 	: id === 'typeof' ? (({ expr }) => `typeof ${format(expr)}`)
 	: id === 'undefined' ? (({}) => `${id}`)
 	: id === 'var' ? (({ vn }) => vn)
-	: id === 'while' ? (({ cond, loop, expr }) => `while (${format(cond)}) { ${format(loop)}; } ${format(expr)};`)
+	: id === 'while' ? (({ cond, loop, expr }) => `while (${format(cond)}) { ${format(loop)}; } ${format(expr)}`)
 	: error(`cannot format ${id}`);
 
 	return `(${f(ast)})`;
