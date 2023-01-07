@@ -705,15 +705,15 @@ let lookup = (vts, v) => {
 	return lookup_(vts);
 };
 
-let defineBindTypes;
+let bindTypes;
 
-defineBindTypes = (vts, ast) => false ? undefined
-	: ast.id === 'array' ? fold(vts, ast.values, defineBindTypes)
+bindTypes = (vts, ast) => false ? undefined
+	: ast.id === 'array' ? fold(vts, ast.values, bindTypes)
 	: ast.id === 'never' ? vts
 	: ast.id === 'nil' ? vts
-	: ast.id === 'pair' ? defineBindTypes(defineBindTypes(vts, ast.lhs), ast.rhs)
-	: ast.id === 'struct' ? fold(vts, ast.kvs, (vts_, kv) => defineBindTypes(vts_, kv.value))
-	: ast.id === 'tuple' ? fold(vts, ast.values, defineBindTypes)
+	: ast.id === 'pair' ? bindTypes(bindTypes(vts, ast.lhs), ast.rhs)
+	: ast.id === 'struct' ? fold(vts, ast.kvs, (vts_, kv) => bindTypes(vts_, kv.value))
+	: ast.id === 'tuple' ? fold(vts, ast.values, bindTypes)
 	: ast.id === 'var' ? cons([ast.vn, newRef()], vts)
 	: error(`cannot destructure ${dump(ast)}`);
 
@@ -900,13 +900,13 @@ inferType = (vts, isAsync, ast) => {
 			&& t;
 	})
 	: id === 'lambda' ? (({ bind, expr }) => {
-		let vts1 = defineBindTypes(vts, bind);
+		let vts1 = bindTypes(vts, bind);
 		let tb = inferType(vts1, false, bind);
 		let te = inferType(vts1, false, expr);
 		return typeLambdaOf(tb, te);
 	})
 	: id === 'lambda-async' ? (({ bind, expr }) => {
-		let vts1 = defineBindTypes(vts, bind);
+		let vts1 = bindTypes(vts, bind);
 		let tb = inferType(vts1, false, bind);
 		let te = inferType(vts1, true, expr);
 		return typeLambdaOf(tb, typePromiseOf(te));
@@ -914,7 +914,7 @@ inferType = (vts, isAsync, ast) => {
 	: id === 'le_' ?
 		inferCmpOp
 	: id === 'let' ? (({ bind, value, expr }) => {
-		let vts1 = defineBindTypes(vts, bind);
+		let vts1 = bindTypes(vts, bind);
 		return function() {
 			try {
 				let tb = inferType(vts1, false, bind);
