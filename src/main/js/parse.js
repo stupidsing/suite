@@ -1231,7 +1231,11 @@ reduceAsync = ast => {
 				expr: {
 					id: 'assign',
 					bind: vp,
-					value: c !== undefined ? { id: 'lambda', bind: { id: 'var', vn: newDummy() }, expr: if_ } : {
+					value: c !== undefined ? {
+						id: 'lambda',
+						bind: { id: 'var', vn: newDummy() },
+						expr: if_,
+					} : {
 						id: 'lambda',
 						bind: { id: 'var', vn: newDummy() },
 						expr: _then(pc, vc, if_),
