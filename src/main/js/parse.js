@@ -1103,7 +1103,7 @@ reduceAsync = ast => {
 	let reduceOp = ({ expr }) => {
 		let pe = reduceAsync(expr);
 		let e = unpromisify(pe);
-		let ve = e ?? { id: 'var', v: newDummy() };
+		let ve = e ?? { id: 'var', value: newDummy() };
 		let p = promisify({ id, expr: ve });
 		return e !== undefined ? p : {
 			id: 'app',
@@ -1115,10 +1115,10 @@ reduceAsync = ast => {
 	let reduceBinOp = ({ lhs, rhs }) => {
 		let pl = reduceAsync(lhs);
 		let l = unpromisify(pl);
-		let vl = l ?? { id: 'var', v: newDummy() };
+		let vl = l ?? { id: 'var', value: newDummy() };
 		let pr = reduceAsync(rhs);
 		let r = unpromisify(pr);
-		let vr = r ?? { id: 'var', v: newDummy() };
+		let vr = r ?? { id: 'var', value: newDummy() };
 		let p;
 		p = promisify({ id, lhs: vl, rhs: vr });
 		p = l !== undefined ? p : {
@@ -1146,7 +1146,7 @@ reduceAsync = ast => {
 	: id === 'if' ? (({ if_, then, else_ }) => {
 		let pi = reduceAsync(if_);
 		let i = unpromisify(pi);
-		let vi = i ?? { id: 'var', v: newDummy() };
+		let vi = i ?? { id: 'var', value: newDummy() };
 		let pt = reduceAsync(then);
 		let t = unpromisify(pt);
 		let pe = reduceAsync(else_);
