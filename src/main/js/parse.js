@@ -455,7 +455,7 @@ parse = program => {
 				value: parse(value),
 				expr: parse(expr),
 			}
-			: isIdentifier(vn) ? {
+			: isIdentifier(v) ? {
 				id: 'alloc',
 				v,
 				expr: parse(expr),
