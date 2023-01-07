@@ -524,7 +524,7 @@ formatExpr = ast => {
 	: id === 'app' ? (({ lhs, rhs }) => `${formatValue(lhs)}(${formatValue(rhs)})`)
 	: id === 'await' ? (({ expr }) => `await ${formatValue(expr)}`)
 	: id === 'coal' ? (({ lhs, rhs }) => `${formatValue(lhs)} ?? ${formatValue(rhs)}`)
-	: id === 'cons' ? (({ lhs, rhs }) => error('FIXME'))
+	: id === 'cons' ? (({ lhs, rhs }) => `[${formatValue(lhs)}, ...${formatValue(rhs)}]`)
 	: id === 'div' ? (({ lhs, rhs }) => `${formatValue(lhs)} / ${formatValue(rhs)}`)
 	: id === 'dot' ? (({ expr, field }) => `${formatValue(expr)}${field}`)
 	: id === 'eq_' ? (({ lhs, rhs }) => `${formatValue(lhs)} === ${formatValue(rhs)}`)
@@ -537,7 +537,7 @@ formatExpr = ast => {
 	: id === 'mul' ? (({ lhs, rhs }) => `${formatValue(lhs)} * ${formatValue(rhs)}`)
 	: id === 'ne_' ? (({ lhs, rhs }) => `${formatValue(lhs)} !== ${formatValue(rhs)}`)
 	: id === 'neg' ? (({ expr }) => `- ${formatValue(expr)}`)
-	: id === 'never' ? (({}) => error('FIXME'))
+	: id === 'never' ? (({}) => `error('${id}')`)
 	: id === 'new-error' ? (({}) => 'new Error')
 	: id === 'new-map' ? (({}) => 'new Map')
 	: id === 'new-promise' ? (({}) => 'new Promise')
@@ -562,7 +562,7 @@ formatValue = ast => {
 	: id === 'boolean' ? (({ v }) => v)
 	: id === 'nil' ? (({}) => '[]')
 	: id === 'number' ? (({ i }) => `${i}`)
-	: id === 'struct' ? (({ kvs }) => `{ ${kvs.map(({ key, value }) => `${key}: ${formatValue(value)}`).join(', ')} }`)
+	: id === 'struct' ? (({ kvs }) => `{ ${kvs.map(({ key, value }) => `${key.slice(1, undefined)}: ${formatValue(value)}`).join(', ')} }`)
 	: id === 'string' ? (({ v }) => `'${v}'`)
 	: id === 'tuple' ? (({ values }) => `[${values.map(formatValue).join(', ')}]`)
 	: (({}) => `(${formatExpr(ast)})`);
@@ -1219,7 +1219,7 @@ reduceAsync = ast => {
 		: function() {
 			let vn = newDummy();
 			let vp = { id: 'var', vn };
-			let invoke = { id: 'app', lhs: vp, rhs: { id: 'undefined' } };
+			let invoke = { id: 'app', lhs: vp, rhs: { id: 'never' } };
 			let if_ = {
 				id: 'if',
 				if_: vc,
