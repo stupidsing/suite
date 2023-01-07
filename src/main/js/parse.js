@@ -1121,16 +1121,18 @@ let reduceAsync;
 reduceAsync = ast => {
 	let { id } = ast;
 
+	let _then = (p, bind, expr) => ({
+		id: 'app',
+		lhs: { id: 'dot', expr: p, field: '.then' },
+		rhs: { id: 'lambda', bind, expr },
+	});
+
 	let reduceOp = ({ expr }) => {
 		let pe = reduceAsync(expr);
 		let e = unpromisify(pe);
 		let ve = e ?? { id: 'var', vn: newDummy() };
 		let p = promisify({ id, expr: ve });
-		return e !== undefined ? p : {
-			id: 'app',
-			lhs: { id: 'dot', expr: pe, field: '.then' },
-			rhs: { id: 'lambda', bind: ve, expr: p },
-		};
+		return e !== undefined ? p : _then(pe, ve, p);
 	};
 
 	let reduceBinOp = ({ lhs, rhs }) => {
@@ -1142,16 +1144,8 @@ reduceAsync = ast => {
 		let vr = r ?? { id: 'var', vn: newDummy() };
 		let p;
 		p = promisify({ id, lhs: vl, rhs: vr });
-		p = l !== undefined ? p : {
-			id: 'app',
-			lhs: { id: 'dot', expr: pl, field: '.then' },
-			rhs: { id: 'lambda', bind: vl, expr: p },
-		};
-		p = r !== undefined ? p : {
-			id: 'app',
-			lhs: { id: 'dot', expr: pr, field: '.then' },
-			rhs: { id: 'lambda', bind: vr, expr: p },
-		};
+		p = l !== undefined ? p : _then(pl, vl, p);
+		p = r !== undefined ? p : _then(pr, vr, p);
 		return p;
 	};
 
@@ -1173,11 +1167,7 @@ reduceAsync = ast => {
 		let e = unpromisify(pe);
 		let ve = e ?? { id: 'var', vn: newDummy() };
 		let p = promisify({ id, expr: ve, field });
-		return e !== undefined ? p : {
-			id: 'app',
-			lhs: { id: 'dot', expr: pe, field: '.then' },
-			rhs: { id: 'lambda', bind: ve, expr: p },
-		};
+		return e !== undefined ? p : _then(pe, ve, p);
 	})
 	: id === 'eq_' ? reduceBinOp
 	: id === 'if' ? (({ if_, then, else_ }) => {
@@ -1191,11 +1181,7 @@ reduceAsync = ast => {
 		return false ? undefined
 		: i !== undefined && t !== undefined && e !== undefined ? promisify({ id, if_: vi, then: t, else_: e })
 		: i !== undefined ? { id, if_: vi, then: pt, else_: pe }
-		: {
-			id: 'app',
-			lhs: { id: 'dot', expr: pi, field: '.then' },
-			rhs: { id: 'lambda', bind: vi, expr: { id, if_: vi, then: pt, else_: pe } },
-		};
+		: _then(pi, vi, { id, if_: vi, then: pt, else_: pe });
 	})
 	: id === 'lambda-async' ? (({ bind, expr }) => ({ id: 'lambda', bind, expr: reduceAsync(expr) }))
 	: id === 'le_' ? reduceBinOp
@@ -1207,11 +1193,7 @@ reduceAsync = ast => {
 		return false ? undefined
 		: e !== undefined && v !== undefined ? promisify({ id, bind, value: v, expr: e })
 		: e === undefined && v !== undefined ? { id, bind, value: v, expr: pe }
-		: {
-			id: 'app',
-			lhs: { id: 'dot', expr: pv, field: '.then' },
-			rhs: { id: 'lambda', bind, expr: pe },
-		};
+		: _then(pv, bind, pe);
 	})
 	: id === 'lt_' ? reduceBinOp
 	: id === 'mul' ? reduceBinOp
@@ -1240,19 +1222,7 @@ reduceAsync = ast => {
 			let if_ = {
 				id: 'if',
 				if_: vc,
-				then: {
-					id: 'app',
-					lhs: { id: 'dot', expr: pl, field: '.then' },
-					rhs: {
-						id: 'lambda',
-						bind: { id: 'var', vn: newDummy() },
-						expr: {
-							id: 'app',
-							lhs: vp,
-							rhs: { id: 'undefined' },
-						},
-					},
-				},
+				then: _then(pl, { id: 'var', vn: newDummy() }, { id: 'app', lhs: vp, rhs: { id: 'undefined' } }),
 				else_: pe,
 			};
 			return {
@@ -1264,11 +1234,7 @@ reduceAsync = ast => {
 					value: c !== undefined ? { id: 'lambda', bind: { id: 'var', vn: newDummy() }, expr: if_ } : {
 						id: 'lambda',
 						bind: { id: 'var', vn: newDummy() },
-						expr: {
-							id: 'app',
-							lhs: { id: 'dot', expr: pc, field: '.then' },
-							rhs: { id: 'lambda', bind: vc, expr: if_ },
-						},
+						expr: _then(pc, vc, if_),
 					},
 					expr: {
 						id: 'app',
