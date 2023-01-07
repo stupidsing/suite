@@ -1273,7 +1273,54 @@ reduceAsync = ast => {
 				},
 			};
 		}()
-		: undefined;
+		: function() {
+			let vn = newDummy();
+			let vc = { id: 'var', vn: newDummy() };
+			let vp = { id: 'var', vn };
+			return {
+				id: 'alloc',
+				vn,
+				expr: {
+					id: 'assign',
+					bind: vp,
+					value: {
+						id: 'lambda',
+						bind: { id: 'var', vn: newDummy() },
+						expr: {
+							id: 'app',
+							lhs: { id: 'dot', expr: pc, field: '.then' },
+							rhs: {
+								id: 'lambda',
+								bind: vc,
+								expr: {
+									id: 'if',
+									if_: vc,
+									then: {
+										id: 'app',
+										lhs: { id: 'dot', expr: pl, field: '.then' },
+										rhs: {
+											id: 'lambda',
+											bind: { id: 'var', vn: newDummy() },
+											expr: {
+												id: 'app',
+												lhs: vp,
+												rhs: { id: 'undefined' },
+											},
+										},
+									},
+									else_: pe,
+								},
+							},
+						},
+					},
+					expr: {
+						id: 'app',
+						lhs: vp,
+						rhs: { id: 'undefined' },
+					},
+				},
+			};
+		}();
 	})
 	: (({}) => promisify(rewrite(ast_ => unpromisify(reduceAsync(ast_)), ast)));
 
