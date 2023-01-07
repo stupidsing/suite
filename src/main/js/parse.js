@@ -495,58 +495,78 @@ parse = program => {
 	}();
 };
 
-let format;
+let formatBlock;
+let formatExpr;
+let formatValue;
 
-format = ast => {
+formatBlock = ast => {
 	let { id } = ast;
 
 	let f = false ? undefined
-	: id === 'add' ? (({ lhs, rhs }) => `${format(lhs)} + ${format(rhs)}`)
-	: id === 'alloc' ? (({ vn, expr }) => `let ${vn}; ${format(expr)}`)
-	: id === 'and' ? (({ lhs, rhs }) => `${format(lhs)} && ${format(rhs)}`)
-	: id === 'app' ? (({ lhs, rhs }) => `${format(lhs)} |> ${format(rhs)}`)
-	: id === 'array' ? (({ values }) => `[${values.map(format).join(', ')}]`)
-	: id === 'assign' ? (({ bind, value, expr }) => `${format(bind)} = ${format(value)}; ${format(expr)}`)
-	: id === 'await' ? (({ expr }) => `await ${format(expr)}`)
-	: id === 'boolean' ? (({ val }) => `${val}`)
-	: id === 'coal' ? (({ lhs, rhs }) => `${format(lhs)} ?? ${format(rhs)}`)
+	: id === 'alloc' ? (({ vn, expr }) => `let ${vn}; ${formatBlock(expr)}`)
+	: id === 'assign' ? (({ bind, value, expr }) => `${formatValue(bind)} = ${formatValue(value)}; ${formatBlock(expr)}`)
+	: id === 'let' ? (({ bind, value, expr }) => `let ${formatValue(bind)} = ${formatValue(value)}; ${formatBlock(expr)}`)
+	: id === 'throw' ? (({ expr }) => `throw ${formatValue(expr)}`)
+	: id === 'try' ? (({ expr, catch_ }) => `try { ${formatBlock(expr)}; } catch (e) { ${formatBlock(catch_)}; }`)
+	: id === 'while' ? (({ cond, loop, expr }) => `while (${formatValue(cond)}) { ${formatBlock(loop)}; } ${formatBlock(expr)}`)
+	: (({}) => `return ${formatValue(ast)}`);
+
+	return f(ast);
+};
+
+formatExpr = ast => {
+	let { id } = ast;
+
+	let f = false ? undefined
+	: id === 'add' ? (({ lhs, rhs }) => `${formatValue(lhs)} + ${formatValue(rhs)}`)
+	: id === 'and' ? (({ lhs, rhs }) => `${formatValue(lhs)} && ${formatValue(rhs)}`)
+	: id === 'app' ? (({ lhs, rhs }) => `${formatValue(rhs)}(${formatExpr(lhs)})`)
+	: id === 'await' ? (({ expr }) => `await ${formatValue(expr)}`)
+	: id === 'coal' ? (({ lhs, rhs }) => `${formatValue(lhs)} ?? ${formatValue(rhs)}`)
 	: id === 'cons' ? (({ lhs, rhs }) => error('FIXME'))
-	: id === 'div' ? (({ lhs, rhs }) => `${format(lhs)} / ${format(rhs)}`)
-	: id === 'dot' ? (({ expr, field }) => `${format(expr)}${field}`)
-	: id === 'eq_' ? (({ lhs, rhs }) => `${format(lhs)} === ${format(rhs)}`)
-	: id === 'if' ? (({ if_, then, else_ }) => `${format(if_)} ? ${format(then)} : ${format(else_)}`)
-	: id === 'index' ? (({ lhs, rhs }) => `${format(lhs)}[${format(rhs)}]`)
-	: id === 'lambda' ? (({ bind, expr }) => `${format(bind)} => ${format(expr)}`)
-	: id === 'lambda-async' ? (({ bind, expr }) => `async ${format(bind)} => ${format(expr)}`)
-	: id === 'le_' ? (({ lhs, rhs }) => `${format(lhs)} <= ${format(rhs)}`)
-	: id === 'let' ? (({ bind, value, expr }) => `let ${format(bind)} = ${format(value)}; ${format(expr)}`)
-	: id === 'lt_' ? (({ lhs, rhs }) => `${format(lhs)} < ${format(rhs)}`)
-	: id === 'mul' ? (({ lhs, rhs }) => `${format(lhs)} * ${format(rhs)}`)
-	: id === 'ne_' ? (({ lhs, rhs }) => `${format(lhs)} !== ${format(rhs)}`)
-	: id === 'neg' ? (({ expr }) => `- ${format(expr)}`)
+	: id === 'div' ? (({ lhs, rhs }) => `${formatValue(lhs)} / ${formatValue(rhs)}`)
+	: id === 'dot' ? (({ expr, field }) => `${formatValue(expr)}${field}`)
+	: id === 'eq_' ? (({ lhs, rhs }) => `${formatValue(lhs)} === ${formatValue(rhs)}`)
+	: id === 'if' ? (({ if_, then, else_ }) => `${formatValue(if_)} ? ${formatValue(then)} : ${formatValue(else_)}`)
+	: id === 'index' ? (({ lhs, rhs }) => `${formatValue(lhs)}[${formatExpr(rhs)}]`)
+	: id === 'lambda' ? (({ bind, expr }) => `${formatValue(bind)} => ${formatValue(expr)}`)
+	: id === 'lambda-async' ? (({ bind, expr }) => `async ${formatValue(bind)} => ${formatValue(expr)}`)
+	: id === 'le_' ? (({ lhs, rhs }) => `${formatValue(lhs)} <= ${formatValue(rhs)}`)
+	: id === 'lt_' ? (({ lhs, rhs }) => `${formatValue(lhs)} < ${formatValue(rhs)}`)
+	: id === 'mul' ? (({ lhs, rhs }) => `${formatValue(lhs)} * ${formatValue(rhs)}`)
+	: id === 'ne_' ? (({ lhs, rhs }) => `${formatValue(lhs)} !== ${formatValue(rhs)}`)
+	: id === 'neg' ? (({ expr }) => `- ${formatValue(expr)}`)
 	: id === 'never' ? (({}) => error('FIXME'))
 	: id === 'new-error' ? (({}) => 'new Error')
 	: id === 'new-map' ? (({}) => 'new Map')
 	: id === 'new-promise' ? (({}) => 'new Promise')
-	: id === 'nil' ? (({}) => '[]')
-	: id === 'not' ? (({ expr }) => `! ${format(expr)}`)
-	: id === 'number' ? (({ i }) => `${i}`)
-	: id === 'or_' ? (({ lhs, rhs }) => `${format(lhs)} || ${format(rhs)}`)
-	: id === 'pair' ? (({ lhs, rhs }) => error('FIXME'))
-	: id === 'pos' ? (({ expr }) => `+ ${format(expr)}`)
-	: id === 'string' ? (({ val }) => `'${val}'`)
-	: id === 'struct' ? (({ kvs }) => `${kvs.map(({ key, value }) => `${key}: ${format(value)}`).join(', ')}`)
-	: id === 'sub' ? (({ lhs, rhs }) => `${format(lhs)} - ${format(rhs)}`)
-	: id === 'throw' ? (({ expr }) => `throw ${format(expr)}`)
-	: id === 'try' ? (({ expr, catch_ }) => `try { ${format(expr)}; } catch (e) { return ${format(catch_)}; }`)
+	: id === 'not' ? (({ expr }) => `! ${formatValue(expr)}`)
+	: id === 'or_' ? (({ lhs, rhs }) => `${formatValue(lhs)} || ${formatValue(rhs)}`)
+	: id === 'pair' ? (({ lhs, rhs }) => `${formatValue(lhs)}, ${formatValue(rhs)}`)
+	: id === 'pos' ? (({ expr }) => `+ ${formatValue(expr)}`)
+	: id === 'sub' ? (({ lhs, rhs }) => `${formatValue(lhs)} - ${formatValue(rhs)}`)
 	: id === 'tuple' ? (({ values }) => error('FIXME'))
-	: id === 'typeof' ? (({ expr }) => `typeof ${format(expr)}`)
+	: id === 'typeof' ? (({ expr }) => `typeof ${formatValue(expr)}`)
 	: id === 'undefined' ? (({}) => `${id}`)
 	: id === 'var' ? (({ vn }) => vn)
-	: id === 'while' ? (({ cond, loop, expr }) => `while (${format(cond)}) { ${format(loop)}; } ${format(expr)}`)
-	: error(`cannot format ${id}`);
+	: (({}) => `function() { ${formatBlock(ast)}; }()`);
 
-	return `(${f(ast)})`;
+	return f(ast);
+};
+
+formatValue = ast => {
+	let { id } = ast;
+
+	let f = false ? undefined
+	: id === 'array' ? (({ values }) => `[${values.map(formatValue).join(', ')}]`)
+	: id === 'boolean' ? (({ val }) => val)
+	: id === 'nil' ? (({}) => '[]')
+	: id === 'number' ? (({ i }) => `${i}`)
+	: id === 'struct' ? (({ kvs }) => `{ ${kvs.map(({ key, value }) => `${key}: ${formatValue(value)}`).join(', ')} }`)
+	: id === 'string' ? (({ val }) => `'${val}'`)
+	: (({}) => `(${formatExpr(ast)})`);
+
+	return f(ast);
 };
 
 let refs = new Map();
