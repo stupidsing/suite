@@ -1219,10 +1219,11 @@ reduceAsync = ast => {
 		: function() {
 			let vn = newDummy();
 			let vp = { id: 'var', vn };
+			let invoke = { id: 'app', lhs: vp, rhs: { id: 'undefined' } };
 			let if_ = {
 				id: 'if',
 				if_: vc,
-				then: _then(pl, { id: 'var', vn: newDummy() }, { id: 'app', lhs: vp, rhs: { id: 'undefined' } }),
+				then: _then(pl, { id: 'var', vn: newDummy() }, invoke),
 				else_: pe,
 			};
 			return {
@@ -1240,11 +1241,7 @@ reduceAsync = ast => {
 						bind: { id: 'var', vn: newDummy() },
 						expr: _then(pc, vc, if_),
 					},
-					expr: {
-						id: 'app',
-						lhs: vp,
-						rhs: { id: 'undefined' },
-					},
+					expr: invoke,
 				},
 			};
 		}();
