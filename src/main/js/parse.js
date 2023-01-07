@@ -457,7 +457,7 @@ parse = program => {
 			}
 			: isIdentifier(v) ? {
 				id: 'alloc',
-				v,
+				vn: v,
 				expr: parse(expr),
 			}
 			: error(`cannot parse let variable "${v}"`);
@@ -502,7 +502,7 @@ format = ast => {
 
 	let f = false ? undefined
 	: id === 'add' ? (({ lhs, rhs }) => `${format(lhs)} + ${format(rhs)}`)
-	: id === 'alloc' ? (({ v, expr }) => error('FIXME'))
+	: id === 'alloc' ? (({ vn, expr }) => error('FIXME'))
 	: id === 'and' ? (({ lhs, rhs }) => `${format(lhs)} && ${format(rhs)}`)
 	: id === 'app' ? (({ lhs, rhs }) => `${format(lhs)} |> ${format(rhs)}`)
 	: id === 'array' ? (({ values }) => error('FIXME'))
@@ -811,8 +811,8 @@ inferType = (vts, isAsync, ast) => {
 			&& (tryBind(t, typeNumber) || tryBind(t, typeString) || error(`cannot add values with type ${dumpRef(t)}`))
 			&& t;
 	})
-	: id === 'alloc' ? (({ v, expr }) =>
-		inferType(cons([v, newRef()], vts), isAsync, expr)
+	: id === 'alloc' ? (({ vn, expr }) =>
+		inferType(cons([vn, newRef()], vts), isAsync, expr)
 	)
 	: id === 'and' ?
 		inferLogicalOp
@@ -1040,7 +1040,7 @@ let rewrite = (rf, ast) => {
 
 	let f = false ? undefined
 	: id === 'add' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
-	: id === 'alloc' ? (({ v, expr }) => ({ id, v, expr: rf(expr) }))
+	: id === 'alloc' ? (({ vn, expr }) => ({ id, vn, expr: rf(expr) }))
 	: id === 'and' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
 	: id === 'app' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
 	: id === 'array' ? (({ values }) => ({ id, values: values.map(rf) }))
@@ -1197,7 +1197,7 @@ generate = ast => {
 
 	let f = false ? undefined
 	: id === 'add' ? (({ lhs, rhs }) => error('FIXME'))
-	: id === 'alloc' ? (({ v, expr }) => error('FIXME'))
+	: id === 'alloc' ? (({ vn, expr }) => error('FIXME'))
 	: id === 'and' ? (({ lhs, rhs }) => error('FIXME'))
 	: id === 'app' ? (({ lhs, rhs }) => error('FIXME'))
 	: id === 'array' ? (({ values }) => error('FIXME'))
