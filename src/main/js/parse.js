@@ -1157,6 +1157,11 @@ reduceAsync = ast => {
 
 	let f = false ? undefined
 	: id === 'add' ? reduceBinOp
+	: id === 'alloc' ? (({ vn, expr }) => {
+		let pe = reduceAsync(expr);
+		let e = unpromisify(pe);
+		return e !== undefined ? promisify({ id, vn, expr: e }) : { id, vn, expr: pe };
+	})
 	: id === 'and' ? reduceBinOp
 	: id === 'app' ? reduceBinOp
 	: id === 'await' ? (({ expr }) => expr)
