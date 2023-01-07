@@ -364,11 +364,15 @@ let parseIf = [parseApplyBlockFieldIndex,]
 	.map(p => parseAssocRight('eq_', '===', p))
 	.map(p => parseAssocRight('and', '&&', p))
 	.map(p => parseAssocRight('or_', '||', p))
+	.map(p => parseAssocRight('coal', '??', p))
 	.map(p => parseAssocLeft_('app', '|>', p))
 	.map(p => program => {
 		let [if_, thenElse] = splitl(program, '?');
 
-		return thenElse === undefined ? p(if_) : function() {
+		return false ? undefined
+		: thenElse === undefined ? p(if_)
+		: thenElse.startsWith('?') ? p(program)
+		: function() {
 			let [then, else_] = splitl(thenElse, ':');
 
 			return {
@@ -505,6 +509,7 @@ format = ast => {
 	: id === 'assign' ? (({ var_, value, expr }) => error('FIXME'))
 	: id === 'await' ? (({ expr }) => error('FIXME'))
 	: id === 'boolean' ? (({ value }) => error('FIXME'))
+	: id === 'coal' ? (({ lhs, rhs }) => error('FIXME'))
 	: id === 'cons' ? (({ lhs, rhs }) => error('FIXME'))
 	: id === 'div' ? (({ lhs, rhs }) => error('FIXME'))
 	: id === 'dot' ? (({ expr, field }) => error('FIXME'))
@@ -838,6 +843,11 @@ inferType = (vts, isAsync, ast) => {
 	: id === 'boolean' ? (({}) =>
 		typeBoolean
 	)
+	: id === 'coal' ? (({ lhs, rhs }) => {
+		let tl = infer(lhs);
+		let tr = infer(rhs);
+		return doBind(ast, tl, tr) && tr;
+	})
 	: id === 'cons' ? (({ lhs, rhs }) => {
 		let tl = typeArrayOf(infer(lhs));
 		return doBind(ast, infer(rhs), tl) && tl;
@@ -1037,6 +1047,7 @@ let rewrite = (rf, ast) => {
 	: id === 'assign' ? (({ var_, value, expr }) => ({ id, var_, value: rf(value), expr: rf(expr) }))
 	: id === 'await' ? (({ expr }) => ({ id, expr: rf(expr) }))
 	: id === 'boolean' ? (({ value }) => ast)
+	: id === 'coal' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
 	: id === 'cons' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
 	: id === 'div' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
 	: id === 'dot' ? (({ expr, field }) => ({ id, expr: rf(expr), field }))
@@ -1128,6 +1139,7 @@ promisifyAsync = ast => {
 	: id === 'and' ? reduceBinOp
 	: id === 'app' ? reduceBinOp
 	: id === 'await' ? (({ expr }) => expr)
+	: id === 'coal' ? reduceBinOp
 	: id === 'cons' ? reduceBinOp
 	: id === 'div' ? reduceBinOp
 	: id === 'eq_' ? reduceBinOp
@@ -1192,6 +1204,7 @@ generate = ast => {
 	: id === 'assign' ? (({ var_, value, expr }) => error('FIXME'))
 	: id === 'await' ? (({ expr }) => error('FIXME'))
 	: id === 'boolean' ? (({ value }) => error('FIXME'))
+	: id === 'coal' ? (({ lhs, rhs }) => error('FIXME'))
 	: id === 'cons' ? (({ lhs, rhs }) => error('FIXME'))
 	: id === 'div' ? (({ lhs, rhs }) => error('FIXME'))
 	: id === 'dot' ? (({ expr, field }) => error('FIXME'))
