@@ -1095,13 +1095,13 @@ let unpromisify = ast => {
 	return id === 'app' && lhs === promiseResolve ? rhs : undefined;
 };
 
-let promisifyAsync;
+let reduceAsync;
 
-promisifyAsync = ast => {
+reduceAsync = ast => {
 	let { id } = ast;
 
 	let reduceOp = ({ expr }) => {
-		let pe = promisifyAsync(expr);
+		let pe = reduceAsync(expr);
 		let e = unpromisify(pe);
 		let ve = e ?? { id: 'var', v: newDummy() };
 		let p = promisify({ id, expr: ve });
@@ -1113,10 +1113,10 @@ promisifyAsync = ast => {
 	};
 
 	let reduceBinOp = ({ lhs, rhs }) => {
-		let pl = promisifyAsync(lhs);
+		let pl = reduceAsync(lhs);
 		let l = unpromisify(pl);
 		let vl = l ?? { id: 'var', v: newDummy() };
-		let pr = promisifyAsync(rhs);
+		let pr = reduceAsync(rhs);
 		let r = unpromisify(pr);
 		let vr = r ?? { id: 'var', v: newDummy() };
 		let p;
@@ -1144,12 +1144,12 @@ promisifyAsync = ast => {
 	: id === 'div' ? reduceBinOp
 	: id === 'eq_' ? reduceBinOp
 	: id === 'if' ? (({ if_, then, else_ }) => {
-		let pi = promisifyAsync(if_);
+		let pi = reduceAsync(if_);
 		let i = unpromisify(pi);
 		let vi = i ?? { id: 'var', v: newDummy() };
-		let pt = promisifyAsync(then);
+		let pt = reduceAsync(then);
 		let t = unpromisify(pt);
-		let pe = promisifyAsync(else_);
+		let pe = reduceAsync(else_);
 		let e = unpromisify(pe);
 		return false ? undefined
 		: i !== undefined && t !== undefined && e !== undefined ? promisify({ id, if_: vi, then: t, else_: e })
@@ -1170,8 +1170,8 @@ promisifyAsync = ast => {
 	: id === 'pos' ? reduceOp
 	: id === 'sub' ? reduceBinOp
 	: id === 'typeof' ? reduceOp
-	: id === 'lambda-async' ? (({ bind, expr }) => ({ id: 'lambda', bind, expr: promisifyAsync(expr) }))
-	: (({}) => promisify(rewrite(ast_ => unpromisify(promisifyAsync(ast_)), ast)));
+	: id === 'lambda-async' ? (({ bind, expr }) => ({ id: 'lambda', bind, expr: reduceAsync(expr) }))
+	: (({}) => promisify(rewrite(ast_ => unpromisify(reduceAsync(ast_)), ast)));
 
 	return f(ast);
 };
@@ -1188,7 +1188,7 @@ reduceNe = ast => {
 	return f(ast);
 };
 
-let reduces = ast => unpromisify(promisifyAsync(reduceNe(ast)));
+let reduces = ast => unpromisify(reduceAsync(reduceNe(ast)));
 
 let generate;
 
