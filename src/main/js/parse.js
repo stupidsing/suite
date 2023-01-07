@@ -221,12 +221,12 @@ let parseConstant = program => {
 	: program.startsWith("'") && program.endsWith("'") ? { id: 'string', value: program.slice(1, -1) }
 	: program.startsWith('"') && program.endsWith('"') ? { id: 'string', value: program.slice(1, -1) }
 	: program.startsWith('`') && program.endsWith('`') ? parseBackquote(program.slice(1, -1))
-	: program === 'false' ? { id: 'boolean', value: 'false' }
+	: program === 'false' ? { id: 'boolean', val: 'false' }
 	: program === 'new Error' ? { id: 'new-error' }
 	: program === 'new Map' ? { id: 'new-map' }
 	: program === 'new Promise' ? { id: 'new-promise' }
 	: program === 'nil' ? { id: 'nil' }
-	: program === 'true' ? { id: 'boolean', value: 'true' }
+	: program === 'true' ? { id: 'boolean', val: 'true' }
 	: program === 'undefined' ? { id: 'undefined' }
 	: isIdentifier(program) ? { id: 'var', value: program }
 	: error(`cannot parse "${program}"`);
@@ -508,7 +508,7 @@ format = ast => {
 	: id === 'array' ? (({ values }) => error('FIXME'))
 	: id === 'assign' ? (({ var_, value, expr }) => error('FIXME'))
 	: id === 'await' ? (({ expr }) => `await ${format(expr)}`)
-	: id === 'boolean' ? (({ value }) => `${value}`)
+	: id === 'boolean' ? (({ val }) => `${val}`)
 	: id === 'coal' ? (({ lhs, rhs }) => `${format(lhs)} ?? ${format(rhs)}`)
 	: id === 'cons' ? (({ lhs, rhs }) => error('FIXME'))
 	: id === 'div' ? (({ lhs, rhs }) => `${format(lhs)} / ${format(rhs)}`)
@@ -1046,7 +1046,7 @@ let rewrite = (rf, ast) => {
 	: id === 'array' ? (({ values }) => ({ id, values: values.map(rf) }))
 	: id === 'assign' ? (({ var_, value, expr }) => ({ id, var_, value: rf(value), expr: rf(expr) }))
 	: id === 'await' ? (({ expr }) => ({ id, expr: rf(expr) }))
-	: id === 'boolean' ? (({ value }) => ast)
+	: id === 'boolean' ? (({ val }) => ast)
 	: id === 'coal' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
 	: id === 'cons' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
 	: id === 'div' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
@@ -1203,7 +1203,7 @@ generate = ast => {
 	: id === 'array' ? (({ values }) => error('FIXME'))
 	: id === 'assign' ? (({ var_, value, expr }) => error('FIXME'))
 	: id === 'await' ? (({ expr }) => error('FIXME'))
-	: id === 'boolean' ? (({ value }) => error('FIXME'))
+	: id === 'boolean' ? (({ val }) => error('FIXME'))
 	: id === 'coal' ? (({ lhs, rhs }) => error('FIXME'))
 	: id === 'cons' ? (({ lhs, rhs }) => error('FIXME'))
 	: id === 'div' ? (({ lhs, rhs }) => error('FIXME'))
