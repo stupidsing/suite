@@ -538,17 +538,12 @@ formatExpr = ast => {
 	: id === 'ne_' ? (({ lhs, rhs }) => `${formatValue(lhs)} !== ${formatValue(rhs)}`)
 	: id === 'neg' ? (({ expr }) => `- ${formatValue(expr)}`)
 	: id === 'never' ? (({}) => `error('${id}')`)
-	: id === 'new-error' ? (({}) => 'new Error')
-	: id === 'new-map' ? (({}) => 'new Map')
-	: id === 'new-promise' ? (({}) => 'new Promise')
 	: id === 'not' ? (({ expr }) => `! ${formatValue(expr)}`)
 	: id === 'or_' ? (({ lhs, rhs }) => `${formatValue(lhs)} || ${formatValue(rhs)}`)
 	: id === 'pair' ? (({ lhs, rhs }) => `${formatValue(lhs)}, ${formatValue(rhs)}`)
 	: id === 'pos' ? (({ expr }) => `+ ${formatValue(expr)}`)
 	: id === 'sub' ? (({ lhs, rhs }) => `${formatValue(lhs)} - ${formatValue(rhs)}`)
 	: id === 'typeof' ? (({ expr }) => `typeof ${formatValue(expr)}`)
-	: id === 'undefined' ? (({}) => `${id}`)
-	: id === 'var' ? (({ vn }) => vn)
 	: (({}) => `function() { ${formatBlock(ast)}; }()`);
 
 	return f(ast);
@@ -560,11 +555,16 @@ formatValue = ast => {
 	let f = false ? undefined
 	: id === 'array' ? (({ values }) => `[${values.map(formatValue).join(', ')},]`)
 	: id === 'boolean' ? (({ v }) => v)
+	: id === 'new-error' ? (({}) => 'new Error')
+	: id === 'new-map' ? (({}) => 'new Map')
+	: id === 'new-promise' ? (({}) => 'new Promise')
 	: id === 'nil' ? (({}) => '[]')
 	: id === 'number' ? (({ i }) => `${i}`)
 	: id === 'struct' ? (({ kvs }) => `{ ${kvs.map(({ key, value }) => `${key.slice(1, undefined)}: ${formatValue(value)}`).join(', ')} }`)
 	: id === 'string' ? (({ v }) => `'${v}'`)
 	: id === 'tuple' ? (({ values }) => `[${values.map(formatValue).join(', ')}]`)
+	: id === 'undefined' ? (({}) => `${id}`)
+	: id === 'var' ? (({ vn }) => vn)
 	: (({}) => `(${formatExpr(ast)})`);
 
 	return f(ast);
