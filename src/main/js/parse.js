@@ -207,10 +207,10 @@ parseBackquote = program => {
 
 		return {
 			id: 'add',
-			lhs: { id: 'string', value: program.slice(0, index) },
+			lhs: { id: 'string', val: program.slice(0, index) },
 			rhs: { id: 'add', lhs: exprToString, rhs: parseBackquote(right) },
 		};
-	}() : { id: 'string', value: program };
+	}() : { id: 'string', val: program };
 };
 
 let parseConstant = program => {
@@ -218,8 +218,8 @@ let parseConstant = program => {
 
 	return false ? undefined
 	: ascii('0') <= first && first <= ascii('9') ? { id: 'number', i: parseNumber(program) }
-	: program.startsWith("'") && program.endsWith("'") ? { id: 'string', value: program.slice(1, -1) }
-	: program.startsWith('"') && program.endsWith('"') ? { id: 'string', value: program.slice(1, -1) }
+	: program.startsWith("'") && program.endsWith("'") ? { id: 'string', val: program.slice(1, -1) }
+	: program.startsWith('"') && program.endsWith('"') ? { id: 'string', val: program.slice(1, -1) }
 	: program.startsWith('`') && program.endsWith('`') ? parseBackquote(program.slice(1, -1))
 	: program === 'false' ? { id: 'boolean', val: 'false' }
 	: program === 'new Error' ? { id: 'new-error' }
@@ -534,7 +534,7 @@ format = ast => {
 	: id === 'or_' ? (({ lhs, rhs }) => `${format(lhs)} || ${format(rhs)}`)
 	: id === 'pair' ? (({ lhs, rhs }) => error('FIXME'))
 	: id === 'pos' ? (({ expr }) => `+ ${format(expr)}`)
-	: id === 'string' ? (({ value }) => `'${value}'`)
+	: id === 'string' ? (({ val }) => `'${val}'`)
 	: id === 'struct' ? (({ kvs }) => error('FIXME'))
 	: id === 'sub' ? (({ lhs, rhs }) => `${format(lhs)} - ${format(rhs)}`)
 	: id === 'throw' ? (({ expr }) => error('FIXME'))
@@ -1072,7 +1072,7 @@ let rewrite = (rf, ast) => {
 	: id === 'or_' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
 	: id === 'pair' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
 	: id === 'pos' ? (({ expr }) => ({ id, expr: rf(expr) }))
-	: id === 'string' ? (({ value }) => ast)
+	: id === 'string' ? (({ val }) => ast)
 	: id === 'struct' ? (({ kvs }) => ({ id, kvs: kvs.map(({ key, value }) => ({ key, value: rf(value) })) }))
 	: id === 'sub' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
 	: id === 'throw' ? (({ expr }) => ({ id, expr: rf(expr) }))
@@ -1229,7 +1229,7 @@ generate = ast => {
 	: id === 'or_' ? (({ lhs, rhs }) => error('FIXME'))
 	: id === 'pair' ? (({ lhs, rhs }) => error('FIXME'))
 	: id === 'pos' ? (({ expr }) => error('FIXME'))
-	: id === 'string' ? (({ value }) => error('FIXME'))
+	: id === 'string' ? (({ val }) => error('FIXME'))
 	: id === 'struct' ? (({ kvs }) => error('FIXME'))
 	: id === 'sub' ? (({ lhs, rhs }) => error('FIXME'))
 	: id === 'throw' ? (({ expr }) => error('FIXME'))
@@ -1295,14 +1295,14 @@ let expect = stringify({
 					expr: {
 						id: 'app',
 						lhs: { id: 'var', value: 'require' },
-						rhs: { id: 'string', value: 'fs' },
+						rhs: { id: 'string', val: 'fs' },
 					},
 					field: '.readFileSync',
 				},
 				rhs: {
 					id: 'pair',
 					lhs: { id: 'number', i: 0 },
-					rhs: { id: 'string', value: 'utf8' },
+					rhs: { id: 'string', val: 'utf8' },
 				},
 			},
 		},
