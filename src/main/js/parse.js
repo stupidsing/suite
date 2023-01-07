@@ -1275,8 +1275,8 @@ reduceAsync = ast => {
 		}()
 		: function() {
 			let vn = newDummy();
-			let vc = { id: 'var', vn: newDummy() };
 			let vp = { id: 'var', vn };
+			let vc = { id: 'var', vn: newDummy() };
 			return {
 				id: 'alloc',
 				vn,
