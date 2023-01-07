@@ -521,7 +521,6 @@ formatExpr = ast => {
 	let f = false ? undefined
 	: id === 'add' ? (({ lhs, rhs }) => `${formatValue(lhs)} + ${formatValue(rhs)}`)
 	: id === 'and' ? (({ lhs, rhs }) => `${formatValue(lhs)} && ${formatValue(rhs)}`)
-	: id === 'app' ? (({ lhs, rhs }) => `${formatValue(lhs)}(${formatValue(rhs)})`)
 	: id === 'await' ? (({ expr }) => `await ${formatValue(expr)}`)
 	: id === 'coal' ? (({ lhs, rhs }) => `${formatValue(lhs)} ?? ${formatValue(rhs)}`)
 	: id === 'cons' ? (({ lhs, rhs }) => `[${formatValue(lhs)}, ...${formatValue(rhs)}]`)
@@ -553,6 +552,7 @@ formatValue = ast => {
 	let { id } = ast;
 
 	let f = false ? undefined
+	: id === 'app' ? (({ lhs, rhs }) => `${formatValue(lhs)}(${formatValue(rhs)})`)
 	: id === 'array' ? (({ values }) => `[${values.map(formatValue).join(', ')},]`)
 	: id === 'boolean' ? (({ v }) => v)
 	: id === 'new-error' ? (({}) => 'new Error')
