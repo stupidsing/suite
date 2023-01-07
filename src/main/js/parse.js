@@ -1234,83 +1234,40 @@ reduceAsync = ast => {
 		return false ? undefined
 		: c !== undefined && l !== undefined && e !== undefined ? promisify({ id, cond: vc, loop: l, expr: e })
 		: c !== undefined && l !== undefined && e === undefined ? { id, cond: vc, loop: l, expr: pe }
-		: c !== undefined ? function() {
-			let vn = newDummy();
-			let vp = { id: 'var', vn };
-			return {
-				id: 'alloc',
-				vn,
-				expr: {
-					id: 'assign',
-					bind: vp,
-					value: {
-						id: 'lambda',
-						bind: { id: 'var', vn: newDummy() },
-						expr: {
-							id: 'if',
-							if_: vc,
-							then: {
-								id: 'app',
-								lhs: { id: 'dot', expr: pl, field: '.then' },
-								rhs: {
-									id: 'lambda',
-									bind: { id: 'var', vn: newDummy() },
-									expr: {
-										id: 'app',
-										lhs: vp,
-										rhs: { id: 'undefined' },
-									},
-								},
-							},
-							else_: pe,
-						},
-					},
-					expr: {
-						id: 'app',
-						lhs: vp,
-						rhs: { id: 'undefined' },
-					},
-				},
-			};
-		}()
 		: function() {
 			let vn = newDummy();
 			let vp = { id: 'var', vn };
-			let vc = { id: 'var', vn: newDummy() };
+			let if_ = {
+				id: 'if',
+				if_: vc,
+				then: {
+					id: 'app',
+					lhs: { id: 'dot', expr: pl, field: '.then' },
+					rhs: {
+						id: 'lambda',
+						bind: { id: 'var', vn: newDummy() },
+						expr: {
+							id: 'app',
+							lhs: vp,
+							rhs: { id: 'undefined' },
+						},
+					},
+				},
+				else_: pe,
+			};
 			return {
 				id: 'alloc',
 				vn,
 				expr: {
 					id: 'assign',
 					bind: vp,
-					value: {
+					value: c !== undefined ? { id: 'lambda', bind: { id: 'var', vn: newDummy() }, expr: if_ } : {
 						id: 'lambda',
 						bind: { id: 'var', vn: newDummy() },
 						expr: {
 							id: 'app',
 							lhs: { id: 'dot', expr: pc, field: '.then' },
-							rhs: {
-								id: 'lambda',
-								bind: vc,
-								expr: {
-									id: 'if',
-									if_: vc,
-									then: {
-										id: 'app',
-										lhs: { id: 'dot', expr: pl, field: '.then' },
-										rhs: {
-											id: 'lambda',
-											bind: { id: 'var', vn: newDummy() },
-											expr: {
-												id: 'app',
-												lhs: vp,
-												rhs: { id: 'undefined' },
-											},
-										},
-									},
-									else_: pe,
-								},
-							},
+							rhs: { id: 'lambda', bind: vc, expr: if_ },
 						},
 					},
 					expr: {
