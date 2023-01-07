@@ -1168,6 +1168,17 @@ reduceAsync = ast => {
 	: id === 'coal' ? reduceBinOp
 	: id === 'cons' ? reduceBinOp
 	: id === 'div' ? reduceBinOp
+	: id === 'dot' ? (({ expr, field }) => {
+		let pe = reduceAsync(expr);
+		let e = unpromisify(pe);
+		let ve = e ?? { id: 'var', vn: newDummy() };
+		let p = promisify({ id, expr: ve, field });
+		return e !== undefined ? p : {
+			id: 'app',
+			lhs: { id: 'dot', expr: pe, field: '.then' },
+			rhs: { id: 'lambda', bind: ve, expr: p },
+		};
+	})
 	: id === 'eq_' ? reduceBinOp
 	: id === 'if' ? (({ if_, then, else_ }) => {
 		let pi = reduceAsync(if_);
