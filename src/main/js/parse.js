@@ -290,8 +290,8 @@ parseValue = program_ => {
 		let [try_, catch_] = splitl(program.slice(4, undefined), 'catch (e)');
 		return {
 			id: 'try',
-			expr: parse(try_),
-			catch_: { id: 'lambda', bind: { id: 'var', vn: 'e' }, expr: parse(catch_) },
+			lhs: parse(try_),
+			rhs: { id: 'lambda', bind: { id: 'var', vn: 'e' }, expr: parse(catch_) },
 		};
 	}()
 	: program.startsWith('typeof ') ?
@@ -508,7 +508,7 @@ formatBlock = ast => {
 	: id === 'assign' ? (({ bind, value, expr }) => `${formatValue(bind)} = ${formatValue(value)}; ${formatBlock(expr)}`)
 	: id === 'let' ? (({ bind, value, expr }) => `let ${formatValue(bind)} = ${formatValue(value)}; ${formatBlock(expr)}`)
 	: id === 'throw' ? (({ expr }) => `throw ${formatValue(expr)}`)
-	: id === 'try' ? (({ expr, catch_ }) => `try { ${formatBlock(expr)}; } catch (e) { ${formatBlock(catch_)}; }`)
+	: id === 'try' ? (({ lhs, rhs }) => `try { ${formatBlock(lhs)}; } catch (e) { ${formatBlock(rhs)}; }`)
 	: id === 'while' ? (({ cond, loop, expr }) => `while (${formatValue(cond)}) { ${formatBlock(loop)}; } ${formatBlock(expr)}`)
 	: (({}) => `return ${formatValue(ast)}`);
 
@@ -993,8 +993,8 @@ inferType = (vts, isAsync, ast) => {
 	: id === 'throw' ? (({}) =>
 		newRef()
 	)
-	: id === 'try' ? (({ expr, catch_ }) =>
-		doBind(ast, infer(catch_), newRef()) && infer(expr)
+	: id === 'try' ? (({ lhs, rhs }) =>
+		doBind(ast, infer(rhs), newRef()) && infer(lhs)
 	)
 	: id === 'tuple' ? (({ values }) => {
 		let inferValues;
@@ -1097,7 +1097,7 @@ let rewrite = (rf, ast) => {
 	: id === 'struct' ? (({ kvs }) => ({ id, kvs: kvs.map(({ key, value }) => ({ key, value: rf(value) })) }))
 	: id === 'sub' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
 	: id === 'throw' ? (({ expr }) => ({ id, expr: rf(expr) }))
-	: id === 'try' ? (({ expr, catch_ }) => ({ id, expr: rf(expr), catch_: rf(catch_) }))
+	: id === 'try' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
 	: id === 'tuple' ? (({ values }) => ({ id, values: values.map(rf) }))
 	: id === 'typeof' ? (({ expr }) => ({ id, expr: rf(expr) }))
 	: id === 'undefined' ? (({}) => ast)
@@ -1220,6 +1220,7 @@ reduceAsync = ast => {
 	: id === 'or_' ? reduceBinOp
 	: id === 'pos' ? reduceOp
 	: id === 'sub' ? reduceBinOp
+	: id === 'try' ? reduceBinOp
 	: id === 'typeof' ? reduceOp
 	: id === 'lambda-async' ? (({ bind, expr }) => ({ id: 'lambda', bind, expr: reduceAsync(expr) }))
 	: (({}) => promisify(rewrite(ast_ => unpromisify(reduceAsync(ast_)), ast)));
@@ -1284,7 +1285,7 @@ generate = ast => {
 	: id === 'struct' ? (({ kvs }) => error('FIXME'))
 	: id === 'sub' ? (({ lhs, rhs }) => error('FIXME'))
 	: id === 'throw' ? (({ expr }) => error('FIXME'))
-	: id === 'try' ? (({ expr, catch_ }) => error('FIXME'))
+	: id === 'try' ? (({ lhs, rhs }) => error('FIXME'))
 	: id === 'tuple' ? (({ values }) => error('FIXME'))
 	: id === 'typeof' ? (({ expr }) => error('FIXME'))
 	: id === 'undefined' ? (({}) => error('FIXME'))
