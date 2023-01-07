@@ -521,7 +521,7 @@ formatExpr = ast => {
 	let f = false ? undefined
 	: id === 'add' ? (({ lhs, rhs }) => `${formatValue(lhs)} + ${formatValue(rhs)}`)
 	: id === 'and' ? (({ lhs, rhs }) => `${formatValue(lhs)} && ${formatValue(rhs)}`)
-	: id === 'app' ? (({ lhs, rhs }) => `${formatValue(rhs)}(${formatExpr(lhs)})`)
+	: id === 'app' ? (({ lhs, rhs }) => `${formatValue(lhs)}(${formatValue(rhs)})`)
 	: id === 'await' ? (({ expr }) => `await ${formatValue(expr)}`)
 	: id === 'coal' ? (({ lhs, rhs }) => `${formatValue(lhs)} ?? ${formatValue(rhs)}`)
 	: id === 'cons' ? (({ lhs, rhs }) => error('FIXME'))
@@ -529,7 +529,7 @@ formatExpr = ast => {
 	: id === 'dot' ? (({ expr, field }) => `${formatValue(expr)}${field}`)
 	: id === 'eq_' ? (({ lhs, rhs }) => `${formatValue(lhs)} === ${formatValue(rhs)}`)
 	: id === 'if' ? (({ if_, then, else_ }) => `${formatValue(if_)} ? ${formatValue(then)} : ${formatValue(else_)}`)
-	: id === 'index' ? (({ lhs, rhs }) => `${formatValue(lhs)}[${formatExpr(rhs)}]`)
+	: id === 'index' ? (({ lhs, rhs }) => `${formatValue(lhs)}[${formatValue(rhs)}]`)
 	: id === 'lambda' ? (({ bind, expr }) => `${formatValue(bind)} => ${formatValue(expr)}`)
 	: id === 'lambda-async' ? (({ bind, expr }) => `async ${formatValue(bind)} => ${formatValue(expr)}`)
 	: id === 'le_' ? (({ lhs, rhs }) => `${formatValue(lhs)} <= ${formatValue(rhs)}`)
@@ -546,7 +546,6 @@ formatExpr = ast => {
 	: id === 'pair' ? (({ lhs, rhs }) => `${formatValue(lhs)}, ${formatValue(rhs)}`)
 	: id === 'pos' ? (({ expr }) => `+ ${formatValue(expr)}`)
 	: id === 'sub' ? (({ lhs, rhs }) => `${formatValue(lhs)} - ${formatValue(rhs)}`)
-	: id === 'tuple' ? (({ values }) => error('FIXME'))
 	: id === 'typeof' ? (({ expr }) => `typeof ${formatValue(expr)}`)
 	: id === 'undefined' ? (({}) => `${id}`)
 	: id === 'var' ? (({ vn }) => vn)
@@ -559,12 +558,13 @@ formatValue = ast => {
 	let { id } = ast;
 
 	let f = false ? undefined
-	: id === 'array' ? (({ values }) => `[${values.map(formatValue).join(', ')}]`)
+	: id === 'array' ? (({ values }) => `[${values.map(formatValue).join(', ')},]`)
 	: id === 'boolean' ? (({ v }) => v)
 	: id === 'nil' ? (({}) => '[]')
 	: id === 'number' ? (({ i }) => `${i}`)
 	: id === 'struct' ? (({ kvs }) => `{ ${kvs.map(({ key, value }) => `${key}: ${formatValue(value)}`).join(', ')} }`)
 	: id === 'string' ? (({ v }) => `'${v}'`)
+	: id === 'tuple' ? (({ values }) => `[${values.map(formatValue).join(', ')}]`)
 	: (({}) => `(${formatExpr(ast)})`);
 
 	return f(ast);
@@ -1390,6 +1390,7 @@ return actual === expect
 		let { ast, type } = process(require('fs').readFileSync(0, 'utf8'));
 		console.log(`ast :: ${stringify(ast)}`);
 		console.log(`type :: ${dumpRef(type)}`);
+		console.log(`format :: ${formatValue(ast)}`);
 		return true;
 	} catch (e) { return console.error(e); }
 }() : error(`
