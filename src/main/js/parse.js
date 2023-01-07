@@ -319,8 +319,8 @@ let parseLvalue = program_ => {
 		return expr === undefined ? parseValue(program)
 		: {
 			id: 'index',
-			expr: parse(expr),
-			index: parse(index),
+			lhs: parse(expr),
+			rhs: parse(index),
 		};
 	}()
 	: parseValue(program);
@@ -515,7 +515,7 @@ format = ast => {
 	: id === 'dot' ? (({ expr, field }) => error('FIXME'))
 	: id === 'eq_' ? (({ lhs, rhs }) => error('FIXME'))
 	: id === 'if' ? (({ if_, then, else_ }) => error('FIXME'))
-	: id === 'index' ? (({ index, expr }) => error('FIXME'))
+	: id === 'index' ? (({ lhs, rhs }) => error('FIXME'))
 	: id === 'lambda' ? (({ bind, expr }) => error('FIXME'))
 	: id === 'lambda-async' ? (({ bind, expr }) => error('FIXME'))
 	: id === 'le_' ? (({ lhs, rhs }) => error('FIXME'))
@@ -872,11 +872,11 @@ inferType = (vts, isAsync, ast) => {
 		let te = infer(else_);
 		return doBind(ast, infer(if_), typeBoolean) && doBind(ast, tt, te) && tt;
 	})
-	: id === 'index' ? (({ index, expr }) => {
+	: id === 'index' ? (({ lhs, rhs }) => {
 		let t = newRef();
 		return true
-			&& doBind(ast, infer(index), typeNumber)
-			&& doBind(ast, infer(expr), typeArrayOf(t))
+			&& doBind(ast, infer(rhs), typeNumber)
+			&& doBind(ast, infer(lhs), typeArrayOf(t))
 			&& t;
 	})
 	: id === 'lambda' ? (({ bind, expr }) => {
@@ -1053,7 +1053,7 @@ let rewrite = (rf, ast) => {
 	: id === 'dot' ? (({ expr, field }) => ({ id, expr: rf(expr), field }))
 	: id === 'eq_' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
 	: id === 'if' ? (({ if_, then, else_ }) => ({ id, if_: rf(if_), then: rf(then), else_: rf(else_) }))
-	: id === 'index' ? (({ index, expr }) => ({ id, index: rf(index), expr: rf(expr) }))
+	: id === 'index' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
 	: id === 'lambda' ? (({ bind, expr }) => ({ id, bind, expr: rf(expr) }))
 	: id === 'lambda-async' ? (({ bind, expr }) => ({ id, bind, expr: rf(expr) }))
 	: id === 'le_' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
@@ -1210,7 +1210,7 @@ generate = ast => {
 	: id === 'dot' ? (({ expr, field }) => error('FIXME'))
 	: id === 'eq_' ? (({ lhs, rhs }) => error('FIXME'))
 	: id === 'if' ? (({ if_, then, else_ }) => error('FIXME'))
-	: id === 'index' ? (({ index, expr }) => error('FIXME'))
+	: id === 'index' ? (({ lhs, rhs }) => error('FIXME'))
 	: id === 'lambda' ? (({ bind, expr }) => error('FIXME'))
 	: id === 'lambda-async' ? (({ bind, expr }) => error('FIXME'))
 	: id === 'le_' ? (({ lhs, rhs }) => error('FIXME'))
