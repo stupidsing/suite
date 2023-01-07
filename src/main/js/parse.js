@@ -498,19 +498,19 @@ parse = program => {
 
 let formatBlock;
 let formatExpr;
-let formatValue;
+let format;
 
 formatBlock = ast => {
 	let { id } = ast;
 
 	let f = false ? undefined
 	: id === 'alloc' ? (({ vn, expr }) => `let ${vn}; ${formatBlock(expr)}`)
-	: id === 'assign' ? (({ bind, value, expr }) => `${formatValue(bind)} = ${formatValue(value)}; ${formatBlock(expr)}`)
-	: id === 'let' ? (({ bind, value, expr }) => `let ${formatValue(bind)} = ${formatValue(value)}; ${formatBlock(expr)}`)
-	: id === 'throw' ? (({ expr }) => `throw ${formatValue(expr)}`)
+	: id === 'assign' ? (({ bind, value, expr }) => `${format(bind)} = ${format(value)}; ${formatBlock(expr)}`)
+	: id === 'let' ? (({ bind, value, expr }) => `let ${format(bind)} = ${format(value)}; ${formatBlock(expr)}`)
+	: id === 'throw' ? (({ expr }) => `throw ${format(expr)}`)
 	: id === 'try' ? (({ lhs, rhs }) => `try { ${formatBlock(lhs)}; } catch (e) { ${formatBlock(rhs)}; }`)
-	: id === 'while' ? (({ cond, loop, expr }) => `while (${formatValue(cond)}) { ${formatBlock(loop)}; } ${formatBlock(expr)}`)
-	: (({}) => `return ${formatValue(ast)}`);
+	: id === 'while' ? (({ cond, loop, expr }) => `while (${format(cond)}) { ${formatBlock(loop)}; } ${formatBlock(expr)}`)
+	: (({}) => `return ${format(ast)}`);
 
 	return f(ast);
 };
@@ -519,50 +519,50 @@ formatExpr = ast => {
 	let { id } = ast;
 
 	let f = false ? undefined
-	: id === 'add' ? (({ lhs, rhs }) => `${formatValue(lhs)} + ${formatValue(rhs)}`)
-	: id === 'and' ? (({ lhs, rhs }) => `${formatValue(lhs)} && ${formatValue(rhs)}`)
-	: id === 'await' ? (({ expr }) => `await ${formatValue(expr)}`)
-	: id === 'coal' ? (({ lhs, rhs }) => `${formatValue(lhs)} ?? ${formatValue(rhs)}`)
-	: id === 'cons' ? (({ lhs, rhs }) => `[${formatValue(lhs)}, ...${formatValue(rhs)}]`)
-	: id === 'div' ? (({ lhs, rhs }) => `${formatValue(lhs)} / ${formatValue(rhs)}`)
-	: id === 'dot' ? (({ expr, field }) => `${formatValue(expr)}${field}`)
-	: id === 'eq_' ? (({ lhs, rhs }) => `${formatValue(lhs)} === ${formatValue(rhs)}`)
-	: id === 'if' ? (({ if_, then, else_ }) => `${formatValue(if_)} ? ${formatValue(then)} : ${formatValue(else_)}`)
-	: id === 'index' ? (({ lhs, rhs }) => `${formatValue(lhs)}[${formatValue(rhs)}]`)
-	: id === 'lambda' ? (({ bind, expr }) => `${formatValue(bind)} => ${formatValue(expr)}`)
-	: id === 'lambda-async' ? (({ bind, expr }) => `async ${formatValue(bind)} => ${formatValue(expr)}`)
-	: id === 'le_' ? (({ lhs, rhs }) => `${formatValue(lhs)} <= ${formatValue(rhs)}`)
-	: id === 'lt_' ? (({ lhs, rhs }) => `${formatValue(lhs)} < ${formatValue(rhs)}`)
-	: id === 'mul' ? (({ lhs, rhs }) => `${formatValue(lhs)} * ${formatValue(rhs)}`)
-	: id === 'ne_' ? (({ lhs, rhs }) => `${formatValue(lhs)} !== ${formatValue(rhs)}`)
-	: id === 'neg' ? (({ expr }) => `- ${formatValue(expr)}`)
+	: id === 'add' ? (({ lhs, rhs }) => `${format(lhs)} + ${format(rhs)}`)
+	: id === 'and' ? (({ lhs, rhs }) => `${format(lhs)} && ${format(rhs)}`)
+	: id === 'await' ? (({ expr }) => `await ${format(expr)}`)
+	: id === 'coal' ? (({ lhs, rhs }) => `${format(lhs)} ?? ${format(rhs)}`)
+	: id === 'cons' ? (({ lhs, rhs }) => `[${format(lhs)}, ...${format(rhs)}]`)
+	: id === 'div' ? (({ lhs, rhs }) => `${format(lhs)} / ${format(rhs)}`)
+	: id === 'dot' ? (({ expr, field }) => `${format(expr)}${field}`)
+	: id === 'eq_' ? (({ lhs, rhs }) => `${format(lhs)} === ${format(rhs)}`)
+	: id === 'if' ? (({ if_, then, else_ }) => `${format(if_)} ? ${format(then)} : ${format(else_)}`)
+	: id === 'index' ? (({ lhs, rhs }) => `${format(lhs)}[${format(rhs)}]`)
+	: id === 'lambda' ? (({ bind, expr }) => `${format(bind)} => ${format(expr)}`)
+	: id === 'lambda-async' ? (({ bind, expr }) => `async ${format(bind)} => ${format(expr)}`)
+	: id === 'le_' ? (({ lhs, rhs }) => `${format(lhs)} <= ${format(rhs)}`)
+	: id === 'lt_' ? (({ lhs, rhs }) => `${format(lhs)} < ${format(rhs)}`)
+	: id === 'mul' ? (({ lhs, rhs }) => `${format(lhs)} * ${format(rhs)}`)
+	: id === 'ne_' ? (({ lhs, rhs }) => `${format(lhs)} !== ${format(rhs)}`)
+	: id === 'neg' ? (({ expr }) => `- ${format(expr)}`)
 	: id === 'never' ? (({}) => `error('${id}')`)
-	: id === 'not' ? (({ expr }) => `! ${formatValue(expr)}`)
-	: id === 'or_' ? (({ lhs, rhs }) => `${formatValue(lhs)} || ${formatValue(rhs)}`)
-	: id === 'pair' ? (({ lhs, rhs }) => `${formatValue(lhs)}, ${formatValue(rhs)}`)
-	: id === 'pos' ? (({ expr }) => `+ ${formatValue(expr)}`)
-	: id === 'sub' ? (({ lhs, rhs }) => `${formatValue(lhs)} - ${formatValue(rhs)}`)
-	: id === 'typeof' ? (({ expr }) => `typeof ${formatValue(expr)}`)
+	: id === 'not' ? (({ expr }) => `! ${format(expr)}`)
+	: id === 'or_' ? (({ lhs, rhs }) => `${format(lhs)} || ${format(rhs)}`)
+	: id === 'pair' ? (({ lhs, rhs }) => `${format(lhs)}, ${format(rhs)}`)
+	: id === 'pos' ? (({ expr }) => `+ ${format(expr)}`)
+	: id === 'sub' ? (({ lhs, rhs }) => `${format(lhs)} - ${format(rhs)}`)
+	: id === 'typeof' ? (({ expr }) => `typeof ${format(expr)}`)
 	: (({}) => `function() { ${formatBlock(ast)}; }()`);
 
 	return f(ast);
 };
 
-formatValue = ast => {
+format = ast => {
 	let { id } = ast;
 
 	let f = false ? undefined
-	: id === 'app' ? (({ lhs, rhs }) => `${formatValue(lhs)}(${formatValue(rhs)})`)
-	: id === 'array' ? (({ values }) => `[${values.map(formatValue).join(', ')},]`)
+	: id === 'app' ? (({ lhs, rhs }) => `${format(lhs)}(${format(rhs)})`)
+	: id === 'array' ? (({ values }) => `[${values.map(format).join(', ')},]`)
 	: id === 'boolean' ? (({ v }) => v)
 	: id === 'new-error' ? (({}) => 'new Error')
 	: id === 'new-map' ? (({}) => 'new Map')
 	: id === 'new-promise' ? (({}) => 'new Promise')
 	: id === 'nil' ? (({}) => '[]')
 	: id === 'number' ? (({ i }) => `${i}`)
-	: id === 'struct' ? (({ kvs }) => `{ ${kvs.map(({ key, value }) => `${key.slice(1, undefined)}: ${formatValue(value)}`).join(', ')} }`)
+	: id === 'struct' ? (({ kvs }) => `{ ${kvs.map(({ key, value }) => `${key.slice(1, undefined)}: ${format(value)}`).join(', ')} }`)
 	: id === 'string' ? (({ v }) => `'${v}'`)
-	: id === 'tuple' ? (({ values }) => `[${values.map(formatValue).join(', ')}]`)
+	: id === 'tuple' ? (({ values }) => `[${values.map(format).join(', ')}]`)
 	: id === 'undefined' ? (({}) => `${id}`)
 	: id === 'var' ? (({ vn }) => vn)
 	: (({}) => `(${formatExpr(ast)})`);
@@ -669,7 +669,7 @@ tryBind = (a, b) => function() {
 }();
 
 let doBind_ = (msg, a, b) => tryBind(a, b) || error(`in ${msg()}:\ncannot bind types between\nfr: ${dumpRef(a)}\nto: ${dumpRef(b)}`);
-let doBind = (ast, a, b) => doBind_(() => dump(ast), a, b);
+let doBind = (ast, a, b) => doBind_(() => format(ast), a, b);
 
 let cloneRef = v => {
 	let fromTos = new Map();
@@ -716,7 +716,7 @@ bindTypes = (vts, ast) => false ? undefined
 	: ast.id === 'struct' ? fold(vts, ast.kvs, (vts_, kv) => bindTypes(vts_, kv.value))
 	: ast.id === 'tuple' ? fold(vts, ast.values, bindTypes)
 	: ast.id === 'var' ? cons([ast.vn, newRef()], vts)
-	: error(`cannot destructure ${dump(ast)}`);
+	: error(`cannot destructure ${format(ast)}`);
 
 let typeArrayOf = type => ({ id: 'array', of: type });
 let typeBoolean = ({ id: 'boolean' });
@@ -853,7 +853,7 @@ inferType = (vts, isAsync, ast) => {
 			let tvalue = infer(value);
 			return doBind({ id: 'assign', bind, value }, tbind, tvalue);
 		} catch (e) {
-			e.message = `in assignment clause of ${dump(bind)}\n${e.message}`;
+			e.message = `in assignment clause of ${format(bind)}\n${e.message}`;
 			throw e;
 		}
 	}() && infer(expr))
@@ -885,7 +885,7 @@ inferType = (vts, isAsync, ast) => {
 			try {
 				return infer(then);
 			} catch (e) {
-				e.message = `in then clause of ${dump(if_)}\n${e.message}`;
+				e.message = `in then clause of ${format(if_)}\n${e.message}`;
 				throw e;
 			}
 		}();
@@ -922,7 +922,7 @@ inferType = (vts, isAsync, ast) => {
 				let tv = infer(value);
 				return doBind({ id: 'let', bind, value }, tb, tv);
 			} catch (e) {
-				e.message = `in value clause of ${dump(bind)}\n${e.message}`;
+				e.message = `in value clause of ${format(bind)}\n${e.message}`;
 				throw e;
 			}
 		}() && inferType(vts1, isAsync, expr);
@@ -1390,7 +1390,6 @@ return actual === expect
 		let { ast, type } = process(require('fs').readFileSync(0, 'utf8'));
 		console.log(`ast :: ${stringify(ast)}`);
 		console.log(`type :: ${dumpRef(type)}`);
-		console.log(`format :: ${formatValue(ast)}`);
 		return true;
 	} catch (e) { return console.error(e); }
 }() : error(`
