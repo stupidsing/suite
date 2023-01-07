@@ -1153,11 +1153,11 @@ promisifyAsync = ast => {
 		let e = unpromisify(pe);
 		return false ? undefined
 		: i !== undefined && t !== undefined && e !== undefined ? promisify({ id, if_: vi, then: t, else_: e })
-		: i !== undefined ? { id, if_: vi, then: promisifyAsync(then), else_: promisifyAsync(else_) }
+		: i !== undefined ? { id, if_: vi, then: pt, else_: pe }
 		: {
 			id: 'app',
 			lhs: { id: 'dot', expr: pi, field: '.then' },
-			rhs: { id: 'lambda', bind: vi, expr: { id, if_: vi, then: promisifyAsync(then), else_: promisifyAsync(else_) } },
+			rhs: { id: 'lambda', bind: vi, expr: { id, if_: vi, then: pt, else_: pe } },
 		};
 	})
 	: id === 'le_' ? reduceBinOp
