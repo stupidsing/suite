@@ -1223,6 +1223,58 @@ reduceAsync = ast => {
 	: id === 'sub' ? reduceBinOp
 	: id === 'try' ? reduceBinOp
 	: id === 'typeof' ? reduceOp
+	: id === 'while' ? (({ cond, loop, expr }) => {
+		let pc = reduceAsync(cond);
+		let c = unpromisify(pc);
+		let vc = c ?? { id: 'var', vn: newDummy() };
+		let pl = reduceAsync(loop);
+		let l = unpromisify(pl);
+		let pe = reduceAsync(expr);
+		let e = unpromisify(pe);
+		return false ? undefined
+		: c !== undefined && l !== undefined && e !== undefined ? promisify({ id, cond: vc, loop: l, expr: e })
+		: c !== undefined && l !== undefined && e === undefined ? { id, cond: vc, loop: l, expr: pe }
+		: c !== undefined ? function() {
+			let vn = newDummy();
+			let vp = { id: 'var', vn };
+			return {
+				id: 'alloc',
+				vn,
+				expr: {
+					id: 'assign',
+					bind: vp,
+					value: {
+						id: 'lambda',
+						bind: { id: 'var', vn: newDummy() },
+						expr: {
+							id: 'if',
+							if_: vc,
+							then: {
+								id: 'app',
+								lhs: { id: 'dot', expr: pl, field: '.then' },
+								rhs: {
+									id: 'lambda',
+									bind: { id: 'var', vn: newDummy() },
+									expr: {
+										id: 'app',
+										lhs: vp,
+										rhs: { id: 'undefined' },
+									},
+								},
+							},
+							else_: pe,
+						},
+					},
+					expr: {
+						id: 'app',
+						lhs: vp,
+						rhs: { id: 'undefined' },
+					},
+				},
+			};
+		}()
+		: undefined;
+	})
 	: (({}) => promisify(rewrite(ast_ => unpromisify(reduceAsync(ast_)), ast)));
 
 	return f(ast);
