@@ -481,7 +481,7 @@ parse = program => {
 			return rhs !== undefined
 			? {
 				id: 'assign',
-				vn: parseLvalue(lhs),
+				bind: parseLvalue(lhs),
 				value: parse(rhs),
 				expr: parse(expr),
 			}
@@ -506,7 +506,7 @@ format = ast => {
 	: id === 'and' ? (({ lhs, rhs }) => `${format(lhs)} && ${format(rhs)}`)
 	: id === 'app' ? (({ lhs, rhs }) => `${format(lhs)} |> ${format(rhs)}`)
 	: id === 'array' ? (({ values }) => error('FIXME'))
-	: id === 'assign' ? (({ vn, value, expr }) => error('FIXME'))
+	: id === 'assign' ? (({ bind, value, expr }) => error('FIXME'))
 	: id === 'await' ? (({ expr }) => `await ${format(expr)}`)
 	: id === 'boolean' ? (({ val }) => `${val}`)
 	: id === 'coal' ? (({ lhs, rhs }) => `${format(lhs)} ?? ${format(rhs)}`)
@@ -826,13 +826,13 @@ inferType = (vts, isAsync, ast) => {
 		let te = newRef();
 		return fold(true, values, (b, value) => b && doBind(ast, infer(value), te)) && typeArrayOf(te);
 	})
-	: id === 'assign' ? (({ vn, value, expr }) => function() {
+	: id === 'assign' ? (({ bind, value, expr }) => function() {
 		try {
-			let tvar = infer(vn);
+			let tbind = infer(bind);
 			let tvalue = infer(value);
-			return doBind({ id: 'assign', vn, value }, tvar, tvalue);
+			return doBind({ id: 'assign', bind, value }, tbind, tvalue);
 		} catch (e) {
-			e.message = `in assignment clause of ${dump(vn)}\n${e.message}`;
+			e.message = `in assignment clause of ${dump(bind)}\n${e.message}`;
 			throw e;
 		}
 	}() && infer(expr))
@@ -1044,7 +1044,7 @@ let rewrite = (rf, ast) => {
 	: id === 'and' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
 	: id === 'app' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
 	: id === 'array' ? (({ values }) => ({ id, values: values.map(rf) }))
-	: id === 'assign' ? (({ vn, value, expr }) => ({ id, vn, value: rf(value), expr: rf(expr) }))
+	: id === 'assign' ? (({ bind, value, expr }) => ({ id, bind, value: rf(value), expr: rf(expr) }))
 	: id === 'await' ? (({ expr }) => ({ id, expr: rf(expr) }))
 	: id === 'boolean' ? (({ val }) => ast)
 	: id === 'coal' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
@@ -1201,7 +1201,7 @@ generate = ast => {
 	: id === 'and' ? (({ lhs, rhs }) => error('FIXME'))
 	: id === 'app' ? (({ lhs, rhs }) => error('FIXME'))
 	: id === 'array' ? (({ values }) => error('FIXME'))
-	: id === 'assign' ? (({ vn, value, expr }) => error('FIXME'))
+	: id === 'assign' ? (({ bind, value, expr }) => error('FIXME'))
 	: id === 'await' ? (({ expr }) => error('FIXME'))
 	: id === 'boolean' ? (({ val }) => error('FIXME'))
 	: id === 'coal' ? (({ lhs, rhs }) => error('FIXME'))
