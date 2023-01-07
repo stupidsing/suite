@@ -1197,6 +1197,7 @@ reduceAsync = ast => {
 			rhs: { id: 'lambda', bind: vi, expr: { id, if_: vi, then: pt, else_: pe } },
 		};
 	})
+	: id === 'lambda-async' ? (({ bind, expr }) => ({ id: 'lambda', bind, expr: reduceAsync(expr) }))
 	: id === 'le_' ? reduceBinOp
 	: id === 'let' ? (({ bind, value, expr }) => {
 		let pv = reduceAsync(value);
@@ -1222,7 +1223,6 @@ reduceAsync = ast => {
 	: id === 'sub' ? reduceBinOp
 	: id === 'try' ? reduceBinOp
 	: id === 'typeof' ? reduceOp
-	: id === 'lambda-async' ? (({ bind, expr }) => ({ id: 'lambda', bind, expr: reduceAsync(expr) }))
 	: (({}) => promisify(rewrite(ast_ => unpromisify(reduceAsync(ast_)), ast)));
 
 	return f(ast);
