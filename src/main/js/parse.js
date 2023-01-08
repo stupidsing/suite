@@ -153,6 +153,7 @@ let _dot = (expr, field) => ({ id: 'dot', expr, field });
 let _if = (if_, then, else_) => ({ id: 'if', if_, then, else_ });
 let _lambda = (bind, expr) => ({ id: 'lambda', bind, expr });
 let _let = (bind, value, expr) => ({ id: 'let', bind, value, expr });
+let _never = { id: 'never' };
 let _num = i => ({ id: 'num', i });
 let _pair = (lhs, rhs) => ({ id: 'pair', lhs, rhs });
 let _str = v => ({ id: 'str', v });
@@ -216,7 +217,7 @@ parseBackquote = program => {
 
 		let exprToString = _app(
 			_dot(parseApplyBlockFieldIndex(expr_), '.toString'),
-			{ id: 'never' });
+			_never);
 
 		return {
 			id: 'add',
@@ -346,7 +347,7 @@ parseApplyBlockFieldIndex = program_ => {
 	: program.startsWith('function() {') && program.endsWith('}()') ?
 		parse(program.slice(12, -3).trim())
 	: program.endsWith('()') ?
-		_app(parse(program.slice(0, -2)), { id: 'never' })
+		_app(parse(program.slice(0, -2)), _never)
 	: program.endsWith(')') ? function() {
 		let [expr, paramStr_] = splitr(program, '(');
 		let paramStr = paramStr_.slice(0, -1).trim();
@@ -403,7 +404,7 @@ parseBind = program_ => {
 
 	return false ? undefined
 	: program === '()' ?
-		{ id: 'never' }
+		_never
 	: program.startsWith('(') && program.endsWith(')') ?
 		parseBind(program.slice(1, -1))
 	: program.startsWith('[') && program.endsWith(']') ?
@@ -1188,7 +1189,7 @@ reduceAsync = ast => {
 		: function() {
 			let vn = newDummy();
 			let vp = _var(vn);
-			let invoke = _app(vp, { id: 'never' });
+			let invoke = _app(vp, _never);
 			let if_ = _if(vc, _then(pl, _var(newDummy()), invoke), pe);
 			return _alloc(vn, _assign(vp, _lambda(_var(newDummy()), c !== undefined ? if_ : _then(pc, vc, if_)), invoke));
 		}();
@@ -1315,6 +1316,7 @@ return actual === expect
 		let { ast, type } = process(require('fs').readFileSync(0, 'utf8'));
 		console.log(`ast :: ${stringify(ast)}`);
 		console.log(`type :: ${dumpRef(type)}`);
+		console.log(`format :: ${format(ast)}`);
 		return true;
 	} catch (e) { return console.error(e); }
 }() : error(`
