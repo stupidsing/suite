@@ -94,13 +94,13 @@ let _undefined = { id: 'undefined' };
 let _var = vn => ({ id: 'var', vn });
 let _while = (cond, loop, expr) => ({ id: 'while', cond, loop, expr });
 
-let isAll = pred => s => {
-	let isAll_;
-	isAll_ = i => i < s.length ? pred(s.charCodeAt(i)) && isAll_(i + 1) : true;
-	return isAll_(0);
-};
-
 let parserModule = () => {
+	let isAll = pred => s => {
+		let isAll_;
+		isAll_ = i => i < s.length ? pred(s.charCodeAt(i)) && isAll_(i + 1) : true;
+		return isAll_(0);
+	};
+
 	let isIdentifier_ = isAll(ch => false
 		|| ascii('0') <= ch && ch <= ascii('9')
 		|| ascii('A') <= ch && ch <= ascii('Z')
