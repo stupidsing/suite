@@ -536,477 +536,481 @@ format = ast => {
 	return f(ast);
 };
 
-let refs = new Map();
-let refCount;
+let typesModule = () => {
+	let refs = new Map();
+	let refCount;
 
-refCount = 0;
+	refCount = 0;
 
-let finalRef;
+	let finalRef;
 
-finalRef = v => {
-	let ref = v.ref;
-	return ref !== undefined && refs.get(ref) !== v ? finalRef(refs.get(ref)) : v;
-};
-
-let setRef = (ref, target) => {
-	refs.set(ref, target);
-	return true;
-};
-
-let newRef = () => {
-	refCount = refCount + 1;
-	let ref = { ref: refCount };
-	refs.set(refCount, ref);
-	return ref;
-};
-
-let dumpRef = v => {
-	let dumpRef_;
-	dumpRef_ = (vs, v) => {
-		let { ref } = v;
-		let listv = assumeList(v);
-		return false ? undefined
-		: contains(vs, v) ?
-			'<recurse>'
-		: ref !== undefined ?
-			(refs.get(ref) !== v ? dumpRef_(cons(v, vs), refs.get(ref)) : `_${ref}`)
-		: typeof v === 'object' ? (false ? undefined
-			: isEmpty(listv) ?
-				''
-			: isNotEmpty(listv) ?
-				`${dumpRef_(vs, head(listv))}:${dumpRef_(vs, assumeObject(tail(listv)))}`
-			: function() {
-				let t = v.t;
-				let join = Object
-					.entries(v)
-					.filter(([k, v_]) => k !== 'id')
-					.map(([k, v_]) => `${k}:${dumpRef_(cons(v, vs), v_)}`)
-					.join(' ');
-				return t !== undefined ? `${t}(${join})` : `{${join}}`;
-			}()
-		)
-		: typeof v === 'string' ?
-			v.toString()
-		: JSON.stringify(v, undefined, undefined);
+	finalRef = v => {
+		let ref = v.ref;
+		return ref !== undefined && refs.get(ref) !== v ? finalRef(refs.get(ref)) : v;
 	};
-	return dumpRef_(nil, v);
-};
 
-let tryBind;
+	let setRef = (ref, target) => {
+		refs.set(ref, target);
+		return true;
+	};
 
-tryBind = (a, b) => function() {
-	let lista = assumeList(a);
-	let listb = assumeList(b);
-	let refa = a.ref;
-	let refb = b.ref;
+	let newRef = () => {
+		refCount = refCount + 1;
+		let ref = { ref: refCount };
+		refs.set(refCount, ref);
+		return ref;
+	};
 
-	return false ? undefined
-	: a === b ?
-		true
-	: refa !== undefined ? function() {
-		let olda = refs.get(refa);
-		let finalb = finalRef(b);
-		return setRef(refa, finalb) && tryBind(olda, finalb) || !setRef(refa, olda);
-	}()
-	: refb !== undefined ? function() {
-		let oldb = refs.get(refb);
-		let finala = finalRef(a);
-		return setRef(refb, finala) && tryBind(finala, oldb) || !setRef(refb, oldb);
-	}()
-	: typeof a === 'object' && typeof b === 'object'
-		&& (lista.length !== undefined
-		? lista.length === listb.length && function() {
-			let tryBindList;
-			tryBindList = index => index === lista.length || tryBind(lista[index], listb[index]) && tryBindList(index + 1);
-			return tryBindList(0);
-		}()
-		: true
-			&& Object.keys(a).reduce((r, k) => {
-				let b_k = getp(b, k);
-				let s = b_k !== undefined || b.completed !== true && function() { b_k = newRef(); setp(b, k, b_k); return true; }();
-				return r && s && tryBind(getp(a, k), b_k);
-			}, true)
-			&& Object.keys(b).reduce((r, k) => {
-				let a_k = getp(a, k);
-				let s = a_k !== undefined || a.completed !== true && function() { a_k = newRef(); setp(a, k, a_k); return true; }();
-				return r && s && tryBind(a_k, getp(b, k));
-			}, true)
-		);
-}();
-
-let doBind_ = (msg, a, b) => tryBind(a, b) || error(`in ${msg()}:\ncannot bind types between\nfr: ${dumpRef(a)}\nto: ${dumpRef(b)}`);
-let doBind = (ast, a, b) => doBind_(() => format(ast), a, b);
-
-let cloneRef = v => {
-	let fromTos = new Map();
-	let cloneRef_;
-
-	cloneRef_ = v => {
-		let { ref } = v;
-		let vlist = assumeList(v);
-		return false ? undefined
-		: ref !== undefined
-			? (fromTos.has(ref) ? fromTos.get(ref) : function() {
-				let v1 = newRef();
-				fromTos.set(ref, v1);
-				return doBind_(() => 'clone reference', v1, cloneRef_(refs.get(ref))) && v1;
-			}())
-		: typeof v === 'object'
-			? (vlist.length !== undefined
-				? assumeObject(vlist.map(cloneRef_))
-				: Object.fromEntries(Object.entries(v).map(([k, v_]) => [k, cloneRef_(v_)]))
+	let dump = v => {
+		let dumpType_;
+		dumpType_ = (vs, v) => {
+			let { ref } = v;
+			let listv = assumeList(v);
+			return false ? undefined
+			: contains(vs, v) ?
+				'<recurse>'
+			: ref !== undefined ?
+				(refs.get(ref) !== v ? dumpType_(cons(v, vs), refs.get(ref)) : `_${ref}`)
+			: typeof v === 'object' ? (false ? undefined
+				: isEmpty(listv) ?
+					''
+				: isNotEmpty(listv) ?
+					`${dumpType_(vs, head(listv))}:${dumpType_(vs, assumeObject(tail(listv)))}`
+				: function() {
+					let t = v.t;
+					let join = Object
+						.entries(v)
+						.filter(([k, v_]) => k !== 'id')
+						.map(([k, v_]) => `${k}:${dumpType_(cons(v, vs), v_)}`)
+						.join(' ');
+					return t !== undefined ? `${t}(${join})` : `{${join}}`;
+				}()
 			)
-		:
-			v;
+			: typeof v === 'string' ?
+				v.toString()
+			: JSON.stringify(v, undefined, undefined);
+		};
+		return dumpType_(nil, v);
 	};
 
-	return cloneRef_(v);
-};
+	let tryBind;
 
-let lookup = (vts, v) => {
-	let lookup_;
-	lookup_ = vts => isNotEmpty(vts) ? function() {
-		let [v_, t] = head(vts);
-		return v_ === v ? t : lookup_(tail(vts));
-	}() : error(`undefined variable ${v}`);
-	return lookup_(vts);
-};
+	tryBind = (a, b) => function() {
+		let lista = assumeList(a);
+		let listb = assumeList(b);
+		let refa = a.ref;
+		let refb = b.ref;
 
-let bindTypes;
-
-bindTypes = (vts, ast) => false ? undefined
-	: ast.id === 'array' ? fold(vts, ast.values, bindTypes)
-	: ast.id === 'never' ? vts
-	: ast.id === 'pair' ? bindTypes(bindTypes(vts, ast.lhs), ast.rhs)
-	: ast.id === 'struct' ? fold(vts, ast.kvs, (vts_, kv) => bindTypes(vts_, kv.value))
-	: ast.id === 'tuple' ? fold(vts, ast.values, bindTypes)
-	: ast.id === 'var' ? cons([ast.vn, newRef()], vts)
-	: error(`cannot destructure ${format(ast)}`);
-
-let tyArrayOf = type => ({ t: 'array', of: type });
-let tyBoolean = ({ t: 'bool' });
-let tyError = ({ t: 'error' });
-let tyLambdaOf = (in_, out) => ({ t: 'lambda', generic: true, in_, out });
-let tyLambdaOfFixed = (in_, out) => ({ t: 'lambda', in_, out });
-let tyNever = { t: 'never' };
-let tyNumber = ({ t: 'num' });
-let tyPairOf = (lhs, rhs) => ({ t: 'pair', lhs, rhs });
-let tyPromiseOf = out => ({ t: 'promise', out });
-let tyString = tyArrayOf({ t: 'char' });
-let tyStructOf = kvs => ({ t: 'struct', kvs });
-let tyStructOfCompleted = kvs => { setp(kvs, 'completed', true); return ({ t: 'struct', kvs }); };
-let tyTupleOf = types => ({ t: 'tuple', types });
-let tyVoid = tyStructOfCompleted({});
-
-let tyMapOf = (tk, tv) => tyStructOfCompleted({
-	'.get': tyLambdaOfFixed(tk, tv),
-	'.has': tyLambdaOfFixed(tk, tyBoolean),
-	'.set': tyLambdaOfFixed(tyPairOf(tk, tv), tyNever),
-});
-
-let inferDot = (ast, ts, field) => {
-	return false ? undefined
-	: field === '.charCodeAt' ?
-		doBind(ast, ts, tyString) && tyLambdaOf(tyNumber, tyNumber)
-	: field === '.endsWith' ?
-		doBind(ast, ts, tyString) && tyLambdaOf(tyString, tyBoolean)
-	: field === '.filter' ? function() {
-		let ti = newRef();
-		return doBind(ast, ts, tyArrayOf(ti)) && tyLambdaOf(tyLambdaOf(ti, tyBoolean), tyArrayOf(ti));
-	}()
-	: field === '.indexOf' ?
-		doBind(ast, ts, tyString) && tyLambdaOf(tyPairOf(tyString, tyNumber), tyNumber)
-	: field === '.join' ?
-		doBind(ast, ts, tyArrayOf(tyString)) && tyLambdaOf(tyString, tyString)
-	: field === '.length' ?
-		doBind(ast, ts, tyArrayOf(newRef())) && tyNumber
-	: field === '.map' ? function() {
-		let ti = newRef();
-		let to = newRef();
-		return doBind(ast, ts, tyArrayOf(ti)) && tyLambdaOf(tyLambdaOf(ti, to), tyArrayOf(to));
-	}()
-	: field === '.reduce' ? function() {
-		let te = newRef();
-		let tr = newRef();
-		let treducer = tyLambdaOf(tyPairOf(tr, te), tr);
-		return doBind(ast, ts, tyArrayOf(te))
-			&& tyLambdaOf(tyPairOf(treducer, tr), tr);
-	}()
-	: field === '.slice' ? function() {
-		let te = newRef();
-		let tl = tyArrayOf(te);
-		return doBind(ast, ts, tl) && tyLambdaOf(tyPairOf(tyNumber, tyNumber), tl);
-	}()
-	: field === '.startsWith' ?
-		doBind(ast, ts, tyString) && tyLambdaOf(tyString, tyBoolean)
-	: field === '.then' ? function() {
-		let ti = newRef();
-		let to = newRef();
-		return doBind(ast, ts, tyPromiseOf(ti)) && tyLambdaOf(ti, tyPromiseOf(to));
-	}()
-	: field === '.toString' ?
-		doBind(ast, ts, newRef()) && tyLambdaOf(tyNever, tyString)
-	: field === '.trim' ?
-		doBind(ast, ts, tyString) && tyLambdaOf(tyNever, tyString)
-	: function() {
-		let kvs = {};
-		let tr = setp(kvs, field, newRef());
-		let to = tyStructOf(kvs);
-		return doBind(ast, ts, to) && function() {
-			let t = finalRef(tr);
-			return t.generic !== true ? t : cloneRef(t);
-		}();
+		return false ? undefined
+		: a === b ?
+			true
+		: refa !== undefined ? function() {
+			let olda = refs.get(refa);
+			let finalb = finalRef(b);
+			return setRef(refa, finalb) && tryBind(olda, finalb) || !setRef(refa, olda);
+		}()
+		: refb !== undefined ? function() {
+			let oldb = refs.get(refb);
+			let finala = finalRef(a);
+			return setRef(refb, finala) && tryBind(finala, oldb) || !setRef(refb, oldb);
+		}()
+		: typeof a === 'object' && typeof b === 'object'
+			&& (lista.length !== undefined
+			? lista.length === listb.length && function() {
+				let tryBindList;
+				tryBindList = index => index === lista.length || tryBind(lista[index], listb[index]) && tryBindList(index + 1);
+				return tryBindList(0);
+			}()
+			: true
+				&& Object.keys(a).reduce((r, k) => {
+					let b_k = getp(b, k);
+					let s = b_k !== undefined || b.completed !== true && function() { b_k = newRef(); setp(b, k, b_k); return true; }();
+					return r && s && tryBind(getp(a, k), b_k);
+				}, true)
+				&& Object.keys(b).reduce((r, k) => {
+					let a_k = getp(a, k);
+					let s = a_k !== undefined || a.completed !== true && function() { a_k = newRef(); setp(a, k, a_k); return true; }();
+					return r && s && tryBind(a_k, getp(b, k));
+				}, true)
+			);
 	}();
-};
 
-let inferType;
+	let doBind_ = (msg, a, b) => tryBind(a, b) || error(`in ${msg()}:\ncannot bind types between\nfr: ${dump(a)}\nto: ${dump(b)}`);
+	let doBind = (ast, a, b) => doBind_(() => format(ast), a, b);
 
-inferType = (vts, isAsync, ast) => {
-	let { id } = ast;
+	let cloneRef = v => {
+		let fromTos = new Map();
+		let cloneRef_;
 
-	let infer = ast_ => inferType(vts, isAsync, ast_);
+		cloneRef_ = v => {
+			let { ref } = v;
+			let vlist = assumeList(v);
+			return false ? undefined
+			: ref !== undefined
+				? (fromTos.has(ref) ? fromTos.get(ref) : function() {
+					let v1 = newRef();
+					fromTos.set(ref, v1);
+					return doBind_(() => 'clone reference', v1, cloneRef_(refs.get(ref))) && v1;
+				}())
+			: typeof v === 'object'
+				? (vlist.length !== undefined
+					? assumeObject(vlist.map(cloneRef_))
+					: Object.fromEntries(Object.entries(v).map(([k, v_]) => [k, cloneRef_(v_)]))
+				)
+			:
+				v;
+		};
 
-	let inferCmpOp = ({ lhs, rhs }) => function() {
-		let t = newRef();
-		return true
-			&& doBind(ast, infer(lhs), t)
-			&& doBind(ast, infer(rhs), t)
-			&& (tryBind(t, tyNumber) || tryBind(t, tyString) || error(`cannot compare values with type ${t}`))
+		return cloneRef_(v);
+	};
+
+	let lookup = (vts, v) => {
+		let lookup_;
+		lookup_ = vts => isNotEmpty(vts) ? function() {
+			let [v_, t] = head(vts);
+			return v_ === v ? t : lookup_(tail(vts));
+		}() : error(`undefined variable ${v}`);
+		return lookup_(vts);
+	};
+
+	let bindTypes;
+
+	bindTypes = (vts, ast) => false ? undefined
+		: ast.id === 'array' ? fold(vts, ast.values, bindTypes)
+		: ast.id === 'never' ? vts
+		: ast.id === 'pair' ? bindTypes(bindTypes(vts, ast.lhs), ast.rhs)
+		: ast.id === 'struct' ? fold(vts, ast.kvs, (vts_, kv) => bindTypes(vts_, kv.value))
+		: ast.id === 'tuple' ? fold(vts, ast.values, bindTypes)
+		: ast.id === 'var' ? cons([ast.vn, newRef()], vts)
+		: error(`cannot destructure ${format(ast)}`);
+
+	let tyArrayOf = type => ({ t: 'array', of: type });
+	let tyBoolean = ({ t: 'bool' });
+	let tyError = ({ t: 'error' });
+	let tyLambdaOf = (in_, out) => ({ t: 'lambda', generic: true, in_, out });
+	let tyLambdaOfFixed = (in_, out) => ({ t: 'lambda', in_, out });
+	let tyNever = { t: 'never' };
+	let tyNumber = ({ t: 'num' });
+	let tyPairOf = (lhs, rhs) => ({ t: 'pair', lhs, rhs });
+	let tyPromiseOf = out => ({ t: 'promise', out });
+	let tyString = tyArrayOf({ t: 'char' });
+	let tyStructOf = kvs => ({ t: 'struct', kvs });
+	let tyStructOfCompleted = kvs => { setp(kvs, 'completed', true); return ({ t: 'struct', kvs }); };
+	let tyTupleOf = types => ({ t: 'tuple', types });
+	let tyVoid = tyStructOfCompleted({});
+
+	let tyMapOf = (tk, tv) => tyStructOfCompleted({
+		'.get': tyLambdaOfFixed(tk, tv),
+		'.has': tyLambdaOfFixed(tk, tyBoolean),
+		'.set': tyLambdaOfFixed(tyPairOf(tk, tv), tyNever),
+	});
+
+	let inferDot = (ast, ts, field) => {
+		return false ? undefined
+		: field === '.charCodeAt' ?
+			doBind(ast, ts, tyString) && tyLambdaOf(tyNumber, tyNumber)
+		: field === '.endsWith' ?
+			doBind(ast, ts, tyString) && tyLambdaOf(tyString, tyBoolean)
+		: field === '.filter' ? function() {
+			let ti = newRef();
+			return doBind(ast, ts, tyArrayOf(ti)) && tyLambdaOf(tyLambdaOf(ti, tyBoolean), tyArrayOf(ti));
+		}()
+		: field === '.indexOf' ?
+			doBind(ast, ts, tyString) && tyLambdaOf(tyPairOf(tyString, tyNumber), tyNumber)
+		: field === '.join' ?
+			doBind(ast, ts, tyArrayOf(tyString)) && tyLambdaOf(tyString, tyString)
+		: field === '.length' ?
+			doBind(ast, ts, tyArrayOf(newRef())) && tyNumber
+		: field === '.map' ? function() {
+			let ti = newRef();
+			let to = newRef();
+			return doBind(ast, ts, tyArrayOf(ti)) && tyLambdaOf(tyLambdaOf(ti, to), tyArrayOf(to));
+		}()
+		: field === '.reduce' ? function() {
+			let te = newRef();
+			let tr = newRef();
+			let treducer = tyLambdaOf(tyPairOf(tr, te), tr);
+			return doBind(ast, ts, tyArrayOf(te))
+				&& tyLambdaOf(tyPairOf(treducer, tr), tr);
+		}()
+		: field === '.slice' ? function() {
+			let te = newRef();
+			let tl = tyArrayOf(te);
+			return doBind(ast, ts, tl) && tyLambdaOf(tyPairOf(tyNumber, tyNumber), tl);
+		}()
+		: field === '.startsWith' ?
+			doBind(ast, ts, tyString) && tyLambdaOf(tyString, tyBoolean)
+		: field === '.then' ? function() {
+			let ti = newRef();
+			let to = newRef();
+			return doBind(ast, ts, tyPromiseOf(ti)) && tyLambdaOf(ti, tyPromiseOf(to));
+		}()
+		: field === '.toString' ?
+			doBind(ast, ts, newRef()) && tyLambdaOf(tyNever, tyString)
+		: field === '.trim' ?
+			doBind(ast, ts, tyString) && tyLambdaOf(tyNever, tyString)
+		: function() {
+			let kvs = {};
+			let tr = setp(kvs, field, newRef());
+			let to = tyStructOf(kvs);
+			return doBind(ast, ts, to) && function() {
+				let t = finalRef(tr);
+				return t.generic !== true ? t : cloneRef(t);
+			}();
+		}();
+	};
+
+	let inferType;
+
+	inferType = (vts, isAsync, ast) => {
+		let { id } = ast;
+
+		let infer = ast_ => inferType(vts, isAsync, ast_);
+
+		let inferCmpOp = ({ lhs, rhs }) => function() {
+			let t = newRef();
+			return true
+				&& doBind(ast, infer(lhs), t)
+				&& doBind(ast, infer(rhs), t)
+				&& (tryBind(t, tyNumber) || tryBind(t, tyString) || error(`cannot compare values with type ${t}`))
+				&& tyBoolean;
+		}();
+
+		let inferEqOp = ({ lhs, rhs }) => true
+			&& doBind(ast, infer(lhs), infer(rhs))
 			&& tyBoolean;
-	}();
 
-	let inferEqOp = ({ lhs, rhs }) => true
-		&& doBind(ast, infer(lhs), infer(rhs))
-		&& tyBoolean;
+		let inferLogicalOp = ({ lhs, rhs }) => true
+			&& doBind(ast, infer(lhs), tyBoolean)
+			&& infer(rhs);
 
-	let inferLogicalOp = ({ lhs, rhs }) => true
-		&& doBind(ast, infer(lhs), tyBoolean)
-		&& infer(rhs);
-
-	let inferMathOp = ({ lhs, rhs }) => true
-		&& doBind(ast, infer(lhs), tyNumber)
-		&& doBind(ast, infer(rhs), tyNumber)
-		&& tyNumber;
-
-	let f = false ? undefined
-	: id === 'add' ? (({ lhs, rhs }) => {
-		let t = newRef();
-		return true
-			&& doBind(ast, infer(lhs), t)
-			&& doBind(ast, infer(rhs), t)
-			&& (tryBind(t, tyNumber) || tryBind(t, tyString) || error(`cannot add values with type ${dumpRef(t)}`))
-			&& t;
-	})
-	: id === 'alloc' ? (({ vn, expr }) =>
-		inferType(cons([vn, newRef()], vts), isAsync, expr)
-	)
-	: id === 'and' ?
-		inferLogicalOp
-	: id === 'app' ? (({ lhs, rhs }) => {
-		let te = infer(lhs);
-		let tp = infer(rhs);
-		let tr = newRef();
-		return doBind(ast, te, tyLambdaOf(tp, tr)) && tr;
-	})
-	: id === 'array' ? (({ values }) => {
-		let te = newRef();
-		return fold(true, values, (b, value) => b && doBind(ast, infer(value), te)) && tyArrayOf(te);
-	})
-	: id === 'assign' ? (({ bind, value, expr }) => function() {
-		try {
-			let tbind = infer(bind);
-			let tvalue = infer(value);
-			return doBind(_assign(bind, value, undefined), tbind, tvalue);
-		} catch (e) {
-			e.message = `in assignment clause of ${format(bind)}\n${e.message}`;
-			throw e;
-		}
-	}() && infer(expr))
-	: id === 'await' ? (({ expr }) => {
-		let t = newRef();
-		return isAsync ? doBind(ast, infer(expr), tyPromiseOf(t)) && t : error(`await not inside async`);
-	})
-	: id === 'bool' ? (({}) =>
-		tyBoolean
-	)
-	: id === 'coal' ? (({ lhs, rhs }) => {
-		let tl = infer(lhs);
-		let tr = infer(rhs);
-		return doBind(ast, tl, tr) && tr;
-	})
-	: id === 'cons' ? (({ lhs, rhs }) => {
-		let tl = tyArrayOf(infer(lhs));
-		return doBind(ast, infer(rhs), tl) && tl;
-	})
-	: id === 'div' ?
-		inferMathOp
-	: id === 'dot' ? (({ expr, field }) =>
-		inferDot(ast, infer(expr), field)
-	)
-	: id === 'eq_' ?
-		inferEqOp
-	: id === 'if' ? (({ if_, then, else_ }) => {
-		let tt = function() {
-			try {
-				return infer(then);
-			} catch (e) {
-				e.message = `in then clause of ${format(if_)}\n${e.message}`;
-				throw e;
-			}
-		}();
-
-		let te = infer(else_);
-		return doBind(ast, infer(if_), tyBoolean) && doBind(ast, tt, te) && tt;
-	})
-	: id === 'index' ? (({ lhs, rhs }) => {
-		let t = newRef();
-		return true
+		let inferMathOp = ({ lhs, rhs }) => true
+			&& doBind(ast, infer(lhs), tyNumber)
 			&& doBind(ast, infer(rhs), tyNumber)
-			&& doBind(ast, infer(lhs), tyArrayOf(t))
-			&& t;
-	})
-	: id === 'lambda' ? (({ bind, expr }) => {
-		let vts1 = bindTypes(vts, bind);
-		let tb = inferType(vts1, false, bind);
-		let te = inferType(vts1, false, expr);
-		return tyLambdaOf(tb, te);
-	})
-	: id === 'lambda-async' ? (({ bind, expr }) => {
-		let vts1 = bindTypes(vts, bind);
-		let tb = inferType(vts1, false, bind);
-		let te = inferType(vts1, true, expr);
-		return tyLambdaOf(tb, tyPromiseOf(te));
-	})
-	: id === 'le_' ?
-		inferCmpOp
-	: id === 'let' ? (({ bind, value, expr }) => {
-		let vts1 = bindTypes(vts, bind);
-		return function() {
+			&& tyNumber;
+
+		let f = false ? undefined
+		: id === 'add' ? (({ lhs, rhs }) => {
+			let t = newRef();
+			return true
+				&& doBind(ast, infer(lhs), t)
+				&& doBind(ast, infer(rhs), t)
+				&& (tryBind(t, tyNumber) || tryBind(t, tyString) || error(`cannot add values with type ${dump(t)}`))
+				&& t;
+		})
+		: id === 'alloc' ? (({ vn, expr }) =>
+			inferType(cons([vn, newRef()], vts), isAsync, expr)
+		)
+		: id === 'and' ?
+			inferLogicalOp
+		: id === 'app' ? (({ lhs, rhs }) => {
+			let te = infer(lhs);
+			let tp = infer(rhs);
+			let tr = newRef();
+			return doBind(ast, te, tyLambdaOf(tp, tr)) && tr;
+		})
+		: id === 'array' ? (({ values }) => {
+			let te = newRef();
+			return fold(true, values, (b, value) => b && doBind(ast, infer(value), te)) && tyArrayOf(te);
+		})
+		: id === 'assign' ? (({ bind, value, expr }) => function() {
 			try {
-				let tb = inferType(vts1, false, bind);
-				let tv = infer(value);
-				return doBind(_let(bind, value, undefined), tb, tv);
+				let tbind = infer(bind);
+				let tvalue = infer(value);
+				return doBind(_assign(bind, value, undefined), tbind, tvalue);
 			} catch (e) {
-				e.message = `in value clause of ${format(bind)}\n${e.message}`;
+				e.message = `in assignment clause of ${format(bind)}\n${e.message}`;
 				throw e;
 			}
-		}() && inferType(vts1, isAsync, expr);
-	})
-	: id === 'lt_' ?
-		inferCmpOp
-	: id === 'mul' ?
-		inferMathOp
-	: id === 'ne_' ?
-		inferEqOp
-	: id === 'neg' ? (({ expr }) =>
-		doBind(ast, infer(expr), tyNumber) && tyNumber
-	)
-	: id === 'never' ? (({}) =>
-		tyNever
-	)
-	: id === 'new-error' ? (({}) =>
-		tyLambdaOf(tyString, tyError)
-	)
-	: id === 'new-map' ? (({}) =>
-		tyLambdaOf(tyNever, tyMapOf(newRef(), newRef()))
-	)
-	: id === 'new-promise' ? (({}) => {
-		let tr = newRef();
-		let tres = tyLambdaOf(tr, tyVoid);
-		let trej = tyLambdaOf(tyError, tyVoid);
-		return tyLambdaOf(tyLambdaOf(tyPairOf(tres, trej), tyVoid), tyPromiseOf(tr));
-	})
-	: id === 'not' ? (({ expr }) =>
-		doBind(ast, infer(expr), tyBoolean) && tyBoolean
-	)
-	: id === 'num' ? (({}) =>
-		tyNumber
-	)
-	: id === 'or_' ?
-		inferLogicalOp
-	: id === 'pair' ? (({ lhs, rhs }) =>
-		tyPairOf(infer(lhs), infer(rhs))
-	)
-	: id === 'pos' ? (({ expr }) =>
-		doBind(ast, infer(expr), tyNumber) && tyNumber
-	)
-	: id === 'str' ? (({}) =>
-		tyString
-	)
-	: id === 'struct' ? (({ kvs }) => {
-		let inferKvs;
-		inferKvs = kvs => 0 < kvs.length ? function() {
-			let { key, value } = head(kvs);
-			let type = inferKvs(tail(kvs));
-			setp(type, key, function() {
+		}() && infer(expr))
+		: id === 'await' ? (({ expr }) => {
+			let t = newRef();
+			return isAsync ? doBind(ast, infer(expr), tyPromiseOf(t)) && t : error(`await not inside async`);
+		})
+		: id === 'bool' ? (({}) =>
+			tyBoolean
+		)
+		: id === 'coal' ? (({ lhs, rhs }) => {
+			let tl = infer(lhs);
+			let tr = infer(rhs);
+			return doBind(ast, tl, tr) && tr;
+		})
+		: id === 'cons' ? (({ lhs, rhs }) => {
+			let tl = tyArrayOf(infer(lhs));
+			return doBind(ast, infer(rhs), tl) && tl;
+		})
+		: id === 'div' ?
+			inferMathOp
+		: id === 'dot' ? (({ expr, field }) =>
+			inferDot(ast, infer(expr), field)
+		)
+		: id === 'eq_' ?
+			inferEqOp
+		: id === 'if' ? (({ if_, then, else_ }) => {
+			let tt = function() {
 				try {
-					return infer(value);
+					return infer(then);
 				} catch (e) {
-					e.message = `in field ${key}\n${e.message}`;
+					e.message = `in then clause of ${format(if_)}\n${e.message}`;
 					throw e;
 				}
-			}());
-			return type;
-		}() : {};
-		return tyStructOf(inferKvs(kvs));
-	})
-	: id === 'sub' ?
-		inferMathOp
-	: id === 'throw' ? (({}) =>
-		newRef()
-	)
-	: id === 'try' ? (({ lhs, rhs }) =>
-		doBind(ast, infer(rhs), newRef()) && infer(lhs)
-	)
-	: id === 'tuple' ? (({ values }) => {
-		let inferValues;
-		inferValues = vs => isNotEmpty(vs) ? cons(infer(head(vs)), inferValues(tail(vs))) : nil;
-		return tyTupleOf(inferValues(values));
-	})
-	: id === 'typeof' ? (({}) =>
-		tyString
-	)
-	: id === 'undefined' ? (({}) =>
-		newRef()
-	)
-	: id === 'var' ? (({ vn }) => {
-		let t = finalRef(lookup(vts, vn));
-		return t.generic !== true ? t : cloneRef(t);
-	})
-	: id === 'while' ? (({ cond, loop, expr }) => {
-		doBind(ast, infer(cond), tyBoolean);
-		doBind(ast, infer(loop), newRef());
-		return infer(expr);
-	})
-	: (({}) =>
-		error(`cannot infer type for ${id}`)
-	);
+			}();
 
-	return f(ast);
+			let te = infer(else_);
+			return doBind(ast, infer(if_), tyBoolean) && doBind(ast, tt, te) && tt;
+		})
+		: id === 'index' ? (({ lhs, rhs }) => {
+			let t = newRef();
+			return true
+				&& doBind(ast, infer(rhs), tyNumber)
+				&& doBind(ast, infer(lhs), tyArrayOf(t))
+				&& t;
+		})
+		: id === 'lambda' ? (({ bind, expr }) => {
+			let vts1 = bindTypes(vts, bind);
+			let tb = inferType(vts1, false, bind);
+			let te = inferType(vts1, false, expr);
+			return tyLambdaOf(tb, te);
+		})
+		: id === 'lambda-async' ? (({ bind, expr }) => {
+			let vts1 = bindTypes(vts, bind);
+			let tb = inferType(vts1, false, bind);
+			let te = inferType(vts1, true, expr);
+			return tyLambdaOf(tb, tyPromiseOf(te));
+		})
+		: id === 'le_' ?
+			inferCmpOp
+		: id === 'let' ? (({ bind, value, expr }) => {
+			let vts1 = bindTypes(vts, bind);
+			return function() {
+				try {
+					let tb = inferType(vts1, false, bind);
+					let tv = infer(value);
+					return doBind(_let(bind, value, undefined), tb, tv);
+				} catch (e) {
+					e.message = `in value clause of ${format(bind)}\n${e.message}`;
+					throw e;
+				}
+			}() && inferType(vts1, isAsync, expr);
+		})
+		: id === 'lt_' ?
+			inferCmpOp
+		: id === 'mul' ?
+			inferMathOp
+		: id === 'ne_' ?
+			inferEqOp
+		: id === 'neg' ? (({ expr }) =>
+			doBind(ast, infer(expr), tyNumber) && tyNumber
+		)
+		: id === 'never' ? (({}) =>
+			tyNever
+		)
+		: id === 'new-error' ? (({}) =>
+			tyLambdaOf(tyString, tyError)
+		)
+		: id === 'new-map' ? (({}) =>
+			tyLambdaOf(tyNever, tyMapOf(newRef(), newRef()))
+		)
+		: id === 'new-promise' ? (({}) => {
+			let tr = newRef();
+			let tres = tyLambdaOf(tr, tyVoid);
+			let trej = tyLambdaOf(tyError, tyVoid);
+			return tyLambdaOf(tyLambdaOf(tyPairOf(tres, trej), tyVoid), tyPromiseOf(tr));
+		})
+		: id === 'not' ? (({ expr }) =>
+			doBind(ast, infer(expr), tyBoolean) && tyBoolean
+		)
+		: id === 'num' ? (({}) =>
+			tyNumber
+		)
+		: id === 'or_' ?
+			inferLogicalOp
+		: id === 'pair' ? (({ lhs, rhs }) =>
+			tyPairOf(infer(lhs), infer(rhs))
+		)
+		: id === 'pos' ? (({ expr }) =>
+			doBind(ast, infer(expr), tyNumber) && tyNumber
+		)
+		: id === 'str' ? (({}) =>
+			tyString
+		)
+		: id === 'struct' ? (({ kvs }) => {
+			let inferKvs;
+			inferKvs = kvs => 0 < kvs.length ? function() {
+				let { key, value } = head(kvs);
+				let type = inferKvs(tail(kvs));
+				setp(type, key, function() {
+					try {
+						return infer(value);
+					} catch (e) {
+						e.message = `in field ${key}\n${e.message}`;
+						throw e;
+					}
+				}());
+				return type;
+			}() : {};
+			return tyStructOf(inferKvs(kvs));
+		})
+		: id === 'sub' ?
+			inferMathOp
+		: id === 'throw' ? (({}) =>
+			newRef()
+		)
+		: id === 'try' ? (({ lhs, rhs }) =>
+			doBind(ast, infer(rhs), newRef()) && infer(lhs)
+		)
+		: id === 'tuple' ? (({ values }) => {
+			let inferValues;
+			inferValues = vs => isNotEmpty(vs) ? cons(infer(head(vs)), inferValues(tail(vs))) : nil;
+			return tyTupleOf(inferValues(values));
+		})
+		: id === 'typeof' ? (({}) =>
+			tyString
+		)
+		: id === 'undefined' ? (({}) =>
+			newRef()
+		)
+		: id === 'var' ? (({ vn }) => {
+			let t = finalRef(lookup(vts, vn));
+			return t.generic !== true ? t : cloneRef(t);
+		})
+		: id === 'while' ? (({ cond, loop, expr }) => {
+			doBind(ast, infer(cond), tyBoolean);
+			doBind(ast, infer(loop), newRef());
+			return infer(expr);
+		})
+		: (({}) =>
+			error(`cannot infer type for ${id}`)
+		);
+
+		return f(ast);
+	};
+
+	let predefinedTypes = Object
+		.entries({
+			JSON: tyStructOfCompleted({
+				'.stringify': tyLambdaOf(tyPairOf(newRef(), tyPairOf(newRef(), newRef())), tyString),
+			}),
+			Object: tyStructOfCompleted({
+				'.assign': tyLambdaOf(newRef(), newRef()),
+				'.entries': tyLambdaOf(tyStructOf({}), tyArrayOf(tyTupleOf(cons(tyString, cons(newRef(), nil))))),
+				'.fromEntries': tyLambdaOf(tyArrayOf(tyTupleOf(cons(tyString, cons(newRef(), nil)))), tyStructOf({})),
+				'.keys': tyLambdaOf(tyStructOf({}), tyArrayOf(tyString)),
+			}),
+			Promise: tyStructOfCompleted({
+				'.reject': tyLambdaOf(tyError, tyPromiseOf(newRef())),
+				'.resolve': function() { let t = newRef(); return tyLambdaOf(t, tyPromiseOf(t)); }(),
+			}),
+			console: tyStructOfCompleted({
+				'.error': tyLambdaOf(newRef(), tyNever),
+				'.log': tyLambdaOf(newRef(), tyNever),
+			}),
+			require: tyLambdaOf(tyString, newRef()),
+		})
+		.reduce((l, vt) => cons(vt, l), nil);
+
+	return { dump, infer: ast => inferType(predefinedTypes, false, ast) };
 };
-
-let predefinedTypes = Object
-	.entries({
-		JSON: tyStructOfCompleted({
-			'.stringify': tyLambdaOf(tyPairOf(newRef(), tyPairOf(newRef(), newRef())), tyString),
-		}),
-		Object: tyStructOfCompleted({
-			'.assign': tyLambdaOf(newRef(), newRef()),
-			'.entries': tyLambdaOf(tyStructOf({}), tyArrayOf(tyTupleOf(cons(tyString, cons(newRef(), nil))))),
-			'.fromEntries': tyLambdaOf(tyArrayOf(tyTupleOf(cons(tyString, cons(newRef(), nil)))), tyStructOf({})),
-			'.keys': tyLambdaOf(tyStructOf({}), tyArrayOf(tyString)),
-		}),
-		Promise: tyStructOfCompleted({
-			'.reject': tyLambdaOf(tyError, tyPromiseOf(newRef())),
-			'.resolve': function() { let t = newRef(); return tyLambdaOf(t, tyPromiseOf(t)); }(),
-		}),
-		console: tyStructOfCompleted({
-			'.error': tyLambdaOf(newRef(), tyNever),
-			'.log': tyLambdaOf(newRef(), tyNever),
-		}),
-		require: tyLambdaOf(tyString, newRef()),
-	})
-	.reduce((l, vt) => cons(vt, l), nil);
 
 let rewrite = (rf, ast) => {
 	let { id } = ast;
@@ -1243,10 +1247,12 @@ generate = ast => {
 	return f(ast);
 };
 
+let types = typesModule();
+
 let process_ = program => {
 	let ast = parse(program);
 
-	return { ast: reduces(ast), type: inferType(predefinedTypes, false, ast) };
+	return { ast: reduces(ast), type: types.infer(ast) };
 };
 
 let process = program_ => {
@@ -1291,7 +1297,7 @@ return actual === expect
 	try {
 		let { ast, type } = process(require('fs').readFileSync(0, 'utf8'));
 		console.log(`ast :: ${stringify(ast)}`);
-		console.log(`type :: ${dumpRef(type)}`);
+		console.log(`type :: ${types.dump(type)}`);
 		"console.log(`format :: ${format(ast)}`)";
 		return true;
 	} catch (e) { return console.error(e); }
