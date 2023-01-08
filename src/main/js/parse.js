@@ -145,15 +145,19 @@ let keepsplitl = (s, sep, apply) => {
 	return keepsplitl_(s);
 };
 
+let _alloc = (vn, expr) => ({ id: 'alloc', vn, expr });
 let _app = (lhs, rhs) => ({ id: 'app', lhs, rhs });
+let _assign = (bind, value, expr) => ({ id: 'assign', bind, value, expr });
 let _bool = v => ({ id: 'bool', v });
 let _dot = (expr, field) => ({ id: 'dot', expr, field });
+let _if = (if_, then, else_) => ({ id: 'if', if_, then, else_ });
 let _lambda = (bind, expr) => ({ id: 'lambda', bind, expr });
 let _let = (bind, value, expr) => ({ id: 'let', bind, value, expr });
 let _num = i => ({ id: 'num', i });
 let _pair = (lhs, rhs) => ({ id: 'pair', lhs, rhs });
 let _str = v => ({ id: 'str', v });
 let _var = vn => ({ id: 'var', vn });
+let _while = (cond, loop, expr) => ({ id: 'while', cond, loop, expr });
 
 let parseAssocLeft_ = (id, op, parseValue) => {
 	let parseAssocLeft__;
@@ -377,12 +381,7 @@ let parseIf = [parseApplyBlockFieldIndex,]
 		: function() {
 			let [then, else_] = splitl(thenElse, ':');
 
-			return {
-				id: 'if',
-				if_: parse(if_),
-				then: parse(then),
-				else_: parse(else_),
-			};
+			return _if(parse(if_), parse(then), parse(else_));
 		}();
 	})
 	[0];
@@ -449,11 +448,7 @@ parse = program => {
 
 			return false ? undefined
 			: value !== undefined ? _let(parseBind(vn), parse(value), parse(expr))
-			: isIdentifier(v) ? {
-				id: 'alloc',
-				vn: v,
-				expr: parse(expr),
-			}
+			: isIdentifier(v) ? _alloc(v, parse(expr))
 			: error(`cannot parse let variable "${v}"`);
 		}()
 		: statement.startsWith('return ') && expr === '' ?
@@ -462,23 +457,13 @@ parse = program => {
 			{ id: 'throw', expr: parse(statement.slice(6, undefined)) }
 		: statement.startsWith('while ') ? function() {
 			let [cond, loop] = splitl(statement.slice(6, undefined), ' ');
-			return {
-				id: 'while',
-				cond: parse(cond),
-				loop: parse(loop),
-				expr: parse(expr),
-			};
+			return _while(parse(cond), parse(loop), parse(expr));
 		}()
 		: function() {
 			let [lhs, rhs] = splitl(statement, '=');
 
 			return rhs !== undefined
-			? {
-				id: 'assign',
-				bind: parseLvalue(lhs),
-				value: parse(rhs),
-				expr: parse(expr),
-			}
+			? _assign(parseLvalue(lhs), parse(rhs), parse(expr))
 			: _let(_var(newDummy()), parse(lhs), parse(expr));
 		}();
 	}();
@@ -1204,22 +1189,8 @@ reduceAsync = ast => {
 			let vn = newDummy();
 			let vp = _var(vn);
 			let invoke = _app(vp, { id: 'never' });
-			let if_ = {
-				id: 'if',
-				if_: vc,
-				then: _then(pl, _var(newDummy()), invoke),
-				else_: pe,
-			};
-			return {
-				id: 'alloc',
-				vn,
-				expr: {
-					id: 'assign',
-					bind: vp,
-					value: _lambda(_var(newDummy()), c !== undefined ? if_ : _then(pc, vc, if_)),
-					expr: invoke,
-				},
-			};
+			let if_ = _if(vc, _then(pl, _var(newDummy()), invoke), pe);
+			return _alloc(vn, _assign(vp, _lambda(_var(newDummy()), c !== undefined ? if_ : _then(pc, vc, if_)), invoke));
 		}();
 	})
 	: (({}) => promisify(rewrite(ast_ => unpromisify(reduceAsync(ast_)), ast)));
