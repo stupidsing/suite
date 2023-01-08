@@ -239,7 +239,7 @@ let parseConstant = program => {
 	: program === 'new Error' ? { id: 'new-error' }
 	: program === 'new Map' ? { id: 'new-map' }
 	: program === 'new Promise' ? { id: 'new-promise' }
-	: program === 'nil' ? { id: 'nil' }
+	: program === 'nil' ? { id: 'array', values: [] }
 	: program === 'true' ? _bool(program)
 	: program === 'undefined' ? { id: 'undefined' }
 	: isIdentifier(program) ? _var(program)
@@ -260,7 +260,7 @@ let parseArray = (program, parse) => {
 				rhs: tail.startsWith('...') && tail.endsWith(',') ? parse(tail.slice(3, -1)) : parseArray_(tail)
 			};
 		}()
-		: { id: 'nil' };
+		: { id: 'array', values: [] };
 	};
 	return parseArray_(program);
 };
@@ -532,7 +532,6 @@ format = ast => {
 	: id === 'new-error' ? (({}) => 'new Error')
 	: id === 'new-map' ? (({}) => 'new Map')
 	: id === 'new-promise' ? (({}) => 'new Promise')
-	: id === 'nil' ? (({}) => '[]')
 	: id === 'num' ? (({ i }) => `${i}`)
 	: id === 'struct' ? (({ kvs }) => `{ ${kvs.map(({ key, value }) => `${key.slice(1, undefined)}: ${format(value)}`).join(', ')} }`)
 	: id === 'str' ? (({ v }) => `'${v}'`)
@@ -685,7 +684,6 @@ let bindTypes;
 bindTypes = (vts, ast) => false ? undefined
 	: ast.id === 'array' ? fold(vts, ast.values, bindTypes)
 	: ast.id === 'never' ? vts
-	: ast.id === 'nil' ? vts
 	: ast.id === 'pair' ? bindTypes(bindTypes(vts, ast.lhs), ast.rhs)
 	: ast.id === 'struct' ? fold(vts, ast.kvs, (vts_, kv) => bindTypes(vts_, kv.value))
 	: ast.id === 'tuple' ? fold(vts, ast.values, bindTypes)
@@ -925,9 +923,6 @@ inferType = (vts, isAsync, ast) => {
 		let trej = typeLambdaOf(typeError, typeVoid);
 		return typeLambdaOf(typeLambdaOf(typePairOf(tres, trej), typeVoid), typePromiseOf(tr));
 	})
-	: id === 'nil' ? (({}) =>
-		typeArrayOf(newRef())
-	)
 	: id === 'not' ? (({ expr }) =>
 		doBind(ast, infer(expr), typeBoolean) && typeBoolean
 	)
@@ -1061,7 +1056,6 @@ let rewrite = (rf, ast) => {
 	: id === 'new-error' ? (({}) => ast)
 	: id === 'new-map' ? (({}) => ast)
 	: id === 'new-promise' ? (({}) => ast)
-	: id === 'nil' ? (({}) => ast)
 	: id === 'not' ? (({ expr }) => ({ id, expr: rf(expr) }))
 	: id === 'num' ? (({ i }) => ast)
 	: id === 'or_' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
@@ -1246,7 +1240,6 @@ generate = ast => {
 	: id === 'new-error' ? (({}) => error('FIXME'))
 	: id === 'new-map' ? (({}) => error('FIXME'))
 	: id === 'new-promise' ? (({}) => error('FIXME'))
-	: id === 'nil' ? (({}) => error('FIXME'))
 	: id === 'not' ? (({ expr }) => error('FIXME'))
 	: id === 'num' ? (({ i }) => error('FIXME'))
 	: id === 'or_' ? (({ lhs, rhs }) => error('FIXME'))
@@ -1316,7 +1309,7 @@ return actual === expect
 		let { ast, type } = process(require('fs').readFileSync(0, 'utf8'));
 		console.log(`ast :: ${stringify(ast)}`);
 		console.log(`type :: ${dumpRef(type)}`);
-		console.log(`format :: ${format(ast)}`);
+		"console.log(`format :: ${format(ast)}`)";
 		return true;
 	} catch (e) { return console.error(e); }
 }() : error(`
