@@ -145,6 +145,16 @@ let keepsplitl = (s, sep, apply) => {
 	return keepsplitl_(s);
 };
 
+let _app = (lhs, rhs) => ({ id: 'app', lhs, rhs });
+let _bool = v => ({ id: 'bool', v });
+let _dot = (expr, field) => ({ id: 'dot', expr, field });
+let _lambda = (bind, expr) => ({ id: 'lambda', bind, expr });
+let _let = (bind, value, expr) => ({ id: 'let', bind, value, expr });
+let _num = i => ({ id: 'num', i });
+let _pair = (lhs, rhs) => ({ id: 'pair', lhs, rhs });
+let _str = v => ({ id: 'str', v });
+let _var = vn => ({ id: 'var', vn });
+
 let parseAssocLeft_ = (id, op, parseValue) => {
 	let parseAssocLeft__;
 	parseAssocLeft__ = program_ => {
@@ -200,36 +210,34 @@ parseBackquote = program => {
 		let remains = program.slice(index + 2, undefined);
 		let [expr_, right] = splitl(remains, '}');
 
-		let exprToString = {
-			id: 'app',
-			lhs: { id: 'dot', expr: parseApplyBlockFieldIndex(expr_), field: '.toString' },
-			rhs: { id: 'never' },
-		};
+		let exprToString = _app(
+			_dot(parseApplyBlockFieldIndex(expr_), '.toString'),
+			{ id: 'never' });
 
 		return {
 			id: 'add',
-			lhs: { id: 'string', v: program.slice(0, index) },
+			lhs: _str(program.slice(0, index)),
 			rhs: { id: 'add', lhs: exprToString, rhs: parseBackquote(right) },
 		};
-	}() : { id: 'string', v: program };
+	}() : _str(program);
 };
 
 let parseConstant = program => {
 	let first = program.charCodeAt(0);
 
 	return false ? undefined
-	: ascii('0') <= first && first <= ascii('9') ? { id: 'number', i: parseNumber(program) }
-	: program.startsWith("'") && program.endsWith("'") ? { id: 'string', v: program.slice(1, -1) }
-	: program.startsWith('"') && program.endsWith('"') ? { id: 'string', v: program.slice(1, -1) }
+	: ascii('0') <= first && first <= ascii('9') ? _num(parseNumber(program))
+	: program.startsWith("'") && program.endsWith("'") ? _str(program.slice(1, -1))
+	: program.startsWith('"') && program.endsWith('"') ? _str(program.slice(1, -1))
 	: program.startsWith('`') && program.endsWith('`') ? parseBackquote(program.slice(1, -1))
-	: program === 'false' ? { id: 'boolean', v: 'false' }
+	: program === 'false' ? _bool(program)
 	: program === 'new Error' ? { id: 'new-error' }
 	: program === 'new Map' ? { id: 'new-map' }
 	: program === 'new Promise' ? { id: 'new-promise' }
 	: program === 'nil' ? { id: 'nil' }
-	: program === 'true' ? { id: 'boolean', v: 'true' }
+	: program === 'true' ? _bool(program)
 	: program === 'undefined' ? { id: 'undefined' }
-	: isIdentifier(program) ? { id: 'var', vn: program }
+	: isIdentifier(program) ? _var(program)
 	: error(`cannot parse "${program}"`);
 };
 
@@ -270,7 +278,7 @@ let parseStructInner = (program, parse) => {
 		kvs: keepsplitl(appendTrailingComma(program), ',', kv => {
 			let [key_, value_] = splitl(kv, ':');
 			let field = parseConstant(key_.trim()).vn;
-			let value = value_ !== undefined ? parse(value_) : { id: 'var', vn: field };
+			let value = value_ !== undefined ? parse(value_) : _var(field);
 			return { key: '.' + field, value };
 		}),
 	};
@@ -291,7 +299,7 @@ parseValue = program_ => {
 		return {
 			id: 'try',
 			lhs: parse(try_),
-			rhs: { id: 'lambda', bind: { id: 'var', vn: 'e' }, expr: parse(catch_) },
+			rhs: _lambda(_var('e'), parse(catch_)),
 		};
 	}()
 	: program.startsWith('typeof ') ?
@@ -313,7 +321,7 @@ let parseLvalue = program_ => {
 
 	return false ? undefined
 	: expr !== undefined && isIdentifier(field) ?
-		{ id: 'dot', expr: parseApplyBlockFieldIndex(expr), field: '.' + field }
+		_dot(parseApplyBlockFieldIndex(expr), '.' + field)
 	: program.endsWith(']') ? function() {
 		let [expr, index_] = splitr(program, '[');
 		let index = index_.slice(0, -1);
@@ -333,19 +341,12 @@ parseApplyBlockFieldIndex = program_ => {
 	return false ? undefined
 	: program.startsWith('function() {') && program.endsWith('}()') ?
 		parse(program.slice(12, -3).trim())
-	: program.endsWith('()') ? {
-		id: 'app',
-		lhs: parse(program.slice(0, -2)),
-		rhs: { id: 'never' },
-	}
+	: program.endsWith('()') ?
+		_app(parse(program.slice(0, -2)), { id: 'never' })
 	: program.endsWith(')') ? function() {
 		let [expr, paramStr_] = splitr(program, '(');
 		let paramStr = paramStr_.slice(0, -1).trim();
-		return expr !== undefined ? {
-			id: 'app',
-			lhs: parse(expr),
-			rhs: parse(paramStr),
-		} : parseValue(program);
+		return expr !== undefined ? _app(parse(expr), parse(paramStr)): parseValue(program);
 	}()
 	: parseLvalue(program);
 };
@@ -391,7 +392,7 @@ let parsePair = (program, parse) => {
 	parsePair_ = program => {
 		let [left, right] = splitl(program, ',');
 		let lhs = parse(left.trim());
-		return right === undefined ? lhs : { id: 'pair', lhs, rhs: parsePair_(right) };
+		return right === undefined ? lhs : _pair(lhs, parsePair_(right));
 	};
 	return parsePair_(program);
 };
@@ -424,11 +425,7 @@ let parseLambda = program => {
 		bind: parseBind(left.slice(6, undefined)),
 		expr: parse(right.trim()),
 	}
-	: {
-		id: 'lambda',
-		bind: parseBind(left),
-		expr: parse(right.trim()),
-	};
+	: _lambda(parseBind(left), parse(right.trim()));
 };
 
 let dummyCount = 0;
@@ -450,12 +447,8 @@ parse = program => {
 			let [vn, value] = splitl(statement.slice(4, undefined), '=');
 			let v = vn.trim();
 
-			return value !== undefined ? {
-				id: 'let',
-				bind: parseBind(vn),
-				value: parse(value),
-				expr: parse(expr),
-			}
+			return false ? undefined
+			: value !== undefined ? _let(parseBind(vn), parse(value), parse(expr))
 			: isIdentifier(v) ? {
 				id: 'alloc',
 				vn: v,
@@ -486,12 +479,7 @@ parse = program => {
 				value: parse(rhs),
 				expr: parse(expr),
 			}
-			: {
-				id: 'let',
-				bind: { id: 'var', vn: newDummy() },
-				value: parse(lhs),
-				expr: parse(expr),
-			};
+			: _let(_var(newDummy()), parse(lhs), parse(expr));
 		}();
 	}();
 };
@@ -554,14 +542,14 @@ format = ast => {
 	let f = false ? undefined
 	: id === 'app' ? (({ lhs, rhs }) => `${format(lhs)}(${format(rhs)})`)
 	: id === 'array' ? (({ values }) => `[${values.map(format).join(', ')},]`)
-	: id === 'boolean' ? (({ v }) => v)
+	: id === 'bool' ? (({ v }) => v)
 	: id === 'new-error' ? (({}) => 'new Error')
 	: id === 'new-map' ? (({}) => 'new Map')
 	: id === 'new-promise' ? (({}) => 'new Promise')
 	: id === 'nil' ? (({}) => '[]')
-	: id === 'number' ? (({ i }) => `${i}`)
+	: id === 'num' ? (({ i }) => `${i}`)
 	: id === 'struct' ? (({ kvs }) => `{ ${kvs.map(({ key, value }) => `${key.slice(1, undefined)}: ${format(value)}`).join(', ')} }`)
-	: id === 'string' ? (({ v }) => `'${v}'`)
+	: id === 'str' ? (({ v }) => `'${v}'`)
 	: id === 'tuple' ? (({ values }) => `[${values.map(format).join(', ')}]`)
 	: id === 'undefined' ? (({}) => `${id}`)
 	: id === 'var' ? (({ vn }) => vn)
@@ -719,12 +707,12 @@ bindTypes = (vts, ast) => false ? undefined
 	: error(`cannot destructure ${format(ast)}`);
 
 let typeArrayOf = type => ({ id: 'array', of: type });
-let typeBoolean = ({ id: 'boolean' });
+let typeBoolean = ({ id: 'bool' });
 let typeError = ({ id: 'error' });
 let typeLambdaOf = (in_, out) => ({ id: 'lambda', generic: true, in_, out });
 let typeLambdaOfFixed = (in_, out) => ({ id: 'lambda', in_, out });
 let typeNever = { id: 'never' };
-let typeNumber = ({ id: 'number' });
+let typeNumber = ({ id: 'num' });
 let typePairOf = (lhs, rhs) => ({ id: 'pair', lhs, rhs });
 let typePromiseOf = out => ({ id: 'promise', out });
 let typeString = typeArrayOf({ id: 'char' });
@@ -861,7 +849,7 @@ inferType = (vts, isAsync, ast) => {
 		let t = newRef();
 		return isAsync ? doBind(ast, infer(expr), typePromiseOf(t)) && t : error(`await not inside async`);
 	})
-	: id === 'boolean' ? (({}) =>
+	: id === 'bool' ? (({}) =>
 		typeBoolean
 	)
 	: id === 'coal' ? (({ lhs, rhs }) => {
@@ -957,7 +945,7 @@ inferType = (vts, isAsync, ast) => {
 	: id === 'not' ? (({ expr }) =>
 		doBind(ast, infer(expr), typeBoolean) && typeBoolean
 	)
-	: id === 'number' ? (({}) =>
+	: id === 'num' ? (({}) =>
 		typeNumber
 	)
 	: id === 'or_' ?
@@ -968,7 +956,7 @@ inferType = (vts, isAsync, ast) => {
 	: id === 'pos' ? (({ expr }) =>
 		doBind(ast, infer(expr), typeNumber) && typeNumber
 	)
-	: id === 'string' ? (({}) =>
+	: id === 'str' ? (({}) =>
 		typeString
 	)
 	: id === 'struct' ? (({ kvs }) => {
@@ -1067,7 +1055,7 @@ let rewrite = (rf, ast) => {
 	: id === 'array' ? (({ values }) => ({ id, values: values.map(rf) }))
 	: id === 'assign' ? (({ bind, value, expr }) => ({ id, bind, value: rf(value), expr: rf(expr) }))
 	: id === 'await' ? (({ expr }) => ({ id, expr: rf(expr) }))
-	: id === 'boolean' ? (({ v }) => ast)
+	: id === 'bool' ? (({ v }) => ast)
 	: id === 'coal' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
 	: id === 'cons' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
 	: id === 'div' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
@@ -1089,11 +1077,11 @@ let rewrite = (rf, ast) => {
 	: id === 'new-promise' ? (({}) => ast)
 	: id === 'nil' ? (({}) => ast)
 	: id === 'not' ? (({ expr }) => ({ id, expr: rf(expr) }))
-	: id === 'number' ? (({ i }) => ast)
+	: id === 'num' ? (({ i }) => ast)
 	: id === 'or_' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
 	: id === 'pair' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
 	: id === 'pos' ? (({ expr }) => ({ id, expr: rf(expr) }))
-	: id === 'string' ? (({ v }) => ast)
+	: id === 'str' ? (({ v }) => ast)
 	: id === 'struct' ? (({ kvs }) => ({ id, kvs: kvs.map(({ key, value }) => ({ key, value: rf(value) })) }))
 	: id === 'sub' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
 	: id === 'throw' ? (({ expr }) => ({ id, expr: rf(expr) }))
@@ -1108,8 +1096,8 @@ let rewrite = (rf, ast) => {
 	return f(ast);
 };
 
-let promiseResolve = { id: 'dot', expr: { id: 'var', vn: 'Promise' }, field: '.resolve' };
-let promisify = ast => ({ id: 'app', lhs: promiseResolve, rhs: ast });
+let promiseResolve = _dot(_var('Promise'), '.resolve');
+let promisify = ast => _app(promiseResolve, ast);
 
 let unpromisify = ast => {
 	let { id, lhs, rhs } = ast;
@@ -1121,16 +1109,12 @@ let reduceAsync;
 reduceAsync = ast => {
 	let { id } = ast;
 
-	let _then = (p, bind, expr) => ({
-		id: 'app',
-		lhs: { id: 'dot', expr: p, field: '.then' },
-		rhs: { id: 'lambda', bind, expr },
-	});
+	let _then = (p, bind, expr) => _app(_dot(p, '.then'), _lambda(bind, expr));
 
 	let reduceOp = ({ expr }) => {
 		let pe = reduceAsync(expr);
 		let e = unpromisify(pe);
-		let ve = e ?? { id: 'var', vn: newDummy() };
+		let ve = e ?? _var(newDummy());
 		let p = promisify({ id, expr: ve });
 		return e !== undefined ? p : _then(pe, ve, p);
 	};
@@ -1138,10 +1122,10 @@ reduceAsync = ast => {
 	let reduceBinOp = ({ lhs, rhs }) => {
 		let pl = reduceAsync(lhs);
 		let l = unpromisify(pl);
-		let vl = l ?? { id: 'var', vn: newDummy() };
+		let vl = l ?? _var(newDummy());
 		let pr = reduceAsync(rhs);
 		let r = unpromisify(pr);
-		let vr = r ?? { id: 'var', vn: newDummy() };
+		let vr = r ?? _var(newDummy());
 		let p;
 		p = promisify({ id, lhs: vl, rhs: vr });
 		p = l !== undefined ? p : _then(pl, vl, p);
@@ -1165,7 +1149,7 @@ reduceAsync = ast => {
 	: id === 'dot' ? (({ expr, field }) => {
 		let pe = reduceAsync(expr);
 		let e = unpromisify(pe);
-		let ve = e ?? { id: 'var', vn: newDummy() };
+		let ve = e ?? _var(newDummy());
 		let p = promisify({ id, expr: ve, field });
 		return e !== undefined ? p : _then(pe, ve, p);
 	})
@@ -1173,7 +1157,7 @@ reduceAsync = ast => {
 	: id === 'if' ? (({ if_, then, else_ }) => {
 		let pi = reduceAsync(if_);
 		let i = unpromisify(pi);
-		let vi = i ?? { id: 'var', vn: newDummy() };
+		let vi = i ?? _var(newDummy());
 		let pt = reduceAsync(then);
 		let t = unpromisify(pt);
 		let pe = reduceAsync(else_);
@@ -1183,7 +1167,7 @@ reduceAsync = ast => {
 		: i !== undefined ? { id, if_: vi, then: pt, else_: pe }
 		: _then(pi, vi, { id, if_: vi, then: pt, else_: pe });
 	})
-	: id === 'lambda-async' ? (({ bind, expr }) => promisify({ id: 'lambda', bind, expr: reduceAsync(expr) }))
+	: id === 'lambda-async' ? (({ bind, expr }) => promisify(_lambda(bind, reduceAsync(expr))))
 	: id === 'le_' ? reduceBinOp
 	: id === 'let' ? (({ bind, value, expr }) => {
 		let pv = reduceAsync(value);
@@ -1208,7 +1192,7 @@ reduceAsync = ast => {
 	: id === 'while' ? (({ cond, loop, expr }) => {
 		let pc = reduceAsync(cond);
 		let c = unpromisify(pc);
-		let vc = c ?? { id: 'var', vn: newDummy() };
+		let vc = c ?? _var(newDummy());
 		let pl = reduceAsync(loop);
 		let l = unpromisify(pl);
 		let pe = reduceAsync(expr);
@@ -1218,12 +1202,12 @@ reduceAsync = ast => {
 		: c !== undefined && l !== undefined && e === undefined ? { id, cond: vc, loop: l, expr: pe }
 		: function() {
 			let vn = newDummy();
-			let vp = { id: 'var', vn };
-			let invoke = { id: 'app', lhs: vp, rhs: { id: 'never' } };
+			let vp = _var(vn);
+			let invoke = _app(vp, { id: 'never' });
 			let if_ = {
 				id: 'if',
 				if_: vc,
-				then: _then(pl, { id: 'var', vn: newDummy() }, invoke),
+				then: _then(pl, _var(newDummy()), invoke),
 				else_: pe,
 			};
 			return {
@@ -1232,15 +1216,7 @@ reduceAsync = ast => {
 				expr: {
 					id: 'assign',
 					bind: vp,
-					value: c !== undefined ? {
-						id: 'lambda',
-						bind: { id: 'var', vn: newDummy() },
-						expr: if_,
-					} : {
-						id: 'lambda',
-						bind: { id: 'var', vn: newDummy() },
-						expr: _then(pc, vc, if_),
-					},
+					value: _lambda(_var(newDummy()), c !== undefined ? if_ : _then(pc, vc, if_)),
 					expr: invoke,
 				},
 			};
@@ -1278,7 +1254,7 @@ generate = ast => {
 	: id === 'array' ? (({ values }) => error('FIXME'))
 	: id === 'assign' ? (({ bind, value, expr }) => error('FIXME'))
 	: id === 'await' ? (({ expr }) => error('FIXME'))
-	: id === 'boolean' ? (({ v }) => error('FIXME'))
+	: id === 'bool' ? (({ v }) => error('FIXME'))
 	: id === 'coal' ? (({ lhs, rhs }) => error('FIXME'))
 	: id === 'cons' ? (({ lhs, rhs }) => error('FIXME'))
 	: id === 'div' ? (({ lhs, rhs }) => error('FIXME'))
@@ -1300,11 +1276,11 @@ generate = ast => {
 	: id === 'new-promise' ? (({}) => error('FIXME'))
 	: id === 'nil' ? (({}) => error('FIXME'))
 	: id === 'not' ? (({ expr }) => error('FIXME'))
-	: id === 'number' ? (({ i }) => error('FIXME'))
+	: id === 'num' ? (({ i }) => error('FIXME'))
 	: id === 'or_' ? (({ lhs, rhs }) => error('FIXME'))
 	: id === 'pair' ? (({ lhs, rhs }) => error('FIXME'))
 	: id === 'pos' ? (({ expr }) => error('FIXME'))
-	: id === 'string' ? (({ v }) => error('FIXME'))
+	: id === 'str' ? (({ v }) => error('FIXME'))
 	: id === 'struct' ? (({ kvs }) => error('FIXME'))
 	: id === 'sub' ? (({ lhs, rhs }) => error('FIXME'))
 	: id === 'throw' ? (({ expr }) => error('FIXME'))
@@ -1345,44 +1321,22 @@ let actual = stringify(process(`
 	console.log(parse(require('fs').readFileSync(0, 'utf8')))
 `).ast);
 
-let expect = stringify({
-	id: 'let',
-	bind: { id: 'var', vn: 'parse' },
-	value: {
-		id: 'lambda',
-		bind: { id: 'var', vn: 'ast' },
-		expr: { id: 'var', vn: 'ast' },
-	},
-	expr: {
-		id: 'app',
-		lhs: {
-			id: 'dot',
-			expr: { id: 'var', vn: 'console' },
-			field: '.log',
-		},
-		rhs: {
-			id: 'app',
-			lhs: { id: 'var', vn: 'parse' },
-			rhs: {
-				id: 'app',
-				lhs: {
-					id: 'dot',
-					expr: {
-						id: 'app',
-						lhs: { id: 'var', vn: 'require' },
-						rhs: { id: 'string', v: 'fs' },
-					},
-					field: '.readFileSync',
-				},
-				rhs: {
-					id: 'pair',
-					lhs: { id: 'number', i: 0 },
-					rhs: { id: 'string', v: 'utf8' },
-				},
-			},
-		},
-	},
-});
+let expect = stringify(
+	_let(
+		_var('parse'),
+		_lambda(_var('ast'), _var('ast')),
+		_app(
+			_dot(_var('console'), '.log'),
+			_app(
+				_var('parse'),
+				_app(
+					_dot(_app(_var('require'), _str('fs')), '.readFileSync'),
+					_pair(_num(0), _str('utf8'))
+				)
+			)
+		)
+	)
+);
 
 return actual === expect
 ? function() {
