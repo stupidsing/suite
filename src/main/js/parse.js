@@ -1183,7 +1183,7 @@ reduceAsync = ast => {
 		: i !== undefined ? { id, if_: vi, then: pt, else_: pe }
 		: _then(pi, vi, { id, if_: vi, then: pt, else_: pe });
 	})
-	: id === 'lambda-async' ? (({ bind, expr }) => ({ id: 'lambda', bind, expr: reduceAsync(expr) }))
+	: id === 'lambda-async' ? (({ bind, expr }) => promisify({ id: 'lambda', bind, expr: reduceAsync(expr) }))
 	: id === 'le_' ? reduceBinOp
 	: id === 'let' ? (({ bind, value, expr }) => {
 		let pv = reduceAsync(value);
