@@ -145,21 +145,31 @@ let keepsplitl = (s, sep, apply) => {
 	return keepsplitl_(s);
 };
 
+let _add = (lhs, rhs) => ({ id: 'add', lhs, rhs });
 let _alloc = (vn, expr) => ({ id: 'alloc', vn, expr });
 let _app = (lhs, rhs) => ({ id: 'app', lhs, rhs });
+let _array = values => ({ id: 'array', values });
 let _assign = (bind, value, expr) => ({ id: 'assign', bind, value, expr });
 let _bool = v => ({ id: 'bool', v });
+let _cons = (lhs, rhs) => ({ id: 'cons', lhs, rhs });
 let _dot = (expr, field) => ({ id: 'dot', expr, field });
+let _eq = (lhs, rhs) => ({ id: 'eq_', lhs, rhs });
 let _if = (if_, then, else_) => ({ id: 'if', if_, then, else_ });
 let _index = (lhs, rhs) => ({ id: 'index', lhs, rhs });
 let _lambda = (bind, expr) => ({ id: 'lambda', bind, expr });
 let _lambdaAsync = (bind, expr) => ({ id: 'lambda-async', bind, expr });
 let _let = (bind, value, expr) => ({ id: 'let', bind, value, expr });
 let _never = { id: 'never' };
+let _not = expr => ({ id: 'not', expr });
 let _num = i => ({ id: 'num', i });
 let _pair = (lhs, rhs) => ({ id: 'pair', lhs, rhs });
 let _str = v => ({ id: 'str', v });
+let _struct = kvs => ({ id: 'struct', kvs });
+let _throw = expr => ({ id: 'throw', expr });
 let _try = (lhs, rhs) => ({ id: 'try', lhs, rhs });
+let _tuple = values => ({ id: 'tuple', values });
+let _typeof = expr => ({ id: 'typeof', expr });
+let _undefined = { id: 'undefined' };
 let _var = vn => ({ id: 'var', vn });
 let _while = (cond, loop, expr) => ({ id: 'while', cond, loop, expr });
 
@@ -222,11 +232,9 @@ parseBackquote = program => {
 			_dot(parseApplyBlockFieldIndex(expr_), '.toString'),
 			_never);
 
-		return {
-			id: 'add',
-			lhs: _str(program.slice(0, index)),
-			rhs: { id: 'add', lhs: exprToString, rhs: parseBackquote(right) },
-		};
+		return _add(
+			_str(program.slice(0, index)),
+			_add(exprToString, parseBackquote(right)));
 	}() : _str(program);
 };
 
@@ -242,9 +250,9 @@ let parseConstant = program => {
 	: program === 'new Error' ? { id: 'new-error' }
 	: program === 'new Map' ? { id: 'new-map' }
 	: program === 'new Promise' ? { id: 'new-promise' }
-	: program === 'nil' ? { id: 'array', values: [] }
+	: program === 'nil' ? _array([])
 	: program === 'true' ? _bool(program)
-	: program === 'undefined' ? { id: 'undefined' }
+	: program === 'undefined' ? _undefined
 	: isIdentifier(program) ? _var(program)
 	: error(`cannot parse "${program}"`);
 };
@@ -257,21 +265,16 @@ let parseArray = (program, parse) => {
 		return program !== '' ? function() {
 			let [head, tail_] = splitl(program, ',');
 			let tail = tail_.trim();
-			return {
-				id: 'cons',
-				lhs: parse(head),
-				rhs: tail.startsWith('...') && tail.endsWith(',') ? parse(tail.slice(3, -1)) : parseArray_(tail)
-			};
+			return _cons(
+				parse(head),
+				tail.startsWith('...') && tail.endsWith(',') ? parse(tail.slice(3, -1)) : parseArray_(tail));
 		}()
-		: { id: 'array', values: [] };
+		: _array([]);
 	};
 	return parseArray_(program);
 };
 
-let parseTuple = (program, parse) => ({
-	id: 'tuple',
-	values: keepsplitl(program + ',', ',', parse),
-});
+let parseTuple = (program, parse) => _tuple((keepsplitl(program + ',', ',', parse)));
 
 let parseArrayTuple = (program_, parse) => {
 	let program = program_.slice(1, -1).trim();
@@ -281,15 +284,12 @@ let parseArrayTuple = (program_, parse) => {
 let parseStructInner = (program, parse) => {
 	let appendTrailingComma = s => s + (s === '' || s.endsWith(',') ? '' : ',');
 
-	return {
-		id: 'struct',
-		kvs: keepsplitl(appendTrailingComma(program), ',', kv => {
-			let [key_, value_] = splitl(kv, ':');
-			let field = parseConstant(key_.trim()).vn;
-			let value = value_ !== undefined ? parse(value_) : _var(field);
-			return { key: '.' + field, value };
-		}),
-	};
+	return _struct(keepsplitl(appendTrailingComma(program), ',', kv => {
+		let [key_, value_] = splitl(kv, ':');
+		let field = parseConstant(key_.trim()).vn;
+		let value = value_ !== undefined ? parse(value_) : _var(field);
+		return { key: '.' + field, value };
+	}));
 };
 
 let parseStruct = (program, parse) => parseStructInner(program.slice(1, -1).trim(), parse);
@@ -307,7 +307,7 @@ parseValue = program_ => {
 		return _try(parse(try_), _lambda(_var('e'), parse(catch_)));
 	}()
 	: program.startsWith('typeof ') ?
-		{ id: 'typeof', expr: parseValue(program.slice(7, undefined)) }
+		_typeof(parseValue(program.slice(7, undefined)))
 	: program.startsWith('(') && program.endsWith(')') ?
 		parse(program.slice(1, -1))
 	: program.startsWith('[') && program.endsWith(']') ?
@@ -448,7 +448,7 @@ parse = program => {
 		: statement.startsWith('return ') && expr === '' ?
 			parse(statement.slice(7, undefined))
 		: statement.startsWith('throw ') && expr === '' ?
-			{ id: 'throw', expr: parse(statement.slice(6, undefined)) }
+			_throw(parse(statement.slice(6, undefined)))
 		: statement.startsWith('while ') ? function() {
 			let [cond, loop] = splitl(statement.slice(6, undefined), ' ');
 			return _while(parse(cond), parse(loop), parse(expr));
@@ -816,7 +816,7 @@ inferType = (vts, isAsync, ast) => {
 		try {
 			let tbind = infer(bind);
 			let tvalue = infer(value);
-			return doBind({ id: 'assign', bind, value }, tbind, tvalue);
+			return doBind(_assign(bind, value, undefined), tbind, tvalue);
 		} catch (e) {
 			e.message = `in assignment clause of ${format(bind)}\n${e.message}`;
 			throw e;
@@ -885,7 +885,7 @@ inferType = (vts, isAsync, ast) => {
 			try {
 				let tb = inferType(vts1, false, bind);
 				let tv = infer(value);
-				return doBind({ id: 'let', bind, value }, tb, tv);
+				return doBind(_let(bind, value, undefined), tb, tv);
 			} catch (e) {
 				e.message = `in value clause of ${format(bind)}\n${e.message}`;
 				throw e;
@@ -1192,7 +1192,7 @@ reduceNe = ast => {
 	let { id } = ast;
 
 	let f = false ? undefined
-	: id === 'ne_' ? (({ lhs, rhs }) => ({ id: 'not', expr: { id: 'eq_', lhs: reduceNe(lhs), rhs: reduceNe(rhs) } }))
+	: id === 'ne_' ? (({ lhs, rhs }) => _not(_eq(reduceNe(lhs), reduceNe(rhs))))
 	: (({}) => rewrite(reduceNe, ast));
 
 	return f(ast);
