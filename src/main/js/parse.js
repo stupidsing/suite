@@ -151,12 +151,15 @@ let _assign = (bind, value, expr) => ({ id: 'assign', bind, value, expr });
 let _bool = v => ({ id: 'bool', v });
 let _dot = (expr, field) => ({ id: 'dot', expr, field });
 let _if = (if_, then, else_) => ({ id: 'if', if_, then, else_ });
+let _index = (lhs, rhs) => ({ id: 'index', lhs, rhs });
 let _lambda = (bind, expr) => ({ id: 'lambda', bind, expr });
+let _lambdaAsync = (bind, expr) => ({ id: 'lambda-async', bind, expr });
 let _let = (bind, value, expr) => ({ id: 'let', bind, value, expr });
 let _never = { id: 'never' };
 let _num = i => ({ id: 'num', i });
 let _pair = (lhs, rhs) => ({ id: 'pair', lhs, rhs });
 let _str = v => ({ id: 'str', v });
+let _try = (lhs, rhs) => ({ id: 'try', lhs, rhs });
 let _var = vn => ({ id: 'var', vn });
 let _while = (cond, loop, expr) => ({ id: 'while', cond, loop, expr });
 
@@ -301,11 +304,7 @@ parseValue = program_ => {
 	return false ? undefined
 	: program.startsWith('try {') && program.endsWith('}') ? function() {
 		let [try_, catch_] = splitl(program.slice(4, undefined), 'catch (e)');
-		return {
-			id: 'try',
-			lhs: parse(try_),
-			rhs: _lambda(_var('e'), parse(catch_)),
-		};
+		return _try(parse(try_), _lambda(_var('e'), parse(catch_)));
 	}()
 	: program.startsWith('typeof ') ?
 		{ id: 'typeof', expr: parseValue(program.slice(7, undefined)) }
@@ -331,11 +330,7 @@ let parseLvalue = program_ => {
 		let [expr, index_] = splitr(program, '[');
 		let index = index_.slice(0, -1);
 		return expr === undefined ? parseValue(program)
-		: {
-			id: 'index',
-			lhs: parse(expr),
-			rhs: parse(index),
-		};
+		: _index(parse(expr), parse(index));
 	}()
 	: parseValue(program);
 };
@@ -420,12 +415,10 @@ let parseLambda = program => {
 
 	return right === undefined ?
 		parseIf(left)
-	: left.startsWith('async ') ? {
-		id: 'lambda-async',
-		bind: parseBind(left.slice(6, undefined)),
-		expr: parse(right.trim()),
-	}
-	: _lambda(parseBind(left), parse(right.trim()));
+	: left.startsWith('async ') ?
+		_lambdaAsync(parseBind(left.slice(6, undefined)), parse(right.trim()))
+	:
+		_lambda(parseBind(left), parse(right.trim()));
 };
 
 let dummyCount = 0;
