@@ -1016,58 +1016,58 @@ let typesModule = () => {
 	return { dump, infer: ast => inferType(predefinedTypes, false, ast) };
 };
 
-let rewrite = (rf, ast) => {
-	let { id } = ast;
-
-	let f = false ? undefined
-	: id === 'add' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
-	: id === 'alloc' ? (({ vn, expr }) => ({ id, vn, expr: rf(expr) }))
-	: id === 'and' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
-	: id === 'app' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
-	: id === 'array' ? (({ values }) => ({ id, values: values.map(rf) }))
-	: id === 'assign' ? (({ bind, value, expr }) => ({ id, bind, value: rf(value), expr: rf(expr) }))
-	: id === 'await' ? (({ expr }) => ({ id, expr: rf(expr) }))
-	: id === 'bool' ? (({ v }) => ast)
-	: id === 'coal' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
-	: id === 'cons' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
-	: id === 'div' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
-	: id === 'dot' ? (({ expr, field }) => ({ id, expr: rf(expr), field }))
-	: id === 'eq_' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
-	: id === 'if' ? (({ if_, then, else_ }) => ({ id, if_: rf(if_), then: rf(then), else_: rf(else_) }))
-	: id === 'index' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
-	: id === 'lambda' ? (({ bind, expr }) => ({ id, bind, expr: rf(expr) }))
-	: id === 'lambda-async' ? (({ bind, expr }) => ({ id, bind, expr: rf(expr) }))
-	: id === 'le_' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
-	: id === 'let' ? (({ bind, value, expr }) => ({ id, bind, value: rf(value), expr: rf(expr) }))
-	: id === 'lt_' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
-	: id === 'mul' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
-	: id === 'ne_' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
-	: id === 'neg' ? (({ expr }) => ({ id, expr: rf(expr) }))
-	: id === 'never' ? (({}) => ast)
-	: id === 'new-error' ? (({}) => ast)
-	: id === 'new-map' ? (({}) => ast)
-	: id === 'new-promise' ? (({}) => ast)
-	: id === 'not' ? (({ expr }) => ({ id, expr: rf(expr) }))
-	: id === 'num' ? (({ i }) => ast)
-	: id === 'or_' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
-	: id === 'pair' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
-	: id === 'pos' ? (({ expr }) => ({ id, expr: rf(expr) }))
-	: id === 'str' ? (({ v }) => ast)
-	: id === 'struct' ? (({ kvs }) => ({ id, kvs: kvs.map(({ key, value }) => ({ key, value: rf(value) })) }))
-	: id === 'sub' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
-	: id === 'throw' ? (({ expr }) => ({ id, expr: rf(expr) }))
-	: id === 'try' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
-	: id === 'tuple' ? (({ values }) => ({ id, values: values.map(rf) }))
-	: id === 'typeof' ? (({ expr }) => ({ id, expr: rf(expr) }))
-	: id === 'undefined' ? (({}) => ast)
-	: id === 'var' ? (({ vn }) => ast)
-	: id === 'while' ? (({ cond, loop, expr }) => ({ id, cond: rf(cond), loop: rf(loop), expr: rf(expr) }))
-	: error(`cannot rewrite for ${id}`);
-
-	return f(ast);
-};
-
 let reducerModule = () => {
+	let rewrite = (rf, ast) => {
+		let { id } = ast;
+
+		let f = false ? undefined
+		: id === 'add' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
+		: id === 'alloc' ? (({ vn, expr }) => ({ id, vn, expr: rf(expr) }))
+		: id === 'and' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
+		: id === 'app' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
+		: id === 'array' ? (({ values }) => ({ id, values: values.map(rf) }))
+		: id === 'assign' ? (({ bind, value, expr }) => ({ id, bind, value: rf(value), expr: rf(expr) }))
+		: id === 'await' ? (({ expr }) => ({ id, expr: rf(expr) }))
+		: id === 'bool' ? (({ v }) => ast)
+		: id === 'coal' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
+		: id === 'cons' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
+		: id === 'div' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
+		: id === 'dot' ? (({ expr, field }) => ({ id, expr: rf(expr), field }))
+		: id === 'eq_' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
+		: id === 'if' ? (({ if_, then, else_ }) => ({ id, if_: rf(if_), then: rf(then), else_: rf(else_) }))
+		: id === 'index' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
+		: id === 'lambda' ? (({ bind, expr }) => ({ id, bind, expr: rf(expr) }))
+		: id === 'lambda-async' ? (({ bind, expr }) => ({ id, bind, expr: rf(expr) }))
+		: id === 'le_' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
+		: id === 'let' ? (({ bind, value, expr }) => ({ id, bind, value: rf(value), expr: rf(expr) }))
+		: id === 'lt_' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
+		: id === 'mul' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
+		: id === 'ne_' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
+		: id === 'neg' ? (({ expr }) => ({ id, expr: rf(expr) }))
+		: id === 'never' ? (({}) => ast)
+		: id === 'new-error' ? (({}) => ast)
+		: id === 'new-map' ? (({}) => ast)
+		: id === 'new-promise' ? (({}) => ast)
+		: id === 'not' ? (({ expr }) => ({ id, expr: rf(expr) }))
+		: id === 'num' ? (({ i }) => ast)
+		: id === 'or_' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
+		: id === 'pair' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
+		: id === 'pos' ? (({ expr }) => ({ id, expr: rf(expr) }))
+		: id === 'str' ? (({ v }) => ast)
+		: id === 'struct' ? (({ kvs }) => ({ id, kvs: kvs.map(({ key, value }) => ({ key, value: rf(value) })) }))
+		: id === 'sub' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
+		: id === 'throw' ? (({ expr }) => ({ id, expr: rf(expr) }))
+		: id === 'try' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
+		: id === 'tuple' ? (({ values }) => ({ id, values: values.map(rf) }))
+		: id === 'typeof' ? (({ expr }) => ({ id, expr: rf(expr) }))
+		: id === 'undefined' ? (({}) => ast)
+		: id === 'var' ? (({ vn }) => ast)
+		: id === 'while' ? (({ cond, loop, expr }) => ({ id, cond: rf(cond), loop: rf(loop), expr: rf(expr) }))
+		: error(`cannot rewrite for ${id}`);
+
+		return f(ast);
+	};
+
 	let promiseResolve = _dot(_var('Promise'), '.resolve');
 	let promisify = ast => _app(promiseResolve, ast);
 
