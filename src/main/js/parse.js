@@ -576,13 +576,13 @@ let dumpRef = v => {
 			: isNotEmpty(listv) ?
 				`${dumpRef_(vs, head(listv))}:${dumpRef_(vs, assumeObject(tail(listv)))}`
 			: function() {
-				let id = v.id;
+				let t = v.t;
 				let join = Object
 					.entries(v)
 					.filter(([k, v_]) => k !== 'id')
 					.map(([k, v_]) => `${k}:${dumpRef_(cons(v, vs), v_)}`)
 					.join(' ');
-				return id !== undefined ? `${id}(${join})` : `{${join}}`;
+				return t !== undefined ? `${t}(${join})` : `{${join}}`;
 			}()
 		)
 		: typeof v === 'string' ?
@@ -683,19 +683,19 @@ bindTypes = (vts, ast) => false ? undefined
 	: ast.id === 'var' ? cons([ast.vn, newRef()], vts)
 	: error(`cannot destructure ${format(ast)}`);
 
-let typeArrayOf = type => ({ id: 'array', of: type });
-let typeBoolean = ({ id: 'bool' });
-let typeError = ({ id: 'error' });
-let typeLambdaOf = (in_, out) => ({ id: 'lambda', generic: true, in_, out });
-let typeLambdaOfFixed = (in_, out) => ({ id: 'lambda', in_, out });
-let typeNever = { id: 'never' };
-let typeNumber = ({ id: 'num' });
-let typePairOf = (lhs, rhs) => ({ id: 'pair', lhs, rhs });
-let typePromiseOf = out => ({ id: 'promise', out });
-let typeString = typeArrayOf({ id: 'char' });
-let typeStructOf = kvs => ({ id: 'struct', kvs });
-let typeStructOfCompleted = kvs => { setp(kvs, 'completed', true); return ({ id: 'struct', kvs }); };
-let typeTupleOf = types => ({ id: 'tuple', types });
+let typeArrayOf = type => ({ t: 'array', of: type });
+let typeBoolean = ({ t: 'bool' });
+let typeError = ({ t: 'error' });
+let typeLambdaOf = (in_, out) => ({ t: 'lambda', generic: true, in_, out });
+let typeLambdaOfFixed = (in_, out) => ({ t: 'lambda', in_, out });
+let typeNever = { t: 'never' };
+let typeNumber = ({ t: 'num' });
+let typePairOf = (lhs, rhs) => ({ t: 'pair', lhs, rhs });
+let typePromiseOf = out => ({ t: 'promise', out });
+let typeString = typeArrayOf({ t: 'char' });
+let typeStructOf = kvs => ({ t: 'struct', kvs });
+let typeStructOfCompleted = kvs => { setp(kvs, 'completed', true); return ({ t: 'struct', kvs }); };
+let typeTupleOf = types => ({ t: 'tuple', types });
 let typeVoid = typeStructOfCompleted({});
 
 let typeMapOf = (tk, tv) => typeStructOfCompleted({
