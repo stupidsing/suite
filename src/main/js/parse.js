@@ -947,8 +947,8 @@ inferType = (vts, isAsync, ast) => {
 	)
 	: id === 'new-promise' ? (({}) => {
 		let tr = newRef();
-		let tres = typeLambdaOf(tr, typeNever);
-		let trej = typeLambdaOf(typeError, typeNever);
+		let tres = typeLambdaOf(tr, typeVoid);
+		let trej = typeLambdaOf(typeError, typeVoid);
 		return typeLambdaOf(typeLambdaOf(typePairOf(tres, trej), typeVoid), typePromiseOf(tr));
 	})
 	: id === 'nil' ? (({}) =>
