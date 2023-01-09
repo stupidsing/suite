@@ -530,7 +530,13 @@ format = ast => {
 	: id === 'new-map' ? (({}) => 'new Map')
 	: id === 'new-promise' ? (({}) => 'new Promise')
 	: id === 'num' ? (({ i }) => `${i}`)
-	: id === 'struct' ? (({ kvs }) => `{ ${kvs.map(({ key, value }) => `${key.slice(1, undefined)}: ${format(value)}`).join(', ')} }`)
+	: id === 'struct' ? (({ kvs }) => {
+		let s = kvs.map(({ key, value }) => {
+			let k = key.slice(1, undefined);
+			return value.id === 'var' && value.vn === k ? k : `${k}: ${format(value)}`;
+		}).join(', ');
+		return `{ ${s} }`;
+	})
 	: id === 'str' ? (({ v }) => `'${v}'`)
 	: id === 'tuple' ? (({ values }) => `[${values.map(format).join(', ')}]`)
 	: id === 'undefined' ? (({}) => `${id}`)
