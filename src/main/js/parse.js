@@ -1207,6 +1207,7 @@ let reducerModule = () => {
 
 	return { reduces };
 };
+
 let generate;
 
 generate = ast => {
