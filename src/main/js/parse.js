@@ -1313,7 +1313,7 @@ return actual === expect
 		let { ast, type } = process(require('fs').readFileSync(0, 'utf8'));
 		console.log(`ast :: ${stringify(ast)}`);
 		console.log(`type :: ${types.dump(type)}`);
-		"console.log(`format :: ${format(ast)}`)";
+		// console.log(`format :: ${format(ast)}`);
 		return true;
 	} catch (e) { return console.error(e); }
 }() : error(`
