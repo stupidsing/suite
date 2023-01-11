@@ -42,6 +42,16 @@ contains = (es, e) => isNotEmpty(es) && (head(es) === e || contains(tail(es), e)
 let fold;
 fold = (init, es, op) => isNotEmpty(es) ? fold(op(init, head(es)), tail(es), op) : init;
 
+let gen = i => {
+	let array = [];
+	while (0 < i) (function() {
+		array.push(i);
+		i = i - 1;
+		i
+	}());
+	return array;
+};
+
 let dummyCount = 0;
 
 let newDummy = () => {
@@ -735,6 +745,10 @@ let typesModule = () => {
 			let ti = newRef();
 			let to = newRef();
 			return doBind(ast, ts, tyArrayOf(ti)) && tyLambdaOf(tyLambdaOf(ti, to), tyArrayOf(to));
+		}()
+		: field === '.push' ? function() {
+			let te = newRef();
+			return doBind(ast, ts, tyArrayOf(te)) && tyLambdaOf(te, tyVoid);
 		}()
 		: field === '.reduce' ? function() {
 			let te = newRef();
