@@ -1235,25 +1235,19 @@ let reducerModule = () => {
 		: id === 'num' ? (({ i }) => bindConstant())
 		: id === 'pair' ? (({ lhs, rhs }) => {
 			return false ? undefined
-			: id !== value.id ? ifBind(lhs, _index(value, _num(0)), ifBind(rhs, _index(value, _num(1)), then, else_), else_)
-			: ifBind(lhs, value.lhs, ifBind(rhs, value.rhs, then, else_), else_);
+			: id !== value.id ?
+				ifBind(lhs, _index(value, _num(0)), ifBind(rhs, _index(value, _num(1)), then, else_), else_)
+			:
+				ifBind(lhs, value.lhs, ifBind(rhs, value.rhs, then, else_), else_);
 		})
 		: id === 'str' ? (({ v }) => bindConstant())
 		: id === 'struct' ? (({ kvs }) => {
 			let ks = Object.keys(kvs);
-			return false ? undefined
-			: id !== value.id ?
-				ks.reduce((expr, k) => ifBind(getp(kvs, k), _dot(value, k), expr, else_), then)
-			:
-				ks.reduce((expr, k) => ifBind(getp(kvs, k), getp(value.kvs, k), expr, else_), then);
+			return ks.reduce((expr, k) => ifBind(getp(kvs, k), id !== value.id ? _dot(value, k) : getp(value.kvs, k), expr, else_), then);
 		})
 		: id === 'tuple' ? (({ values }) => {
 			let indices = gen(values.length);
-			return false ? undefined
-			: id !== value.id ?
-				indices.reduce((expr, i) => ifBind(values[i], _index(value, _num(i)), expr, else_), then)
-			:
-				indices.reduce((expr, i) => ifBind(values[i], value.values[i], expr, else_), then);
+			return indices.reduce((expr, i) => ifBind(values[i], id !== value.id ? _index(value, _num(i)) : value.values[i], expr, else_), then);
 		})
 		: id === 'var' ? (({ vn }) => _let(bind, value, then))
 		: error(`cannot destructure ${format(bind)}`);
