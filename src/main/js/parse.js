@@ -1298,6 +1298,36 @@ let reducerModule = () => {
 		return f(ast);
 	};
 
+	let lookup = (vts, v) => {
+		let lookup_;
+		lookup_ = vts => isNotEmpty(vts) ? function() {
+			let [v_, t] = head(vts);
+			return v_ === v ? t : lookup_(tail(vts));
+		}() : error(`undefined variable ${v}`);
+		return lookup_(vts);
+	};
+
+	let reduceVars;
+
+	reduceVars = (vts, ps, fs, ast) => {
+		let ps1 = ps + 1;
+		let fs1 = fs + 1;
+		let { id } = ast;
+
+		let f = false ? undefined
+		: id === 'alloc' ? (({ vn, expr }) => _alloc(vn, reduceVars(cons([vn, [ps, fs]], vts), ps, fs1, expr)))
+		: id === 'lambda' ? (({ bind, expr }) => _lambda(bind, reduceVars(cons([bind.vn, [ps1, 0]], vts), ps1, 1, expr)))
+		: id === 'lambda-async' ? (({ bind, expr }) => _lambdaAsync(bind, reduceVars(cons([bind.vn, [ps1, 0]], vts), ps1, 1, expr)))
+		: id === 'let' ? (({ bind, value, expr }) => _let(bind, reduceVars(vts, ps, fs, value), reduceVars(cons([bind.vn, [ps, fs]], vts), ps, fs1, expr)))
+		: id === 'var' ? (({ vn }) => {
+			let [ps_, fs_] = lookup(vts, vn);
+			return { id: 'stack', p: ps - ps_, i: fs_ };
+		})
+		: (({}) => rewrite(ast => reduceVars(vts, ps, fs, ast), ast));
+
+		return f(ast);
+	};
+
 	let reduces = ast => unpromisify(reduceAsync(reduceBind(reduceNe(ast))));
 
 	return { reduces };
