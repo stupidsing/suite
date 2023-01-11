@@ -1227,7 +1227,9 @@ let reducerModule = () => {
 					indices.reduce((expr, i) => ifBind(values[i], _index(value, _num(i)), expr, else_), then),
 					else_)
 			: values.length === value.values.length ?
-				indices.reduce((expr, i) => ifBind(values[i], value.values[i], expr, else_), then)
+				indices.reduce(
+					(expr, i) => ifBind(values[i], value.values[i], expr, else_),
+					then)
 			:
 				else_;
 		})
@@ -1244,11 +1246,15 @@ let reducerModule = () => {
 		: id === 'str' ? (({ v }) => bindConstant())
 		: id === 'struct' ? (({ kvs }) => {
 			let getValue = k => value.kvs.filter(kv => kv.key === k)[0].value;
-			return kvs.reduce((expr, kv) => ifBind(kv.value, id !== value.id ? _dot(value, kv.key) : getValue(kv.key), expr, else_), then);
+			return kvs.reduce(
+				(expr, kv) => ifBind(kv.value, id !== value.id ? _dot(value, kv.key) : getValue(kv.key), expr, else_),
+				then);
 		})
 		: id === 'tuple' ? (({ values }) => {
 			let indices = gen(values.length);
-			return indices.reduce((expr, i) => ifBind(values[i], id !== value.id ? _index(value, _num(i)) : value.values[i], expr, else_), then);
+			return indices.reduce(
+				(expr, i) => ifBind(values[i], id !== value.id ? _index(value, _num(i)) : value.values[i], expr, else_),
+				then);
 		})
 		: id === 'var' ? (({ vn }) => _let(bind, value, then))
 		: error(`cannot destructure ${format(bind)}`);
