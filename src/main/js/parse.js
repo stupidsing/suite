@@ -85,6 +85,7 @@ let _bool = v => ({ id: 'bool', v });
 let _cons = (lhs, rhs) => ({ id: 'cons', lhs, rhs });
 let _dot = (expr, field) => ({ id: 'dot', expr, field });
 let _eq = (lhs, rhs) => ({ id: 'eq_', lhs, rhs });
+let _error = { id: 'error' };
 let _if = (if_, then, else_) => ({ id: 'if', if_, then, else_ });
 let _index = (lhs, rhs) => ({ id: 'index', lhs, rhs });
 let _lambda = (bind, expr) => ({ id: 'lambda', bind, expr });
@@ -1242,8 +1243,8 @@ let reducerModule = () => {
 		})
 		: id === 'str' ? (({ v }) => bindConstant())
 		: id === 'struct' ? (({ kvs }) => {
-			let ks = Object.keys(kvs);
-			return ks.reduce((expr, k) => ifBind(getp(kvs, k), id !== value.id ? _dot(value, k) : getp(value.kvs, k), expr, else_), then);
+			let getValue = k => value.kvs.filter(kv => kv.key === k)[0].value;
+			return kvs.reduce((expr, kv) => ifBind(kv.value, id !== value.id ? _dot(value, kv.key) : getValue(kv.key), expr, else_), then);
 		})
 		: id === 'tuple' ? (({ values }) => {
 			let indices = gen(values.length);
@@ -1261,9 +1262,20 @@ let reducerModule = () => {
 		let { id } = ast;
 
 		let f = false ? undefined
-		: id === 'let' ? (({ bind, value, expr }) => {
+		: id === 'lambda' && ast.bind.id !== 'var' ? (({ bind, expr }) => {
+			let arg = _var(newDummy());
+			return _lambda(arg, ifBind(bind, arg, expr, _error));
 		})
-		: (({}) => rewrite(reduceBind, ast));
+		: id === 'lambda-async' && ast.bind.id !== 'var' ? (({ bind, expr }) => {
+			let arg = _var(newDummy());
+			return _lambdaAsync(arg, ifBind(bind, arg, expr, _error));
+		})
+		: id === 'let' && ast.bind.id !== 'var' ? (({ bind, value, expr }) =>
+			ifBind(bind, value, expr, _error)
+		)
+		: (({}) =>
+			rewrite(reduceBind, ast)
+		);
 
 		return f(ast);
 	};
@@ -1280,7 +1292,7 @@ let reducerModule = () => {
 		return f(ast);
 	};
 
-	let reduces = ast => unpromisify(reduceAsync(reduceNe(ast)));
+	let reduces = ast => unpromisify(reduceAsync(reduceBind(reduceNe(ast))));
 
 	return { reduces };
 };
