@@ -1205,6 +1205,75 @@ let reducerModule = () => {
 		return f(ast);
 	};
 
+	let ifBind;
+
+	ifBind = (bind, value, then, else_) => {
+		let { id } = bind;
+
+		let bindConstant = () => false ? undefined
+			: bind.id !== value.id ? _if(_eq(bind, value), then, else_)
+			: bind.v === value.v ? then
+			: else_;
+
+		let f = false ? undefined
+		: id === 'array' ? (({ values }) => {
+			let indices = gen(values.length);
+			return false ? undefined
+			: id !== value.id ?
+				ifBind(
+					_num(values.length),
+					_dot(value, '.length'),
+					indices.reduce((expr, i) => ifBind(values[i], _index(value, _num(i)), expr, else_), then),
+					else_)
+			: values.length === value.values.length ?
+				indices.reduce((expr, i) => ifBind(values[i], value.values[i], expr, else_), then)
+			:
+				else_;
+		})
+		: id === 'bool' ? (({ v }) => bindConstant())
+		: id === 'never' ? (({}) => else_)
+		: id === 'num' ? (({ i }) => bindConstant())
+		: id === 'pair' ? (({ lhs, rhs }) => {
+			return false ? undefined
+			: id !== value.id ? ifBind(lhs, _index(value, _num(0)), ifBind(rhs, _index(value, _num(1)), then, else_), else_)
+			: ifBind(lhs, value.lhs, ifBind(rhs, value.rhs, then, else_), else_);
+		})
+		: id === 'str' ? (({ v }) => bindConstant())
+		: id === 'struct' ? (({ kvs }) => {
+			let ks = Object.keys(kvs);
+			return false ? undefined
+			: id !== value.id ?
+				ks.reduce((expr, k) => ifBind(getp(kvs, k), _dot(value, k), expr, else_), then)
+			:
+				ks.reduce((expr, k) => ifBind(getp(kvs, k), getp(value.kvs, k), expr, else_), then);
+		})
+		: id === 'tuple' ? (({ values }) => {
+			let indices = gen(values.length);
+			return false ? undefined
+			: id !== value.id ?
+				indices.reduce((expr, i) => ifBind(values[i], _index(value, _num(i)), expr, else_), then)
+			:
+				indices.reduce((expr, i) => ifBind(values[i], value.values[i], expr, else_), then);
+		})
+		: id === 'var' ? (({ vn }) => _let(bind, value, then))
+		: error(`cannot destructure ${format(bind)}`);
+
+		return f(bind);
+	};
+
+	let reduceBind;
+
+	reduceBind = ast => {
+		let { id } = ast;
+
+		let f = false ? undefined
+		: id === 'let' ? (({ bind, value, expr }) => {
+		})
+		: (({}) => rewrite(reduceBind, ast));
+
+		return f(ast);
+	};
+
 	let reduceNe;
 
 	reduceNe = ast => {
