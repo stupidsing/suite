@@ -1315,15 +1315,27 @@ let reducerModule = () => {
 		let { id } = ast;
 
 		let f = false ? undefined
-		: id === 'alloc' ? (({ vn, expr }) => _alloc(vn, reduceVars(cons([vn, [ps, fs]], vts), ps, fs1, expr)))
-		: id === 'lambda' ? (({ bind, expr }) => _lambda(bind, reduceVars(cons([bind.vn, [ps1, 0]], vts), ps1, 1, expr)))
-		: id === 'lambda-async' ? (({ bind, expr }) => _lambdaAsync(bind, reduceVars(cons([bind.vn, [ps1, 0]], vts), ps1, 1, expr)))
-		: id === 'let' ? (({ bind, value, expr }) => _alloc(bind.vn, _assign(bind, reduceVars(vts, ps, fs, value), reduceVars(cons([bind.vn, [ps, fs]], vts), ps, fs1, expr))))
+		: id === 'alloc' ? (({ vn, expr }) =>
+			_alloc(vn, reduceVars(cons([vn, [ps, fs]], vts), ps, fs1, expr))
+		)
+		: id === 'lambda' ? (({ bind, expr }) =>
+			_lambda(bind, reduceVars(cons([bind.vn, [ps1, 0]], vts), ps1, 1, expr))
+		)
+		: id === 'lambda-async' ? (({ bind, expr }) =>
+			_lambdaAsync(bind, reduceVars(cons([bind.vn, [ps1, 0]], vts), ps1, 1, expr))
+		)
+		: id === 'let' ? (({ bind, value, expr }) =>
+			_alloc(bind.vn, _assign(bind,
+				reduceVars(vts, ps, fs, value),
+				reduceVars(cons([bind.vn, [ps, fs]], vts), ps, fs1, expr)))
+		)
 		: id === 'var' ? (({ vn }) => {
 			let [ps_, fs_] = lookup(vts, vn);
 			return { id: 'stack', p: ps - ps_, i: fs_ };
 		})
-		: (({}) => rewrite(ast => reduceVars(vts, ps, fs, ast), ast));
+		: (({}) =>
+			rewrite(ast => reduceVars(vts, ps, fs, ast), ast)
+		);
 
 		return f(ast);
 	};
