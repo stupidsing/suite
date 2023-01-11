@@ -600,7 +600,7 @@ let typesModule = () => {
 					let t = v.t;
 					let join = Object
 						.entries(v)
-						.filter(([k, v_]) => k !== 'id')
+						.filter(([k, v_]) => k !== 't')
 						.map(([k, v_]) => `${k}:${dumpType_(cons(v, vs), v_)}`)
 						.join(' ');
 					return t !== undefined ? `${t}(${join})` : `{${join}}`;
