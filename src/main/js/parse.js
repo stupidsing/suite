@@ -72,7 +72,8 @@ let dump = v => {
 				.join(' ');
 			return `${v.id}(${join})`;
 		}()
-		: v.toString();
+		:
+			v.toString();
 	return dump_(nil, v);
 };
 
@@ -335,7 +336,8 @@ let parserModule = () => {
 			let block = program.slice(1, -1).trim();
 			return block.endsWith(';') ? parse(block) : parseStructInner(block, parse);
 		}()
-		: parseConstant(program);
+		:
+			parseConstant(program);
 	};
 
 	let parseLvalue = program_ => {
@@ -351,7 +353,8 @@ let parserModule = () => {
 			return expr === undefined ? parseValue(program)
 			: _index(parse(expr), parse(index));
 		}()
-		: parseValue(program);
+		:
+			parseValue(program);
 	};
 
 	parseApplyBlockFieldIndex = program_ => {
@@ -1127,18 +1130,24 @@ let reducerModule = () => {
 		};
 
 		let f = false ? undefined
-		: id === 'add' ? reduceBinOp
+		: id === 'add' ?
+			reduceBinOp
 		: id === 'alloc' ? (({ vn, expr }) => {
 			let pe = reduceAsync(expr);
 			let e = unpromisify(pe);
 			return e !== undefined ? promisify({ id, vn, expr: e }) : { id, vn, expr: pe };
 		})
-		: id === 'and' ? reduceBinOp
-		: id === 'app' ? reduceBinOp
+		: id === 'and' ?
+			reduceBinOp
+		: id === 'app' ?
+			reduceBinOp
 		: id === 'await' ? (({ expr }) => expr)
-		: id === 'coal' ? reduceBinOp
-		: id === 'cons' ? reduceBinOp
-		: id === 'div' ? reduceBinOp
+		: id === 'coal' ?
+			reduceBinOp
+		: id === 'cons' ?
+			reduceBinOp
+		: id === 'div' ?
+			reduceBinOp
 		: id === 'dot' ? (({ expr, field }) => {
 			let pe = reduceAsync(expr);
 			let e = unpromisify(pe);
@@ -1146,7 +1155,8 @@ let reducerModule = () => {
 			let p = promisify({ id, expr: ve, field });
 			return e !== undefined ? p : _then(pe, ve, p);
 		})
-		: id === 'eq_' ? reduceBinOp
+		: id === 'eq_' ?
+			reduceBinOp
 		: id === 'if' ? (({ if_, then, else_ }) => {
 			let pi = reduceAsync(if_);
 			let i = unpromisify(pi);
@@ -1160,8 +1170,11 @@ let reducerModule = () => {
 			: i !== undefined ? { id, if_: vi, then: pt, else_: pe }
 			: _then(pi, vi, { id, if_: vi, then: pt, else_: pe });
 		})
-		: id === 'lambda-async' ? (({ bind, expr }) => promisify(_lambda(bind, reduceAsync(expr))))
-		: id === 'le_' ? reduceBinOp
+		: id === 'lambda-async' ? (({ bind, expr }) =>
+			promisify(_lambda(bind, reduceAsync(expr)))
+		)
+		: id === 'le_' ?
+			reduceBinOp
 		: id === 'let' ? (({ bind, value, expr }) => {
 			let pv = reduceAsync(value);
 			let v = unpromisify(pv);
@@ -1172,16 +1185,26 @@ let reducerModule = () => {
 			: e === undefined && v !== undefined ? { id, bind, value: v, expr: pe }
 			: _then(pv, bind, pe);
 		})
-		: id === 'lt_' ? reduceBinOp
-		: id === 'mul' ? reduceBinOp
-		: id === 'ne_' ? reduceBinOp
-		: id === 'neg' ? reduceOp
-		: id === 'not' ? reduceOp
-		: id === 'or_' ? reduceBinOp
-		: id === 'pos' ? reduceOp
-		: id === 'sub' ? reduceBinOp
-		: id === 'try' ? reduceBinOp
-		: id === 'typeof' ? reduceOp
+		: id === 'lt_' ?
+			reduceBinOp
+		: id === 'mul' ?
+			reduceBinOp
+		: id === 'ne_' ?
+			reduceBinOp
+		: id === 'neg' ?
+			reduceOp
+		: id === 'not' ?
+			reduceOp
+		: id === 'or_' ?
+			reduceBinOp
+		: id === 'pos' ?
+			reduceOp
+		: id === 'sub' ?
+			reduceBinOp
+		: id === 'try' ?
+			reduceBinOp
+		: id === 'typeof' ?
+			reduceOp
 		: id === 'while' ? (({ cond, loop, expr }) => {
 			let pc = reduceAsync(cond);
 			let c = unpromisify(pc);
@@ -1201,7 +1224,9 @@ let reducerModule = () => {
 				return _alloc(vn, _assign(vp, _lambda(_var(newDummy()), c !== undefined ? if_ : _then(pc, vc, if_)), invoke));
 			}();
 		})
-		: (({}) => promisify(rewrite(ast_ => unpromisify(reduceAsync(ast_)), ast)));
+		: (({}) =>
+			promisify(rewrite(ast_ => unpromisify(reduceAsync(ast_)), ast))
+		);
 
 		return f(ast);
 	};
@@ -1211,7 +1236,7 @@ let reducerModule = () => {
 	ifBind = (bind, value, then, else_) => {
 		let { id } = bind;
 
-		let bindConstant = () => false ? undefined
+		let bindConstant = ast => false ? undefined
 			: bind.id !== value.id ? _if(_eq(bind, value), then, else_)
 			: bind.v === value.v ? then
 			: else_;
@@ -1233,9 +1258,13 @@ let reducerModule = () => {
 			:
 				else_;
 		})
-		: id === 'bool' ? (({ v }) => bindConstant())
-		: id === 'never' ? (({}) => else_)
-		: id === 'num' ? (({ i }) => bindConstant())
+		: id === 'bool' ?
+			bindConstant
+		: id === 'never' ? (({}) =>
+			else_
+		)
+		: id === 'num' ?
+			bindConstant
 		: id === 'pair' ? (({ lhs, rhs }) => {
 			return false ? undefined
 			: id !== value.id ?
@@ -1243,7 +1272,8 @@ let reducerModule = () => {
 			:
 				ifBind(lhs, value.lhs, ifBind(rhs, value.rhs, then, else_), else_);
 		})
-		: id === 'str' ? (({ v }) => bindConstant())
+		: id === 'str' ?
+			bindConstant
 		: id === 'struct' ? (({ kvs }) => {
 			let getValue = k => value.kvs.filter(kv => kv.key === k)[0].value;
 			return kvs.reduce(
@@ -1256,8 +1286,11 @@ let reducerModule = () => {
 				(expr, i) => ifBind(values[i], id !== value.id ? _index(value, _num(i)) : value.values[i], expr, else_),
 				then);
 		})
-		: id === 'var' ? (({ vn }) => _let(bind, value, then))
-		: error(`cannot destructure ${format(bind)}`);
+		: id === 'var' ? (({ vn }) =>
+			_let(bind, value, then)
+		)
+		:
+			error(`cannot destructure ${format(bind)}`);
 
 		return f(bind);
 	};
