@@ -744,6 +744,10 @@ let typesModule = () => {
 			let to = newRef();
 			return doBind(ast, ts, tyArrayOf(ti)) && tyLambdaOf(tyLambdaOf(ti, tyArrayOf(to)), tyArrayOf(to));
 		}()
+		: field === '.includes' ? function() {
+			let te = newRef();
+			return doBind(ast, ts, tyArrayOf(te)) && tyLambdaOf(te, tyBoolean);
+		}()
 		: field === '.indexOf' ?
 			doBind(ast, ts, tyString) && tyLambdaOf(tyPairOf(tyString, tyNumber), tyNumber)
 		: field === '.join' ?
