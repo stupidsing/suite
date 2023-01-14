@@ -106,6 +106,90 @@ let _undefined = { id: 'undefined' };
 let _var = vn => ({ id: 'var', vn });
 let _while = (cond, loop, expr) => ({ id: 'while', cond, loop, expr });
 
+let lexerModule = () => {
+	let isAlphabet = ch => ascii('A') <= ch && ch <= ascii('Z') || ascii('a') <= ch && ch <= ascii('z');
+	let isNum = ch => ascii('0') <= ch && ch <= ascii('9');
+	let isId = ch => isAlphabet(ch) || isNum(ch) || ch === ascii('_');
+
+	let lex = (s, pos) => {
+		let op2s = ['<=', '^&&', '||', '??', '|>',];
+		let op3s = ['!==', '===',];
+
+		let i = pos;
+		let tokenss = [];
+		let cont = true;
+
+		while (i < s.length) (function() {
+			let ch = s.charCodeAt(i);
+			let op2 = s.slice(i, i + 2);
+			let op3 = s.slice(i, i + 3);
+
+			let tokens = false ? undefined
+				: ch === 9 || ch === 10 || ch === 13 || ch === 32 ?
+					[]
+				: ch === ascii("'") || ch === ascii('"') ? function() {
+					let j = i + 1;
+					while (j < s.length && s.charCodeAt(j) !== ch) (function() {
+						j = j + 1;
+						return j;
+					}());
+					i = j + 1;
+					return [{ lex: 'str',  s: s.slice(i + 1, j) },];
+				}()
+				: isAlphabet(ch) ? function() {
+					let j = i + 1;
+					while (j < s.length && isId(s.charCodeAt(j))) (function() {
+						j = j + 1;
+						return j;
+					}());
+					i = j + 1;
+					return [{ lex: 'id', s: s.slice(i, j) },];
+				}()
+				: isNum(ch) ? function() {
+					let j = i + 1;
+					while (j < s.length && isNum(s.charCodeAt(j))) (function() {
+						j = j + 1;
+						return j;
+					}());
+					i = j + 1;
+					return [{ lex: 'num', s: s.slice(i, j) },];
+				}()
+				: op2s.includes(op2) ? function() {
+					i = i + op2.length;
+					return [{ lex: 'sym', s: op2 },];
+				}()
+				: op3s.includes(op3) ? function() {
+					i = i + op3.length;
+					return [{ lex: 'sym', s: op3 },];
+				}()
+				: function() {
+					let sym = s.slice(i, i + 1);
+					i = i + 1;
+					return [{ lex: 'sym', s: sym },];
+				}();
+
+			tokenss.push(tokens);
+
+			let t = false ? undefined
+				: ch === 9 || ch === 10 || ch === 13 || ch === 32 ? ' '
+				: ascii("'") === ch ? "'"
+				: ascii('"') === ch ? '"'
+				: ascii('`') === ch ? '`'
+				: ascii('0') <= ch && ch <= ascii('9') ? 'N'
+				: ascii('A') <= ch && ch <= ascii('Z') ? 'A'
+				: ch === ascii('_') ? 'A'
+				: ascii('a') <= ch && ch <= ascii('z') ? 'A'
+				: '$';
+
+			return t;
+		}());
+
+		return tokenss.flatMap(tokens => tokens);
+	};
+
+	return { lex };
+};
+
 let parserModule = () => {
 	let isAll = pred => s => {
 		let isAll_;
