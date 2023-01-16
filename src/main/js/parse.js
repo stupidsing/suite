@@ -47,7 +47,6 @@ let gen = i => {
 	while (0 < i) (function() {
 		array.push(i);
 		i = i - 1;
-		i
 	}());
 	return array;
 };
@@ -131,7 +130,6 @@ let lexerModule = () => {
 					let j = i + 1;
 					while (j < s.length && s.charCodeAt(j) !== ch) (function() {
 						j = j + 1;
-						return j;
 					}());
 					i = j + 1;
 					return [{ lex: 'str', s: s.slice(i + 1, j) },];
@@ -140,7 +138,6 @@ let lexerModule = () => {
 					let j = i + 1;
 					while (j < s.length && isId(s.charCodeAt(j))) (function() {
 						j = j + 1;
-						return j;
 					}());
 					i = j + 1;
 					return [{ lex: 'id', s: s.slice(i, j) },];
@@ -149,7 +146,6 @@ let lexerModule = () => {
 					let j = i + 1;
 					while (j < s.length && isNum(s.charCodeAt(j))) (function() {
 						j = j + 1;
-						return j;
 					}());
 					i = j + 1;
 					return [{ lex: 'num', s: s.slice(i, j) },];
@@ -180,8 +176,6 @@ let lexerModule = () => {
 				: ch === ascii('_') ? 'A'
 				: ascii('a') <= ch && ch <= ascii('z') ? 'A'
 				: '$';
-
-			return t;
 		}());
 
 		return tokenss.flatMap(tokens => tokens);
@@ -240,7 +234,6 @@ let parserModule = () => {
 		}()) (function() {
 			i = i + 1;
 			qb = qb1;
-			return true;
 		}());
 
 		return j <= s.length ? [s.slice(0, i), s.slice(j, undefined)] : [s, undefined];
@@ -262,7 +255,6 @@ let parserModule = () => {
 		}()) (function() {
 			j = j - 1;
 			qb = qb1;
-			return true;
 		}());
 
 		return 0 <= i ? [s.slice(0, i), s.slice(j, undefined)] : [undefined, s];
@@ -1545,7 +1537,6 @@ let process = program_ => {
 		return 0 <= posx;
 	}()) (function() {
 		program = program.slice(0, pos0) + program.slice(posx, undefined);
-		return true;
 	}());
 	return process_(program);
 };
