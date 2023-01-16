@@ -134,7 +134,7 @@ let lexerModule = () => {
 						return j;
 					}());
 					i = j + 1;
-					return [{ lex: 'str',  s: s.slice(i + 1, j) },];
+					return [{ lex: 'str', s: s.slice(i + 1, j) },];
 				}()
 				: isAlphabet(ch) ? function() {
 					let j = i + 1;
