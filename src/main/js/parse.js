@@ -533,6 +533,7 @@ let parserModule = () => {
 		return expr_ === undefined ? parsePair(statement_, parseLambda) : function() {
 			let statement = statement_.trim();
 			let expr = expr_.trim();
+			let parseExpr = expr !== '' ? parse(expr) : _undefined;
 
 			return false ? undefined
 			: statement.startsWith('let ') ? function() {
@@ -540,8 +541,8 @@ let parserModule = () => {
 				let v = vn.trim();
 
 				return false ? undefined
-				: value !== undefined ? _let(parseBind(vn), parse(value), parse(expr))
-				: isIdentifier(v) ? _alloc(v, parse(expr))
+				: value !== undefined ? _let(parseBind(vn), parse(value), parseExpr)
+				: isIdentifier(v) ? _alloc(v, parseExpr)
 				: error(`cannot parse let variable "${v}"`);
 			}()
 			: statement.startsWith('return ') && expr === '' ?
@@ -550,14 +551,14 @@ let parserModule = () => {
 				_throw(parse(statement.slice(6, undefined)))
 			: statement.startsWith('while ') ? function() {
 				let [cond, loop] = splitl(statement.slice(6, undefined), ' ');
-				return _while(parse(cond), parse(loop), parse(expr));
+				return _while(parse(cond), parse(loop), parseExpr);
 			}()
 			: function() {
 				let [lhs, rhs] = splitl(statement, '=');
 
 				return rhs !== undefined
-				? _assign(parseLvalue(lhs), parse(rhs), parse(expr))
-				: _let(_var(newDummy()), parse(lhs), parse(expr));
+				? _assign(parseLvalue(lhs), parse(rhs), parseExpr)
+				: _let(_var(newDummy()), parse(lhs), parseExpr);
 			}();
 		}();
 	};
