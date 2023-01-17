@@ -123,46 +123,43 @@ let lexerModule = () => {
 			let op2 = s.slice(i, i + 2);
 			let op3 = s.slice(i, i + 3);
 
+			let j = i + 1;
+
+			let until = f => {
+				while (j < s.length && f(s.charCodeAt(j))) (function() {
+					j = j + 1;
+				}());
+			};
+
 			let tokens = false ? undefined
 				: ch === 9 || ch === 10 || ch === 13 || ch === 32 ?
 					[]
 				: ch === ascii("'") || ch === ascii('"') ? function() {
-					let j = i + 1;
-					while (j < s.length && s.charCodeAt(j) !== ch) (function() {
-						j = j + 1;
-					}());
-					i = j + 1;
-					return [{ lex: 'str', s: s.slice(i + 1, j) },];
+					until(c => c !== ch);
+					return [{ lex: 'str', s: s.slice(i + 1, j - 1) },];
 				}()
 				: isAlphabet(ch) ? function() {
-					let j = i + 1;
-					while (j < s.length && isId(s.charCodeAt(j))) (function() {
-						j = j + 1;
-					}());
-					i = j + 1;
+					until(isId);
 					return [{ lex: 'id', s: s.slice(i, j) },];
 				}()
 				: isNum(ch) ? function() {
-					let j = i + 1;
-					while (j < s.length && isNum(s.charCodeAt(j))) (function() {
-						j = j + 1;
-					}());
-					i = j + 1;
+					until(isNum);
 					return [{ lex: 'num', s: s.slice(i, j) },];
 				}()
 				: op2s.includes(op2) ? function() {
-					i = i + op2.length;
+					j = i + op2.length;
 					return [{ lex: 'sym', s: op2 },];
 				}()
 				: op3s.includes(op3) ? function() {
-					i = i + op3.length;
+					j = i + op3.length;
 					return [{ lex: 'sym', s: op3 },];
 				}()
 				: function() {
-					let sym = s.slice(i, i + 1);
-					i = i + 1;
+					let sym = s.slice(i, j);
 					return [{ lex: 'sym', s: sym },];
 				}();
+
+			i = j;
 
 			tokenss.push(tokens);
 
