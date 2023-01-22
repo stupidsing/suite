@@ -134,7 +134,7 @@ let lexerModule = () => {
 			let tokens = false ? undefined
 				: ch === 9 || ch === 10 || ch === 13 || ch === 32 ?
 					[]
-				: ch === ascii("'") || ch === ascii('"') ? function() {
+				: ch === ascii("'") || ch === ascii('"') || ch === ascii('`') ? function() {
 					until(c => c !== ch);
 					return [{ lex: 'str', s: s.slice(i + 1, j - 1) },];
 				}()
