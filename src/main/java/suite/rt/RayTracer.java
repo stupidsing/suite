@@ -183,6 +183,7 @@ public class RayTracer {
 					var lightDir = R3.sub(lightSource.source(), hitPoint);
 					var lightDot = R3.dot(lightDir, normal);
 
+					// diffuse
 					if (0d < lightDot) { // facing the light
 						var lightPoint = R3.add(hitPoint, negligible(normal));
 						var lightRayHit = nearestHit(scene.hit(new Ray(lightPoint, lightDir)));
@@ -193,6 +194,16 @@ public class RayTracer {
 							color = R3.add(color, lightColor.scale(cos));
 						}
 					}
+
+					// specular
+					var dir0 = lightDir.norm();
+					var dir1 = hitPoint.norm();
+					var n = 5d;
+					var lightColor = lightSource.lit(hitPoint);
+
+					var r = R3.dot(dir0, R3.sub(dir1, normal.scale(2 * R3.dot(normal, dir1))));
+					if (0d < r)
+						color = R3.add(color, lightColor.scale(Math.pow(r, n)));
 				}
 			}
 
