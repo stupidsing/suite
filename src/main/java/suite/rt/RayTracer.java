@@ -176,7 +176,7 @@ public class RayTracer {
 
 				color = R3.add(reflectColor.scale(fresnel1), refractColor.scale((1d - fresnel1) * transparency));
 			} else {
-				color = R3.origin;
+				color = ambient;
 
 				// account for light sources
 				for (var lightSource : lightSources) {
