@@ -198,7 +198,7 @@ public class RayTracer {
 					// specular
 					var dir0 = lightDir.norm();
 					var dir1 = hitPoint.norm();
-					var n = 5d;
+					var n = 3d;
 					var lightColor = lightSource.lit(hitPoint);
 
 					var r = R3.dot(dir0, R3.sub(dir1, normal.scale(2 * R3.dot(normal, dir1))));

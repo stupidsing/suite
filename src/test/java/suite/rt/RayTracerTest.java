@@ -80,6 +80,7 @@ public class RayTracerTest {
 		rasterize(rayTracer);
 	}
 
+	// https://www.scratchapixel.com/lessons/3d-basic-rendering/introduction-to-ray-tracing/ray-tracing-practical-example.html
 	@Test
 	public void testCopyCat() throws IOException {
 		var sphere0 = Sphere.c(v(0d, 1004d, 20d), 1000d, solid(v(.2d, .2d, .2d)));
