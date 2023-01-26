@@ -1314,69 +1314,76 @@ let reducerModule = () => {
 		return f(ast);
 	};
 
-	let ifBind;
+	let ifBindId = bindId => {
+		let ifBind;
 
-	ifBind = (bind, value, then, else_) => {
-		let { id } = bind;
+		ifBind = (bind, value, then, else_) => {
+			let { id } = bind;
 
-		let bindConstant = ast => false ? undefined
-			: bind.id !== value.id ? _if(_eq(bind, value), then, else_)
-			: bind.v === value.v ? then
-			: else_;
+			let bindConstant = ast => false ? undefined
+				: bind.id !== value.id ? _if(_eq(bind, value), then, else_)
+				: bind.v === value.v ? then
+				: else_;
 
-		let f = false ? undefined
-		: id === 'array' ? (({ values }) => {
-			let indices = gen(values.length);
-			return false ? undefined
-			: id !== value.id ?
-				ifBind(
-					_num(values.length),
-					_dot(value, '.length'),
-					indices.reduce((expr, i) => ifBind(values[i], _index(value, _num(i)), expr, else_), then),
-					else_)
-			: values.length === value.values.length ?
-				indices.reduce(
-					(expr, i) => ifBind(values[i], value.values[i], expr, else_),
-					then)
+			let f = false ? undefined
+			: id === 'array' ? (({ values }) => {
+				let indices = gen(values.length);
+				return false ? undefined
+				: id !== value.id ?
+					ifBind(
+						_num(values.length),
+						_dot(value, '.length'),
+						indices.reduce((expr, i) => ifBind(values[i], _index(value, _num(i)), expr, else_), then),
+						else_)
+				: values.length === value.values.length ?
+					indices.reduce(
+						(expr, i) => ifBind(values[i], value.values[i], expr, else_),
+						then)
+				:
+					else_;
+			})
+			: id === 'bool' ?
+				bindConstant
+			: id === 'never' ? (({}) =>
+				else_
+			)
+			: id === 'num' ?
+				bindConstant
+			: id === 'pair' ? (({ lhs, rhs }) => {
+				return false ? undefined
+				: id !== value.id ?
+					ifBind(lhs, _index(value, _num(0)), ifBind(rhs, _index(value, _num(1)), then, else_), else_)
+				:
+					ifBind(lhs, value.lhs, ifBind(rhs, value.rhs, then, else_), else_);
+			})
+			: id === 'str' ?
+				bindConstant
+			: id === 'struct' ? (({ kvs }) => {
+				let getValue = k => value.kvs.filter(kv => kv.key === k)[0].value;
+				return kvs.reduce(
+					(expr, kv) => ifBind(kv.value, id !== value.id ? _dot(value, kv.key) : getValue(kv.key), expr, else_),
+					then);
+			})
+			: id === 'tuple' ? (({ values }) => {
+				let indices = gen(values.length);
+				return indices.reduce(
+					(expr, i) => ifBind(values[i], id !== value.id ? _index(value, _num(i)) : value.values[i], expr, else_),
+					then);
+			})
+			: id === 'var' ? (({ vn }) =>
+				({ id: bindId, bind, value, expr: then })
+			)
 			:
-				else_;
-		})
-		: id === 'bool' ?
-			bindConstant
-		: id === 'never' ? (({}) =>
-			else_
-		)
-		: id === 'num' ?
-			bindConstant
-		: id === 'pair' ? (({ lhs, rhs }) => {
-			return false ? undefined
-			: id !== value.id ?
-				ifBind(lhs, _index(value, _num(0)), ifBind(rhs, _index(value, _num(1)), then, else_), else_)
-			:
-				ifBind(lhs, value.lhs, ifBind(rhs, value.rhs, then, else_), else_);
-		})
-		: id === 'str' ?
-			bindConstant
-		: id === 'struct' ? (({ kvs }) => {
-			let getValue = k => value.kvs.filter(kv => kv.key === k)[0].value;
-			return kvs.reduce(
-				(expr, kv) => ifBind(kv.value, id !== value.id ? _dot(value, kv.key) : getValue(kv.key), expr, else_),
-				then);
-		})
-		: id === 'tuple' ? (({ values }) => {
-			let indices = gen(values.length);
-			return indices.reduce(
-				(expr, i) => ifBind(values[i], id !== value.id ? _index(value, _num(i)) : value.values[i], expr, else_),
-				then);
-		})
-		: id === 'var' ? (({ vn }) =>
-			_let(bind, value, then)
-		)
-		:
-			error(`cannot destructure ${format(bind)}`);
+				error(`cannot destructure ${format(bind)}`);
 
-		return f(bind);
+			return f(bind);
+		};
+
+		return ifBind;
 	};
+
+	let assignBind = ifBindId('assign');
+	let letBind = ifBindId('let');
 
 	let reduceBind;
 
@@ -1384,16 +1391,19 @@ let reducerModule = () => {
 		let { id } = ast;
 
 		let f = false ? undefined
+		: id === 'assign' && ast.bind.id !== 'var' ? (({ bind, value, expr }) =>
+			assignBind(bind, value, expr, _error)
+		)
 		: id === 'lambda' && ast.bind.id !== 'var' ? (({ bind, expr }) => {
 			let arg = _var(newDummy());
-			return _lambda(arg, ifBind(bind, arg, expr, _error));
+			return _lambda(arg, letBind(bind, arg, expr, _error));
 		})
 		: id === 'lambda-async' && ast.bind.id !== 'var' ? (({ bind, expr }) => {
 			let arg = _var(newDummy());
-			return _lambdaAsync(arg, ifBind(bind, arg, expr, _error));
+			return _lambdaAsync(arg, letBind(bind, arg, expr, _error));
 		})
 		: id === 'let' && ast.bind.id !== 'var' ? (({ bind, value, expr }) =>
-			ifBind(bind, value, expr, _error)
+			letBind(bind, value, expr, _error)
 		)
 		: (({}) =>
 			rewrite(reduceBind, ast)
