@@ -101,6 +101,10 @@ public class RayTracer {
 		return traceRay(depth, ray);
 	}
 
+	public BufferedImage trace(int width, int height) {
+		return trace(width, height, width);
+	}
+
 	public BufferedImage trace(int width, int height, int viewDistance) {
 		var ivd = viewDistance / width;
 

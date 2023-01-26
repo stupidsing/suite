@@ -200,7 +200,7 @@ public class RayTracerTest {
 
 	private void rasterize(RayTracer rayTracer) throws IOException {
 		var path = Tmp.path(Get.stackTrace(3).getMethodName() + ".png");
-		var bufferedImage = rayTracer.trace(640, 480, 640);
+		var bufferedImage = rayTracer.trace(640, 480);
 		if (Boolean.TRUE)
 			WriteFile.to(path).doWrite(os -> ImageIO.write(bufferedImage, "png", os));
 		else {
