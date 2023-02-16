@@ -176,6 +176,11 @@ tp_npm14() {
 	$(cchs "echo https://nodejs.org/dist/v'${NODE_V}'/node-v'${NODE_V}'-linux-x64.tar.xz" @curl @tar-xf @dir)/bin/npm $@
 }
 
+tp_npm16() {
+	local NODE_V=16.16.0
+	$(cchs "echo https://nodejs.org/dist/v'${NODE_V}'/node-v'${NODE_V}'-linux-x64.tar.xz" @curl @tar-xf @dir)/bin/npm $@
+}
+
 tp_rocksndiamonds() {
 	# https://www.artsoft.org/rocksndiamonds/news/
 	$(cchs "echo https://www.artsoft.org/RELEASES/unix/rocksndiamonds/rocksndiamonds-4.1.3.0.tar.gz" @curl @tar-zxf @dir "@exec make")/rocksndiamonds
