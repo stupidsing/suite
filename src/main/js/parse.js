@@ -1473,55 +1473,70 @@ let reducerModule = () => {
 
 let execute;
 
-execute = ast => {
-	let { id } = ast;
+execute = vvs => {
+	let execute_;
 
-	let f = false ? undefined
-	: id === 'add' ? (({ lhs, rhs }) => execute(lhs) + execute(rhs))
-	: id === 'alloc' ? (({ vn, expr }) => error('FIXME'))
-	: id === 'and' ? (({ lhs, rhs }) => execute(lhs) !== 0 && execute(rhs) !== 0 ? 1 : 0)
-	: id === 'app' ? (({ lhs, rhs }) => error('FIXME'))
-	: id === 'array' ? (({ values }) => error('FIXME'))
-	: id === 'assign' ? (({ bind, value, expr }) => error('FIXME'))
-	: id === 'await' ? (({ expr }) => error('FIXME'))
-	: id === 'bool' ? (({ v }) => v ? 1 : 0)
-	: id === 'coal' ? (({ lhs, rhs }) => error('FIXME'))
-	: id === 'cons' ? (({ lhs, rhs }) => error('FIXME'))
-	: id === 'div' ? (({ lhs, rhs }) => execute(lhs) / execute(rhs))
-	: id === 'dot' ? (({ expr, field }) => error('FIXME'))
-	: id === 'eq_' ? (({ lhs, rhs }) => execute(lhs) === execute(rhs) ? 1 : 0)
-	: id === 'if' ? (({ if_, then, else_ }) => execute(if_) !== 0 ? execute(then) : execute(else_))
-	: id === 'index' ? (({ lhs, rhs }) => error('FIXME'))
-	: id === 'lambda' ? (({ bind, expr }) => error('FIXME'))
-	: id === 'lambda-async' ? (({ bind, expr }) => error('FIXME'))
-	: id === 'le_' ? (({ lhs, rhs }) => execute(lhs) <= execute(rhs) ? 1 : 0)
-	: id === 'let' ? (({ bind, value, expr }) => error('FIXME'))
-	: id === 'lt_' ? (({ lhs, rhs }) => execute(lhs) < execute(rhs) ? 1 : 0)
-	: id === 'mul' ? (({ lhs, rhs }) => execute(lhs) * execute(rhs))
-	: id === 'ne_' ? (({ lhs, rhs }) => execute(lhs) !== execute(rhs) ? 1 : 0)
-	: id === 'neg' ? (({ expr }) => -execute(expr))
-	: id === 'never' ? (({}) => error('FIXME'))
-	: id === 'new-error' ? (({}) => error('FIXME'))
-	: id === 'new-map' ? (({}) => error('FIXME'))
-	: id === 'new-promise' ? (({}) => error('FIXME'))
-	: id === 'not' ? (({ expr }) => execute(expr) === 0 ? 1 : 0)
-	: id === 'num' ? (({ i }) => i)
-	: id === 'or_' ? (({ lhs, rhs }) => execute(lhs) !== 0 || execute(rhs) !== 0 ? 1 : 0)
-	: id === 'pair' ? (({ lhs, rhs }) => error('FIXME'))
-	: id === 'pos' ? (({ expr }) => +execute(expr))
-	: id === 'str' ? (({ v }) => error('FIXME'))
-	: id === 'struct' ? (({ kvs }) => error('FIXME'))
-	: id === 'sub' ? (({ lhs, rhs }) => execute(lhs) - execute(rhs))
-	: id === 'throw' ? (({ expr }) => error('FIXME'))
-	: id === 'try' ? (({ lhs, rhs }) => error('FIXME'))
-	: id === 'tuple' ? (({ values }) => error('FIXME'))
-	: id === 'typeof' ? (({ expr }) => error('FIXME'))
-	: id === 'undefined' ? (({}) => error('FIXME'))
-	: id === 'var' ? (({ vn }) => error('FIXME'))
-	: id === 'while' ? (({ cond, loop, expr }) => error('FIXME'))
-	: error(`cannot generate for ${id}`);
+	let lookup = v => {
+		let lookup_;
+		lookup_ = vvs => isNotEmpty(vvs) ? function() {
+			let [v_, value] = head(vvs);
+			return v_ === v ? value : lookup_(tail(vvs));
+		}() : error(`undefined variable ${v}`);
+		return lookup_(vvs);
+	};
 
-	return f(ast);
+	execute_ = ast => {
+		let { id } = ast;
+
+		let f = false ? undefined
+		: id === 'add' ? (({ lhs, rhs }) => execute_(lhs) + execute_(rhs))
+		: id === 'alloc' ? (({ vn, expr }) => error('FIXME'))
+		: id === 'and' ? (({ lhs, rhs }) => execute_(lhs) !== 0 && execute_(rhs) !== 0 ? 1 : 0)
+		: id === 'app' ? (({ lhs, rhs }) => error('FIXME'))
+		: id === 'array' ? (({ values }) => error('FIXME'))
+		: id === 'assign' ? (({ bind, value, expr }) => error('FIXME'))
+		: id === 'await' ? (({ expr }) => error('FIXME'))
+		: id === 'bool' ? (({ v }) => v ? 1 : 0)
+		: id === 'coal' ? (({ lhs, rhs }) => error('FIXME'))
+		: id === 'cons' ? (({ lhs, rhs }) => error('FIXME'))
+		: id === 'div' ? (({ lhs, rhs }) => execute_(lhs) / execute_(rhs))
+		: id === 'dot' ? (({ expr, field }) => error('FIXME'))
+		: id === 'eq_' ? (({ lhs, rhs }) => execute_(lhs) === execute_(rhs) ? 1 : 0)
+		: id === 'if' ? (({ if_, then, else_ }) => execute_(if_) !== 0 ? execute_(then) : execute_(else_))
+		: id === 'index' ? (({ lhs, rhs }) => error('FIXME'))
+		: id === 'lambda' ? (({ bind, expr }) => error('FIXME'))
+		: id === 'lambda-async' ? (({ bind, expr }) => error('FIXME'))
+		: id === 'le_' ? (({ lhs, rhs }) => execute_(lhs) <= execute_(rhs) ? 1 : 0)
+		: id === 'let' ? (({ bind, value, expr }) => execute(cons([bind, value], vvs))(expr))
+		: id === 'lt_' ? (({ lhs, rhs }) => execute_(lhs) < execute_(rhs) ? 1 : 0)
+		: id === 'mul' ? (({ lhs, rhs }) => execute_(lhs) * execute_(rhs))
+		: id === 'ne_' ? (({ lhs, rhs }) => execute_(lhs) !== execute_(rhs) ? 1 : 0)
+		: id === 'neg' ? (({ expr }) => -execute_(expr))
+		: id === 'never' ? (({}) => error('FIXME'))
+		: id === 'new-error' ? (({}) => error('FIXME'))
+		: id === 'new-map' ? (({}) => error('FIXME'))
+		: id === 'new-promise' ? (({}) => error('FIXME'))
+		: id === 'not' ? (({ expr }) => execute_(expr) === 0 ? 1 : 0)
+		: id === 'num' ? (({ i }) => i)
+		: id === 'or_' ? (({ lhs, rhs }) => execute_(lhs) !== 0 || execute_(rhs) !== 0 ? 1 : 0)
+		: id === 'pair' ? (({ lhs, rhs }) => error('FIXME'))
+		: id === 'pos' ? (({ expr }) => +execute_(expr))
+		: id === 'str' ? (({ v }) => error('FIXME'))
+		: id === 'struct' ? (({ kvs }) => error('FIXME'))
+		: id === 'sub' ? (({ lhs, rhs }) => execute_(lhs) - execute_(rhs))
+		: id === 'throw' ? (({ expr }) => error('FIXME'))
+		: id === 'try' ? (({ lhs, rhs }) => error('FIXME'))
+		: id === 'tuple' ? (({ values }) => error('FIXME'))
+		: id === 'typeof' ? (({ expr }) => error('FIXME'))
+		: id === 'undefined' ? (({}) => error('FIXME'))
+		: id === 'var' ? (({ vn }) => lookup(vvs, vn))
+		: id === 'while' ? (({ cond, loop, expr }) => error('FIXME'))
+		: error(`cannot generate for ${id}`);
+
+		return f(ast);
+	};
+
+	return execute_;
 };
 
 let generate;
