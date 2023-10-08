@@ -1497,7 +1497,10 @@ execute = vvs => {
 		: id === 'assign' ? (({ bind, value, expr }) => error('FIXME'))
 		: id === 'await' ? (({ expr }) => error('FIXME'))
 		: id === 'bool' ? (({ v }) => v ? 1 : 0)
-		: id === 'coal' ? (({ lhs, rhs }) => error('FIXME'))
+		: id === 'coal' ? (({ lhs, rhs }) => function() {
+			let v = execute_(lhs);
+			return v !== 0 ? v : execute_(rhs);
+		}())
 		: id === 'cons' ? (({ lhs, rhs }) => error('FIXME'))
 		: id === 'div' ? (({ lhs, rhs }) => execute_(lhs) / execute_(rhs))
 		: id === 'dot' ? (({ expr, field }) => error('FIXME'))
@@ -1507,7 +1510,7 @@ execute = vvs => {
 		: id === 'lambda' ? (({ bind, expr }) => error('FIXME'))
 		: id === 'lambda-async' ? (({ bind, expr }) => error('FIXME'))
 		: id === 'le_' ? (({ lhs, rhs }) => execute_(lhs) <= execute_(rhs) ? 1 : 0)
-		: id === 'let' ? (({ bind, value, expr }) => execute(cons([bind, value], vvs))(expr))
+		: id === 'let' ? (({ bind, value, expr }) => execute(cons([bind.vn, value], vvs))(expr))
 		: id === 'lt_' ? (({ lhs, rhs }) => execute_(lhs) < execute_(rhs) ? 1 : 0)
 		: id === 'mul' ? (({ lhs, rhs }) => execute_(lhs) * execute_(rhs))
 		: id === 'ne_' ? (({ lhs, rhs }) => execute_(lhs) !== execute_(rhs) ? 1 : 0)
@@ -1530,7 +1533,11 @@ execute = vvs => {
 		: id === 'typeof' ? (({ expr }) => error('FIXME'))
 		: id === 'undefined' ? (({}) => error('FIXME'))
 		: id === 'var' ? (({ vn }) => lookup(vvs, vn))
-		: id === 'while' ? (({ cond, loop, expr }) => error('FIXME'))
+		: id === 'while' ? (({ cond, loop, expr }) => function() {
+			let v;
+			while (execute_(cond) !== 0) execute_(loop);
+			execute_(expr);
+		}())
 		: error(`cannot generate for ${id}`);
 
 		return f(ast);
