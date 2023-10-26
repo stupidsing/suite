@@ -3,18 +3,18 @@
 curl -sL https://raw.githubusercontent.com/stupidsing/suite/master/src/main/sh/cache.sh
 
 ECLIPSE_V=2023-09
-GH_V=2.32.0
-MAVEN_V=3.9.3
-NODE_V=18.16.1
+GH_V=2.37.0
+MAVEN_V=3.9.5
+NODE_V=20.9.0
 
 echo '
 AWS_DIST=$(cchs "echo https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" @curl @unzip "@exec ./aws/install -i . -b .")/aws/dist
 ECLIPSE_HOME=$(cchs "echo http://ftp.jaist.ac.jp/pub/eclipse/technology/epp/downloads/release/'${ECLIPSE_V}'/R/eclipse-java-'${ECLIPSE_V}'-R-linux-gtk-x86_64.tar.gz" @curl @tar-zxf @dir)
 GH_HOME=$(cchs "echo https://github.com/cli/cli/releases/download/v'${GH_V}'/gh_'${GH_V}'_linux_amd64.tar.gz" @curl @tar-zxf @dir)
 GIT_HD=$(cchs "echo git@github.com:stupidsing/home-data.git" @git-clone "@git-cd pwd")
-GOROOT=$(cchs "echo https://dl.google.com/go/go1.20.6.linux-amd64.tar.gz" @curl @tar-zxf @dir)
+GOROOT=$(cchs "echo https://dl.google.com/go/go1.21.3.linux-amd64.tar.gz" @curl @tar-zxf @dir)
 GRADLE_HOME=$(cchs "echo https://services.gradle.org/distributions/gradle-8.4-bin.zip" @curl @unzip @dir)
-JAVA_HOME=$(cchs "curl -sL https://jdk.java.net/20/" "grep https://download.java.net/ | grep -v sha256 | grep linux-x64 | grep \\.tar\\.gz" "cut -d\\\" -f2" @curl @tar-zxf @dir)
+JAVA_HOME=$(cchs "curl -sL https://jdk.java.net/21/" "grep https://download.java.net/ | grep -v sha256 | grep linux-x64 | grep \\.tar\\.gz" "cut -d\\\" -f2" @curl @tar-zxf @dir)
 M2_HOME=$(cchs "echo https://dlcdn.apache.org/maven/maven-3/'${MAVEN_V}'/binaries/apache-maven-'${MAVEN_V}'-bin.tar.gz" @curl @tar-zxf @dir)
 NODE_HOME=$(cchs "echo https://nodejs.org/dist/v'${NODE_V}'/node-v'${NODE_V}'-linux-x64.tar.xz" @curl @tar-xf @dir)
 TERMINATOR_HOME=$(cchs "echo https://github.com/gnome-terminator/terminator.git" @git-clone "@git-cd pwd")
