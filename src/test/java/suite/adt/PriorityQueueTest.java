@@ -15,6 +15,12 @@ public class PriorityQueueTest {
 	private Random random = new Random();
 
 	@Test
+	public void test3000() {
+		for (int i = 0; i < 3000; i++)
+			test();
+	}
+
+	@Test
 	public void test() {
 		var floats = To.vector(1024, i -> random.nextDouble());
 

@@ -22,11 +22,8 @@ public class PriorityQueue<T> {
 	}
 
 	public int add(T t) {
-		int i, p;
 		ts[++size] = t;
-		for (i = size; 1 < i && 0 < compare(ts[p = i / 2], ts[i]); i = p)
-			swap(p, i);
-		return i;
+		return shuffle0(size);
 	}
 
 	public T extractMin() {
@@ -46,9 +43,26 @@ public class PriorityQueue<T> {
 	}
 
 	public T remove(int i) {
-		int c;
 		var t = ts[i];
 		ts[i] = ts[size--];
+		shuffle1(i);
+		shuffle0(i);
+		return t;
+	}
+
+	public int size() {
+		return size;
+	}
+
+	private int shuffle0(int i) {
+		int p;
+		for (; 1 < i && 0 < compare(ts[p = i / 2], ts[i]); i = p)
+			swap(p, i);
+		return i;
+	}
+
+	private void shuffle1(int i) {
+		int c;
 		for (; (c = 2 * i) <= size; i = c) {
 			if (c + 1 <= size && compare(ts[c + 1], ts[c]) < 0)
 				c++;
@@ -57,11 +71,6 @@ public class PriorityQueue<T> {
 			else
 				break;
 		}
-		return t;
-	}
-
-	public int size() {
-		return size;
 	}
 
 	private int compare(T t0, T t1) {
