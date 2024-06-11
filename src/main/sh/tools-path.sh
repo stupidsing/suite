@@ -2,7 +2,7 @@
 
 curl -sL https://raw.githubusercontent.com/stupidsing/suite/master/src/main/sh/cache.sh
 
-ECLIPSE_V=2024-03
+ECLIPSE_V=2024-06
 GH_V=2.50.0
 MAVEN_V=3.9.7
 NODE_V=20.14.0
