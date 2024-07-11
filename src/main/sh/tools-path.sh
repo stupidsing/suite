@@ -10,6 +10,7 @@ NODE_V=20.14.0
 echo '
 AWS_DIST=$(cchs "echo https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" @curl @unzip "@exec ./aws/install -i . -b .")/aws/dist
 ECLIPSE_HOME=$(cchs "echo http://ftp.jaist.ac.jp/pub/eclipse/technology/epp/downloads/release/'${ECLIPSE_V}'/R/eclipse-java-'${ECLIPSE_V}'-R-linux-gtk-x86_64.tar.gz" @curl @tar-zxf @dir)
+GCLOUD_HOME=$(cchs "echo https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-cli-linux-x86_64.tar.gz" @curl @tar-zxf)/google-cloud-sdk
 GH_HOME=$(cchs "echo https://github.com/cli/cli/releases/download/v'${GH_V}'/gh_'${GH_V}'_linux_amd64.tar.gz" @curl @tar-zxf @dir)
 GIT_HD=$(cchs "echo git@github.com:stupidsing/home-data.git" @git-clone "@git-cd pwd")
 GOROOT=$(cchs "echo https://dl.google.com/go/go1.22.4.linux-amd64.tar.gz" @curl @tar-zxf @dir)
@@ -24,6 +25,7 @@ save_tp() {
 	echo "# save into ~/.bashrc"
 	echo export AWS_DIST=${AWS_DIST}
 	echo export ECLIPSE_HOME=${ECLIPSE_HOME}
+	echo export GCLOUD_HOME=${GCLOUD_HOME}
 	echo export GH_HOME=${GH_HOME}
 	echo export GIT_HD=${GIT_HD}
 	echo export GOROOT=${GOROOT}
@@ -32,7 +34,7 @@ save_tp() {
 	echo export M2_HOME=${M2_HOME}
 	echo export NODE_HOME=${NODE_HOME}
 	echo
-	echo PATH='${AWS_DIST}:${GH_HOME}/bin:${GIT_HD:9}/bin:${GOROOT}/bin:${GRADLE_HOME}/bin:${JAVA_HOME}/bin:${M2_HOME}/bin:${NODE_HOME}/bin:${PATH}'
+	echo PATH='${AWS_DIST}:${GCLOUD_HOME}/bin:${GH_HOME}/bin:${GIT_HD:9}/bin:${GOROOT}/bin:${GRADLE_HOME}/bin:${JAVA_HOME}/bin:${M2_HOME}/bin:${NODE_HOME}/bin:${PATH}'
 }
 
 tp_android_avdmanager() {
@@ -101,6 +103,10 @@ tp_enigma() {
 		cd $(cchs "echo https://www.chiark.greenend.org.uk/~sgtatham/enigma/enigma-1.04.tar.gz" @curl @tar-zxf @dir "@exec ./configure --datadir=share" "@exec make" "@exec mkdir share" "@exec rsync -avz levels/ share/enigma/")
 		./enigma
 	)
+}
+
+tp_gcloud() {
+  $(cchs "echo https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-cli-linux-x86_64.tar.gz" @curl @tar-zxf)/google-cloud-sdk/bin/gcloud
 }
 
 tp_geckodriver() {
