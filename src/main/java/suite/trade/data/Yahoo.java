@@ -92,7 +92,7 @@ public class Yahoo {
 			var length = ts.length;
 
 			var dataJsons0 = Read //
-					.<String> empty() //
+					.<String>empty() //
 					.map2(tag -> jsons //
 							.flatMap(json_ -> {
 								var json0 = json_.path("indicators");
@@ -193,11 +193,31 @@ public class Yahoo {
 
 	private Map<String, Float> quote_(Streamlet<String> symbols, String field) {
 		if (0 < symbols.size()) {
-			var url = "https://download.finance.yahoo.com/d/quotes.csv" //
-					+ "?s=" + symbols.sort(Compare::objects).map(this::encode).toJoinedString("+") //
-					+ "&f=s" + field;
+			var cookie = "A1=d=AQABBJ9wzWYCEKqayM1ExKtxXG3sbN4ry0AFEgEBAQHCzmbXZliZ8HgB_eMAAA&S=AQAAAnzHQn5Gwlw1uRk7Wr589m4";
+			var userAgent = "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/115.0";
 
-			return HttpClient.get(url).out().collect(As::csv).toMap(array -> array[0], array -> Float.parseFloat(array[1]));
+			var headers = Map.ofEntries( //
+					Map.entry("Cookie", cookie), //
+					Map.entry("User-Agent", userAgent));
+
+			var url0 = "https://query2.finance.yahoo.com/v1/test/getcrumb";
+
+			var crumb = HttpClient.get(url0).headers(headers).out().collect(As::string);
+
+			var url1 = "https://query1.finance.yahoo.com/v7/finance/quote" //
+					+ "?symbols=" + symbols.sort(Compare::objects).map(this::encode).toJoinedString("+") //
+					+ "&crumb=" + crumb;
+
+			var json = HttpClient.get(url1).headers(headers).inputStream().doRead(om::readTree);
+
+			var jsons = Read.each(json) //
+					.flatMap(json_ -> json_.path("quoteResponse").path("result"));
+
+			return jsons //
+					.map2( //
+							json_ -> json_.path("symbol").textValue(), //
+							json_ -> json_.path("regularMarketPrice").numberValue().floatValue()) //
+					.toMap();
 		} else
 			return new HashMap<>();
 	}

@@ -2,6 +2,8 @@ package suite.trade.data;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.Set;
+
 import org.junit.jupiter.api.Test;
 
 import primal.os.Log_;
@@ -44,6 +46,12 @@ public class YahooTest {
 			} catch (Exception ex) {
 				Log_.error(ex);
 			}
+	}
+
+	@Test
+	public void testQuote() {
+		var quotes = yahoo.quote(Set.of("0005.HK"));
+		System.out.println(quotes);
 	}
 
 }
