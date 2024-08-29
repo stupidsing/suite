@@ -110,8 +110,8 @@ let subnetClass = () => {
 				`  --map-public-ip-on-launch ${MapPublicIpOnLaunch} \\`,
 				`  --tag-specifications '${JSON.stringify([
 					{ ResourceType: class_, Tags: [{ Key: 'Name', Value: name }] }
-				])} \\`,
-				`  --vpc-id ${VpcId}' \\`,
+				])}' \\`,
+				`  --vpc-id ${VpcId} \\`,
 				`  | jq .Subnet > ${getStateFilename_(resource)}.json`,
 			);
 			state = {};
@@ -141,6 +141,8 @@ let vpcClass = () => {
 	let delete_ = (state, key) => [
 		`aws ec2 delete-vpc --vpc-id ${state.VpcId}`,
 		`rm -f ${getStateFilename(key)}.json`,
+		`rm -f ${getStateFilename(key)}.EnableDnsHostnames.json`,
+		`rm -f ${getStateFilename(key)}.EnableDnsSupport.json`,
 	];
 
 	let upsert = (state, resource) => {
@@ -158,6 +160,13 @@ let vpcClass = () => {
 				`  jq .Vpc > ${getStateFilename_(resource)}.json`,
 			);
 			state = { CidrBlockAssociationSet: [{ CidrBlock: attributes['CidrBlockAssociationSet'][0]['CidrBlock'] }] };
+		} else {
+			let stateFilename = getStateFilename_(resource);
+			state = {
+				...state,
+				EnableDnsHostnames: readJsonIfExists(`${stateFilename}.EnableDnsHostnames`),
+				EnableDnsSupport: readJsonIfExists(`${stateFilename}.EnableDnsSupport`),
+			};
 		}
 
 		// let VpcId = `$(aws ec2 describe-vpcs --filter Name:${name} | jq -r .Vpcs[0].VpcId)`;
@@ -247,7 +256,7 @@ let get = (resource, prop) => {
 	let { getKey } = objectByClass[class_];
 	let key = getKey(resource);
 	let state = stateByKey[key];
-	return `$(cat ${state ? state[prop] : getStateFilename(key)}.json | jq -r .${prop})`;
+	return state ? state[prop] : `$(cat ${getStateFilename(key)}.json | jq -r .${prop})`;
 };
 
 let getResources = () => {
