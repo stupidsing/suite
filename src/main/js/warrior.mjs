@@ -9,7 +9,55 @@ let readJsonIfExists = name => {
 
 let getStateFilename = key => `${stateDir}/${key}`;
 
+let ec2Class = () => {
+	let class_ = 'ec2';
+
+	let getKey = ({ name, attributes }) => [
+		name,
+		attributes['InstanceType'],
+	].join('_');
+
+	let getStateFilename_ = resource => getStateFilename(getKey(resource));
+
+	let create = resource => {
+		let { name, attributes: { InstanceType, SubnetId } } = resource;
+		return [
+			`aws ec2 run-instances --instance-type ${InstanceType} --subnet-id ${SubnetId} --tag-specifications '${JSON.stringify([
+				{ ResourceType: class_, Tags: [{ Key: 'Name', Value: name }] }
+			])}' | jq .Instances[0] > ${getStateFilename_(resource)}.json`,
+		];}
+	;
+
+	let delete_ = (state, resource) => [
+		`aws ec2 terminate-instance --instance-ids ${state.InstanceId}`,
+		`rm -f ${getStateFilename_(resource)}.json`,
+	];
+
+	let upsert = (state, resource) => {
+		let commands = [];
+
+		if (state == null) {
+			commands.push(...create(resource));
+			state = {};
+		}
+
+		return commands;
+	};
+
+	return {
+		delete_,
+		getKey,
+		getState: resource => readJsonIfExists(`${getStateFilename_(resource)}.json`),
+		refresh: (resource, id) => [
+			`aws ec2 describe-instances --instance-ids ${id} | jq .Reservations[0] | .Instances[0] > ${getStateFilename_(resource)}.json`,
+		],
+		upsert,
+	};
+};
+
 let subnetClass = () => {
+	let class_ = 'subnet';
+
 	let getKey = ({ name, attributes }) => [
 		name,
 		attributes['VpcId'],
@@ -23,7 +71,7 @@ let subnetClass = () => {
 		let { name, attributes: { AvailabilityZone, MapPublicIpOnLaunch, VpcId } } = resource;
 		return [
 			`aws ec2 create-subnet --availability-zone ${AvailabilityZone} --map-public-ip-on-launch ${MapPublicIpOnLaunch} --tag-specifications '${JSON.stringify([
-				{ ResourceType: 'subnet', Tags: [{ Key: 'Name', Value: name }] }
+				{ ResourceType: class_, Tags: [{ Key: 'Name', Value: name }] }
 			])} --vpc-id ${VpcId}' | jq .Subnet > ${getStateFilename_(resource)}.json`,
 		];}
 	;
@@ -56,6 +104,7 @@ let subnetClass = () => {
 };
 
 let vpcClass = () => {
+	let class_ = 'vpc';
 	let getKey = ({ name }) => name;
 	let getStateFilename_ = resource => getStateFilename(getKey(resource));
 
@@ -63,7 +112,7 @@ let vpcClass = () => {
 		let { name, attributes: { CidrBlockAssociationSet } } = resource;
 		return [
 			`aws ec2 create-vpc --cidr-block ${CidrBlockAssociationSet[0].CidrBlock} --tag-specifications '${JSON.stringify([
-				{ ResourceType: 'vpc', Tags: [{ Key: 'Name', Value: name }] }
+				{ ResourceType: class_, Tags: [{ Key: 'Name', Value: name }] }
 			])}' | jq .Vpc > ${getStateFilename_(resource)}.json`,
 		];
 	};
@@ -142,6 +191,7 @@ let vpcClass = () => {
 };
 
 let objectByClass = {
+	ec2: ec2Class(),
 	subnet: subnetClass(),
 	vpc: vpcClass(),
 };
@@ -152,39 +202,53 @@ let get = (resource, path) => {
 	return `$(cat ${getStateFilename(getKey(resource))}.json | jq -r ${path})`;
 };
 
-let vpc = {
-	class_: 'vpc',
-	name: 'npt-cloud-vpc',
-	attributes: {
-		CidrBlockAssociationSet: [{ CidrBlock: '10.25.0.0/16' }],
-		EnableDnsHostnames: true,
-		EnableDnsSupport: true,
-	},
+let getResources = () => {
+	let vpc = {
+		class_: 'vpc',
+		name: 'npt-cloud-vpc',
+		attributes: {
+			CidrBlockAssociationSet: [{ CidrBlock: '10.25.0.0/16' }],
+			EnableDnsHostnames: true,
+			EnableDnsSupport: true,
+		},
+	};
+
+	let subnetPublic = {
+		class_: 'subnet',
+		name: 'npt-cloud-subnet-public',
+		attributes: {
+			AvailabilityZone: 'ap-southeast-1a',
+			MapPublicIpOnLaunch: true,
+			VpcId: get(vpc, '.VpcId'),
+		},
+	};
+
+	let subnetPrivate = {
+		class_: 'subnet',
+		name: 'npt-cloud-subnet-private',
+		attributes: {
+			AvailabilityZone: 'ap-southeast-1a',
+			MapPublicIpOnLaunch: false,
+			VpcId: get(vpc, '.VpcId'),
+		},
+	};
+
+	let ec2 = {
+		class_: 'ec2',
+		name: 'npt-cloud-ec2-0',
+		attributes: {
+			InstanceType: 't3.nano',
+			SubnetId: get(subnetPrivate, '.SubnetId'),
+		},
+	};
+
+	return [vpc, subnetPublic, subnetPrivate, ec2];
 };
 
-let subnetPublic = {
-	class_: 'subnet',
-	name: 'npt-cloud-subnet-public',
-	attributes: {
-		AvailabilityZone: 'ap-southeast-1a',
-		MapPublicIpOnLaunch: true,
-		VpcId: get(vpc, '.VpcId'),
-	},
-};
-
-let subnetPrivate = {
-	class_: 'subnet',
-	name: 'npt-cloud-subnet-private',
-	attributes: {
-		AvailabilityZone: 'ap-southeast-1a',
-		MapPublicIpOnLaunch: false,
-		VpcId: get(vpc, '.VpcId'),
-	},
-};
-
+let resources = getResources();
 let commands = [];
 
-for (let resource of [vpc, subnetPublic, subnetPrivate]) {
+for (let resource of resources) {
 	let { delete_, getState, upsert } = objectByClass[resource.class_];
 	let state = getState(resource);
 	if (!resource.delete_) {
