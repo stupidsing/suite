@@ -28,8 +28,6 @@ let ec2Class = () => {
 		`rm -f ${getStateFilename(key)}.json`,
 	];
 
-	let refresh = ({ InstanceId }, resource) => refreshById(resource, InstanceId);
-
 	let refreshById = (resource, id) => [
 		`aws ec2 describe-instances \\`,
 		`  --instance-ids ${id} \\`,
@@ -77,7 +75,7 @@ let ec2Class = () => {
 		class_,
 		delete_,
 		getKey,
-		refresh,
+		refresh: ({ InstanceId }, resource) => refreshById(resource, InstanceId),
 		upsert,
 	};
 };
@@ -96,7 +94,7 @@ let subnetClass = () => {
 	let getStateFilename_ = resource => getStateFilename(getKey(resource));
 
 	let delete_ = (state, key) => [
-		`aws ec2 delete-vpc \\`,
+		`aws ec2 delete-subnet \\`,
 		`  --subnet-id ${state.SubnetId}`,
 		`rm -f ${getStateFilename(key)}.json`,
 	];
@@ -104,8 +102,6 @@ let subnetClass = () => {
 	let refreshById = (resource, id) => [
 		`aws ec2 describe-subnets --subnet-ids ${id} | jq .Subnets[0] > ${getStateFilename_(resource)}.json`,
 	];
-
-	let refresh = ({ SubnetId }, resource) => refresh(resource, SubnetId);
 
 	let upsert = (state, resource) => {
 		let { attributes } = resource;
@@ -147,7 +143,7 @@ let subnetClass = () => {
 		class_,
 		delete_,
 		getKey,
-		refresh,
+		refresh: ({ SubnetId }, resource) => refresh(resource, SubnetId),
 		upsert,
 	};
 };
