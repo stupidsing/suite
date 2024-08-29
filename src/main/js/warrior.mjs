@@ -318,6 +318,17 @@ let getResources = () => {
 };
 
 let stateFilenames = readdirSync(stateDir);
+let action = 'up';
+
+if (action === 'refresh') {
+	stateFilenames.map(stateFilename => {
+		let [key] = stateFilename.split('.');
+		let [class_] = key.split('_');
+		let state = JSON.parse(readFileSync(`${stateDir}/${stateFilename}`));
+		let { refresh } = objectByClass[class_];
+		commands.push(refresh(state, resource));
+	});
+}
 
 stateByKey = Object.fromEntries(stateFilenames.map(stateFilename => {
 	let [key] = stateFilename.split('.');
@@ -325,7 +336,7 @@ stateByKey = Object.fromEntries(stateFilenames.map(stateFilename => {
 	return [key, state];
 }));
 
-let resources = getResources();
+let resources = action === 'up' ? getResources() : [];
 
 let resourceByKey = Object.fromEntries(resources.map(resource => {
 	let { getKey } = objectByClass[resource.class_];
