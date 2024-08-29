@@ -7,46 +7,31 @@ let readJsonIfExists = name => {
 	return existsSync(filename) ? JSON.parse(readFileSync(filename)) : null;
 };
 
-let getStateFilename = name => `${stateDir}/${name}`;
+let getStateFilename = key => `${stateDir}/${key}`;
 
 let subnetClass = () => {
-	let getKey = ({ name, attributes }) => [name, attributes['CidrBlock'], attributes['VpcId']].join('_');
+	let getKey = ({ name, attributes }) => [name, attributes['VpcId'], attributes['AvailabilityZone']].join('_');
 
 	let create = resource => {
-		let { name, attributes: { VpcId } } = resource;
+		let { name, attributes: { AvailabilityZone, VpcId } } = resource;
 		return [
-			`aws ec2 create-subnet --tag-specifications '${JSON.stringify([
+			`aws ec2 create-subnet --availability-zone ${AvailabilityZone} --tag-specifications '${JSON.stringify([
 				{ ResourceType: 'vpc', Tags: [{ Key: 'Name', Value: name }] }
-			])} --vpc-id ${VpcId}' | jq .Vpc > ${getStateFilename(name)}.json`,
+			])} --vpc-id ${VpcId}' | jq .Vpc > ${getStateFilename(getKey(resource))}.json`,
 		];}
 	;
 
-	let delete_ = (name, state, key) => [
+	let delete_ = (state, resource) => [
 		`aws ec2 delete-vpc --subnet-id ${state.SubnetId}`,
-		`rm -f ${getStateFilename(name)}.json`,
+		`rm -f ${getStateFilename(getKey(resource))}.json`,
 	];
 
-	let update = (name, state, resource) => {
-		let { attributes } = resource;
+	let update = (state, resource) => {
 		let commands = [];
 
 		if (state == null) {
 			commands.push(...create(resource));
-			state = { CidrBlock: attributes['CidrBlock'], VpcId: attributes['VpcId'] };
-		}
-
-		{
-			let prop = 'CidrBlock';
-			if (state[prop] !== attributes[prop]) {
-				return [...delete_(name, state), ...update(name, null, resource)];
-			}
-		}
-
-		{
-			let prop = 'VpcId';
-			if (state[prop] !== attributes[prop]) {
-				return [...delete_(name, state), ...update(name, null, resource)];
-			}
+			state = {};
 		}
 
 		return commands;
@@ -56,27 +41,32 @@ let subnetClass = () => {
 		create,
 		delete_,
 		getKey,
-		getState: ({ name }) => readJsonIfExists(`${getStateFilename(name)}.json`),
-		refresh: (name, id) => [
-			`aws ec2 describe-subnets --subnet-ids ${id} | jq .Subnets[0] > ${getStateFilename(name)}.json`,
+		getState: resource => readJsonIfExists(`${getStateFilename(getKey(resource))}.json`),
+		refresh: (resource, id) => [
+			`aws ec2 describe-subnets --subnet-ids ${id} | jq .Subnets[0] > ${getStateFilename(getKey(resource))}.json`,
 		],
 		update,
 	};
 };
 
 let vpcClass = () => {
-	let create = ({ name, attributes: { CidrBlockAssociationSet } }) => [
-		`aws ec2 create-vpc --cidr-block ${CidrBlockAssociationSet[0].CidrBlock} --tag-specifications '${JSON.stringify([
-			{ ResourceType: 'vpc', Tags: [{ Key: 'Name', Value: name }] }
-		])}' | jq .Vpc > ${getStateFilename(name)}.json`,
-	];
+	let getKey = ({ name }) => name;
 
-	let delete_ = (name, state, key) => [
+	let create = resource => {
+		let { name, attributes: { CidrBlockAssociationSet } } = resource;
+		return [
+			`aws ec2 create-vpc --cidr-block ${CidrBlockAssociationSet[0].CidrBlock} --tag-specifications '${JSON.stringify([
+				{ ResourceType: 'vpc', Tags: [{ Key: 'Name', Value: name }] }
+			])}' | jq .Vpc > ${getStateFilename(getKey(resource))}.json`,
+		];
+	};
+
+	let delete_ = (state, resource) => [
 		`aws ec2 delete-vpc --vpc-id ${state.VpcId}`,
-		`rm -f ${getStateFilename(name)}.json`,
+		`rm -f ${getStateFilename(getKey(resource))}.json`,
 	];
 
-	let update = (name, state, resource) => {
+	let update = (state, resource) => {
 		let { attributes } = resource;
 		let commands = [];
 
@@ -86,7 +76,7 @@ let vpcClass = () => {
 		}
 
 		// let VpcId = `$(aws ec2 describe-vpcs --filter Name:${name} | jq -r .Vpcs[0].VpcId)`;
-		let VpcId = `$(cat ${getStateFilename(name)}.json | jq -r .VpcId)`;
+		let VpcId = `$(cat ${getStateFilename(getKey(resource))}.json | jq -r .VpcId)`;
 
 		{
 			let prop = 'CidrBlockAssociationSet';
@@ -108,7 +98,7 @@ let vpcClass = () => {
 			if (state[prop] !== attributes[prop]) {
 				commands.push(
 					`aws ec2 modify-vpc-attribute --vpc-id ${VpcId} ${attributes[prop] ? `--` : `--no-`}enable-dns-hostnames`,
-					`echo ${attributes[prop]} > ${getStateFilename(name)}.${prop}.json`);
+					`echo ${attributes[prop]} > ${getStateFilename(getKey(resource))}.${prop}.json`);
 			}
 		}
 		{
@@ -116,7 +106,7 @@ let vpcClass = () => {
 			if (state[prop] !== attributes[prop]) {
 				commands.push(
 					`aws ec2 modify-vpc-attribute --vpc-id ${VpcId} ${attributes[prop] ? `--` : `--no-`}enable-dns-support`,
-					`echo ${attributes[prop]} > ${getStateFilename(name)}.${prop}.json`);
+					`echo ${attributes[prop]} > ${getStateFilename(getKey(resource))}.${prop}.json`);
 			}
 		}
 
@@ -126,9 +116,9 @@ let vpcClass = () => {
 	return {
 		create,
 		delete_,
-		getKey: ({ name }) => name,
-		getState: ({ name }) => {
-			let stateFilename = getStateFilename(name);
+		getKey,
+		getState: resource => {
+			let stateFilename = getStateFilename(getKey(resource));
 			let state = readJsonIfExists(`${stateFilename}.json`);
 			return state ? {
 				...state,
@@ -136,10 +126,10 @@ let vpcClass = () => {
 				EnableDnsSupport: readJsonIfExists(`${stateFilename}.EnableDnsSupport`),
 			} : null;
 		},
-		refresh: (name, id) => [
-			`aws ec2 describe-vpcs --vpc-ids ${id} | jq .Vpcs[0] > ${getStateFilename(name)}.json`,
-			`aws ec2 describe-vpc-attribute --vpc-id ${id} --attribute enableDnsHostnames | jq -r .EnableDnsHostnames.Value > ${getStateFilename(name)}.EnableDnsHostnames.json`,
-			`aws ec2 describe-vpc-attribute --vpc-id ${id} --attribute enableDnsSupport | jq -r .EnableDnsSupport.Value > ${getStateFilename(name)}.EnableDnsSupport.json`,
+		refresh: (resource, id) => [
+			`aws ec2 describe-vpcs --vpc-ids ${id} | jq .Vpcs[0] > ${getStateFilename(getKey(resource))}.json`,
+			`aws ec2 describe-vpc-attribute --vpc-id ${id} --attribute enableDnsHostnames | jq -r .EnableDnsHostnames.Value > ${getStateFilename(getKey(resource))}.EnableDnsHostnames.json`,
+			`aws ec2 describe-vpc-attribute --vpc-id ${id} --attribute enableDnsSupport | jq -r .EnableDnsSupport.Value > ${getStateFilename(getKey(resource))}.EnableDnsSupport.json`,
 		],
 		update,
 	};
@@ -150,7 +140,11 @@ let objectByClass = {
 	vpc: vpcClass(),
 };
 
-let get = ({ name }, path) => `$(cat ${getStateFilename(name)}.json | jq -r ${path})`;
+let get = (resource, path) => {
+	let { class_, name } = resource;
+	let { getKey } = objectByClass[class_];
+	return `$(cat ${getStateFilename(getKey(resource))}.json | jq -r ${path})`;
+};
 
 let vpc = {
 	class_: 'vpc',
@@ -166,6 +160,7 @@ let subnet = {
 	class_: 'subnet',
 	name: 'npt-cloud-subnet',
 	attributes: {
+		AvailabilityZone: 'ap-southeast-1a',
 		VpcId: get(vpc, '.VpcId'),
 	},
 };
@@ -174,8 +169,8 @@ for (let resource of [vpc, subnet]) {
 	let { delete_, getKey, getState, update } = objectByClass[resource.class_];
 	let state = getState(resource);
 	if (!resource.delete_) {
-		console.log(update(resource.name, state, resource).join('\n'));
+		console.log(update(state, resource).join('\n'));
 	} else {
-		console.log(delete_(resource.name, state, getKey(resource)).join('\n'));
+		console.log(delete_(state, resource).join('\n'));
 	}
 }
