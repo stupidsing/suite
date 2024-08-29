@@ -1,6 +1,6 @@
-import { existsSync, readFileSync } from 'fs';
+import { existsSync, readdirSync, readFileSync } from 'fs';
 
-let stateDir = '/tmp';
+let stateDir = `${process.env.HOME}/.warrior`;
 
 let readJsonIfExists = name => {
 	let filename = `${name}.json`;
@@ -28,9 +28,9 @@ let ec2Class = () => {
 		];}
 	;
 
-	let delete_ = (state, resource) => [
+	let delete_ = (state, key) => [
 		`aws ec2 terminate-instance --instance-ids ${state.InstanceId}`,
-		`rm -f ${getStateFilename_(resource)}.json`,
+		`rm -f ${getStateFilename(key)}.json`,
 	];
 
 	let upsert = (state, resource) => {
@@ -47,7 +47,6 @@ let ec2Class = () => {
 	return {
 		delete_,
 		getKey,
-		getState: resource => readJsonIfExists(`${getStateFilename_(resource)}.json`),
 		refresh: (resource, id) => [
 			`aws ec2 describe-instances --instance-ids ${id} | jq .Reservations[0] | .Instances[0] > ${getStateFilename_(resource)}.json`,
 		],
@@ -76,9 +75,9 @@ let subnetClass = () => {
 		];}
 	;
 
-	let delete_ = (state, resource) => [
+	let delete_ = (state, key) => [
 		`aws ec2 delete-vpc --subnet-id ${state.SubnetId}`,
-		`rm -f ${getStateFilename_(resource)}.json`,
+		`rm -f ${getStateFilename(key)}.json`,
 	];
 
 	let upsert = (state, resource) => {
@@ -95,7 +94,6 @@ let subnetClass = () => {
 	return {
 		delete_,
 		getKey,
-		getState: resource => readJsonIfExists(`${getStateFilename_(resource)}.json`),
 		refresh: (resource, id) => [
 			`aws ec2 describe-subnets --subnet-ids ${id} | jq .Subnets[0] > ${getStateFilename_(resource)}.json`,
 		],
@@ -117,9 +115,9 @@ let vpcClass = () => {
 		];
 	};
 
-	let delete_ = (state, resource) => [
+	let delete_ = (state, key) => [
 		`aws ec2 delete-vpc --vpc-id ${state.VpcId}`,
-		`rm -f ${getStateFilename_(resource)}.json`,
+		`rm -f ${getStateFilename(key)}.json`,
 	];
 
 	let upsert = (state, resource) => {
@@ -245,22 +243,39 @@ let getResources = () => {
 	return [vpc, subnetPublic, subnetPrivate, ec2];
 };
 
-let resources = getResources();
+let stateFilenames = readdirSync(stateDir);
+
+let stateByKey = Object.fromEntries(stateFilenames.map(stateFilename => {
+	let [key] = stateFilename.split('.');
+	let state = JSON.parse(readFileSync(`${stateDir}/${stateFilename}`));
+	return [key, state];
+}));
+
+let resourceByKey = Object.fromEntries(getResources().map(resource => {
+	let { getKey } = objectByClass[resource.class_];
+	let key = getKey(resource);
+	return [key, resource];
+}));
+
 let commands = [];
 
-for (let resource of resources) {
-	let { delete_, getState, upsert } = objectByClass[resource.class_];
-	let state = getState(resource);
-	if (!resource.delete_) {
+for (let [key, resource] of Object.entries(resourceByKey)) {
+	let { upsert } = objectByClass[resource.class_];
+	let state = stateByKey[key];
+	commands.push(
+		'',
+		`# ${state ? 'update' : 'create'} ${key}`,
+		...upsert(state, resource));
+}
+
+for (let [key, state] of Object.entries(stateByKey)) {
+	let { delete_ } = objectByClass[resource.class_];
+	let resource = resourceByKey[key];
+	if (!resourceByKey) {
 		commands.push(
 			'',
-			`# ${state ? 'update' : 'create'} ${resource.class_} ${resource.name}`,
-			...upsert(state, resource));
-	} else {
-		commands.push(
-			'',
-			`# ${'delete'} ${resource.class_} ${resource.name}`,
-			...delete_(state, resource));
+			`# delete ${key}`,
+			...delete_(state, key));
 	}
 }
 
