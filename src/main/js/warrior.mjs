@@ -28,7 +28,9 @@ let ec2Class = () => {
 		`rm -f ${getStateFilename(key)}.json`,
 	];
 
-	let refresh = (resource, id) => [
+	let refresh = ({ InstanceId }, resource) => refreshById(resource, InstanceId);
+
+	let refreshById = (resource, id) => [
 		`aws ec2 describe-instances \\`,
 		`  --instance-ids ${id} \\`,
 		`  | jq '.Reservations[0] | .Instances[0]' \\`,
@@ -63,7 +65,7 @@ let ec2Class = () => {
 					`aws ec2 modify-instance-attribute \\`,
 					`  --groups ${attributes[prop].join(',')} \\`,
 					`  --instance-id ${InstanceId}`,
-					...refresh(resource, InstanceId),
+					...refreshById(resource, InstanceId),
 				);
 			}
 		}
@@ -124,8 +126,8 @@ let subnetClass = () => {
 		class_,
 		delete_,
 		getKey,
-		refresh: (resource, id) => [
-			`aws ec2 describe-subnets --subnet-ids ${id} | jq .Subnets[0] > ${getStateFilename_(resource)}.json`,
+		refresh: ({ SubnetId }, resource) => [
+			`aws ec2 describe-subnets --subnet-ids ${SubnetId} | jq .Subnets[0] > ${getStateFilename_(resource)}.json`,
 		],
 		upsert,
 	};
@@ -232,17 +234,17 @@ let vpcClass = () => {
 				EnableDnsSupport: readJsonIfExists(`${stateFilename}.EnableDnsSupport`),
 			} : null;
 		},
-		refresh: (resource, id) => [
+		refresh: ({ VpcId }, resource) => [
 			`aws ec2 describe-vpcs \\`,
-			`  --vpc-ids ${id} \\`,
+			`  --vpc-ids ${VpcId} \\`,
 			`  | jq .Vpcs[0] > ${getStateFilename_(resource)}.json`,
 			`aws ec2 describe-vpc-attribute \\`,
 			`  --attribute enableDnsHostnames \\`,
-			`  --vpc-id ${id} \\`,
+			`  --vpc-id ${VpcId} \\`,
 			`  | jq -r .EnableDnsHostnames.Value > ${getStateFilename_(resource)}.EnableDnsHostnames.json`,
 			`aws ec2 describe-vpc-attribute \\`,
 			`  --attribute enableDnsSupport \\`,
-			`  --vpc-id ${id} \\`,
+			`  --vpc-id ${VpcId} \\`,
 			`  | jq -r .EnableDnsSupport.Value > ${getStateFilename_(resource)}.EnableDnsSupport.json`,
 		],
 		upsert,
