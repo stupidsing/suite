@@ -61,7 +61,8 @@ let ec2Class = () => {
 			if (state[prop] !== attributes[prop]) {
 				commands.push(
 					`aws ec2 modify-instance-attribute \\`,
-					`  --groups ${attributes[prop].join(',')}`,
+					`  --groups ${attributes[prop].join(',')} \\`,
+					`  --instance-id ${InstanceId}`,
 					...refresh(resource, InstanceId),
 				);
 			}
