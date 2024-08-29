@@ -2,6 +2,8 @@ import { existsSync, readdirSync, readFileSync } from 'fs';
 
 let stateDir = `${process.env.HOME}/.warrior`;
 
+let stateByKey;
+
 let readJsonIfExists = name => {
 	let filename = `${name}.json`;
 	return existsSync(filename) ? JSON.parse(readFileSync(filename)) : null;
@@ -12,7 +14,8 @@ let getStateFilename = key => `${stateDir}/${key}`;
 let ec2Class = () => {
 	let class_ = 'ec2';
 
-	let getKey = ({ name, attributes }) => [
+	let getKey = ({ class_, name, attributes }) => [
+		class_,
 		name,
 		attributes['InstanceType'],
 	].join('_');
@@ -46,6 +49,7 @@ let ec2Class = () => {
 	};
 
 	return {
+		class_,
 		delete_,
 		getKey,
 		refresh: (resource, id) => [
@@ -61,7 +65,8 @@ let ec2Class = () => {
 let subnetClass = () => {
 	let class_ = 'subnet';
 
-	let getKey = ({ name, attributes }) => [
+	let getKey = ({ class_, name, attributes }) => [
+		class_,
 		name,
 		attributes['VpcId'],
 		attributes['AvailabilityZone'],
@@ -98,6 +103,7 @@ let subnetClass = () => {
 	};
 
 	return {
+		class_,
 		delete_,
 		getKey,
 		refresh: (resource, id) => [
@@ -109,7 +115,9 @@ let subnetClass = () => {
 
 let vpcClass = () => {
 	let class_ = 'vpc';
-	let getKey = ({ name }) => name;
+
+	let getKey = ({ class_, name }) => [class_, name].join('_');
+
 	let getStateFilename_ = resource => getStateFilename(getKey(resource));
 
 	let delete_ = (state, key) => [
@@ -185,6 +193,7 @@ let vpcClass = () => {
 	};
 
 	return {
+		class_,
 		delete_,
 		getKey,
 		getState: resource => {
@@ -213,16 +222,14 @@ let vpcClass = () => {
 	};
 };
 
-let objectByClass = {
-	ec2: ec2Class(),
-	subnet: subnetClass(),
-	vpc: vpcClass(),
-};
+let objectByClass = Object.fromEntries([ec2Class(), subnetClass(), vpcClass()].map(c => [c.class_, c]));
 
-let get = (resource, path) => {
+let get = (resource, prop) => {
 	let { class_ } = resource;
 	let { getKey } = objectByClass[class_];
-	return `$(cat ${getStateFilename(getKey(resource))}.json | jq -r ${path})`;
+	let key = getKey(resource);
+	let state = stateByKey[key];
+	return `$(cat ${state ? state[prop] : getStateFilename(key)}.json | jq -r .${prop})`;
 };
 
 let getResources = () => {
@@ -242,7 +249,7 @@ let getResources = () => {
 		attributes: {
 			AvailabilityZone: 'ap-southeast-1a',
 			MapPublicIpOnLaunch: true,
-			VpcId: get(vpc, '.VpcId'),
+			VpcId: get(vpc, 'VpcId'),
 		},
 	};
 
@@ -252,7 +259,7 @@ let getResources = () => {
 		attributes: {
 			AvailabilityZone: 'ap-southeast-1a',
 			MapPublicIpOnLaunch: false,
-			VpcId: get(vpc, '.VpcId'),
+			VpcId: get(vpc, 'VpcId'),
 		},
 	};
 
@@ -261,7 +268,7 @@ let getResources = () => {
 		name: 'npt-cloud-ec2-0',
 		attributes: {
 			InstanceType: 't3.nano',
-			SubnetId: get(subnetPrivate, '.SubnetId'),
+			SubnetId: get(subnetPrivate, 'SubnetId'),
 		},
 	};
 
@@ -270,13 +277,15 @@ let getResources = () => {
 
 let stateFilenames = readdirSync(stateDir);
 
-let stateByKey = Object.fromEntries(stateFilenames.map(stateFilename => {
+stateByKey = Object.fromEntries(stateFilenames.map(stateFilename => {
 	let [key] = stateFilename.split('.');
 	let state = JSON.parse(readFileSync(`${stateDir}/${stateFilename}`));
 	return [key, state];
 }));
 
-let resourceByKey = Object.fromEntries(getResources().map(resource => {
+let resources = getResources();
+
+let resourceByKey = Object.fromEntries(resources.map(resource => {
 	let { getKey } = objectByClass[resource.class_];
 	let key = getKey(resource);
 	return [key, resource];
@@ -285,21 +294,23 @@ let resourceByKey = Object.fromEntries(getResources().map(resource => {
 let commands = [];
 
 for (let [key, resource] of Object.entries(resourceByKey)) {
-	let { upsert } = objectByClass[resource.class_];
+	let [class_, name] = key.split('_');
+	let { upsert } = objectByClass[class_];
 	let state = stateByKey[key];
 	commands.push(
 		'',
-		`# ${state ? 'update' : 'create'} ${key}`,
+		`# ${state ? 'update' : 'create'} ${name}`,
 		...upsert(state, resource));
 }
 
 for (let [key, state] of Object.entries(stateByKey)) {
-	let { delete_ } = objectByClass[resource.class_];
+	let [class_, name] = key.split('_');
+	let { delete_ } = objectByClass[class_];
 	let resource = resourceByKey[key];
-	if (!resourceByKey) {
+	if (resource == null) {
 		commands.push(
 			'',
-			`# delete ${key}`,
+			`# delete ${name}`,
 			...delete_(state, key));
 	}
 }
