@@ -90,7 +90,7 @@ let subnetClass = () => {
 		name,
 		attributes['VpcId'],
 		attributes['AvailabilityZone'],
-		attributes['MapPublicIpOnLaunch'] ? 'public' : 'private',
+		attributes['CidrBlock'].replaceAll('.', ':').replaceAll('/', ':'),
 	].join('_');
 
 	let getStateFilename_ = resource => getStateFilename(getKey(resource));
@@ -101,15 +101,22 @@ let subnetClass = () => {
 		`rm -f ${getStateFilename(key)}.json`,
 	];
 
+	let refreshById = (resource, id) => [
+		`aws ec2 describe-subnets --subnet-ids ${id} | jq .Subnets[0] > ${getStateFilename_(resource)}.json`,
+	];
+
+	let refresh = ({ SubnetId }, resource) => refresh(resource, SubnetId);
+
 	let upsert = (state, resource) => {
 		let { attributes } = resource;
 		let commands = [];
 
 		if (state == null) {
-			let { name, attributes: { AvailabilityZone, VpcId } } = resource;
+			let { name, attributes: { AvailabilityZone, CidrBlock, VpcId } } = resource;
 			commands.push(
 				`aws ec2 create-subnet \\`,
 				`  --availability-zone ${AvailabilityZone} \\`,
+				...(CidrBlock ? [`  --cidr-block ${CidrBlock} \\`] : []),
 				`  --tag-specifications '${JSON.stringify([
 					{ ResourceType: class_, Tags: [{ Key: 'Name', Value: name }] }
 				])}' \\`,
@@ -128,7 +135,8 @@ let subnetClass = () => {
 					`aws ec2 modify-subnet-attribute \\`,
 					`  --${attributes[prop] ? `` : `no-`}map-public-ip-on-launch \\`,
 					`  --subnet-id ${SubnetId}`,
-					`echo ${attributes[prop]} > ${getStateFilename_(resource)}.${prop}.json`);
+					...refreshById(resource, SubnetId),
+				);
 			}
 		}
 
@@ -139,9 +147,7 @@ let subnetClass = () => {
 		class_,
 		delete_,
 		getKey,
-		refresh: ({ SubnetId }, resource) => [
-			`aws ec2 describe-subnets --subnet-ids ${SubnetId} | jq .Subnets[0] > ${getStateFilename_(resource)}.json`,
-		],
+		refresh,
 		upsert,
 	};
 };
@@ -279,7 +285,7 @@ let getResources = () => {
 		class_: 'vpc',
 		name: 'npt-cloud-vpc',
 		attributes: {
-			CidrBlockAssociationSet: [{ CidrBlock: '10.25.0.0/16' }],
+			CidrBlockAssociationSet: [{ CidrBlock: '10.88.0.0/16' }],
 			EnableDnsHostnames: true,
 			EnableDnsSupport: true,
 		},
@@ -290,6 +296,7 @@ let getResources = () => {
 		name: 'npt-cloud-subnet-public',
 		attributes: {
 			AvailabilityZone: 'ap-southeast-1a',
+			CidrBlock: '10.88.1.0/24',
 			MapPublicIpOnLaunch: true,
 			VpcId: get(vpc, 'VpcId'),
 		},
@@ -300,6 +307,7 @@ let getResources = () => {
 		name: 'npt-cloud-subnet-private',
 		attributes: {
 			AvailabilityZone: 'ap-southeast-1a',
+			CidrBlock: '10.88.2.0/24',
 			MapPublicIpOnLaunch: false,
 			VpcId: get(vpc, 'VpcId'),
 		},
@@ -318,7 +326,7 @@ let getResources = () => {
 };
 
 let stateFilenames = readdirSync(stateDir);
-let action = 'up';
+let action = process.env.ACTION ?? 'up';
 
 if (action === 'refresh') {
 	stateFilenames.map(stateFilename => {
