@@ -36,15 +36,15 @@ let subnetClass = () => {
 		}
 
 		{
-			let key = 'CidrBlock';
-			if (state[key] !== attributes[key]) {
+			let prop = 'CidrBlock';
+			if (state[prop] !== attributes[prop]) {
 				return [...delete_(name, state), ...update(name, null, resource)];
 			}
 		}
 
 		{
-			let key = 'VpcId';
-			if (state[key] !== attributes[key]) {
+			let prop = 'VpcId';
+			if (state[prop] !== attributes[prop]) {
 				return [...delete_(name, state), ...update(name, null, resource)];
 			}
 		}
@@ -89,9 +89,9 @@ let vpcClass = () => {
 		let VpcId = `$(cat ${getStateFilename(name)}.json | jq -r .VpcId)`;
 
 		{
-			let key = 'CidrBlockAssociationSet';
-			let map0 = Object.fromEntries(state[key].map(({ CidrBlock, AssociationId }) => [CidrBlock, AssociationId]));
-			let map1 = Object.fromEntries(attributes[key].map(({ CidrBlock, AssociationId }) => [CidrBlock, AssociationId]));
+			let prop = 'CidrBlockAssociationSet';
+			let map0 = Object.fromEntries(state[prop].map(({ CidrBlock, AssociationId }) => [CidrBlock, AssociationId]));
+			let map1 = Object.fromEntries(attributes[prop].map(({ CidrBlock, AssociationId }) => [CidrBlock, AssociationId]));
 			for (let [CidrBlock, AssociationId] of Object.entries(map0)) {
 				if (!map1.hasOwnProperty(CidrBlock)) {
 					commands.push(`aws ec2 disassociate-vpc-cidr-block --vpc-id ${VpcId} --association-id ${AssociationId}`);
@@ -104,19 +104,19 @@ let vpcClass = () => {
 			}
 		}
 		{
-			let key = 'EnableDnsHostnames';
-			if (state[key] !== attributes[key]) {
+			let prop = 'EnableDnsHostnames';
+			if (state[prop] !== attributes[prop]) {
 				commands.push(
-					`aws ec2 modify-vpc-attribute --vpc-id ${VpcId} ${attributes[key] ? `--` : `--no-`}enable-dns-hostnames`,
-					`echo ${attributes[key]} > ${getStateFilename(name)}.${key}.json`);
+					`aws ec2 modify-vpc-attribute --vpc-id ${VpcId} ${attributes[prop] ? `--` : `--no-`}enable-dns-hostnames`,
+					`echo ${attributes[prop]} > ${getStateFilename(name)}.${prop}.json`);
 			}
 		}
 		{
-			let key = 'EnableDnsSupport';
-			if (state[key] !== attributes[key]) {
+			let prop = 'EnableDnsSupport';
+			if (state[prop] !== attributes[prop]) {
 				commands.push(
-					`aws ec2 modify-vpc-attribute --vpc-id ${VpcId} ${attributes[key] ? `--` : `--no-`}enable-dns-support`,
-					`echo ${attributes[key]} > ${getStateFilename(name)}.${key}.json`);
+					`aws ec2 modify-vpc-attribute --vpc-id ${VpcId} ${attributes[prop] ? `--` : `--no-`}enable-dns-support`,
+					`echo ${attributes[prop]} > ${getStateFilename(name)}.${prop}.json`);
 			}
 		}
 
