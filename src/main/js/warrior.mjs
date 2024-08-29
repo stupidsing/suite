@@ -16,8 +16,8 @@ let subnetClass = () => {
 		])} --vpc-id ${VpcId}' | jq .Vpc > ${stateFilename(name)}.json`,
 	];
 
-	let delete_ = (name, id) => [
-		`aws ec2 delete-vpc --subnet-id ${id}`, `rm -f ${stateFilename(name)}.json`,
+	let delete_ = (name, state) => [
+		`aws ec2 delete-vpc --subnet-id ${state.SubnetId}`, `rm -f ${stateFilename(name)}.json`,
 	];
 
 	// let findIdByName = name => `aws ec2 describe-subnets --filter Name:${name} | jq -r .Subnets[0].SubnetId`;
@@ -32,23 +32,22 @@ let subnetClass = () => {
 			attributes0 = state;
 		} else {
 			commands.push(...create(resource));
-			attributes0 = { CidrBlock: attributes['CidrBlock'] };
+			attributes0 = { CidrBlock: attributes['CidrBlock'], VpcId: attributes['VpcId'] };
 		}
 
 		let { attributes: attributes1 } = resource ?? { class_, name, attributes: {} };
-		let SubnetId = '$(' + findIdByName(name) + ')';
 
 		{
 			let key = 'CidrBlock';
 			if (attributes0[key] !== attributes1[key]) {
-				return [...delete_(name, SubnetId), ...update(resource, null)];
+				return [...delete_(name, state), ...update(resource, null)];
 			}
 		}
 
 		{
 			let key = 'VpcId';
 			if (attributes0[key] !== attributes1[key]) {
-				return [...delete_(name, SubnetId), ...update(resource, null)];
+				return [...delete_(name, state), ...update(resource, null)];
 			}
 		}
 
@@ -75,8 +74,8 @@ let vpcClass = () => {
 		])}' | jq .Vpc > ${stateFilename(name)}.json`,
 	];
 
-	let delete_ = (name, id) => [
-		`aws ec2 delete-vpc --vpc-id ${id}`, `rm -f ${stateFilename(name)}.json`,
+	let delete_ = (name, state) => [
+		`aws ec2 delete-vpc --vpc-id ${state.VpcId}`, `rm -f ${stateFilename(name)}.json`,
 	];
 
 	// let findIdByName = name => `aws ec2 describe-vpcs --filter Name:${name} | jq -r .Vpcs[0].VpcId`;
@@ -130,7 +129,7 @@ let vpcClass = () => {
 		}
 
 		if (resource == null) {
-			commands.push(...delete_(name, VpcId));
+			commands.push(...delete_(name, state));
 		}
 
 		return commands;
