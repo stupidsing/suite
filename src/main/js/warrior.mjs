@@ -20,7 +20,8 @@ let ec2Class = () => {
 	let getStateFilename_ = resource => getStateFilename(getKey(resource));
 
 	let delete_ = (state, key) => [
-		`aws ec2 terminate-instance --instance-ids ${state.InstanceId}`,
+		`aws ec2 terminate-instance\\`,
+		`  --instance-ids ${state.InstanceId}`,
 		`rm -f ${getStateFilename(key)}.json`,
 	];
 
@@ -29,11 +30,15 @@ let ec2Class = () => {
 
 		if (state == null) {
 			let { name, attributes: { InstanceType, SubnetId } } = resource;
-			commands.push(...[
-				`aws ec2 run-instances --instance-type ${InstanceType} --subnet-id ${SubnetId} --tag-specifications '${JSON.stringify([
+			commands.push(
+				`aws ec2 run-instances \\`,
+				`  --instance-type ${InstanceType} \\`,
+				`  --subnet-id ${SubnetId} \\`,
+				`  --tag-specifications '${JSON.stringify([
 					{ ResourceType: class_, Tags: [{ Key: 'Name', Value: name }] }
-				])}' | jq .Instances[0] > ${getStateFilename_(resource)}.json`,
-			]);
+				])}' \\`,
+				`  | jq .Instances[0] > ${getStateFilename_(resource)}.json`,
+			);
 			state = {};
 		}
 
@@ -44,7 +49,10 @@ let ec2Class = () => {
 		delete_,
 		getKey,
 		refresh: (resource, id) => [
-			`aws ec2 describe-instances --instance-ids ${id} | jq .Reservations[0] | .Instances[0] > ${getStateFilename_(resource)}.json`,
+			`aws ec2 describe-instances \\`,
+			`  --instance-ids ${id} \\`,
+			`  | jq '.Reservations[0] | .Instances[0]' \\`,
+			`  > ${getStateFilename_(resource)}.json`,
 		],
 		upsert,
 	};
@@ -63,7 +71,8 @@ let subnetClass = () => {
 	let getStateFilename_ = resource => getStateFilename(getKey(resource));
 
 	let delete_ = (state, key) => [
-		`aws ec2 delete-vpc --subnet-id ${state.SubnetId}`,
+		`aws ec2 delete-vpc \\`,
+		`  --subnet-id ${state.SubnetId}`,
 		`rm -f ${getStateFilename(key)}.json`,
 	];
 
@@ -72,11 +81,16 @@ let subnetClass = () => {
 
 		if (state == null) {
 			let { name, attributes: { AvailabilityZone, MapPublicIpOnLaunch, VpcId } } = resource;
-			commands.push(...[
-				`aws ec2 create-subnet --availability-zone ${AvailabilityZone} --map-public-ip-on-launch ${MapPublicIpOnLaunch} --tag-specifications '${JSON.stringify([
+			commands.push(
+				`aws ec2 create-subnet \\`,
+				`  --availability-zone ${AvailabilityZone} \\`,
+				`  --map-public-ip-on-launch ${MapPublicIpOnLaunch} \\`,
+				`  --tag-specifications '${JSON.stringify([
 					{ ResourceType: class_, Tags: [{ Key: 'Name', Value: name }] }
-				])} --vpc-id ${VpcId}' | jq .Subnet > ${getStateFilename_(resource)}.json`,
-			]);
+				])} \\`,
+				`  --vpc-id ${VpcId}' \\`,
+				`  | jq .Subnet > ${getStateFilename_(resource)}.json`,
+			);
 			state = {};
 		}
 
@@ -109,11 +123,14 @@ let vpcClass = () => {
 
 		if (state == null) {
 			let { name, attributes: { CidrBlockAssociationSet } } = resource;
-			commands.push(...[
-				`aws ec2 create-vpc --cidr-block ${CidrBlockAssociationSet[0].CidrBlock} --tag-specifications '${JSON.stringify([
+			commands.push(
+				`aws ec2 create-vpc \\`,
+				`  --cidr-block ${CidrBlockAssociationSet[0].CidrBlock} \\`,
+				`  --tag-specifications '${JSON.stringify([
 					{ ResourceType: class_, Tags: [{ Key: 'Name', Value: name }] }
-				])}' | jq .Vpc > ${getStateFilename_(resource)}.json`,
-			]);
+				])}' | \\`,
+				`  jq .Vpc > ${getStateFilename_(resource)}.json`,
+			);
 			state = { CidrBlockAssociationSet: [{ CidrBlock: attributes['CidrBlockAssociationSet'][0]['CidrBlock'] }] };
 		}
 
@@ -126,12 +143,20 @@ let vpcClass = () => {
 			let map1 = Object.fromEntries(attributes[prop].map(({ CidrBlock, AssociationId }) => [CidrBlock, AssociationId]));
 			for (let [CidrBlock, AssociationId] of Object.entries(map0)) {
 				if (!map1.hasOwnProperty(CidrBlock)) {
-					commands.push(`aws ec2 disassociate-vpc-cidr-block --vpc-id ${VpcId} --association-id ${AssociationId}`);
+					commands.push(
+						`aws ec2 disassociate-vpc-cidr-block \\`,
+						`  --association-id ${AssociationId}`,
+						`  --vpc-id ${VpcId} \\`,
+					);
 				}
 			}
 			for (let [CidrBlock, AssociationId] of Object.entries(map1)) {
 				if (!map0.hasOwnProperty(CidrBlock)) {
-					commands.push(`aws ec2 associate-vpc-cidr-block --vpc-id ${VpcId} --cidr-block ${CidrBlock}`);
+					commands.push(
+						`aws ec2 associate-vpc-cidr-block\\`,
+						`  --cidr-block ${CidrBlock}`,
+						`  --vpc-id ${VpcId}\\`,
+					);
 				}
 			}
 		}
@@ -139,7 +164,9 @@ let vpcClass = () => {
 			let prop = 'EnableDnsHostnames';
 			if (state[prop] !== attributes[prop]) {
 				commands.push(
-					`aws ec2 modify-vpc-attribute --vpc-id ${VpcId} ${attributes[prop] ? `--` : `--no-`}enable-dns-hostnames`,
+					`aws ec2 modify-vpc-attribute \\`,
+					`  --${attributes[prop] ? `` : `no-`}enable-dns-hostnames`,
+					`  --vpc-id ${VpcId} \\`,
 					`echo ${attributes[prop]} > ${getStateFilename_(resource)}.${prop}.json`);
 			}
 		}
@@ -147,7 +174,9 @@ let vpcClass = () => {
 			let prop = 'EnableDnsSupport';
 			if (state[prop] !== attributes[prop]) {
 				commands.push(
-					`aws ec2 modify-vpc-attribute --vpc-id ${VpcId} ${attributes[prop] ? `--` : `--no-`}enable-dns-support`,
+					`aws ec2 modify-vpc-attribute \\`,
+					`  --${attributes[prop] ? `` : `no-`}enable-dns-support`,
+					`  --vpc-id ${VpcId} \\`,
 					`echo ${attributes[prop]} > ${getStateFilename_(resource)}.${prop}.json`);
 			}
 		}
@@ -168,9 +197,17 @@ let vpcClass = () => {
 			} : null;
 		},
 		refresh: (resource, id) => [
-			`aws ec2 describe-vpcs --vpc-ids ${id} | jq .Vpcs[0] > ${getStateFilename_(resource)}.json`,
-			`aws ec2 describe-vpc-attribute --vpc-id ${id} --attribute enableDnsHostnames | jq -r .EnableDnsHostnames.Value > ${getStateFilename_(resource)}.EnableDnsHostnames.json`,
-			`aws ec2 describe-vpc-attribute --vpc-id ${id} --attribute enableDnsSupport | jq -r .EnableDnsSupport.Value > ${getStateFilename_(resource)}.EnableDnsSupport.json`,
+			`aws ec2 describe-vpcs \\`,
+			`  --vpc-ids ${id} \\`,
+			`  | jq .Vpcs[0] > ${getStateFilename_(resource)}.json`,
+			`aws ec2 describe-vpc-attribute \\`,
+			`  --attribute enableDnsHostnames \\`,
+			`  --vpc-id ${id} \\`,
+			`  | jq -r .EnableDnsHostnames.Value > ${getStateFilename_(resource)}.EnableDnsHostnames.json`,
+			`aws ec2 describe-vpc-attribute \\`,
+			`  --attribute enableDnsSupport \\`,
+			`  --vpc-id ${id} \\`,
+			`  | jq -r .EnableDnsSupport.Value > ${getStateFilename_(resource)}.EnableDnsSupport.json`,
 		],
 		upsert,
 	};
