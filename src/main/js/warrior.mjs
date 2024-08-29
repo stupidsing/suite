@@ -14,7 +14,7 @@ let getStateFilename = key => `${stateDir}/${key}`;
 let ec2Class = () => {
 	let class_ = 'ec2';
 
-	let getKey = ({ class_, name, attributes }) => [
+	let getKey = ({ name, attributes }) => [
 		class_,
 		name,
 		attributes['InstanceType'],
@@ -28,13 +28,22 @@ let ec2Class = () => {
 		`rm -f ${getStateFilename(key)}.json`,
 	];
 
+	let refresh = (resource, id) => [
+		`aws ec2 describe-instances \\`,
+		`  --instance-ids ${id} \\`,
+		`  | jq '.Reservations[0] | .Instances[0]' \\`,
+		`  > ${getStateFilename_(resource)}.json`,
+	];
+
 	let upsert = (state, resource) => {
+		let { attributes } = resource;
 		let commands = [];
 
 		if (state == null) {
-			let { name, attributes: { InstanceType, SubnetId } } = resource;
+			let { name, attributes: { InstanceType, SecurityGroups, SubnetId } } = resource;
 			commands.push(
 				`aws ec2 run-instances \\`,
+				(SecurityGroups ? `  --security-groups ${SecurityGroup.join(',')} \\` : ``),
 				`  --instance-type ${InstanceType} \\`,
 				`  --subnet-id ${SubnetId} \\`,
 				`  --tag-specifications '${JSON.stringify([
@@ -42,7 +51,20 @@ let ec2Class = () => {
 				])}' \\`,
 				`  | jq .Instances[0] > ${getStateFilename_(resource)}.json`,
 			);
-			state = {};
+			state = { SecurityGroups };
+		}
+
+		let InstanceId = `$(cat ${getStateFilename_(resource)}.json | jq -r .InstanceId)`;
+
+		{
+			let prop = 'SecurityGroups';
+			if (state[prop] !== attributes[prop]) {
+				commands.push(
+					`aws ec2 modify-instance-attribute \\`,
+					`  --groups ${attributes[prop].join(',')}`,
+					...refresh(resource, InstanceId),
+				);
+			}
 		}
 
 		return commands;
@@ -52,12 +74,7 @@ let ec2Class = () => {
 		class_,
 		delete_,
 		getKey,
-		refresh: (resource, id) => [
-			`aws ec2 describe-instances \\`,
-			`  --instance-ids ${id} \\`,
-			`  | jq '.Reservations[0] | .Instances[0]' \\`,
-			`  > ${getStateFilename_(resource)}.json`,
-		],
+		refresh,
 		upsert,
 	};
 };
@@ -65,7 +82,7 @@ let ec2Class = () => {
 let subnetClass = () => {
 	let class_ = 'subnet';
 
-	let getKey = ({ class_, name, attributes }) => [
+	let getKey = ({ name, attributes }) => [
 		class_,
 		name,
 		attributes['VpcId'],
@@ -116,7 +133,7 @@ let subnetClass = () => {
 let vpcClass = () => {
 	let class_ = 'vpc';
 
-	let getKey = ({ class_, name }) => [class_, name].join('_');
+	let getKey = ({ name }) => [class_, name].join('_');
 
 	let getStateFilename_ = resource => getStateFilename(getKey(resource));
 
