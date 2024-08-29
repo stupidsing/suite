@@ -2,18 +2,20 @@ import { readFileSync } from 'fs';
 
 let stateDir = '/tmp';
 
-let vpcObject = () => {
+let vpcClass = () => {
 	let stateFilename = name => `${stateDir}/${name}`;
 
-	let create = ({ name }) => [
-		`aws ec2 create-vpc --tag-specifications '${JSON.stringify([{ ResourceType: 'vpc', Tags: [{ Key: 'Name', Value: name }] }])}' | jq .Vpc > ${stateFilename(name)}.json`,
+	let create = ({ name, attributes: { CidrBlock } }) => [
+		`aws ec2 create-vpc --cidr-block ${CidrBlock} --tag-specifications '${JSON.stringify([
+			{ ResourceType: 'vpc', Tags: [{ Key: 'Name', Value: name }] }
+		])}' | jq .Vpc > ${stateFilename(name)}.json`,
 	];
 
 	let delete_ = (name, id) => [
 		`aws ec2 delete-vpc --vpc-id ${id}`, `rm -f ${stateFilename(name)}.json`,
 	];
 
-	//let findIdByName = name => `aws ec2 describe-vpcs --filter Name:${name} | jq -r .Vpcs[0].VpcId`;
+	// let findIdByName = name => `aws ec2 describe-vpcs --filter Name:${name} | jq -r .Vpcs[0].VpcId`;
 	let findIdByName = name => `cat ${stateFilename(name)}.json | jq -r .VpcId`;
 
 	return {
@@ -49,7 +51,7 @@ let vpcObject = () => {
 						commands.push(`aws ec2 disassociate-vpc-cidr-block --vpc-id ${vpcId} --association-id ${state0.CidrBlockAssociationSet.find(r => r.CidrBlock === attributes0[key]).AssociationId}`);
 					}
 					if (attributes1[key] != null) {
-						commands.push(`aws ec2 associate-vpc-cidr-block --vpc-id ${vpcId} $--cidr-block ${attributes1[key]}`);
+						commands.push(`aws ec2 associate-vpc-cidr-block --vpc-id ${vpcId} --cidr-block ${attributes1[key]}`);
 					}
 				}
 			}
@@ -83,7 +85,7 @@ let resource0 = null;
 
 let resource1 = {
 	class_: 'vpc',
-	name: 'aqt-cloud-vpc',
+	name: 'npt-cloud-vpc',
 	attributes: {
 		CidrBlock: '10.25.0.0/16',
 		EnableDnsHostnames: true,
@@ -91,7 +93,7 @@ let resource1 = {
 	},
 };
 
-let objectByClass = { vpc: vpcObject() };
+let objectByClass = { vpc: vpcClass() };
 
 let object = objectByClass[(resource0 ?? resource1).class_];
 
