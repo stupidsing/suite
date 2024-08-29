@@ -19,15 +19,6 @@ let ec2Class = () => {
 
 	let getStateFilename_ = resource => getStateFilename(getKey(resource));
 
-	let create = resource => {
-		let { name, attributes: { InstanceType, SubnetId } } = resource;
-		return [
-			`aws ec2 run-instances --instance-type ${InstanceType} --subnet-id ${SubnetId} --tag-specifications '${JSON.stringify([
-				{ ResourceType: class_, Tags: [{ Key: 'Name', Value: name }] }
-			])}' | jq .Instances[0] > ${getStateFilename_(resource)}.json`,
-		];}
-	;
-
 	let delete_ = (state, key) => [
 		`aws ec2 terminate-instance --instance-ids ${state.InstanceId}`,
 		`rm -f ${getStateFilename(key)}.json`,
@@ -37,7 +28,12 @@ let ec2Class = () => {
 		let commands = [];
 
 		if (state == null) {
-			commands.push(...create(resource));
+			let { name, attributes: { InstanceType, SubnetId } } = resource;
+			commands.push(...[
+				`aws ec2 run-instances --instance-type ${InstanceType} --subnet-id ${SubnetId} --tag-specifications '${JSON.stringify([
+					{ ResourceType: class_, Tags: [{ Key: 'Name', Value: name }] }
+				])}' | jq .Instances[0] > ${getStateFilename_(resource)}.json`,
+			]);
 			state = {};
 		}
 
@@ -66,15 +62,6 @@ let subnetClass = () => {
 
 	let getStateFilename_ = resource => getStateFilename(getKey(resource));
 
-	let create = resource => {
-		let { name, attributes: { AvailabilityZone, MapPublicIpOnLaunch, VpcId } } = resource;
-		return [
-			`aws ec2 create-subnet --availability-zone ${AvailabilityZone} --map-public-ip-on-launch ${MapPublicIpOnLaunch} --tag-specifications '${JSON.stringify([
-				{ ResourceType: class_, Tags: [{ Key: 'Name', Value: name }] }
-			])} --vpc-id ${VpcId}' | jq .Subnet > ${getStateFilename_(resource)}.json`,
-		];}
-	;
-
 	let delete_ = (state, key) => [
 		`aws ec2 delete-vpc --subnet-id ${state.SubnetId}`,
 		`rm -f ${getStateFilename(key)}.json`,
@@ -84,7 +71,12 @@ let subnetClass = () => {
 		let commands = [];
 
 		if (state == null) {
-			commands.push(...create(resource));
+			let { name, attributes: { AvailabilityZone, MapPublicIpOnLaunch, VpcId } } = resource;
+			commands.push(...[
+				`aws ec2 create-subnet --availability-zone ${AvailabilityZone} --map-public-ip-on-launch ${MapPublicIpOnLaunch} --tag-specifications '${JSON.stringify([
+					{ ResourceType: class_, Tags: [{ Key: 'Name', Value: name }] }
+				])} --vpc-id ${VpcId}' | jq .Subnet > ${getStateFilename_(resource)}.json`,
+			]);
 			state = {};
 		}
 
@@ -106,15 +98,6 @@ let vpcClass = () => {
 	let getKey = ({ name }) => name;
 	let getStateFilename_ = resource => getStateFilename(getKey(resource));
 
-	let create = resource => {
-		let { name, attributes: { CidrBlockAssociationSet } } = resource;
-		return [
-			`aws ec2 create-vpc --cidr-block ${CidrBlockAssociationSet[0].CidrBlock} --tag-specifications '${JSON.stringify([
-				{ ResourceType: class_, Tags: [{ Key: 'Name', Value: name }] }
-			])}' | jq .Vpc > ${getStateFilename_(resource)}.json`,
-		];
-	};
-
 	let delete_ = (state, key) => [
 		`aws ec2 delete-vpc --vpc-id ${state.VpcId}`,
 		`rm -f ${getStateFilename(key)}.json`,
@@ -125,7 +108,12 @@ let vpcClass = () => {
 		let commands = [];
 
 		if (state == null) {
-			commands.push(...create(resource));
+			let { name, attributes: { CidrBlockAssociationSet } } = resource;
+			commands.push(...[
+				`aws ec2 create-vpc --cidr-block ${CidrBlockAssociationSet[0].CidrBlock} --tag-specifications '${JSON.stringify([
+					{ ResourceType: class_, Tags: [{ Key: 'Name', Value: name }] }
+				])}' | jq .Vpc > ${getStateFilename_(resource)}.json`,
+			]);
 			state = { CidrBlockAssociationSet: [{ CidrBlock: attributes['CidrBlockAssociationSet'][0]['CidrBlock'] }] };
 		}
 
