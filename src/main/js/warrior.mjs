@@ -162,9 +162,9 @@ let vpc = {
 	},
 };
 
-let subnet = {
+let subnetPublic = {
 	class_: 'subnet',
-	name: 'npt-cloud-subnet',
+	name: 'npt-cloud-subnet-public',
 	attributes: {
 		AvailabilityZone: 'ap-southeast-1a',
 		MapPublicIpOnLaunch: true,
@@ -172,9 +172,19 @@ let subnet = {
 	},
 };
 
+let subnetPrivate = {
+	class_: 'subnet',
+	name: 'npt-cloud-subnet-private',
+	attributes: {
+		AvailabilityZone: 'ap-southeast-1a',
+		MapPublicIpOnLaunch: false,
+		VpcId: get(vpc, '.VpcId'),
+	},
+};
+
 let commands = [];
 
-for (let resource of [vpc, subnet]) {
+for (let resource of [vpc, subnetPublic, subnetPrivate]) {
 	let { delete_, getState, upsert } = objectByClass[resource.class_];
 	let state = getState(resource);
 	if (!resource.delete_) {
