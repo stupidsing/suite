@@ -1,11 +1,12 @@
 import { existsSync, readdirSync, readFileSync } from 'fs';
 
-let stateDir = `${process.env.HOME}/.warrior`;
+let prefix = 'npt';
+let stateDir = `.warrior`;
 
 let stateByKey;
 
 let readJsonIfExists = name => {
-	let filename = `${name}.json`;
+	let filename = name;
 	return existsSync(filename) ? JSON.parse(readFileSync(filename)) : null;
 };
 
@@ -15,8 +16,9 @@ let ec2Class = () => {
 	let class_ = 'ec2';
 
 	let getKey = ({ name, attributes }) => [
-		class_,
+		prefix,
 		name,
+		class_,
 		attributes['InstanceType'],
 	].join('_');
 
@@ -25,14 +27,14 @@ let ec2Class = () => {
 	let delete_ = (state, key) => [
 		`aws ec2 terminate-instance\\`,
 		`  --instance-ids ${state.InstanceId}`,
-		`rm -f ${getStateFilename(key)}.json`,
+		`rm -f ${getStateFilename(key)}`,
 	];
 
 	let refreshById = (resource, id) => [
 		`aws ec2 describe-instances \\`,
 		`  --instance-ids ${id} \\`,
 		`  | jq '.Reservations[0] | .Instances[0]' \\`,
-		`  > ${getStateFilename_(resource)}.json`,
+		`  > ${getStateFilename_(resource)}`,
 	];
 
 	let upsert = (state, resource) => {
@@ -49,12 +51,12 @@ let ec2Class = () => {
 				`  --tag-specifications '${JSON.stringify([
 					{ ResourceType: class_, Tags: [{ Key: 'Name', Value: name }] }
 				])}' \\`,
-				`  | jq .Instances[0] > ${getStateFilename_(resource)}.json`,
+				`  | jq .Instances[0] > ${getStateFilename_(resource)}`,
 			);
 			state = { SecurityGroups };
 		}
 
-		let InstanceId = `$(cat ${getStateFilename_(resource)}.json | jq -r .InstanceId)`;
+		let InstanceId = `$(cat ${getStateFilename_(resource)} | jq -r .InstanceId)`;
 
 		{
 			let prop = 'SecurityGroups';
@@ -84,8 +86,9 @@ let subnetClass = () => {
 	let class_ = 'subnet';
 
 	let getKey = ({ name, attributes }) => [
-		class_,
+		prefix,
 		name,
+		class_,
 		attributes['VpcId'],
 		attributes['AvailabilityZone'],
 		attributes['CidrBlock'].replaceAll('.', ':').replaceAll('/', ':'),
@@ -96,11 +99,11 @@ let subnetClass = () => {
 	let delete_ = (state, key) => [
 		`aws ec2 delete-subnet \\`,
 		`  --subnet-id ${state.SubnetId}`,
-		`rm -f ${getStateFilename(key)}.json`,
+		`rm -f ${getStateFilename(key)}`,
 	];
 
 	let refreshById = (resource, id) => [
-		`aws ec2 describe-subnets --subnet-ids ${id} | jq .Subnets[0] > ${getStateFilename_(resource)}.json`,
+		`aws ec2 describe-subnets --subnet-ids ${id} | jq .Subnets[0] > ${getStateFilename_(resource)}`,
 	];
 
 	let upsert = (state, resource) => {
@@ -117,12 +120,12 @@ let subnetClass = () => {
 					{ ResourceType: class_, Tags: [{ Key: 'Name', Value: name }] }
 				])}' \\`,
 				`  --vpc-id ${VpcId} \\`,
-				`  | jq .Subnet > ${getStateFilename_(resource)}.json`,
+				`  | jq .Subnet > ${getStateFilename_(resource)}`,
 			);
 			state = {};
 		}
 
-		let SubnetId = `$(cat ${getStateFilename_(resource)}.json | jq -r .SubnetId)`;
+		let SubnetId = `$(cat ${getStateFilename_(resource)} | jq -r .SubnetId)`;
 
 		{
 			let prop = 'MapPublicIpOnLaunch';
@@ -151,15 +154,19 @@ let subnetClass = () => {
 let vpcClass = () => {
 	let class_ = 'vpc';
 
-	let getKey = ({ name }) => [class_, name].join('_');
+	let getKey = ({ name }) => [
+		prefix,
+		name,
+		class_,
+	].join('_');
 
 	let getStateFilename_ = resource => getStateFilename(getKey(resource));
 
 	let delete_ = (state, key) => [
 		`aws ec2 delete-vpc --vpc-id ${state.VpcId}`,
-		`rm -f ${getStateFilename(key)}.json`,
-		`rm -f ${getStateFilename(key)}.EnableDnsHostnames.json`,
-		`rm -f ${getStateFilename(key)}.EnableDnsSupport.json`,
+		`rm -f ${getStateFilename(key)}`,
+		`rm -f ${getStateFilename(key)}.EnableDnsHostnames`,
+		`rm -f ${getStateFilename(key)}.EnableDnsSupport`,
 	];
 
 	let upsert = (state, resource) => {
@@ -174,7 +181,7 @@ let vpcClass = () => {
 				`  --tag-specifications '${JSON.stringify([
 					{ ResourceType: class_, Tags: [{ Key: 'Name', Value: name }] }
 				])}' | \\`,
-				`  jq .Vpc > ${getStateFilename_(resource)}.json`,
+				`  jq .Vpc > ${getStateFilename_(resource)}`,
 			);
 			state = { CidrBlockAssociationSet: [{ CidrBlock: attributes['CidrBlockAssociationSet'][0]['CidrBlock'] }] };
 		} else {
@@ -187,7 +194,7 @@ let vpcClass = () => {
 		}
 
 		// let VpcId = `$(aws ec2 describe-vpcs --filter Name:${name} | jq -r .Vpcs[0].VpcId)`;
-		let VpcId = `$(cat ${getStateFilename_(resource)}.json | jq -r .VpcId)`;
+		let VpcId = `$(cat ${getStateFilename_(resource)} | jq -r .VpcId)`;
 
 		{
 			let prop = 'CidrBlockAssociationSet';
@@ -219,7 +226,7 @@ let vpcClass = () => {
 					`aws ec2 modify-vpc-attribute \\`,
 					`  --${attributes[prop] ? `` : `no-`}enable-dns-hostnames \\`,
 					`  --vpc-id ${VpcId}`,
-					`echo ${attributes[prop]} > ${getStateFilename_(resource)}.${prop}.json`);
+					`echo ${attributes[prop]} > ${getStateFilename_(resource)}.${prop}`);
 			}
 		}
 		{
@@ -229,7 +236,7 @@ let vpcClass = () => {
 					`aws ec2 modify-vpc-attribute \\`,
 					`  --${attributes[prop] ? `` : `no-`}enable-dns-support \\`,
 					`  --vpc-id ${VpcId}`,
-					`echo ${attributes[prop]} > ${getStateFilename_(resource)}.${prop}.json`);
+					`echo ${attributes[prop]} > ${getStateFilename_(resource)}.${prop}`);
 			}
 		}
 
@@ -242,7 +249,7 @@ let vpcClass = () => {
 		getKey,
 		getState: resource => {
 			let stateFilename = getStateFilename_(resource);
-			let state = readJsonIfExists(`${stateFilename}.json`);
+			let state = readJsonIfExists(stateFilename);
 			return state ? {
 				...state,
 				EnableDnsHostnames: readJsonIfExists(`${stateFilename}.EnableDnsHostnames`),
@@ -252,15 +259,15 @@ let vpcClass = () => {
 		refresh: ({ VpcId }, resource) => [
 			`aws ec2 describe-vpcs \\`,
 			`  --vpc-ids ${VpcId} \\`,
-			`  | jq .Vpcs[0] > ${getStateFilename_(resource)}.json`,
+			`  | jq .Vpcs[0] > ${getStateFilename_(resource)}`,
 			`aws ec2 describe-vpc-attribute \\`,
 			`  --attribute enableDnsHostnames \\`,
 			`  --vpc-id ${VpcId} \\`,
-			`  | jq -r .EnableDnsHostnames.Value > ${getStateFilename_(resource)}.EnableDnsHostnames.json`,
+			`  | jq -r .EnableDnsHostnames.Value > ${getStateFilename_(resource)}.EnableDnsHostnames`,
 			`aws ec2 describe-vpc-attribute \\`,
 			`  --attribute enableDnsSupport \\`,
 			`  --vpc-id ${VpcId} \\`,
-			`  | jq -r .EnableDnsSupport.Value > ${getStateFilename_(resource)}.EnableDnsSupport.json`,
+			`  | jq -r .EnableDnsSupport.Value > ${getStateFilename_(resource)}.EnableDnsSupport`,
 		],
 		upsert,
 	};
@@ -273,13 +280,13 @@ let get = (resource, prop) => {
 	let { getKey } = objectByClass[class_];
 	let key = getKey(resource);
 	let state = stateByKey[key];
-	return state ? state[prop] : `$(cat ${getStateFilename(key)}.json | jq -r .${prop})`;
+	return state ? state[prop] : `$(cat ${getStateFilename(key)} | jq -r .${prop})`;
 };
 
 let getResources = () => {
 	let vpc = {
 		class_: 'vpc',
-		name: 'npt-cloud-vpc',
+		name: 'cloud',
 		attributes: {
 			CidrBlockAssociationSet: [{ CidrBlock: '10.88.0.0/16' }],
 			EnableDnsHostnames: true,
@@ -289,7 +296,7 @@ let getResources = () => {
 
 	let subnetPublic = {
 		class_: 'subnet',
-		name: 'npt-cloud-subnet-public',
+		name: 'public',
 		attributes: {
 			AvailabilityZone: 'ap-southeast-1a',
 			CidrBlock: '10.88.1.0/24',
@@ -300,7 +307,7 @@ let getResources = () => {
 
 	let subnetPrivate = {
 		class_: 'subnet',
-		name: 'npt-cloud-subnet-private',
+		name: 'private',
 		attributes: {
 			AvailabilityZone: 'ap-southeast-1a',
 			CidrBlock: '10.88.2.0/24',
@@ -311,7 +318,7 @@ let getResources = () => {
 
 	let ec2 = {
 		class_: 'ec2',
-		name: 'npt-cloud-ec2-0',
+		name: 'cloud-0',
 		attributes: {
 			InstanceType: 't3.nano',
 			SubnetId: get(subnetPrivate, 'SubnetId'),
@@ -327,7 +334,7 @@ let action = process.env.ACTION ?? 'up';
 if (action === 'refresh') {
 	stateFilenames.map(stateFilename => {
 		let [key] = stateFilename.split('.');
-		let [class_] = key.split('_');
+		let [prefix, name, class_] = key.split('_');
 		let state = JSON.parse(readFileSync(`${stateDir}/${stateFilename}`));
 		let { refresh } = objectByClass[class_];
 		commands.push(refresh(state, resource));
@@ -351,7 +358,7 @@ let resourceByKey = Object.fromEntries(resources.map(resource => {
 let commands = [];
 
 for (let [key, resource] of Object.entries(resourceByKey)) {
-	let [class_, name] = key.split('_');
+	let [prefix, name, class_] = key.split('_');
 	let { upsert } = objectByClass[class_];
 	let state = stateByKey[key];
 	commands.push(
@@ -361,7 +368,7 @@ for (let [key, resource] of Object.entries(resourceByKey)) {
 }
 
 for (let [key, state] of Object.entries(stateByKey)) {
-	let [class_, name] = key.split('_');
+	let [prefix, name, class_] = key.split('_');
 	let { delete_ } = objectByClass[class_];
 	let resource = resourceByKey[key];
 	if (resource == null) {
