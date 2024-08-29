@@ -102,14 +102,14 @@ let subnetClass = () => {
 	];
 
 	let upsert = (state, resource) => {
+		let { attributes } = resource;
 		let commands = [];
 
 		if (state == null) {
-			let { name, attributes: { AvailabilityZone, MapPublicIpOnLaunch, VpcId } } = resource;
+			let { name, attributes: { AvailabilityZone, VpcId } } = resource;
 			commands.push(
 				`aws ec2 create-subnet \\`,
 				`  --availability-zone ${AvailabilityZone} \\`,
-				`  --map-public-ip-on-launch ${MapPublicIpOnLaunch} \\`,
 				`  --tag-specifications '${JSON.stringify([
 					{ ResourceType: class_, Tags: [{ Key: 'Name', Value: name }] }
 				])}' \\`,
@@ -117,6 +117,19 @@ let subnetClass = () => {
 				`  | jq .Subnet > ${getStateFilename_(resource)}.json`,
 			);
 			state = {};
+		}
+
+		let SubnetId = `$(cat ${getStateFilename_(resource)}.json | jq -r .SubnetId)`;
+
+		{
+			let prop = 'MapPublicIpOnLaunch';
+			if (state[prop] !== attributes[prop]) {
+				commands.push(
+					`aws ec2 modify-subnet-attribute \\`,
+					`  --${attributes[prop] ? `` : `no-`}map-public-ip-on-launch \\`,
+					`  --subnet-id ${SubnetId}`,
+					`echo ${attributes[prop]} > ${getStateFilename_(resource)}.${prop}.json`);
+			}
 		}
 
 		return commands;
