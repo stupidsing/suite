@@ -5,12 +5,12 @@ let stateDir = '/tmp';
 let vpcObject = () => {
 	let stateFilename = name => `${stateDir}/${name}`;
 
-	let create = resource => [
-		`aws ec2 create-vpc --tag-specifications '${JSON.stringify([{ ResourceType: 'vpc', Tags: [{ Key: 'Name', Value: resource.name }] }])}' | jq .Vpc | cat > ${stateFilename(resource.name)}.json`
+	let create = ({ name }) => [
+		`aws ec2 create-vpc --tag-specifications '${JSON.stringify([{ ResourceType: 'vpc', Tags: [{ Key: 'Name', Value: name }] }])}' | jq .Vpc > ${stateFilename(name)}.json`,
 	];
 
 	let delete_ = (name, id) => [
-		`aws ec2 delete-vpc --vpc-id ${id}`, `rm -f ${stateFilename(name)}.json`
+		`aws ec2 delete-vpc --vpc-id ${id}`, `rm -f ${stateFilename(name)}.json`,
 	];
 
 	//let findIdByName = name => `aws ec2 describe-vpcs --filter Name:${name} | jq -r .Vpcs[0].VpcId`;
@@ -21,9 +21,9 @@ let vpcObject = () => {
 		delete_,
 		findIdByName,
 		refresh: (name, id) => [
-			`aws ec2 describe-vpcs --vpc-ids ${id} | jq .Vpcs[0] | tee ${stateFilename(name)}.json`,
-			`aws ec2 describe-vpc-attribute --vpc-id ${id} --attribute enableDnsHostnames | jq -r .EnableDnsHostnames.Value | tee ${stateFilename(name)}.EnableDnsHostnames.json`,
-			`aws ec2 describe-vpc-attribute --vpc-id ${id} --attribute enableDnsSupport | jq -r .EnableDnsSupport.Value | tee ${stateFilename(name)}.EnableDnsSupport.json`,
+			`aws ec2 describe-vpcs --vpc-ids ${id} | jq .Vpcs[0] > ${stateFilename(name)}.json`,
+			`aws ec2 describe-vpc-attribute --vpc-id ${id} --attribute enableDnsHostnames | jq -r .EnableDnsHostnames.Value > ${stateFilename(name)}.EnableDnsHostnames.json`,
+			`aws ec2 describe-vpc-attribute --vpc-id ${id} --attribute enableDnsSupport | jq -r .EnableDnsSupport.Value > ${stateFilename(name)}.EnableDnsSupport.json`,
 		],
 		update: (resource0, resource1) => {
 			let { class_, name } = resource0 ?? resource1;
@@ -56,13 +56,17 @@ let vpcObject = () => {
 			{
 				let key = 'EnableDnsHostnames';
 				if (attributes0[key] !== attributes1[key]) {
-					commands.push(`aws ec2 modify-vpc-attribute --vpc-id ${vpcId} ${attributes1[key] ? `--` : `--no-`}enable-dns-hostnames`);
+					commands.push(
+						`aws ec2 modify-vpc-attribute --vpc-id ${vpcId} ${attributes1[key] ? `--` : `--no-`}enable-dns-hostnames`,
+						`echo ${attributes1[key]} > ${stateFilename(name)}.EnableDnsHostnames.json`);
 				}
 			}
 			{
 				let key = 'EnableDnsSupport';
 				if (attributes0[key] !== attributes1[key]) {
-					commands.push(`aws ec2 modify-vpc-attribute --vpc-id ${vpcId} ${attributes1[key] ? `--` : `--no-`}enable-dns-support`);
+					commands.push(
+						`aws ec2 modify-vpc-attribute --vpc-id ${vpcId} ${attributes1[key] ? `--` : `--no-`}enable-dns-support`,
+						`echo ${attributes1[key]} > ${stateFilename(name)}.EnableDnsSupport.json`);
 				}
 			}
 
@@ -91,6 +95,4 @@ let objectByClass = { vpc: vpcObject() };
 
 let object = objectByClass[(resource0 ?? resource1).class_];
 
-let commands = object.update(resource0, resource1);
-
-console.log(commands.join('\n'));
+console.log(object.update(resource0, resource1).join('\n'));
