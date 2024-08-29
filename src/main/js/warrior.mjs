@@ -43,7 +43,7 @@ let ec2Class = () => {
 			let { name, attributes: { InstanceType, SecurityGroups, SubnetId } } = resource;
 			commands.push(
 				`aws ec2 run-instances \\`,
-				(SecurityGroups ? `  --security-groups ${SecurityGroup.join(',')} \\` : ``),
+				...(SecurityGroups ? [`  --security-groups ${SecurityGroup.join(',')} \\`] : []),
 				`  --instance-type ${InstanceType} \\`,
 				`  --subnet-id ${SubnetId} \\`,
 				`  --tag-specifications '${JSON.stringify([
@@ -191,8 +191,8 @@ let vpcClass = () => {
 			if (state[prop] !== attributes[prop]) {
 				commands.push(
 					`aws ec2 modify-vpc-attribute \\`,
-					`  --${attributes[prop] ? `` : `no-`}enable-dns-hostnames`,
-					`  --vpc-id ${VpcId} \\`,
+					`  --${attributes[prop] ? `` : `no-`}enable-dns-hostnames \\`,
+					`  --vpc-id ${VpcId}`,
 					`echo ${attributes[prop]} > ${getStateFilename_(resource)}.${prop}.json`);
 			}
 		}
@@ -201,8 +201,8 @@ let vpcClass = () => {
 			if (state[prop] !== attributes[prop]) {
 				commands.push(
 					`aws ec2 modify-vpc-attribute \\`,
-					`  --${attributes[prop] ? `` : `no-`}enable-dns-support`,
-					`  --vpc-id ${VpcId} \\`,
+					`  --${attributes[prop] ? `` : `no-`}enable-dns-support \\`,
+					`  --vpc-id ${VpcId}`,
 					`echo ${attributes[prop]} > ${getStateFilename_(resource)}.${prop}.json`);
 			}
 		}
