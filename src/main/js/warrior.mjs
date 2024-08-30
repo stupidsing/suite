@@ -36,10 +36,10 @@ let instanceClass = () => {
 		`rm -f ${getStateFilename(key)}`,
 	];
 
-	let refreshById = (resource, id) => [
+	let refreshById = (key, id) => [
 		`aws ec2 describe-instances \\`,
 		`  --instance-ids ${id} \\`,
-		`  | jq .Reservations[0].Instances[0] | tee ${getStateFilename_(resource)}`,
+		`  | jq .Reservations[0].Instances[0] | tee ${getStateFilename(key)}`,
 	];
 
 	let upsert = (state, resource) => {
@@ -71,7 +71,7 @@ let instanceClass = () => {
 					`aws ec2 modify-instance-attribute \\`,
 					`  --groups ${attributes[prop].join(',')} \\`,
 					`  --instance-id ${InstanceId}`,
-					...refreshById(resource, InstanceId),
+					...refreshById(getKey(resource), InstanceId),
 				);
 			}
 		}
@@ -83,7 +83,7 @@ let instanceClass = () => {
 		class_,
 		delete_,
 		getKey,
-		refresh: ({ InstanceId }, resource) => refreshById(resource, InstanceId),
+		refresh: ({ InstanceId }, key) => refreshById(key, InstanceId),
 		upsert,
 	};
 };
@@ -108,10 +108,10 @@ let subnetClass = () => {
 		`rm -f ${getStateFilename(key)}`,
 	];
 
-	let refreshById = (resource, id) => [
+	let refreshById = (key, id) => [
 		`aws ec2 describe-subnets \\`,
 		`  --subnet-ids ${id} \\`,
-		`  | jq .Subnets[0] | tee ${getStateFilename_(resource)}`,
+		`  | jq .Subnets[0] | tee ${getStateFilename(key)}`,
 	];
 
 	let upsert = (state, resource) => {
@@ -142,7 +142,7 @@ let subnetClass = () => {
 					`aws ec2 modify-subnet-attribute \\`,
 					`  --${attributes[prop] ? `` : `no-`}map-public-ip-on-launch \\`,
 					`  --subnet-id ${SubnetId}`,
-					...refreshById(resource, SubnetId),
+					...refreshById(getKey(resource), SubnetId),
 				);
 			}
 		}
@@ -154,7 +154,7 @@ let subnetClass = () => {
 		class_,
 		delete_,
 		getKey,
-		refresh: ({ SubnetId }, resource) => refresh(resource, SubnetId),
+		refresh: ({ SubnetId }, key) => refreshById(key, SubnetId),
 		upsert,
 	};
 };
@@ -248,18 +248,18 @@ let vpcClass = () => {
 		class_,
 		delete_,
 		getKey,
-		refresh: ({ VpcId }, resource) => [
+		refresh: ({ VpcId }, key) => [
 			`aws ec2 describe-vpcs \\`,
 			`  --vpc-ids ${VpcId} \\`,
-			`  | jq .Vpcs[0] | tee ${getStateFilename_(resource)}`,
+			`  | jq .Vpcs[0] | tee ${getStateFilename(key)}`,
 			`aws ec2 describe-vpc-attribute \\`,
 			`  --attribute enableDnsHostnames \\`,
 			`  --vpc-id ${VpcId} \\`,
-			`  | jq -r .EnableDnsHostnames.Value | tee ${getStateFilename_(resource)}.EnableDnsHostnames`,
+			`  | jq -r .EnableDnsHostnames.Value | tee ${getStateFilename(key)}.EnableDnsHostnames`,
 			`aws ec2 describe-vpc-attribute \\`,
 			`  --attribute enableDnsSupport \\`,
 			`  --vpc-id ${VpcId} \\`,
-			`  | jq -r .EnableDnsSupport.Value | tee ${getStateFilename_(resource)}.EnableDnsSupport`,
+			`  | jq -r .EnableDnsSupport.Value | tee ${getStateFilename(key)}.EnableDnsSupport`,
 		],
 		upsert,
 	};
@@ -347,29 +347,31 @@ let commands = [];
 
 if (action === 'refresh') {
 	for (let [key, state] of Object.entries(stateByKey)) {
-		commands.push(refresh(state, resourceByKey[key]));
+	let [prefix, class_, name] = key.split('_');
+		let { refresh } = objectByClass[class_];
+		commands.push(...refresh(state, key));
 	}
-}
-
-for (let [key, resource] of Object.entries(resourceByKey)) {
-	let [prefix, class_, name] = key.split('_');
-	let { upsert } = objectByClass[class_];
-	let state = stateByKey[key];
-	commands.push(
-		'',
-		`# ${state ? 'update' : 'create'} ${name}`,
-		...upsert(state, resource));
-}
-
-for (let [key, state] of Object.entries(stateByKey)) {
-	let [prefix, class_, name] = key.split('_');
-	let { delete_ } = objectByClass[class_];
-	let resource = resourceByKey[key];
-	if (resource == null) {
+} else {
+	for (let [key, resource] of Object.entries(resourceByKey)) {
+		let [prefix, class_, name] = key.split('_');
+		let { upsert } = objectByClass[class_];
+		let state = stateByKey[key];
 		commands.push(
 			'',
-			`# delete ${name}`,
-			...delete_(state, key));
+			`# ${state ? 'update' : 'create'} ${name}`,
+			...upsert(state, resource));
+	}
+
+	for (let [key, state] of Object.entries(stateByKey)) {
+		let [prefix, class_, name] = key.split('_');
+		let { delete_ } = objectByClass[class_];
+		let resource = resourceByKey[key];
+		if (resource == null) {
+			commands.push(
+				'',
+				`# delete ${name}`,
+				...delete_(state, key));
+		}
 	}
 }
 
