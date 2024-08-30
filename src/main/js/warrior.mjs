@@ -49,7 +49,7 @@ let ec2Class = () => {
 				`  --instance-type ${InstanceType} \\`,
 				`  --subnet-id ${SubnetId} \\`,
 				`  --tag-specifications '${JSON.stringify([
-					{ ResourceType: class_, Tags: [{ Key: 'Name', Value: name }] }
+					{ ResourceType: class_, Tags: [{ Key: 'Name', Value: `${prefix}-${name}` }] },
 				])}' \\`,
 				`  | jq .Instances[0] > ${getStateFilename_(resource)}`,
 			);
@@ -117,7 +117,7 @@ let subnetClass = () => {
 				`  --availability-zone ${AvailabilityZone} \\`,
 				...(CidrBlock ? [`  --cidr-block ${CidrBlock} \\`] : []),
 				`  --tag-specifications '${JSON.stringify([
-					{ ResourceType: class_, Tags: [{ Key: 'Name', Value: name }] }
+					{ ResourceType: class_, Tags: [{ Key: 'Name', Value: `${prefix}-${name}` }] },
 				])}' \\`,
 				`  --vpc-id ${VpcId} \\`,
 				`  | jq .Subnet > ${getStateFilename_(resource)}`,
@@ -179,7 +179,7 @@ let vpcClass = () => {
 				`aws ec2 create-vpc \\`,
 				`  --cidr-block ${CidrBlockAssociationSet[0].CidrBlock} \\`,
 				`  --tag-specifications '${JSON.stringify([
-					{ ResourceType: class_, Tags: [{ Key: 'Name', Value: name }] }
+					{ ResourceType: class_, Tags: [{ Key: 'Name', Value: `${prefix}-${name}` }] },
 				])}' | \\`,
 				`  jq .Vpc > ${getStateFilename_(resource)}`,
 			);
@@ -341,11 +341,14 @@ if (action === 'refresh') {
 	});
 }
 
-stateByKey = Object.fromEntries(stateFilenames.map(stateFilename => {
-	let [key] = stateFilename.split('.');
+stateByKey = {};
+
+for (let stateFilename of stateFilenames) {
+	let [key, subKey] = stateFilename.split('.');
 	let state = JSON.parse(readFileSync(`${stateDir}/${stateFilename}`));
-	return [key, state];
-}));
+	if (subKey) state = { [subKey]: state };
+	stateByKey[key] = { ...stateByKey[key] ?? {}, ...state };
+}
 
 let resources = action === 'up' ? getResources() : [];
 
