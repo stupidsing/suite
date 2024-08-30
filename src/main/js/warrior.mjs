@@ -7,34 +7,38 @@ let stateByKey;
 
 let readJsonIfExists = name => {
 	let filename = name;
-	return existsSync(filename) ? JSON.parse(readFileSync(filename)) : null;
+	if (existsSync(filename)) {
+		let text = readFileSync(filename, 'ascii');
+		return text ? JSON.parse(text) : null;
+	} else {
+		return null;
+	}
 };
 
 let getStateFilename = key => `${stateDir}/${key}`;
 
-let ec2Class = () => {
-	let class_ = 'ec2';
+let instanceClass = () => {
+	let class_ = 'instance';
 
 	let getKey = ({ name, attributes }) => [
 		prefix,
-		name,
 		class_,
+		name,
 		attributes['InstanceType'],
 	].join('_');
 
 	let getStateFilename_ = resource => getStateFilename(getKey(resource));
 
 	let delete_ = (state, key) => [
-		`aws ec2 terminate-instance\\`,
-		`  --instance-ids ${state.InstanceId}`,
+		`aws ec2 terminate-instance \\`,
+		`  --instance-ids ${state.InstanceId} \\`,
 		`rm -f ${getStateFilename(key)}`,
 	];
 
 	let refreshById = (resource, id) => [
 		`aws ec2 describe-instances \\`,
 		`  --instance-ids ${id} \\`,
-		`  | jq '.Reservations[0] | .Instances[0]' \\`,
-		`  > ${getStateFilename_(resource)}`,
+		`  | jq .Reservations[0].Instances[0] | tee ${getStateFilename_(resource)}`,
 	];
 
 	let upsert = (state, resource) => {
@@ -42,16 +46,17 @@ let ec2Class = () => {
 		let commands = [];
 
 		if (state == null) {
-			let { name, attributes: { InstanceType, SecurityGroups, SubnetId } } = resource;
+			let { name, attributes: { ImageId, InstanceType, SecurityGroups, SubnetId } } = resource;
 			commands.push(
 				`aws ec2 run-instances \\`,
 				...(SecurityGroups ? [`  --security-groups ${SecurityGroup.join(',')} \\`] : []),
+				`  --image-id ${ImageId} \\`,
 				`  --instance-type ${InstanceType} \\`,
 				`  --subnet-id ${SubnetId} \\`,
 				`  --tag-specifications '${JSON.stringify([
-					{ ResourceType: class_, Tags: [{ Key: 'Name', Value: `${prefix}-${name}` }] },
+					{ ResourceType: 'instance', Tags: [{ Key: 'Name', Value: `${prefix}-${name}` }] },
 				])}' \\`,
-				`  | jq .Instances[0] > ${getStateFilename_(resource)}`,
+				`  | jq .Instances[0] | tee ${getStateFilename_(resource)}`,
 			);
 			state = { SecurityGroups };
 		}
@@ -87,8 +92,8 @@ let subnetClass = () => {
 
 	let getKey = ({ name, attributes }) => [
 		prefix,
-		name,
 		class_,
+		name,
 		attributes['VpcId'],
 		attributes['AvailabilityZone'],
 		attributes['CidrBlock'].replaceAll('.', ':').replaceAll('/', ':'),
@@ -103,7 +108,9 @@ let subnetClass = () => {
 	];
 
 	let refreshById = (resource, id) => [
-		`aws ec2 describe-subnets --subnet-ids ${id} | jq .Subnets[0] > ${getStateFilename_(resource)}`,
+		`aws ec2 describe-subnets \\`,
+		`  --subnet-ids ${id} \\`,
+		`  | jq .Subnets[0] | tee ${getStateFilename_(resource)}`,
 	];
 
 	let upsert = (state, resource) => {
@@ -120,7 +127,7 @@ let subnetClass = () => {
 					{ ResourceType: class_, Tags: [{ Key: 'Name', Value: `${prefix}-${name}` }] },
 				])}' \\`,
 				`  --vpc-id ${VpcId} \\`,
-				`  | jq .Subnet > ${getStateFilename_(resource)}`,
+				`  | jq .Subnet | tee ${getStateFilename_(resource)}`,
 			);
 			state = {};
 		}
@@ -156,8 +163,8 @@ let vpcClass = () => {
 
 	let getKey = ({ name }) => [
 		prefix,
-		name,
 		class_,
+		name,
 	].join('_');
 
 	let getStateFilename_ = resource => getStateFilename(getKey(resource));
@@ -181,16 +188,9 @@ let vpcClass = () => {
 				`  --tag-specifications '${JSON.stringify([
 					{ ResourceType: class_, Tags: [{ Key: 'Name', Value: `${prefix}-${name}` }] },
 				])}' | \\`,
-				`  jq .Vpc > ${getStateFilename_(resource)}`,
+				`  jq .Vpc | tee ${getStateFilename_(resource)}`,
 			);
 			state = { CidrBlockAssociationSet: [{ CidrBlock: attributes['CidrBlockAssociationSet'][0]['CidrBlock'] }] };
-		} else {
-			let stateFilename = getStateFilename_(resource);
-			state = {
-				...state,
-				EnableDnsHostnames: readJsonIfExists(`${stateFilename}.EnableDnsHostnames`),
-				EnableDnsSupport: readJsonIfExists(`${stateFilename}.EnableDnsSupport`),
-			};
 		}
 
 		// let VpcId = `$(aws ec2 describe-vpcs --filter Name:${name} | jq -r .Vpcs[0].VpcId)`;
@@ -226,7 +226,7 @@ let vpcClass = () => {
 					`aws ec2 modify-vpc-attribute \\`,
 					`  --${attributes[prop] ? `` : `no-`}enable-dns-hostnames \\`,
 					`  --vpc-id ${VpcId}`,
-					`echo ${attributes[prop]} > ${getStateFilename_(resource)}.${prop}`);
+					`echo ${attributes[prop]} | tee ${getStateFilename_(resource)}.${prop}`);
 			}
 		}
 		{
@@ -236,7 +236,7 @@ let vpcClass = () => {
 					`aws ec2 modify-vpc-attribute \\`,
 					`  --${attributes[prop] ? `` : `no-`}enable-dns-support \\`,
 					`  --vpc-id ${VpcId}`,
-					`echo ${attributes[prop]} > ${getStateFilename_(resource)}.${prop}`);
+					`echo ${attributes[prop]} | tee ${getStateFilename_(resource)}.${prop}`);
 			}
 		}
 
@@ -247,33 +247,24 @@ let vpcClass = () => {
 		class_,
 		delete_,
 		getKey,
-		getState: resource => {
-			let stateFilename = getStateFilename_(resource);
-			let state = readJsonIfExists(stateFilename);
-			return state ? {
-				...state,
-				EnableDnsHostnames: readJsonIfExists(`${stateFilename}.EnableDnsHostnames`),
-				EnableDnsSupport: readJsonIfExists(`${stateFilename}.EnableDnsSupport`),
-			} : null;
-		},
 		refresh: ({ VpcId }, resource) => [
 			`aws ec2 describe-vpcs \\`,
 			`  --vpc-ids ${VpcId} \\`,
-			`  | jq .Vpcs[0] > ${getStateFilename_(resource)}`,
+			`  | jq .Vpcs[0] | tee ${getStateFilename_(resource)}`,
 			`aws ec2 describe-vpc-attribute \\`,
 			`  --attribute enableDnsHostnames \\`,
 			`  --vpc-id ${VpcId} \\`,
-			`  | jq -r .EnableDnsHostnames.Value > ${getStateFilename_(resource)}.EnableDnsHostnames`,
+			`  | jq -r .EnableDnsHostnames.Value | tee ${getStateFilename_(resource)}.EnableDnsHostnames`,
 			`aws ec2 describe-vpc-attribute \\`,
 			`  --attribute enableDnsSupport \\`,
 			`  --vpc-id ${VpcId} \\`,
-			`  | jq -r .EnableDnsSupport.Value > ${getStateFilename_(resource)}.EnableDnsSupport`,
+			`  | jq -r .EnableDnsSupport.Value | tee ${getStateFilename_(resource)}.EnableDnsSupport`,
 		],
 		upsert,
 	};
 };
 
-let objectByClass = Object.fromEntries([ec2Class(), subnetClass(), vpcClass()].map(c => [c.class_, c]));
+let objectByClass = Object.fromEntries([instanceClass(), subnetClass(), vpcClass()].map(c => [c.class_, c]));
 
 let get = (resource, prop) => {
 	let { class_ } = resource;
@@ -316,16 +307,17 @@ let getResources = () => {
 		},
 	};
 
-	let ec2 = {
-		class_: 'ec2',
-		name: 'cloud-0',
+	let instance = {
+		class_: 'instance',
+		name: 'app-0',
 		attributes: {
+			ImageId: 'ami-05d6d0aae066c8d93', // aws ssm get-parameter --name /aws/service/canonical/ubuntu/server/24.04/stable/current/amd64/hvm/ebs-gp3/ami-id | jq -r .Parameter.Value
 			InstanceType: 't3.nano',
 			SubnetId: get(subnetPrivate, 'SubnetId'),
 		},
 	};
 
-	return [vpc, subnetPublic, subnetPrivate, ec2];
+	return [vpc, subnetPublic, subnetPrivate, instance];
 };
 
 let stateFilenames = readdirSync(stateDir);
@@ -334,10 +326,10 @@ let action = process.env.ACTION ?? 'up';
 if (action === 'refresh') {
 	stateFilenames.map(stateFilename => {
 		let [key] = stateFilename.split('.');
-		let [prefix, name, class_] = key.split('_');
-		let state = JSON.parse(readFileSync(`${stateDir}/${stateFilename}`));
+		let [prefix, class_, name] = key.split('_');
 		let { refresh } = objectByClass[class_];
-		commands.push(refresh(state, resource));
+		let state = readJsonIfExists(`${stateDir}/${stateFilename}`);
+		if (state) commands.push(refresh(state, resource));
 	});
 }
 
@@ -345,9 +337,11 @@ stateByKey = {};
 
 for (let stateFilename of stateFilenames) {
 	let [key, subKey] = stateFilename.split('.');
-	let state = JSON.parse(readFileSync(`${stateDir}/${stateFilename}`));
-	if (subKey) state = { [subKey]: state };
-	stateByKey[key] = { ...stateByKey[key] ?? {}, ...state };
+	let state = readJsonIfExists(`${stateDir}/${stateFilename}`);
+	if (state) {
+		if (subKey) state = { [subKey]: state };
+		stateByKey[key] = { ...stateByKey[key] ?? {}, ...state };
+	}
 }
 
 let resources = action === 'up' ? getResources() : [];
@@ -361,7 +355,7 @@ let resourceByKey = Object.fromEntries(resources.map(resource => {
 let commands = [];
 
 for (let [key, resource] of Object.entries(resourceByKey)) {
-	let [prefix, name, class_] = key.split('_');
+	let [prefix, class_, name] = key.split('_');
 	let { upsert } = objectByClass[class_];
 	let state = stateByKey[key];
 	commands.push(
@@ -371,7 +365,7 @@ for (let [key, resource] of Object.entries(resourceByKey)) {
 }
 
 for (let [key, state] of Object.entries(stateByKey)) {
-	let [prefix, name, class_] = key.split('_');
+	let [prefix, class_, name] = key.split('_');
 	let { delete_ } = objectByClass[class_];
 	let resource = resourceByKey[key];
 	if (resource == null) {
