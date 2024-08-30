@@ -34,7 +34,7 @@ save_tp() {
 	echo export M2_HOME=${M2_HOME}
 	echo export NODE_HOME=${NODE_HOME}
 	echo
-	echo PATH='${AWS_DIST}:${GCLOUD_HOME}/bin:${GH_HOME}/bin:${GIT_HD:9}/bin:${GOROOT}/bin:${GRADLE_HOME}/bin:${JAVA_HOME}/bin:${M2_HOME}/bin:${NODE_HOME}/bin:${PATH}'
+	echo PATH=${AWS_DIST}:${GCLOUD_HOME}/bin:${GH_HOME}/bin:${GIT_HD:9}/bin:${GOROOT}/bin:${GRADLE_HOME}/bin:${JAVA_HOME}/bin:${M2_HOME}/bin:${NODE_HOME}/bin:${PATH}
 }
 
 tp_android_avdmanager() {
