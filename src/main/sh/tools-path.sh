@@ -19,7 +19,9 @@ JAVA_HOME=$(cchs "curl -sL https://jdk.java.net/22/" "grep https://download.java
 M2_HOME=$(cchs "echo https://dlcdn.apache.org/maven/maven-3/'${MAVEN_V}'/binaries/apache-maven-'${MAVEN_V}'-bin.tar.gz" @curl @tar-zxf @dir)
 NODE_HOME=$(cchs "echo https://nodejs.org/dist/v'${NODE_V}'/node-v'${NODE_V}'-linux-x64.tar.xz" @curl @tar-xf @dir)
 TERMINATOR_HOME=$(cchs "echo https://github.com/gnome-terminator/terminator.git" @git-clone "@git-cd pwd")
-PATH=${AWS_DIST}:${GH_HOME}/bin:${GIT_HD:9}/bin:${GOROOT}/bin:${GRADLE_HOME}/bin:${JAVA_HOME}/bin:${M2_HOME}/bin:${NODE_HOME}/bin:${PATH}
+
+PATH0=${PATH}
+PATH=${AWS_DIST}:${GH_HOME}/bin:${GIT_HD:9}/bin:${GOROOT}/bin:${GRADLE_HOME}/bin:${JAVA_HOME}/bin:${M2_HOME}/bin:${NODE_HOME}/bin:${PATH0}
 
 save_tp() {
 	echo "# save into ~/.bashrc"
@@ -34,7 +36,7 @@ save_tp() {
 	echo export M2_HOME=${M2_HOME}
 	echo export NODE_HOME=${NODE_HOME}
 	echo
-	echo PATH=${AWS_DIST}:${GCLOUD_HOME}/bin:${GH_HOME}/bin:${GIT_HD:9}/bin:${GOROOT}/bin:${GRADLE_HOME}/bin:${JAVA_HOME}/bin:${M2_HOME}/bin:${NODE_HOME}/bin:${PATH}
+	echo PATH=\${AWS_DIST}:\${GCLOUD_HOME}/bin:\${GH_HOME}/bin:\${GIT_HD:9}/bin:\${GOROOT}/bin:\${GRADLE_HOME}/bin:\${JAVA_HOME}/bin:\${M2_HOME}/bin:\${NODE_HOME}/bin:${PATH0}
 }
 
 tp_android_avdmanager() {
