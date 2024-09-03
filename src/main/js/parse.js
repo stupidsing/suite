@@ -116,7 +116,6 @@ let lexerModule = () => {
 
 		let i = pos;
 		let tokenss = [];
-		let cont = true;
 
 		while (i < s.length) (function() {
 			let ch = s.charCodeAt(i);
