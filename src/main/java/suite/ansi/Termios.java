@@ -3,6 +3,7 @@ package suite.ansi;
 import java.io.Closeable;
 
 import primal.Nouns.Buffer;
+import primal.primitive.adt.pair.IntIntPair;
 import suite.streamlet.ReadChars;
 
 public class Termios implements Closeable {
@@ -74,6 +75,16 @@ public class Termios implements Closeable {
 		puts(esc + "[38;5;" + (16 + b + g * 6 + r * 36) + "m");
 	}
 
+	public IntIntPair getSize() {
+		var bs = new byte[4];
+		if (libc.ioctl(1, 0x5413, bs) == 0) {
+			var nRows = (Byte.toUnsignedInt(bs[0]) << 0) + (Byte.toUnsignedInt(bs[1]) << 8);
+			var nCols = (Byte.toUnsignedInt(bs[2]) << 0) + (Byte.toUnsignedInt(bs[3]) << 8);
+			return IntIntPair.of(nRows, nCols);
+		} else
+			return null;
+	}
+
 	public void gotoxy(int x, int y) {
 		puts(esc + "[" + (y + 1) + ";" + (x + 1) + "H");
 	}
@@ -95,6 +106,10 @@ public class Termios implements Closeable {
 	public void scroll(int row0, int row1, int dir) {
 		puts(esc + "[" + row0 + ";" + row1 + "r");
 		scroll_(dir);
+	}
+
+	public void putc(char ch) {
+		libc.putchar(ch);
 	}
 
 	public void puts(String s) {
