@@ -109,6 +109,60 @@ public class TermEditorMain {
 				}
 			};
 
+			var c = new Object() {
+				private void delete() {
+					var line = lines.get(o.cursory);
+					lines.put(o.cursory, line.substring(0, o.cursorx) + line.substring(o.cursorx + 1));
+					o.redrawRow(o.cursory - o.basey);
+					o.setCursor();
+				}
+
+				private void end() {
+					var line = lines.get(o.cursory);
+					o.gotoCursor(line != null ? line.length() : 0, o.cursory);
+				}
+
+				private void moveCursor(int dx, int dy) {
+					o.moveCursor(dx, dy);
+				}
+
+				private void insert(char ch) {
+					var line = lines.get(o.cursory);
+					lines.put(o.cursory, line.substring(0, o.cursorx) + ch + line.substring(o.cursorx));
+					o.redrawRow(o.cursory - o.basey);
+					o.moveCursor(1, 0);
+				}
+
+				private void pageDown() {
+					if (o.basey == o.cursory) {
+						o.cursory = o.basey + (nRows - 1);
+						o.setCursor();
+					} else {
+						if (o.basey + (nRows - 1) == o.cursory) {
+							o.basey = Math.min(nLines_, o.basey + nRows);
+							o.cursory = o.basey + (nRows - 1);
+						} else
+							o.basey = o.cursory;
+						o.redraw();
+					}
+
+				}
+
+				private void pageUp() {
+					if (o.basey + (nRows - 1) == o.cursory) {
+						o.cursory = o.basey;
+						o.setCursor();
+					} else {
+						if (o.basey == o.cursory) {
+							o.basey = Math.max(0, o.basey - nRows);
+							o.cursory = o.basey;
+						} else
+							o.basey = Math.max(0, o.cursory - (nRows - 1));
+						o.redraw();
+					}
+
+				}
+			};
 			o.redraw();
 
 			Handle handle = //
@@ -117,57 +171,22 @@ public class TermEditorMain {
 									Map.entry(91, new Handle(Map.ofEntries( //
 											Map.entry(51, new Handle(Map.ofEntries( //
 													Map.entry(126, new Handle(Map.ofEntries( //
-													), ch -> { // delete
-														var line = lines.get(o.cursory);
-														lines.put(o.cursory,
-																line.substring(0, o.cursorx) + line.substring(o.cursorx + 1));
-														o.redrawRow(o.cursory - o.basey);
-														o.setCursor();
-													})) //
+													), ch -> c.delete())) //
 											), ch -> {
 											})), //
 											Map.entry(53, new Handle(Map.ofEntries( //
-													Map.entry(126, new Handle(Map.ofEntries( // page up
-													), ch -> {
-														if (o.basey + (nRows - 1) == o.cursory) {
-															o.cursory = o.basey;
-															o.setCursor();
-														} else {
-															if (o.basey == o.cursory) {
-																o.basey = Math.max(0, o.basey - nRows);
-																o.cursory = o.basey;
-															} else
-																o.basey = Math.max(0, o.cursory - (nRows - 1));
-															o.redraw();
-														}
-													})) //
+													Map.entry(126, new Handle(ch -> c.pageUp())) //
 											), ch -> {
 											})), //
 											Map.entry(54, new Handle(Map.ofEntries( //
-													Map.entry(126, new Handle(Map.ofEntries( // page down
-													), ch -> {
-														if (o.basey == o.cursory) {
-															o.cursory = o.basey + (nRows - 1);
-															o.setCursor();
-														} else {
-															if (o.basey + (nRows - 1) == o.cursory) {
-																o.basey = Math.min(nLines_, o.basey + nRows);
-																o.cursory = o.basey + (nRows - 1);
-															} else
-																o.basey = o.cursory;
-															o.redraw();
-														}
-													})) //
+													Map.entry(126, new Handle(ch -> c.pageDown())) //
 											), ch -> {
 											})), //
-											Map.entry(65, new Handle(ch -> o.moveCursor(0, -1))), // up
-											Map.entry(66, new Handle(ch -> o.moveCursor(0, +1))), // down
-											Map.entry(67, new Handle(ch -> o.moveCursor(+1, 0))), // right
-											Map.entry(68, new Handle(ch -> o.moveCursor(-1, 0))), // left
-											Map.entry(70, new Handle(ch -> { // end
-												var line = lines.get(o.cursory);
-												o.gotoCursor(line != null ? line.length() : 0, o.cursory);
-											})), //
+											Map.entry(65, new Handle(ch -> c.moveCursor(0, -1))), // up
+											Map.entry(66, new Handle(ch -> c.moveCursor(0, +1))), // down
+											Map.entry(67, new Handle(ch -> c.moveCursor(+1, 0))), // right
+											Map.entry(68, new Handle(ch -> c.moveCursor(-1, 0))), // left
+											Map.entry(70, new Handle(ch -> c.end())), //
 											Map.entry(72, new Handle(ch -> o.gotoCursor(0, o.cursory))) // home
 									), ch -> {
 									})) //
@@ -182,12 +201,8 @@ public class TermEditorMain {
 								}
 							})) //
 					), ch -> {
-						if (32 <= ch && ch < 127) {
-							var line = lines.get(o.cursory);
-							lines.put(o.cursory, line.substring(0, o.cursorx) + ((char) (int) ch) + line.substring(o.cursorx));
-							o.redrawRow(o.cursory - o.basey);
-							o.moveCursor(1, 0);
-						}
+						if (32 <= ch && ch < 127)
+							c.insert((char) (int) ch);
 					});
 
 			Handle handle_ = handle;
