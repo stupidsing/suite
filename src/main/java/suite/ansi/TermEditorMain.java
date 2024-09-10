@@ -1,6 +1,8 @@
 package suite.ansi;
 
+import java.util.ArrayDeque;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,23 +20,23 @@ public class TermEditorMain {
 		new TermEditorMain().run();
 	}
 
-	private static class Handle {
-		private Map<Integer, Handle> map;
-		private Sink<Integer> sink;
+	private record Action(int x0, int x1, int y, String oldString, String newString) {
+	}
 
-		private Handle(Map<Integer, Handle> map) {
-			this.map = map;
-			this.sink = ch -> {
-			};
+	private record Handle( //
+			Map<Integer, Handle> map, //
+			Sink<Integer> sink) {
+		private static Handle of(Map<Integer, Handle> map) {
+			return of(map, ch -> {
+			});
 		}
 
-		private Handle(Sink<Integer> sink) {
-			this(Collections.emptyMap(), sink);
+		private static Handle of(Sink<Integer> sink) {
+			return of(Collections.emptyMap(), sink);
 		}
 
-		private Handle(Map<Integer, Handle> map, Sink<Integer> sink) {
-			this.map = map;
-			this.sink = sink;
+		private static Handle of(Map<Integer, Handle> map, Sink<Integer> sink) {
+			return new Handle(map, sink);
 		}
 	}
 
@@ -58,6 +60,7 @@ public class TermEditorMain {
 			var o = new Object() {
 				private int basex = 0, basey = 0;
 				private int cursorx = 0, cursory = 0;
+				private boolean cont = true;
 
 				private void moveCursor(int dx, int dy) {
 					int x1 = Math.max(0, cursorx + dx);
@@ -123,10 +126,31 @@ public class TermEditorMain {
 				}
 			};
 
+			var a = new Object() {
+				private Deque<Action> actions = new ArrayDeque<>();
+
+				private void splice(int x0, int x1, int y, String newString) {
+					var line = lines.get(y);
+					String oldString = line.substring(x0, x1);
+					lines.put(y, line.substring(0, x0) + newString + line.substring(x1));
+					actions.push(new Action(x0, x1, y, oldString, newString));
+				}
+
+				private void undo() {
+					if (0 < actions.size()) {
+						var action = actions.pop();
+						var line = lines.get(action.y);
+						var l = line.substring(0, action.x0);
+						var r = line.substring(action.x0 + action.newString.length());
+						lines.put(action.y, l + action.oldString + r);
+						o.redrawRow(action.y - o.basey);
+					}
+				}
+			};
+
 			var c = new Object() {
 				private void delete() {
-					var line = lines.get(o.cursory);
-					lines.put(o.cursory, line.substring(0, o.cursorx) + line.substring(o.cursorx + 1));
+					a.splice(o.cursorx, o.cursorx + 1, o.cursory, "");
 					o.redrawRow(o.cursory - o.basey);
 					o.setCursor();
 				}
@@ -141,8 +165,7 @@ public class TermEditorMain {
 				}
 
 				private void insert(char ch) {
-					var line = lines.get(o.cursory);
-					lines.put(o.cursory, line.substring(0, o.cursorx) + ch + line.substring(o.cursorx));
+					a.splice(o.cursorx, o.cursorx, o.cursory, String.valueOf(ch));
 					o.redrawRow(o.cursory - o.basey);
 					o.moveCursor(1, 0);
 				}
@@ -179,33 +202,31 @@ public class TermEditorMain {
 			o.redraw();
 
 			Handle handle = //
-					new Handle(Map.ofEntries( //
-							Map.entry(27, new Handle(Map.ofEntries( //
-									Map.entry(91, new Handle(Map.ofEntries( //
-											Map.entry(51, new Handle(Map.ofEntries( //
-													Map.entry(126, new Handle(ch -> c.delete())) //
-											), ch -> {
-											})), //
-											Map.entry(53, new Handle(Map.ofEntries( //
-													Map.entry(126, new Handle(ch -> c.pageUp())) //
-											), ch -> {
-											})), //
-											Map.entry(54, new Handle(Map.ofEntries( //
-													Map.entry(126, new Handle(ch -> c.pageDown())) //
-											), ch -> {
-											})), //
-											Map.entry(65, new Handle(ch -> c.moveCursor(0, -1))), // up
-											Map.entry(66, new Handle(ch -> c.moveCursor(0, +1))), // down
-											Map.entry(67, new Handle(ch -> c.moveCursor(+1, 0))), // right
-											Map.entry(68, new Handle(ch -> c.moveCursor(-1, 0))), // left
-											Map.entry(70, new Handle(ch -> c.end())), //
-											Map.entry(72, new Handle(ch -> o.gotoCursor(0, o.cursory))) // home
+					Handle.of(Map.ofEntries( //
+							Map.entry(24, Handle.of(ch -> o.cont = false)), //
+							Map.entry(26, Handle.of(ch -> a.undo())), //
+							Map.entry(27, Handle.of(Map.ofEntries( //
+									Map.entry(91, Handle.of(Map.ofEntries( //
+											Map.entry(51, Handle.of(Map.ofEntries( //
+													Map.entry(126, Handle.of(ch -> c.delete())) //
+											))), //
+											Map.entry(53, Handle.of(Map.ofEntries( //
+													Map.entry(126, Handle.of(ch -> c.pageUp())) //
+											))), //
+											Map.entry(54, Handle.of(Map.ofEntries( //
+													Map.entry(126, Handle.of(ch -> c.pageDown())) //
+											))), //
+											Map.entry(65, Handle.of(ch -> c.moveCursor(0, -1))), // up
+											Map.entry(66, Handle.of(ch -> c.moveCursor(0, +1))), // down
+											Map.entry(67, Handle.of(ch -> c.moveCursor(+1, 0))), // right
+											Map.entry(68, Handle.of(ch -> c.moveCursor(-1, 0))), // left
+											Map.entry(70, Handle.of(ch -> c.end())), //
+											Map.entry(72, Handle.of(ch -> o.gotoCursor(0, o.cursory))) // home
 									))) //
 							))), //
-							Map.entry(127, new Handle(ch -> { // backspace
+							Map.entry(127, Handle.of(ch -> { // backspace
 								if (0 < o.cursorx) {
-									var line = lines.get(o.cursory);
-									lines.put(o.cursory, line.substring(0, o.cursorx - 1) + line.substring(o.cursorx));
+									a.splice(o.cursorx - 1, o.cursorx, o.cursory, "");
 									o.redrawRow(o.cursory - o.basey);
 									o.moveCursor(-1, 0);
 								}
@@ -217,7 +238,7 @@ public class TermEditorMain {
 
 			Handle handle_ = handle;
 
-			while (true) {
+			while (o.cont) {
 				var ch = libc.getchar();
 
 				handle_.sink.f(ch);
@@ -230,11 +251,6 @@ public class TermEditorMain {
 					handle_.sink.f(ch);
 					handle_ = handle;
 				}
-
-				if (ch == 'q')
-					break;
-				else
-					;
 			}
 		}
 	}
