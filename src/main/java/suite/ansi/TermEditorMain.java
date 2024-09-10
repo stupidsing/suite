@@ -22,6 +22,12 @@ public class TermEditorMain {
 		private Map<Integer, Handle> map;
 		private Sink<Integer> sink;
 
+		private Handle(Map<Integer, Handle> map) {
+			this.map = map;
+			this.sink = ch -> {
+			};
+		}
+
 		private Handle(Sink<Integer> sink) {
 			this(Collections.emptyMap(), sink);
 		}
@@ -54,7 +60,7 @@ public class TermEditorMain {
 				private int cursorx = 0, cursory = 0;
 
 				private void moveCursor(int dx, int dy) {
-					int x1 = Math.max(0, Math.min(132, cursorx + dx));
+					int x1 = Math.max(0, cursorx + dx);
 					int y1 = Math.max(0, Math.min(nLines_, cursory + dy));
 					if (x1 < basex) {
 						basex = x1;
@@ -98,6 +104,14 @@ public class TermEditorMain {
 				private void gotoCursor(int cx, int cy) {
 					cursorx = cx;
 					cursory = cy;
+					if (cx < basex) {
+						basex = cx;
+						redraw();
+					}
+					if (cy < basey) {
+						basey = cy;
+						redraw();
+					}
 					setCursor();
 				}
 
@@ -145,7 +159,6 @@ public class TermEditorMain {
 							o.basey = o.cursory;
 						o.redraw();
 					}
-
 				}
 
 				private void pageUp() {
@@ -170,8 +183,7 @@ public class TermEditorMain {
 							Map.entry(27, new Handle(Map.ofEntries( //
 									Map.entry(91, new Handle(Map.ofEntries( //
 											Map.entry(51, new Handle(Map.ofEntries( //
-													Map.entry(126, new Handle(Map.ofEntries( //
-													), ch -> c.delete())) //
+													Map.entry(126, new Handle(ch -> c.delete())) //
 											), ch -> {
 											})), //
 											Map.entry(53, new Handle(Map.ofEntries( //
@@ -188,10 +200,8 @@ public class TermEditorMain {
 											Map.entry(68, new Handle(ch -> c.moveCursor(-1, 0))), // left
 											Map.entry(70, new Handle(ch -> c.end())), //
 											Map.entry(72, new Handle(ch -> o.gotoCursor(0, o.cursory))) // home
-									), ch -> {
-									})) //
-							), ch -> {
-							})), //
+									))) //
+							))), //
 							Map.entry(127, new Handle(ch -> { // backspace
 								if (0 < o.cursorx) {
 									var line = lines.get(o.cursory);
