@@ -135,21 +135,19 @@ public class TermEditorMain {
 				}
 
 				private void redraw() {
-					for (var r = 0; r < nRows; r++)
-						redrawRow(r);
+					for (var y = basey; y < basey + nRows; y++)
+						redrawLine(y);
 
 					setCursor();
 				}
 
-				private void redrawRow(int r) {
-					var y_ = r + basey;
-					var line = f.getLine(y_);
+				private void redrawLine(int y) {
+					var line = f.getLine(y);
 
-					termios.gotoxy(0, r);
+					termios.gotoxy(0, y - basey);
 
-					for (var c = 0; c < nCols; c++) {
-						var x_ = c + basex;
-						var ch = 0 <= x_ && x_ < line.length() ? line.charAt(x_) : ' ';
+					for (var x = basex; x < basex + nCols; x++) {
+						var ch = 0 <= x && x < line.length() ? line.charAt(x) : ' ';
 						termios.putc(ch != 9 ? ch : ' ');
 					}
 				}
@@ -186,7 +184,7 @@ public class TermEditorMain {
 					var r = line.substring(action.x1);
 					f.putLine(action.y, l + action.newString + r);
 					d.gotoCursor(action.x0 + action.newString.length(), action.y);
-					d.redrawRow(action.y - d.basey);
+					d.redrawLine(action.y);
 				}
 
 				private void undo() {
@@ -199,7 +197,7 @@ public class TermEditorMain {
 						var r = line.substring(action.x0 + action.newString.length());
 						f.putLine(action.y, l + action.oldString + r);
 						d.gotoCursor(action.x1, action.y);
-						d.redrawRow(action.y - d.basey);
+						d.redrawLine(action.y);
 					}
 				}
 			};
