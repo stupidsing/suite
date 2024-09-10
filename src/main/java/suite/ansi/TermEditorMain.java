@@ -76,17 +76,23 @@ public class TermEditorMain {
 						throw new RuntimeException(ex);
 					}
 				}
-			};
 
-			f.load();
+				private String getLine(int y) {
+					return y < nLines ? lines.get(y) : "";
+				}
+
+				private void putLine(int y, String line) {
+					while (nLines <= y)
+						lines.put(nLines++, "");
+					lines.put(y, line);
+				}
+			};
 
 			var size = termios.getSize();
 			var nCols = size.t1;
 			var nRows = size.t0;
 
-			termios.clear();
-
-			var o = new Object() {
+			var d = new Object() {
 				private int basex = 0, basey = 0;
 				private int cursorx = 0, cursory = 0;
 				private boolean cont = true;
@@ -137,7 +143,7 @@ public class TermEditorMain {
 
 				private void redrawRow(int r) {
 					var y_ = r + basey;
-					var line = y_ < f.lines.size() ? f.lines.get(y_) : "";
+					var line = f.getLine(y_);
 
 					termios.gotoxy(0, r);
 
@@ -157,96 +163,113 @@ public class TermEditorMain {
 			};
 
 			var a = new Object() {
-				private Deque<Action> actions = new ArrayDeque<>();
+				private Deque<Action> redos = new ArrayDeque<>();
+				private Deque<Action> undos = new ArrayDeque<>();
+
+				private void redo() {
+					if (0 < redos.size())
+						do_(redos.pop());
+				}
 
 				private void splice(int x0, int x1, int y, String newString) {
-					var line = f.lines.get(y);
-					String oldString = line.substring(x0, x1);
-					f.lines.put(y, line.substring(0, x0) + newString + line.substring(x1));
-					actions.push(new Action(x0, x1, y, oldString, newString));
+					var line = f.getLine(y);
+					var oldString = line.substring(x0, x1);
+					var action = new Action(x0, x1, y, oldString, newString);
+					do_(action);
+					redos.clear();
+					undos.push(action);
+				}
+
+				private void do_(Action action) {
+					var line = f.getLine(action.y);
+					var l = line.substring(0, action.x0);
+					var r = line.substring(action.x1);
+					f.putLine(action.y, l + action.newString + r);
+					d.gotoCursor(action.x0 + action.newString.length(), action.y);
+					d.redrawRow(action.y - d.basey);
 				}
 
 				private void undo() {
-					if (0 < actions.size()) {
-						var action = actions.pop();
-						var line = f.lines.get(action.y);
+					if (0 < undos.size()) {
+						var action = undos.pop();
+						redos.push(action);
+
+						var line = f.getLine(action.y);
 						var l = line.substring(0, action.x0);
 						var r = line.substring(action.x0 + action.newString.length());
-						f.lines.put(action.y, l + action.oldString + r);
-						o.redrawRow(action.y - o.basey);
+						f.putLine(action.y, l + action.oldString + r);
+						d.gotoCursor(action.x1, action.y);
+						d.redrawRow(action.y - d.basey);
 					}
 				}
 			};
 
 			var c = new Object() {
 				private void backspace() {
-					if (0 < o.cursorx) {
-						a.splice(o.cursorx - 1, o.cursorx, o.cursory, "");
-						o.redrawRow(o.cursory - o.basey);
-						o.moveCursor(-1, 0);
-					}
+					if (0 < d.cursorx)
+						a.splice(d.cursorx - 1, d.cursorx, d.cursory, "");
 				}
 
 				private void delete() {
-					a.splice(o.cursorx, o.cursorx + 1, o.cursory, "");
-					o.redrawRow(o.cursory - o.basey);
-					o.setCursor();
+					a.splice(d.cursorx, d.cursorx + 1, d.cursory, "");
 				}
 
 				private void end() {
-					var line = f.lines.get(o.cursory);
-					o.gotoCursor(line != null ? line.length() : 0, o.cursory);
+					var line = f.getLine(d.cursory);
+					d.gotoCursor(line != null ? line.length() : 0, d.cursory);
 				}
 
 				private void home() {
-					o.gotoCursor(0, o.cursory);
+					d.gotoCursor(0, d.cursory);
 				}
 
 				private void insert(char ch) {
-					a.splice(o.cursorx, o.cursorx, o.cursory, String.valueOf(ch));
-					o.redrawRow(o.cursory - o.basey);
-					o.moveCursor(1, 0);
+					a.splice(d.cursorx, d.cursorx, d.cursory, String.valueOf(ch));
 				}
 
 				private void moveCursor(int dx, int dy) {
-					o.moveCursor(dx, dy);
+					d.moveCursor(dx, dy);
 				}
 
 				private void pageDown() {
-					if (o.basey == o.cursory) {
-						o.cursory = o.basey + (nRows - 1);
-						o.setCursor();
+					if (d.basey == d.cursory) {
+						d.cursory = d.basey + (nRows - 1);
+						d.setCursor();
 					} else {
-						if (o.basey + (nRows - 1) == o.cursory) {
-							o.basey = Math.min(f.nLines, o.basey + nRows);
-							o.cursory = o.basey + (nRows - 1);
+						if (d.basey + (nRows - 1) == d.cursory) {
+							d.basey = Math.min(f.nLines, d.basey + nRows);
+							d.cursory = d.basey + (nRows - 1);
 						} else
-							o.basey = o.cursory;
-						o.redraw();
+							d.basey = d.cursory;
+						d.redraw();
 					}
 				}
 
 				private void pageUp() {
-					if (o.basey + (nRows - 1) == o.cursory) {
-						o.cursory = o.basey;
-						o.setCursor();
+					if (d.basey + (nRows - 1) == d.cursory) {
+						d.cursory = d.basey;
+						d.setCursor();
 					} else {
-						if (o.basey == o.cursory) {
-							o.basey = Math.max(0, o.basey - nRows);
-							o.cursory = o.basey;
+						if (d.basey == d.cursory) {
+							d.basey = Math.max(0, d.basey - nRows);
+							d.cursory = d.basey;
 						} else
-							o.basey = Math.max(0, o.cursory - (nRows - 1));
-						o.redraw();
+							d.basey = Math.max(0, d.cursory - (nRows - 1));
+						d.redraw();
 					}
 
 				}
 			};
-			o.redraw();
+
+			f.load();
+			termios.clear();
+			d.redraw();
 
 			Handle handle = //
 					Handle.of(Map.ofEntries( //
 							Map.entry(19, Handle.of(ch -> f.save())), //
-							Map.entry(24, Handle.of(ch -> o.cont = false)), //
+							Map.entry(24, Handle.of(ch -> d.cont = false)), //
+							Map.entry(25, Handle.of(ch -> a.redo())), //
 							Map.entry(26, Handle.of(ch -> a.undo())), //
 							Map.entry(27, Handle.of(Map.ofEntries( //
 									Map.entry(91, Handle.of(Map.ofEntries( //
@@ -275,7 +298,7 @@ public class TermEditorMain {
 
 			Handle handle_ = handle;
 
-			while (o.cont) {
+			while (d.cont) {
 				var ch = libc.getchar();
 
 				handle_.sink.f(ch);
