@@ -266,11 +266,34 @@ public class TermEditorMain {
 			Handle handle = //
 					Handle.of(Map.ofEntries( //
 							Map.entry(19, Handle.of(ch -> f.save())), //
-							Map.entry(24, Handle.of(ch -> d.cont = false)), //
+							Map.entry(24, Handle.of(ch -> {
+								if (f.isSaved())
+									d.cont = false;
+								else
+									d.cont = false;
+							})), //
 							Map.entry(25, Handle.of(ch -> a.redo())), //
 							Map.entry(26, Handle.of(ch -> a.undo())), //
 							Map.entry(27, Handle.of(Map.ofEntries( //
 									Map.entry(91, Handle.of(Map.ofEntries( //
+											Map.entry(49, Handle.of(Map.ofEntries( //
+													Map.entry(59, Handle.of(Map.ofEntries( //
+															Map.entry(50, Handle.of(Map.ofEntries( //
+																	Map.entry(65, Handle.of(ch -> c.moveCursor(0, -1))), // shift up
+																	Map.entry(66, Handle.of(ch -> c.moveCursor(0, +1))), // shift
+																															// down
+																	Map.entry(67, Handle.of(ch -> c.moveCursor(+1, 0))), // shift
+																															// right
+																	Map.entry(68, Handle.of(ch -> c.moveCursor(-1, 0))) // shift
+																														// left
+															))), //
+															Map.entry(53, Handle.of(Map.ofEntries( //
+																	Map.entry(70, Handle.of(ch -> d.gotoCursor(f.nLines, 0))), // ctrl
+																																// end
+																	Map.entry(72, Handle.of(ch -> d.gotoCursor(0, 0))) // ctrl home
+															))) //
+													))) //
+											))), //
 											Map.entry(51, Handle.of(Map.ofEntries( //
 													Map.entry(126, Handle.of(ch -> c.delete())) //
 											))), //
