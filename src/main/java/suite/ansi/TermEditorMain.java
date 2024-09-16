@@ -288,6 +288,13 @@ public class TermEditorMain {
 																														// left
 															))), //
 															Map.entry(53, Handle.of(Map.ofEntries( //
+																	Map.entry(65, Handle.of(ch -> c.moveCursor(0, -1))), // ctrl up
+																	Map.entry(66, Handle.of(ch -> c.moveCursor(0, +1))), // ctrl
+																															// down
+																	Map.entry(67, Handle.of(ch -> c.moveCursor(+1, 0))), // ctrl
+																															// right
+																	Map.entry(68, Handle.of(ch -> c.moveCursor(-1, 0))), // ctrl
+																															// left
 																	Map.entry(70, Handle.of(ch -> d.gotoCursor(f.nLines, 0))), // ctrl
 																																// end
 																	Map.entry(72, Handle.of(ch -> d.gotoCursor(0, 0))) // ctrl home
