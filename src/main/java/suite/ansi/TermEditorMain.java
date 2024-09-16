@@ -51,6 +51,7 @@ public class TermEditorMain {
 			var f = new Object() {
 				private Map<Integer, String> lines;
 				private int nLines;
+				private int editHash, fileHash;
 
 				private void load() {
 					var text = filename_ != null ? ReadString.from(filename_) : "";
@@ -60,6 +61,8 @@ public class TermEditorMain {
 
 					for (var line : text.split("\n"))
 						lines.put(nLines++, line);
+
+					editHash = fileHash = 0;
 				}
 
 				private void save() {
@@ -75,6 +78,8 @@ public class TermEditorMain {
 					} catch (IOException ex) {
 						throw new RuntimeException(ex);
 					}
+
+					fileHash = editHash;
 				}
 
 				private String getLine(int y) {
@@ -86,11 +91,16 @@ public class TermEditorMain {
 						lines.put(nLines++, "");
 					lines.put(y, line);
 				}
+
+				private boolean isSaved() {
+					return editHash == fileHash;
+				}
 			};
 
 			var size = termios.getSize();
 			var nCols = size.t1;
-			var nRows = size.t0;
+			var nRows = size.t0 - 1;
+			var statusRow = size.t0;
 
 			var d = new Object() {
 				private int basex = 0, basey = 0;
@@ -183,6 +193,7 @@ public class TermEditorMain {
 					var l = line.substring(0, action.x0);
 					var r = line.substring(action.x1);
 					f.putLine(action.y, l + action.newString + r);
+					f.editHash = Integer.rotateLeft(f.editHash, 3) + action.hashCode();
 					d.gotoCursor(action.x0 + action.newString.length(), action.y);
 					d.redrawLine(action.y);
 				}
@@ -195,6 +206,7 @@ public class TermEditorMain {
 						var line = f.getLine(action.y);
 						var l = line.substring(0, action.x0);
 						var r = line.substring(action.x0 + action.newString.length());
+						f.editHash = Integer.rotateRight(f.editHash - action.hashCode(), 3);
 						f.putLine(action.y, l + action.oldString + r);
 						d.gotoCursor(action.x1, action.y);
 						d.redrawLine(action.y);
@@ -269,8 +281,12 @@ public class TermEditorMain {
 							Map.entry(24, Handle.of(ch -> {
 								if (f.isSaved())
 									d.cont = false;
-								else
-									d.cont = false;
+								else {
+									termios.gotoxy(0, statusRow);
+									termios.puts("file not saved");
+									if (libc.getchar() == '!')
+										d.cont = false;
+								}
 							})), //
 							Map.entry(25, Handle.of(ch -> a.redo())), //
 							Map.entry(26, Handle.of(ch -> a.undo())), //
