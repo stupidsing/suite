@@ -182,6 +182,14 @@ public class TermEditorMain {
 					undos.push(action);
 				}
 
+				private void undo() {
+					if (0 < undos.size()) {
+						var action = undos.pop();
+						redos.push(action);
+						undo_(action);
+					}
+				}
+
 				private void do_(Action action) {
 					var line = f.getLine(action.y);
 					var l = line.substring(0, action.x0);
@@ -192,19 +200,14 @@ public class TermEditorMain {
 					d.redrawLine(action.y);
 				}
 
-				private void undo() {
-					if (0 < undos.size()) {
-						var action = undos.pop();
-						redos.push(action);
-
-						var line = f.getLine(action.y);
-						var l = line.substring(0, action.x0);
-						var r = line.substring(action.x0 + action.newString.length());
-						f.editHash = Integer.rotateRight(f.editHash - action.hashCode(), 3);
-						f.putLine(action.y, l + action.oldString + r);
-						d.gotoCursor(action.x1, action.y);
-						d.redrawLine(action.y);
-					}
+				private void undo_(Action action) {
+					var line = f.getLine(action.y);
+					var l = line.substring(0, action.x0);
+					var r = line.substring(action.x0 + action.newString.length());
+					f.editHash = Integer.rotateRight(f.editHash - action.hashCode(), 3);
+					f.putLine(action.y, l + action.oldString + r);
+					d.gotoCursor(action.x1, action.y);
+					d.redrawLine(action.y);
 				}
 			};
 
