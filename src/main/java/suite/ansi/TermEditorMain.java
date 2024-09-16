@@ -9,6 +9,7 @@ import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Predicate;
 
 import com.sun.jna.Native;
 
@@ -111,36 +112,29 @@ public class TermEditorMain {
 					int x1 = Math.max(0, cursorx + dx);
 					int y1 = Math.max(0, Math.min(f.nLines, cursory + dy));
 
-					if (x1 < basex) {
-						basex = x1 - 8;
-						redraw();
-					} else if (basex < x1 - (nCols - 1)) {
-						basex = x1 - (nCols - 1) + 8;
-						redraw();
-					}
-
-					if (y1 < basey) {
-						basey = y1 - 8;
-						redraw();
-					} else if (basey < y1 - (nRows - 1)) {
-						basey = y1 - (nRows - 1) + 8;
-						redraw();
-					}
-
 					gotoCursor(x1, y1);
 				}
 
 				private void gotoCursor(int cx, int cy) {
 					cursorx = cx;
 					cursory = cy;
+
 					if (cx < basex) {
-						basex = cx;
+						basex = cx - 8;
+						redraw();
+					} else if (basex < cx - (nCols - 1)) {
+						basex = cx - (nCols - 1) + 8;
 						redraw();
 					}
+
 					if (cy < basey) {
-						basey = cy;
+						basey = cy - 8;
+						redraw();
+					} else if (basey < cy - (nRows - 1)) {
+						basey = cy - (nRows - 1) + 8;
 						redraw();
 					}
+
 					setCursor();
 				}
 
@@ -241,6 +235,28 @@ public class TermEditorMain {
 					d.moveCursor(dx, dy);
 				}
 
+				private void moveWord(int dx) {
+					var y = d.cursory;
+					var line = f.getLine(y);
+					var x = d.cursorx + dx;
+					if (x < 0)
+						if (0 < y)
+							d.gotoCursor(f.getLine(y - 1).length(), y - 1);
+						else
+							;
+					else if (line.length() <= x)
+						d.gotoCursor(0, y + 1);
+					else {
+						Predicate<Character> pred = ch -> false //
+								|| ('0' <= ch && ch <= '9') //
+								|| ('A' <= ch && ch <= 'Z') //
+								|| ('a' <= ch && ch <= 'z');
+						while (0 <= x && x < line.length() && pred.test(line.charAt(x)))
+							x += dx;
+						d.gotoCursor(x, y);
+					}
+				}
+
 				private void pageDown() {
 					if (d.basey == d.cursory) {
 						d.cursory = d.basey + (nRows - 1);
@@ -307,10 +323,8 @@ public class TermEditorMain {
 																	Map.entry(65, Handle.of(ch -> c.moveCursor(0, -1))), // ctrl up
 																	Map.entry(66, Handle.of(ch -> c.moveCursor(0, +1))), // ctrl
 																															// down
-																	Map.entry(67, Handle.of(ch -> c.moveCursor(+1, 0))), // ctrl
-																															// right
-																	Map.entry(68, Handle.of(ch -> c.moveCursor(-1, 0))), // ctrl
-																															// left
+																	Map.entry(67, Handle.of(ch -> c.moveWord(+1))), // ctrl right
+																	Map.entry(68, Handle.of(ch -> c.moveWord(-1))), // ctrl left
 																	Map.entry(70, Handle.of(ch -> d.gotoCursor(f.nLines, 0))), // ctrl
 																																// end
 																	Map.entry(72, Handle.of(ch -> d.gotoCursor(0, 0))) // ctrl home
