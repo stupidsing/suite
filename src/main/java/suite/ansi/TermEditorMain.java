@@ -236,9 +236,9 @@ public class TermEditorMain {
 				}
 
 				private void moveWord(int dx) {
+					var x = d.cursorx + dx;
 					var y = d.cursory;
 					var line = f.getLine(y);
-					var x = d.cursorx + dx;
 					if (x < 0)
 						if (0 < y)
 							d.gotoCursor(f.getLine(y - 1).length(), y - 1);
@@ -248,9 +248,9 @@ public class TermEditorMain {
 						d.gotoCursor(0, y + 1);
 					else {
 						Predicate<Character> pred = ch -> false //
-								|| ('0' <= ch && ch <= '9') //
-								|| ('A' <= ch && ch <= 'Z') //
-								|| ('a' <= ch && ch <= 'z');
+								|| '0' <= ch && ch <= '9' //
+								|| 'A' <= ch && ch <= 'Z' //
+								|| 'a' <= ch && ch <= 'z';
 						while (0 <= x && x < line.length() && pred.test(line.charAt(x)))
 							x += dx;
 						d.gotoCursor(x, y);
