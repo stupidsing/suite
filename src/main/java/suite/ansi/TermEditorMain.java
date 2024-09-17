@@ -103,10 +103,15 @@ public class TermEditorMain {
 			var nRows = size.t0 - 1;
 			var statusRow = size.t0;
 
-			var d = new Object() {
+			var d = new Object() { // display
 				private int basex = 0, basey = 0;
 				private int cursorx = 0, cursory = 0;
-				private boolean cont = true;
+
+				private void scroll(int dy) {
+					basey = Math.max(0, basey + dy);
+					cursory = Math.min(basey + nRows - 1, Math.max(basey, cursory));
+					redraw();
+				}
 
 				private void moveCursor(int dx, int dy) {
 					int x1 = Math.max(0, cursorx + dx);
@@ -164,7 +169,7 @@ public class TermEditorMain {
 				}
 			};
 
-			var a = new Object() {
+			var a = new Object() { // actions
 				private Deque<Action> redos = new ArrayDeque<>();
 				private Deque<Action> undos = new ArrayDeque<>();
 
@@ -211,7 +216,9 @@ public class TermEditorMain {
 				}
 			};
 
-			var c = new Object() {
+			var c = new Object() { // commands
+				private boolean cont = true;
+
 				private void backspace() {
 					if (0 < d.cursorx)
 						a.splice(d.cursorx - 1, d.cursorx, d.cursory, "");
@@ -286,7 +293,19 @@ public class TermEditorMain {
 							d.basey = Math.max(0, d.cursory - (nRows - 1));
 						d.redraw();
 					}
+				}
 
+				private void quit() {
+					if (f.isSaved())
+						cont = false;
+					else {
+						termios.gotoxy(0, statusRow);
+						termios.puts("file not saved. do you really want to quit (y/n)");
+						if (libc.getchar() != 'y')
+							d.setCursor();
+						else
+							cont = false;
+					}
 				}
 			};
 
@@ -297,16 +316,7 @@ public class TermEditorMain {
 			Handle handle = //
 					Handle.of(Map.ofEntries( //
 							Map.entry(19, Handle.of(ch -> f.save())), //
-							Map.entry(24, Handle.of(ch -> {
-								if (f.isSaved())
-									d.cont = false;
-								else {
-									termios.gotoxy(0, statusRow);
-									termios.puts("file not saved");
-									if (libc.getchar() == '!')
-										d.cont = false;
-								}
-							})), //
+							Map.entry(24, Handle.of(ch -> c.quit())), //
 							Map.entry(25, Handle.of(ch -> a.redo())), //
 							Map.entry(26, Handle.of(ch -> a.undo())), //
 							Map.entry(27, Handle.of(Map.ofEntries( //
@@ -323,9 +333,8 @@ public class TermEditorMain {
 																														// left
 															))), //
 															Map.entry(53, Handle.of(Map.ofEntries( //
-																	Map.entry(65, Handle.of(ch -> c.moveCursor(0, -1))), // ctrl up
-																	Map.entry(66, Handle.of(ch -> c.moveCursor(0, +1))), // ctrl
-																															// down
+																	Map.entry(65, Handle.of(ch -> d.scroll(-9))), // ctrl up
+																	Map.entry(66, Handle.of(ch -> d.scroll(+9))), // ctrl down
 																	Map.entry(67, Handle.of(ch -> c.moveWord(+1))), // ctrl right
 																	Map.entry(68, Handle.of(ch -> c.moveWord(-1))), // ctrl left
 																	Map.entry(70, Handle.of(ch -> d.gotoCursor(f.nLines, 0))), // ctrl
@@ -359,7 +368,7 @@ public class TermEditorMain {
 
 			Handle handle_ = handle;
 
-			while (d.cont) {
+			while (c.cont) {
 				var ch = libc.getchar();
 
 				handle_.sink.f(ch);
