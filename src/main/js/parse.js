@@ -1049,10 +1049,8 @@ let typesModule = () => {
 			tyString
 		)
 		: id === 'struct' ? (({ kvs }) => {
-			let inferKvs;
-			inferKvs = kvs => 0 < kvs.length ? function() {
-				let { key, value } = head(kvs);
-				let type = inferKvs(tail(kvs));
+			return tyStructOf(foldl({}, kvs, (type, kv) => {
+				let { key, value } = kv;
 				setp(type, key, function() {
 					try {
 						return infer(value);
@@ -1062,8 +1060,7 @@ let typesModule = () => {
 					}
 				}());
 				return type;
-			}() : {};
-			return tyStructOf(inferKvs(kvs));
+			}));
 		})
 		: id === 'sub' ?
 			inferMathOp
@@ -1544,7 +1541,11 @@ evaluate = vvs => {
 		: id === 'pair' ? (({ lhs, rhs }) => assumeAny([eval(lhs), eval(rhs)]))
 		: id === 'pos' ? (({ expr }) => assumeAny(+eval(expr)))
 		: id === 'str' ? (({ v }) => v)
-		: id === 'struct' ? (({ kvs }) => error('FIXME'))
+		: id === 'struct' ? (({ kvs }) => assumeAny(foldl({}, kvs, (struct, kv) => {
+			let { key, value } = kv;
+			setp(struct, key.slice(1, undefined), eval(value));
+			return struct;
+		})))
 		: id === 'sub' ? (({ lhs, rhs }) => assumeAny(eval(lhs) - eval(rhs)))
 		: id === 'throw' ? (({ expr }) => function() { throw eval(expr); }())
 		: id === 'try' ? (({ lhs, rhs }) => function() {
