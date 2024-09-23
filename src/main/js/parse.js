@@ -1514,7 +1514,7 @@ execute = vvs => {
 		: id === 'mul' ? (({ lhs, rhs }) => execute_(lhs) * execute_(rhs))
 		: id === 'ne_' ? (({ lhs, rhs }) => execute_(lhs) !== execute_(rhs) ? 1 : 0)
 		: id === 'neg' ? (({ expr }) => -execute_(expr))
-		: id === 'never' ? (({}) => error('FIXME'))
+		: id === 'never' ? (({}) => error('NEVER'))
 		: id === 'new-error' ? (({}) => error('FIXME'))
 		: id === 'new-map' ? (({}) => error('FIXME'))
 		: id === 'new-promise' ? (({}) => error('FIXME'))
