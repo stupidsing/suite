@@ -1073,11 +1073,9 @@ let typesModule = () => {
 		: id === 'try' ? (({ lhs, rhs }) =>
 			doBind(ast, infer(rhs), newRef()) && infer(lhs)
 		)
-		: id === 'tuple' ? (({ values }) => {
-			let inferValues;
-			inferValues = vs => isNotEmpty(vs) ? cons(infer(head(vs)), inferValues(tail(vs))) : nil;
-			return tyTupleOf(inferValues(values));
-		})
+		: id === 'tuple' ? (({ values }) =>
+			tyTupleOf(foldr(nil, values, (tuple, value) => cons(infer(value), tuple)))
+		)
 		: id === 'typeof' ? (({}) =>
 			tyString
 		)
