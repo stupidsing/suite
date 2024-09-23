@@ -95,7 +95,6 @@ let _index = (lhs, rhs) => ({ id: 'index', lhs, rhs });
 let _lambda = (bind, expr) => ({ id: 'lambda', bind, expr });
 let _lambdaAsync = (bind, expr) => ({ id: 'lambda-async', bind, expr });
 let _let = (bind, value, expr) => ({ id: 'let', bind, value, expr });
-let _never = { id: 'never' };
 let _not = expr => ({ id: 'not', expr });
 let _num = i => ({ id: 'num', i });
 let _pair = (lhs, rhs) => ({ id: 'pair', lhs, rhs });
@@ -107,6 +106,7 @@ let _tuple = values => ({ id: 'tuple', values });
 let _typeof = expr => ({ id: 'typeof', expr });
 let _undefined = { id: 'undefined' };
 let _var = vn => ({ id: 'var', vn });
+let _void = { id: 'struct', completed: true, kvs: [] };
 let _while = (cond, loop, expr) => ({ id: 'while', cond, loop, expr });
 
 let lexerModule = () => {
@@ -326,7 +326,7 @@ let parserModule = () => {
 
 			let exprToString = _app(
 				_dot(parseApplyBlockFieldIndex(expr_), '.toString'),
-				_never);
+				_void);
 
 			return _add(
 				_str(program.slice(0, index)),
@@ -440,7 +440,7 @@ let parserModule = () => {
 		: program.startsWith('typeof ') ?
 			_typeof(parseValue(program.slice(7, undefined)))
 		: program.endsWith('()') ?
-			_app(parse(program.slice(0, -2)), _never)
+			_app(parse(program.slice(0, -2)), _void)
 		: program.endsWith(')') ? function() {
 			let [expr, paramStr_] = splitr(program, '(');
 			let paramStr = paramStr_.slice(0, -1).trim();
@@ -497,7 +497,7 @@ let parserModule = () => {
 
 		return false ? undefined
 		: program === '()' ?
-			_never
+			_void
 		: program.startsWith('(') && program.endsWith(')') ?
 			parseBind(program.slice(1, -1))
 		: program.startsWith('[') && program.endsWith(']') ?
@@ -598,7 +598,6 @@ formatExpr = ast => {
 	: id === 'mul' ? (({ lhs, rhs }) => `${format(lhs)} * ${format(rhs)}`)
 	: id === 'ne_' ? (({ lhs, rhs }) => `${format(lhs)} !== ${format(rhs)}`)
 	: id === 'neg' ? (({ expr }) => `- ${format(expr)}`)
-	: id === 'never' ? (({}) => `error('${id}')`)
 	: id === 'not' ? (({ expr }) => `! ${format(expr)}`)
 	: id === 'or_' ? (({ lhs, rhs }) => `${format(lhs)} || ${format(rhs)}`)
 	: id === 'pair' ? (({ lhs, rhs }) => `${format(lhs)}, ${format(rhs)}`)
@@ -778,7 +777,6 @@ let typesModule = () => {
 
 	bindTypes = (vts, ast) => false ? undefined
 		: ast.id === 'array' ? foldl(vts, ast.values, bindTypes)
-		: ast.id === 'never' ? vts
 		: ast.id === 'pair' ? bindTypes(bindTypes(vts, ast.lhs), ast.rhs)
 		: ast.id === 'struct' ? foldl(vts, ast.kvs, (vts_, kv) => bindTypes(vts_, kv.value))
 		: ast.id === 'tuple' ? foldl(vts, ast.values, bindTypes)
@@ -790,7 +788,6 @@ let typesModule = () => {
 	let tyError = ({ t: 'error' });
 	let tyLambdaOf = (in_, out) => ({ t: 'lambda', generic: true, in_, out });
 	let tyLambdaOfFixed = (in_, out) => ({ t: 'lambda', in_, out });
-	let tyNever = { t: 'never' };
 	let tyNumber = ({ t: 'num' });
 	let tyPairOf = (lhs, rhs) => ({ t: 'pair', lhs, rhs });
 	let tyPromiseOf = out => ({ t: 'promise', out });
@@ -803,7 +800,7 @@ let typesModule = () => {
 	let tyMapOf = (tk, tv) => tyStructOfCompleted({
 		'.get': tyLambdaOfFixed(tk, tv),
 		'.has': tyLambdaOfFixed(tk, tyBoolean),
-		'.set': tyLambdaOfFixed(tyPairOf(tk, tv), tyNever),
+		'.set': tyLambdaOfFixed(tyPairOf(tk, tv), tyVoid),
 	});
 
 	let inferDot = (ast, ts, field) => {
@@ -860,9 +857,9 @@ let typesModule = () => {
 			return doBind(ast, ts, tyPromiseOf(ti)) && tyLambdaOf(ti, tyPromiseOf(to));
 		}()
 		: field === '.toString' ?
-			doBind(ast, ts, newRef()) && tyLambdaOf(tyNever, tyString)
+			doBind(ast, ts, newRef()) && tyLambdaOf(tyVoid, tyString)
 		: field === '.trim' ?
-			doBind(ast, ts, tyString) && tyLambdaOf(tyNever, tyString)
+			doBind(ast, ts, tyString) && tyLambdaOf(tyVoid, tyString)
 		: function() {
 			let kvs = {};
 			let tr = setp(kvs, field, newRef());
@@ -1016,14 +1013,11 @@ let typesModule = () => {
 		: id === 'neg' ? (({ expr }) =>
 			doBind(ast, infer(expr), tyNumber) && tyNumber
 		)
-		: id === 'never' ? (({}) =>
-			tyNever
-		)
 		: id === 'new-error' ? (({}) =>
 			tyLambdaOf(tyString, tyError)
 		)
 		: id === 'new-map' ? (({}) =>
-			tyLambdaOf(tyNever, tyMapOf(newRef(), newRef()))
+			tyLambdaOf(tyVoid, tyMapOf(newRef(), newRef()))
 		)
 		: id === 'new-promise' ? (({}) => {
 			let tr = newRef();
@@ -1111,8 +1105,8 @@ let typesModule = () => {
 				'.resolve': function() { let t = newRef(); return tyLambdaOf(t, tyPromiseOf(t)); }(),
 			}),
 			console: tyStructOfCompleted({
-				'.error': tyLambdaOf(newRef(), tyNever),
-				'.log': tyLambdaOf(newRef(), tyNever),
+				'.error': tyLambdaOf(newRef(), tyVoid),
+				'.log': tyLambdaOf(newRef(), tyVoid),
 			}),
 			process: tyStructOfCompleted({
 				'.env': tyStructOf({}),
@@ -1152,7 +1146,6 @@ let reducerModule = () => {
 		: id === 'mul' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
 		: id === 'ne_' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
 		: id === 'neg' ? (({ expr }) => ({ id, expr: rf(expr) }))
-		: id === 'never' ? (({}) => ast)
 		: id === 'new-error' ? (({}) => ast)
 		: id === 'new-map' ? (({}) => ast)
 		: id === 'new-promise' ? (({}) => ast)
@@ -1303,7 +1296,7 @@ let reducerModule = () => {
 			: function() {
 				let vn = newDummy();
 				let vp = _var(vn);
-				let invoke = _app(vp, _never);
+				let invoke = _app(vp, _void);
 				let if_ = _if(vc, _then(pl, _var(newDummy()), invoke), pe);
 				return _alloc(vn, _assign(vp, _lambda(_var(newDummy()), c !== undefined ? if_ : _then(pc, vc, if_)), invoke));
 			}();
@@ -1345,9 +1338,6 @@ let reducerModule = () => {
 			})
 			: id === 'bool' ?
 				bindConstant
-			: id === 'never' ? (({}) =>
-				else_
-			)
 			: id === 'num' ?
 				bindConstant
 			: id === 'pair' ? (({ lhs, rhs }) => {
@@ -1531,7 +1521,6 @@ evaluate = vvs => {
 		: id === 'mul' ? (({ lhs, rhs }) => assumeAny(eval(lhs) * eval(rhs)))
 		: id === 'ne_' ? (({ lhs, rhs }) => assumeAny(eval(lhs) !== eval(rhs)))
 		: id === 'neg' ? (({ expr }) => assumeAny(-eval(expr)))
-		: id === 'never' ? (({}) => error('NEVER'))
 		: id === 'new-error' ? (({}) => assumeAny(e => new Error(e)))
 		: id === 'new-map' ? (({}) => assumeAny(() => new Map()))
 		: id === 'new-promise' ? (({}) => assumeAny(f => new Promise(f)))
@@ -1597,7 +1586,6 @@ generate = ast => {
 	: id === 'mul' ? (({ lhs, rhs }) => error('FIXME'))
 	: id === 'ne_' ? (({ lhs, rhs }) => error('FIXME'))
 	: id === 'neg' ? (({ expr }) => error('FIXME'))
-	: id === 'never' ? (({}) => error('FIXME'))
 	: id === 'new-error' ? (({}) => error('FIXME'))
 	: id === 'new-map' ? (({}) => error('FIXME'))
 	: id === 'new-promise' ? (({}) => error('FIXME'))
