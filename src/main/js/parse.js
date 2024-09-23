@@ -1535,7 +1535,7 @@ execute = vvs => {
 		: id === 'var' ? (({ vn }) => lookup(vvs, vn))
 		: id === 'while' ? (({ cond, loop, expr }) => function() {
 			let v;
-			while (exec(cond) !== 0) exec(loop);
+			while (exec(cond)) exec(loop);
 			exec(expr);
 		}())
 		: error(`cannot generate for ${id}`);
