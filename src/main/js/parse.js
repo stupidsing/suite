@@ -1604,13 +1604,6 @@ let reducer = reducerModule();
 let types = typesModule();
 
 let process_ = program => {
-	let ast = parser.parse(program);
-
-	return { ast: reducer.reduces(ast), type: types.infer(ast) };
-};
-
-let process = program_ => {
-	let program = program_;
 	let pos0;
 	let posx;
 	while (function() {
@@ -1620,10 +1613,13 @@ let process = program_ => {
 	}()) (function() {
 		program = program.slice(0, pos0) + program.slice(posx, undefined);
 	}());
-	return process_(program);
+
+	let ast = parser.parse(program);
+
+	return { ast: reducer.reduces(ast), type: types.infer(ast) };
 };
 
-let actual = stringify(process(`
+let actual = stringify(process_(`
 	let parse = ast => ast;
 	console.log(parse(require('fs').readFileSync(0, 'utf8')))
 `).ast);
@@ -1648,7 +1644,7 @@ let expect = stringify(
 return actual === expect
 ? function() {
 	try {
-		let { ast, type } = process(require('fs').readFileSync(0, 'utf8'));
+		let { ast, type } = process_(require('fs').readFileSync(0, 'utf8'));
 		console.log(`ast :: ${stringify(ast)}`);
 		console.log(`type :: ${types.dump(type)}`);
 		// console.log(`format :: ${format(ast)}`);
