@@ -1512,7 +1512,10 @@ evaluate = vvs => {
 		: id === 'and' ? (({ lhs, rhs }) => assumeAny(eval(lhs) && eval(rhs)))
 		: id === 'app' ? (({ lhs, rhs }) => eval(lhs)(eval(rhs)))
 		: id === 'array' ? (({ values }) => assumeAny(values.map(eval)))
-		: id === 'assign' ? (({ bind, value, expr }) => error('FIXME'))
+		: id === 'assign' ? (({ bind, value, expr }) => function() {
+			assign(bind.vn, eval(value));
+			return eval(expr);
+		}())
 		: id === 'bool' ? (({ v }) => v)
 		: id === 'coal' ? (({ lhs, rhs }) => function() {
 			let v = eval(lhs);
