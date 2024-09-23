@@ -111,7 +111,7 @@ let lexerModule = () => {
 	let isId = ch => isAlphabet(ch) || isNum(ch) || ch === ascii('_');
 
 	let lex = (s, pos) => {
-		let op2s = ['<=', '^&&', '||', '??', '|>',];
+		let op2s = ['<=', '&&', '||', '??', '|>',];
 		let op3s = ['!==', '===',];
 
 		let i = pos;
@@ -1473,8 +1473,6 @@ let reducerModule = () => {
 let execute;
 
 execute = vvs => {
-	let execute_;
-
 	let lookup = v => {
 		let lookup_;
 		lookup_ = vvs => isNotEmpty(vvs) ? function() {
@@ -1484,48 +1482,51 @@ execute = vvs => {
 		return lookup_(vvs);
 	};
 
+	let execute_;
+
 	execute_ = ast => {
+		let exec = ast => (execute_(ast));
 		let { id } = ast;
 
 		let f = false ? undefined
-		: id === 'add' ? (({ lhs, rhs }) => execute_(lhs) + execute_(rhs))
+		: id === 'add' ? (({ lhs, rhs }) => assumeAny(exec(lhs) + exec(rhs)))
 		: id === 'alloc' ? (({ vn, expr }) => error('FIXME'))
-		: id === 'and' ? (({ lhs, rhs }) => execute_(lhs) !== 0 && execute_(rhs) !== 0 ? 1 : 0)
+		: id === 'and' ? (({ lhs, rhs }) => assumeAny(exec(lhs) && exec(rhs)))
 		: id === 'app' ? (({ lhs, rhs }) => error('FIXME'))
 		: id === 'array' ? (({ values }) => error('FIXME'))
 		: id === 'assign' ? (({ bind, value, expr }) => error('FIXME'))
 		: id === 'await' ? (({ expr }) => error('FIXME'))
-		: id === 'bool' ? (({ v }) => v ? 1 : 0)
+		: id === 'bool' ? (({ v }) => v)
 		: id === 'coal' ? (({ lhs, rhs }) => function() {
-			let v = execute_(lhs);
-			return v !== 0 ? v : execute_(rhs);
+			let v = exec(lhs);
+			return v ? assumeAny(v) : exec(rhs);
 		}())
 		: id === 'cons' ? (({ lhs, rhs }) => error('FIXME'))
-		: id === 'div' ? (({ lhs, rhs }) => execute_(lhs) / execute_(rhs))
+		: id === 'div' ? (({ lhs, rhs }) => assumeAny(exec(lhs) / exec(rhs)))
 		: id === 'dot' ? (({ expr, field }) => error('FIXME'))
-		: id === 'eq_' ? (({ lhs, rhs }) => execute_(lhs) === execute_(rhs) ? 1 : 0)
-		: id === 'if' ? (({ if_, then, else_ }) => execute_(if_) !== 0 ? execute_(then) : execute_(else_))
+		: id === 'eq_' ? (({ lhs, rhs }) => assumeAny(exec(lhs) === exec(rhs)))
+		: id === 'if' ? (({ if_, then, else_ }) => execute_(if_) ? execute_(then) : execute_(else_))
 		: id === 'index' ? (({ lhs, rhs }) => error('FIXME'))
 		: id === 'lambda' ? (({ bind, expr }) => error('FIXME'))
 		: id === 'lambda-async' ? (({ bind, expr }) => error('FIXME'))
-		: id === 'le_' ? (({ lhs, rhs }) => execute_(lhs) <= execute_(rhs) ? 1 : 0)
+		: id === 'le_' ? (({ lhs, rhs }) => assumeAny(execute_(lhs) <= execute_(rhs)))
 		: id === 'let' ? (({ bind, value, expr }) => execute(cons([bind.vn, value], vvs))(expr))
-		: id === 'lt_' ? (({ lhs, rhs }) => execute_(lhs) < execute_(rhs) ? 1 : 0)
-		: id === 'mul' ? (({ lhs, rhs }) => execute_(lhs) * execute_(rhs))
-		: id === 'ne_' ? (({ lhs, rhs }) => execute_(lhs) !== execute_(rhs) ? 1 : 0)
-		: id === 'neg' ? (({ expr }) => -execute_(expr))
+		: id === 'lt_' ? (({ lhs, rhs }) => assumeAny(execute_(lhs) < execute_(rhs)))
+		: id === 'mul' ? (({ lhs, rhs }) => assumeAny(execute_(lhs) * execute_(rhs)))
+		: id === 'ne_' ? (({ lhs, rhs }) => assumeAny(execute_(lhs) !== execute_(rhs)))
+		: id === 'neg' ? (({ expr }) => assumeAny(-exec(expr)))
 		: id === 'never' ? (({}) => error('NEVER'))
 		: id === 'new-error' ? (({}) => error('FIXME'))
 		: id === 'new-map' ? (({}) => error('FIXME'))
 		: id === 'new-promise' ? (({}) => error('FIXME'))
-		: id === 'not' ? (({ expr }) => execute_(expr) === 0 ? 1 : 0)
+		: id === 'not' ? (({ expr }) => assumeAny(!execute_(expr)))
 		: id === 'num' ? (({ i }) => i)
-		: id === 'or_' ? (({ lhs, rhs }) => execute_(lhs) !== 0 || execute_(rhs) !== 0 ? 1 : 0)
+		: id === 'or_' ? (({ lhs, rhs }) => assumeAny(execute_(lhs) || execute_(rhs)))
 		: id === 'pair' ? (({ lhs, rhs }) => error('FIXME'))
-		: id === 'pos' ? (({ expr }) => +execute_(expr))
+		: id === 'pos' ? (({ expr }) => assumeAny(+exec(expr)))
 		: id === 'str' ? (({ v }) => error('FIXME'))
 		: id === 'struct' ? (({ kvs }) => error('FIXME'))
-		: id === 'sub' ? (({ lhs, rhs }) => execute_(lhs) - execute_(rhs))
+		: id === 'sub' ? (({ lhs, rhs }) => assumeAny(exec(lhs) - exec(rhs)))
 		: id === 'throw' ? (({ expr }) => error('FIXME'))
 		: id === 'try' ? (({ lhs, rhs }) => error('FIXME'))
 		: id === 'tuple' ? (({ values }) => error('FIXME'))
@@ -1534,8 +1535,8 @@ execute = vvs => {
 		: id === 'var' ? (({ vn }) => lookup(vvs, vn))
 		: id === 'while' ? (({ cond, loop, expr }) => function() {
 			let v;
-			while (execute_(cond) !== 0) execute_(loop);
-			execute_(expr);
+			while (exec(cond) !== 0) exec(loop);
+			exec(expr);
 		}())
 		: error(`cannot generate for ${id}`);
 
