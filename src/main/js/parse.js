@@ -402,8 +402,6 @@ let parserModule = () => {
 			let [try_, catch_] = splitl(program.slice(4, undefined), 'catch (e)');
 			return _try(parse(try_), _lambda(_var('e'), parse(catch_)));
 		}()
-		: program.startsWith('typeof ') ?
-			_typeof(parseValue(program.slice(7, undefined)))
 		: program.startsWith('(') && program.endsWith(')') ?
 			parse(program.slice(1, -1))
 		: program.startsWith('[') && program.endsWith(']') ?
@@ -439,6 +437,8 @@ let parserModule = () => {
 		return false ? undefined
 		: program.startsWith('function() {') && program.endsWith('}()') ?
 			parse(program.slice(12, -3).trim())
+		: program.startsWith('typeof ') ?
+			_typeof(parseValue(program.slice(7, undefined)))
 		: program.endsWith('()') ?
 			_app(parse(program.slice(0, -2)), _never)
 		: program.endsWith(')') ? function() {
@@ -1553,7 +1553,7 @@ evaluate = vvs => {
 			} catch (e) { return eval(_app(rhs, e)); }
 		}())
 		: id === 'tuple' ? (({ values }) => assumeAny(foldr(nil, values, (tuple, value) => cons(eval(value), tuple))))
-		: id === 'typeof' ? (({ expr }) => error('FIXME'))
+		: id === 'typeof' ? (({ expr }) => assumeAny(typeof (eval(expr))))
 		: id === 'undefined' ? (({}) => undefined)
 		: id === 'var' ? (({ vn }) => lookup(vn))
 		: id === 'while' ? (({ cond, loop, expr }) => function() {
