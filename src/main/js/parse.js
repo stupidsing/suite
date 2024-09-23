@@ -1534,7 +1534,7 @@ evaluate = vvs => {
 		: id === 'never' ? (({}) => error('NEVER'))
 		: id === 'new-error' ? (({}) => assumeAny(e => new Error(e)))
 		: id === 'new-map' ? (({}) => assumeAny(() => new Map()))
-		: id === 'new-promise' ? (({}) => error('FIXME'))
+		: id === 'new-promise' ? (({}) => assumeAny(f => new Promise(f)))
 		: id === 'not' ? (({ expr }) => assumeAny(!eval(expr)))
 		: id === 'num' ? (({ i }) => i)
 		: id === 'or_' ? (({ lhs, rhs }) => assumeAny(eval(lhs) || eval(rhs)))
