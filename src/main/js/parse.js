@@ -1115,6 +1115,9 @@ let typesModule = () => {
 				'.error': tyLambdaOf(newRef(), tyNever),
 				'.log': tyLambdaOf(newRef(), tyNever),
 			}),
+			process: tyStructOfCompleted({
+				'.env': tyStructOf({}),
+			}),
 			require: tyLambdaOf(tyString, newRef()),
 		})
 		.reduce((l, vt) => cons(vt, l), nil);
@@ -1470,9 +1473,9 @@ let reducerModule = () => {
 	return { reduces };
 };
 
-let execute;
+let evaluate;
 
-execute = vvs => {
+evaluate = vvs => {
 	let lookup = vn => {
 		let lookup_;
 		lookup_ = vvs => isNotEmpty(vvs) ? function() {
@@ -1482,10 +1485,10 @@ execute = vvs => {
 		return lookup_(vvs);
 	};
 
-	let execute_;
+	let evaluate_;
 
-	execute_ = ast => {
-		let exec = ast => execute_(ast);
+	evaluate_ = ast => {
+		let exec = ast => evaluate_(ast);
 		let { id } = ast;
 
 		let f = false ? undefined
@@ -1505,23 +1508,23 @@ execute = vvs => {
 		: id === 'div' ? (({ lhs, rhs }) => assumeAny(exec(lhs) / exec(rhs)))
 		: id === 'dot' ? (({ expr, field }) => error('FIXME'))
 		: id === 'eq_' ? (({ lhs, rhs }) => assumeAny(exec(lhs) === exec(rhs)))
-		: id === 'if' ? (({ if_, then, else_ }) => execute_(if_) ? execute_(then) : execute_(else_))
+		: id === 'if' ? (({ if_, then, else_ }) => evaluate_(if_) ? evaluate_(then) : evaluate_(else_))
 		: id === 'index' ? (({ lhs, rhs }) => error('FIXME'))
-		: id === 'lambda' ? (({ bind, expr }) => assumeAny(value => execute(cons([bind.vn, value], vvs))(expr)))
+		: id === 'lambda' ? (({ bind, expr }) => assumeAny(value => evaluate(cons([bind.vn, value], vvs))(expr)))
 		: id === 'lambda-async' ? (({ bind, expr }) => error('FIXME'))
-		: id === 'le_' ? (({ lhs, rhs }) => assumeAny(execute_(lhs) <= execute_(rhs)))
-		: id === 'let' ? (({ bind, value, expr }) => execute(cons([bind.vn, value], vvs))(expr))
-		: id === 'lt_' ? (({ lhs, rhs }) => assumeAny(execute_(lhs) < execute_(rhs)))
-		: id === 'mul' ? (({ lhs, rhs }) => assumeAny(execute_(lhs) * execute_(rhs)))
-		: id === 'ne_' ? (({ lhs, rhs }) => assumeAny(execute_(lhs) !== execute_(rhs)))
+		: id === 'le_' ? (({ lhs, rhs }) => assumeAny(evaluate_(lhs) <= evaluate_(rhs)))
+		: id === 'let' ? (({ bind, value, expr }) => evaluate(cons([bind.vn, value], vvs))(expr))
+		: id === 'lt_' ? (({ lhs, rhs }) => assumeAny(evaluate_(lhs) < evaluate_(rhs)))
+		: id === 'mul' ? (({ lhs, rhs }) => assumeAny(evaluate_(lhs) * evaluate_(rhs)))
+		: id === 'ne_' ? (({ lhs, rhs }) => assumeAny(evaluate_(lhs) !== evaluate_(rhs)))
 		: id === 'neg' ? (({ expr }) => assumeAny(-exec(expr)))
 		: id === 'never' ? (({}) => error('NEVER'))
 		: id === 'new-error' ? (({}) => error('FIXME'))
 		: id === 'new-map' ? (({}) => error('FIXME'))
 		: id === 'new-promise' ? (({}) => error('FIXME'))
-		: id === 'not' ? (({ expr }) => assumeAny(!execute_(expr)))
+		: id === 'not' ? (({ expr }) => assumeAny(!evaluate_(expr)))
 		: id === 'num' ? (({ i }) => i)
-		: id === 'or_' ? (({ lhs, rhs }) => assumeAny(execute_(lhs) || execute_(rhs)))
+		: id === 'or_' ? (({ lhs, rhs }) => assumeAny(evaluate_(lhs) || evaluate_(rhs)))
 		: id === 'pair' ? (({ lhs, rhs }) => error('FIXME'))
 		: id === 'pos' ? (({ expr }) => assumeAny(+exec(expr)))
 		: id === 'str' ? (({ v }) => error('FIXME'))
@@ -1543,7 +1546,7 @@ execute = vvs => {
 		return f(ast);
 	};
 
-	return execute_;
+	return evaluate_;
 };
 
 let generate;
