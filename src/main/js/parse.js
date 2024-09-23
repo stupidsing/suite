@@ -1485,7 +1485,7 @@ execute = vvs => {
 	let execute_;
 
 	execute_ = ast => {
-		let exec = ast => (execute_(ast));
+		let exec = ast => execute_(ast);
 		let { id } = ast;
 
 		let f = false ? undefined
@@ -1499,7 +1499,7 @@ execute = vvs => {
 		: id === 'bool' ? (({ v }) => v)
 		: id === 'coal' ? (({ lhs, rhs }) => function() {
 			let v = exec(lhs);
-			return v ? assumeAny(v) : exec(rhs);
+			return v ? v : exec(rhs);
 		}())
 		: id === 'cons' ? (({ lhs, rhs }) => error('FIXME'))
 		: id === 'div' ? (({ lhs, rhs }) => assumeAny(exec(lhs) / exec(rhs)))
