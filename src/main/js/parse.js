@@ -1473,12 +1473,12 @@ let reducerModule = () => {
 let execute;
 
 execute = vvs => {
-	let lookup = v => {
+	let lookup = vn => {
 		let lookup_;
 		lookup_ = vvs => isNotEmpty(vvs) ? function() {
-			let [v_, value] = head(vvs);
-			return v_ === v ? value : lookup_(tail(vvs));
-		}() : error(`undefined variable ${v}`);
+			let [vn_, value] = head(vvs);
+			return vn_ === vn ? value : lookup_(tail(vvs));
+		}() : error(`undefined variable ${vn}`);
 		return lookup_(vvs);
 	};
 
