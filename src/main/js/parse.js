@@ -40,8 +40,11 @@ let setp = (m, k, v) => { fake(m)[k !== '' && fake(k)] = v; return v; };
 let contains;
 contains = (es, e) => isNotEmpty(es) && (head(es) === e || contains(tail(es), e));
 
-let fold;
-fold = (init, es, op) => isNotEmpty(es) ? fold(op(init, head(es)), tail(es), op) : init;
+let foldl;
+foldl = (init, es, op) => isNotEmpty(es) ? foldl(op(init, head(es)), tail(es), op) : init;
+
+let foldr;
+foldr = (init, es, op) => isNotEmpty(es) ? op(foldr(init, tail(es), op), head(es)) : init;
 
 let gen = i => {
 	let array = [];
@@ -774,11 +777,11 @@ let typesModule = () => {
 	let bindTypes;
 
 	bindTypes = (vts, ast) => false ? undefined
-		: ast.id === 'array' ? fold(vts, ast.values, bindTypes)
+		: ast.id === 'array' ? foldl(vts, ast.values, bindTypes)
 		: ast.id === 'never' ? vts
 		: ast.id === 'pair' ? bindTypes(bindTypes(vts, ast.lhs), ast.rhs)
-		: ast.id === 'struct' ? fold(vts, ast.kvs, (vts_, kv) => bindTypes(vts_, kv.value))
-		: ast.id === 'tuple' ? fold(vts, ast.values, bindTypes)
+		: ast.id === 'struct' ? foldl(vts, ast.kvs, (vts_, kv) => bindTypes(vts_, kv.value))
+		: ast.id === 'tuple' ? foldl(vts, ast.values, bindTypes)
 		: ast.id === 'var' ? cons([ast.vn, newRef()], vts)
 		: error(`cannot destructure ${format(ast)}`);
 
@@ -922,7 +925,7 @@ let typesModule = () => {
 		})
 		: id === 'array' ? (({ values }) => {
 			let te = newRef();
-			return fold(true, values, (b, value) => b && doBind(ast, infer(value), te)) && tyArrayOf(te);
+			return foldl(true, values, (b, value) => b && doBind(ast, infer(value), te)) && tyArrayOf(te);
 		})
 		: id === 'assign' ? (({ bind, value, expr }) => function() {
 			try {
@@ -1521,22 +1524,22 @@ evaluate = vvs => {
 		: id === 'div' ? (({ lhs, rhs }) => assumeAny(eval(lhs) / eval(rhs)))
 		: id === 'dot' ? (({ expr, field }) => getp(eval(expr), field))
 		: id === 'eq_' ? (({ lhs, rhs }) => assumeAny(eval(lhs) === eval(rhs)))
-		: id === 'if' ? (({ if_, then, else_ }) => evaluate_(if_) ? evaluate_(then) : evaluate_(else_))
+		: id === 'if' ? (({ if_, then, else_ }) => eval(if_) ? eval(then) : eval(else_))
 		: id === 'index' ? (({ lhs, rhs }) => eval(lhs)[eval(rhs)])
 		: id === 'lambda' ? (({ bind, expr }) => assumeAny(value => evaluate(cons([bind.vn, value], vvs))(expr)))
-		: id === 'le_' ? (({ lhs, rhs }) => assumeAny(evaluate_(lhs) <= evaluate_(rhs)))
+		: id === 'le_' ? (({ lhs, rhs }) => assumeAny(eval(lhs) <= eval(rhs)))
 		: id === 'let' ? (({ bind, value, expr }) => evaluate(cons([bind.vn, value], vvs))(expr))
-		: id === 'lt_' ? (({ lhs, rhs }) => assumeAny(evaluate_(lhs) < evaluate_(rhs)))
-		: id === 'mul' ? (({ lhs, rhs }) => assumeAny(evaluate_(lhs) * evaluate_(rhs)))
-		: id === 'ne_' ? (({ lhs, rhs }) => assumeAny(evaluate_(lhs) !== evaluate_(rhs)))
+		: id === 'lt_' ? (({ lhs, rhs }) => assumeAny(eval(lhs) < eval(rhs)))
+		: id === 'mul' ? (({ lhs, rhs }) => assumeAny(eval(lhs) * eval(rhs)))
+		: id === 'ne_' ? (({ lhs, rhs }) => assumeAny(eval(lhs) !== eval(rhs)))
 		: id === 'neg' ? (({ expr }) => assumeAny(-eval(expr)))
 		: id === 'never' ? (({}) => error('NEVER'))
 		: id === 'new-error' ? (({}) => error('FIXME'))
 		: id === 'new-map' ? (({}) => error('FIXME'))
 		: id === 'new-promise' ? (({}) => error('FIXME'))
-		: id === 'not' ? (({ expr }) => assumeAny(!evaluate_(expr)))
+		: id === 'not' ? (({ expr }) => assumeAny(!eval(expr)))
 		: id === 'num' ? (({ i }) => i)
-		: id === 'or_' ? (({ lhs, rhs }) => assumeAny(evaluate_(lhs) || evaluate_(rhs)))
+		: id === 'or_' ? (({ lhs, rhs }) => assumeAny(eval(lhs) || eval(rhs)))
 		: id === 'pair' ? (({ lhs, rhs }) => assumeAny([eval(lhs), eval(rhs)]))
 		: id === 'pos' ? (({ expr }) => assumeAny(+eval(expr)))
 		: id === 'str' ? (({ v }) => v)
@@ -1548,7 +1551,7 @@ evaluate = vvs => {
 				return eval(lhs);
 			} catch (e) { return eval(_app(rhs, e)); }
 		}())
-		: id === 'tuple' ? (({ values }) => error('FIXME'))
+		: id === 'tuple' ? (({ values }) => assumeAny(foldr(nil, values, (tuple, value) => cons(eval(value), tuple))))
 		: id === 'typeof' ? (({ expr }) => error('FIXME'))
 		: id === 'undefined' ? (({}) => undefined)
 		: id === 'var' ? (({ vn }) => lookup(vn))
@@ -1664,6 +1667,7 @@ return actual === expect
 		let { ast, type } = process_(require('fs').readFileSync(0, 'utf8'));
 		console.log(`ast :: ${stringify(ast)}`);
 		console.log(`type :: ${types.dump(type)}`);
+		// console.log(`eval :: ${JSON.stringify(evaluate([])(ast))}`);
 		// console.log(`format :: ${format(ast)}`);
 		return true;
 	} catch (e) { return console.error(e); }
