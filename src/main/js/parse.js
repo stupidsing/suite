@@ -33,6 +33,7 @@ let isNotEmpty = list => 0 < list.length;
 let nil = [];
 let tail = list => list.slice(1, undefined);
 
+let seti = (m, k, v) => { fake(m)[0 <= k && fake(k)] = v; return v; };
 let getp = (m, k) => fake(m)[k !== '' && fake(k)];
 let setp = (m, k, v) => { fake(m)[k !== '' && fake(k)] = v; return v; };
 
@@ -440,7 +441,7 @@ let parserModule = () => {
 		: program.endsWith(')') ? function() {
 			let [expr, paramStr_] = splitr(program, '(');
 			let paramStr = paramStr_.slice(0, -1).trim();
-			return expr !== undefined ? _app(parse(expr), parse(paramStr)): parseValue(program);
+			return expr !== undefined ? _app(parse(expr), parse(paramStr)) : parseValue(program);
 		}()
 		: parseLvalue(program);
 	};
@@ -1476,6 +1477,19 @@ let reducerModule = () => {
 let evaluate;
 
 evaluate = vvs => {
+	let assign = (vn, value) => {
+		let assign_;
+		assign_ = vvs => isNotEmpty(vvs) ? function() {
+			let vv = head(vvs);
+			let [vn_, value_] = vv;
+			return vn_ === vn ? function() {
+				seti(vv, 1, value);
+				return value;
+			}() : assign_(tail(vvs));
+		}() : error(`undefined variable ${vn}`);
+		return assign_(vvs);
+	};
+
 	let lookup = vn => {
 		let lookup_;
 		lookup_ = vvs => isNotEmpty(vvs) ? function() {
@@ -1493,12 +1507,11 @@ evaluate = vvs => {
 
 		let f = false ? undefined
 		: id === 'add' ? (({ lhs, rhs }) => assumeAny(eval(lhs) + eval(rhs)))
-		: id === 'alloc' ? (({ vn, expr }) => error('FIXME'))
+		: id === 'alloc' ? (({ vn, expr }) => evaluate(cons([vn, undefined], vvs))(expr))
 		: id === 'and' ? (({ lhs, rhs }) => assumeAny(eval(lhs) && eval(rhs)))
 		: id === 'app' ? (({ lhs, rhs }) => eval(lhs)(eval(rhs)))
-		: id === 'array' ? (({ values }) => error('FIXME'))
+		: id === 'array' ? (({ values }) => assumeAny(values.map(eval)))
 		: id === 'assign' ? (({ bind, value, expr }) => error('FIXME'))
-		: id === 'await' ? (({ expr }) => error('FIXME'))
 		: id === 'bool' ? (({ v }) => v)
 		: id === 'coal' ? (({ lhs, rhs }) => function() {
 			let v = eval(lhs);
@@ -1506,12 +1519,11 @@ evaluate = vvs => {
 		}())
 		: id === 'cons' ? (({ lhs, rhs }) => assumeAny(cons(eval(lhs), eval(rhs))))
 		: id === 'div' ? (({ lhs, rhs }) => assumeAny(eval(lhs) / eval(rhs)))
-		: id === 'dot' ? (({ expr, field }) => error('FIXME'))
+		: id === 'dot' ? (({ expr, field }) => getp(eval(expr), field))
 		: id === 'eq_' ? (({ lhs, rhs }) => assumeAny(eval(lhs) === eval(rhs)))
 		: id === 'if' ? (({ if_, then, else_ }) => evaluate_(if_) ? evaluate_(then) : evaluate_(else_))
-		: id === 'index' ? (({ lhs, rhs }) => error('FIXME'))
+		: id === 'index' ? (({ lhs, rhs }) => eval(lhs)[eval(rhs)])
 		: id === 'lambda' ? (({ bind, expr }) => assumeAny(value => evaluate(cons([bind.vn, value], vvs))(expr)))
-		: id === 'lambda-async' ? (({ bind, expr }) => error('FIXME'))
 		: id === 'le_' ? (({ lhs, rhs }) => assumeAny(evaluate_(lhs) <= evaluate_(rhs)))
 		: id === 'let' ? (({ bind, value, expr }) => evaluate(cons([bind.vn, value], vvs))(expr))
 		: id === 'lt_' ? (({ lhs, rhs }) => assumeAny(evaluate_(lhs) < evaluate_(rhs)))
@@ -1525,16 +1537,20 @@ evaluate = vvs => {
 		: id === 'not' ? (({ expr }) => assumeAny(!evaluate_(expr)))
 		: id === 'num' ? (({ i }) => i)
 		: id === 'or_' ? (({ lhs, rhs }) => assumeAny(evaluate_(lhs) || evaluate_(rhs)))
-		: id === 'pair' ? (({ lhs, rhs }) => error('FIXME'))
+		: id === 'pair' ? (({ lhs, rhs }) => assumeAny([eval(lhs), eval(rhs)]))
 		: id === 'pos' ? (({ expr }) => assumeAny(+eval(expr)))
-		: id === 'str' ? (({ v }) => error('FIXME'))
+		: id === 'str' ? (({ v }) => v)
 		: id === 'struct' ? (({ kvs }) => error('FIXME'))
 		: id === 'sub' ? (({ lhs, rhs }) => assumeAny(eval(lhs) - eval(rhs)))
-		: id === 'throw' ? (({ expr }) => error('FIXME'))
-		: id === 'try' ? (({ lhs, rhs }) => error('FIXME'))
+		: id === 'throw' ? (({ expr }) => function() { throw eval(expr); }())
+		: id === 'try' ? (({ lhs, rhs }) => function() {
+			try {
+				return eval(lhs);
+			} catch (e) { return eval(_app(rhs, e)); }
+		}())
 		: id === 'tuple' ? (({ values }) => error('FIXME'))
 		: id === 'typeof' ? (({ expr }) => error('FIXME'))
-		: id === 'undefined' ? (({}) => error('FIXME'))
+		: id === 'undefined' ? (({}) => undefined)
 		: id === 'var' ? (({ vn }) => lookup(vn))
 		: id === 'while' ? (({ cond, loop, expr }) => function() {
 			let v;
@@ -1561,7 +1577,6 @@ generate = ast => {
 	: id === 'app' ? (({ lhs, rhs }) => error('FIXME'))
 	: id === 'array' ? (({ values }) => error('FIXME'))
 	: id === 'assign' ? (({ bind, value, expr }) => error('FIXME'))
-	: id === 'await' ? (({ expr }) => error('FIXME'))
 	: id === 'bool' ? (({ v }) => error('FIXME'))
 	: id === 'coal' ? (({ lhs, rhs }) => error('FIXME'))
 	: id === 'cons' ? (({ lhs, rhs }) => error('FIXME'))
@@ -1571,7 +1586,6 @@ generate = ast => {
 	: id === 'if' ? (({ if_, then, else_ }) => error('FIXME'))
 	: id === 'index' ? (({ lhs, rhs }) => error('FIXME'))
 	: id === 'lambda' ? (({ bind, expr }) => error('FIXME'))
-	: id === 'lambda-async' ? (({ bind, expr }) => error('FIXME'))
 	: id === 'le_' ? (({ lhs, rhs }) => error('FIXME'))
 	: id === 'let' ? (({ bind, value, expr }) => error('FIXME'))
 	: id === 'lt_' ? (({ lhs, rhs }) => error('FIXME'))
