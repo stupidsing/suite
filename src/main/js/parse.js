@@ -1411,8 +1411,12 @@ let reducerModule = () => {
 		let { id } = ast;
 
 		let f = false ? undefined
-		: id === 'ne_' ? (({ lhs, rhs }) => _not(_eq(reduceNe(lhs), reduceNe(rhs))))
-		: (({}) => rewrite(reduceNe, ast));
+		: id === 'ne_' ? (({ lhs, rhs }) =>
+			_not(_eq(reduceNe(lhs), reduceNe(rhs)))
+		)
+		: (({}) =>
+			rewrite(reduceNe, ast)
+		);
 
 		return f(ast);
 	};
