@@ -1563,14 +1563,14 @@ let generatorModule = () => {
 			let { id } = ast;
 
 			let f = false ? undefined
-			: id === 'alloc' ? (({ vn, expr }) => generate(frame, offset + 1, cons([vn, [frame, offset]], vps))(expr))
-			: id === 'lambda' ? (({ bind, expr }) => function() {
-				let frame1 = frame + 1;
-				return ({ id: 'lambda', bind, expr: generate(frame1, 1, cons([bind.vn, [frame1, 0]], vps))(expr) });
-			}())
-			: id === 'let' ? (({ bind, value, expr }) => generate(frame, offset + 1, cons([bind.vn, [frame, offset]], vps))(
-				{ id: 'assign', bind, value, expr }
-			))
+			: id === 'alloc' ? (({ vn, expr }) =>  ({
+				id: 'alloc-frame',
+				expr: generate(frame, offset + 1, cons([vn, [frame, offset]], vps))(expr),
+			}))
+			: id === 'let' ? (({ bind, value, expr }) => ({
+				id: 'alloc-frame',
+				expr: generate(frame, offset + 1, cons([bind.vn, [frame, offset]], vps))({ id: 'assign', bind, value, expr }),
+			}))
 			: id === 'var' ? (({ vn }) => function() {
 				let [frame_, offset] = lookup(vn);
 				return { id: 'mem', frame: frame - frame_, offset };
