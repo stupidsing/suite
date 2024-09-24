@@ -37,6 +37,12 @@ let seti = (m, k, v) => { fake(m)[0 <= k && fake(k)] = v; return v; };
 let getp = (m, k) => fake(m)[k !== '' && fake(k)];
 let setp = (m, k, v) => { fake(m)[k !== '' && fake(k)] = v; return v; };
 
+let find;
+find = (es, op) => isNotEmpty(es) ? function() {
+	let e = head(es);
+	return op(e) ? e : find(tail(es), op);
+}() : function() { throw new Error('not found'); }();
+
 let contains;
 contains = (es, e) => isNotEmpty(es) && (head(es) === e || contains(tail(es), e));
 
@@ -814,13 +820,9 @@ let typesModule = () => {
 		return cloneRef_(v);
 	};
 
-	let lookup = (vts, v) => {
-		let lookup_;
-		lookup_ = vts => isNotEmpty(vts) ? function() {
-			let [v_, t] = head(vts);
-			return v_ === v ? t : lookup_(tail(vts));
-		}() : error(`undefined variable ${v}`);
-		return lookup_(vts);
+	let lookup = (vts, vn) => {
+		let [vn_, t] = find(vts, ([vn_, t]) => vn_ === vn);
+		return t;
 	};
 
 	let bindTypes;
@@ -1415,13 +1417,9 @@ let reducerModule = () => {
 		return f(ast);
 	};
 
-	let lookup = (vts, v) => {
-		let lookup_;
-		lookup_ = vts => isNotEmpty(vts) ? function() {
-			let [v_, t] = head(vts);
-			return v_ === v ? t : lookup_(tail(vts));
-		}() : error(`undefined variable ${v}`);
-		return lookup_(vts);
+	let lookup = (vts, vn) => {
+		let [vn_, t] = find(vts, ([vn_, t]) => vn_ === vn);
+		return t;
 	};
 
 	let reduceVars;
@@ -1466,25 +1464,14 @@ let evaluate;
 
 evaluate = vvs => {
 	let assign = (vn, value) => {
-		let assign_;
-		assign_ = vvs => isNotEmpty(vvs) ? function() {
-			let vv = head(vvs);
-			let [vn_, value_] = vv;
-			return vn_ === vn ? function() {
-				seti(vv, 1, value);
-				return value;
-			}() : assign_(tail(vvs));
-		}() : error(`undefined variable ${vn}`);
-		return assign_(vvs);
+		let vv = find(vvs, ([vn_, value]) => vn_ === vn);
+		seti(vv, 1, value);
+		return value;
 	};
 
 	let lookup = vn => {
-		let lookup_;
-		lookup_ = vvs => isNotEmpty(vvs) ? function() {
-			let [vn_, value] = head(vvs);
-			return vn_ === vn ? value : lookup_(tail(vvs));
-		}() : error(`undefined variable ${vn}`);
-		return lookup_(vvs);
+		let [vn_, value] = find(vvs, ([vn_, value]) => vn_ === vn);
+		return value;
 	};
 
 	let evaluate_;
@@ -1566,12 +1553,8 @@ let generatorModule = () => {
 
 	generate = (frame, offset, vps) => {
 		let lookup = vn => {
-			let lookup_;
-			lookup_ = vps => isNotEmpty(vps) ? function() {
-				let [vn_, pointer] = head(vps);
-				return vn_ === vn ? pointer : lookup_(tail(vps));
-			}() : error(`undefined variable ${vn}`);
-			return lookup_(vps);
+			let [vn_, pointer] = find(vps, ([vn_, pointer]) => vn_ === vn);
+			return pointer;
 		};
 
 		let gen;
