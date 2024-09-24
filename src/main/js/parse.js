@@ -1,5 +1,5 @@
 // cat src/main/js/parse.js | node src/main/js/parse.js
-// parsing a javascript subset and inference variable types.
+// parse a javascript subset and inference variable types.
 // able to parse myself.
 
 // a, b is a pair.
