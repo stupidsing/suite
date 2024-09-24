@@ -1634,10 +1634,10 @@ return actual === expect
 	try {
 		let { ast, type } = process_(require('fs').readFileSync(0, 'utf8'));
 		console.log(`ast :: ${stringify(ast)}`);
-		console.log(`type :: ${types.dump(type)}`);
 		// console.log(`eval :: ${JSON.stringify(evaluate([])(ast))}`);
 		// console.log(`format :: ${format(ast)}`);
 		// console.log(`generate :: ${generator.generate(ast)}`);
+		console.log(`type :: ${types.dump(type)}`);
 		return true;
 	} catch (e) { return console.error(e); }
 }() : error(`
