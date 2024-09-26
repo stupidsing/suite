@@ -697,6 +697,7 @@ public class P0 {
 		MANUAL, // capture the variables and allocate a capture frame, to be uncaptured (freed) manually
 		NOSCOP, // no access to variables of outer scope
 		ONCE__, // capture the variables and allocate a capture frame, which is to be freed after first call; lambda cannot be called twice
+		SINGLE, // pass one variable
 		STACKF, // pass the stack frame, no need to capture; lambda lifetime equals to stack frame lifetime
 	}
 
