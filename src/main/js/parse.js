@@ -1428,32 +1428,32 @@ let reducerModule = () => {
 
 	let reduceVars;
 
-	reduceVars = (vts, ps, fs, ast) => {
-		let ps1 = ps + 1;
+	reduceVars = (fs, ps, vts, ast) => {
 		let fs1 = fs + 1;
+		let ps1 = ps + 1;
 		let { id } = ast;
 
 		let f = false ? undefined
 		: id === 'alloc' ? (({ vn, expr }) =>
-			_alloc(vn, reduceVars(cons([vn, [ps, fs]], vts), ps, fs1, expr))
+			_alloc(vn, reduceVars(ps, fs1, cons([vn, [fs, ps]], vts), expr))
 		)
 		: id === 'lambda' ? (({ bind, expr }) =>
-			_lambda(bind, reduceVars(cons([bind.vn, [ps1, 0]], vts), ps1, 1, expr))
+			_lambda(bind, reduceVars(fs1, 1, cons([bind.vn, [fs1, 0]], vts), expr))
 		)
 		: id === 'lambda-async' ? (({ bind, expr }) =>
-			_lambdaAsync(bind, reduceVars(cons([bind.vn, [ps1, 0]], vts), ps1, 1, expr))
+			_lambdaAsync(bind, reduceVars(fs1, 1, cons([bind.vn, [fs1, 0]], vts), expr))
 		)
 		: id === 'let' ? (({ bind, value, expr }) =>
 			_alloc(bind.vn, _assign(bind,
-				reduceVars(vts, ps, fs, value),
-				reduceVars(cons([bind.vn, [ps, fs]], vts), ps, fs1, expr)))
+				reduceVars(fs, ps, vts, fs, ps, value),
+				reduceVars(fs, ps1, cons([bind.vn, [fs, ps]], vts), expr)))
 		)
 		: id === 'var' ? (({ vn }) => {
-			let [ps_, fs_] = lookup(vts, vn);
-			return { id: 'stack', p: ps - ps_, i: fs_ };
+			let [fs_, ps_] = lookup(vts, vn);
+			return { id: 'stack', fs: fs - fs_, ps: ps_ };
 		})
 		: (({}) =>
-			rewrite(ast => reduceVars(vts, ps, fs, ast), ast)
+			rewrite(ast => reduceVars(fs, ps, vts, ast), ast)
 		);
 
 		return f(ast);
@@ -1556,6 +1556,9 @@ let generatorModule = () => {
 	let generate;
 
 	generate = (fs, ps, vps) => {
+		let fs1 = fs + 1;
+		let ps1 = ps + 1;
+
 		let lookup = vn => {
 			let [vn_, pointer] = find(vps, ([vn_, pointer]) => vn_ === vn);
 			return pointer;
@@ -1569,15 +1572,14 @@ let generatorModule = () => {
 			let f = false ? undefined
 			: id === 'alloc' ? (({ vn, expr }) =>  ({
 				id: 'alloc-frame',
-				expr: generate(fs, ps + 1, cons([vn, [fs, ps]], vps))(expr),
+				expr: generate(fs, ps1, cons([vn, [fs, ps]], vps))(expr),
 			}))
 			: id === 'lambda' ? (({ bind, expr }) => function() {
-				let fs1 = fs + 1;
 				return ({ id: 'lambda', bind, expr: generate(fs1, 1, cons([bind.vn, [fs1, 0]], vps))(expr) });
 			}())
 			: id === 'let' ? (({ bind, value, expr }) => ({
 				id: 'alloc-frame',
-				expr: generate(fs, ps + 1, cons([bind.vn, [fs, ps]], vps))({ id: 'assign', bind, value, expr }),
+				expr: generate(fs, ps1, cons([bind.vn, [fs, ps]], vps))({ id: 'assign', bind, value, expr }),
 			}))
 			: id === 'var' ? (({ vn }) => function() {
 				let [fs_, ps] = lookup(vn);
