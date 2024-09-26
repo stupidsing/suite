@@ -1555,7 +1555,7 @@ evaluate = vvs => {
 let generatorModule = () => {
 	let generate;
 
-	generate = (frame, offset, vps) => {
+	generate = (fs, ps, vps) => {
 		let lookup = vn => {
 			let [vn_, pointer] = find(vps, ([vn_, pointer]) => vn_ === vn);
 			return pointer;
@@ -1569,15 +1569,19 @@ let generatorModule = () => {
 			let f = false ? undefined
 			: id === 'alloc' ? (({ vn, expr }) =>  ({
 				id: 'alloc-frame',
-				expr: generate(frame, offset + 1, cons([vn, [frame, offset]], vps))(expr),
+				expr: generate(fs, ps + 1, cons([vn, [fs, ps]], vps))(expr),
 			}))
+			: id === 'lambda' ? (({ bind, expr }) => function() {
+				let fs1 = fs + 1;
+				return ({ id: 'lambda', bind, expr: generate(fs1, 1, cons([bind.vn, [fs1, 0]], vps))(expr) });
+			}())
 			: id === 'let' ? (({ bind, value, expr }) => ({
 				id: 'alloc-frame',
-				expr: generate(frame, offset + 1, cons([bind.vn, [frame, offset]], vps))({ id: 'assign', bind, value, expr }),
+				expr: generate(fs, ps + 1, cons([bind.vn, [fs, ps]], vps))({ id: 'assign', bind, value, expr }),
 			}))
 			: id === 'var' ? (({ vn }) => function() {
-				let [frame_, offset] = lookup(vn);
-				return { id: 'mem', frame: frame - frame_, offset };
+				let [fs_, ps] = lookup(vn);
+				return { id: 'mem', fs: fs - fs_, ps };
 			}())
 			: (({}) => rewrite(gen, ast));
 
