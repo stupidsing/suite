@@ -351,9 +351,9 @@ let parserModule = () => {
 		: program.startsWith('"') && program.endsWith('"') ? _str(program.slice(1, -1))
 		: program.startsWith('`') && program.endsWith('`') ? parseBackquote(program.slice(1, -1))
 		: program === 'false' ? _bool(program)
-		: program === 'new Error' ? { id: 'new-error' }
-		: program === 'new Map' ? { id: 'new-map' }
-		: program === 'new Promise' ? { id: 'new-promise' }
+		: program === 'new Error' ? { id: 'new', clazz: 'Error' }
+		: program === 'new Map' ? { id: 'new', clazz: 'Map' }
+		: program === 'new Promise' ? { id: 'new', clazz: 'Promise' }
 		: program === 'nil' ? _array([])
 		: program === 'true' ? _bool(program)
 		: program === 'undefined' ? _undefined
@@ -593,9 +593,7 @@ let rewrite = (rf, ast) => {
 	: id === 'mul' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
 	: id === 'ne_' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
 	: id === 'neg' ? (({ expr }) => ({ id, expr: rf(expr) }))
-	: id === 'new-error' ? (({}) => ast)
-	: id === 'new-map' ? (({}) => ast)
-	: id === 'new-promise' ? (({}) => ast)
+	: id === 'new' ? (({}) => ast)
 	: id === 'not' ? (({ expr }) => ({ id, expr: rf(expr) }))
 	: id === 'num' ? (({ i }) => ast)
 	: id === 'or_' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
@@ -674,9 +672,7 @@ format = ast => {
 	: id === 'app' ? (({ lhs, rhs }) => `${format(lhs)}(${format(rhs)})`)
 	: id === 'array' ? (({ values }) => `[${values.map(format).join(', ')},]`)
 	: id === 'bool' ? (({ v }) => v)
-	: id === 'new-error' ? (({}) => 'new Error')
-	: id === 'new-map' ? (({}) => 'new Map')
-	: id === 'new-promise' ? (({}) => 'new Promise')
+	: id === 'new' ? (({ clazz }) => `new ${clazz}`)
 	: id === 'num' ? (({ i }) => `${i}`)
 	: id === 'struct' ? (({ kvs }) => {
 		let s = kvs.map(({ key, value }) => {
@@ -1062,18 +1058,18 @@ let typesModule = () => {
 		: id === 'neg' ? (({ expr }) =>
 			doBind(ast, infer(expr), tyNumber) && tyNumber
 		)
-		: id === 'new-error' ? (({}) =>
-			tyLambdaOf(tyString, tyError)
+		: id === 'new' ? (({ clazz }) =>
+			false ? undefined
+			: clazz === 'Error' ? tyLambdaOf(tyString, tyError)
+			: clazz === 'Map' ? tyLambdaOf(tyVoid, tyMapOf(newRef(), newRef()))
+			: clazz === 'Promise' ? function() {
+				let tr = newRef();
+				let tres = tyLambdaOf(tr, tyVoid);
+				let trej = tyLambdaOf(tyError, tyVoid);
+				return tyLambdaOf(tyLambdaOf(tyPairOf(tres, trej), tyVoid), tyPromiseOf(tr));
+			}()
+			: error(`unknown class ${clazz}`)
 		)
-		: id === 'new-map' ? (({}) =>
-			tyLambdaOf(tyVoid, tyMapOf(newRef(), newRef()))
-		)
-		: id === 'new-promise' ? (({}) => {
-			let tr = newRef();
-			let tres = tyLambdaOf(tr, tyVoid);
-			let trej = tyLambdaOf(tyError, tyVoid);
-			return tyLambdaOf(tyLambdaOf(tyPairOf(tres, trej), tyVoid), tyPromiseOf(tr));
-		})
 		: id === 'not' ? (({ expr }) =>
 			doBind(ast, infer(expr), tyBoolean) && tyBoolean
 		)
@@ -1462,9 +1458,12 @@ evaluate = vvs => {
 		: id === 'mul' ? (({ lhs, rhs }) => assumeAny(eval(lhs) * eval(rhs)))
 		: id === 'ne_' ? (({ lhs, rhs }) => assumeAny(eval(lhs) !== eval(rhs)))
 		: id === 'neg' ? (({ expr }) => assumeAny(-eval(expr)))
-		: id === 'new-error' ? (({}) => assumeAny(e => new Error(e)))
-		: id === 'new-map' ? (({}) => assumeAny(() => new Map()))
-		: id === 'new-promise' ? (({}) => assumeAny(f => new Promise(f)))
+		: id === 'new' ? (({ clazz }) => false ? undefined
+			: clazz === 'Error' ? assumeAny(e => new Error(e))
+			: clazz === 'Map' ? assumeAny(() => new Map())
+			: clazz === 'Promise' ? assumeAny(f => new Promise(f))
+			: error(`unknown class ${clazz}`)
+		)
 		: id === 'not' ? (({ expr }) => assumeAny(!eval(expr)))
 		: id === 'num' ? (({ i }) => i)
 		: id === 'or_' ? (({ lhs, rhs }) => assumeAny(eval(lhs) || eval(rhs)))
