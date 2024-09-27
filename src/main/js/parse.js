@@ -55,8 +55,8 @@ foldr = (init, es, op) => isNotEmpty(es) ? op(foldr(init, tail(es), op), head(es
 let gen = i => {
 	let array = [];
 	while (0 < i) (function() {
-		array.push(i);
 		i = i - 1;
+		array.push(i);
 	}());
 	return array;
 };
