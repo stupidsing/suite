@@ -33,6 +33,8 @@ let isNotEmpty = list => 0 < list.length;
 let nil = [];
 let tail = list => list.slice(1, undefined);
 
+let get0 = tuple => { let [a, b] = tuple; return a; };
+let get1 = tuple => { let [a, b] = tuple; return b; };
 let seti = (m, k, v) => { fake(m)[0 <= k && fake(k)] = v; return v; };
 let getp = (m, k) => fake(m)[k !== '' && fake(k)];
 let setp = (m, k, v) => { fake(m)[k !== '' && fake(k)] = v; return v; };
@@ -820,11 +822,6 @@ let typesModule = () => {
 		return cloneRef_(v);
 	};
 
-	let lookup = (vts, vn) => {
-		let [vn_, t] = find(vts, ([vn_, t]) => vn_ === vn);
-		return t;
-	};
-
 	let bindTypes;
 
 	bindTypes = (vts, ast) => false ? undefined
@@ -1126,7 +1123,7 @@ let typesModule = () => {
 			newRef()
 		)
 		: id === 'var' ? (({ vn }) => {
-			let t = finalRef(lookup(vts, vn));
+			let t = finalRef(get1(find(vts, ([vn_, t]) => vn_ === vn)));
 			return t.generic !== true ? t : cloneRef(t);
 		})
 		: id === 'while' ? (({ cond, loop, expr }) => {
@@ -1429,11 +1426,6 @@ evaluate = vvs => {
 		return value;
 	};
 
-	let lookup = vn => {
-		let [vn_, value] = find(vvs, ([vn_, value]) => vn_ === vn);
-		return value;
-	};
-
 	let evaluate_;
 
 	evaluate_ = ast => {
@@ -1494,7 +1486,7 @@ evaluate = vvs => {
 		: id === 'tuple' ? (({ values }) => assumeAny(foldr(nil, values, (tuple, value) => cons(eval(value), tuple))))
 		: id === 'typeof' ? (({ expr }) => assumeAny(typeof (eval(expr))))
 		: id === 'undefined' ? (({}) => undefined)
-		: id === 'var' ? (({ vn }) => lookup(vn))
+		: id === 'var' ? (({ vn }) => get1(find(vvs, ([vn_, value]) => vn_ === vn)))
 		: id === 'while' ? (({ cond, loop, expr }) => function() {
 			let v;
 			while (eval(cond)) eval(loop);
@@ -1508,51 +1500,41 @@ evaluate = vvs => {
 	return evaluate_;
 };
 
-let generatorModule = () => {
-	let lookup = (vts, vn) => {
-		let [vn_, pointer] = find(vts, ([vn_, pointer]) => vn_ === vn);
-		return pointer;
-	};
+let reduceVars;
 
-	let reduceVars;
+reduceVars = (fs, ps, vts, ast) => {
+	let fs1 = fs + 1;
+	let ps1 = ps + 1;
+	let { id } = ast;
 
-	reduceVars = (fs, ps, vts, ast) => {
-		let fs1 = fs + 1;
-		let ps1 = ps + 1;
-		let { id } = ast;
+	let f = false ? undefined
+	: id === 'alloc' ? (({ vn, expr }) =>
+		_alloc(vn, reduceVars(ps, fs1, cons([vn, [fs, ps]], vts), expr))
+	)
+	: id === 'lambda' ? (({ bind, expr }) =>
+		_lambda(bind, reduceVars(fs1, 1, cons([bind.vn, [fs1, 0]], vts), expr))
+	)
+	: id === 'lambda-async' ? (({ bind, expr }) =>
+		_lambdaAsync(bind, reduceVars(fs1, 1, cons([bind.vn, [fs1, 0]], vts), expr))
+	)
+	: id === 'let' ? (({ bind, value, expr }) =>
+		_alloc(bind.vn, _assign(bind,
+			reduceVars(fs, ps, vts, fs, ps, value),
+			reduceVars(fs, ps1, cons([bind.vn, [fs, ps]], vts), expr)))
+	)
+	: id === 'var' ? (({ vn }) => {
+		let [fs_, ps] = get1(find(vts, ([vn_, pointer]) => vn_ === vn));
+		return { id: 'stack', fs: fs - fs_, ps };
+	})
+	: (({}) =>
+		rewrite(ast => reduceVars(fs, ps, vts, ast), ast)
+	);
 
-		let f = false ? undefined
-		: id === 'alloc' ? (({ vn, expr }) =>
-			_alloc(vn, reduceVars(ps, fs1, cons([vn, [fs, ps]], vts), expr))
-		)
-		: id === 'lambda' ? (({ bind, expr }) =>
-			_lambda(bind, reduceVars(fs1, 1, cons([bind.vn, [fs1, 0]], vts), expr))
-		)
-		: id === 'lambda-async' ? (({ bind, expr }) =>
-			_lambdaAsync(bind, reduceVars(fs1, 1, cons([bind.vn, [fs1, 0]], vts), expr))
-		)
-		: id === 'let' ? (({ bind, value, expr }) =>
-			_alloc(bind.vn, _assign(bind,
-				reduceVars(fs, ps, vts, fs, ps, value),
-				reduceVars(fs, ps1, cons([bind.vn, [fs, ps]], vts), expr)))
-		)
-		: id === 'var' ? (({ vn }) => {
-			let [fs_, ps] = lookup(vts, vn);
-			return { id: 'stack', fs: fs - fs_, ps };
-		})
-		: (({}) =>
-			rewrite(ast => reduceVars(fs, ps, vts, ast), ast)
-		);
-
-		return f(ast);
-	};
-
-	let generate = ast => reduceVars(0, 0, [], ast);
-
-	return { generate };
+	return f(ast);
 };
 
-let generator = generatorModule();
+let generate = ast => reduceVars(0, 0, [], ast);
+
 let parser = parserModule();
 let types = typesModule();
 
