@@ -1518,7 +1518,7 @@ reduceVars = (fs, ps, vts, ast) => {
 	)
 	: id === 'let' ? (({ bind, value, expr }) =>
 		_alloc(bind.vn, _assign(bind,
-			reduceVars(fs, ps, vts, fs, ps, value),
+			reduceVars(fs, ps, vts, value),
 			reduceVars(fs, ps1, cons([bind.vn, [fs, ps]], vts), expr)))
 	)
 	: id === 'var' ? (({ vn }) => {
