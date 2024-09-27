@@ -1567,9 +1567,13 @@ let process_ = program => {
 		program = program.slice(0, pos0) + program.slice(posx, undefined);
 	}());
 
-	let ast = parser.parse(program);
+	let ast0 = parser.parse(program);
+	let ast1 = reduceNe(ast0);
+	let ast2 = reduceBind(ast1);
+	let ast3 = reduceAsync(ast2);
+	let ast4 = unpromisify(ast3);
 
-	return { ast: unpromisify(reduceAsync(reduceBind(reduceNe(ast)))), type: types.infer(ast) };
+	return { ast: ast4, type: types.infer(ast0) };
 };
 
 let actual = stringify(process_(`
