@@ -1170,260 +1170,254 @@ let typesModule = () => {
 	return { dump, infer: ast => inferType(predefinedTypes, false, ast) };
 };
 
-let reducerModule = () => {
-	let promiseResolve = _dot(_var('Promise'), '.resolve');
-	let promisify = ast => _app(promiseResolve, ast);
+let promiseResolve = _dot(_var('Promise'), '.resolve');
+let promisify = ast => _app(promiseResolve, ast);
 
-	let unpromisify = ast => {
-		let { id, lhs, rhs } = ast;
-		return id === 'app' && lhs === promiseResolve ? rhs : undefined;
+let unpromisify = ast => {
+	let { id, lhs, rhs } = ast;
+	return id === 'app' && lhs === promiseResolve ? rhs : undefined;
+};
+
+let reduceAsync;
+
+reduceAsync = ast => {
+	let { id } = ast;
+
+	let _then = (p, bind, expr) => _app(_dot(p, '.then'), _lambda(bind, expr));
+
+	let reduceOp = ({ expr }) => {
+		let pe = reduceAsync(expr);
+		let e = unpromisify(pe);
+		let ve = e ?? _var(newDummy());
+		let p = promisify({ id, expr: ve });
+		return e !== undefined ? p : _then(pe, ve, p);
 	};
 
-	let reduceAsync;
+	let reduceBinOp = ({ lhs, rhs }) => {
+		let pl = reduceAsync(lhs);
+		let l = unpromisify(pl);
+		let vl = l ?? _var(newDummy());
+		let pr = reduceAsync(rhs);
+		let r = unpromisify(pr);
+		let vr = r ?? _var(newDummy());
+		let p;
+		p = promisify({ id, lhs: vl, rhs: vr });
+		p = l !== undefined ? p : _then(pl, vl, p);
+		p = r !== undefined ? p : _then(pr, vr, p);
+		return p;
+	};
 
-	reduceAsync = ast => {
-		let { id } = ast;
+	let f = false ? undefined
+	: id === 'add' ?
+		reduceBinOp
+	: id === 'alloc' ? (({ vn, expr }) => {
+		let pe = reduceAsync(expr);
+		let e = unpromisify(pe);
+		return e !== undefined ? promisify({ id, vn, expr: e }) : { id, vn, expr: pe };
+	})
+	: id === 'and' ?
+		reduceBinOp
+	: id === 'app' ?
+		reduceBinOp
+	: id === 'await' ? (({ expr }) => expr)
+	: id === 'coal' ?
+		reduceBinOp
+	: id === 'cons' ?
+		reduceBinOp
+	: id === 'div' ?
+		reduceBinOp
+	: id === 'dot' ? (({ expr, field }) => {
+		let pe = reduceAsync(expr);
+		let e = unpromisify(pe);
+		let ve = e ?? _var(newDummy());
+		let p = promisify({ id, expr: ve, field });
+		return e !== undefined ? p : _then(pe, ve, p);
+	})
+	: id === 'eq_' ?
+		reduceBinOp
+	: id === 'if' ? (({ if_, then, else_ }) => {
+		let pi = reduceAsync(if_);
+		let i = unpromisify(pi);
+		let vi = i ?? _var(newDummy());
+		let pt = reduceAsync(then);
+		let t = unpromisify(pt);
+		let pe = reduceAsync(else_);
+		let e = unpromisify(pe);
+		return false ? undefined
+		: i !== undefined && t !== undefined && e !== undefined ? promisify({ id, if_: vi, then: t, else_: e })
+		: i !== undefined ? { id, if_: vi, then: pt, else_: pe }
+		: _then(pi, vi, { id, if_: vi, then: pt, else_: pe });
+	})
+	: id === 'lambda-async' ? (({ bind, expr }) =>
+		promisify(_lambda(bind, reduceAsync(expr)))
+	)
+	: id === 'le_' ?
+		reduceBinOp
+	: id === 'let' ? (({ bind, value, expr }) => {
+		let pv = reduceAsync(value);
+		let v = unpromisify(pv);
+		let pe = reduceAsync(expr);
+		let e = unpromisify(pe);
+		return false ? undefined
+		: e !== undefined && v !== undefined ? promisify({ id, bind, value: v, expr: e })
+		: e === undefined && v !== undefined ? { id, bind, value: v, expr: pe }
+		: _then(pv, bind, pe);
+	})
+	: id === 'lt_' ?
+		reduceBinOp
+	: id === 'mul' ?
+		reduceBinOp
+	: id === 'ne_' ?
+		reduceBinOp
+	: id === 'neg' ?
+		reduceOp
+	: id === 'not' ?
+		reduceOp
+	: id === 'or_' ?
+		reduceBinOp
+	: id === 'pos' ?
+		reduceOp
+	: id === 'sub' ?
+		reduceBinOp
+	: id === 'try' ?
+		reduceBinOp
+	: id === 'typeof' ?
+		reduceOp
+	: id === 'while' ? (({ cond, loop, expr }) => {
+		let pc = reduceAsync(cond);
+		let c = unpromisify(pc);
+		let vc = c ?? _var(newDummy());
+		let pl = reduceAsync(loop);
+		let l = unpromisify(pl);
+		let pe = reduceAsync(expr);
+		let e = unpromisify(pe);
+		return false ? undefined
+		: c !== undefined && l !== undefined && e !== undefined ? promisify({ id, cond: vc, loop: l, expr: e })
+		: c !== undefined && l !== undefined && e === undefined ? { id, cond: vc, loop: l, expr: pe }
+		: function() {
+			let vn = newDummy();
+			let vp = _var(vn);
+			let invoke = _app(vp, _void);
+			let if_ = _if(vc, _then(pl, _var(newDummy()), invoke), pe);
+			return _alloc(vn, _assign(vp, _lambda(_var(newDummy()), c !== undefined ? if_ : _then(pc, vc, if_)), invoke));
+		}();
+	})
+	: (({}) =>
+		promisify(rewrite(ast_ => unpromisify(reduceAsync(ast_)), ast))
+	);
 
-		let _then = (p, bind, expr) => _app(_dot(p, '.then'), _lambda(bind, expr));
+	return f(ast);
+};
 
-		let reduceOp = ({ expr }) => {
-			let pe = reduceAsync(expr);
-			let e = unpromisify(pe);
-			let ve = e ?? _var(newDummy());
-			let p = promisify({ id, expr: ve });
-			return e !== undefined ? p : _then(pe, ve, p);
-		};
+let ifBindId = bindId => {
+	let ifBind;
 
-		let reduceBinOp = ({ lhs, rhs }) => {
-			let pl = reduceAsync(lhs);
-			let l = unpromisify(pl);
-			let vl = l ?? _var(newDummy());
-			let pr = reduceAsync(rhs);
-			let r = unpromisify(pr);
-			let vr = r ?? _var(newDummy());
-			let p;
-			p = promisify({ id, lhs: vl, rhs: vr });
-			p = l !== undefined ? p : _then(pl, vl, p);
-			p = r !== undefined ? p : _then(pr, vr, p);
-			return p;
-		};
+	ifBind = (bind, value, then, else_) => {
+		let { id } = bind;
+
+		let bindConstant = ast => false ? undefined
+			: bind.id !== value.id ? _if(_eq(bind, value), then, else_)
+			: bind.v === value.v ? then
+			: else_;
 
 		let f = false ? undefined
-		: id === 'add' ?
-			reduceBinOp
-		: id === 'alloc' ? (({ vn, expr }) => {
-			let pe = reduceAsync(expr);
-			let e = unpromisify(pe);
-			return e !== undefined ? promisify({ id, vn, expr: e }) : { id, vn, expr: pe };
-		})
-		: id === 'and' ?
-			reduceBinOp
-		: id === 'app' ?
-			reduceBinOp
-		: id === 'await' ? (({ expr }) => expr)
-		: id === 'coal' ?
-			reduceBinOp
-		: id === 'cons' ?
-			reduceBinOp
-		: id === 'div' ?
-			reduceBinOp
-		: id === 'dot' ? (({ expr, field }) => {
-			let pe = reduceAsync(expr);
-			let e = unpromisify(pe);
-			let ve = e ?? _var(newDummy());
-			let p = promisify({ id, expr: ve, field });
-			return e !== undefined ? p : _then(pe, ve, p);
-		})
-		: id === 'eq_' ?
-			reduceBinOp
-		: id === 'if' ? (({ if_, then, else_ }) => {
-			let pi = reduceAsync(if_);
-			let i = unpromisify(pi);
-			let vi = i ?? _var(newDummy());
-			let pt = reduceAsync(then);
-			let t = unpromisify(pt);
-			let pe = reduceAsync(else_);
-			let e = unpromisify(pe);
+		: id === 'array' ? (({ values }) => {
+			let indices = gen(values.length);
 			return false ? undefined
-			: i !== undefined && t !== undefined && e !== undefined ? promisify({ id, if_: vi, then: t, else_: e })
-			: i !== undefined ? { id, if_: vi, then: pt, else_: pe }
-			: _then(pi, vi, { id, if_: vi, then: pt, else_: pe });
-		})
-		: id === 'lambda-async' ? (({ bind, expr }) =>
-			promisify(_lambda(bind, reduceAsync(expr)))
-		)
-		: id === 'le_' ?
-			reduceBinOp
-		: id === 'let' ? (({ bind, value, expr }) => {
-			let pv = reduceAsync(value);
-			let v = unpromisify(pv);
-			let pe = reduceAsync(expr);
-			let e = unpromisify(pe);
-			return false ? undefined
-			: e !== undefined && v !== undefined ? promisify({ id, bind, value: v, expr: e })
-			: e === undefined && v !== undefined ? { id, bind, value: v, expr: pe }
-			: _then(pv, bind, pe);
-		})
-		: id === 'lt_' ?
-			reduceBinOp
-		: id === 'mul' ?
-			reduceBinOp
-		: id === 'ne_' ?
-			reduceBinOp
-		: id === 'neg' ?
-			reduceOp
-		: id === 'not' ?
-			reduceOp
-		: id === 'or_' ?
-			reduceBinOp
-		: id === 'pos' ?
-			reduceOp
-		: id === 'sub' ?
-			reduceBinOp
-		: id === 'try' ?
-			reduceBinOp
-		: id === 'typeof' ?
-			reduceOp
-		: id === 'while' ? (({ cond, loop, expr }) => {
-			let pc = reduceAsync(cond);
-			let c = unpromisify(pc);
-			let vc = c ?? _var(newDummy());
-			let pl = reduceAsync(loop);
-			let l = unpromisify(pl);
-			let pe = reduceAsync(expr);
-			let e = unpromisify(pe);
-			return false ? undefined
-			: c !== undefined && l !== undefined && e !== undefined ? promisify({ id, cond: vc, loop: l, expr: e })
-			: c !== undefined && l !== undefined && e === undefined ? { id, cond: vc, loop: l, expr: pe }
-			: function() {
-				let vn = newDummy();
-				let vp = _var(vn);
-				let invoke = _app(vp, _void);
-				let if_ = _if(vc, _then(pl, _var(newDummy()), invoke), pe);
-				return _alloc(vn, _assign(vp, _lambda(_var(newDummy()), c !== undefined ? if_ : _then(pc, vc, if_)), invoke));
-			}();
-		})
-		: (({}) =>
-			promisify(rewrite(ast_ => unpromisify(reduceAsync(ast_)), ast))
-		);
-
-		return f(ast);
-	};
-
-	let ifBindId = bindId => {
-		let ifBind;
-
-		ifBind = (bind, value, then, else_) => {
-			let { id } = bind;
-
-			let bindConstant = ast => false ? undefined
-				: bind.id !== value.id ? _if(_eq(bind, value), then, else_)
-				: bind.v === value.v ? then
-				: else_;
-
-			let f = false ? undefined
-			: id === 'array' ? (({ values }) => {
-				let indices = gen(values.length);
-				return false ? undefined
-				: id !== value.id ?
-					ifBind(
-						_num(values.length),
-						_dot(value, '.length'),
-						indices.reduce((expr, i) => ifBind(values[i], _index(value, _num(i)), expr, else_), then),
-						else_)
-				: values.length === value.values.length ?
-					indices.reduce(
-						(expr, i) => ifBind(values[i], value.values[i], expr, else_),
-						then)
-				:
-					else_;
-			})
-			: id === 'bool' ?
-				bindConstant
-			: id === 'num' ?
-				bindConstant
-			: id === 'pair' ? (({ lhs, rhs }) => {
-				return false ? undefined
-				: id !== value.id ?
-					ifBind(lhs, _index(value, _num(0)), ifBind(rhs, _index(value, _num(1)), then, else_), else_)
-				:
-					ifBind(lhs, value.lhs, ifBind(rhs, value.rhs, then, else_), else_);
-			})
-			: id === 'str' ?
-				bindConstant
-			: id === 'struct' ? (({ kvs }) => {
-				let getValue = k => value.kvs.filter(kv => kv.key === k)[0].value;
-				return kvs.reduce(
-					(expr, kv) => ifBind(kv.value, id !== value.id ? _dot(value, kv.key) : getValue(kv.key), expr, else_),
-					then);
-			})
-			: id === 'tuple' ? (({ values }) => {
-				let indices = gen(values.length);
-				return indices.reduce(
-					(expr, i) => ifBind(values[i], id !== value.id ? _index(value, _num(i)) : value.values[i], expr, else_),
-					then);
-			})
-			: id === 'var' ? (({ vn }) =>
-				({ id: bindId, bind, value, expr: then })
-			)
+			: id !== value.id ?
+				ifBind(
+					_num(values.length),
+					_dot(value, '.length'),
+					indices.reduce((expr, i) => ifBind(values[i], _index(value, _num(i)), expr, else_), then),
+					else_)
+			: values.length === value.values.length ?
+				indices.reduce(
+					(expr, i) => ifBind(values[i], value.values[i], expr, else_),
+					then)
 			:
-				error(`cannot destructure ${format(bind)}`);
-
-			return f(bind);
-		};
-
-		return ifBind;
-	};
-
-	let assignBind = ifBindId('assign');
-	let letBind = ifBindId('let');
-
-	let reduceBind;
-
-	reduceBind = ast => {
-		let { id } = ast;
-
-		let f = false ? undefined
-		: id === 'assign' && ast.bind.id !== 'var' ? (({ bind, value, expr }) =>
-			assignBind(bind, value, expr, _error)
-		)
-		: id === 'lambda' && ast.bind.id !== 'var' ? (({ bind, expr }) => {
-			let arg = _var(newDummy());
-			return _lambda(arg, letBind(bind, arg, expr, _error));
+				else_;
 		})
-		: id === 'lambda-async' && ast.bind.id !== 'var' ? (({ bind, expr }) => {
-			let arg = _var(newDummy());
-			return _lambdaAsync(arg, letBind(bind, arg, expr, _error));
+		: id === 'bool' ?
+			bindConstant
+		: id === 'num' ?
+			bindConstant
+		: id === 'pair' ? (({ lhs, rhs }) => {
+			return false ? undefined
+			: id !== value.id ?
+				ifBind(lhs, _index(value, _num(0)), ifBind(rhs, _index(value, _num(1)), then, else_), else_)
+			:
+				ifBind(lhs, value.lhs, ifBind(rhs, value.rhs, then, else_), else_);
 		})
-		: id === 'let' && ast.bind.id !== 'var' ? (({ bind, value, expr }) =>
-			letBind(bind, value, expr, _error)
+		: id === 'str' ?
+			bindConstant
+		: id === 'struct' ? (({ kvs }) => {
+			let getValue = k => value.kvs.filter(kv => kv.key === k)[0].value;
+			return kvs.reduce(
+				(expr, kv) => ifBind(kv.value, id !== value.id ? _dot(value, kv.key) : getValue(kv.key), expr, else_),
+				then);
+		})
+		: id === 'tuple' ? (({ values }) => {
+			let indices = gen(values.length);
+			return indices.reduce(
+				(expr, i) => ifBind(values[i], id !== value.id ? _index(value, _num(i)) : value.values[i], expr, else_),
+				then);
+		})
+		: id === 'var' ? (({ vn }) =>
+			({ id: bindId, bind, value, expr: then })
 		)
-		: (({}) =>
-			rewrite(reduceBind, ast)
-		);
+		:
+			error(`cannot destructure ${format(bind)}`);
 
-		return f(ast);
+		return f(bind);
 	};
 
-	let reduceNe;
+	return ifBind;
+};
 
-	reduceNe = ast => {
-		let { id } = ast;
+let assignBind = ifBindId('assign');
+let letBind = ifBindId('let');
 
-		let f = false ? undefined
-		: id === 'ne_' ? (({ lhs, rhs }) =>
-			_not(_eq(reduceNe(lhs), reduceNe(rhs)))
-		)
-		: (({}) =>
-			rewrite(reduceNe, ast)
-		);
+let reduceBind;
 
-		return f(ast);
-	};
+reduceBind = ast => {
+	let { id } = ast;
 
-	let reduces = ast => unpromisify(reduceAsync(reduceBind(reduceNe(ast))));
+	let f = false ? undefined
+	: id === 'assign' && ast.bind.id !== 'var' ? (({ bind, value, expr }) =>
+		assignBind(bind, value, expr, _error)
+	)
+	: id === 'lambda' && ast.bind.id !== 'var' ? (({ bind, expr }) => {
+		let arg = _var(newDummy());
+		return _lambda(arg, letBind(bind, arg, expr, _error));
+	})
+	: id === 'lambda-async' && ast.bind.id !== 'var' ? (({ bind, expr }) => {
+		let arg = _var(newDummy());
+		return _lambdaAsync(arg, letBind(bind, arg, expr, _error));
+	})
+	: id === 'let' && ast.bind.id !== 'var' ? (({ bind, value, expr }) =>
+		letBind(bind, value, expr, _error)
+	)
+	: (({}) =>
+		rewrite(reduceBind, ast)
+	);
 
-	return { reduces };
+	return f(ast);
+};
+
+let reduceNe;
+
+reduceNe = ast => {
+	let { id } = ast;
+
+	let f = false ? undefined
+	: id === 'ne_' ? (({ lhs, rhs }) =>
+		_not(_eq(reduceNe(lhs), reduceNe(rhs)))
+	)
+	: (({}) =>
+		rewrite(reduceNe, ast)
+	);
+
+	return f(ast);
 };
 
 let evaluate;
@@ -1560,7 +1554,6 @@ let generatorModule = () => {
 
 let generator = generatorModule();
 let parser = parserModule();
-let reducer = reducerModule();
 let types = typesModule();
 
 let process_ = program => {
@@ -1576,7 +1569,7 @@ let process_ = program => {
 
 	let ast = parser.parse(program);
 
-	return { ast: reducer.reduces(ast), type: types.infer(ast) };
+	return { ast: unpromisify(reduceAsync(reduceBind(reduceNe(ast)))), type: types.infer(ast) };
 };
 
 let actual = stringify(process_(`
