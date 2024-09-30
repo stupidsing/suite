@@ -97,7 +97,7 @@ let _bool = v => ({ id: 'bool', v });
 let _cons = (lhs, rhs) => ({ id: 'cons', lhs, rhs });
 let _dot = (expr, field) => ({ id: 'dot', expr, field });
 let _eq = (lhs, rhs) => ({ id: 'eq_', lhs, rhs });
-let _error = { id: 'error' };
+let _error = { id: 'new', clazz: 'Error' };
 let _if = (if_, then, else_) => ({ id: 'if', if_, then, else_ });
 let _index = (lhs, rhs) => ({ id: 'index', lhs, rhs });
 let _lambda = (bind, expr) => ({ id: 'lambda', bind, expr });
