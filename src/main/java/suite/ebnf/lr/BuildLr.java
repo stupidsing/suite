@@ -30,14 +30,7 @@ public class BuildLr {
 	public final State state0;
 	public final Map<State, Transition> fsm = new HashMap<>();
 
-	private class Blr {
-		private int nTokens;
-		private Transition next;
-
-		private Blr(int nTokens, Transition next) {
-			this.nTokens = nTokens;
-			this.next = next;
-		}
+	private record Blr(int nTokens, Transition next) {
 	}
 
 	public class Transition extends HashMap<String, Pair<State, Reduce>> {
