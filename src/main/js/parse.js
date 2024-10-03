@@ -1508,7 +1508,7 @@ reduceVars = (fs, ps, vts, ast) => {
 
 	let f = false ? undefined
 	: id === 'alloc' ? (({ vn, expr }) =>
-		_alloc(vn, reduceVars(ps, fs1, cons([vn, [fs, ps]], vts), expr))
+		_alloc(vn, reduceVars(fs, ps1, cons([vn, [fs, ps]], vts), expr))
 	)
 	: id === 'lambda' ? (({ bind, expr }) =>
 		_lambda(bind, reduceVars(fs1, 1, cons([bind.vn, [fs1, 0]], vts), expr))
