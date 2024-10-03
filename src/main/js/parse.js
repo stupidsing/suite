@@ -1513,9 +1513,6 @@ reduceVars = (fs, ps, vts, ast) => {
 	: id === 'lambda' ? (({ bind, expr }) =>
 		_lambda(bind, reduceVars(fs1, 1, cons([bind.vn, [fs1, 0]], vts), expr))
 	)
-	: id === 'lambda-async' ? (({ bind, expr }) =>
-		_lambdaAsync(bind, reduceVars(fs1, 1, cons([bind.vn, [fs1, 0]], vts), expr))
-	)
 	: id === 'let' ? (({ bind, value, expr }) =>
 		_alloc(bind.vn, _assign(bind,
 			reduceVars(fs, ps, vts, value),
@@ -1532,7 +1529,7 @@ reduceVars = (fs, ps, vts, ast) => {
 	return f(ast);
 };
 
-let generate = ast => reduceVars(0, 0, [], ast);
+// let generate = ast => reduceVars(0, 0, [], ast);
 
 let parser = parserModule();
 let types = typesModule();
