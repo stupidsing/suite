@@ -1614,7 +1614,7 @@ rewriteVars = (fs, ps, vts, ast) => {
 let parser = parserModule();
 let types = typesModule();
 
-let process_ = program => {
+let process0 = program => {
 	let pos0;
 	let posx;
 	while (function() {
@@ -1634,7 +1634,7 @@ let process_ = program => {
 	return { ast: ast4, type: types.infer(ast0) };
 };
 
-let actual = stringify(process_(`
+let actual = stringify(process0(`
 	let parse = ast => ast;
 	console.log(parse(require('fs').readFileSync(0, 'utf8')))
 `).ast);
@@ -1659,7 +1659,7 @@ let expect = stringify(
 return actual === expect
 ? function() {
 	try {
-		let { ast, type } = process_(require('fs').readFileSync(0, 'utf8'));
+		let { ast, type } = process0(require('fs').readFileSync(0, 'utf8'));
 		console.log(`ast :: ${stringify(ast)}`);
 		// console.log(`eval :: ${JSON.stringify(evaluate([])(ast))}`);
 		// console.log(`format :: ${format(ast)}`);
