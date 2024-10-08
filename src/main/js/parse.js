@@ -1171,15 +1171,15 @@ let unpromisify = ast => {
 	return id === 'app' && lhs === promiseResolve ? rhs : undefined;
 };
 
-let reduceAsync;
+let rewriteAsync;
 
-reduceAsync = ast => {
+rewriteAsync = ast => {
 	let { id } = ast;
 
 	let _then = (p, bind, expr) => _app(_dot(p, '.then'), _lambda(bind, expr));
 
 	let reduceOp = ({ expr }) => {
-		let pe = reduceAsync(expr);
+		let pe = rewriteAsync(expr);
 		let e = unpromisify(pe);
 		let ve = e ?? _var(newDummy());
 		let p = promisify({ id, expr: ve });
@@ -1187,10 +1187,10 @@ reduceAsync = ast => {
 	};
 
 	let reduceBinOp = ({ lhs, rhs }) => {
-		let pl = reduceAsync(lhs);
+		let pl = rewriteAsync(lhs);
 		let l = unpromisify(pl);
 		let vl = l ?? _var(newDummy());
-		let pr = reduceAsync(rhs);
+		let pr = rewriteAsync(rhs);
 		let r = unpromisify(pr);
 		let vr = r ?? _var(newDummy());
 		let p;
@@ -1204,7 +1204,7 @@ reduceAsync = ast => {
 	: id === 'add' ?
 		reduceBinOp
 	: id === 'alloc' ? (({ vn, expr }) => {
-		let pe = reduceAsync(expr);
+		let pe = rewriteAsync(expr);
 		let e = unpromisify(pe);
 		return e !== undefined ? promisify({ id, vn, expr: e }) : { id, vn, expr: pe };
 	})
@@ -1220,7 +1220,7 @@ reduceAsync = ast => {
 	: id === 'div' ?
 		reduceBinOp
 	: id === 'dot' ? (({ expr, field }) => {
-		let pe = reduceAsync(expr);
+		let pe = rewriteAsync(expr);
 		let e = unpromisify(pe);
 		let ve = e ?? _var(newDummy());
 		let p = promisify({ id, expr: ve, field });
@@ -1229,12 +1229,12 @@ reduceAsync = ast => {
 	: id === 'eq_' ?
 		reduceBinOp
 	: id === 'if' ? (({ if_, then, else_ }) => {
-		let pi = reduceAsync(if_);
+		let pi = rewriteAsync(if_);
 		let i = unpromisify(pi);
 		let vi = i ?? _var(newDummy());
-		let pt = reduceAsync(then);
+		let pt = rewriteAsync(then);
 		let t = unpromisify(pt);
-		let pe = reduceAsync(else_);
+		let pe = rewriteAsync(else_);
 		let e = unpromisify(pe);
 		return false ? undefined
 		: i !== undefined && t !== undefined && e !== undefined ? promisify({ id, if_: vi, then: t, else_: e })
@@ -1242,14 +1242,14 @@ reduceAsync = ast => {
 		: _then(pi, vi, { id, if_: vi, then: pt, else_: pe });
 	})
 	: id === 'lambda-async' ? (({ bind, expr }) =>
-		promisify(_lambda(bind, reduceAsync(expr)))
+		promisify(_lambda(bind, rewriteAsync(expr)))
 	)
 	: id === 'le_' ?
 		reduceBinOp
 	: id === 'let' ? (({ bind, value, expr }) => {
-		let pv = reduceAsync(value);
+		let pv = rewriteAsync(value);
 		let v = unpromisify(pv);
-		let pe = reduceAsync(expr);
+		let pe = rewriteAsync(expr);
 		let e = unpromisify(pe);
 		return false ? undefined
 		: e !== undefined && v !== undefined ? promisify({ id, bind, value: v, expr: e })
@@ -1277,12 +1277,12 @@ reduceAsync = ast => {
 	: id === 'typeof' ?
 		reduceOp
 	: id === 'while' ? (({ cond, loop, expr }) => {
-		let pc = reduceAsync(cond);
+		let pc = rewriteAsync(cond);
 		let c = unpromisify(pc);
 		let vc = c ?? _var(newDummy());
-		let pl = reduceAsync(loop);
+		let pl = rewriteAsync(loop);
 		let l = unpromisify(pl);
-		let pe = reduceAsync(expr);
+		let pe = rewriteAsync(expr);
 		let e = unpromisify(pe);
 		return false ? undefined
 		: c !== undefined && l !== undefined && e !== undefined ? promisify({ id, cond: vc, loop: l, expr: e })
@@ -1296,7 +1296,7 @@ reduceAsync = ast => {
 		}();
 	})
 	: (({}) =>
-		promisify(rewrite(ast_ => unpromisify(reduceAsync(ast_)), ast))
+		promisify(rewrite(ast_ => unpromisify(rewriteAsync(ast_)), ast))
 	);
 
 	return f(ast);
@@ -1370,9 +1370,9 @@ let ifBindId = bindId => {
 let assignBind = ifBindId('assign');
 let letBind = ifBindId('let');
 
-let reduceBind;
+let rewriteBind;
 
-reduceBind = ast => {
+rewriteBind = ast => {
 	let { id } = ast;
 
 	let f = false ? undefined
@@ -1391,23 +1391,103 @@ reduceBind = ast => {
 		letBind(bind, value, expr, _error)
 	)
 	: (({}) =>
-		rewrite(reduceBind, ast)
+		rewrite(rewriteBind, ast)
 	);
 
 	return f(ast);
 };
 
-let reduceNe;
+let rewriteCaptureVar;
 
-reduceNe = ast => {
+rewriteCaptureVar = (outsidevs, ast) => {
+	let { id } = ast;
+
+	let f = false ? undefined
+	: id === 'var' ? (({ vn }) => {
+		return !outsidevs.includes(vn) ? ast : function() {
+			error('need to capture');
+		}();
+	})
+	: (({}) =>
+		rewrite(ast => rewriteCaptureVar(outsidevs, ast), ast)
+	);
+
+	return f(ast);
+};
+
+let rewriteCapture;
+
+rewriteCapture = (fs, vfs, ast) => {
+	let fs1 = fs + 1;
+	let { id } = ast;
+
+	let f = false ? undefined
+	: id === 'alloc' ? (({ vn, expr }) =>
+		_alloc(vn, rewriteCapture(fs, cons([vn, fs], vfs), expr))
+	)
+	: id === 'lambda' ? (({ bind, expr }) => function() {
+		let vfs1 = cons([bind.vn, fs1], vfs);
+		return _lambda(bind, rewriteCapture(fs1, vfs1, rewriteCaptureVar(vfs.map(([vn, fs]) => vn), expr)));
+	}())
+	: id === 'let' ? (({ bind, value, expr }) =>
+		_let(bind,
+			rewriteCapture(fs, vfs, value),
+			rewriteCapture(fs, cons([bind.vn, fs], vfs), expr))
+	)
+	: (({}) =>
+		rewrite(ast => rewriteCapture(fs, vfs, ast), ast)
+	);
+
+	return f(ast);
+};
+
+let rewriteNe;
+
+rewriteNe = ast => {
 	let { id } = ast;
 
 	let f = false ? undefined
 	: id === 'ne_' ? (({ lhs, rhs }) =>
-		_not(_eq(reduceNe(lhs), reduceNe(rhs)))
+		_not(_eq(rewriteNe(lhs), rewriteNe(rhs)))
 	)
 	: (({}) =>
-		rewrite(reduceNe, ast)
+		rewrite(rewriteNe, ast)
+	);
+
+	return f(ast);
+};
+
+let rewriteRenameVar;
+
+rewriteRenameVar = (scope, vns, ast) => {
+	let { id } = ast;
+
+	let f = false ? undefined
+	: id === 'alloc' ? (({ vn, expr }) => function() {
+		let vn1 = `${vn}_${scope}`;
+		return _alloc(vn1, rewriteRenameVar(scope, cons([vn, `${vn}_${scope}`], vns), expr));
+	}()
+	)
+	: id === 'lambda' ? (({ bind, expr }) => function() {
+		let { vn } = bind;
+		let scope1 = newDummy();
+		let vn1 = `${vn}_${scope1}`;
+		return _lambda(_var(vn1), rewriteRenameVar(scope1, cons([vn, vn1], vns), expr));
+	}()
+	)
+	: id === 'let' ? (({ bind, value, expr }) => function() {
+		let { vn } = bind;
+		let vn1 = `${vn}_${scope}`;
+		return _let(_var(vn1),
+			rewriteRenameVar(scope, vns, value),
+			rewriteRenameVar(scope, cons([vn, vn1], vns), expr));
+	}()
+	)
+	: id === 'var' ? (({ vn }) =>
+		_var(get1(find(vns, ([vn_, vn1]) => vn_ === vn)))
+	)
+	: (({}) =>
+		rewrite(ast => rewriteRenameVar(scope, vns, ast), ast)
 	);
 
 	return f(ast);
@@ -1499,31 +1579,31 @@ evaluate = vvs => {
 	return evaluate_;
 };
 
-let reduceVars;
+let rewriteVars;
 
-reduceVars = (fs, ps, vts, ast) => {
+rewriteVars = (fs, ps, vts, ast) => {
 	let fs1 = fs + 1;
 	let ps1 = ps + 1;
 	let { id } = ast;
 
 	let f = false ? undefined
 	: id === 'alloc' ? (({ vn, expr }) =>
-		_alloc(vn, reduceVars(fs, ps1, cons([vn, [fs, ps]], vts), expr))
+		_alloc(vn, rewriteVars(fs, ps1, cons([vn, [fs, ps]], vts), expr))
 	)
 	: id === 'lambda' ? (({ bind, expr }) =>
-		_lambda(bind, reduceVars(fs1, 1, cons([bind.vn, [fs1, 0]], vts), expr))
+		_lambda(bind, rewriteVars(fs1, 1, cons([bind.vn, [fs1, 0]], vts), expr))
 	)
 	: id === 'let' ? (({ bind, value, expr }) =>
 		_alloc(bind.vn, _assign(bind,
-			reduceVars(fs, ps, vts, value),
-			reduceVars(fs, ps1, cons([bind.vn, [fs, ps]], vts), expr)))
+			rewriteVars(fs, ps, vts, value),
+			rewriteVars(fs, ps1, cons([bind.vn, [fs, ps]], vts), expr)))
 	)
 	: id === 'var' ? (({ vn }) => {
 		let [fs_, ps] = get1(find(vts, ([vn_, pointer]) => vn_ === vn));
 		return { id: 'stack', fs: fs - fs_, ps };
 	})
 	: (({}) =>
-		rewrite(ast => reduceVars(fs, ps, vts, ast), ast)
+		rewrite(ast => rewriteVars(fs, ps, vts, ast), ast)
 	);
 
 	return f(ast);
@@ -1546,9 +1626,9 @@ let process_ = program => {
 	}());
 
 	let ast0 = parser.parse(program);
-	let ast1 = reduceNe(ast0);
-	let ast2 = reduceBind(ast1);
-	let ast3 = reduceAsync(ast2);
+	let ast1 = rewriteNe(ast0);
+	let ast2 = rewriteBind(ast1);
+	let ast3 = rewriteAsync(ast2);
 	let ast4 = unpromisify(ast3);
 
 	return { ast: ast4, type: types.infer(ast0) };
