@@ -136,7 +136,7 @@ let lexerModule = () => {
 
 			let j = i + 1;
 
-			let until = f => {
+			let skip = f => {
 				while (j < s.length && f(s.charCodeAt(j))) (function() {
 					j = j + 1;
 				}());
@@ -146,16 +146,20 @@ let lexerModule = () => {
 				: ch === 9 || ch === 10 || ch === 13 || ch === 32 ?
 					[]
 				: ch === ascii("'") || ch === ascii('"') || ch === ascii('`') ? function() {
-					until(c => c !== ch);
+					skip(c => c !== ch);
 					return [{ lex: 'str', s: s.slice(i + 1, j - 1) },];
 				}()
 				: isAlphabet(ch) ? function() {
-					until(isId);
+					skip(isId);
 					return [{ lex: 'id', s: s.slice(i, j) },];
 				}()
 				: isNum(ch) ? function() {
-					until(isNum);
+					skip(isNum);
 					return [{ lex: 'num', s: s.slice(i, j) },];
+				}()
+				: op2 === '//' ? function() {
+					skip(c => c !== 10);
+					return [];
 				}()
 				: op2s.includes(op2) ? function() {
 					j = i + op2.length;
