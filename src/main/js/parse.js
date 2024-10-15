@@ -830,7 +830,7 @@ let typesModule = () => {
 		: ast.id === 'struct' ? foldl(vts, ast.kvs, (vts_, kv) => bindTypes(vts_, kv.value))
 		: ast.id === 'tuple' ? foldl(vts, ast.values, bindTypes)
 		: ast.id === 'var' ? cons([ast.vn, newRef()], vts)
-		: error(`cannot destructure ${format(ast)}`);
+		: error(`bindTypes(): cannot destructure ${format(ast)}`);
 
 	let tyArrayOf = type => ({ t: 'array', of: type });
 	let tyBoolean = ({ t: 'bool' });
@@ -1363,7 +1363,7 @@ let ifBindId = bindId => {
 			({ id: bindId, bind, value, expr: then })
 		)
 		:
-			error(`cannot destructure ${format(bind)}`);
+			error(`ifBindId(): cannot destructure ${format(bind)}`);
 
 		return f(bind);
 	};
@@ -1380,19 +1380,19 @@ rewriteBind = ast => {
 	let { id } = ast;
 
 	let f = false ? undefined
-	: id === 'assign' && ast.bind.id !== 'var' ? (({ bind, value, expr }) =>
-		assignBind(bind, value, expr, _error)
+	: id === 'assign' && ast.bind.id !== 'dot' && ast.bind.id !== 'index' && ast.bind.id !== 'var' ? (({ bind, value, expr }) =>
+		assignBind(bind, rewriteBind(value), rewriteBind(expr), _error)
 	)
 	: id === 'lambda' && ast.bind.id !== 'var' ? (({ bind, expr }) => {
 		let arg = _var(newDummy());
-		return _lambda(arg, letBind(bind, arg, expr, _error));
+		return _lambda(arg, letBind(bind, arg, rewriteBind(expr), _error));
 	})
 	: id === 'lambda-async' && ast.bind.id !== 'var' ? (({ bind, expr }) => {
 		let arg = _var(newDummy());
-		return _lambdaAsync(arg, letBind(bind, arg, expr, _error));
+		return _lambdaAsync(arg, letBind(bind, arg, rewriteBind(expr), _error));
 	})
 	: id === 'let' && ast.bind.id !== 'var' ? (({ bind, value, expr }) =>
-		letBind(bind, value, expr, _error)
+		letBind(bind, rewriteBind(value), rewriteBind(expr), _error)
 	)
 	: (({}) =>
 		rewrite(rewriteBind, ast)
@@ -1482,8 +1482,13 @@ rewriteRenameVar = (scope, vns, ast) => {
 	: id === 'let' ? (({ bind, value, expr }) => function() {
 		let { vn } = bind;
 		let vn1 = `${vn}_${scope}`;
+		let r = function() {
+			try {
+				return rewriteRenameVar(scope, vns, value);
+			} catch (e) { e.message = `in ${vn}\n${e.message}`; throw e; }
+		}();
 		return _let(_var(vn1),
-			rewriteRenameVar(scope, vns, value),
+			r,
 			rewriteRenameVar(scope, cons([vn, vn1], vns), expr));
 	}()
 	)
@@ -1638,6 +1643,21 @@ let process0 = program => {
 	return { ast: ast4, type: types.infer(ast0) };
 };
 
+let process1 = program => {
+	let { ast: ast4, type } = process0(program);
+
+	let ast5 = rewriteRenameVar(newDummy(), [
+		['JSON', 'JSON'],
+		['Object', 'Object'],
+		['Promise', 'Promise'],
+		['console', 'console'],
+		['process', 'process'],
+		['require', 'require'],
+	], ast4);
+
+	return { ast: ast5, type };
+};
+
 let actual = stringify(process0(`
 	let parse = ast => ast;
 	console.log(parse(require('fs').readFileSync(0, 'utf8')))
@@ -1663,7 +1683,7 @@ let expect = stringify(
 return actual === expect
 ? function() {
 	try {
-		let { ast, type } = process0(require('fs').readFileSync(0, 'utf8'));
+		let { ast, type } = process1(require('fs').readFileSync(0, 'utf8'));
 		console.log(`ast :: ${stringify(ast)}`);
 		// console.log(`eval :: ${JSON.stringify(evaluate([])(ast))}`);
 		// console.log(`format :: ${format(ast)}`);
