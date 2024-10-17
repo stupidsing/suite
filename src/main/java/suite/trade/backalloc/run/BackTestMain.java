@@ -24,7 +24,7 @@ import suite.trade.data.TradeCfgImpl;
 import suite.util.RunUtil;
 import suite.util.SmartSplit;
 
-// mvn compile exec:java -Dexec.mainClass=suite.trade.bcakalloc.run.BackTestMain
+// mvn compile exec:java -Dexec.mainClass=suite.trade.backalloc.run.BackTestMain
 public class BackTestMain {
 
 	private BackTester runner = new BackTester();
