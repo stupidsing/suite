@@ -1482,13 +1482,8 @@ rewriteRenameVar = (scope, vns, ast) => {
 	: id === 'let' ? (({ bind, value, expr }) => function() {
 		let { vn } = bind;
 		let vn1 = `${vn}_${scope}`;
-		let r = function() {
-			try {
-				return rewriteRenameVar(scope, vns, value);
-			} catch (e) { e.message = `in ${vn}\n${e.message}`; throw e; }
-		}();
 		return _let(_var(vn1),
-			r,
+			rewriteRenameVar(scope, vns, value),
 			rewriteRenameVar(scope, cons([vn, vn1], vns), expr));
 	}()
 	)
