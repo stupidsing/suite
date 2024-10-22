@@ -102,6 +102,7 @@ let _if = (if_, then, else_) => ({ id: 'if', if_, then, else_ });
 let _index = (lhs, rhs) => ({ id: 'index', lhs, rhs });
 let _lambda = (bind, expr) => ({ id: 'lambda', bind, expr });
 let _lambdaAsync = (bind, expr) => ({ id: 'lambda-async', bind, expr });
+let _lambdaCapture = (capture, bindCapture, bind, expr) => ({ id: 'lambda-capture', capture, bindCapture, bind, expr });
 let _let = (bind, value, expr) => ({ id: 'let', bind, value, expr });
 let _not = expr => ({ id: 'not', expr });
 let _num = i => ({ id: 'num', i });
@@ -591,6 +592,7 @@ let rewrite = (rf, ast) => {
 	: id === 'index' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
 	: id === 'lambda' ? (({ bind, expr }) => ({ id, bind, expr: rf(expr) }))
 	: id === 'lambda-async' ? (({ bind, expr }) => ({ id, bind, expr: rf(expr) }))
+	: id === 'lambda-capture' ? (({ capture, bindCapture, bind, expr }) => ({ id, capture: rf(capture), bindCapture, bind, expr: rf(expr) }))
 	: id === 'le_' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
 	: id === 'let' ? (({ bind, value, expr }) => ({ id, bind, value: rf(value), expr: rf(expr) }))
 	: id === 'lt_' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
@@ -653,6 +655,7 @@ formatExpr = ast => {
 	: id === 'index' ? (({ lhs, rhs }) => `${format(lhs)}[${format(rhs)}]`)
 	: id === 'lambda' ? (({ bind, expr }) => `${format(bind)} => ${format(expr)}`)
 	: id === 'lambda-async' ? (({ bind, expr }) => `async ${format(bind)} => ${format(expr)}`)
+	: id === 'lambda-capture' ? (({ capture, bindCapture, bind, expr }) => `|${format(capture)}| ${format(bind)} => |${format(bindCapture)}| ${format(expr)}`)
 	: id === 'le_' ? (({ lhs, rhs }) => `${format(lhs)} <= ${format(rhs)}`)
 	: id === 'lt_' ? (({ lhs, rhs }) => `${format(lhs)} < ${format(rhs)}`)
 	: id === 'mul' ? (({ lhs, rhs }) => `${format(lhs)} * ${format(rhs)}`)
@@ -1403,12 +1406,13 @@ rewriteBind = ast => {
 
 let rewriteCaptureVar;
 
-rewriteCaptureVar = (outsidevs, ast) => {
+rewriteCaptureVar = (outsidevs, captures, ast) => {
 	let { id } = ast;
 
 	let f = false ? undefined
 	: id === 'var' ? (({ vn }) => {
 		return !outsidevs.includes(vn) ? ast : function() {
+			captures.push(vn);
 			error('need to capture');
 		}();
 	})
@@ -1431,7 +1435,11 @@ rewriteCapture = (fs, vfs, ast) => {
 	)
 	: id === 'lambda' ? (({ bind, expr }) => function() {
 		let vfs1 = cons([bind.vn, fs1], vfs);
-		return _lambda(bind, rewriteCapture(fs1, vfs1, rewriteCaptureVar(vfs.map(([vn, fs]) => vn), expr)));
+		let captures = [];
+		let expr_ = rewriteCaptureVar(vfs.map(([vn, fs]) => vn), captures, expr);
+		let definitions = Object.fromEntries(captures.map(vn => [`.${vn}`, vn]));
+		let bindCapture = newDummy();
+		return _lambdaCapture(definitions, bindCapture, bind, rewriteCapture(fs1, vfs1, expr_));
 	}())
 	: id === 'let' ? (({ bind, value, expr }) =>
 		_let(bind,
@@ -1536,6 +1544,7 @@ evaluate = vvs => {
 		: id === 'index' ? (({ lhs, rhs }) => eval(lhs)[eval(rhs)])
 		: id === 'lambda' ? (({ bind, expr }) => assumeAny(value => evaluate(cons([bind.vn, value], vvs))(expr)))
 		: id === 'lambda-async' ? (({ bind, expr }) => error('BAD'))
+		: id === 'lambda-capture' ? (({ capture, bindCapture, bind, expr }) => assumeAny(value => evaluate(cons([bind.vn, value], cons([bindCapture.vn, eval(capture)], vvs)))(expr)))
 		: id === 'le_' ? (({ lhs, rhs }) => assumeAny(eval(lhs) <= eval(rhs)))
 		: id === 'let' ? (({ bind, value, expr }) => evaluate(cons([bind.vn, eval(value)], vvs))(expr))
 		: id === 'lt_' ? (({ lhs, rhs }) => assumeAny(eval(lhs) < eval(rhs)))
@@ -1639,16 +1648,10 @@ let process0 = program => {
 };
 
 let process1 = program => {
-	let { ast: ast4, type } = process0(program);
+	let roots = ['JSON', 'Object', 'Promise', 'console', 'process', 'require',];
 
-	let ast5 = rewriteRenameVar(newDummy(), [
-		['JSON', 'JSON'],
-		['Object', 'Object'],
-		['Promise', 'Promise'],
-		['console', 'console'],
-		['process', 'process'],
-		['require', 'require'],
-	], ast4);
+	let { ast: ast4, type } = process0(program);
+	let ast5 = rewriteRenameVar(newDummy(), roots.map(v => [v, v]), ast4);
 
 	return { ast: ast5, type };
 };
