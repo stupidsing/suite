@@ -1406,18 +1406,18 @@ rewriteBind = ast => {
 
 let rewriteCaptureVar;
 
-rewriteCaptureVar = (outsidevs, captures, ast) => {
+rewriteCaptureVar = (capture, outsidevs, captures, ast) => {
 	let { id } = ast;
 
 	let f = false ? undefined
 	: id === 'var' ? (({ vn }) => {
 		return !outsidevs.includes(vn) ? ast : function() {
 			captures.push(vn);
-			error('need to capture');
+			return _dot(_var(capture), `.${vn}`);
 		}();
 	})
 	: (({}) =>
-		rewrite(ast => rewriteCaptureVar(outsidevs, ast), ast)
+		rewrite(ast => rewriteCaptureVar(capture, outsidevs, captures, ast), ast)
 	);
 
 	return f(ast);
@@ -1435,10 +1435,10 @@ rewriteCapture = (fs, vfs, ast) => {
 	)
 	: id === 'lambda' ? (({ bind, expr }) => function() {
 		let vfs1 = cons([bind.vn, fs1], vfs);
-		let captures = [];
-		let expr_ = rewriteCaptureVar(vfs.map(([vn, fs]) => vn), captures, expr);
-		let definitions = Object.fromEntries(captures.map(vn => [`.${vn}`, vn]));
 		let bindCapture = newDummy();
+		let captures = [];
+		let expr_ = rewriteCaptureVar(bindCapture, vfs.map(([vn, fs]) => vn), captures, expr);
+		let definitions = Object.fromEntries(captures.map(vn => [`.${vn}`, vn]));
 		return _lambdaCapture(definitions, bindCapture, bind, rewriteCapture(fs1, vfs1, expr_));
 	}())
 	: id === 'let' ? (({ bind, value, expr }) =>
@@ -1652,8 +1652,9 @@ let process1 = program => {
 
 	let { ast: ast4, type } = process0(program);
 	let ast5 = rewriteRenameVar(newDummy(), roots.map(v => [v, v]), ast4);
+	let ast6 = rewriteCapture(0, roots.map(v => [v, 0]), ast5);
 
-	return { ast: ast5, type };
+	return { ast: ast6, type };
 };
 
 let actual = stringify(process0(`
