@@ -1141,33 +1141,33 @@ let typesModule = () => {
 		return f(ast);
 	};
 
-	let predefinedTypes = Object
-		.entries({
-			JSON: tyStructOfCompleted({
-				'.stringify': tyLambdaOf(tyPairOf(newRef(), tyPairOf(newRef(), newRef())), tyString),
-			}),
-			Object: tyStructOfCompleted({
-				'.assign': tyLambdaOf(newRef(), newRef()),
-				'.entries': tyLambdaOf(tyStructOf({}), tyArrayOf(tyTupleOf(cons(tyString, cons(newRef(), nil))))),
-				'.fromEntries': tyLambdaOf(tyArrayOf(tyTupleOf(cons(tyString, cons(newRef(), nil)))), tyStructOf({})),
-				'.keys': tyLambdaOf(tyStructOf({}), tyArrayOf(tyString)),
-			}),
-			Promise: tyStructOfCompleted({
-				'.reject': tyLambdaOf(tyError, tyPromiseOf(newRef())),
-				'.resolve': function() { let t = newRef(); return tyLambdaOf(t, tyPromiseOf(t)); }(),
-			}),
-			console: tyStructOfCompleted({
-				'.error': tyLambdaOf(newRef(), tyVoid),
-				'.log': tyLambdaOf(newRef(), tyVoid),
-			}),
-			process: tyStructOfCompleted({
-				'.env': tyStructOf({}),
-			}),
-			require: tyLambdaOf(tyString, newRef()),
-		})
-		.reduce((l, vt) => cons(vt, l), nil);
+	let predefinedTypes = {
+		JSON: tyStructOfCompleted({
+			'.stringify': tyLambdaOf(tyPairOf(newRef(), tyPairOf(newRef(), newRef())), tyString),
+		}),
+		Object: tyStructOfCompleted({
+			'.assign': tyLambdaOf(newRef(), newRef()),
+			'.entries': tyLambdaOf(tyStructOf({}), tyArrayOf(tyTupleOf(cons(tyString, cons(newRef(), nil))))),
+			'.fromEntries': tyLambdaOf(tyArrayOf(tyTupleOf(cons(tyString, cons(newRef(), nil)))), tyStructOf({})),
+			'.keys': tyLambdaOf(tyStructOf({}), tyArrayOf(tyString)),
+		}),
+		Promise: tyStructOfCompleted({
+			'.reject': tyLambdaOf(tyError, tyPromiseOf(newRef())),
+			'.resolve': function() { let t = newRef(); return tyLambdaOf(t, tyPromiseOf(t)); }(),
+		}),
+		console: tyStructOfCompleted({
+			'.error': tyLambdaOf(newRef(), tyVoid),
+			'.log': tyLambdaOf(newRef(), tyVoid),
+		}),
+		process: tyStructOfCompleted({
+			'.env': tyStructOf({}),
+		}),
+		require: tyLambdaOf(tyString, newRef()),
+	};
 
-	return { dump, infer: ast => inferType(predefinedTypes, false, ast) };
+	let predefinedTypes_ = Object.entries(predefinedTypes).reduce((l, vt) => cons(vt, l), nil);
+
+	return { dump, infer: ast => inferType(predefinedTypes_, false, ast), predefinedTypes };
 };
 
 let promiseResolve = _dot(_var('Promise'), '.resolve');
@@ -1648,7 +1648,7 @@ let process0 = program => {
 };
 
 let process1 = program => {
-	let roots = ['JSON', 'Object', 'Promise', 'console', 'process', 'require',];
+	let roots = Object.keys(typesModule().predefinedTypes);
 
 	let { ast: ast4, type } = process0(program);
 	let ast5 = rewriteRenameVar(newDummy(), roots.map(v => [v, v]), ast4);
