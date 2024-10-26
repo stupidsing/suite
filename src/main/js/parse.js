@@ -592,7 +592,9 @@ let rewrite = (rf, ast) => {
 	: id === 'index' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
 	: id === 'lambda' ? (({ bind, expr }) => ({ id, bind, expr: rf(expr) }))
 	: id === 'lambda-async' ? (({ bind, expr }) => ({ id, bind, expr: rf(expr) }))
-	: id === 'lambda-capture' ? (({ capture, bindCapture, bind, expr }) => ({ id, capture: rf(capture), bindCapture, bind, expr: rf(expr) }))
+	: id === 'lambda-capture' ? (({ capture, bindCapture, bind, expr }) =>
+		({ id, capture: rf(capture), bindCapture, bind, expr: rf(expr) })
+	)
 	: id === 'le_' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
 	: id === 'let' ? (({ bind, value, expr }) => ({ id, bind, value: rf(value), expr: rf(expr) }))
 	: id === 'lt_' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
@@ -655,7 +657,9 @@ formatExpr = ast => {
 	: id === 'index' ? (({ lhs, rhs }) => `${format(lhs)}[${format(rhs)}]`)
 	: id === 'lambda' ? (({ bind, expr }) => `${format(bind)} => ${format(expr)}`)
 	: id === 'lambda-async' ? (({ bind, expr }) => `async ${format(bind)} => ${format(expr)}`)
-	: id === 'lambda-capture' ? (({ capture, bindCapture, bind, expr }) => `|${format(capture)}| ${format(bind)} => |${format(bindCapture)}| ${format(expr)}`)
+	: id === 'lambda-capture' ? (({ capture, bindCapture, bind, expr }) =>
+		`|${format(capture)}| ${format(bind)} => |${format(bindCapture)}| ${format(expr)}`
+	)
 	: id === 'le_' ? (({ lhs, rhs }) => `${format(lhs)} <= ${format(rhs)}`)
 	: id === 'lt_' ? (({ lhs, rhs }) => `${format(lhs)} < ${format(rhs)}`)
 	: id === 'mul' ? (({ lhs, rhs }) => `${format(lhs)} * ${format(rhs)}`)
@@ -1141,33 +1145,33 @@ let typesModule = () => {
 		return f(ast);
 	};
 
-	let predefinedTypes = {
-		JSON: tyStructOfCompleted({
-			'.stringify': tyLambdaOf(tyPairOf(newRef(), tyPairOf(newRef(), newRef())), tyString),
-		}),
-		Object: tyStructOfCompleted({
-			'.assign': tyLambdaOf(newRef(), newRef()),
-			'.entries': tyLambdaOf(tyStructOf({}), tyArrayOf(tyTupleOf(cons(tyString, cons(newRef(), nil))))),
-			'.fromEntries': tyLambdaOf(tyArrayOf(tyTupleOf(cons(tyString, cons(newRef(), nil)))), tyStructOf({})),
-			'.keys': tyLambdaOf(tyStructOf({}), tyArrayOf(tyString)),
-		}),
-		Promise: tyStructOfCompleted({
-			'.reject': tyLambdaOf(tyError, tyPromiseOf(newRef())),
-			'.resolve': function() { let t = newRef(); return tyLambdaOf(t, tyPromiseOf(t)); }(),
-		}),
-		console: tyStructOfCompleted({
-			'.error': tyLambdaOf(newRef(), tyVoid),
-			'.log': tyLambdaOf(newRef(), tyVoid),
-		}),
-		process: tyStructOfCompleted({
-			'.env': tyStructOf({}),
-		}),
-		require: tyLambdaOf(tyString, newRef()),
-	};
+	let predefinedTypes = Object
+		.entries({
+			JSON: tyStructOfCompleted({
+				'.stringify': tyLambdaOf(tyPairOf(newRef(), tyPairOf(newRef(), newRef())), tyString),
+			}),
+			Object: tyStructOfCompleted({
+				'.assign': tyLambdaOf(newRef(), newRef()),
+				'.entries': tyLambdaOf(tyStructOf({}), tyArrayOf(tyTupleOf(cons(tyString, cons(newRef(), nil))))),
+				'.fromEntries': tyLambdaOf(tyArrayOf(tyTupleOf(cons(tyString, cons(newRef(), nil)))), tyStructOf({})),
+				'.keys': tyLambdaOf(tyStructOf({}), tyArrayOf(tyString)),
+			}),
+			Promise: tyStructOfCompleted({
+				'.reject': tyLambdaOf(tyError, tyPromiseOf(newRef())),
+				'.resolve': function() { let t = newRef(); return tyLambdaOf(t, tyPromiseOf(t)); }(),
+			}),
+			console: tyStructOfCompleted({
+				'.error': tyLambdaOf(newRef(), tyVoid),
+				'.log': tyLambdaOf(newRef(), tyVoid),
+			}),
+			process: tyStructOfCompleted({
+				'.env': tyStructOf({}),
+			}),
+			require: tyLambdaOf(tyString, newRef()),
+		})
+		.reduce((l, vt) => cons(vt, l), nil);
 
-	let predefinedTypes_ = Object.entries(predefinedTypes).reduce((l, vt) => cons(vt, l), nil);
-
-	return { dump, infer: ast => inferType(predefinedTypes_, false, ast), predefinedTypes };
+	return { dump, infer: ast => inferType(predefinedTypes, false, ast) };
 };
 
 let promiseResolve = _dot(_var('Promise'), '.resolve');
@@ -1380,21 +1384,21 @@ let letBind = ifBindId('let');
 let rewriteBind;
 
 rewriteBind = ast => {
-	let { id } = ast;
+	let { bind, id } = ast;
 
 	let f = false ? undefined
-	: id === 'assign' && ast.bind.id !== 'dot' && ast.bind.id !== 'index' && ast.bind.id !== 'var' ? (({ bind, value, expr }) =>
+	: id === 'assign' && bind.id !== 'dot' && bind.id !== 'index' && bind.id !== 'var' ? (({ bind, value, expr }) =>
 		assignBind(bind, rewriteBind(value), rewriteBind(expr), _error)
 	)
-	: id === 'lambda' && ast.bind.id !== 'var' ? (({ bind, expr }) => {
+	: id === 'lambda' && bind.id !== 'var' ? (({ bind, expr }) => {
 		let arg = _var(newDummy());
 		return _lambda(arg, letBind(bind, arg, rewriteBind(expr), _error));
 	})
-	: id === 'lambda-async' && ast.bind.id !== 'var' ? (({ bind, expr }) => {
+	: id === 'lambda-async' && bind.id !== 'var' ? (({ bind, expr }) => {
 		let arg = _var(newDummy());
 		return _lambdaAsync(arg, letBind(bind, arg, rewriteBind(expr), _error));
 	})
-	: id === 'let' && ast.bind.id !== 'var' ? (({ bind, value, expr }) =>
+	: id === 'let' && bind.id !== 'var' ? (({ bind, value, expr }) =>
 		letBind(bind, rewriteBind(value), rewriteBind(expr), _error)
 	)
 	: (({}) =>
@@ -1544,7 +1548,9 @@ evaluate = vvs => {
 		: id === 'index' ? (({ lhs, rhs }) => eval(lhs)[eval(rhs)])
 		: id === 'lambda' ? (({ bind, expr }) => assumeAny(value => evaluate(cons([bind.vn, value], vvs))(expr)))
 		: id === 'lambda-async' ? (({ bind, expr }) => error('BAD'))
-		: id === 'lambda-capture' ? (({ capture, bindCapture, bind, expr }) => assumeAny(value => evaluate(cons([bind.vn, value], cons([bindCapture.vn, eval(capture)], vvs)))(expr)))
+		: id === 'lambda-capture' ? (({ capture, bindCapture, bind, expr }) =>
+			assumeAny(value => evaluate(cons([bind.vn, value], cons([bindCapture.vn, eval(capture)], vvs)))(expr))
+		)
 		: id === 'le_' ? (({ lhs, rhs }) => assumeAny(eval(lhs) <= eval(rhs)))
 		: id === 'let' ? (({ bind, value, expr }) => evaluate(cons([bind.vn, eval(value)], vvs))(expr))
 		: id === 'lt_' ? (({ lhs, rhs }) => assumeAny(eval(lhs) < eval(rhs)))
@@ -1648,7 +1654,7 @@ let process0 = program => {
 };
 
 let process1 = program => {
-	let roots = Object.keys(typesModule().predefinedTypes);
+	let roots = ['JSON', 'Object', 'Promise', 'console', 'process', 'require',];
 
 	let { ast: ast4, type } = process0(program);
 	let ast5 = rewriteRenameVar(newDummy(), roots.map(v => [v, v]), ast4);
