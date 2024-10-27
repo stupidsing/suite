@@ -104,6 +104,7 @@ let _lambda = (bind, expr) => ({ id: 'lambda', bind, expr });
 let _lambdaAsync = (bind, expr) => ({ id: 'lambda-async', bind, expr });
 let _lambdaCapture = (capture, bindCapture, bind, expr) => ({ id: 'lambda-capture', capture, bindCapture, bind, expr });
 let _let = (bind, value, expr) => ({ id: 'let', bind, value, expr });
+let _nil = _array([]);
 let _not = expr => ({ id: 'not', expr });
 let _num = i => ({ id: 'num', i });
 let _pair = (lhs, rhs) => ({ id: 'pair', lhs, rhs });
@@ -359,7 +360,7 @@ let parserModule = () => {
 		: program === 'new Error' ? { id: 'new', clazz: 'Error' }
 		: program === 'new Map' ? { id: 'new', clazz: 'Map' }
 		: program === 'new Promise' ? { id: 'new', clazz: 'Promise' }
-		: program === 'nil' ? _array([])
+		: program === 'nil' ? _nil
 		: program === 'true' ? _bool(program)
 		: program === 'undefined' ? _undefined
 		: isIdentifier(program) ? _var(program)
@@ -378,7 +379,7 @@ let parserModule = () => {
 					parse(head),
 					tail.startsWith('...') && tail.endsWith(',') ? parse(tail.slice(3, -1)) : parseArray_(tail));
 			}()
-			: _array([]);
+			: _nil;
 		};
 		return parseArray_(program);
 	};
