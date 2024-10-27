@@ -1350,20 +1350,21 @@ let ifBindId = bindId => {
 		: id === 'bool' ?
 			bindConstant
 		: id === 'cons' ? (({ lhs, rhs }) => {
-			return false ? undefined
-			: id !== value.id ?
-				ifBind(lhs, _index(value, _num(0)), ifBind(rhs, _app(_dot(value, '.slice'), _num(1)), then, else_), else_)
-			:
-				ifBind(lhs, value.lhs, ifBind(rhs, value.rhs, then, else_), else_);
+			return id !== value.id
+				? ifBind(lhs, _index(value, _num(0)), ifBind(rhs, _app(_dot(value, '.slice'), _num(1)), then, else_), else_)
+				: ifBind(lhs, value.lhs, ifBind(rhs, value.rhs, then, else_), else_);
+		})
+		: id === 'nil' ? (({}) => {
+			return id !== value.id
+				? _if(_eq(_app(_dot(value, '.length'), _void), _num(0)), then, else_)
+				: then;
 		})
 		: id === 'num' ?
 			bindConstant
 		: id === 'pair' ? (({ lhs, rhs }) => {
-			return false ? undefined
-			: id !== value.id ?
-				ifBind(lhs, _index(value, _num(0)), ifBind(rhs, _index(value, _num(1)), then, else_), else_)
-			:
-				ifBind(lhs, value.lhs, ifBind(rhs, value.rhs, then, else_), else_);
+			return id !== value.id
+				? ifBind(lhs, _index(value, _num(0)), ifBind(rhs, _index(value, _num(1)), then, else_), else_)
+				: ifBind(lhs, value.lhs, ifBind(rhs, value.rhs, then, else_), else_);
 		})
 		: id === 'str' ?
 			bindConstant
