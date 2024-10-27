@@ -734,7 +734,9 @@ format_ = (priority, ast) => {
 	: id === 'var' ? (({ vn }) => vn)
 	: (({}) => `function() { ${formatBlock(ast)}; }()`);
 
-	return priority_ <= priority ? f(ast) : `(${f(ast)})`;
+	let s = f(ast);
+	let s0 = s.slice(0, 1);
+	return s0 === '(' || s0 === '[' || s0 === '{' ? s : priority_ <= priority ? s : `(${s})`;
 };
 
 let typesModule = () => {
