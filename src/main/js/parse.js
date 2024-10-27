@@ -603,6 +603,7 @@ let rewrite = (rf, ast) => {
 	: id === 'ne_' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
 	: id === 'neg' ? (({ expr }) => ({ id, expr: rf(expr) }))
 	: id === 'new' ? (({}) => ast)
+	: id === 'nil' ? (({}) => ast)
 	: id === 'not' ? (({ expr }) => ({ id, expr: rf(expr) }))
 	: id === 'num' ? (({ i }) => ast)
 	: id === 'or_' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
@@ -685,6 +686,7 @@ format = ast => {
 	: id === 'array' ? (({ values }) => `[${values.map(format).join(', ')},]`)
 	: id === 'bool' ? (({ v }) => v)
 	: id === 'new' ? (({ clazz }) => `new ${clazz}`)
+	: id === 'nil' ? (({}) => '[]')
 	: id === 'num' ? (({ i }) => `${i}`)
 	: id === 'struct' ? (({ kvs }) => {
 		let s = kvs.map(({ key, value }) => {
@@ -1081,6 +1083,9 @@ let typesModule = () => {
 				return tyLambdaOf(tyLambdaOf(tyPairOf(tres, trej), tyVoid), tyPromiseOf(tr));
 			}()
 			: error(`unknown class ${clazz}`)
+		)
+		: id === 'nil' ? (({}) =>
+			tyArrayOf(newRef())
 		)
 		: id === 'not' ? (({ expr }) =>
 			doBind(ast, infer(expr), tyBoolean) && tyBoolean
@@ -1571,6 +1576,7 @@ evaluate = vvs => {
 			: clazz === 'Promise' ? assumeAny(f => new Promise(f))
 			: error(`unknown class ${clazz}`)
 		)
+		: id === 'nil' ? (({}) => assumeAny([]))
 		: id === 'not' ? (({ expr }) => assumeAny(!eval(expr)))
 		: id === 'num' ? (({ i }) => i)
 		: id === 'or_' ? (({ lhs, rhs }) => assumeAny(eval(lhs) || eval(rhs)))
