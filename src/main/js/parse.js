@@ -293,6 +293,17 @@ let parserModule = () => {
 		return parseAssocLeft__;
 	};
 
+	let parseAssocLeftReverse = (id, op, parseValue) => {
+		let parseAssocLeftReverse_;
+		parseAssocLeftReverse_ = program_ => {
+			let program = program_.trim();
+			let [left, right] = splitr(program, op);
+			let lhs = parseValue(right);
+			return left === undefined ? lhs : { id, lhs, rhs: parseAssocLeftReverse_(left) };
+		};
+		return parseAssocLeftReverse_;
+	};
+
 	let parseAssocRight = (id, op, parseValue) => {
 		let parseAssocRight_;
 		parseAssocRight_ = program_ => {
@@ -478,7 +489,7 @@ let parserModule = () => {
 		.map(p => parseAssocRight('and', '&&', p))
 		.map(p => parseAssocRight('or_', '||', p))
 		.map(p => parseAssocRight('coal', '??', p))
-		.map(p => parseAssocLeft_('app', '|>', p))
+		.map(p => parseAssocLeftReverse('app', '|>', p))
 		.map(p => program => {
 			let [if_, thenElse] = splitl(program, '?');
 
