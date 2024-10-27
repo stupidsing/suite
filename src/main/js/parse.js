@@ -1628,7 +1628,7 @@ evaluate = vvs => {
 let rewriteVars;
 
 rewriteVars = (fs, ps, vts, ast) => {
-	let fs1 = fs + '1';
+	let fs1 = fs + 1;
 	let ps1 = ps + 1;
 	let { id } = ast;
 
