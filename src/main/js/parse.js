@@ -91,7 +91,6 @@ let dump = v => {
 let _add = (lhs, rhs) => ({ id: 'add', lhs, rhs });
 let _alloc = (vn, expr) => ({ id: 'alloc', vn, expr });
 let _app = (lhs, rhs) => ({ id: 'app', lhs, rhs });
-let _array = values => ({ id: 'array', values });
 let _assign = (bind, value, expr) => ({ id: 'assign', bind, value, expr });
 let _bool = v => ({ id: 'bool', v });
 let _cons = (lhs, rhs) => ({ id: 'cons', lhs, rhs });
@@ -104,7 +103,7 @@ let _lambda = (bind, expr) => ({ id: 'lambda', bind, expr });
 let _lambdaAsync = (bind, expr) => ({ id: 'lambda-async', bind, expr });
 let _lambdaCapture = (capture, bindCapture, bind, expr) => ({ id: 'lambda-capture', capture, bindCapture, bind, expr });
 let _let = (bind, value, expr) => ({ id: 'let', bind, value, expr });
-let _nil = _array([]);
+let _nil = { id: 'nil' };
 let _not = expr => ({ id: 'not', expr });
 let _num = i => ({ id: 'num', i });
 let _pair = (lhs, rhs) => ({ id: 'pair', lhs, rhs });
@@ -580,7 +579,6 @@ let rewrite = (rf, ast) => {
 	: id === 'alloc' ? (({ vn, expr }) => ({ id, vn, expr: rf(expr) }))
 	: id === 'and' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
 	: id === 'app' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
-	: id === 'array' ? (({ values }) => ({ id, values: values.map(rf) }))
 	: id === 'assign' ? (({ bind, value, expr }) => ({ id, bind, value: rf(value), expr: rf(expr) }))
 	: id === 'await' ? (({ expr }) => ({ id, expr: rf(expr) }))
 	: id === 'bool' ? (({ v }) => ast)
@@ -683,7 +681,6 @@ format = ast => {
 
 	let f = false ? undefined
 	: id === 'app' ? (({ lhs, rhs }) => `${format(lhs)}(${format(rhs)})`)
-	: id === 'array' ? (({ values }) => `[${values.map(format).join(', ')},]`)
 	: id === 'bool' ? (({ v }) => v)
 	: id === 'new' ? (({ clazz }) => `new ${clazz}`)
 	: id === 'nil' ? (({}) => '[]')
@@ -835,7 +832,7 @@ let typesModule = () => {
 	let bindTypes;
 
 	bindTypes = (vts, ast) => false ? undefined
-		: ast.id === 'array' ? foldl(vts, ast.values, bindTypes)
+		: ast.id === 'nil' ? vts
 		: ast.id === 'pair' ? bindTypes(bindTypes(vts, ast.lhs), ast.rhs)
 		: ast.id === 'struct' ? foldl(vts, ast.kvs, (vts_, kv) => bindTypes(vts_, kv.value))
 		: ast.id === 'tuple' ? foldl(vts, ast.values, bindTypes)
@@ -978,10 +975,6 @@ let typesModule = () => {
 			let tp = infer(rhs);
 			let tr = newRef();
 			return doBind(ast, te, tyLambdaOf(tp, tr)) && tr;
-		})
-		: id === 'array' ? (({ values }) => {
-			let te = newRef();
-			return foldl(true, values, (b, value) => b && doBind(ast, infer(value), te)) && tyArrayOf(te);
 		})
 		: id === 'assign' ? (({ bind, value, expr }) => function() {
 			try {
@@ -1331,22 +1324,6 @@ let ifBindId = bindId => {
 			: else_;
 
 		let f = false ? undefined
-		: id === 'array' ? (({ values }) => {
-			let indices = gen(values.length);
-			return false ? undefined
-			: id !== value.id ?
-				ifBind(
-					_num(values.length),
-					_dot(value, '.length'),
-					indices.reduce((expr, i) => ifBind(values[i], _index(value, _num(i)), expr, else_), then),
-					else_)
-			: values.length === value.values.length ?
-				indices.reduce(
-					(expr, i) => ifBind(values[i], value.values[i], expr, else_),
-					then)
-			:
-				else_;
-		})
 		: id === 'bool' ?
 			bindConstant
 		: id === 'cons' ? (({ lhs, rhs }) => {
@@ -1543,7 +1520,6 @@ evaluate = vvs => {
 		: id === 'alloc' ? (({ vn, expr }) => evaluate(cons([vn, undefined], vvs))(expr))
 		: id === 'and' ? (({ lhs, rhs }) => assumeAny(eval(lhs) && eval(rhs)))
 		: id === 'app' ? (({ lhs, rhs }) => eval(lhs)(eval(rhs)))
-		: id === 'array' ? (({ values }) => assumeAny(values.map(eval)))
 		: id === 'assign' ? (({ bind, value, expr }) => function() {
 			assign(bind.vn, eval(value));
 			return eval(expr);
