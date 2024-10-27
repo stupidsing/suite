@@ -734,9 +734,7 @@ format_ = (priority, ast) => {
 	: id === 'var' ? (({ vn }) => vn)
 	: (({}) => `function() { ${formatBlock(ast)}; }()`);
 
-	let s = f(ast);
-	let s0 = s.slice(0, 1);
-	return s0 === '(' || s0 === '[' || s0 === '{' ? s : priority_ <= priority ? s : `(${s})`;
+	return priority_ <= priority ? f(ast) : `(${f(ast)})`;
 };
 
 let typesModule = () => {
@@ -1630,7 +1628,7 @@ evaluate = vvs => {
 let rewriteVars;
 
 rewriteVars = (fs, ps, vts, ast) => {
-	let fs1 = fs + 1;
+	let fs1 = fs + '1';
 	let ps1 = ps + 1;
 	let { id } = ast;
 
