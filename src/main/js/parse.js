@@ -633,38 +633,38 @@ let rewrite = (rf, ast) => {
 	return f(ast);
 };
 
-let precOrder = [
-	['bool', 'nil', 'num', 'str', 'struct', 'tuple', 'undefined', 'var',],
-	['new',],
-	['cons', 'struct', 'tuple',],
-	['typeof',],
-	['app',],
-	['await',],
-	['div',],
-	['mul',],
-	['neg',],
-	['sub',],
-	['pos',],
-	['add',],
-	['lt_',],
-	['le_',],
-	['not',],
-	['ne_',],
-	['eq_',],
-	['and',],
-	['or',],
-	['coal',],
-	['app',],
-	['if',],
-	['lambda', 'lambda-async', 'lambda-capture',],
-	['pair',],
-	['let',],
-	['throw',],
-	['while',],
-	['assign',],
-];
-
 let precs = function() {
+	let precOrder = [
+		['bool', 'nil', 'num', 'str', 'struct', 'tuple', 'undefined', 'var',],
+		['new',],
+		['cons', 'struct', 'tuple',],
+		['typeof',],
+		['app',],
+		['await',],
+		['div',],
+		['mul',],
+		['neg',],
+		['sub',],
+		['pos',],
+		['add',],
+		['lt_',],
+		['le_',],
+		['not',],
+		['ne_',],
+		['eq_',],
+		['and',],
+		['or',],
+		['coal',],
+		['app',],
+		['if',],
+		['lambda', 'lambda-async', 'lambda-capture',],
+		['pair',],
+		['let',],
+		['throw',],
+		['while',],
+		['assign',],
+	];
+
 	let precs = {};
 	let i = 0;
 	while (i < precOrder.length) (function() {
