@@ -43,7 +43,7 @@ let find;
 find = (es, op) => isNotEmpty(es) ? function() {
 	let e = head(es);
 	return op(e) ? e : find(tail(es), op);
-}() : function() { throw new Error('not found'); }();
+}() : undefined;
 
 let contains;
 contains = (es, e) => isNotEmpty(es) && (head(es) === e || contains(tail(es), e));
@@ -53,6 +53,11 @@ foldl = (init, es, op) => isNotEmpty(es) ? foldl(op(init, head(es)), tail(es), o
 
 let foldr;
 foldr = (init, es, op) => isNotEmpty(es) ? op(foldr(init, tail(es), op), head(es)) : init;
+
+let findk = (kvs, k) => {
+	let kv = find(kvs, ([k_, v]) => k_ === k);
+	return kv !== undefined ? get1(kv) : error(`variable ${k} not found`);
+};
 
 let gen = i => {
 	let array = [];
@@ -1176,7 +1181,7 @@ let typesModule = () => {
 			newRef()
 		)
 		: id === 'var' ? (({ vn }) => {
-			let t = finalRef(get1(find(vts, ([vn_, t]) => vn_ === vn)));
+			let t = finalRef(findk(vts, vn));
 			return t.generic !== true ? t : cloneRef(t);
 		})
 		: id === 'while' ? (({ cond, loop, expr }) => {
@@ -1538,7 +1543,7 @@ rewriteRenameVar = (scope, vns, ast) => {
 	}()
 	)
 	: id === 'var' ? (({ vn }) =>
-		_var(get1(find(vns, ([vn_, vn1]) => vn_ === vn)))
+		_var(findk(vns, vn))
 	)
 	: (({}) =>
 		rewrite(ast => rewriteRenameVar(scope, vns, ast), ast)
@@ -1622,7 +1627,7 @@ evaluate = vvs => {
 		: id === 'tuple' ? (({ values }) => assumeAny(foldr(nil, values, (tuple, value) => cons(eval(value), tuple))))
 		: id === 'typeof' ? (({ expr }) => assumeAny(typeof (eval(expr))))
 		: id === 'undefined' ? (({}) => undefined)
-		: id === 'var' ? (({ vn }) => get1(find(vvs, ([vn_, value]) => vn_ === vn)))
+		: id === 'var' ? (({ vn }) => findk(vvs, vn))
 		: id === 'while' ? (({ cond, loop, expr }) => function() {
 			let v;
 			while (eval(cond)) eval(loop);
@@ -1656,7 +1661,7 @@ rewriteVars = (fs, ps, vts, ast) => {
 			rewriteVars(fs, ps1, cons([bind.vn, [fs, ps]], vts), expr)))
 	)
 	: id === 'var' ? (({ vn }) => {
-		let [fs_, ps] = get1(find(vts, ([vn_, pointer]) => vn_ === vn));
+		let [fs_, ps] = findk(vts, vn);
 		return { id: 'stack', fs: fs - fs_, ps };
 	})
 	: (({}) =>
