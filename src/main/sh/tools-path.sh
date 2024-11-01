@@ -5,7 +5,7 @@ curl -sL https://raw.githubusercontent.com/stupidsing/suite/master/src/main/sh/c
 ECLIPSE_V=2024-09
 GH_V=2.56.0
 MAVEN_V=3.9.9
-NODE_V=22.8.0
+NODE_V=22.11.0
 
 echo '
 AWS_DIST=$(cchs "echo https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" @curl @unzip "@exec ./aws/install -i . -b .")/aws/dist
