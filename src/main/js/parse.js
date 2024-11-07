@@ -1575,7 +1575,7 @@ evaluate = vvs => {
 		: id === 'assign' ? (({ bind, value, expr }) => function() {
 			assign(bind.vn, eval(value));
 			return eval(expr);
-		}())
+		}()) 
 		: id === 'await' ? (({ expr }) => error('BAD'))
 		: id === 'bool' ? (({ v }) => v)
 		: id === 'coal' ? (({ lhs, rhs }) => function() {
@@ -1651,9 +1651,6 @@ rewriteVars = (fs, ps, vts, ast) => {
 	let f = false ? undefined
 	: id === 'alloc' ? (({ vn, expr }) =>
 		_alloc(vn, rewriteVars(fs, ps1, cons([vn, [fs, ps]], vts), expr))
-	)
-	: id === 'lambda' ? (({ bind, expr }) =>
-		_lambda(bind, rewriteVars(fs1, 1, cons([bind.vn, [fs1, 0]], vts), expr))
 	)
 	: id === 'lambda-capture' ? (({ capture, bindCapture, bind, expr }) =>
 		_lambdaCapture(capture, bindCapture, bind, rewriteVars(fs1, 1, cons([bind.vn, [fs1, 1]], cons([bindCapture.vn, [fs1, 0]], vts)), expr))
