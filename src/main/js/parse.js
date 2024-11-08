@@ -1658,6 +1658,10 @@ rewriteVars = (fs, ps, vts, ast) => {
 	: id === 'alloc' ? (({ vn, expr }) =>
 		_alloc(vn, rewriteVars(fs, ps1, cons([vn, [fs, ps]], vts), expr))
 	)
+	: id === 'assign' ? (({ bind, value, expr }) => {
+		let [fs_, ps] = findk(vts, bind.vn);
+		return _assign({ id: 'stack', fs: fs - fs_, ps }, rewriteVars(fs, ps, vts, value), rewriteVars(fs, ps, vts, expr));
+	})
 	: id === 'lambda-capture' ? (({ capture, bindCapture, bind, expr }) =>
 		_lambdaCapture(
 			capture, bindCapture, bind,
