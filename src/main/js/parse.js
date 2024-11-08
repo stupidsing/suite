@@ -915,6 +915,10 @@ let typesModule = () => {
 		return false ? undefined
 		: field === '.charCodeAt' ?
 			doBind(ast, ts, tyString) && tyLambdaOf(tyNumber, tyNumber)
+		: field === '.concat' ? function() {
+			let ta = tyArrayOf(newRef());
+			return doBind(ast, ts, ta) && tyLambdaOf(ta, ta);
+		}()
 		: field === '.endsWith' ?
 			doBind(ast, ts, tyString) && tyLambdaOf(tyString, tyBoolean)
 		: field === '.filter' ? function() {
