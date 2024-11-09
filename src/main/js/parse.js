@@ -1715,7 +1715,7 @@ generate = ast => {
 	: id === 'alloc' ? (({ vn, expr }) => [
 		{ id }, // a push
 		...generate(expr),
-		{ id: 'pop' },
+		{ id: 'fpop' },
 	])
 	: id === 'and' ?
 		generateBinOp
@@ -1780,9 +1780,9 @@ generate = ast => {
 		generateBinOp
 	: id === 'let' ? (({ bind, value, expr }) => [
 		...generate(value),
-		{ id: 'push' },
+		{ id: 'fpush' },
 		...generate(expr),
-		{ id: 'pop' },
+		{ id: 'fpop' },
 	])
 	: id === 'lt_' ?
 		generateBinOp
@@ -1822,15 +1822,18 @@ generate = ast => {
 		generateBinOp
 	: id === 'throw' ? (({ expr }) => [
 		...generate(expr),
-		{ id: 'throw' },
+		{ id },
 	])
 	: id === 'try' ? (({ lhs, rhs }) => function() {
 		let catchLabel = newDummy();
 		let finallyLabel = newDummy();
 		return [
-			{ id: 'get-ex-handler' },
-			{ id: 'set-ex-handler', label: catchLabel },
+			{ id: 'get-catch' },
+			{ id: 'push-label', label: catchLabel },
+			{ id: 'set-catch' },
 			...generate(lhs),
+			{ id: 'rotate' },
+			{ id: 'set-catch' },
 			{ id: 'jump', label: finallyLabel },
 			{ id: 'label', label: catchLabel },
 			...generate(rhs),
@@ -1857,6 +1860,7 @@ generate = ast => {
 			...generate(cond),
 			{ id: 'jump-zero', label: exitLabel },
 			...generate(loop),
+			{ id: 'pop' },
 			{ id: 'label', label: exitLabel },
 			...generate(expr),
 		];
