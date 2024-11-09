@@ -1693,7 +1693,180 @@ rewriteVars = (fs, ps, vts, ast) => {
 	return f(ast);
 };
 
-// let generate = ast => reduceVars(0, 0, [], ast);
+// let generate = ast => rewriteVars(0, 0, [], ast);
+
+let generate;
+
+generate = ast => {
+	let { id } = ast;
+
+	let generateOp = (({ expr }) => [
+		...generate(expr),
+		{ id },
+	]);
+
+	let generateBinOp = (({ lhs, rhs }) =>
+		[...generate(lhs), ...generate(rhs), { id },]
+	);
+
+	let f = false ? undefined
+	: id === 'add' ?
+		generateBinOp
+	: id === 'alloc' ? (({ vn, expr }) => [
+		{ id }, // a push
+		...generate(expr),
+		{ id: 'pop' },
+	])
+	: id === 'and' ?
+		generateBinOp
+	: id === 'app' ? (({ lhs, rhs }) =>
+		[...generate(lhs), ...generate(rhs), { id },]
+	)
+	: id === 'assign' ? (({ bind, value, expr }) => [
+		...generate(value),
+		{ id, fs: bind.fs, ps: bind.ps },
+		...generate(expr),
+	])
+	: id === 'await' ? (({}) =>
+		error('BAD')
+	)
+	: id === 'bool' ? (({}) =>
+		[ast,]
+	)
+	: id === 'coal' ?
+		generateBinOp
+	: id === 'cons' ?
+		generateBinOp
+	: id === 'div' ?
+		generateBinOp
+	: id === 'dot' ? (({ expr, field }) => [
+		...generate(expr),
+		{ id: 'get', key: field },
+	])
+	: id === 'eq_' ?
+		generateBinOp
+	: id === 'if' ? (({ if_, then, else_ }) => function() {
+		let elseLabel = newDummy();
+		let fiLabel = newDummy();
+		return [
+			...generate(if_),
+			{ id: 'jump-zero', label: elseLabel },
+			...generate(then),
+			{ id: 'jump', label: fiLabel },
+			{ id: 'label', label: elseLabel },
+			...generate(else_),
+			{ id: 'label', label: fiLabel },
+		];
+	}())
+	: id === 'index' ?
+		generateBinOp
+	: id === 'lambda' ?
+		error('BAD')
+	: id === 'lambda-async' ?
+		error('BAD')
+	: id === 'lambda-capture' ? (({ capture, bindCapture, bind, expr }) => function() {
+		let lambdaLabel = newDummy();
+		let skipLabel = newDummy();
+		return [
+			{ id: 'jump', label: skipLabel },
+			{ id: 'label', label: lambdaLabel },
+			...generate(capture),
+			{ id: 'label', label: skipLabel },
+			{ id: 'push-label', label: lambdaLabel },
+			{ id: 'lambda-capture' },
+		];
+	}())
+	: id === 'le_' ?
+		generateBinOp
+	: id === 'let' ? (({ bind, value, expr }) => [
+		...generate(value),
+		{ id: 'push' },
+		...generate(expr),
+		{ id: 'pop' },
+	])
+	: id === 'lt_' ?
+		generateBinOp
+	: id === 'mul' ?
+		generateBinOp
+	: id === 'ne_' ?
+		generateBinOp
+	: id === 'neg' ?
+		generateOp
+	: id === 'new' ?
+		error('TODO')
+	: id === 'nil' ? (({}) =>
+		[ast,]
+	)
+	: id === 'not' ?
+		generateOp
+	: id === 'num' ? (({}) =>
+		[ast,]
+	)
+	: id === 'or' ?
+		generateBinOp
+	: id === 'pair' ?
+		generateBinOp
+	: id === 'pos' ?
+		generateOp
+	: id === 'stack' ? (({}) =>
+		[ast,]
+	)
+	: id === 'str' ? (({}) =>
+		[ast,]
+	)
+	: id === 'struct' ? (({ kvs }) => [
+		{ id: 'object' },
+		...kvs.reverse().flatMap(({ key, value }) => [...generate(value), { id: 'put', key },]),
+	])
+	: id === 'sub' ?
+		generateBinOp
+	: id === 'throw' ? (({ expr }) => [
+		...generate(expr),
+		{ id: 'throw' },
+	])
+	: id === 'try' ? (({ lhs, rhs }) => function() {
+		let catchLabel = newDummy();
+		let finallyLabel = newDummy();
+		return [
+			{ id: 'get-ex-handler' },
+			{ id: 'set-ex-handler', label: catchLabel },
+			...generate(lhs),
+			{ id: 'jump', label: finallyLabel },
+			{ id: 'label', label: catchLabel },
+			...generate(rhs),
+			{ id: 'label', label: finallyLabel },
+		];
+	}()
+	)
+	: id === 'tuple' ? (({ values }) => [
+		{ id: 'nil' },
+		...values.reverse().flatMap(value => [...generate(value), { id: 'cons' },]),
+	])
+	: id === 'typeof' ?
+		error('BAD')
+	: id === 'undefined' ? (({}) =>
+		[{ id },]
+	)
+	: id === 'var' ?
+		error('BAD')
+	: id === 'while' ? (({ cond, loop, expr }) => {
+		let loopLabel = newDummy();
+		let exitLabel = newDummy();
+		return [
+			{ id: 'label', label: loopLabel },
+			...generate(cond),
+			{ id: 'jump-zero', label: exitLabel },
+			...generate(loop),
+			{ id: 'label', label: exitLabel },
+			...generate(expr),
+		];
+	})
+	: (({}) =>
+		error('BAD')
+	);
+
+	return f(ast);
+};
 
 let parser = parserModule();
 let types = typesModule();
