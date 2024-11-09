@@ -112,6 +112,7 @@ let _nil = { id: 'nil' };
 let _not = expr => ({ id: 'not', expr });
 let _num = i => ({ id: 'num', i });
 let _pair = (lhs, rhs) => ({ id: 'pair', lhs, rhs });
+let _stack = (fs, ps) => ({ id: 'stack', fs, ps });
 let _str = v => ({ id: 'str', v });
 let _struct = kvs => ({ id: 'struct', kvs });
 let _throw = expr => ({ id: 'throw', expr });
@@ -625,6 +626,7 @@ let rewrite = (rf, ast) => {
 	: id === 'or_' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
 	: id === 'pair' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
 	: id === 'pos' ? (({ expr }) => ({ id, expr: rf(expr) }))
+	: id === 'stack' ? (({ fs, ps }) => ast)
 	: id === 'str' ? (({ v }) => ast)
 	: id === 'struct' ? (({ kvs }) => ({ id, kvs: kvs.map(({ key, value }) => ({ key, value: rf(value) })) }))
 	: id === 'sub' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
@@ -737,6 +739,7 @@ format_ = (priority, ast) => {
 	: id === 'or_' ? (({ lhs, rhs }) => `${fm(lhs)} || ${fmt(rhs)}`)
 	: id === 'pair' ? (({ lhs, rhs }) => `${fm(lhs)}, ${fmt(rhs)}`)
 	: id === 'pos' ? (({ expr }) => `+ ${fmt(expr)}`)
+	: id === 'stack' ? (({ fs, ps }) => `frame[${fs}][${ps}]`)
 	: id === 'str' ? (({ v }) => `'${v}'`)
 	: id === 'struct' ? (({ kvs }) => {
 		let s = kvs.map(({ key, value }) => {
@@ -1156,6 +1159,8 @@ let typesModule = () => {
 		: id === 'pos' ? (({ expr }) =>
 			doBind(ast, infer(expr), tyNumber) && tyNumber
 		)
+		: id === 'stack' ?
+			error('BAD')
 		: id === 'str' ? (({}) =>
 			tyString
 		)
@@ -1621,6 +1626,7 @@ evaluate = vvs => {
 		: id === 'or_' ? (({ lhs, rhs }) => assumeAny(eval(lhs) || eval(rhs)))
 		: id === 'pair' ? (({ lhs, rhs }) => assumeAny([eval(lhs), eval(rhs)]))
 		: id === 'pos' ? (({ expr }) => assumeAny(+eval(expr)))
+		: id === 'stack' ? error('BAD')
 		: id === 'str' ? (({ v }) => v)
 		: id === 'struct' ? (({ kvs }) => assumeAny(foldl({}, kvs, (struct, kv) => {
 			let { key, value } = kv;
@@ -1664,7 +1670,7 @@ rewriteVars = (fs, ps, vts, ast) => {
 	)
 	: id === 'assign' ? (({ bind, value, expr }) => {
 		let [fs_, ps] = findk(vts, bind.vn);
-		return _assign({ id: 'stack', fs: fs - fs_, ps }, rewriteVars(fs, ps, vts, value), rewriteVars(fs, ps, vts, expr));
+		return _assign(_stack(fs - fs_, ps), rewriteVars(fs, ps, vts, value), rewriteVars(fs, ps, vts, expr));
 	})
 	: id === 'lambda-capture' ? (({ capture, bindCapture, bind, expr }) =>
 		_lambdaCapture(
@@ -1678,7 +1684,7 @@ rewriteVars = (fs, ps, vts, ast) => {
 	)
 	: id === 'var' ? (({ vn }) => {
 		let [fs_, ps] = findk(vts, vn);
-		return { id: 'stack', fs: fs - fs_, ps };
+		return _stack(fs - fs_, ps);
 	})
 	: (({}) =>
 		rewrite(ast => rewriteVars(fs, ps, vts, ast), ast)
