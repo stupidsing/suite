@@ -958,6 +958,10 @@ let typesModule = () => {
 			return doBind(ast, ts, tyArrayOf(te))
 				&& tyLambdaOf(tyPairOf(treducer, tr), tr);
 		}()
+		: field === '.reverse' ? function() {
+			let tl = tyArrayOf(newRef());
+			return doBind(ast, ts, tl) && tyLambdaOf(tyVoid, tl);
+		}()
 		: field === '.slice' ? function() {
 			let te = newRef();
 			let tl = tyArrayOf(te);
