@@ -1903,8 +1903,7 @@ let process1 = program => {
 	return { ast: ast6, type };
 };
 
-let process2 = program => {
-	let ast6 = process1(program);
+let process2 = ast6 => {
 	let ast7 = rewriteVars(0, 0, [], ast6);
 	let opcodes = generate(ast7);
 	return opcodes;
@@ -1937,9 +1936,9 @@ return actual === expect
 	try {
 		let { ast, type } = process1(require('fs').readFileSync(0, 'utf8'));
 		console.log(`ast :: ${stringify(ast)}`);
-		// console.log(`eval :: ${JSON.stringify(evaluate([])(ast))}`);
-		// console.log(`format :: ${format(ast)}`);
-		// console.log(`generate :: ${generator.generate(ast)}`);
+		// process.env.EVAL && console.log(`eval :: ${JSON.stringify(evaluate([])(ast))}`);
+		process.env.FORMAT && console.log(`format :: ${format(ast)}`);
+		process.env.GENERATE && console.log(`generate :: ${process2(ast)}`);
 		console.log(`type :: ${types.dump(type)}`);
 		return true;
 	} catch (e) { return console.error(e); }
