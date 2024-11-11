@@ -1693,8 +1693,6 @@ rewriteVars = (fs, ps, vts, ast) => {
 	return f(ast);
 };
 
-// let generate = ast => rewriteVars(0, 0, [], ast);
-
 let generate;
 
 generate = ast => {
@@ -1713,9 +1711,10 @@ generate = ast => {
 	: id === 'add' ?
 		generateBinOp
 	: id === 'alloc' ? (({ vn, expr }) => [
-		{ id }, // a push
+		{ id: 'num', i: 0 },
+		{ id: 'fpush' },
 		...generate(expr),
-		{ id: 'fpop' },
+		{ id: 'fdiscard' },
 	])
 	: id === 'and' ?
 		generateBinOp
@@ -1740,7 +1739,7 @@ generate = ast => {
 		generateBinOp
 	: id === 'dot' ? (({ expr, field }) => [
 		...generate(expr),
-		{ id: 'get', key: field },
+		{ id, key: field },
 	])
 	: id === 'eq_' ?
 		generateBinOp
@@ -1755,9 +1754,9 @@ generate = ast => {
 			{ id: 'jump-zero', label: elseLabel },
 			...generate(then),
 			{ id: 'jump', label: fiLabel },
-			{ id: 'label', label: elseLabel },
+			{ id: 'l', label: elseLabel },
 			...generate(else_),
-			{ id: 'label', label: fiLabel },
+			{ id: 'l', label: fiLabel },
 		];
 	}())
 	: id === 'index' ?
@@ -1771,11 +1770,11 @@ generate = ast => {
 		let skipLabel = newDummy();
 		return [
 			{ id: 'jump', label: skipLabel },
-			{ id: 'label', label: lambdaLabel },
+			{ id: 'l', label: lambdaLabel },
 			...generate(capture),
-			{ id: 'label', label: skipLabel },
-			{ id: 'push-label', label: lambdaLabel },
-			{ id: 'lambda-capture' },
+			{ id: 'l', label: skipLabel },
+			{ id: 'label', label: lambdaLabel },
+			{ id },
 		];
 	}())
 	: id === 'le_' ?
@@ -1784,7 +1783,7 @@ generate = ast => {
 		...generate(value),
 		{ id: 'fpush' },
 		...generate(expr),
-		{ id: 'fpop' },
+		{ id: 'fdiscard' },
 	])
 	: id === 'lt_' ?
 		generateBinOp
@@ -1828,15 +1827,15 @@ generate = ast => {
 		let finallyLabel = newDummy();
 		return [
 			{ id: 'get-catch' },
-			{ id: 'push-label', label: catchLabel },
+			{ id: 'label', label: catchLabel },
 			{ id: 'set-catch' },
 			...generate(lhs),
 			{ id: 'rotate' },
 			{ id: 'set-catch' },
 			{ id: 'jump', label: finallyLabel },
-			{ id: 'label', label: catchLabel },
+			{ id: 'l', label: catchLabel },
 			...generate(rhs),
-			{ id: 'label', label: finallyLabel },
+			{ id: 'l', label: finallyLabel },
 		];
 	}()
 	)
@@ -1855,12 +1854,12 @@ generate = ast => {
 		let loopLabel = newDummy();
 		let exitLabel = newDummy();
 		return [
-			{ id: 'label', label: loopLabel },
+			{ id: 'l', label: loopLabel },
 			...generate(cond),
 			{ id: 'jump-zero', label: exitLabel },
 			...generate(loop),
-			{ id: 'pop' },
-			{ id: 'label', label: exitLabel },
+			{ id: 'discard' },
+			{ id: 'l', label: exitLabel },
 			...generate(expr),
 		];
 	})
@@ -1902,6 +1901,13 @@ let process1 = program => {
 	let ast6 = rewriteCapture(0, roots.map(v => [v, 0]), ast5);
 
 	return { ast: ast6, type };
+};
+
+let process2 = program => {
+	let ast6 = process1(program);
+	let ast7 = rewriteVars(0, 0, [], ast6);
+	let opcodes = generate(ast7);
+	return opcodes;
 };
 
 let actual = stringify(process0(`
