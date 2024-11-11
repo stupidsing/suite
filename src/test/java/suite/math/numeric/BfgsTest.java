@@ -10,7 +10,7 @@ import suite.math.linalg.Vector;
 public class BfgsTest {
 
 	private Bfgs bfgs = new Bfgs();
-	Rosenbrock rb = new Rosenbrock();
+	private Rosenbrock rb = new Rosenbrock();
 	private Vector vec = new Vector();
 
 	@Test
