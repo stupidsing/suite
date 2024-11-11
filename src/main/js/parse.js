@@ -102,6 +102,7 @@ let _cons = (lhs, rhs) => ({ id: 'cons', lhs, rhs });
 let _dot = (expr, field) => ({ id: 'dot', expr, field });
 let _eq = (lhs, rhs) => ({ id: 'eq_', lhs, rhs });
 let _error = { id: 'new', clazz: 'Error' };
+let _frame = (fs, ps) => ({ id: 'frame', fs, ps });
 let _if = (if_, then, else_) => ({ id: 'if', if_, then, else_ });
 let _index = (lhs, rhs) => ({ id: 'index', lhs, rhs });
 let _lambda = (bind, expr) => ({ id: 'lambda', bind, expr });
@@ -112,7 +113,6 @@ let _nil = { id: 'nil' };
 let _not = expr => ({ id: 'not', expr });
 let _num = i => ({ id: 'num', i });
 let _pair = (lhs, rhs) => ({ id: 'pair', lhs, rhs });
-let _stack = (fs, ps) => ({ id: 'stack', fs, ps });
 let _str = v => ({ id: 'str', v });
 let _struct = kvs => ({ id: 'struct', kvs });
 let _throw = expr => ({ id: 'throw', expr });
@@ -606,6 +606,7 @@ let rewrite = (rf, ast) => {
 	: id === 'div' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
 	: id === 'dot' ? (({ expr, field }) => ({ id, expr: rf(expr), field }))
 	: id === 'eq_' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
+	: id === 'frame' ? (({ fs, ps }) => ast)
 	: id === 'if' ? (({ if_, then, else_ }) => ({ id, if_: rf(if_), then: rf(then), else_: rf(else_) }))
 	: id === 'index' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
 	: id === 'lambda' ? (({ bind, expr }) => ({ id, bind, expr: rf(expr) }))
@@ -626,7 +627,6 @@ let rewrite = (rf, ast) => {
 	: id === 'or_' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
 	: id === 'pair' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
 	: id === 'pos' ? (({ expr }) => ({ id, expr: rf(expr) }))
-	: id === 'stack' ? (({ fs, ps }) => ast)
 	: id === 'str' ? (({ v }) => ast)
 	: id === 'struct' ? (({ kvs }) => ({ id, kvs: kvs.map(({ key, value }) => ({ key, value: rf(value) })) }))
 	: id === 'sub' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
@@ -720,6 +720,7 @@ format_ = (priority, ast) => {
 	: id === 'div' ? (({ lhs, rhs }) => `${fmt(lhs)} / ${fm(rhs)}`)
 	: id === 'dot' ? (({ expr, field }) => `${fmt(expr)}${field}`)
 	: id === 'eq_' ? (({ lhs, rhs }) => `${fmt(lhs)} === ${fmt(rhs)}`)
+	: id === 'frame' ? (({ fs, ps }) => `frame[${fs}][${ps}]`)
 	: id === 'if' ? (({ if_, then, else_ }) => `${fm(if_)} ? ${fmt(then)} : ${fmt(else_)}`)
 	: id === 'index' ? (({ lhs, rhs }) => `${fmt(lhs)}[${format(rhs)}]`)
 	: id === 'lambda' ? (({ bind, expr }) => `${fmt(bind)} => ${fmt(expr)}`)
@@ -739,7 +740,6 @@ format_ = (priority, ast) => {
 	: id === 'or_' ? (({ lhs, rhs }) => `${fm(lhs)} || ${fmt(rhs)}`)
 	: id === 'pair' ? (({ lhs, rhs }) => `${fm(lhs)}, ${fmt(rhs)}`)
 	: id === 'pos' ? (({ expr }) => `+ ${fmt(expr)}`)
-	: id === 'stack' ? (({ fs, ps }) => `frame[${fs}][${ps}]`)
 	: id === 'str' ? (({ v }) => `'${v}'`)
 	: id === 'struct' ? (({ kvs }) => {
 		let s = kvs.map(({ key, value }) => {
@@ -1074,6 +1074,8 @@ let typesModule = () => {
 		)
 		: id === 'eq_' ?
 			inferEqOp
+		: id === 'frame' ?
+			error('BAD')
 		: id === 'if' ? (({ if_, then, else_ }) => {
 			let tt = function() {
 				try {
@@ -1159,8 +1161,6 @@ let typesModule = () => {
 		: id === 'pos' ? (({ expr }) =>
 			doBind(ast, infer(expr), tyNumber) && tyNumber
 		)
-		: id === 'stack' ?
-			error('BAD')
 		: id === 'str' ? (({}) =>
 			tyString
 		)
@@ -1601,6 +1601,7 @@ evaluate = vvs => {
 		: id === 'div' ? (({ lhs, rhs }) => assumeAny(eval(lhs) / eval(rhs)))
 		: id === 'dot' ? (({ expr, field }) => getp(eval(expr), field))
 		: id === 'eq_' ? (({ lhs, rhs }) => assumeAny(eval(lhs) === eval(rhs)))
+		: id === 'frame' ? error('BAD')
 		: id === 'if' ? (({ if_, then, else_ }) => eval(if_) ? eval(then) : eval(else_))
 		: id === 'index' ? (({ lhs, rhs }) => eval(lhs)[eval(rhs)])
 		: id === 'lambda' ? (({ bind, expr }) => assumeAny(value => evaluate(cons([bind.vn, value], vvs))(expr)))
@@ -1626,7 +1627,6 @@ evaluate = vvs => {
 		: id === 'or_' ? (({ lhs, rhs }) => assumeAny(eval(lhs) || eval(rhs)))
 		: id === 'pair' ? (({ lhs, rhs }) => assumeAny([eval(lhs), eval(rhs)]))
 		: id === 'pos' ? (({ expr }) => assumeAny(+eval(expr)))
-		: id === 'stack' ? error('BAD')
 		: id === 'str' ? (({ v }) => v)
 		: id === 'struct' ? (({ kvs }) => assumeAny(foldl({}, kvs, (struct, kv) => {
 			let { key, value } = kv;
@@ -1670,7 +1670,7 @@ rewriteVars = (fs, ps, vts, ast) => {
 	)
 	: id === 'assign' ? (({ bind, value, expr }) => {
 		let [fs_, ps] = findk(vts, bind.vn);
-		return _assign(_stack(fs - fs_, ps), rewriteVars(fs, ps, vts, value), rewriteVars(fs, ps, vts, expr));
+		return _assign(_frame(fs - fs_, ps), rewriteVars(fs, ps, vts, value), rewriteVars(fs, ps, vts, expr));
 	})
 	: id === 'lambda-capture' ? (({ capture, bindCapture, bind, expr }) =>
 		_lambdaCapture(
@@ -1684,7 +1684,7 @@ rewriteVars = (fs, ps, vts, ast) => {
 	)
 	: id === 'var' ? (({ vn }) => {
 		let [fs_, ps] = findk(vts, vn);
-		return _stack(fs - fs_, ps);
+		return _frame(fs - fs_, ps);
 	})
 	: (({}) =>
 		rewrite(ast => rewriteVars(fs, ps, vts, ast), ast)
@@ -1744,6 +1744,9 @@ generate = ast => {
 	])
 	: id === 'eq_' ?
 		generateBinOp
+	: id === 'frame' ? (({}) =>
+		[ast,]
+	)
 	: id === 'if' ? (({ if_, then, else_ }) => function() {
 		let elseLabel = newDummy();
 		let fiLabel = newDummy();
@@ -1807,9 +1810,6 @@ generate = ast => {
 		generateBinOp
 	: id === 'pos' ?
 		generateOp
-	: id === 'stack' ? (({}) =>
-		[ast,]
-	)
 	: id === 'str' ? (({}) =>
 		[ast,]
 	)
