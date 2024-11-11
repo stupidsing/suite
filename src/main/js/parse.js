@@ -1719,9 +1719,8 @@ generate = ast => {
 	])
 	: id === 'and' ?
 		generateBinOp
-	: id === 'app' ? (({ lhs, rhs }) =>
-		[...generate(lhs), ...generate(rhs), { id },]
-	)
+	: id === 'app' ?
+		generateBinOp
 	: id === 'assign' ? (({ bind, value, expr }) => [
 		...generate(value),
 		{ id, fs: bind.fs, ps: bind.ps },
