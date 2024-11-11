@@ -1938,7 +1938,7 @@ return actual === expect
 		console.log(`ast :: ${stringify(ast)}`);
 		// process.env.EVAL && console.log(`eval :: ${JSON.stringify(evaluate([])(ast))}`);
 		process.env.FORMAT && console.log(`format :: ${format(ast)}`);
-		process.env.GENERATE && console.log(`generate :: ${process2(ast)}`);
+		// process.env.GENERATE && console.log(`generate :: ${process2(ast).map(JSON.stringify).join('\n')}`);
 		console.log(`type :: ${types.dump(type)}`);
 		return true;
 	} catch (e) { return console.error(e); }
