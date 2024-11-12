@@ -950,6 +950,10 @@ let typesModule = () => {
 			let to = newRef();
 			return doBind(ast, ts, tyArrayOf(ti)) && tyLambdaOf(tyLambdaOf(ti, to), tyArrayOf(to));
 		}()
+		: field === '.pop' ? function() {
+			let te = newRef();
+			return doBind(ast, ts, tyArrayOf(te)) && tyLambdaOf(tyVoid, te);
+		}()
 		: field === '.push' ? function() {
 			let te = newRef();
 			return doBind(ast, ts, tyArrayOf(te)) && tyLambdaOf(te, tyVoid);
@@ -1706,9 +1710,11 @@ generate = ast => {
 		{ id },
 	]);
 
-	let generateBinOp = (({ lhs, rhs }) =>
-		[...generate(lhs), ...generate(rhs), { id },]
-	);
+	let generateBinOp = (({ lhs, rhs }) => [
+		...generate(lhs),
+		...generate(rhs),
+		{ id },
+	]);
 
 	let f = false ? undefined
 	: id === 'add' ?
