@@ -1670,7 +1670,10 @@ rewriteVars = (fs, ps, vts, ast) => {
 	)
 	: id === 'assign' ? (({ bind, value, expr }) => {
 		let [fs_, ps] = findk(vts, bind.vn);
-		return _assign(_frame(fs - fs_, ps), rewriteVars(fs, ps, vts, value), rewriteVars(fs, ps, vts, expr));
+		return _assign(
+			_frame(fs - fs_, ps),
+			rewriteVars(fs, ps, vts, value),
+			rewriteVars(fs, ps, vts, expr));
 	})
 	: id === 'lambda-capture' ? (({ capture, bindCapture, bind, expr }) =>
 		_lambdaCapture(
@@ -1863,8 +1866,8 @@ generate = ast => {
 			...generate(expr),
 		];
 	})
-	: (({}) =>
-		error('BAD')
+	: (({ id }) =>
+		error(`unknown node ${id}`)
 	);
 
 	return f(ast);
