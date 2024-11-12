@@ -1939,9 +1939,9 @@ return actual === expect
 	try {
 		let { ast, type } = process1(require('fs').readFileSync(0, 'utf8'));
 		console.log(`ast :: ${stringify(ast)}`);
-		// process.env.EVAL && console.log(`eval :: ${JSON.stringify(evaluate([])(ast))}`);
+		process.env.EVAL && console.log(`eval :: ${stringify(evaluate([])(ast))}`);
 		process.env.FORMAT && console.log(`format :: ${format(ast)}`);
-		// process.env.GENERATE && console.log(`generate :: ${process2(ast).map(JSON.stringify).join('\n')}`);
+		process.env.GENERATE && console.log(`generate :: ${process2(ast).map(stringify).join('\n')}`);
 		console.log(`type :: ${types.dump(type)}`);
 		return true;
 	} catch (e) { return console.error(e); }
