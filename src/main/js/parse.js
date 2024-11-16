@@ -704,6 +704,7 @@ formatBlock = ast => {
 
 format_ = (priority, ast) => {
 	let { id } = ast;
+	console.log(ast);
 	let priority_ = getp(precs, id);
 
 	let fm = ast => format_(priority_ - 1, ast);
@@ -1504,8 +1505,8 @@ rewriteCapture = (fs, vfs, ast) => {
 		let bindCapture = newDummy();
 		let captures = [];
 		let expr_ = rewriteCaptureVar(bindCapture, vfs.map(([vn, fs]) => vn), captures, expr);
-		let definitions = Object.fromEntries(captures.map(vn => [`.${vn}`, vn]));
-		return _lambdaCapture(definitions, { vn: bindCapture }, bind, rewriteCapture(fs1, vfs1, expr_));
+		let definitions = _struct(captures.map(vn => ({ key: `.${vn}`, value: _var(vn) })));
+		return _lambdaCapture(definitions, _var(bindCapture), bind, rewriteCapture(fs1, vfs1, expr_));
 	}())
 	: id === 'let' ? (({ bind, value, expr }) =>
 		_let(bind,
