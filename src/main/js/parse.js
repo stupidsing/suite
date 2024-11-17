@@ -1698,7 +1698,12 @@ rewriteVars = (fs, ps, vts, ast) => {
 	)
 	: id === 'assign' ? (({ bind, value, expr }) => {
 		return false ? undefined
-		: bind.id === 'index' ? error('BAD')
+		: bind.id === 'index' ? function() {
+			return _assign(
+				rewriteVars(fs, ps, vts, bind),
+				rewriteVars(fs, ps, vts, value),
+				rewriteVars(fs, ps, vts, expr));
+		}()
 		: bind.id === 'var' ? function() {
 			let [fs_, ps] = findk(vts, bind.vn);
 			return _assign(
@@ -1758,11 +1763,21 @@ generate = ast => {
 		generateBinOp
 	: id === 'app' ?
 		generateBinOp
-	: id === 'assign' ? (({ bind, value, expr }) => [
-		...generate(value),
-		{ id, fs: bind.fs, ps: bind.ps },
-		...generate(expr),
-	])
+	: id === 'assign' ? (({ bind, value, expr }) => false ? undefined
+		: bind.id === 'frame' ? [
+			...generate(value),
+			{ id, fs: bind.fs, ps: bind.ps },
+			...generate(expr),
+		]
+		: bind.id === 'index' ? [
+			...generate(bind.lhs),
+			...generate(bind.rhs),
+			...generate(value),
+			{ id: 'set-index' },
+			...generate(expr),
+		]
+		: error('BAD')
+	)
 	: id === 'await' ? (({}) =>
 		error('BAD')
 	)
