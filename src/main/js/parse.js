@@ -1698,12 +1698,10 @@ rewriteVars = (fs, ps, vts, ast) => {
 	)
 	: id === 'assign' ? (({ bind, value, expr }) => {
 		return false ? undefined
-		: bind.id === 'index' ? function() {
-			return _assign(
-				rewriteVars(fs, ps, vts, bind),
-				rewriteVars(fs, ps, vts, value),
-				rewriteVars(fs, ps, vts, expr));
-		}()
+		: bind.id === 'index' ? _assign(
+			rewriteVars(fs, ps, vts, bind),
+			rewriteVars(fs, ps, vts, value),
+			rewriteVars(fs, ps, vts, expr))
 		: bind.id === 'var' ? function() {
 			let [fs_, ps] = findk(vts, bind.vn);
 			return _assign(
