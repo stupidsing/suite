@@ -6,7 +6,8 @@
 // [a, b,] is an array.
 // [a, b] is a tuple.
 
-let assumeAny = Object.assign;
+let __id = x => x;
+let assumeAny = __id;
 
 let assumeList = v => {
 	let list = assumeAny(v);
@@ -20,7 +21,7 @@ let assumeObject = v => {
 	return object;
 };
 
-let fake = Object.assign;
+let fake = __id;
 
 let ascii = s => s.charCodeAt(0);
 let error = message => { throw new Error(message); };
@@ -1120,7 +1121,9 @@ let typesModule = () => {
 			return function() {
 				try {
 					let tb = inferType(vts1, false, bind);
-					let tv = infer(value);
+					let tv = bind.id !== 'var' || !bind.vn.startsWith('__')
+						? infer(value)
+						: tyLambdaOf(newRef(), newRef());
 					return doBind(_let(bind, value, undefined), tb, tv);
 				} catch (e) {
 					e.message = `in value clause of ${format(bind)}\n${e.message}`;
@@ -1637,7 +1640,7 @@ evaluate = vvs => {
 		: id === 'lambda-capture' ? (({ capture, bindCapture, bind, expr }) =>
 			assumeAny(value => evaluate(cons([bind.vn, value], cons([bindCapture.vn, eval(capture)], vvs)))(expr))
 		)
-		: id === 'le_' ? (({ lhs, rhs }) => assumeAny(eval(lhs) <= eval(rhs)))
+		: id === 'le_' ? (({ lhs, rhs }) => eval(lhs) <= eval(rhs))
 		: id === 'let' ? (({ bind, value, expr }) => evaluate(cons([bind.vn, eval(value)], vvs))(expr))
 		: id === 'lt_' ? (({ lhs, rhs }) => assumeAny(eval(lhs) < eval(rhs)))
 		: id === 'mul' ? (({ lhs, rhs }) => assumeAny(eval(lhs) * eval(rhs)))
