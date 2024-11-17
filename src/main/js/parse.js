@@ -1604,8 +1604,16 @@ evaluate = vvs => {
 		: id === 'and' ? (({ lhs, rhs }) => assumeAny(eval(lhs) && eval(rhs)))
 		: id === 'app' ? (({ lhs, rhs }) => eval(lhs)(eval(rhs)))
 		: id === 'assign' ? (({ bind, value, expr }) => function() {
-			assign(bind.vn, eval(value));
-			return eval(expr);
+			return false ? undefined
+				: bind.id === 'index' ? function() {
+					eval(bind.lhs)[eval(bind.rhs)] = eval(value);
+					return eval(expr);
+				}()
+				: bind.id === 'var' ? function() {
+					assign(bind.vn, eval(value));
+					return eval(expr);
+				}()
+				: error('BAD');
 		}()) 
 		: id === 'await' ? (({ expr }) => error('BAD'))
 		: id === 'bool' ? (({ v }) => v)
@@ -1615,7 +1623,11 @@ evaluate = vvs => {
 		}())
 		: id === 'cons' ? (({ lhs, rhs }) => assumeAny(cons(eval(lhs), eval(rhs))))
 		: id === 'div' ? (({ lhs, rhs }) => assumeAny(eval(lhs) / eval(rhs)))
-		: id === 'dot' ? (({ expr, field }) => getp(eval(expr), field.slice(1, undefined)))
+		: id === 'dot' ? (({ expr, field }) => function() {
+			let object = eval(expr);
+			let value = getp(object, field.slice(1, undefined));
+			return typeof value !== 'function' ? value : fake(value).bind(object);
+		}())
 		: id === 'eq_' ? (({ lhs, rhs }) => assumeAny(eval(lhs) === eval(rhs)))
 		: id === 'frame' ? error('BAD')
 		: id === 'if' ? (({ if_, then, else_ }) => eval(if_) ? eval(then) : eval(else_))
@@ -1685,11 +1697,16 @@ rewriteVars = (fs, ps, vts, ast) => {
 		_alloc(vn, rewriteVars(fs, ps1, cons([vn, [fs, ps]], vts), expr))
 	)
 	: id === 'assign' ? (({ bind, value, expr }) => {
-		let [fs_, ps] = findk(vts, bind.vn);
-		return _assign(
-			_frame(fs - fs_, ps),
-			rewriteVars(fs, ps, vts, value),
-			rewriteVars(fs, ps, vts, expr));
+		return false ? undefined
+		: bind.id === 'index' ? error('BAD')
+		: bind.id === 'var' ? function() {
+			let [fs_, ps] = findk(vts, bind.vn);
+			return _assign(
+				_frame(fs - fs_, ps),
+				rewriteVars(fs, ps, vts, value),
+				rewriteVars(fs, ps, vts, expr));
+		}()
+		: error('BAD');
 	})
 	: id === 'lambda-capture' ? (({ capture, bindCapture, bind, expr }) =>
 		_lambdaCapture(
