@@ -598,7 +598,7 @@ let rewrite = (rf, ast) => {
 	: id === 'alloc' ? (({ vn, expr }) => ({ id, vn, expr: rf(expr) }))
 	: id === 'and' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
 	: id === 'app' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
-	: id === 'assign' ? (({ bind, value, expr }) => ({ id, bind, value: rf(value), expr: rf(expr) }))
+	: id === 'assign' ? (({ bind, value, expr }) => ({ id, bind: rf(bind), value: rf(value), expr: rf(expr) }))
 	: id === 'await' ? (({ expr }) => ({ id, expr: rf(expr) }))
 	: id === 'bool' ? (({ v }) => ast)
 	: id === 'coal' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
@@ -609,13 +609,13 @@ let rewrite = (rf, ast) => {
 	: id === 'frame' ? (({ fs, ps }) => ast)
 	: id === 'if' ? (({ if_, then, else_ }) => ({ id, if_: rf(if_), then: rf(then), else_: rf(else_) }))
 	: id === 'index' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
-	: id === 'lambda' ? (({ bind, expr }) => ({ id, bind, expr: rf(expr) }))
-	: id === 'lambda-async' ? (({ bind, expr }) => ({ id, bind, expr: rf(expr) }))
+	: id === 'lambda' ? (({ bind, expr }) => ({ id, bind: rf(bind), expr: rf(expr) }))
+	: id === 'lambda-async' ? (({ bind, expr }) => ({ id, bind: rf(bind), expr: rf(expr) }))
 	: id === 'lambda-capture' ? (({ capture, bindCapture, bind, expr }) =>
-		({ id, capture: rf(capture), bindCapture, bind, expr: rf(expr) })
+		({ id, capture: rf(capture), bindCapture: rf(bindCapture), bind: rf(bind), expr: rf(expr) })
 	)
 	: id === 'le_' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
-	: id === 'let' ? (({ bind, value, expr }) => ({ id, bind, value: rf(value), expr: rf(expr) }))
+	: id === 'let' ? (({ bind, value, expr }) => ({ id, bind: rf(bind), value: rf(value), expr: rf(expr) }))
 	: id === 'lt_' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
 	: id === 'mul' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
 	: id === 'ne_' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
@@ -1231,6 +1231,7 @@ let typesModule = () => {
 				'.reject': tyLambdaOf(tyError, tyPromiseOf(newRef())),
 				'.resolve': function() { let t = newRef(); return tyLambdaOf(t, tyPromiseOf(t)); }(),
 			}),
+			eval: tyLambdaOf(tyString, newRef()),
 			console: tyStructOfCompleted({
 				'.error': tyLambdaOf(newRef(), tyVoid),
 				'.log': tyLambdaOf(newRef(), tyVoid),
@@ -1544,7 +1545,7 @@ rewriteRenameVar = (scope, vns, ast) => {
 	let f = false ? undefined
 	: id === 'alloc' ? (({ vn, expr }) => function() {
 		let vn1 = `${vn}_${scope}`;
-		return _alloc(vn1, rewriteRenameVar(scope, cons([vn, `${vn}_${scope}`], vns), expr));
+		return _alloc(vn1, rewriteRenameVar(scope, cons([vn, vn1], vns), expr));
 	}()
 	)
 	: id === 'lambda' ? (({ bind, expr }) => function() {
@@ -1571,6 +1572,16 @@ rewriteRenameVar = (scope, vns, ast) => {
 
 	return f(ast);
 };
+
+let evaluateVvs = Object.entries({
+	JSON: eval('JSON'),
+	Object: eval('Object'),
+	Promise: eval('Promise'),
+	console: eval('console'),
+	eval: eval('eval'),
+	process: eval('process'),
+	require: eval('require'),
+});
 
 let evaluate;
 
@@ -1904,7 +1915,7 @@ let process0 = program => {
 };
 
 let process1 = program => {
-	let roots = ['JSON', 'Object', 'Promise', 'console', 'process', 'require',];
+	let roots = ['JSON', 'Object', 'Promise', 'console', 'eval', 'process', 'require',];
 
 	let { ast: ast4, type } = process0(program);
 	let ast5 = rewriteRenameVar(newDummy(), roots.map(v => [v, v]), ast4);
@@ -1946,7 +1957,7 @@ return actual === expect
 	try {
 		let { ast, type } = process1(require('fs').readFileSync(0, 'utf8'));
 		console.log(`ast :: ${stringify(ast)}`);
-		process.env.EVAL && console.log(`eval :: ${stringify(evaluate([])(ast))}`);
+		process.env.EVAL && console.log(`eval :: ${stringify(evaluate(evaluateVvs)(ast))}`);
 		process.env.FORMAT && console.log(`format :: ${format(ast)}`);
 		process.env.GENERATE && console.log(`generate :: ${process2(ast).map(stringify).join('\n')}`);
 		console.log(`type :: ${types.dump(type)}`);
