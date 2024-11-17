@@ -1615,7 +1615,7 @@ evaluate = vvs => {
 		}())
 		: id === 'cons' ? (({ lhs, rhs }) => assumeAny(cons(eval(lhs), eval(rhs))))
 		: id === 'div' ? (({ lhs, rhs }) => assumeAny(eval(lhs) / eval(rhs)))
-		: id === 'dot' ? (({ expr, field }) => getp(eval(expr), field.slice(1, 0)))
+		: id === 'dot' ? (({ expr, field }) => getp(eval(expr), field.slice(1, undefined)))
 		: id === 'eq_' ? (({ lhs, rhs }) => assumeAny(eval(lhs) === eval(rhs)))
 		: id === 'frame' ? error('BAD')
 		: id === 'if' ? (({ if_, then, else_ }) => eval(if_) ? eval(then) : eval(else_))
