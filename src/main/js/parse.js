@@ -705,8 +705,7 @@ formatBlock = ast => {
 
 format_ = (priority, ast) => {
 	let { id } = ast;
-	console.log(ast);
-	let priority_ = getp(precs, id);
+	let priority_ = getp(precs, id) ?? 0;
 
 	let fm = ast => format_(priority_ - 1, ast);
 	let fmt = ast => format_(priority_, ast);
