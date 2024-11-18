@@ -1555,20 +1555,25 @@ rewriteRenameVar = (scope, vns, ast) => {
 	let f = false ? undefined
 	: id === 'alloc' ? (({ vn, expr }) => function() {
 		let vn1 = `${vn}_${scope}`;
-		return _alloc(vn1, rewriteRenameVar(scope, cons([vn, vn1], vns), expr));
+		return _alloc(
+			vn1,
+			rewriteRenameVar(scope, cons([vn, vn1], vns), expr));
 	}()
 	)
 	: id === 'lambda' ? (({ bind, expr }) => function() {
 		let { vn } = bind;
 		let scope1 = newDummy();
 		let vn1 = `${vn}_${scope1}`;
-		return _lambda(_var(vn1), rewriteRenameVar(scope1, cons([vn, vn1], vns), expr));
+		return _lambda(
+			_var(vn1),
+			rewriteRenameVar(scope1, cons([vn, vn1], vns), expr));
 	}()
 	)
 	: id === 'let' ? (({ bind, value, expr }) => function() {
 		let { vn } = bind;
 		let vn1 = `${vn}_${scope}`;
-		return _let(_var(vn1),
+		return _let(
+		_var(vn1),
 			rewriteRenameVar(scope, vns, value),
 			rewriteRenameVar(scope, cons([vn, vn1], vns), expr));
 	}()
@@ -1816,7 +1821,7 @@ generate = ast => {
 		let fiLabel = newDummy();
 		return [
 			...generate(if_),
-			{ id: 'jump-zero', label: elseLabel },
+			{ id: 'jump-false', label: elseLabel },
 			...generate(then),
 			{ id: 'jump', label: fiLabel },
 			{ id: 'l', label: elseLabel },
@@ -1834,9 +1839,11 @@ generate = ast => {
 		let lambdaLabel = newDummy();
 		let skipLabel = newDummy();
 		return [
+			...generate(capture),
 			{ id: 'jump', label: skipLabel },
 			{ id: 'l', label: lambdaLabel },
-			...generate(capture),
+			...generate(expr),
+			{ id: 'return' },
 			{ id: 'l', label: skipLabel },
 			{ id: 'label', label: lambdaLabel },
 			{ id },
@@ -1893,12 +1900,12 @@ generate = ast => {
 		let catchLabel = newDummy();
 		let finallyLabel = newDummy();
 		return [
-			{ id: 'get-catch' },
+			{ id: 'catch-get' },
 			{ id: 'label', label: catchLabel },
-			{ id: 'set-catch' },
+			{ id: 'catch-set' },
 			...generate(lhs),
 			{ id: 'rotate' },
-			{ id: 'set-catch' },
+			{ id: 'catch-set' },
 			{ id: 'jump', label: finallyLabel },
 			{ id: 'l', label: catchLabel },
 			...generate(rhs),
@@ -1923,7 +1930,7 @@ generate = ast => {
 		return [
 			{ id: 'l', label: loopLabel },
 			...generate(cond),
-			{ id: 'jump-zero', label: exitLabel },
+			{ id: 'jump-false', label: exitLabel },
 			...generate(loop),
 			{ id: 'discard' },
 			{ id: 'l', label: exitLabel },
@@ -1937,10 +1944,169 @@ generate = ast => {
 	return f(ast);
 };
 
+let interpret = opcodes => {
+	let indexByLabel = {};
+	let i = 0;
+
+	while (i < opcodes.length) (function() {
+		let { id, label } = opcodes[i];
+		let isLabel = id === 'l';
+		isLabel && setp(indexByLabel, label, i);
+		i = i + 1;
+		return true;
+	}());
+
+	let catchLabel = undefined;
+
+	let frames = [];
+	let fcreate = () => frames.push([]);
+	let fremove = () => frames.pop();
+	let fpush = v => frames[frames.length - 1].push(v);
+	let fdiscard = v => frames[frames.length - 1].pop();
+
+	let stackr = [];
+	let pushr = v => stackr.push(v);
+	let popr = () => assumeAny(stackr.pop());
+	let ip = 0;
+
+	while (ip < opcodes.length) (function() {
+		let opcode = opcodes[ip];
+		let { id } = opcode;
+
+		let f = false ? undefined
+			: id === 'add' ? pushr(popr() + popr())
+			: id === 'and' ? pushr(popr() && popr())
+			: id === 'app' ? function() {
+				let parameter = popr();
+				let lambda = popr();
+				ip = lambda.label;
+				pushr(ip);
+				fcreate();
+				fpush(lambda.capture);
+				fpush(parameter);
+			}()
+			: id === 'assign' ? function() {
+				let { fs, ps } = opcode;
+				frames[frames.length - 1 - fs][ps] = popr();
+			}()
+			: id === 'bool' ? pushr(opcode.v)
+			: id === 'catch-get' ? pushr(catchLabel)
+			: id === 'catch-set' ? function() {
+				catchLabel = popr();
+				return undefined;
+			}()
+			: id === 'coal' ? function() {
+				let b = popr();
+				let a = popr();
+				pushr(a ?? b);
+			}()
+			: id === 'cons' ? function() {
+				let b = popr();
+				let a = popr();
+				pushr(cons(a, b));
+			}()
+			: id === 'discard' ? popr()
+			: id === 'div' ? function() {
+				let b = popr();
+				let a = popr();
+				pushr(a / b);
+			}()
+			: id === 'eq_' ? pushr(popr() === popr())
+			: id === 'fdiscard' ? fdiscard()
+			: id === 'fpush' ? fpush(popr())
+			: id === 'frame' ? frames[frames.length - 1 - opcode.fs][opcode.ps]
+			: id === 'jump' ? function() {
+				ip = popr();
+				return undefined;
+			}()
+			: id === 'jump-false' ? function() {
+				ip = popr() ? ip : popr();
+				return undefined;
+			}()
+			: id === 'l' ? undefined
+			: id === 'label' ? undefined
+			: id === 'lambda-capture' ? function() {
+				let capture = popr();
+				let label = popr();
+				pushr(capture * label);
+			}()
+			: id === 'le_' ? function() {
+				let b = popr();
+				let a = popr();
+				pushr(a <= b);
+			}()
+			: id === 'lt_' ? function() {
+				let b = popr();
+				let a = popr();
+				pushr(a < b);
+			}()
+			: id === 'mod' ? function() {
+				let b = popr();
+				let a = popr();
+				pushr(a % b);
+			}()
+			: id === 'mul' ? pushr(popr() * popr())
+			: id === 'ne_' ? pushr(popr() !== popr())
+			: id === 'ne_' ? pushr(popr() !== popr())
+			: id === 'neg' ? pushr(-popr())
+			: id === 'nil' ? pushr([])
+			: id === 'not' ? pushr(!popr())
+			: id === 'num' ? pushr(opcode.i)
+			: id === 'object' ? pushr({})
+			: id === 'or_' ? pushr(popr() || popr())
+			: id === 'pair' ? function() {
+				let b = popr();
+				let a = popr();
+				pushr([a, b]);
+			}()
+			: id === 'pos' ? pushr(+popr())
+			: id === 'put' ? function() {
+				let value = popr();
+				let object = popr();
+				setp(object, opcode.key, value);
+				return undefined;
+			}()
+			: id === 'return' ? function() {
+				ip = popr();
+				fdiscard();
+				fdiscard();
+				fremove();
+			}()
+			: id === 'rotate' ? function() {
+				let b = popr();
+				let a = popr();
+				pushr(b);
+				pushr(a);
+			}()
+			: id === 'set-index' ? function() {
+				let value = popr();
+				let index = popr();
+				let array = popr();
+				seti(array, index, value);
+			}()
+			: id === 'str' ? pushr(opcode.v)
+			: id === 'sub' ? function() {
+				let b = popr();
+				let a = popr();
+				pushr(a - b);
+			}()
+			: id === 'throw' ? function() {
+				ip = catchLabel ?? error(`THROWN ${popr()}`);
+				return undefined;
+			}()
+			: id === 'undefined' ? pushr(undefined)
+			: error('BAD');
+
+		ip = ip + 1;
+	}());
+
+	return popr();
+};
+
 let parser = parserModule();
 let types = typesModule();
 
-let process0 = program => {
+let promiseAst = program => {
 	let pos0;
 	let posx;
 	while (function() {
@@ -1960,23 +2126,23 @@ let process0 = program => {
 	return { ast: ast4, type: types.infer(ast0) };
 };
 
-let process1 = program => {
+let processRewrite = program => {
 	let roots = ['JSON', 'Object', 'Promise', 'console', 'eval', 'process', 'require',];
 
-	let { ast: ast4, type } = process0(program);
+	let { ast: ast4, type } = promiseAst(program);
 	let ast5 = rewriteRenameVar(newDummy(), roots.map(v => [v, v]), ast4);
 	let ast6 = rewriteCapture(0, roots.map(v => [v, 0]), ast5);
 
 	return { ast: ast6, type };
 };
 
-let process2 = ast6 => {
+let processGenerate = ast6 => {
 	let ast7 = rewriteVars(0, 0, [], ast6);
 	let opcodes = generate(ast7);
 	return opcodes;
 };
 
-let actual = stringify(process0(`
+let actual = stringify(promiseAst(`
 	let parse = ast => ast;
 	console.log(parse(require('fs').readFileSync(0, 'utf8')))
 `).ast);
@@ -2001,11 +2167,12 @@ let expect = stringify(
 return actual === expect
 ? function() {
 	try {
-		let { ast, type } = process1(require('fs').readFileSync(0, 'utf8'));
+		let { ast, type } = processRewrite(require('fs').readFileSync(0, 'utf8'));
 		console.log(`ast :: ${stringify(ast)}`);
 		process.env.EVAL && console.log(`eval :: ${stringify(evaluate(evaluateVvs)(ast))}`);
 		process.env.FORMAT && console.log(`format :: ${format(ast)}`);
-		process.env.GENERATE && console.log(`generate :: ${process2(ast).map(stringify).join('\n')}`);
+		process.env.GENERATE && console.log(`generate :: ${processGenerate(ast).map(stringify).join('\n')}`);
+		process.env.INTERPRET && console.log(`interpret :: ${interpret(processGenerate(ast))}`);
 		console.log(`type :: ${types.dump(type)}`);
 		return true;
 	} catch (e) { return console.error(e); }
