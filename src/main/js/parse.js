@@ -484,6 +484,7 @@ let parserModule = () => {
 
 	let parseIf = [parseApplyBlockFieldIndex,]
 		.map(p => parsePrefix('await', 'await ', p))
+		.map(p => parseAssocLeft_('mod', '%', p))
 		.map(p => parseAssocLeft_('div', '/', p))
 		.map(p => parseAssocRight('mul', '*', p))
 		.map(p => parsePrefix('neg', '-', p))
@@ -618,6 +619,7 @@ let rewrite = (rf, ast) => {
 	: id === 'le_' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
 	: id === 'let' ? (({ bind, value, expr }) => ({ id, bind: rf(bind), value: rf(value), expr: rf(expr) }))
 	: id === 'lt_' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
+	: id === 'mod' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
 	: id === 'mul' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
 	: id === 'ne_' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
 	: id === 'neg' ? (({ expr }) => ({ id, expr: rf(expr) }))
@@ -651,6 +653,7 @@ let precs = function() {
 		['typeof',],
 		['app',],
 		['await',],
+		['mod',],
 		['div',],
 		['mul',],
 		['neg',],
@@ -731,6 +734,7 @@ format_ = (priority, ast) => {
 	)
 	: id === 'le_' ? (({ lhs, rhs }) => `${fm(lhs)} <= ${fmt(rhs)}`)
 	: id === 'lt_' ? (({ lhs, rhs }) => `${fm(lhs)} < ${fmt(rhs)}`)
+	: id === 'mod' ? (({ lhs, rhs }) => `${fmt(lhs)} % ${fm(rhs)}`)
 	: id === 'mul' ? (({ lhs, rhs }) => `${fm(lhs)} * ${fmt(rhs)}`)
 	: id === 'ne_' ? (({ lhs, rhs }) => `${fm(lhs)} !== ${fmt(rhs)}`)
 	: id === 'neg' ? (({ expr }) => `- ${fmt(expr)}`)
@@ -1132,6 +1136,8 @@ let typesModule = () => {
 		})
 		: id === 'lt_' ?
 			inferCmpOp
+		: id === 'mod' ?
+			inferMathOp
 		: id === 'mul' ?
 			inferMathOp
 		: id === 'ne_' ?
@@ -1342,6 +1348,8 @@ rewriteAsync = ast => {
 		: _then(pv, bind, pe);
 	})
 	: id === 'lt_' ?
+		reduceBinOp
+	: id === 'mod' ?
 		reduceBinOp
 	: id === 'mul' ?
 		reduceBinOp
@@ -1642,6 +1650,7 @@ evaluate = vvs => {
 		: id === 'le_' ? (({ lhs, rhs }) => eval(lhs) <= eval(rhs))
 		: id === 'let' ? (({ bind, value, expr }) => evaluate(cons([bind.vn, eval(value)], vvs))(expr))
 		: id === 'lt_' ? (({ lhs, rhs }) => assumeAny(eval(lhs) < eval(rhs)))
+		: id === 'mod' ? (({ lhs, rhs }) => assumeAny(eval(lhs) % eval(rhs)))
 		: id === 'mul' ? (({ lhs, rhs }) => assumeAny(eval(lhs) * eval(rhs)))
 		: id === 'ne_' ? (({ lhs, rhs }) => assumeAny(eval(lhs) !== eval(rhs)))
 		: id === 'neg' ? (({ expr }) => assumeAny(-eval(expr)))
@@ -1842,6 +1851,8 @@ generate = ast => {
 		{ id: 'fdiscard' },
 	])
 	: id === 'lt_' ?
+		generateBinOp
+	: id === 'mod' ?
 		generateBinOp
 	: id === 'mul' ?
 		generateBinOp
