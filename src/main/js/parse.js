@@ -1715,11 +1715,14 @@ rewriteVars = (fs, ps, vts, ast) => {
 	})
 	: id === 'lambda-capture' ? (({ capture, bindCapture, bind, expr }) =>
 		_lambdaCapture(
-			capture, bindCapture, bind,
+			rewriteVars(fs, ps, vts, capture),
+			bindCapture,
+			bind,
 			rewriteVars(fs1, 1, cons([bind.vn, [fs1, 1]], cons([bindCapture.vn, [fs1, 0]], vts)), expr))
 	)
 	: id === 'let' ? (({ bind, value, expr }) =>
-		_alloc(bind.vn, _assign(bind,
+		_alloc(bind.vn, _assign(
+			_frame(0, ps),
 			rewriteVars(fs, ps, vts, value),
 			rewriteVars(fs, ps1, cons([bind.vn, [fs, ps]], vts), expr)))
 	)
