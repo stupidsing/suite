@@ -1706,49 +1706,56 @@ let rewriteVars;
 rewriteVars = (fs, ps, vts, ast) => {
 	let fs1 = fs + 1;
 	let ps1 = ps + 1;
-	let { id } = ast;
 
-	let f = false ? undefined
-	: id === 'alloc' ? (({ vn, expr }) =>
-		_alloc(vn, rewriteVars(fs, ps1, cons([vn, [fs, ps]], vts), expr))
-	)
-	: id === 'assign' ? (({ bind, value, expr }) => {
-		return false ? undefined
-		: bind.id === 'index' ? _assign(
-			rewriteVars(fs, ps, vts, bind),
-			rewriteVars(fs, ps, vts, value),
-			rewriteVars(fs, ps, vts, expr))
-		: bind.id === 'var' ? function() {
-			let [fs_, ps] = findk(vts, bind.vn);
-			return _assign(
-				_frame(fs - fs_, ps),
-				rewriteVars(fs, ps, vts, value),
-				rewriteVars(fs, ps, vts, expr));
-		}()
-		: error('BAD');
-	})
-	: id === 'lambda-capture' ? (({ capture, bindCapture, bind, expr }) =>
-		_lambdaCapture(
-			rewriteVars(fs, ps, vts, capture),
-			bindCapture,
-			bind,
-			rewriteVars(fs1, 1, cons([bind.vn, [fs1, 1]], cons([bindCapture.vn, [fs1, 0]], vts)), expr))
-	)
-	: id === 'let' ? (({ bind, value, expr }) =>
-		_alloc(bind.vn, _assign(
-			_frame(0, ps),
-			rewriteVars(fs, ps, vts, value),
-			rewriteVars(fs, ps1, cons([bind.vn, [fs, ps]], vts), expr)))
-	)
-	: id === 'var' ? (({ vn }) => {
-		let [fs_, ps] = findk(vts, vn);
-		return _frame(fs - fs_, ps);
-	})
-	: (({}) =>
-		rewrite(ast => rewriteVars(fs, ps, vts, ast), ast)
-	);
+	let rewriteVars_;
 
-	return f(ast);
+	rewriteVars_ = ast => {
+		let { id } = ast;
+
+		let f = false ? undefined
+		: id === 'alloc' ? (({ vn, expr }) =>
+			_alloc(vn, rewriteVars(fs, ps1, cons([vn, [fs, ps]], vts), expr))
+		)
+		: id === 'assign' ? (({ bind, value, expr }) => {
+			return false ? undefined
+			: bind.id === 'index' ? _assign(
+				rewriteVars_(bind),
+				rewriteVars_(value),
+				rewriteVars_(expr))
+			: bind.id === 'var' ? function() {
+				let [fs_, ps] = findk(vts, bind.vn);
+				return _assign(
+					_frame(fs - fs_, ps),
+					rewriteVars_(value),
+					rewriteVars_(expr));
+			}()
+			: error('BAD');
+		})
+		: id === 'lambda-capture' ? (({ capture, bindCapture, bind, expr }) =>
+			_lambdaCapture(
+				rewriteVars_(capture),
+				bindCapture,
+				bind,
+				rewriteVars(fs1, 1, cons([bind.vn, [fs1, 1]], cons([bindCapture.vn, [fs1, 0]], vts)), expr))
+		)
+		: id === 'let' ? (({ bind, value, expr }) =>
+			_alloc(bind.vn, _assign(
+				_frame(0, ps),
+				rewriteVars_(value),
+				rewriteVars(fs, ps1, cons([bind.vn, [fs, ps]], vts), expr)))
+		)
+		: id === 'var' ? (({ vn }) => {
+			let [fs_, ps] = findk(vts, vn);
+			return _frame(fs - fs_, ps);
+		})
+		: (({}) =>
+			rewrite(rewriteVars_, ast)
+		);
+
+		return f(ast);
+	};
+
+	return rewriteVars_(ast);
 };
 
 let generate;
@@ -1958,149 +1965,158 @@ let interpret = opcodes => {
 
 	let catchLabel = undefined;
 
-	let frames = [];
+	let frames = [[],];
 	let fcreate = () => frames.push([]);
 	let fremove = () => frames.pop();
 	let fpush = v => frames[frames.length - 1].push(v);
 	let fdiscard = v => frames[frames.length - 1].pop();
 
-	let stackr = [];
-	let pushr = v => stackr.push(v);
-	let popr = () => assumeAny(stackr.pop());
+	let rstack = [];
+	let rpush = v => rstack.push(v);
+	let rpop = () => assumeAny(rstack.pop());
 	let ip = 0;
 
 	while (ip < opcodes.length) (function() {
 		let opcode = opcodes[ip];
 		let { id } = opcode;
 
+		process.env.LOG && function() {
+			console.log(`----------`);
+			console.log(`FRAMES = ${JSON.stringify(frames, undefined, undefined)}`);
+			console.log(`RSTACK = ${JSON.stringify(rstack, undefined, undefined)}`);
+			console.log(`IP = ${ip} ${JSON.stringify(opcode, undefined, undefined)}`);
+		}();
+
+		ip = ip + 1;
+
 		let f = false ? undefined
-			: id === 'add' ? pushr(popr() + popr())
-			: id === 'and' ? pushr(popr() && popr())
+			: id === 'add' ? rpush(rpop() + rpop())
+			: id === 'and' ? rpush(rpop() && rpop())
 			: id === 'app' ? function() {
-				let parameter = popr();
-				let lambda = popr();
+				let parameter = rpop();
+				let lambda = rpop();
+				rpush(ip);
 				ip = lambda.label;
-				pushr(ip);
 				fcreate();
 				fpush(lambda.capture);
 				fpush(parameter);
 			}()
 			: id === 'assign' ? function() {
 				let { fs, ps } = opcode;
-				frames[frames.length - 1 - fs][ps] = popr();
+				frames[frames.length - 1 - fs][ps] = rpop();
 			}()
-			: id === 'bool' ? pushr(opcode.v)
-			: id === 'catch-get' ? pushr(catchLabel)
+			: id === 'bool' ? rpush(opcode.v)
+			: id === 'catch-get' ? rpush(catchLabel)
 			: id === 'catch-set' ? function() {
-				catchLabel = popr();
+				catchLabel = rpop();
 				return undefined;
 			}()
 			: id === 'coal' ? function() {
-				let b = popr();
-				let a = popr();
-				pushr(a ?? b);
+				let b = rpop();
+				let a = rpop();
+				rpush(a ?? b);
 			}()
 			: id === 'cons' ? function() {
-				let b = popr();
-				let a = popr();
-				pushr(cons(a, b));
+				let b = rpop();
+				let a = rpop();
+				rpush(cons(a, b));
 			}()
-			: id === 'discard' ? popr()
+			: id === 'discard' ? rpop()
 			: id === 'div' ? function() {
-				let b = popr();
-				let a = popr();
-				pushr(a / b);
+				let b = rpop();
+				let a = rpop();
+				rpush(a / b);
 			}()
-			: id === 'eq_' ? pushr(popr() === popr())
+			: id === 'eq_' ? rpush(rpop() === rpop())
 			: id === 'fdiscard' ? fdiscard()
-			: id === 'fpush' ? fpush(popr())
-			: id === 'frame' ? frames[frames.length - 1 - opcode.fs][opcode.ps]
+			: id === 'fpush' ? fpush(rpop())
+			: id === 'frame' ? rpush(frames[frames.length - 1 - opcode.fs][opcode.ps])
 			: id === 'jump' ? function() {
-				ip = popr();
+				ip = getp(indexByLabel, opcode.label);
 				return undefined;
 			}()
 			: id === 'jump-false' ? function() {
-				ip = popr() ? ip : popr();
+				ip = rpop() ? ip : getp(indexByLabel, opcode.label);
 				return undefined;
 			}()
 			: id === 'l' ? undefined
-			: id === 'label' ? undefined
+			: id === 'label' ? rpush(getp(indexByLabel, opcode.label))
 			: id === 'lambda-capture' ? function() {
-				let capture = popr();
-				let label = popr();
-				pushr(capture * label);
+				let label = rpop();
+				let capture = rpop();
+				rpush({ capture, label });
 			}()
 			: id === 'le_' ? function() {
-				let b = popr();
-				let a = popr();
-				pushr(a <= b);
+				let b = rpop();
+				let a = rpop();
+				rpush(a <= b);
 			}()
 			: id === 'lt_' ? function() {
-				let b = popr();
-				let a = popr();
-				pushr(a < b);
+				let b = rpop();
+				let a = rpop();
+				rpush(a < b);
 			}()
 			: id === 'mod' ? function() {
-				let b = popr();
-				let a = popr();
-				pushr(a % b);
+				let b = rpop();
+				let a = rpop();
+				rpush(a % b);
 			}()
-			: id === 'mul' ? pushr(popr() * popr())
-			: id === 'ne_' ? pushr(popr() !== popr())
-			: id === 'ne_' ? pushr(popr() !== popr())
-			: id === 'neg' ? pushr(-popr())
-			: id === 'nil' ? pushr([])
-			: id === 'not' ? pushr(!popr())
-			: id === 'num' ? pushr(opcode.i)
-			: id === 'object' ? pushr({})
-			: id === 'or_' ? pushr(popr() || popr())
+			: id === 'mul' ? rpush(rpop() * rpop())
+			: id === 'ne_' ? rpush(rpop() !== rpop())
+			: id === 'ne_' ? rpush(rpop() !== rpop())
+			: id === 'neg' ? rpush(-rpop())
+			: id === 'nil' ? rpush([])
+			: id === 'not' ? rpush(!rpop())
+			: id === 'num' ? rpush(opcode.i)
+			: id === 'object' ? rpush({})
+			: id === 'or_' ? rpush(rpop() || rpop())
 			: id === 'pair' ? function() {
-				let b = popr();
-				let a = popr();
-				pushr([a, b]);
+				let b = rpop();
+				let a = rpop();
+				rpush([a, b]);
 			}()
-			: id === 'pos' ? pushr(+popr())
+			: id === 'pos' ? rpush(+rpop())
 			: id === 'put' ? function() {
-				let value = popr();
-				let object = popr();
+				let value = rpop();
+				let object = rpop();
 				setp(object, opcode.key, value);
 				return undefined;
 			}()
 			: id === 'return' ? function() {
-				ip = popr();
+				let rc = rpop();
 				fdiscard();
 				fdiscard();
 				fremove();
+				ip = rpop();
+				rpush(rc);
 			}()
 			: id === 'rotate' ? function() {
-				let b = popr();
-				let a = popr();
-				pushr(b);
-				pushr(a);
+				let b = rpop();
+				let a = rpop();
+				rpush(b);
+				rpush(a);
 			}()
 			: id === 'set-index' ? function() {
-				let value = popr();
-				let index = popr();
-				let array = popr();
+				let value = rpop();
+				let index = rpop();
+				let array = rpop();
 				seti(array, index, value);
 			}()
-			: id === 'str' ? pushr(opcode.v)
+			: id === 'str' ? rpush(opcode.v)
 			: id === 'sub' ? function() {
-				let b = popr();
-				let a = popr();
-				pushr(a - b);
+				let b = rpop();
+				let a = rpop();
+				rpush(a - b);
 			}()
 			: id === 'throw' ? function() {
-				ip = catchLabel ?? error(`THROWN ${popr()}`);
+				ip = catchLabel ?? error(`THROWN ${rpop()}`);
 				return undefined;
 			}()
-			: id === 'undefined' ? pushr(undefined)
+			: id === 'undefined' ? rpush(undefined)
 			: error('BAD');
-
-		ip = ip + 1;
 	}());
 
-	return popr();
+	return rstack.length !== 1 ? error('RSTACK RESIDUE') : frames.length !== 1 && frames[0].length !== 0 ? error('FRAME RESIDUE') : rpop();
 };
 
 let parser = parserModule();
@@ -2138,8 +2154,7 @@ let processRewrite = program => {
 
 let processGenerate = ast6 => {
 	let ast7 = rewriteVars(0, 0, [], ast6);
-	let opcodes = generate(ast7);
-	return opcodes;
+	return generate(ast7);
 };
 
 let actual = stringify(promiseAst(`
@@ -2168,11 +2183,12 @@ return actual === expect
 ? function() {
 	try {
 		let { ast, type } = processRewrite(require('fs').readFileSync(0, 'utf8'));
+		let opcodes = process.env.GENERATE || process.env.INTERPRET ? processGenerate(ast) : undefined;
 		console.log(`ast :: ${stringify(ast)}`);
 		process.env.EVAL && console.log(`eval :: ${stringify(evaluate(evaluateVvs)(ast))}`);
 		process.env.FORMAT && console.log(`format :: ${format(ast)}`);
-		process.env.GENERATE && console.log(`generate :: ${processGenerate(ast).map(stringify).join('\n')}`);
-		process.env.INTERPRET && console.log(`interpret :: ${interpret(processGenerate(ast))}`);
+		process.env.GENERATE && console.log(`generate :: ${opcodes.map(opcode => '\n' + JSON.stringify(opcode, undefined, undefined)).join(undefined)}`);
+		process.env.INTERPRET && console.log(`interpret :: ${interpret(opcodes)}`);
 		console.log(`type :: ${types.dump(type)}`);
 		return true;
 	} catch (e) { return console.error(e); }
