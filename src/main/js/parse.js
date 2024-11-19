@@ -1744,6 +1744,11 @@ rewriteVars = (fs, ps, vts, ast) => {
 				rewriteVars_(value),
 				rewriteVars(fs, ps1, cons([bind.vn, [fs, ps]], vts), expr)))
 		)
+		: id === 'try' ? (({ lhs, rhs }) =>
+			_try(
+				rewriteVars_(lhs),
+				rewriteVars(fs, ps1, cons(['e', [fs, ps]], vts), rhs))
+		)
 		: id === 'var' ? (({ vn }) => {
 			let [fs_, ps] = findk(vts, vn);
 			return _frame(fs - fs_, ps);
@@ -1895,11 +1900,16 @@ generate = ast => {
 	: id === 'try' ? (({ lhs, rhs }) => function() {
 		let finallyLabel = newDummy();
 		return [
-			{ id: 'label-segment', segment: [...generate(rhs), { id: 'jump', label: finallyLabel },] },
-			{ id: 'catch-push' },
+			{ id: 'label-segment', segment: [
+				{ id: 'fpush' },
+				...generate(rhs),
+				{ id: 'fdealloc' },
+				{ id: 'jump', label: finallyLabel },
+			] },
+			{ id: 'try-push' },
 			...generate(lhs),
 			{ id: 'rotate' },
-			{ id: 'catch-pop' },
+			{ id: 'try-pop' },
 			{ id: 'l', label: finallyLabel },
 		];
 	}()
@@ -2005,25 +2015,6 @@ let interpret = opcodes => {
 				fpush(parameter);
 			}()
 			: id === 'bool' ? rpush(opcode.v)
-			: id === 'catch-pop' ? function() {
-				let { label, fl, fsl, rsl } = rpop();
-				catchHandler = label;
-				while (fsl < frames.length) fremove();
-				while (fl < frames[frames.length - 1].length) fpop();
-				while (rsl < rstack.length) rpop();
-				return undefined;
-			}()
-			: id === 'catch-push' ? function() {
-				let catchHandler0 = catchHandler;
-				catchHandler = {
-					label: rpop(),
-					fl: frames[frames.length - 1].length,
-					fsl: frames.length,
-					rsl: rstack.length,
-				};
-				rpush(catchHandler0);
-				return undefined;
-			}()
 			: id === 'coal' ? function() {
 				let b = rpop();
 				let a = rpop();
@@ -2053,6 +2044,7 @@ let interpret = opcodes => {
 			}()
 			: id === 'fdealloc' ? fpop()
 			: id === 'fget' ? rpush(frames[frames.length - 1 - opcode.fs][opcode.ps])
+			: id === 'fpush' ? fpush(rpop())
 			: id === 'jump' ? function() {
 				ip = getp(indexByLabel, opcode.label);
 				return undefined;
@@ -2131,7 +2123,27 @@ let interpret = opcodes => {
 				rpush(a - b);
 			}()
 			: id === 'throw' ? function() {
-				ip = catchHandler.label ?? error(`THROWN ${rpop()}`);
+				let { label, fl, fsl, rsl } = catchHandler;
+				ip = label ?? error(`THROWN ${rpop()}`);
+				while (fsl < frames.length) fremove();
+				while (fl < frames[frames.length - 1].length) fpop();
+				while (rsl < rstack.length) rpop();
+				return undefined;
+			}()
+			: id === 'try-pop' ? function() {
+				let { label } = rpop();
+				catchHandler = label;
+				return undefined;
+			}()
+			: id === 'try-push' ? function() {
+				let catchHandler0 = catchHandler;
+				catchHandler = {
+					label: rpop(),
+					fl: frames[frames.length - 1].length,
+					fsl: frames.length,
+					rsl: rstack.length,
+				};
+				rpush(catchHandler0);
 				return undefined;
 			}()
 			: id === 'undefined' ? rpush(undefined)
