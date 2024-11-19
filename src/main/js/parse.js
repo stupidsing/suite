@@ -1778,10 +1778,9 @@ generate = ast => {
 	: id === 'add' ?
 		generateBinOp
 	: id === 'alloc' ? (({ vn, expr }) => [
-		{ id: 'num', i: 0 },
-		{ id: 'fpush' },
+		{ id: 'falloc' },
 		...generate(expr),
-		{ id: 'fdiscard' },
+		{ id: 'fdealloc' },
 	])
 	: id === 'and' ?
 		generateBinOp
@@ -1790,7 +1789,7 @@ generate = ast => {
 	: id === 'assign' ? (({ bind, value, expr }) => false ? undefined
 		: bind.id === 'frame' ? [
 			...generate(value),
-			{ id, fs: bind.fs, ps: bind.ps },
+			{ id: 'fassign', fs: bind.fs, ps: bind.ps },
 			...generate(expr),
 		]
 		: bind.id === 'index' ? [
@@ -1820,9 +1819,9 @@ generate = ast => {
 	])
 	: id === 'eq_' ?
 		generateBinOp
-	: id === 'frame' ? (({}) =>
-		[ast,]
-	)
+	: id === 'frame' ? (({ fs, ps }) => [
+		{ id: 'fget', fs, ps },
+	])
 	: id === 'if' ? (({ if_, then, else_ }) => function() {
 		let elseLabel = newDummy();
 		let fiLabel = newDummy();
@@ -1858,12 +1857,7 @@ generate = ast => {
 	}())
 	: id === 'le_' ?
 		generateBinOp
-	: id === 'let' ? (({ bind, value, expr }) => [
-		...generate(value),
-		{ id: 'fpush' },
-		...generate(expr),
-		{ id: 'fdiscard' },
-	])
+	: id === 'let' ? error('BAD')
 	: id === 'lt_' ?
 		generateBinOp
 	: id === 'mod' ?
@@ -1895,7 +1889,7 @@ generate = ast => {
 	)
 	: id === 'struct' ? (({ kvs }) => [
 		{ id: 'object' },
-		...kvs.reverse().flatMap(({ key, value }) => [...generate(value), { id: 'put', key },]),
+		...kvs.reverse().flatMap(({ key, value }) => [...generate(value), { id: 'object-put', key },]),
 	])
 	: id === 'sub' ?
 		generateBinOp
@@ -1969,7 +1963,7 @@ let interpret = opcodes => {
 	let fcreate = () => frames.push([]);
 	let fremove = () => frames.pop();
 	let fpush = v => frames[frames.length - 1].push(v);
-	let fdiscard = v => frames[frames.length - 1].pop();
+	let fpop = () => frames[frames.length - 1].pop();
 
 	let rstack = [];
 	let rpush = v => rstack.push(v);
@@ -2001,10 +1995,6 @@ let interpret = opcodes => {
 				fpush(lambda.capture);
 				fpush(parameter);
 			}()
-			: id === 'assign' ? function() {
-				let { fs, ps } = opcode;
-				frames[frames.length - 1 - fs][ps] = rpop();
-			}()
 			: id === 'bool' ? rpush(opcode.v)
 			: id === 'catch-get' ? rpush(catchLabel)
 			: id === 'catch-set' ? function() {
@@ -2029,9 +2019,17 @@ let interpret = opcodes => {
 			}()
 			: id === 'dot' ? rpush(getp(rpop(), opcode.key))
 			: id === 'eq_' ? rpush(rpop() === rpop())
-			: id === 'fdiscard' ? fdiscard()
-			: id === 'fpush' ? fpush(rpop())
-			: id === 'frame' ? rpush(frames[frames.length - 1 - opcode.fs][opcode.ps])
+			: id === 'exit' ? function() {
+				ip = 1 / 0;
+				return undefined;
+			}()
+			: id === 'falloc' ? fpush(undefined)
+			: id === 'fassign' ? function() {
+				let { fs, ps } = opcode;
+				frames[frames.length - 1 - fs][ps] = rpop();
+			}()
+			: id === 'fdealloc' ? fpop()
+			: id === 'fget' ? rpush(frames[frames.length - 1 - opcode.fs][opcode.ps])
 			: id === 'jump' ? function() {
 				ip = getp(indexByLabel, opcode.label);
 				return undefined;
@@ -2070,6 +2068,12 @@ let interpret = opcodes => {
 			: id === 'not' ? rpush(!rpop())
 			: id === 'num' ? rpush(opcode.i)
 			: id === 'object' ? rpush({})
+			: id === 'object-put' ? function() {
+				let value = rpop();
+				let object = rpop();
+				setp(object, opcode.key, value);
+				rpush(object);
+			}()
 			: id === 'or_' ? rpush(rpop() || rpop())
 			: id === 'pair' ? function() {
 				let b = rpop();
@@ -2077,16 +2081,10 @@ let interpret = opcodes => {
 				rpush([a, b]);
 			}()
 			: id === 'pos' ? rpush(+rpop())
-			: id === 'put' ? function() {
-				let value = rpop();
-				let object = rpop();
-				setp(object, opcode.key, value);
-				rpush(object);
-			}()
 			: id === 'return' ? function() {
 				let rc = rpop();
-				fdiscard();
-				fdiscard();
+				fpop();
+				fpop();
 				fremove();
 				ip = rpop();
 				rpush(rc);
