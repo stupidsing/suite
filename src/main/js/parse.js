@@ -2006,12 +2006,21 @@ let interpret = opcodes => {
 			}()
 			: id === 'bool' ? rpush(opcode.v)
 			: id === 'catch-pop' ? function() {
-				catchHandler = rpop();
+				let { label, fl, fsl, rsl } = rpop();
+				catchHandler = label;
+				while (fsl < frames.length) fremove();
+				while (fl < frames[frames.length - 1].length) fpop();
+				while (rsl < rstack.length) rpop();
 				return undefined;
 			}()
 			: id === 'catch-push' ? function() {
 				let catchHandler0 = catchHandler;
-				catchHandler = { label: rpop() };
+				catchHandler = {
+					label: rpop(),
+					fl: frames[frames.length - 1].length,
+					fsl: frames.length,
+					rsl: rstack.length,
+				};
 				rpush(catchHandler0);
 				return undefined;
 			}()
