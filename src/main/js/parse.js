@@ -1893,18 +1893,13 @@ generate = ast => {
 		{ id },
 	])
 	: id === 'try' ? (({ lhs, rhs }) => function() {
-		let catchLabel = newDummy();
 		let finallyLabel = newDummy();
 		return [
-			{ id: 'catch-get' },
-			{ id: 'label', label: catchLabel },
-			{ id: 'catch-set' },
+			{ id: 'label-segment', segment: [...generate(rhs), { id: 'jump', label: finallyLabel },] },
+			{ id: 'catch-push' },
 			...generate(lhs),
 			{ id: 'rotate' },
-			{ id: 'catch-set' },
-			{ id: 'jump', label: finallyLabel },
-			{ id: 'l', label: catchLabel },
-			...generate(rhs),
+			{ id: 'catch-pop' },
 			{ id: 'l', label: finallyLabel },
 		];
 	}()
@@ -1971,7 +1966,7 @@ let interpret = opcodes => {
 		return true;
 	}());
 
-	let catchLabel = undefined;
+	let catchHandler = undefined;
 
 	let frames = [[],];
 	let fcreate = () => frames.push([]);
@@ -2010,9 +2005,14 @@ let interpret = opcodes => {
 				fpush(parameter);
 			}()
 			: id === 'bool' ? rpush(opcode.v)
-			: id === 'catch-get' ? rpush(catchLabel)
-			: id === 'catch-set' ? function() {
-				catchLabel = rpop();
+			: id === 'catch-pop' ? function() {
+				catchHandler = rpop();
+				return undefined;
+			}()
+			: id === 'catch-push' ? function() {
+				let catchHandler0 = catchHandler;
+				catchHandler = { label: rpop() };
+				rpush(catchHandler0);
 				return undefined;
 			}()
 			: id === 'coal' ? function() {
@@ -2122,7 +2122,7 @@ let interpret = opcodes => {
 				rpush(a - b);
 			}()
 			: id === 'throw' ? function() {
-				ip = catchLabel ?? error(`THROWN ${rpop()}`);
+				ip = catchHandler.label ?? error(`THROWN ${rpop()}`);
 				return undefined;
 			}()
 			: id === 'undefined' ? rpush(undefined)
