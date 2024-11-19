@@ -1787,8 +1787,9 @@ generate = ast => {
 		...generate(expr),
 		{ id: 'fdealloc' },
 	])
-	: id === 'and' ?
-		generateBinOp
+	: id === 'and' ? (({ lhs, rhs }) =>
+		generate(_if(lhs, rhs, _bool(false)))
+	)
 	: id === 'app' ?
 		generateBinOp
 	: id === 'assign' ? (({ bind, value, expr }) => false ? undefined
@@ -1847,8 +1848,6 @@ generate = ast => {
 	: id === 'lambda-async' ?
 		error('BAD')
 	: id === 'lambda-capture' ? (({ capture, bindCapture, bind, expr }) => function() {
-		let lambdaLabel = newDummy();
-		let skipLabel = newDummy();
 		return [
 			...generate(capture),
 			{ id: 'label-segment', segment: [...generate(expr), { id: 'return' },] },
@@ -1878,8 +1877,9 @@ generate = ast => {
 	: id === 'num' ? (({}) =>
 		[ast,]
 	)
-	: id === 'or' ?
-		generateBinOp
+	: id === 'or_' ? (({ lhs, rhs }) =>
+		generate(_if(lhs, _bool(true), rhs))
+	)
 	: id === 'pair' ?
 		generateBinOp
 	: id === 'pos' ?
@@ -2004,7 +2004,7 @@ let interpret = opcodes => {
 
 		let f = false ? undefined
 			: id === 'add' ? rpush(rpop() + rpop())
-			: id === 'and' ? rpush(rpop() && rpop())
+			: id === 'and' ? error('BAD')
 			: id === 'app' ? function() {
 				let parameter = rpop();
 				let lambda = rpop();
@@ -2089,7 +2089,7 @@ let interpret = opcodes => {
 				setp(object, opcode.key, value);
 				rpush(object);
 			}()
-			: id === 'or_' ? rpush(rpop() || rpop())
+			: id === 'or_' ? error('BAD')
 			: id === 'pair' ? function() {
 				let b = rpop();
 				let a = rpop();
