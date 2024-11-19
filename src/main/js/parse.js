@@ -2123,11 +2123,13 @@ let interpret = opcodes => {
 				rpush(a - b);
 			}()
 			: id === 'throw' ? function() {
+				let thrown = rpop();
 				let { label, fl, fsl, rsl } = catchHandler;
 				ip = label ?? error(`THROWN ${rpop()}`);
 				while (fsl < frames.length) fremove();
 				while (fl < frames[frames.length - 1].length) fpop();
 				while (rsl < rstack.length) rpop();
+				rpush(thrown);
 				return undefined;
 			}()
 			: id === 'try-pop' ? function() {
