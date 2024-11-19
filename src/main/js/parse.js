@@ -2027,6 +2027,7 @@ let interpret = opcodes => {
 				let a = rpop();
 				rpush(a / b);
 			}()
+			: id === 'dot' ? rpush(getp(rpop(), opcode.key))
 			: id === 'eq_' ? rpush(rpop() === rpop())
 			: id === 'fdiscard' ? fdiscard()
 			: id === 'fpush' ? fpush(rpop())
@@ -2080,7 +2081,7 @@ let interpret = opcodes => {
 				let value = rpop();
 				let object = rpop();
 				setp(object, opcode.key, value);
-				return undefined;
+				rpush(object);
 			}()
 			: id === 'return' ? function() {
 				let rc = rpop();
