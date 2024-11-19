@@ -1951,6 +1951,7 @@ let expand = opcodes => {
 			opcodes = [...opcodes, { id: 'l', label }, ...segment,];
 			setp(opcodes[i], 'id', 'label');
 			setp(opcodes[i], 'label', label);
+			setp(opcodes[i], 'segment', undefined);
 		}();
 		i = i + 1;
 	}());
