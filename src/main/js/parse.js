@@ -1846,12 +1846,7 @@ generate = ast => {
 		let skipLabel = newDummy();
 		return [
 			...generate(capture),
-			{ id: 'jump', label: skipLabel },
-			{ id: 'l', label: lambdaLabel },
-			...generate(expr),
-			{ id: 'return' },
-			{ id: 'l', label: skipLabel },
-			{ id: 'label', label: lambdaLabel },
+			{ id: 'label-segment', segment: [...generate(expr), { id: 'return' },] },
 			{ id },
 		];
 	}())
@@ -1943,6 +1938,24 @@ generate = ast => {
 	);
 
 	return f(ast);
+};
+
+let expand = opcodes => {
+	let i = 0;
+
+	while (i < opcodes.length) (function() {
+		let { id, segment } = opcodes[i];
+		let isSegment = id === 'label-segment';
+		isSegment && function() {
+			let label = newDummy();
+			opcodes = [...opcodes, { id: 'l', label }, ...segment,];
+			setp(opcodes[i], 'id', 'label');
+			setp(opcodes[i], 'label', label);
+		}();
+		i = i + 1;
+	}());
+
+	return opcodes;
 };
 
 let interpret = opcodes => {
@@ -2153,7 +2166,7 @@ let processRewrite = program => {
 
 let processGenerate = ast6 => {
 	let ast7 = rewriteVars(0, 0, [], ast6);
-	return generate(ast7);
+	return expand([...generate(ast7), { id: 'exit' },]);
 };
 
 let actual = stringify(promiseAst(`
