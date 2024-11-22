@@ -2018,8 +2018,10 @@ let interpret = opcodes => {
 		ip = ip + 1;
 
 		let f = false ? undefined
-			: id === 'add' ? rpush(rpop() + rpop())
-			: id === 'and' ? error('BAD')
+			: id === 'add' ?
+				rpush(rpop() + rpop())
+			: id === 'and' ?
+				error('BAD')
 			: id === 'app' ? function() {
 				let parameter = rpop();
 				let lambda = rpop();
@@ -2029,7 +2031,8 @@ let interpret = opcodes => {
 				fpush(lambda.capture);
 				fpush(parameter);
 			}()
-			: id === 'bool' ? rpush(opcode.v)
+			: id === 'bool' ?
+				rpush(opcode.v)
 			: id === 'coal' ? function() {
 				let b = rpop();
 				let a = rpop();
@@ -2040,26 +2043,33 @@ let interpret = opcodes => {
 				let a = rpop();
 				rpush(cons(a, b));
 			}()
-			: id === 'discard' ? rpop()
+			: id === 'discard' ?
+				rpop()
 			: id === 'div' ? function() {
 				let b = rpop();
 				let a = rpop();
 				rpush(a / b);
 			}()
-			: id === 'dot' ? rpush(getp(rpop(), opcode.key))
-			: id === 'eq_' ? rpush(rpop() === rpop())
+			: id === 'dot' ?
+				rpush(getp(rpop(), opcode.key))
+			: id === 'eq_' ?
+				rpush(rpop() === rpop())
 			: id === 'exit' ? function() {
 				ip = 1 / 0;
 				return undefined;
 			}()
-			: id === 'falloc' ? fpush(undefined)
+			: id === 'falloc' ?
+				fpush(undefined)
 			: id === 'fassign' ? function() {
 				let { fs, ps } = opcode;
 				frames[frames.length - 1 - fs][ps] = rpop();
 			}()
-			: id === 'fdealloc' ? fpop()
-			: id === 'fget' ? rpush(frames[frames.length - 1 - opcode.fs][opcode.ps])
-			: id === 'fpush' ? fpush(rpop())
+			: id === 'fdealloc' ?
+				fpop()
+			: id === 'fget' ?
+				rpush(frames[frames.length - 1 - opcode.fs][opcode.ps])
+			: id === 'fpush' ?
+				fpush(rpop())
 			: id === 'index' ? function() {
 				let i = rpop();
 				let array = rpop();
@@ -2073,8 +2083,10 @@ let interpret = opcodes => {
 				ip = rpop() ? ip : getp(indexByLabel, opcode.label);
 				return undefined;
 			}()
-			: id === 'l' ? undefined
-			: id === 'label' ? rpush(getp(indexByLabel, opcode.label))
+			: id === 'l' ?
+				undefined
+			: id === 'label' ?
+				rpush(getp(indexByLabel, opcode.label))
 			: id === 'lambda-capture' ? function() {
 				let label = rpop();
 				let capture = rpop();
@@ -2095,27 +2107,37 @@ let interpret = opcodes => {
 				let a = rpop();
 				rpush(a % b);
 			}()
-			: id === 'mul' ? rpush(rpop() * rpop())
-			: id === 'ne_' ? rpush(rpop() !== rpop())
-			: id === 'ne_' ? rpush(rpop() !== rpop())
-			: id === 'neg' ? rpush(-rpop())
-			: id === 'nil' ? rpush([])
-			: id === 'not' ? rpush(!rpop())
-			: id === 'num' ? rpush(opcode.i)
-			: id === 'object' ? rpush({})
+			: id === 'mul' ?
+				rpush(rpop() * rpop())
+			: id === 'ne_' ?
+				rpush(rpop() !== rpop())
+			: id === 'ne_' ?
+				rpush(rpop() !== rpop())
+			: id === 'neg' ?
+				rpush(-rpop())
+			: id === 'nil' ?
+				rpush([])
+			: id === 'not' ?
+				rpush(!rpop())
+			: id === 'num' ?
+				rpush(opcode.i)
+			: id === 'object' ?
+				rpush({})
 			: id === 'object-put' ? function() {
 				let value = rpop();
 				let object = rpop();
 				setp(object, opcode.key, value);
 				rpush(object);
 			}()
-			: id === 'or_' ? error('BAD')
+			: id === 'or_' ?
+				error('BAD')
 			: id === 'pair' ? function() {
 				let b = rpop();
 				let a = rpop();
 				rpush([a, b]);
 			}()
-			: id === 'pos' ? rpush(+rpop())
+			: id === 'pos' ?
+				rpush(+rpop())
 			: id === 'return' ? function() {
 				let rc = rpop();
 				fpop();
@@ -2136,7 +2158,8 @@ let interpret = opcodes => {
 				let array = rpop();
 				seti(array, index, value);
 			}()
-			: id === 'str' ? rpush(opcode.v)
+			: id === 'str' ?
+				rpush(opcode.v)
 			: id === 'sub' ? function() {
 				let b = rpop();
 				let a = rpop();
@@ -2168,8 +2191,10 @@ let interpret = opcodes => {
 				rpush(catchHandler0);
 				return undefined;
 			}()
-			: id === 'undefined' ? rpush(undefined)
-			: error('BAD');
+			: id === 'undefined' ?
+				rpush(undefined)
+			:
+				error('BAD');
 	}());
 
 	return rstack.length !== 1 ? error('RSTACK RESIDUE') : frames.length !== 1 && frames[0].length !== 0 ? error('FRAME RESIDUE') : rpop();
