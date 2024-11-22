@@ -1620,6 +1620,10 @@ evaluate = vvs => {
 		: id === 'app' ? (({ lhs, rhs }) => eval(lhs)(eval(rhs)))
 		: id === 'assign' ? (({ bind, value, expr }) => function() {
 			return false ? undefined
+				: bind.id === 'dot' ? function() {
+					eval(bind.expr)[bind.field] = eval(value);
+					return eval(expr);
+				}()
 				: bind.id === 'index' ? function() {
 					eval(bind.lhs)[eval(bind.rhs)] = eval(value);
 					return eval(expr);
@@ -1718,6 +1722,10 @@ rewriteVars = (fs, ps, vts, ast) => {
 		)
 		: id === 'assign' ? (({ bind, value, expr }) => {
 			return false ? undefined
+			: bind.id === 'dot' ? _assign(
+				rewriteVars_(bind),
+				rewriteVars_(value),
+				rewriteVars_(expr))
 			: bind.id === 'index' ? _assign(
 				rewriteVars_(bind),
 				rewriteVars_(value),
@@ -1793,6 +1801,13 @@ generate = ast => {
 	: id === 'app' ?
 		generateBinOp
 	: id === 'assign' ? (({ bind, value, expr }) => false ? undefined
+		: bind.id === 'dot' ? [
+			...generate(bind.expr),
+			...generate(value),
+			{ id: 'object-put', key: bind.field },
+			{ id: 'discard' },
+			...generate(expr),
+		]
 		: bind.id === 'frame' ? [
 			...generate(value),
 			{ id: 'fassign', fs: bind.fs, ps: bind.ps },
@@ -2045,6 +2060,11 @@ let interpret = opcodes => {
 			: id === 'fdealloc' ? fpop()
 			: id === 'fget' ? rpush(frames[frames.length - 1 - opcode.fs][opcode.ps])
 			: id === 'fpush' ? fpush(rpop())
+			: id === 'index' ? function() {
+				let i = rpop();
+				let array = rpop();
+				rpush(array[i]);
+			}()
 			: id === 'jump' ? function() {
 				ip = getp(indexByLabel, opcode.label);
 				return undefined;
@@ -2224,7 +2244,7 @@ return actual === expect
 		process.env.EVAL && console.log(`eval :: ${stringify(evaluate(evaluateVvs)(ast))}`);
 		process.env.FORMAT && console.log(`format :: ${format(ast)}`);
 		process.env.GENERATE && console.log(`generate :: ${opcodes.map(opcode => '\n' + JSON.stringify(opcode, undefined, undefined)).join(undefined)}`);
-		process.env.INTERPRET && console.log(`interpret :: ${interpret(opcodes)}`);
+		process.env.INTERPRET && console.log(`interpret :: ${stringify(interpret(opcodes))}`);
 		console.log(`type :: ${types.dump(type)}`);
 		return true;
 	} catch (e) { return console.error(e); }
