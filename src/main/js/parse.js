@@ -1885,8 +1885,21 @@ generate = ast => {
 		generateBinOp
 	: id === 'neg' ?
 		generateOp
-	: id === 'new' ?
-		error('TODO')
+	: id === 'new' ? (({ clazz }) =>
+		false ? undefined
+		: clazz === 'Error' ? [
+			{ id: 'object' },
+			{ id: 'label-segment', segment: [
+				{ id: 'frame-get', fs: 0, ps: 1 },
+				{ id: 'error' },
+				{ id: 'return' },
+			] },
+			{ id: 'lambda-capture' },
+		]
+		: clazz === 'Map' ? error('BAD')
+		: clazz === 'Promise' ? error('BAD')
+		: error('BAD')
+	)
 	: id === 'nil' ? (({}) =>
 		[ast,]
 	)
@@ -2064,6 +2077,8 @@ let interpret = opcodes => {
 				let a = rpop();
 				rpush(a / b);
 			}()
+			: id === 'error' ?
+				error(rpop())
 			: id === 'eq_' ?
 				rpush(rpop() === rpop())
 			: id === 'exit' ? function() {
