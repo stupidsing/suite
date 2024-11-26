@@ -357,7 +357,7 @@ let parserModule = () => {
 
 			let exprToString = _app(
 				_dot(parseApplyBlockFieldIndex(expr_), '.toString'),
-				_void);
+				_undefined);
 
 			return _add(
 				_str(program.slice(0, index)),
@@ -473,7 +473,7 @@ let parserModule = () => {
 		: program.startsWith('typeof ') ?
 			_typeof(parseValue(program.slice(7, undefined)))
 		: program.endsWith('()') ?
-			_app(parse(program.slice(0, -2)), _void)
+			_app(parse(program.slice(0, -2)), _undefined)
 		: program.endsWith(')') ? function() {
 			let [expr, paramStr_] = splitr(program, '(');
 			let paramStr = paramStr_.slice(0, -1).trim();
@@ -1889,16 +1889,12 @@ generate = ast => {
 		false ? undefined
 		: clazz === 'Error' ? [
 			{ id: 'object' },
-			{ id: 'label-segment', segment: [
-				{ id: 'frame-get', fs: 0, ps: 1 },
-				{ id: 'error' },
-				{ id: 'return' },
-			] },
+			{ id: 'label-segment', segment: [{ id: 'frame-get', fs: 0, ps: 1 }, { id: 'return' },] },
 			{ id: 'lambda-capture' },
 		]
 		: clazz === 'Map' ? error('BAD')
 		: clazz === 'Promise' ? error('BAD')
-		: error('BAD')
+		: error(`unknown class ${clazz}`)
 	)
 	: id === 'nil' ? (({}) =>
 		[ast,]
@@ -2077,8 +2073,6 @@ let interpret = opcodes => {
 				let a = rpop();
 				rpush(a / b);
 			}()
-			: id === 'error' ?
-				error(rpop())
 			: id === 'eq_' ?
 				rpush(rpop() === rpop())
 			: id === 'exit' ? function() {
@@ -2185,13 +2179,16 @@ let interpret = opcodes => {
 			}()
 			: id === 'throw' ? function() {
 				let thrown = rpop();
-				let { label, fl, fsl, rsl } = catchHandler;
-				ip = label ?? error(`THROWN ${rpop()}`);
-				while (fsl < frames.length) fremove();
-				while (fl < frames[frames.length - 1].length) fpop();
-				while (rsl < rstack.length) rpop();
-				rpush(thrown);
-				return undefined;
+				return catchHandler !== undefined ? function() {
+					let { label, fl, fsl, rsl } = catchHandler;
+					ip = label ?? error(`THROWN ${rpop()}`);
+					while (fsl < frames.length) fremove();
+					while (fl < frames[frames.length - 1].length) fpop();
+					while (rsl < rstack.length) rpop();
+					rpush(thrown);
+					return undefined;
+				}()
+				: error(thrown);
 			}()
 			: id === 'try-pop' ? function() {
 				let { label } = rpop();
