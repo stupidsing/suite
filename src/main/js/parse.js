@@ -914,7 +914,7 @@ let typesModule = () => {
 	let tyPromiseOf = out => ({ t: 'promise', out });
 	let tyString = tyArrayOf({ t: 'char' });
 	let tyStructOf = kvs => ({ t: 'struct', kvs });
-	let tyStructOfCompleted = kvs => { setp(kvs, 'completed', true); return ({ t: 'struct', kvs }); };
+	let tyStructOfCompleted = kvs => ({ t: 'struct', completed: true, kvs });
 	let tyTupleOf = types => ({ t: 'tuple', types });
 	let tyVoid = tyStructOfCompleted({});
 
