@@ -2350,7 +2350,7 @@ return actual === expect
 		let { ast, type } = processRewrite(require('fs').readFileSync(0, 'utf8'));
 		let opcodes = process.env.GENERATE || process.env.INTERPRET ? processGenerate(ast) : undefined;
 		console.error(`ast :: ${stringify(ast)}`);
-		process.env.EVAL && console.error(`eval :: ${stringify(evaluate(evaluateVvs)(ast))}`);
+		process.env.EVALUATE && console.error(`evaluate :: ${stringify(evaluate(evaluateVvs)(ast))}`);
 		process.env.FORMAT && console.error(`format :: ${format(ast)}`);
 		process.env.GENERATE && console.error(`generate :: ${opcodes.map(opcode => '\n' + JSON.stringify(opcode, undefined, undefined)).join(undefined)}`);
 		process.env.INTERPRET && console.error(`interpret :: ${stringify(interpret(opcodes))}`);
