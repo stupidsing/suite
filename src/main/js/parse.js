@@ -114,6 +114,7 @@ let _nil = { id: 'nil' };
 let _not = expr => ({ id: 'not', expr });
 let _num = i => ({ id: 'num', i });
 let _pair = (lhs, rhs) => ({ id: 'pair', lhs, rhs });
+let _segment = opcodes => ({ id: 'segment', opcodes });
 let _str = v => ({ id: 'str', v });
 let _struct = kvs => ({ id: 'struct', kvs });
 let _throw = expr => ({ id: 'throw', expr });
@@ -630,6 +631,7 @@ let rewrite = (rf, ast) => {
 	: id === 'or_' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
 	: id === 'pair' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
 	: id === 'pos' ? (({ expr }) => ({ id, expr: rf(expr) }))
+	: id === 'segment' ? (({ opcodes }) => ast)
 	: id === 'str' ? (({ v }) => ast)
 	: id === 'struct' ? (({ kvs }) => ({ id, kvs: kvs.map(({ key, value }) => ({ key, value: rf(value) })) }))
 	: id === 'sub' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
@@ -745,6 +747,7 @@ format_ = (priority, ast) => {
 	: id === 'or_' ? (({ lhs, rhs }) => `${fm(lhs)} || ${fmt(rhs)}`)
 	: id === 'pair' ? (({ lhs, rhs }) => `${fm(lhs)}, ${fmt(rhs)}`)
 	: id === 'pos' ? (({ expr }) => `+ ${fmt(expr)}`)
+	: id === 'segment' ? (({ opcodes }) => `<<${stringify(opcodes)}>>`)
 	: id === 'str' ? (({ v }) => `'${v}'`)
 	: id === 'struct' ? (({ kvs }) => {
 		let s = kvs.map(({ key, value }) => {
@@ -1174,6 +1177,9 @@ let typesModule = () => {
 		: id === 'pos' ? (({ expr }) =>
 			doBind(ast, infer(expr), tyNumber) && tyNumber
 		)
+		: id === 'segment' ? (({ opcodes }) =>
+			newRef()
+		)
 		: id === 'str' ? (({}) =>
 			tyString
 		)
@@ -1363,6 +1369,8 @@ rewriteAsync = ast => {
 		reduceBinOp
 	: id === 'pos' ?
 		reduceOp
+	: id === 'segment' ?
+		error('BAD')
 	: id === 'sub' ?
 		reduceBinOp
 	: id === 'try' ?
@@ -1675,6 +1683,7 @@ evaluate = vvs => {
 		: id === 'or_' ? (({ lhs, rhs }) => assumeAny(eval(lhs) || eval(rhs)))
 		: id === 'pair' ? (({ lhs, rhs }) => assumeAny([eval(lhs), eval(rhs)]))
 		: id === 'pos' ? (({ expr }) => assumeAny(+eval(expr)))
+		: id === 'segment' ? (({ opcodes }) => error('BAD'))
 		: id === 'str' ? (({ v }) => v)
 		: id === 'struct' ? (({ kvs }) => assumeAny(foldl({}, kvs, (struct, kv) => {
 			let { key, value } = kv;
@@ -1911,6 +1920,9 @@ generate = ast => {
 		generateBinOp
 	: id === 'pos' ?
 		generateOp
+	: id === 'segment' ? (({ opcodes }) =>
+		opcodes
+	)
 	: id === 'str' ? (({}) =>
 		[ast,]
 	)
@@ -2156,6 +2168,13 @@ let interpret = opcodes => {
 			}()
 			: id === 'pos' ?
 				rpush(+rpop())
+			: id === 'service' ? (
+				false ? undefined
+				: opcode.service === 'JSON.stringify' ? function() { let v = rpop(); rpush(JSON.stringify(v[0], v[1][0], v[1][1])); }()
+				: opcode.service === 'console.error' ? function() { console.error(rpop()); rpush(undefined); }()
+				: opcode.service === 'console.log' ? function() { console.log(rpop()); rpush(undefined); }()
+				: error('BAD')
+			)
 			: id === 'return' ? function() {
 				let rc = rpop();
 				fpop();
@@ -2249,6 +2268,56 @@ let processRewrite = program => {
 };
 
 let processGenerate = ast6 => {
+	let proxy1 = service => _lambdaCapture(_undefined, _var(newDummy()), _var(newDummy()), _segment([
+		{ id: 'frame-get', fs: 0, ps: 1 },
+		{ id: 'service', service: service },
+	]));
+
+	ast6 = _let(
+		_var('JSON'),
+		_struct([
+			{ key: '.stringify', value: proxy1('JSON.stringify') },
+		]),
+		ast6);
+
+	ast6 = _let(
+		_var('Object'),
+		_struct([
+		]),
+		ast6);
+
+	ast6 = _let(
+		_var('Promise'),
+		_struct([
+		]),
+		ast6);
+
+	ast6 = _let(
+		_var('console'),
+		_struct([
+			{ key: '.error', value: proxy1('console.error') },
+			{ key: '.log', value: proxy1('console.log') },
+		]),
+		ast6);
+
+	ast6 = _let(
+		_var('eval'),
+		_struct([
+		]),
+		ast6);
+
+	ast6 = _let(
+		_var('process'),
+		_struct([
+		]),
+		ast6);
+
+	ast6 = _let(
+		_var('require'),
+		_struct([
+		]),
+		ast6);
+
 	let ast7 = rewriteVars(0, 0, [], ast6);
 	return expand([...generate(ast7), { id: 'exit' },]);
 };
