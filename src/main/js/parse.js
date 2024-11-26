@@ -73,7 +73,7 @@ let dummyCount = 0;
 
 let newDummy = () => {
 	dummyCount = dummyCount + 1;
-	return `dummy${dummyCount}`;
+	return `d${dummyCount}`;
 };
 
 let dump = v => {
@@ -1791,9 +1791,9 @@ generate = ast => {
 	: id === 'add' ?
 		generateBinOp
 	: id === 'alloc' ? (({ vn, expr }) => [
-		{ id: 'falloc' },
+		{ id: 'frame-alloc' },
 		...generate(expr),
-		{ id: 'fdealloc' },
+		{ id: 'frame-dealloc' },
 	])
 	: id === 'and' ? (({ lhs, rhs }) =>
 		generate(_if(lhs, rhs, _bool(false)))
@@ -1810,14 +1810,14 @@ generate = ast => {
 		]
 		: bind.id === 'frame' ? [
 			...generate(value),
-			{ id: 'fassign', fs: bind.fs, ps: bind.ps },
+			{ id: 'frame-assign', fs: bind.fs, ps: bind.ps },
 			...generate(expr),
 		]
 		: bind.id === 'index' ? [
 			...generate(bind.lhs),
 			...generate(bind.rhs),
 			...generate(value),
-			{ id: 'set-index' },
+			{ id: 'array-set' },
 			...generate(expr),
 		]
 		: error('BAD')
@@ -1836,12 +1836,12 @@ generate = ast => {
 		generateBinOp
 	: id === 'dot' ? (({ expr, field }) => [
 		...generate(expr),
-		{ id, key: field },
+		{ id: 'object-get', key: field },
 	])
 	: id === 'eq_' ?
 		generateBinOp
 	: id === 'frame' ? (({ fs, ps }) => [
-		{ id: 'fget', fs, ps },
+		{ id: 'frame-get', fs, ps },
 	])
 	: id === 'if' ? (({ if_, then, else_ }) => function() {
 		let elseLabel = newDummy();
@@ -1856,8 +1856,11 @@ generate = ast => {
 			{ id: 'l', label: fiLabel },
 		];
 	}())
-	: id === 'index' ?
-		generateBinOp
+	: id === 'index' ? (({ lhs, rhs }) => [
+		...generate(lhs),
+		...generate(rhs),
+		{ id: 'array-get' },
+	])
 	: id === 'lambda' ?
 		error('BAD')
 	: id === 'lambda-async' ?
@@ -1916,9 +1919,9 @@ generate = ast => {
 		let finallyLabel = newDummy();
 		return [
 			{ id: 'label-segment', segment: [
-				{ id: 'fpush' },
+				{ id: 'frame-push' },
 				...generate(rhs),
-				{ id: 'fdealloc' },
+				{ id: 'frame-dealloc' },
 				{ id: 'jump', label: finallyLabel },
 			] },
 			{ id: 'try-push' },
@@ -2009,10 +2012,10 @@ let interpret = opcodes => {
 		let { id } = opcode;
 
 		process.env.LOG && function() {
-			console.log(`----------`);
-			console.log(`FRAMES = ${JSON.stringify(frames, undefined, undefined)}`);
-			console.log(`RSTACK = ${JSON.stringify(rstack, undefined, undefined)}`);
-			console.log(`IP = ${ip} ${JSON.stringify(opcode, undefined, undefined)}`);
+			console.error(`----------`);
+			console.error(`FRAMES = ${JSON.stringify(frames, undefined, undefined)}`);
+			console.error(`RSTACK = ${JSON.stringify(rstack, undefined, undefined)}`);
+			console.error(`IP = ${ip} ${JSON.stringify(opcode, undefined, undefined)}`);
 		}();
 
 		ip = ip + 1;
@@ -2030,6 +2033,17 @@ let interpret = opcodes => {
 				fcreate();
 				fpush(lambda.capture);
 				fpush(parameter);
+			}()
+			: id === 'array-get' ? function() {
+				let i = rpop();
+				let array = rpop();
+				rpush(array[i]);
+			}()
+			: id === 'array-set' ? function() {
+				let value = rpop();
+				let index = rpop();
+				let array = rpop();
+				seti(array, index, value);
 			}()
 			: id === 'bool' ?
 				rpush(opcode.v)
@@ -2050,31 +2064,24 @@ let interpret = opcodes => {
 				let a = rpop();
 				rpush(a / b);
 			}()
-			: id === 'dot' ?
-				rpush(getp(rpop(), opcode.key))
 			: id === 'eq_' ?
 				rpush(rpop() === rpop())
 			: id === 'exit' ? function() {
 				ip = 1 / 0;
 				return undefined;
 			}()
-			: id === 'falloc' ?
+			: id === 'frame-alloc' ?
 				fpush(undefined)
-			: id === 'fassign' ? function() {
+			: id === 'frame-assign' ? function() {
 				let { fs, ps } = opcode;
 				frames[frames.length - 1 - fs][ps] = rpop();
 			}()
-			: id === 'fdealloc' ?
+			: id === 'frame-dealloc' ?
 				fpop()
-			: id === 'fget' ?
+			: id === 'frame-get' ?
 				rpush(frames[frames.length - 1 - opcode.fs][opcode.ps])
-			: id === 'fpush' ?
+			: id === 'frame-push' ?
 				fpush(rpop())
-			: id === 'index' ? function() {
-				let i = rpop();
-				let array = rpop();
-				rpush(array[i]);
-			}()
 			: id === 'jump' ? function() {
 				ip = getp(indexByLabel, opcode.label);
 				return undefined;
@@ -2123,6 +2130,8 @@ let interpret = opcodes => {
 				rpush(opcode.i)
 			: id === 'object' ?
 				rpush({})
+			: id === 'object-get' ?
+				rpush(getp(rpop(), opcode.key))
 			: id === 'object-put' ? function() {
 				let value = rpop();
 				let object = rpop();
@@ -2151,12 +2160,6 @@ let interpret = opcodes => {
 				let a = rpop();
 				rpush(b);
 				rpush(a);
-			}()
-			: id === 'set-index' ? function() {
-				let value = rpop();
-				let index = rpop();
-				let array = rpop();
-				seti(array, index, value);
 			}()
 			: id === 'str' ?
 				rpush(opcode.v)
@@ -2265,12 +2268,12 @@ return actual === expect
 	try {
 		let { ast, type } = processRewrite(require('fs').readFileSync(0, 'utf8'));
 		let opcodes = process.env.GENERATE || process.env.INTERPRET ? processGenerate(ast) : undefined;
-		console.log(`ast :: ${stringify(ast)}`);
-		process.env.EVAL && console.log(`eval :: ${stringify(evaluate(evaluateVvs)(ast))}`);
-		process.env.FORMAT && console.log(`format :: ${format(ast)}`);
-		process.env.GENERATE && console.log(`generate :: ${opcodes.map(opcode => '\n' + JSON.stringify(opcode, undefined, undefined)).join(undefined)}`);
-		process.env.INTERPRET && console.log(`interpret :: ${stringify(interpret(opcodes))}`);
-		console.log(`type :: ${types.dump(type)}`);
+		console.error(`ast :: ${stringify(ast)}`);
+		process.env.EVAL && console.error(`eval :: ${stringify(evaluate(evaluateVvs)(ast))}`);
+		process.env.FORMAT && console.error(`format :: ${format(ast)}`);
+		process.env.GENERATE && console.error(`generate :: ${opcodes.map(opcode => '\n' + JSON.stringify(opcode, undefined, undefined)).join(undefined)}`);
+		process.env.INTERPRET && console.error(`interpret :: ${stringify(interpret(opcodes))}`);
+		console.error(`type :: ${types.dump(type)}`);
 		return true;
 	} catch (e) { return console.error(e); }
 }() : error(`
