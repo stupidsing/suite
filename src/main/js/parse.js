@@ -357,7 +357,7 @@ let parserModule = () => {
 			let [expr_, right] = splitl(remains, '}');
 
 			let exprToString = _app(
-				_dot(parseApplyBlockFieldIndex(expr_), '.toString'),
+				_dot(parseApplyBlockFieldIndex(expr_), 'toString'),
 				_undefined);
 
 			return _add(
@@ -395,7 +395,7 @@ let parserModule = () => {
 				return head.startsWith('...')
 					? function() {
 						let head_ = parseArray_(head.slice(3, 0));
-						return tail_ !== '' ? _app(_dot(head_, '.concat'), parseArray_(tail_)) : head_;
+						return tail_ !== '' ? _app(_dot(head_, 'concat'), parseArray_(tail_)) : head_;
 					}()
 					: _cons(parse(head), parseArray_(tail_));
 			}()
@@ -416,9 +416,9 @@ let parserModule = () => {
 
 		return _struct(keepsplitl(appendTrailingComma(program), ',', kv => {
 			let [key_, value_] = splitl(kv, ':');
-			let field = parseConstant(key_.trim()).vn;
-			let value = value_ !== undefined ? parse(value_) : _var(field);
-			return { key: '.' + field, value };
+			let key = parseConstant(key_.trim()).vn;
+			let value = value_ !== undefined ? parse(value_) : _var(key);
+			return { key, value };
 		}));
 	};
 
@@ -454,12 +454,11 @@ let parserModule = () => {
 
 		return false ? undefined
 		: expr !== undefined && isIdentifier(field) ?
-			_dot(parseApplyBlockFieldIndex(expr), '.' + field)
+			_dot(parseApplyBlockFieldIndex(expr), field)
 		: program.endsWith(']') ? function() {
 			let [expr, index_] = splitr(program, '[');
 			let index = index_.slice(0, -1);
-			return expr === undefined ? parseValue(program)
-			: _index(parse(expr), parse(index));
+			return expr === undefined ? parseValue(program) : _index(parse(expr), parse(index));
 		}()
 		:
 			parseValue(program);
@@ -724,7 +723,7 @@ format_ = (priority, ast) => {
 	: id === 'coal' ? (({ lhs, rhs }) => `${fm(lhs)} ?? ${fmt(rhs)}`)
 	: id === 'cons' ? (({ lhs, rhs }) => `[${fmt(lhs)}, ...${fmt(rhs)}]`)
 	: id === 'div' ? (({ lhs, rhs }) => `${fmt(lhs)} / ${fm(rhs)}`)
-	: id === 'dot' ? (({ expr, field }) => `${fmt(expr)}${field}`)
+	: id === 'dot' ? (({ expr, field }) => `${fmt(expr)}.${field}`)
 	: id === 'eq_' ? (({ lhs, rhs }) => `${fmt(lhs)} === ${fmt(rhs)}`)
 	: id === 'frame' ? (({ fs, ps }) => `frame[${fs}][${ps}]`)
 	: id === 'if' ? (({ if_, then, else_ }) => `${fm(if_)} ? ${fmt(then)} : ${fmt(else_)}`)
@@ -750,10 +749,9 @@ format_ = (priority, ast) => {
 	: id === 'segment' ? (({ opcodes }) => `<<${stringify(opcodes)}>>`)
 	: id === 'str' ? (({ v }) => `'${v}'`)
 	: id === 'struct' ? (({ kvs }) => {
-		let s = kvs.map(({ key, value }) => {
-			let k = key.slice(1, undefined);
-			return value.id === 'var' && value.vn === k ? k : `${k}: ${fmt(value)}`;
-		}).join(', ');
+		let s = kvs
+			.map(({ key, value }) => value.id === 'var' && value.vn === key ? key : `${key}: ${fmt(value)}`)
+			.join(', ');
 		return `{ ${s} }`;
 	})
 	: id === 'sub' ? (({ lhs, rhs }) => `${fmt(lhs)} - ${fm(rhs)}`)
@@ -799,7 +797,7 @@ let typesModule = () => {
 			return false ? undefined
 			: contains(vs, v) ?
 				'<recurse>'
-			: ref !== undefined ?
+			: typeof ref === 'number' ?
 				(refs.get(ref) !== v ? dumpType_(cons(v, vs), refs.get(ref)) : `_${ref}`)
 			: typeof v === 'object' ? (false ? undefined
 				: isEmpty(listv) ?
@@ -834,12 +832,12 @@ let typesModule = () => {
 		return false ? undefined
 		: a === b ?
 			true
-		: refa !== undefined ? function() {
+		: typeof refa === 'number' ? function() {
 			let olda = refs.get(refa);
 			let finalb = finalRef(b);
 			return setRef(refa, finalb) && tryBind(olda, finalb) || !setRef(refa, olda);
 		}()
-		: refb !== undefined ? function() {
+		: typeof refb === 'number' ? function() {
 			let oldb = refs.get(refb);
 			let finala = finalRef(a);
 			return setRef(refb, finala) && tryBind(finala, oldb) || !setRef(refb, oldb);
@@ -876,7 +874,7 @@ let typesModule = () => {
 			let { ref } = v;
 			let vlist = assumeList(v);
 			return false ? undefined
-			: ref !== undefined
+			: typeof ref === 'number'
 				? (fromTos.has(ref) ? fromTos.get(ref) : function() {
 					let v1 = newRef();
 					fromTos.set(ref, v1);
@@ -919,79 +917,79 @@ let typesModule = () => {
 	let tyVoid = tyStructOfCompleted({});
 
 	let tyMapOf = (tk, tv) => tyStructOfCompleted({
-		'.get': tyLambdaOfFixed(tk, tv),
-		'.has': tyLambdaOfFixed(tk, tyBoolean),
-		'.set': tyLambdaOfFixed(tyPairOf(tk, tv), tyVoid),
+		get: tyLambdaOfFixed(tk, tv),
+		has: tyLambdaOfFixed(tk, tyBoolean),
+		set: tyLambdaOfFixed(tyPairOf(tk, tv), tyVoid),
 	});
 
 	let inferDot = (ast, ts, field) => {
 		return false ? undefined
-		: field === '.charCodeAt' ?
+		: field === 'charCodeAt' ?
 			doBind(ast, ts, tyString) && tyLambdaOf(tyNumber, tyNumber)
-		: field === '.concat' ? function() {
+		: field === 'concat' ? function() {
 			let ta = tyArrayOf(newRef());
 			return doBind(ast, ts, ta) && tyLambdaOf(ta, ta);
 		}()
-		: field === '.endsWith' ?
+		: field === 'endsWith' ?
 			doBind(ast, ts, tyString) && tyLambdaOf(tyString, tyBoolean)
-		: field === '.filter' ? function() {
+		: field === 'filter' ? function() {
 			let ti = newRef();
 			return doBind(ast, ts, tyArrayOf(ti)) && tyLambdaOf(tyLambdaOf(ti, tyBoolean), tyArrayOf(ti));
 		}()
-		: field === '.flatMap' ? function() {
+		: field === 'flatMap' ? function() {
 			let ti = newRef();
 			let to = newRef();
 			return doBind(ast, ts, tyArrayOf(ti)) && tyLambdaOf(tyLambdaOf(ti, tyArrayOf(to)), tyArrayOf(to));
 		}()
-		: field === '.includes' ? function() {
+		: field === 'includes' ? function() {
 			let te = newRef();
 			return doBind(ast, ts, tyArrayOf(te)) && tyLambdaOf(te, tyBoolean);
 		}()
-		: field === '.indexOf' ?
+		: field === 'indexOf' ?
 			doBind(ast, ts, tyString) && tyLambdaOf(tyPairOf(tyString, tyNumber), tyNumber)
-		: field === '.join' ?
+		: field === 'join' ?
 			doBind(ast, ts, tyArrayOf(tyString)) && tyLambdaOf(tyString, tyString)
-		: field === '.length' ?
+		: field === 'length' ?
 			doBind(ast, ts, tyArrayOf(newRef())) && tyNumber
-		: field === '.map' ? function() {
+		: field === 'map' ? function() {
 			let ti = newRef();
 			let to = newRef();
 			return doBind(ast, ts, tyArrayOf(ti)) && tyLambdaOf(tyLambdaOf(ti, to), tyArrayOf(to));
 		}()
-		: field === '.pop' ? function() {
+		: field === 'pop' ? function() {
 			let te = newRef();
 			return doBind(ast, ts, tyArrayOf(te)) && tyLambdaOf(tyVoid, te);
 		}()
-		: field === '.push' ? function() {
+		: field === 'push' ? function() {
 			let te = newRef();
 			return doBind(ast, ts, tyArrayOf(te)) && tyLambdaOf(te, tyVoid);
 		}()
-		: field === '.reduce' ? function() {
+		: field === 'reduce' ? function() {
 			let te = newRef();
 			let tr = newRef();
 			let treducer = tyLambdaOf(tyPairOf(tr, te), tr);
 			return doBind(ast, ts, tyArrayOf(te))
 				&& tyLambdaOf(tyPairOf(treducer, tr), tr);
 		}()
-		: field === '.reverse' ? function() {
+		: field === 'reverse' ? function() {
 			let tl = tyArrayOf(newRef());
 			return doBind(ast, ts, tl) && tyLambdaOf(tyVoid, tl);
 		}()
-		: field === '.slice' ? function() {
+		: field === 'slice' ? function() {
 			let te = newRef();
 			let tl = tyArrayOf(te);
 			return doBind(ast, ts, tl) && tyLambdaOf(tyPairOf(tyNumber, tyNumber), tl);
 		}()
-		: field === '.startsWith' ?
+		: field === 'startsWith' ?
 			doBind(ast, ts, tyString) && tyLambdaOf(tyString, tyBoolean)
-		: field === '.then' ? function() {
+		: field === 'then' ? function() {
 			let ti = newRef();
 			let to = newRef();
 			return doBind(ast, ts, tyPromiseOf(ti)) && tyLambdaOf(ti, tyPromiseOf(to));
 		}()
-		: field === '.toString' ?
+		: field === 'toString' ?
 			doBind(ast, ts, newRef()) && tyLambdaOf(tyVoid, tyString)
-		: field === '.trim' ?
+		: field === 'trim' ?
 			doBind(ast, ts, tyString) && tyLambdaOf(tyVoid, tyString)
 		: function() {
 			let kvs = {};
@@ -1227,31 +1225,32 @@ let typesModule = () => {
 			error(`cannot infer type for ${id}`)
 		);
 
-		return f(ast);
+		let t = f(ast);
+		return t;
 	};
 
 	let predefinedTypes = Object
 		.entries({
 			JSON: tyStructOfCompleted({
-				'.stringify': tyLambdaOf(tyPairOf(newRef(), tyPairOf(newRef(), newRef())), tyString),
+				stringify: tyLambdaOf(tyPairOf(newRef(), tyPairOf(newRef(), newRef())), tyString),
 			}),
 			Object: tyStructOfCompleted({
-				'.assign': tyLambdaOf(newRef(), newRef()),
-				'.entries': tyLambdaOf(tyStructOf({}), tyArrayOf(tyTupleOf(cons(tyString, cons(newRef(), nil))))),
-				'.fromEntries': tyLambdaOf(tyArrayOf(tyTupleOf(cons(tyString, cons(newRef(), nil)))), tyStructOf({})),
-				'.keys': tyLambdaOf(tyStructOf({}), tyArrayOf(tyString)),
+				assign: tyLambdaOf(newRef(), newRef()),
+				entries: tyLambdaOf(tyStructOf({}), tyArrayOf(tyTupleOf(cons(tyString, cons(newRef(), nil))))),
+				fromEntries: tyLambdaOf(tyArrayOf(tyTupleOf(cons(tyString, cons(newRef(), nil)))), tyStructOf({})),
+				keys: tyLambdaOf(tyStructOf({}), tyArrayOf(tyString)),
 			}),
 			Promise: tyStructOfCompleted({
-				'.reject': tyLambdaOf(tyError, tyPromiseOf(newRef())),
-				'.resolve': function() { let t = newRef(); return tyLambdaOf(t, tyPromiseOf(t)); }(),
+				reject: tyLambdaOf(tyError, tyPromiseOf(newRef())),
+				resolve: function() { let t = newRef(); return tyLambdaOf(t, tyPromiseOf(t)); }(),
 			}),
 			eval: tyLambdaOf(tyString, newRef()),
 			console: tyStructOfCompleted({
-				'.error': tyLambdaOf(newRef(), tyVoid),
-				'.log': tyLambdaOf(newRef(), tyVoid),
+				error: tyLambdaOf(newRef(), tyVoid),
+				log: tyLambdaOf(newRef(), tyVoid),
 			}),
 			process: tyStructOfCompleted({
-				'.env': tyStructOf({}),
+				env: tyStructOf({}),
 			}),
 			require: tyLambdaOf(tyString, newRef()),
 		})
@@ -1260,7 +1259,7 @@ let typesModule = () => {
 	return { dump, infer: ast => inferType(predefinedTypes, false, ast) };
 };
 
-let promiseResolve = _dot(_var('Promise'), '.resolve');
+let promiseResolve = _dot(_var('Promise'), 'resolve');
 let promisify = ast => _app(promiseResolve, ast);
 
 let unpromisify = ast => {
@@ -1273,7 +1272,7 @@ let rewriteAsync;
 rewriteAsync = ast => {
 	let { id } = ast;
 
-	let _then = (p, bind, expr) => _app(_dot(p, '.then'), _lambda(bind, expr));
+	let _then = (p, bind, expr) => _app(_dot(p, 'then'), _lambda(bind, expr));
 
 	let reduceOp = ({ expr }) => {
 		let pe = rewriteAsync(expr);
@@ -1419,12 +1418,12 @@ let ifBindId = bindId => {
 			bindConstant
 		: id === 'cons' ? (({ lhs, rhs }) => {
 			return id !== value.id
-				? ifBind(lhs, _index(value, _num(0)), ifBind(rhs, _app(_dot(value, '.slice'), _num(1)), then, else_), else_)
+				? ifBind(lhs, _index(value, _num(0)), ifBind(rhs, _app(_dot(value, 'slice'), _num(1)), then, else_), else_)
 				: ifBind(lhs, value.lhs, ifBind(rhs, value.rhs, then, else_), else_);
 		})
 		: id === 'nil' ? (({}) => {
 			return id !== value.id
-				? _if(_eq(_app(_dot(value, '.length'), _void), _num(0)), then, else_)
+				? _if(_eq(_app(_dot(value, 'length'), _void), _num(0)), then, else_)
 				: then;
 		})
 		: id === 'num' ?
@@ -1499,7 +1498,7 @@ rewriteCaptureVar = (capture, outsidevs, captures, ast) => {
 	: id === 'var' ? (({ vn }) => {
 		return !outsidevs.includes(vn) ? ast : function() {
 			captures.push(vn);
-			return _dot(_var(capture), `.${vn}`);
+			return _dot(_var(capture), vn);
 		}();
 	})
 	: (({}) =>
@@ -1524,7 +1523,7 @@ rewriteCapture = (fs, vfs, ast) => {
 		let bindCapture = newDummy();
 		let captures = [];
 		let expr_ = rewriteCaptureVar(bindCapture, vfs.map(([vn, fs]) => vn), captures, expr);
-		let definitions = _struct(captures.map(vn => ({ key: `.${vn}`, value: _var(vn) })));
+		let definitions = _struct(captures.map(vn => ({ key: vn, value: _var(vn) })));
 		return _lambdaCapture(definitions, _var(bindCapture), bind, rewriteCapture(fs1, vfs1, expr_));
 	}())
 	: id === 'let' ? (({ bind, value, expr }) =>
@@ -1652,7 +1651,7 @@ evaluate = vvs => {
 		: id === 'div' ? (({ lhs, rhs }) => assumeAny(eval(lhs) / eval(rhs)))
 		: id === 'dot' ? (({ expr, field }) => function() {
 			let object = eval(expr);
-			let value = getp(object, field.slice(1, undefined));
+			let value = getp(object, field);
 			return typeof value !== 'function' ? value : fake(value).bind(object);
 		}())
 		: id === 'eq_' ? (({ lhs, rhs }) => assumeAny(eval(lhs) === eval(rhs)))
@@ -1687,7 +1686,7 @@ evaluate = vvs => {
 		: id === 'str' ? (({ v }) => v)
 		: id === 'struct' ? (({ kvs }) => assumeAny(foldl({}, kvs, (struct, kv) => {
 			let { key, value } = kv;
-			setp(struct, key.slice(1, undefined), eval(value));
+			setp(struct, key, eval(value));
 			return struct;
 		})))
 		: id === 'sub' ? (({ lhs, rhs }) => assumeAny(eval(lhs) - eval(rhs)))
@@ -2276,7 +2275,7 @@ let processGenerate = ast6 => {
 	ast6 = _let(
 		_var('JSON'),
 		_struct([
-			{ key: '.stringify', value: proxy1('JSON.stringify') },
+			{ key: 'stringify', value: proxy1('JSON.stringify') },
 		]),
 		ast6);
 
@@ -2295,8 +2294,8 @@ let processGenerate = ast6 => {
 	ast6 = _let(
 		_var('console'),
 		_struct([
-			{ key: '.error', value: proxy1('console.error') },
-			{ key: '.log', value: proxy1('console.log') },
+			{ key: 'error', value: proxy1('console.error') },
+			{ key: 'log', value: proxy1('console.log') },
 		]),
 		ast6);
 
@@ -2332,11 +2331,11 @@ let expect = stringify(
 		_var('parse'),
 		_lambda(_var('ast'), _var('ast')),
 		_app(
-			_dot(_var('console'), '.log'),
+			_dot(_var('console'), 'log'),
 			_app(
 				_var('parse'),
 				_app(
-					_dot(_app(_var('require'), _str('fs')), '.readFileSync'),
+					_dot(_app(_var('require'), _str('fs')), 'readFileSync'),
 					_pair(_num(0), _str('utf8'))
 				)
 			)
