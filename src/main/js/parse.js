@@ -1758,6 +1758,11 @@ rewriteVars = (fs, ps, vts, ast) => {
 				rewriteVars_(bind),
 				rewriteVars_(value),
 				rewriteVars_(expr))
+			: bind.id === 'ref' ? _assign(
+				rewriteVars_(bind),
+				rewriteVars_(value),
+				rewriteVars_(expr))
+			)
 			: bind.id === 'var' ? function() {
 				let [fs_, ps] = findk(vts, bind.vn);
 				return _assign(
@@ -1846,6 +1851,12 @@ generate = ast => {
 			...generate(bind.rhs),
 			...generate(value),
 			{ id: 'array-set' },
+			...generate(expr),
+		]
+		: bind.id === 'ref' ? [
+			...generate(bind),
+			...generate(value),
+			{ id: 'assign-ref' },
 			...generate(expr),
 		]
 		: error('BAD')
@@ -1942,7 +1953,7 @@ generate = ast => {
 	: id === 'pos' ?
 		generateOp
 	: id === 'ref' ? (({ expr }) =>
-		expr.clazz === 'frame' ? [{ id: 'frame-get-ref', fs: expr.fs, ps: expr.ps },]
+		expr.id === 'frame' ? [{ id: 'frame-get-ref', fs: expr.fs, ps: expr.ps },]
 		: error('BAD')
 	)
 	: id === 'segment' ? (({ opcodes }) =>
@@ -2092,6 +2103,11 @@ let interpret = opcodes => {
 				let index = rpop();
 				let array = rpop();
 				seti(array, index, value);
+			}()
+			: id === 'assign-ref' ? function() {
+				let value = rpop();
+				let ref = rpop();
+				frame[ref.fs][ref.ps] = value;
 			}()
 			: id === 'bool' ?
 				rpush(opcode.v)
