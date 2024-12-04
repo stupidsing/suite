@@ -2041,6 +2041,8 @@ let interpret = opcodes => {
 		ip = ip + 1;
 
 		let f = false ? undefined
+			: id === ':' ?
+				undefined
 			: id === 'add' ?
 				rpush(rpop() + rpop())
 			: id === 'and' ?
@@ -2110,8 +2112,6 @@ let interpret = opcodes => {
 				ip = rpop() ? ip : getp(indexByLabel, opcode.label);
 				return undefined;
 			}()
-			: id === ':' ?
-				undefined
 			: id === 'label' ?
 				rpush(getp(indexByLabel, opcode.label))
 			: id === 'lambda-capture' ? function() {
