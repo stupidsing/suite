@@ -1516,7 +1516,7 @@ rewriteCaptureVar = (capture, outsidevs, captures, ast) => {
 	: id === 'var' ? (({ vn }) => {
 		return !outsidevs.includes(vn) ? ast : function() {
 			captures.push(vn);
-			return _dot(_var(capture), vn);
+			return _deref(_dot(_var(capture), vn));
 		}();
 	})
 	: (({}) =>
@@ -1541,7 +1541,7 @@ rewriteCapture = (fs, vfs, ast) => {
 		let bindCapture = newDummy();
 		let captures = [];
 		let expr_ = rewriteCaptureVar(bindCapture, vfs.map(([vn, fs]) => vn), captures, expr);
-		let definitions = _struct(captures.map(vn => ({ key: vn, value: _var(vn) })));
+		let definitions = _struct(captures.map(vn => ({ key: vn, value: _ref(_var(vn)) })));
 		return _lambdaCapture(definitions, _var(bindCapture), bind, rewriteCapture(fs1, vfs1, expr_));
 	}())
 	: id === 'let' ? (({ bind, value, expr }) =>
@@ -2106,7 +2106,7 @@ let interpret = opcodes => {
 			: id === 'assign-ref' ? function() {
 				let value = rpop();
 				let ref = rpop();
-				frame[ref.fs][ref.ps] = value;
+				frames[ref.fs][ref.ps] = value;
 			}()
 			: id === 'bool' ?
 				rpush(opcode.v)
@@ -2120,8 +2120,10 @@ let interpret = opcodes => {
 				let a = rpop();
 				rpush(cons(a, b));
 			}()
-			: id === 'deref' ?
-				rpush(frames[opcode.fs][opcode.ps])
+			: id === 'deref' ? function() {
+				let ref = rpop();
+				rpush(frames[ref.fs][ref.ps]);
+			}()
 			: id === 'discard' ?
 				rpop()
 			: id === 'div' ? function() {
