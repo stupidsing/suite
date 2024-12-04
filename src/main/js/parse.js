@@ -1859,9 +1859,9 @@ generate = ast => {
 			{ id: 'jump-false', label: elseLabel },
 			...generate(then),
 			{ id: 'jump', label: fiLabel },
-			{ id: 'l', label: elseLabel },
+			{ id: ':', label: elseLabel },
 			...generate(else_),
-			{ id: 'l', label: fiLabel },
+			{ id: ':', label: fiLabel },
 		];
 	}())
 	: id === 'index' ? (({ lhs, rhs }) => [
@@ -1948,7 +1948,7 @@ generate = ast => {
 			...generate(lhs),
 			{ id: 'rotate' },
 			{ id: 'try-pop' },
-			{ id: 'l', label: finallyLabel },
+			{ id: ':', label: finallyLabel },
 		];
 	}()
 	)
@@ -1967,12 +1967,12 @@ generate = ast => {
 		let loopLabel = newDummy();
 		let exitLabel = newDummy();
 		return [
-			{ id: 'l', label: loopLabel },
+			{ id: ':', label: loopLabel },
 			...generate(cond),
 			{ id: 'jump-false', label: exitLabel },
 			...generate(loop),
 			{ id: 'discard' },
-			{ id: 'l', label: exitLabel },
+			{ id: ':', label: exitLabel },
 			...generate(expr),
 		];
 	})
@@ -1991,7 +1991,7 @@ let expand = opcodes => {
 		let isSegment = id === 'label-segment';
 		isSegment && function() {
 			let label = newDummy();
-			opcodes = [...opcodes, { id: 'l', label }, ...segment,];
+			opcodes = [...opcodes, { id: ':', label }, ...segment,];
 			setp(opcodes[i], 'id', 'label');
 			setp(opcodes[i], 'label', label);
 			setp(opcodes[i], 'segment', undefined);
@@ -2008,7 +2008,7 @@ let interpret = opcodes => {
 
 	while (i < opcodes.length) (function() {
 		let { id, label } = opcodes[i];
-		let isLabel = id === 'l';
+		let isLabel = id === ':';
 		isLabel && setp(indexByLabel, label, i);
 		i = i + 1;
 		return true;
@@ -2110,7 +2110,7 @@ let interpret = opcodes => {
 				ip = rpop() ? ip : getp(indexByLabel, opcode.label);
 				return undefined;
 			}()
-			: id === 'l' ?
+			: id === ':' ?
 				undefined
 			: id === 'label' ?
 				rpush(getp(indexByLabel, opcode.label))
