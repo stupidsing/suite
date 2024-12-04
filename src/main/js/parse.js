@@ -1653,6 +1653,11 @@ evaluate = vvs => {
 					eval(bind.lhs)[eval(bind.rhs)] = eval(value);
 					return eval(expr);
 				}()
+				: bind.id === 'ref' ? function() {
+					let { vv } = eval(bind);
+					vv[1] = eval(value);
+					return eval(expr);
+				}()
 				: bind.id === 'var' ? function() {
 					assign(bind.vn, eval(value));
 					return eval(expr);
@@ -1666,7 +1671,10 @@ evaluate = vvs => {
 			return v ? v : eval(rhs);
 		}())
 		: id === 'cons' ? (({ lhs, rhs }) => assumeAny(cons(eval(lhs), eval(rhs))))
-		: id === 'deref' ? (({ expr }) => error('BAD'))
+		: id === 'deref' ? (({ expr }) => function() {
+			let { vv } = eval(expr);
+			return get1(vv);
+		}())
 		: id === 'div' ? (({ lhs, rhs }) => assumeAny(eval(lhs) / eval(rhs)))
 		: id === 'dot' ? (({ expr, field }) => function() {
 			let object = eval(expr);
@@ -1701,7 +1709,10 @@ evaluate = vvs => {
 		: id === 'or_' ? (({ lhs, rhs }) => assumeAny(eval(lhs) || eval(rhs)))
 		: id === 'pair' ? (({ lhs, rhs }) => assumeAny([eval(lhs), eval(rhs)]))
 		: id === 'pos' ? (({ expr }) => assumeAny(+eval(expr)))
-		: id === 'ref' ? (({ expr }) => error('BAD'))
+		: id === 'ref' ? (({ expr }) =>
+			expr.id === 'var' ? assumeAny({ vv: find(vvs, ([k_, v]) => k_ === expr.vn) })
+			: error('BAD')
+		)
 		: id === 'segment' ? (({ opcodes }) => error('BAD'))
 		: id === 'str' ? (({ v }) => v)
 		: id === 'struct' ? (({ kvs }) => assumeAny(foldl({}, kvs, (struct, kv) => {
