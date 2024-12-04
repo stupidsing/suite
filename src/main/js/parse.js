@@ -1762,7 +1762,6 @@ rewriteVars = (fs, ps, vts, ast) => {
 				rewriteVars_(bind),
 				rewriteVars_(value),
 				rewriteVars_(expr))
-			)
 			: bind.id === 'var' ? function() {
 				let [fs_, ps] = findk(vts, bind.vn);
 				return _assign(
