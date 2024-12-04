@@ -100,6 +100,7 @@ let _app = (lhs, rhs) => ({ id: 'app', lhs, rhs });
 let _assign = (bind, value, expr) => ({ id: 'assign', bind, value, expr });
 let _bool = v => ({ id: 'bool', v });
 let _cons = (lhs, rhs) => ({ id: 'cons', lhs, rhs });
+let _deref = expr => ({ id: 'deref', expr });
 let _dot = (expr, field) => ({ id: 'dot', expr, field });
 let _eq = (lhs, rhs) => ({ id: 'eq_', lhs, rhs });
 let _error = { id: 'new', clazz: 'Error' };
@@ -114,6 +115,7 @@ let _nil = { id: 'nil' };
 let _not = expr => ({ id: 'not', expr });
 let _num = i => ({ id: 'num', i });
 let _pair = (lhs, rhs) => ({ id: 'pair', lhs, rhs });
+let _ref = expr => ({ id: 'ref', expr });
 let _segment = opcodes => ({ id: 'segment', opcodes });
 let _str = v => ({ id: 'str', v });
 let _struct = kvs => ({ id: 'struct', kvs });
@@ -605,6 +607,7 @@ let rewrite = (rf, ast) => {
 	: id === 'bool' ? (({ v }) => ast)
 	: id === 'coal' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
 	: id === 'cons' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
+	: id === 'deref' ? (({ expr }) => ({ id, expr: rf(expr) }))
 	: id === 'div' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
 	: id === 'dot' ? (({ expr, field }) => ({ id, expr: rf(expr), field }))
 	: id === 'eq_' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
@@ -623,13 +626,14 @@ let rewrite = (rf, ast) => {
 	: id === 'mul' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
 	: id === 'ne_' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
 	: id === 'neg' ? (({ expr }) => ({ id, expr: rf(expr) }))
-	: id === 'new' ? (({}) => ast)
+	: id === 'new' ? (({ clazz }) => ast)
 	: id === 'nil' ? (({}) => ast)
 	: id === 'not' ? (({ expr }) => ({ id, expr: rf(expr) }))
 	: id === 'num' ? (({ i }) => ast)
 	: id === 'or_' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
 	: id === 'pair' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
 	: id === 'pos' ? (({ expr }) => ({ id, expr: rf(expr) }))
+	: id === 'ref' ? (({ expr }) => ({ id, expr: rf(expr) }))
 	: id === 'segment' ? (({ opcodes }) => ast)
 	: id === 'str' ? (({ v }) => ast)
 	: id === 'struct' ? (({ kvs }) => ({ id, kvs: kvs.map(({ key, value }) => ({ key, value: rf(value) })) }))
@@ -722,6 +726,7 @@ format_ = (priority, ast) => {
 	: id === 'bool' ? (({ v }) => v)
 	: id === 'coal' ? (({ lhs, rhs }) => `${fm(lhs)} ?? ${fmt(rhs)}`)
 	: id === 'cons' ? (({ lhs, rhs }) => `[${fmt(lhs)}, ...${fmt(rhs)}]`)
+	: id === 'deref' ? (({ expr }) => `* ${fmt(expr)}`)
 	: id === 'div' ? (({ lhs, rhs }) => `${fmt(lhs)} / ${fm(rhs)}`)
 	: id === 'dot' ? (({ expr, field }) => `${fmt(expr)}.${field}`)
 	: id === 'eq_' ? (({ lhs, rhs }) => `${fmt(lhs)} === ${fmt(rhs)}`)
@@ -746,6 +751,7 @@ format_ = (priority, ast) => {
 	: id === 'or_' ? (({ lhs, rhs }) => `${fm(lhs)} || ${fmt(rhs)}`)
 	: id === 'pair' ? (({ lhs, rhs }) => `${fm(lhs)}, ${fmt(rhs)}`)
 	: id === 'pos' ? (({ expr }) => `+ ${fmt(expr)}`)
+	: id === 'ref' ? (({ expr }) => `& ${fmt(expr)}`)
 	: id === 'segment' ? (({ opcodes }) => `<<${stringify(opcodes)}>>`)
 	: id === 'str' ? (({ v }) => `'${v}'`)
 	: id === 'struct' ? (({ kvs }) => {
@@ -910,6 +916,7 @@ let typesModule = () => {
 	let tyNumber = ({ t: 'num' });
 	let tyPairOf = (lhs, rhs) => ({ t: 'pair', lhs, rhs });
 	let tyPromiseOf = out => ({ t: 'promise', out });
+	let tyRefOf = expr => ({ t: 'ref', expr });
 	let tyString = tyArrayOf({ t: 'char' });
 	let tyStructOf = kvs => ({ t: 'struct', kvs });
 	let tyStructOfCompleted = kvs => ({ t: 'struct', completed: true, kvs });
@@ -1077,6 +1084,10 @@ let typesModule = () => {
 			let tl = tyArrayOf(infer(lhs));
 			return doBind(ast, infer(rhs), tl) && tl;
 		})
+		: id === 'deref' ?(({ expr }) => {
+			let t = newRef();
+			return doBind(ast, infer(expr), tyRefOf(t)) && t;
+		})
 		: id === 'div' ?
 			inferMathOp
 		: id === 'dot' ? (({ expr, field }) =>
@@ -1174,6 +1185,9 @@ let typesModule = () => {
 		)
 		: id === 'pos' ? (({ expr }) =>
 			doBind(ast, infer(expr), tyNumber) && tyNumber
+		)
+		: id === 'ref' ? (({ expr }) =>
+			tyRefOf(infer(expr))
 		)
 		: id === 'segment' ? (({ opcodes }) =>
 			newRef()
@@ -1313,6 +1327,8 @@ rewriteAsync = ast => {
 		reduceBinOp
 	: id === 'cons' ?
 		reduceBinOp
+	: id === 'deref' ?
+		reduceOp
 	: id === 'div' ?
 		reduceBinOp
 	: id === 'dot' ? (({ expr, field }) => {
@@ -1367,6 +1383,8 @@ rewriteAsync = ast => {
 	: id === 'or_' ?
 		reduceBinOp
 	: id === 'pos' ?
+		reduceOp
+	: id === 'ref' ?
 		reduceOp
 	: id === 'segment' ?
 		error('BAD')
@@ -1648,6 +1666,7 @@ evaluate = vvs => {
 			return v ? v : eval(rhs);
 		}())
 		: id === 'cons' ? (({ lhs, rhs }) => assumeAny(cons(eval(lhs), eval(rhs))))
+		: id === 'deref' ? (({ expr }) => error('BAD'))
 		: id === 'div' ? (({ lhs, rhs }) => assumeAny(eval(lhs) / eval(rhs)))
 		: id === 'dot' ? (({ expr, field }) => function() {
 			let object = eval(expr);
@@ -1682,6 +1701,7 @@ evaluate = vvs => {
 		: id === 'or_' ? (({ lhs, rhs }) => assumeAny(eval(lhs) || eval(rhs)))
 		: id === 'pair' ? (({ lhs, rhs }) => assumeAny([eval(lhs), eval(rhs)]))
 		: id === 'pos' ? (({ expr }) => assumeAny(+eval(expr)))
+		: id === 'ref' ? (({ expr }) => error('BAD'))
 		: id === 'segment' ? (({ opcodes }) => error('BAD'))
 		: id === 'str' ? (({ v }) => v)
 		: id === 'struct' ? (({ kvs }) => assumeAny(foldl({}, kvs, (struct, kv) => {
@@ -1840,6 +1860,8 @@ generate = ast => {
 		generateBinOp
 	: id === 'cons' ?
 		generateBinOp
+	: id === 'deref' ?
+		generateOp
 	: id === 'div' ?
 		generateBinOp
 	: id === 'dot' ? (({ expr, field }) => [
@@ -1919,6 +1941,10 @@ generate = ast => {
 		generateBinOp
 	: id === 'pos' ?
 		generateOp
+	: id === 'ref' ? (({ expr }) =>
+		expr.clazz === 'frame' ? [{ id: 'frame-get-ref', fs: expr.fs, ps: expr.ps },]
+		: error('BAD')
+	)
 	: id === 'segment' ? (({ opcodes }) =>
 		opcodes
 	)
@@ -2079,6 +2105,8 @@ let interpret = opcodes => {
 				let a = rpop();
 				rpush(cons(a, b));
 			}()
+			: id === 'deref' ?
+				rpush(frames[opcode.fs][opcode.ps])
 			: id === 'discard' ?
 				rpop()
 			: id === 'div' ? function() {
@@ -2102,6 +2130,8 @@ let interpret = opcodes => {
 				fpop()
 			: id === 'frame-get' ?
 				rpush(frames[frames.length - 1 - opcode.fs][opcode.ps])
+			: id === 'frame-get-ref' ?
+				rpush({ fs: frames.length - 1 - opcode.fs, ps: opcode.ps })
 			: id === 'frame-push' ?
 				fpush(rpop())
 			: id === 'jump' ? function() {
