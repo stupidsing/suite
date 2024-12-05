@@ -2316,45 +2316,41 @@ let processGenerate = ast6 => {
 		{ id: 'service', n, service: service },
 	]));
 
-	let addObject = (ast, c, fns) => _let(
-		_var(c),
-		_struct(fns.map(({ f, n }) => ({ key: f, value: proxy(n, `${c}.${f}`) }))),
-		ast);
+	let addObject = (ast, c, v) => _let(_var(c), v, ast);
 
-	ast6 = addObject(ast6, 'JSON', [
+	let addObjectOfFunctions = (ast, c, fns) => addObject(
+		ast,
+		c,
+		_struct(fns.map(({ f, n }) => ({ key: f, value: proxy(n, `${c}.${f}`) }))));
+
+	ast6 = addObjectOfFunctions(ast6, 'JSON', [
 		{ f: 'stringify', n: 3 },
 	]);
 
-	ast6 = addObject(ast6, 'Object', [
+	ast6 = addObjectOfFunctions(ast6, 'Object', [
 		{ f: 'assign', n: 1 },
 		{ f: 'entries', n: 1 },
 		{ f: 'fromEntries', n: 1 },
 		{ f: 'keys', n: 1 },
 	]);
 
-	ast6 = addObject(ast6, 'Promise', [
+	ast6 = addObjectOfFunctions(ast6, 'Promise', [
+		{ f: 'reject', n: 1 },
 		{ f: 'resolve', n: 1 },
 	]);
 
-	ast6 = addObject(ast6, 'console', [
+	ast6 = addObjectOfFunctions(ast6, 'console', [
 		{ f: 'error', n: 1 },
 		{ f: 'log', n: 1 },
 	]);
 
-	ast6 = _let(
-		_var('eval'),
-		proxy(1, 'eval'),
-		ast6);
+	ast6 = addObject(ast6, 'eval', proxy(1, 'eval'));
 
-	ast6 = _let(
-		_var('process'),
-		_struct([{ key: 'env', value: _struct(Object.entries(process.env).map(([key, v]) => ({ key, value: _str(v) }))) },]),
-		ast6);
+	ast6 = addObject(ast6, 'process', _struct([
+		{ key: 'env', value: _struct(Object.entries(process.env).map(([key, v]) => ({ key, value: _str(v) }))) },
+	]));
 
-	ast6 = _let(
-		_var('require'),
-		proxy(1, 'require'),
-		ast6);
+	ast6 = addObject(ast6, 'require', proxy(1, 'require'));
 
 	let ast7 = rewriteVars(0, 0, [], ast6);
 	return expand([...generate(ast7), { id: 'exit' },]);
