@@ -1852,8 +1852,9 @@ generate = ast => {
 			...generate(expr),
 		]
 		: bind.id === 'frame' ? [
+			...generate(_ref(bind)),
 			...generate(value),
-			{ id: 'frame-assign', fs: bind.fs, ps: bind.ps },
+			{ id: 'assign-ref' },
 			...generate(expr),
 		]
 		: bind.id === 'index' ? [
@@ -2150,10 +2151,6 @@ let interpret = opcodes => {
 			}()
 			: id === 'frame-alloc' ?
 				fpush(undefined)
-			: id === 'frame-assign' ? function() {
-				let { fs, ps } = opcode;
-				frames[frames.length - 1 - fs][ps] = rpop();
-			}()
 			: id === 'frame-dealloc' ?
 				fpop()
 			: id === 'frame-get' ?
