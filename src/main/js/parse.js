@@ -1928,7 +1928,11 @@ generate = ast => {
 		false ? undefined
 		: clazz === 'Error' ? [
 			{ id: 'object' },
-			{ id: 'label-segment', segment: [{ id: 'frame-get-ref', fs: 0, ps: 1 }, { id: 'deref' }, { id: 'return' },] },
+			{ id: 'label-segment', segment: [
+				{ id: 'frame-get-ref', fs: 0, ps: 1 },
+				{ id: 'deref' },
+				{ id: 'return' },
+			] },
 			{ id: 'lambda-capture' },
 		]
 		: clazz === 'Map' ? error('BAD')
