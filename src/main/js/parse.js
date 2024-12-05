@@ -2053,6 +2053,7 @@ generate = ast => {
 			{ id: 'jump-false', label: exitLabel },
 			...generate(loop),
 			{ id: 'discard' },
+			{ id: 'jump', label: loopLabel },
 			{ id: ':', label: exitLabel },
 			...generate(expr),
 		];
