@@ -1879,7 +1879,8 @@ generate = ast => {
 	: id === 'eq_' ?
 		generateBinOp
 	: id === 'frame' ? (({ fs, ps }) => [
-		{ id: 'frame-get', fs, ps },
+		{ id: 'frame-get-ref', fs, ps },
+		{ id: 'deref' },
 	])
 	: id === 'if' ? (({ if_, then, else_ }) => function() {
 		let elseLabel = newDummy();
@@ -1927,7 +1928,7 @@ generate = ast => {
 		false ? undefined
 		: clazz === 'Error' ? [
 			{ id: 'object' },
-			{ id: 'label-segment', segment: [{ id: 'frame-get', fs: 0, ps: 1 }, { id: 'return' },] },
+			{ id: 'label-segment', segment: [{ id: 'frame-get-ref', fs: 0, ps: 1 }, { id: 'deref' }, { id: 'return' },] },
 			{ id: 'lambda-capture' },
 		]
 		: clazz === 'Map' ? error('BAD')
@@ -2139,8 +2140,6 @@ let interpret = opcodes => {
 				fpush(undefined)
 			: id === 'frame-dealloc' ?
 				fpop()
-			: id === 'frame-get' ?
-				rpush(frames[frames.length - 1 - opcode.fs][opcode.ps])
 			: id === 'frame-get-ref' ?
 				rpush({ fs: frames.length - 1 - opcode.fs, ps: opcode.ps })
 			: id === 'frame-push' ?
@@ -2309,7 +2308,8 @@ let processRewrite = program => {
 
 let processGenerate = ast6 => {
 	let proxy1 = service => _lambdaCapture(_undefined, _var(newDummy()), _var(newDummy()), _segment([
-		{ id: 'frame-get', fs: 0, ps: 1 },
+		{ id: 'frame-get-ref', fs: 0, ps: 1 },
+		{ id: 'deref' },
 		{ id: 'service', service: service },
 	]));
 
