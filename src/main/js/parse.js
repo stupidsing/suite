@@ -1258,11 +1258,11 @@ let typesModule = () => {
 				reject: tyLambdaOf(tyError, tyPromiseOf(newRef())),
 				resolve: function() { let t = newRef(); return tyLambdaOf(t, tyPromiseOf(t)); }(),
 			}),
-			eval: tyLambdaOf(tyString, newRef()),
 			console: tyStructOfCompleted({
 				error: tyLambdaOf(newRef(), tyVoid),
 				log: tyLambdaOf(newRef(), tyVoid),
 			}),
+			eval: tyLambdaOf(tyString, newRef()),
 			process: tyStructOfCompleted({
 				env: tyStructOf({}),
 			}),
@@ -2207,13 +2207,6 @@ let interpret = opcodes => {
 			}()
 			: id === 'pos' ?
 				rpush(+rpop())
-			: id === 'service' ? (
-				false ? undefined
-				: opcode.service === 'JSON.stringify' ? function() { let v = rpop(); rpush(JSON.stringify(v[0], v[1][0], v[1][1])); }()
-				: opcode.service === 'console.error' ? function() { console.error(rpop()); rpush(undefined); }()
-				: opcode.service === 'console.log' ? function() { console.log(rpop()); rpush(undefined); }()
-				: error('BAD')
-			)
 			: id === 'return' ? function() {
 				let rc = rpop();
 				fpop();
@@ -2227,6 +2220,16 @@ let interpret = opcodes => {
 				let a = rpop();
 				rpush(b);
 				rpush(a);
+			}()
+			: id === 'service' && opcode.n === 1 ?
+				rpush(eval(opcode.service)(rpop()))
+			: id === 'service' && opcode.n === 2 ? function() {
+				let [a, b] = rpop();
+				rpush(eval(opcode.service)(a, b));
+			}()
+			: id === 'service' && opcode.n === 3 ? function() {
+				let [a, [b, c]] = rpop();
+				rpush(eval(opcode.service)(a, b, c));
 			}()
 			: id === 'str' ?
 				rpush(opcode.v)
@@ -2307,38 +2310,36 @@ let processRewrite = program => {
 };
 
 let processGenerate = ast6 => {
-	let proxy1 = service => _lambdaCapture(_undefined, _var(newDummy()), _var(newDummy()), _segment([
+	let proxy = (n, service) => _lambdaCapture(_undefined, _var(newDummy()), _var(newDummy()), _segment([
 		{ id: 'frame-get-ref', fs: 0, ps: 1 },
 		{ id: 'deref' },
-		{ id: 'service', service: service },
+		{ id: 'service', n, service: service },
 	]));
 
-	ast6 = _let(
-		_var('JSON'),
-		_struct([
-			{ key: 'stringify', value: proxy1('JSON.stringify') },
-		]),
-		ast6);
+	let add = (c, fns, ast) => _let(
+		_var(c),
+		_struct(fns.map(({ f, n }) => ({ key: f, value: proxy(n, `${c}.${f}`) }))),
+		ast);
 
-	ast6 = _let(
-		_var('Object'),
-		_struct([
-		]),
-		ast6);
+	ast6 = add('JSON', [
+		{ f: 'stringify', n: 3 },
+	], ast6);
 
-	ast6 = _let(
-		_var('Promise'),
-		_struct([
-		]),
-		ast6);
+	ast6 = add('Object', [
+		{ f: 'assign', n: 1 },
+		{ f: 'entries', n: 1 },
+		{ f: 'fromEntries', n: 1 },
+		{ f: 'keys', n: 1 },
+	], ast6);
 
-	ast6 = _let(
-		_var('console'),
-		_struct([
-			{ key: 'error', value: proxy1('console.error') },
-			{ key: 'log', value: proxy1('console.log') },
-		]),
-		ast6);
+	ast6 = add('Promise', [
+		{ f: 'resolve', n: 1 },
+	], ast6);
+
+	ast6 = add('console', [
+		{ f: 'error', n: 1 },
+		{ f: 'log', n: 1 },
+	], ast6);
 
 	ast6 = _let(
 		_var('eval'),
@@ -2346,11 +2347,9 @@ let processGenerate = ast6 => {
 		]),
 		ast6);
 
-	ast6 = _let(
-		_var('process'),
-		_struct([
-		]),
-		ast6);
+	ast6 = add('process', [
+		// env
+	], ast6);
 
 	ast6 = _let(
 		_var('require'),
