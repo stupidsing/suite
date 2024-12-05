@@ -1645,17 +1645,17 @@ evaluate = vvs => {
 		: id === 'app' ? (({ lhs, rhs }) => eval(lhs)(eval(rhs)))
 		: id === 'assign' ? (({ bind, value, expr }) => function() {
 			return false ? undefined
+				: bind.id === 'deref' ? function() {
+					let { vv } = eval(bind);
+					vv[1] = eval(value);
+					return eval(expr);
+				}()
 				: bind.id === 'dot' ? function() {
 					eval(bind.expr)[bind.field] = eval(value);
 					return eval(expr);
 				}()
 				: bind.id === 'index' ? function() {
 					eval(bind.lhs)[eval(bind.rhs)] = eval(value);
-					return eval(expr);
-				}()
-				: bind.id === 'ref' ? function() {
-					let { vv } = eval(bind);
-					vv[1] = eval(value);
 					return eval(expr);
 				}()
 				: bind.id === 'var' ? function() {
@@ -1761,18 +1761,6 @@ rewriteVars = (fs, ps, vts, ast) => {
 		)
 		: id === 'assign' ? (({ bind, value, expr }) => {
 			return false ? undefined
-			: bind.id === 'dot' ? _assign(
-				rewriteVars_(bind),
-				rewriteVars_(value),
-				rewriteVars_(expr))
-			: bind.id === 'index' ? _assign(
-				rewriteVars_(bind),
-				rewriteVars_(value),
-				rewriteVars_(expr))
-			: bind.id === 'ref' ? _assign(
-				rewriteVars_(bind),
-				rewriteVars_(value),
-				rewriteVars_(expr))
 			: bind.id === 'var' ? function() {
 				let [fs_, ps] = findk(vts, bind.vn);
 				return _assign(
@@ -1780,7 +1768,11 @@ rewriteVars = (fs, ps, vts, ast) => {
 					rewriteVars_(value),
 					rewriteVars_(expr));
 			}()
-			: error('BAD');
+			:
+				_assign(
+					rewriteVars_(bind),
+					rewriteVars_(value),
+					rewriteVars_(expr));
 		})
 		: id === 'lambda-capture' ? (({ capture, bindCapture, bind, expr }) =>
 			_lambdaCapture(
@@ -1851,12 +1843,6 @@ generate = ast => {
 			{ id: 'discard' },
 			...generate(expr),
 		]
-		: bind.id === 'frame' ? [
-			...generate(_ref(bind)),
-			...generate(value),
-			{ id: 'assign-ref' },
-			...generate(expr),
-		]
 		: bind.id === 'index' ? [
 			...generate(bind.lhs),
 			...generate(bind.rhs),
@@ -1864,13 +1850,13 @@ generate = ast => {
 			{ id: 'array-set' },
 			...generate(expr),
 		]
-		: bind.id === 'ref' ? [
-			...generate(bind),
+		:
+		[
+			...generate(_ref(bind)),
 			...generate(value),
 			{ id: 'assign-ref' },
 			...generate(expr),
 		]
-		: error('BAD')
 	)
 	: id === 'await' ? (({}) =>
 		error('BAD')
