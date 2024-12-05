@@ -1872,10 +1872,23 @@ generate = ast => {
 		generateOp
 	: id === 'div' ?
 		generateBinOp
-	: id === 'dot' ? (({ expr, field }) => [
-		...generate(expr),
-		{ id: 'object-get', key: field },
-	])
+	: id === 'dot' ? (({ expr, field }) => function() {
+		return false ? undefined
+		: field === 'toString' ? [
+			...generate(expr),
+			{ id: 'label-segment', segment: [
+				{ id: 'frame-get-ref', fs: 0, ps: 0 },
+				{ id: 'deref' },
+				{ id: 'service', service: field },
+				{ id: 'return' },
+			] },
+			{ id: 'lambda-capture' },
+		]
+		: [
+			...generate(expr),
+			{ id: 'object-get', key: field },
+		];
+	}())
 	: id === 'eq_' ?
 		generateBinOp
 	: id === 'frame' ? (({ fs, ps }) => [
@@ -2066,6 +2079,12 @@ let interpret = opcodes => {
 	let rpop = () => assumeAny(rstack.pop());
 	let ip = 0;
 
+	let interpretBinOp = f => {
+		let b = rpop();
+		let a = rpop();
+		rpush(f(a, b));
+	};
+
 	while (ip < opcodes.length) (function() {
 		let opcode = opcodes[ip];
 		let { id } = opcode;
@@ -2083,7 +2102,7 @@ let interpret = opcodes => {
 			: id === ':' ?
 				undefined
 			: id === 'add' ?
-				rpush(rpop() + rpop())
+				interpretBinOp((a, b) => a + b)
 			: id === 'and' ?
 				error('BAD')
 			: id === 'app' ? function() {
@@ -2113,29 +2132,20 @@ let interpret = opcodes => {
 			}()
 			: id === 'bool' ?
 				rpush(opcode.v)
-			: id === 'coal' ? function() {
-				let b = rpop();
-				let a = rpop();
-				rpush(a ?? b);
-			}()
-			: id === 'cons' ? function() {
-				let b = rpop();
-				let a = rpop();
-				rpush(cons(a, b));
-			}()
+			: id === 'coal' ?
+				interpretBinOp((a, b) => a ?? b)
+			: id === 'cons' ?
+				interpretBinOp(cons)
 			: id === 'deref' ? function() {
 				let ref = rpop();
 				rpush(frames[ref.fs][ref.ps]);
 			}()
 			: id === 'discard' ?
 				rpop()
-			: id === 'div' ? function() {
-				let b = rpop();
-				let a = rpop();
-				rpush(a / b);
-			}()
+			: id === 'div' ?
+				interpretBinOp((a, b) => a / b)
 			: id === 'eq_' ?
-				rpush(rpop() === rpop())
+				interpretBinOp((a, b) => a === b)
 			: id === 'exit' ? function() {
 				ip = 1 / 0;
 				return undefined;
@@ -2163,27 +2173,16 @@ let interpret = opcodes => {
 				let capture = rpop();
 				rpush({ capture, label });
 			}()
-			: id === 'le_' ? function() {
-				let b = rpop();
-				let a = rpop();
-				rpush(a <= b);
-			}()
-			: id === 'lt_' ? function() {
-				let b = rpop();
-				let a = rpop();
-				rpush(a < b);
-			}()
-			: id === 'mod' ? function() {
-				let b = rpop();
-				let a = rpop();
-				rpush(a % b);
-			}()
+			: id === 'le_' ?
+				interpretBinOp((a, b) => a <= b)
+			: id === 'lt_' ?
+				interpretBinOp((a, b) => a < b)
+			: id === 'mod' ?
+				interpretBinOp((a, b) => a % b)
 			: id === 'mul' ?
-				rpush(rpop() * rpop())
+				interpretBinOp((a, b) => a * b)
 			: id === 'ne_' ?
-				rpush(rpop() !== rpop())
-			: id === 'ne_' ?
-				rpush(rpop() !== rpop())
+				interpretBinOp((a, b) => a !== b)
 			: id === 'neg' ?
 				rpush(-rpop())
 			: id === 'nil' ?
@@ -2204,11 +2203,8 @@ let interpret = opcodes => {
 			}()
 			: id === 'or_' ?
 				error('BAD')
-			: id === 'pair' ? function() {
-				let b = rpop();
-				let a = rpop();
-				rpush([a, b]);
-			}()
+			: id === 'pair' ?
+				interpretBinOp((a, b) => [a, b])
 			: id === 'pos' ?
 				rpush(+rpop())
 			: id === 'return' ? function() {
@@ -2225,6 +2221,8 @@ let interpret = opcodes => {
 				rpush(b);
 				rpush(a);
 			}()
+			: id === 'service' && opcode.n === undefined ?
+				rpush(rpop()[assumeAny(opcode.service)]())
 			: id === 'service' && opcode.n === 1 ?
 				rpush(eval(opcode.service)(rpop()))
 			: id === 'service' && opcode.n === 2 ? function() {
@@ -2237,11 +2235,8 @@ let interpret = opcodes => {
 			}()
 			: id === 'str' ?
 				rpush(opcode.v)
-			: id === 'sub' ? function() {
-				let b = rpop();
-				let a = rpop();
-				rpush(a - b);
-			}()
+			: id === 'sub' ?
+				interpretBinOp((a, b) => a - b)
 			: id === 'throw' ? function() {
 				let thrown = rpop();
 				return catchHandler !== undefined ? function() {
