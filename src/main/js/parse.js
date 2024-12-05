@@ -1874,12 +1874,25 @@ generate = ast => {
 		generateBinOp
 	: id === 'dot' ? (({ expr, field }) => function() {
 		return false ? undefined
+		: field === 'concat' ? [
+			...generate(expr),
+			{ id: 'label-segment', segment: [
+				{ id: 'frame-get-ref', fs: 0, ps: 0 },
+				{ id: 'deref' },
+				{ id: 'frame-get-ref', fs: 0, ps: 1 },
+				{ id: 'deref' },
+				{ id: 'pair' },
+				{ id: 'service', m: 2, service: field },
+				{ id: 'return' },
+			] },
+			{ id: 'lambda-capture' },
+		]
 		: field === 'toString' ? [
 			...generate(expr),
 			{ id: 'label-segment', segment: [
 				{ id: 'frame-get-ref', fs: 0, ps: 0 },
 				{ id: 'deref' },
-				{ id: 'service', service: field },
+				{ id: 'service', m: 1, service: field },
 				{ id: 'return' },
 			] },
 			{ id: 'lambda-capture' },
@@ -2221,8 +2234,12 @@ let interpret = opcodes => {
 				rpush(b);
 				rpush(a);
 			}()
-			: id === 'service' && opcode.n === undefined ?
+			: id === 'service' && opcode.m === 1 ?
 				rpush(rpop()[assumeAny(opcode.service)]())
+			: id === 'service' && opcode.m === 2 ? function() {
+				let [a, b] = rpop();
+				return rpush(a[assumeAny(opcode.service)](b));
+			}()
 			: id === 'service' && opcode.n === 1 ?
 				rpush(eval(opcode.service)(rpop()))
 			: id === 'service' && opcode.n === 2 ? function() {
