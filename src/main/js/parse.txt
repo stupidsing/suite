@@ -1,0 +1,48 @@
+-
+# FAIL
+echo "
+[1, 2, 3, 4,].slice(1, 3)
+" | EVALUATE=1 node src/main/js/parse.js
+
+-
+echo "
+[1, 2,].includes(2) && [1.toString(),].concat([2.toString(),]).length === 2 && [1, 2, 3, 4,].slice(1, 3)
+" | EVALUATE=1 INTERPRET=1 node src/main/js/parse.js
+
+-
+echo '
+let fib;
+fib = v => v <= 1 ? 1 : v * fib(v - 1);
+fib(10)
+' | EVALUATE=1 INTERPRET=1 node src/main/js/parse.js
+
+-
+echo '
+let fib = [undefined,];
+fib[0] = v => v <= 1 ? 1 : v * fib[0](v - 1);
+fib[0](10)
+' | EVALUATE=1 INTERPRET=1 node src/main/js/parse.js
+
+-
+echo '
+console.log(JSON.stringify(process.env, undefined, undefined))
+' | EVALUATE=1 INTERPRET=1 node src/main/js/parse.js
+
+-
+echo '
+let error = message => { throw new Error(message); };
+error(3)
+' | EVALUATE=1 node src/main/js/parse.js
+
+-
+echo '
+let error = message => { throw new Error(message); };
+error(3)
+' | INTERPRET=1 node src/main/js/parse.js
+
+-
+echo '
+let a = 3;
+let l = v => v + a;
+l(5)
+' | EVALUATE=1 INTERPRET=1 node src/main/js/parse.js
