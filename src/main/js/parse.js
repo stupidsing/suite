@@ -1643,27 +1643,26 @@ evaluate = vvs => {
 		: id === 'alloc' ? (({ vn, expr }) => evaluate(cons([vn, undefined], vvs))(expr))
 		: id === 'and' ? (({ lhs, rhs }) => assumeAny(eval(lhs) && eval(rhs)))
 		: id === 'app' ? (({ lhs, rhs }) => eval(lhs)(eval(rhs)))
-		: id === 'assign' ? (({ bind, value, expr }) => function() {
-			return false ? undefined
-				: bind.id === 'deref' ? function() {
-					let { vv } = eval(bind);
-					vv[1] = eval(value);
-					return eval(expr);
-				}()
-				: bind.id === 'dot' ? function() {
-					eval(bind.expr)[bind.field] = eval(value);
-					return eval(expr);
-				}()
-				: bind.id === 'index' ? function() {
-					eval(bind.lhs)[eval(bind.rhs)] = eval(value);
-					return eval(expr);
-				}()
-				: bind.id === 'var' ? function() {
-					assign(bind.vn, eval(value));
-					return eval(expr);
-				}()
-				: error('BAD');
-		}()) 
+		: id === 'assign' ? (({ bind, value, expr }) => false ? undefined
+			: bind.id === 'deref' ? function() {
+				let { vv } = eval(bind);
+				vv[1] = eval(value);
+				return eval(expr);
+			}()
+			: bind.id === 'dot' ? function() {
+				eval(bind.expr)[bind.field] = eval(value);
+				return eval(expr);
+			}()
+			: bind.id === 'index' ? function() {
+				eval(bind.lhs)[eval(bind.rhs)] = eval(value);
+				return eval(expr);
+			}()
+			: bind.id === 'var' ? function() {
+				assign(bind.vn, eval(value));
+				return eval(expr);
+			}()
+			: error('BAD')
+		)
 		: id === 'await' ? (({ expr }) => error('BAD'))
 		: id === 'bool' ? (({ v }) => v)
 		: id === 'coal' ? (({ lhs, rhs }) => function() {
