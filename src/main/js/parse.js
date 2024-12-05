@@ -1874,7 +1874,7 @@ generate = ast => {
 		generateBinOp
 	: id === 'dot' ? (({ expr, field }) => function() {
 		return false ? undefined
-		: field === 'concat' ? [
+		: ['charCodeAt', 'concat', 'endsWith', 'includes', 'indexOf', 'join', 'push', 'startsWith',].includes(field) ? [
 			...generate(expr),
 			{ id: 'label-segment', segment: [
 				{ id: 'frame-get-ref', fs: 0, ps: 0 },
@@ -1887,7 +1887,7 @@ generate = ast => {
 			] },
 			{ id: 'lambda-capture' },
 		]
-		: field === 'toString' ? [
+		: ['pop', 'reverse', 'toString', 'trim',].includes(field) ? [
 			...generate(expr),
 			{ id: 'label-segment', segment: [
 				{ id: 'frame-get-ref', fs: 0, ps: 0 },
