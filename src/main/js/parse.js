@@ -1614,7 +1614,7 @@ rewriteRenameVar = (scope, vns, ast) => {
 };
 
 let evaluateVvs = Object.entries({
-	JSON: eval('JSON'),
+	JSON: { stringify: v => JSON.stringify(v[0], v[0][1], v[1][1]) },
 	Object: eval('Object'),
 	Promise: eval('Promise'),
 	console: eval('console'),
@@ -2316,45 +2316,44 @@ let processGenerate = ast6 => {
 		{ id: 'service', n, service: service },
 	]));
 
-	let add = (c, fns, ast) => _let(
+	let addObject = (ast, c, fns) => _let(
 		_var(c),
 		_struct(fns.map(({ f, n }) => ({ key: f, value: proxy(n, `${c}.${f}`) }))),
 		ast);
 
-	ast6 = add('JSON', [
+	ast6 = addObject(ast6, 'JSON', [
 		{ f: 'stringify', n: 3 },
-	], ast6);
+	]);
 
-	ast6 = add('Object', [
+	ast6 = addObject(ast6, 'Object', [
 		{ f: 'assign', n: 1 },
 		{ f: 'entries', n: 1 },
 		{ f: 'fromEntries', n: 1 },
 		{ f: 'keys', n: 1 },
-	], ast6);
+	]);
 
-	ast6 = add('Promise', [
+	ast6 = addObject(ast6, 'Promise', [
 		{ f: 'resolve', n: 1 },
-	], ast6);
+	]);
 
-	ast6 = add('console', [
+	ast6 = addObject(ast6, 'console', [
 		{ f: 'error', n: 1 },
 		{ f: 'log', n: 1 },
-	], ast6);
+	]);
 
 	ast6 = _let(
 		_var('eval'),
-		_struct([
-		]),
+		proxy(1, 'eval'),
 		ast6);
 
-	ast6 = add('process', [
-		// env
-	], ast6);
+	ast6 = _let(
+		_var('process'),
+		_struct([{ key: 'env', value: _struct(Object.entries(process.env).map(([key, v]) => ({ key, value: _str(v) }))) },]),
+		ast6);
 
 	ast6 = _let(
 		_var('require'),
-		_struct([
-		]),
+		proxy(1, 'require'),
 		ast6);
 
 	let ast7 = rewriteVars(0, 0, [], ast6);
