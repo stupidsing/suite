@@ -2318,7 +2318,7 @@ let interpret = opcodes => {
 let parser = parserModule();
 let types = typesModule();
 
-let promiseAst = program => {
+let parseAst = program => {
 	let pos0;
 	let posx;
 	while (function() {
@@ -2341,7 +2341,7 @@ let promiseAst = program => {
 let processRewrite = program => {
 	let roots = ['JSON', 'Object', 'Promise', 'console', 'eval', 'process', 'require',];
 
-	let { ast: ast4, type } = promiseAst(program);
+	let { ast: ast4, type } = parseAst(program);
 	let ast5 = rewriteRenameVar(newDummy(), roots.map(v => [v, v]), ast4);
 	let ast6 = rewriteCapture(0, roots.map(v => [v, 0]), ast5);
 
@@ -2395,7 +2395,7 @@ let processGenerate = ast6 => {
 	return expand([...generate(ast7), { id: 'exit' },]);
 };
 
-let actual = stringify(promiseAst(`
+let actual = stringify(parseAst(`
 	let parse = ast => ast;
 	console.log(parse(require('fs').readFileSync(0, 'utf8')))
 `).ast);
