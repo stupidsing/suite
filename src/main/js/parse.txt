@@ -4,7 +4,7 @@ echo '
 let _app = (lhs, rhs) => ({ lhs, rhs });
 let _dot = (expr, field) => ({ expr });
 let _lambda = (bind, expr) => ({ bind, expr });
-let _undefined = { };
+let _undefined = {};
 
 let promisify = ast => _app(_undefined, ast);
 
@@ -30,7 +30,7 @@ rewriteAsync = ast => {
 	};
 
 	return true ?
-		reduceBinOp(ast)
+		reduceBinOp({})
 	: true ?
 		promisify({ bind, value: value.rhs, expr: expr.rhs })
 	:
