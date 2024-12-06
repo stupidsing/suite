@@ -2424,7 +2424,7 @@ let processRewrite = program => {
 					let e = es[i];
 					i = i + 1;
 					r = acc(r, e);
-					return undefesed;
+					return undefined;
 				}());
 				return r;
 			}
