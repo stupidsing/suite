@@ -1572,7 +1572,7 @@ rewriteIntrinsics = ast => {
 	let { id, lhs, rhs } = ast;
 
 	return false ? undefined
-	: id === 'app' && lhs.id === 'dot' && ['filter',].includes(lhs.field) ?
+	: id === 'app' && lhs.id === 'dot' && ['filter', 'flatMap', 'map', 'reduce',].includes(lhs.field) ?
 		_app(_var(`$${lhs.field}`), _pair(lhs.expr, rhs))
 	:
 		rewrite(rewriteIntrinsics, ast);
@@ -2365,18 +2365,58 @@ let processRewrite = program => {
 
 	let { ast: ast4, type } = parseAst(program);
 
-	let ast5 = _let(_var('$filter'), rewriteBind(parser.parse(`
-		(in, pred) => {
-			let i = 0;
-			let out = [];
-			while (i < in.length) (function() {
-				let e = in[i];
-				i = i + 1;
-				pred(e) && out.push(e);
-			}());
-			return out;
-		}
-	`)), rewriteIntrinsics(ast4));
+	let ast5 = [ast4,]
+		.map(ast => _let(_var('$filter'), rewriteBind(parser.parse(`
+			(in, pred) => {
+				let i = 0;
+				let out = [];
+				while (i < in.length) (function() {
+					let e = in[i];
+					i = i + 1;
+					pred(e) && out.push(e);
+				}());
+				return out;
+			}
+		`)), rewriteIntrinsics(ast)))
+		.map(ast => _let(_var('$flatMap'), rewriteBind(parser.parse(`
+			(in, f) => {
+				let i = 0;
+				let out = [];
+				while (i < in.length) (function() {
+					let list = f(in[i]);
+					i = i + 1;
+					let j = 0;
+					while (j < list.length) out.push(j);
+				}());
+				return out;
+			}
+		`)), rewriteIntrinsics(ast)))
+		.map(ast => _let(_var('$map'), rewriteBind(parser.parse(`
+			(in, f) => {
+				let i = 0;
+				let out = [];
+				while (i < in.length) function() {
+					let e = in[i];
+					i = i + 1;
+					out.push(f(e));
+				}();
+				return out;
+			}
+		`)), rewriteIntrinsics(ast)))
+		.map(ast => _let(_var('$reduce'), rewriteBind(parser.parse(`
+			(in, accum) => {
+				let i = 0;
+				let r = in[0];
+				while (i < in.length) (function() {
+					let e = in[i];
+					i = i + 1;
+					r = accum(r, e);
+					return undefined;
+				}());
+				return r;
+			}
+		`)), rewriteIntrinsics(ast)))
+		[0];
 
 	let ast6 = rewriteRenameVar(newDummy(), roots.map(v => [v, v]), ast5);
 	let ast7 = rewriteCapture(0, roots.map(v => [v, 0]), ast6);

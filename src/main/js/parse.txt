@@ -1,13 +1,56 @@
 -
 # FAIL
+echo '
+let _app = (lhs, rhs) => ({ lhs, rhs });
+let _dot = (expr, field) => ({ expr });
+let _lambda = (bind, expr) => ({ bind, expr });
+let _undefined = { };
+
+let promisify = ast => _app(_undefined, ast);
+
+let rewriteAsync;
+
+rewriteAsync = ast => {
+	let { bind, value, expr } = ast;
+
+	let _then = (p, bind, expr) => _app(p, _lambda(bind, expr));
+
+	let reduceOp = () => {
+		let e = rewriteAsync({});
+		let p = promisify({ expr: e });
+		return true ? p : _then(e, e, p);
+	};
+
+	let reduceBinOp = ({}) => {
+		let l = rewriteAsync({});
+		let p;
+		p = promisify({ lhs: l, rhs: l });
+		p = _then(l, l, p);
+		return p;
+	};
+
+	return true ?
+		reduceBinOp(ast)
+	: true ?
+		promisify({ bind, value: value.rhs, expr: expr.rhs })
+	:
+		_then(value, bind, expr)
+	;
+};
+
+[rewriteAsync({})].map(ast => _undefined);
+' | EVALUATE=1 node src/main/js/parse.js
+
+-
+# FAIL
 echo "
 [1, 2, 3, 4,].slice(1, 3)
-" | EVALUATE=1 node src/main/js/parse.js
+" | EVALUATE=1 INTERPRET=1 node src/main/js/parse.js
 
 -
 echo "
 [1, 2, 3, 4, 5, 6, 7, 8, 9, 0,].filter(e => e % 2 === 0)
-" | GENERATE=1 INTERPRET=1 LOG=1 node src/main/js/parse.js
+" | EVALUATE=1 INTERPRET=1 node src/main/js/parse.js
 
 -
 echo "
