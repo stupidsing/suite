@@ -725,7 +725,15 @@ format_ = (priority, ast) => {
 	: id === 'await' ? (({ expr }) => `await ${fmt(expr)}`)
 	: id === 'bool' ? (({ v }) => v)
 	: id === 'coal' ? (({ lhs, rhs }) => `${fm(lhs)} ?? ${fmt(rhs)}`)
-	: id === 'cons' ? (({ lhs, rhs }) => `[${fmt(lhs)}, ...${fmt(rhs)}]`)
+	: id === 'cons' ? (({ lhs, rhs }) => function() {
+		let s = fmt(lhs);
+		let r = rhs;
+		while (r.id === 'cons') (function() {
+			s = s + `, ${fmt(r.lhs)}`;
+			r = r.rhs;
+		}());
+		return r.id !== 'nil' ? `[${s}, ...${fmt(r)}]` : `[${s},]`;
+	}())
 	: id === 'deref' ? (({ expr }) => `* ${fmt(expr)}`)
 	: id === 'div' ? (({ lhs, rhs }) => `${fmt(lhs)} / ${fm(rhs)}`)
 	: id === 'dot' ? (({ expr, field }) => `${fmt(expr)}.${field}`)
@@ -736,7 +744,9 @@ format_ = (priority, ast) => {
 	: id === 'lambda' ? (({ bind, expr }) => `${fmt(bind)} => ${fmt(expr)}`)
 	: id === 'lambda-async' ? (({ bind, expr }) => `async ${fmt(bind)} => ${fmt(expr)}`)
 	: id === 'lambda-capture' ? (({ capture, bindCapture, bind, expr }) =>
-		`|${fmt(capture)}| ${fmt(bind)} => |${fmt(bindCapture)}| ${fmt(expr)}`
+		capture !== undefined && 0 < Object.keys(capture.kvs).length
+			? `|${fmt(capture)}| ${fmt(bind)} => |${fmt(bindCapture)}| ${fmt(expr)}`
+			: `${fmt(bind)} => ${fmt(expr)}`
 	)
 	: id === 'le_' ? (({ lhs, rhs }) => `${fm(lhs)} <= ${fmt(rhs)}`)
 	: id === 'lt_' ? (({ lhs, rhs }) => `${fm(lhs)} < ${fmt(rhs)}`)
@@ -2422,7 +2432,7 @@ return actual === expect
 	try {
 		let { ast, type } = processRewrite(require('fs').readFileSync(0, 'utf8'));
 		let opcodes = process.env.GENERATE || process.env.INTERPRET ? processGenerate(ast) : undefined;
-		console.error(`ast :: ${stringify(ast)}`);
+		process.env.AST && console.error(`ast :: ${stringify(ast)}`);
 		process.env.EVALUATE && console.error(`evaluate :: ${stringify(evaluate(evaluateVvs)(ast))}`);
 		process.env.FORMAT && console.error(`format :: ${format(ast)}`);
 		process.env.GENERATE && console.error(`generate :: ${opcodes.map(opcode => '\n' + JSON.stringify(opcode, undefined, undefined)).join(undefined)}`);
