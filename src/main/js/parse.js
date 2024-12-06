@@ -2398,37 +2398,33 @@ let processGenerate = ast6 => {
 		c,
 		_struct(fns.map(({ f, n }) => ({ key: f, value: proxy(n, `${c}.${f}`) }))));
 
-	ast6 = addObjectOfFunctions(ast6, 'JSON', [
-		{ f: 'stringify', n: 3 },
-	]);
+	let ast7 = [ast6,]
+		.map(ast => addObjectOfFunctions(ast, 'JSON', [
+			{ f: 'stringify', n: 3 },
+		]))
+		.map(ast => addObjectOfFunctions(ast, 'Object', [
+			{ f: 'assign', n: 1 },
+			{ f: 'entries', n: 1 },
+			{ f: 'fromEntries', n: 1 },
+			{ f: 'keys', n: 1 },
+		]))
+		.map(ast => addObjectOfFunctions(ast, 'Promise', [
+			{ f: 'reject', n: 1 },
+			{ f: 'resolve', n: 1 },
+		]))
+		.map(ast => addObjectOfFunctions(ast, 'console', [
+			{ f: 'error', n: 1 },
+			{ f: 'log', n: 1 },
+		]))
+		.map(ast => addObject(ast, 'eval', proxy(1, 'eval')))
+		.map(ast => addObject(ast, 'process', _struct([
+			{ key: 'env', value: _struct(Object.entries(process.env).map(([key, v]) => ({ key, value: _str(v) }))) },
+		])))
+		.map(ast => addObject(ast, 'require', proxy(1, 'require')))
+		[0];
 
-	ast6 = addObjectOfFunctions(ast6, 'Object', [
-		{ f: 'assign', n: 1 },
-		{ f: 'entries', n: 1 },
-		{ f: 'fromEntries', n: 1 },
-		{ f: 'keys', n: 1 },
-	]);
-
-	ast6 = addObjectOfFunctions(ast6, 'Promise', [
-		{ f: 'reject', n: 1 },
-		{ f: 'resolve', n: 1 },
-	]);
-
-	ast6 = addObjectOfFunctions(ast6, 'console', [
-		{ f: 'error', n: 1 },
-		{ f: 'log', n: 1 },
-	]);
-
-	ast6 = addObject(ast6, 'eval', proxy(1, 'eval'));
-
-	ast6 = addObject(ast6, 'process', _struct([
-		{ key: 'env', value: _struct(Object.entries(process.env).map(([key, v]) => ({ key, value: _str(v) }))) },
-	]));
-
-	ast6 = addObject(ast6, 'require', proxy(1, 'require'));
-
-	let ast7 = rewriteVars(0, 0, [], ast6);
-	return expand([...generate(ast7), { id: 'exit' },]);
+	let ast8 = rewriteVars(0, 0, [], ast7);
+	return expand([...generate(ast8), { id: 'exit' },]);
 };
 
 let actual = stringify(parseAst(`
