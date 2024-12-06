@@ -2,11 +2,9 @@
 # FAIL
 echo '
 let _app = (lhs, rhs) => ({ lhs, rhs });
-let _dot = (expr, field) => ({ expr });
 let _lambda = (bind, expr) => ({ bind, expr });
-let _undefined = {};
 
-let promisify = ast => _app(_undefined, ast);
+let promisify = ast => _app({}, ast);
 
 let rewriteAsync;
 
@@ -14,18 +12,17 @@ rewriteAsync = ast => {
 	let { bind, value, expr } = ast;
 
 	let _then = (p, bind, expr) => _app(p, _lambda(bind, expr));
+	let e = rewriteAsync({});
 
 	let reduceOp = () => {
-		let e = rewriteAsync({});
 		let p = promisify({ expr: e });
 		return true ? p : _then(e, e, p);
 	};
 
 	let reduceBinOp = ({}) => {
-		let l = rewriteAsync({});
 		let p;
-		p = promisify({ lhs: l, rhs: l });
-		p = _then(l, l, p);
+		p = promisify({ rhs: e });
+		p = _then(e, e, p);
 		return p;
 	};
 
@@ -38,7 +35,7 @@ rewriteAsync = ast => {
 	;
 };
 
-[rewriteAsync({})].map(ast => _undefined);
+[rewriteAsync({})].map(ast => {});
 ' | EVALUATE=1 node src/main/js/parse.js
 
 -

@@ -40,14 +40,28 @@ let seti = (m, k, v) => { fake(m)[0 <= k && fake(k)] = v; return v; };
 let getp = (m, k) => fake(m)[k !== '' && fake(k)];
 let setp = (m, k, v) => { fake(m)[k !== '' && fake(k)] = v; return v; };
 
-let find;
-find = (es, op) => isNotEmpty(es) ? function() {
-	let e = head(es);
-	return op(e) ? e : find(tail(es), op);
-}() : undefined;
+let find = (es, op) => {
+	let i = 0;
+	let r = undefined;
+	while (r === undefined && i < es.length) (function() {
+		let e = es[i];
+		r = op(e) ? e : undefined;
+		i = i + 1;
+		return undefined;
+	}());
+	return r;
+};
 
-let contains;
-contains = (es, e) => isNotEmpty(es) && (head(es) === e || contains(tail(es), e));
+let contains = (es, e) => {
+	let i = 0;
+	let b = false;
+	while (i < es.length) (function() {
+		b = b || es[i] === e;
+		i = i + 1;
+		return undefined;
+	}());
+	return b;
+};
 
 let foldl;
 foldl = (init, es, op) => isNotEmpty(es) ? foldl(op(init, head(es)), tail(es), op) : init;
@@ -806,26 +820,27 @@ let typesModule = () => {
 	};
 
 	let dump = v => {
-		let dumpType_;
-		dumpType_ = (vs, v) => {
+		let dump_;
+		dump_ = (vs, v) => {
 			let { ref } = v;
+			let vs_ = cons(v, vs);
 			let listv = assumeList(v);
 			return false ? undefined
 			: contains(vs, v) ?
 				'<recurse>'
 			: typeof ref === 'number' ?
-				(refs.get(ref) !== v ? dumpType_(cons(v, vs), refs.get(ref)) : `_${ref}`)
+				(refs.get(ref) !== v ? dump_(vs_, refs.get(ref)) : `_${ref}`)
 			: typeof v === 'object' ? (false ? undefined
 				: isEmpty(listv) ?
 					''
 				: isNotEmpty(listv) ?
-					`${dumpType_(vs, head(listv))}:${dumpType_(vs, assumeObject(tail(listv)))}`
+					`${dump_(vs_, head(listv))}:${dump_(vs_, assumeObject(tail(listv)))}`
 				: function() {
 					let t = v.t;
 					let join = Object
 						.entries(v)
 						.filter(([k, v_]) => k !== 't')
-						.map(([k, v_]) => `${k}:${dumpType_(cons(v, vs), v_)}`)
+						.map(([k, v_]) => `${k}:${dump_(vs_, v_)}`)
 						.join(' ');
 					return t !== undefined ? `${t}(${join})` : `{${join}}`;
 				}()
@@ -834,7 +849,7 @@ let typesModule = () => {
 				v.toString()
 			: JSON.stringify(v, undefined, undefined);
 		};
-		return dumpType_(nil, v);
+		return dump_(nil, v);
 	};
 
 	let tryBind;
@@ -1249,8 +1264,7 @@ let typesModule = () => {
 			error(`cannot infer type for ${id}`)
 		);
 
-		let t = f(ast);
-		return t;
+		return f(ast);
 	};
 
 	let predefinedTypes = Object
