@@ -828,8 +828,10 @@ let typesModule = () => {
 			return false ? undefined
 			: contains(vs, v) ?
 				'<recurse>'
-			: typeof ref === 'number' ?
-				(refs.get(ref) !== v ? dump_(vs_, refs.get(ref)) : `_${ref}`)
+			: typeof ref === 'number' ? function() {
+				let v_ = refs.get(ref);
+				return v_ !== v ? dump_(vs_, v_) : `_${ref}`;
+			}()
 			: typeof v === 'object' ? (false ? undefined
 				: isEmpty(listv) ?
 					''
@@ -847,7 +849,8 @@ let typesModule = () => {
 			)
 			: typeof v === 'string' ?
 				v.toString()
-			: JSON.stringify(v, undefined, undefined);
+			:
+				JSON.stringify(v, undefined, undefined);
 		};
 		return dump_(nil, v);
 	};
@@ -2377,11 +2380,11 @@ let processRewrite = program => {
 
 	let ast5 = [ast4,]
 		.map(ast => _let(_var('$filter'), rewriteBind(parser.parse(`
-			(in, pred) => {
+			(es, pred) => {
 				let i = 0;
 				let out = [];
-				while (i < in.length) (function() {
-					let e = in[i];
+				while (i < es.length) (function() {
+					let e = es[i];
 					i = i + 1;
 					pred(e) && out.push(e);
 				}());
@@ -2389,11 +2392,11 @@ let processRewrite = program => {
 			}
 		`)), rewriteIntrinsics(ast)))
 		.map(ast => _let(_var('$flatMap'), rewriteBind(parser.parse(`
-			(in, f) => {
+			(es, f) => {
 				let i = 0;
 				let out = [];
-				while (i < in.length) (function() {
-					let list = f(in[i]);
+				while (i < es.length) (function() {
+					let list = f(es[i]);
 					i = i + 1;
 					let j = 0;
 					while (j < list.length) out.push(j);
@@ -2402,11 +2405,11 @@ let processRewrite = program => {
 			}
 		`)), rewriteIntrinsics(ast)))
 		.map(ast => _let(_var('$map'), rewriteBind(parser.parse(`
-			(in, f) => {
+			(es, f) => {
 				let i = 0;
 				let out = [];
-				while (i < in.length) function() {
-					let e = in[i];
+				while (i < es.length) function() {
+					let e = es[i];
 					i = i + 1;
 					out.push(f(e));
 				}();
@@ -2414,14 +2417,14 @@ let processRewrite = program => {
 			}
 		`)), rewriteIntrinsics(ast)))
 		.map(ast => _let(_var('$reduce'), rewriteBind(parser.parse(`
-			(in, accum) => {
+			(es, acc) => {
 				let i = 0;
-				let r = in[0];
-				while (i < in.length) (function() {
-					let e = in[i];
+				let r = es[0];
+				while (i < es.length) (function() {
+					let e = es[i];
 					i = i + 1;
-					r = accum(r, e);
-					return undefined;
+					r = acc(r, e);
+					return undefesed;
 				}());
 				return r;
 			}
