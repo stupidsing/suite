@@ -1566,6 +1566,18 @@ rewriteCapture = (fs, vfs, ast) => {
 	return f(ast);
 };
 
+let rewriteIntrinsics;
+
+rewriteIntrinsics = ast => {
+	let { id, lhs, rhs } = ast;
+
+	return false ? undefined
+	: id === 'app' && lhs.id === 'dot' && ['filter',].includes(lhs.field) ?
+		_app(_var(`$${lhs.field}`), _pair(lhs.expr, rhs))
+	:
+		rewrite(rewriteIntrinsics, ast);
+};
+
 let rewriteNe;
 
 rewriteNe = ast => {
@@ -2352,10 +2364,24 @@ let processRewrite = program => {
 	let roots = ['JSON', 'Object', 'Promise', 'console', 'eval', 'process', 'require',];
 
 	let { ast: ast4, type } = parseAst(program);
-	let ast5 = rewriteRenameVar(newDummy(), roots.map(v => [v, v]), ast4);
-	let ast6 = rewriteCapture(0, roots.map(v => [v, 0]), ast5);
 
-	return { ast: ast6, type };
+	let ast5 = _let(_var('$filter'), rewriteBind(parser.parse(`
+		(in, pred) => {
+			let i = 0;
+			let out = [];
+			while (i < in.length) (function() {
+				let e = in[i];
+				i = i + 1;
+				pred(e) && out.push(e);
+			}());
+			return out;
+		}
+	`)), rewriteIntrinsics(ast4));
+
+	let ast6 = rewriteRenameVar(newDummy(), roots.map(v => [v, v]), ast5);
+	let ast7 = rewriteCapture(0, roots.map(v => [v, 0]), ast6);
+
+	return { ast: ast7, type };
 };
 
 let processGenerate = ast6 => {
