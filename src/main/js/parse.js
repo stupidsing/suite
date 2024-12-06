@@ -725,7 +725,7 @@ format_ = (priority, ast) => {
 	: id === 'await' ? (({ expr }) => `await ${fmt(expr)}`)
 	: id === 'bool' ? (({ v }) => v)
 	: id === 'coal' ? (({ lhs, rhs }) => `${fm(lhs)} ?? ${fmt(rhs)}`)
-	: id === 'cons' ? (({ lhs, rhs }) => function() {
+	: id === 'cons' ? (({ lhs, rhs }) => {
 		let s = fmt(lhs);
 		let r = rhs;
 		while (r.id === 'cons') (function() {
@@ -733,7 +733,7 @@ format_ = (priority, ast) => {
 			r = r.rhs;
 		}());
 		return r.id !== 'nil' ? `[${s}, ...${fmt(r)}]` : `[${s},]`;
-	}())
+	})
 	: id === 'deref' ? (({ expr }) => `* ${fmt(expr)}`)
 	: id === 'div' ? (({ lhs, rhs }) => `${fmt(lhs)} / ${fm(rhs)}`)
 	: id === 'dot' ? (({ expr, field }) => `${fmt(expr)}.${field}`)
@@ -839,7 +839,7 @@ let typesModule = () => {
 
 	let tryBind;
 
-	tryBind = (a, b) => function() {
+	tryBind = (a, b) => {
 		let lista = assumeList(a);
 		let listb = assumeList(b);
 		let refa = a.ref;
@@ -877,7 +877,7 @@ let typesModule = () => {
 					return r && s && tryBind(a_k, getp(b, k));
 				}, true)
 			);
-	}();
+	};
 
 	let doBind_ = (msg, a, b) => tryBind(a, b) || error(`in ${msg()}:\ncannot bind types between\nfr: ${dump(a)}\nto: ${dump(b)}`);
 	let doBind = (ast, a, b) => doBind_(() => format(ast), a, b);
@@ -1026,14 +1026,14 @@ let typesModule = () => {
 
 		let infer = ast_ => inferType(vts, isAsync, ast_);
 
-		let inferCmpOp = ({ lhs, rhs }) => function() {
+		let inferCmpOp = ({ lhs, rhs }) => {
 			let t = newRef();
 			return true
 				&& doBind(ast, infer(lhs), t)
 				&& doBind(ast, infer(rhs), t)
 				&& (tryBind(t, tyNumber) || tryBind(t, tyString) || error(`cannot compare values with type ${t}`))
 				&& tyBoolean;
-		}();
+		};
 
 		let inferEqOp = ({ lhs, rhs }) => true
 			&& doBind(ast, infer(lhs), infer(rhs))
@@ -1546,14 +1546,14 @@ rewriteCapture = (fs, vfs, ast) => {
 	: id === 'alloc' ? (({ vn, expr }) =>
 		_alloc(vn, rewriteCapture(fs, cons([vn, fs], vfs), expr))
 	)
-	: id === 'lambda' ? (({ bind, expr }) => function() {
+	: id === 'lambda' ? (({ bind, expr }) => {
 		let vfs1 = cons([bind.vn, fs1], vfs);
 		let bindCapture = newDummy();
 		let captures = [];
 		let expr_ = rewriteCaptureVar(bindCapture, vfs.map(([vn, fs]) => vn), captures, expr);
 		let definitions = _struct(captures.map(vn => ({ key: vn, value: _ref(_var(vn)) })));
 		return _lambdaCapture(definitions, _var(bindCapture), bind, rewriteCapture(fs1, vfs1, expr_));
-	}())
+	})
 	: id === 'let' ? (({ bind, value, expr }) =>
 		_let(bind,
 			rewriteCapture(fs, vfs, value),
@@ -1600,31 +1600,28 @@ rewriteRenameVar = (scope, vns, ast) => {
 	let { id } = ast;
 
 	let f = false ? undefined
-	: id === 'alloc' ? (({ vn, expr }) => function() {
+	: id === 'alloc' ? (({ vn, expr }) => {
 		let vn1 = `${vn}_${scope}`;
 		return _alloc(
 			vn1,
 			rewriteRenameVar(scope, cons([vn, vn1], vns), expr));
-	}()
-	)
-	: id === 'lambda' ? (({ bind, expr }) => function() {
+	})
+	: id === 'lambda' ? (({ bind, expr }) => {
 		let { vn } = bind;
 		let scope1 = newDummy();
 		let vn1 = `${vn}_${scope1}`;
 		return _lambda(
 			_var(vn1),
 			rewriteRenameVar(scope1, cons([vn, vn1], vns), expr));
-	}()
-	)
-	: id === 'let' ? (({ bind, value, expr }) => function() {
+	})
+	: id === 'let' ? (({ bind, value, expr }) => {
 		let { vn } = bind;
 		let vn1 = `${vn}_${scope}`;
 		return _let(
 		_var(vn1),
 			rewriteRenameVar(scope, vns, value),
 			rewriteRenameVar(scope, cons([vn, vn1], vns), expr));
-	}()
-	)
+	})
 	: id === 'var' ? (({ vn }) =>
 		_var(findk(vns, vn))
 	)
@@ -1687,21 +1684,21 @@ evaluate = vvs => {
 		)
 		: id === 'await' ? (({ expr }) => error('BAD'))
 		: id === 'bool' ? (({ v }) => v)
-		: id === 'coal' ? (({ lhs, rhs }) => function() {
+		: id === 'coal' ? (({ lhs, rhs }) => {
 			let v = eval(lhs);
 			return v ? v : eval(rhs);
-		}())
+		})
 		: id === 'cons' ? (({ lhs, rhs }) => assumeAny(cons(eval(lhs), eval(rhs))))
-		: id === 'deref' ? (({ expr }) => function() {
+		: id === 'deref' ? (({ expr }) => {
 			let { vv } = eval(expr);
 			return get1(vv);
-		}())
+		})
 		: id === 'div' ? (({ lhs, rhs }) => assumeAny(eval(lhs) / eval(rhs)))
-		: id === 'dot' ? (({ expr, field }) => function() {
+		: id === 'dot' ? (({ expr, field }) => {
 			let object = eval(expr);
 			let value = getp(object, field);
 			return typeof value !== 'function' ? value : fake(value).bind(object);
-		}())
+		})
 		: id === 'eq_' ? (({ lhs, rhs }) => assumeAny(eval(lhs) === eval(rhs)))
 		: id === 'frame' ? error('BAD')
 		: id === 'if' ? (({ if_, then, else_ }) => eval(if_) ? eval(then) : eval(else_))
@@ -1742,7 +1739,7 @@ evaluate = vvs => {
 			return struct;
 		})))
 		: id === 'sub' ? (({ lhs, rhs }) => assumeAny(eval(lhs) - eval(rhs)))
-		: id === 'throw' ? (({ expr }) => function() { throw eval(expr); }())
+		: id === 'throw' ? (({ expr }) => { throw eval(expr); })
 		: id === 'try' ? (({ lhs, rhs }) => function() {
 			try {
 				return eval(lhs);
@@ -1752,11 +1749,11 @@ evaluate = vvs => {
 		: id === 'typeof' ? (({ expr }) => assumeAny(typeof (eval(expr))))
 		: id === 'undefined' ? (({}) => undefined)
 		: id === 'var' ? (({ vn }) => findk(vvs, vn))
-		: id === 'while' ? (({ cond, loop, expr }) => function() {
+		: id === 'while' ? (({ cond, loop, expr }) => {
 			let v;
 			while (eval(cond)) eval(loop);
 			eval(expr);
-		}())
+		})
 		: error(`cannot generate for ${id}`);
 
 		return f(ast);
@@ -1893,8 +1890,8 @@ generate = ast => {
 		generateOp
 	: id === 'div' ?
 		generateBinOp
-	: id === 'dot' ? (({ expr, field }) => function() {
-		return false ? undefined
+	: id === 'dot' ? (({ expr, field }) =>
+		false ? undefined
 		: ['length',].includes(field) ? [
 			...generate(expr),
 			{ id: 'service', f: 1, service: field },
@@ -1938,15 +1935,15 @@ generate = ast => {
 		: [
 			...generate(expr),
 			{ id: 'object-get', key: field },
-		];
-	}())
+		]
+	)
 	: id === 'eq_' ?
 		generateBinOp
 	: id === 'frame' ? (({ fs, ps }) => [
 		{ id: 'frame-get-ref', fs, ps },
 		{ id: 'deref' },
 	])
-	: id === 'if' ? (({ if_, then, else_ }) => function() {
+	: id === 'if' ? (({ if_, then, else_ }) => {
 		let elseLabel = newDummy();
 		let fiLabel = newDummy();
 		return [
@@ -1958,7 +1955,7 @@ generate = ast => {
 			...generate(else_),
 			{ id: ':', label: fiLabel },
 		];
-	}())
+	})
 	: id === 'index' ? (({ lhs, rhs }) => [
 		...generate(lhs),
 		...generate(rhs),
@@ -1968,13 +1965,13 @@ generate = ast => {
 		error('BAD')
 	: id === 'lambda-async' ?
 		error('BAD')
-	: id === 'lambda-capture' ? (({ capture, bindCapture, bind, expr }) => function() {
+	: id === 'lambda-capture' ? (({ capture, bindCapture, bind, expr }) => {
 		return [
 			...generate(capture),
 			{ id: 'label-segment', segment: [...generate(expr), { id: 'return' },] },
 			{ id },
 		];
-	}())
+	})
 	: id === 'le_' ?
 		generateBinOp
 	: id === 'let' ? error('BAD')
@@ -2038,7 +2035,7 @@ generate = ast => {
 		...generate(expr),
 		{ id },
 	])
-	: id === 'try' ? (({ lhs, rhs }) => function() {
+	: id === 'try' ? (({ lhs, rhs }) => {
 		let finallyLabel = newDummy();
 		return [
 			{ id: 'label-segment', segment: [
@@ -2053,8 +2050,7 @@ generate = ast => {
 			{ id: 'try-pop' },
 			{ id: ':', label: finallyLabel },
 		];
-	}()
-	)
+	})
 	: id === 'tuple' ? (({ values }) => [
 		{ id: 'nil' },
 		...values.reverse().flatMap(value => [...generate(value), { id: 'cons' },]),
