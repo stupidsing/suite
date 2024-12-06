@@ -1788,7 +1788,7 @@ rewriteVars = (fs, ps, vts, ast) => {
 				rewriteVars_(capture),
 				bindCapture,
 				bind,
-				rewriteVars(fs1, 1, cons([bind.vn, [fs1, 1]], cons([bindCapture.vn, [fs1, 0]], vts)), expr))
+				rewriteVars(fs1, 2, cons([bind.vn, [fs1, 1]], cons([bindCapture.vn, [fs1, 0]], vts)), expr))
 		)
 		: id === 'let' ? (({ bind, value, expr }) =>
 			_alloc(bind.vn, _assign(
