@@ -1784,7 +1784,7 @@ evaluate = vvs => {
 		: id === 'while' ? (({ cond, loop, expr }) => {
 			let v;
 			while (eval(cond)) eval(loop);
-			eval(expr);
+			return eval(expr);
 		})
 		: error(`cannot evaluate ${id}`);
 
