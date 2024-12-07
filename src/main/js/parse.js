@@ -1666,6 +1666,8 @@ let evaluateVvs = Object.entries({
 let evaluate;
 
 evaluate = vvs => {
+	let pairTag = {};
+
 	let assign = (vn, value) => {
 		let vv = find(vvs, ([vn_, value]) => vn_ === vn);
 		seti(vv, 1, value);
@@ -1682,7 +1684,17 @@ evaluate = vvs => {
 		: id === 'add' ? (({ lhs, rhs }) => assumeAny(eval(lhs) + eval(rhs)))
 		: id === 'alloc' ? (({ vn, expr }) => evaluate(cons([vn, undefined], vvs))(expr))
 		: id === 'and' ? (({ lhs, rhs }) => assumeAny(eval(lhs) && eval(rhs)))
-		: id === 'app' ? (({ lhs, rhs }) => eval(lhs)(eval(rhs)))
+		: id === 'app' ? (({ lhs, rhs }) => {
+			let arg = eval(rhs);
+			console.log(arg);
+			let ps = [];
+			while (arg[2] === pairTag) (function() {
+				ps.push(arg[0]);
+				arg = arg[1];
+			}());
+			ps.push(arg);
+			return eval(lhs)(...ps);
+		})
 		: id === 'assign' ? (({ bind, value, expr }) => false ? undefined
 			: bind.id === 'deref' ? function() {
 				let { vv } = eval(bind);
@@ -1746,7 +1758,7 @@ evaluate = vvs => {
 		: id === 'not' ? (({ expr }) => assumeAny(!eval(expr)))
 		: id === 'num' ? (({ i }) => i)
 		: id === 'or_' ? (({ lhs, rhs }) => assumeAny(eval(lhs) || eval(rhs)))
-		: id === 'pair' ? (({ lhs, rhs }) => assumeAny([eval(lhs), eval(rhs)]))
+		: id === 'pair' ? (({ lhs, rhs }) => assumeAny([eval(lhs), eval(rhs), pairTag]))
 		: id === 'pos' ? (({ expr }) => assumeAny(+eval(expr)))
 		: id === 'ref' ? (({ expr }) =>
 			expr.id === 'var' ? assumeAny({ vv: find(vvs, ([k_, v]) => k_ === expr.vn) })
@@ -1775,7 +1787,7 @@ evaluate = vvs => {
 			while (eval(cond)) eval(loop);
 			eval(expr);
 		})
-		: error(`cannot generate for ${id}`);
+		: error(`cannot evaluate ${id}`);
 
 		return f(ast);
 	};
@@ -2509,14 +2521,15 @@ let expect = stringify(
 return actual === expect
 ? function() {
 	try {
-		let { ast, type } = processRewrite(require('fs').readFileSync(0, 'utf8'));
+		let program = require('fs').readFileSync(0, 'utf8');
+		let { ast, type } = processRewrite(program);
 		let opcodes = process.env.GENERATE || process.env.INTERPRET ? processGenerate(ast) : undefined;
 		process.env.AST && console.error(`ast :: ${stringify(ast)}`);
-		process.env.EVALUATE && console.error(`evaluate :: ${stringify(evaluate(evaluateVvs)(ast))}`);
+		process.env.EVALUATE && console.error(`evaluate :: ${stringify(evaluate(evaluateVvs)(parseAst(program).ast))}`);
 		process.env.FORMAT && console.error(`format :: ${format(ast)}`);
 		process.env.GENERATE && console.error(`generate :: ${opcodes.map(opcode => '\n' + JSON.stringify(opcode, undefined, undefined)).join(undefined)}`);
 		process.env.INTERPRET && console.error(`interpret :: ${stringify(interpret(opcodes))}`);
-		console.error(`type :: ${types.dump(type)}`);
+		process.env.TYPE && console.error(`type :: ${types.dump(type)}`);
 		return true;
 	} catch (e) { return console.error(e); }
 }() : error(`
