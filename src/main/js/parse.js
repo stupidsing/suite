@@ -1686,7 +1686,6 @@ evaluate = vvs => {
 		: id === 'and' ? (({ lhs, rhs }) => assumeAny(eval(lhs) && eval(rhs)))
 		: id === 'app' ? (({ lhs, rhs }) => {
 			let arg = eval(rhs);
-			console.log(arg);
 			let ps = [];
 			while (arg[2] === pairTag) (function() {
 				ps.push(arg[0]);
