@@ -1094,7 +1094,7 @@ let typesModule = () => {
 			try {
 				let tbind = infer(bind);
 				let tvalue = infer(value);
-				return doBind(_assign(bind, value, undefined), tbind, tvalue);
+				return doBind(_assign(bind, value, _undefined), tbind, tvalue);
 			} catch (e) {
 				e.message = `in assignment clause of ${format(bind)}\n${e.message}`;
 				throw e;
