@@ -1740,7 +1740,7 @@ evaluate = vvs => {
 		: id === 'lambda-capture' ? (({ capture, bindCapture, bind, expr }) =>
 			assumeAny(value => evaluate(cons([bind.vn, value], cons([bindCapture.vn, eval(capture)], vvs)))(expr))
 		)
-		: id === 'le_' ? (({ lhs, rhs }) => eval(lhs) <= eval(rhs))
+		: id === 'le_' ? (({ lhs, rhs }) => assumeAny(eval(lhs) <= eval(rhs)))
 		: id === 'let' ? (({ bind, value, expr }) => evaluate(cons([bind.vn, eval(value)], vvs))(expr))
 		: id === 'lt_' ? (({ lhs, rhs }) => assumeAny(eval(lhs) < eval(rhs)))
 		: id === 'mod' ? (({ lhs, rhs }) => assumeAny(eval(lhs) % eval(rhs)))
