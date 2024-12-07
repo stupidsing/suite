@@ -1,96 +1,55 @@
--
-# FAIL
-echo '
-let _app = (lhs, rhs) => ({ lhs, rhs });
-let _lambda = (bind, expr) => ({ bind, expr });
-
-let promisify = ast => _app({}, ast);
-
-let rewriteAsync;
-
-rewriteAsync = ast => {
-	let { bind, value, expr } = ast;
-
-	let _then = (p, bind, expr) => _app(p, _lambda(bind, expr));
-	let e = rewriteAsync({});
-
-	let reduceOp = () => {
-		let p = promisify({ expr: e });
-		return true ? p : _then(e, e, p);
-	};
-
-	let reduceBinOp = ({}) => {
-		let p;
-		p = promisify({ rhs: e });
-		p = _then(e, e, p);
-		return p;
-	};
-
-	return true ?
-		reduceBinOp({})
-	: true ?
-		promisify({ bind, value: value.rhs, expr: expr.rhs })
-	:
-		_then(value, bind, expr)
-	;
-};
-
-[rewriteAsync({})].map(ast => {});
-' | EVALUATE=1 node src/main/js/parse.js
-
--
 # FAIL
 echo "
 [1, 2, 3, 4,].slice(1, 3)
 " | EVALUATE=1 INTERPRET=1 node src/main/js/parse.js
 
--
+# OK
 echo "
 [1, 2, 3, 4, 5, 6, 7, 8, 9, 0,].filter(e => e % 2 === 0)
 " | EVALUATE=1 INTERPRET=1 node src/main/js/parse.js
 
--
+# OK
 echo "
 [1, 2,].includes(2) && [1.toString(),].concat([2.toString(),]).length === 2 && [1, 2, 3, 4,].slice(1, 3)
 " | EVALUATE=1 INTERPRET=1 node src/main/js/parse.js
 
--
+# OK
 echo '
 let fib;
 fib = v => v <= 1 ? 1 : v * fib(v - 1);
 fib(10)
 ' | EVALUATE=1 INTERPRET=1 node src/main/js/parse.js
 
--
+# OK
 echo '
 let fib = [undefined,];
 fib[0] = v => v <= 1 ? 1 : v * fib[0](v - 1);
 fib[0](10)
 ' | EVALUATE=1 INTERPRET=1 node src/main/js/parse.js
 
--
+# OK
 echo '
 console.log(JSON.stringify(process.env, undefined, undefined))
 ' | EVALUATE=1 INTERPRET=1 node src/main/js/parse.js
 
--
+# OK
 echo '
 let error = message => { throw new Error(message); };
 error(3)
 ' | EVALUATE=1 node src/main/js/parse.js
 
--
+# OK
 echo '
 let error = message => { throw new Error(message); };
 error(3)
 ' | INTERPRET=1 node src/main/js/parse.js
 
--
+# OK
 echo '
 let a = 3;
 let l = v => v + a;
 l(5)
 ' | EVALUATE=1 INTERPRET=1 node src/main/js/parse.js
 
--
+# OK
 cat src/main/js/parse.js | node src/main/js/parse.js
