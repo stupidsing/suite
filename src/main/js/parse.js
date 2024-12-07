@@ -1719,7 +1719,7 @@ evaluate = vvs => {
 		: id === 'bool' ? (({ v }) => v)
 		: id === 'coal' ? (({ lhs, rhs }) => {
 			let v = eval(lhs);
-			return v ? v : eval(rhs);
+			return v !== undefined ? v : eval(rhs);
 		})
 		: id === 'cons' ? (({ lhs, rhs }) => assumeAny(cons(eval(lhs), eval(rhs))))
 		: id === 'deref' ? (({ expr }) => {
