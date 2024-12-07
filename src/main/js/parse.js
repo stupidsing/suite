@@ -1006,10 +1006,6 @@ let typesModule = () => {
 			return doBind(ast, ts, tyArrayOf(te))
 				&& tyLambdaOf(tyPairOf(treducer, tr), tr);
 		}()
-		: field === 'reverse' ? function() {
-			let tl = tyArrayOf(newRef());
-			return doBind(ast, ts, tl) && tyLambdaOf(tyVoid, tl);
-		}()
 		: field === 'slice' ? function() {
 			let te = newRef();
 			let tl = tyArrayOf(te);
@@ -1021,6 +1017,10 @@ let typesModule = () => {
 			let ti = newRef();
 			let to = newRef();
 			return doBind(ast, ts, tyPromiseOf(ti)) && tyLambdaOf(ti, tyPromiseOf(to));
+		}()
+		: field === 'toReversed' ? function() {
+			let tl = tyArrayOf(newRef());
+			return doBind(ast, ts, tl) && tyLambdaOf(tyVoid, tl);
 		}()
 		: field === 'toString' ?
 			doBind(ast, ts, newRef()) && tyLambdaOf(tyVoid, tyString)
@@ -1939,7 +1939,7 @@ generate = ast => {
 			] },
 			{ id: 'lambda-capture' },
 		]
-		: ['pop', 'reverse', 'toString', 'trim',].includes(field) ? [
+		: ['pop', 'toReversed', 'toString', 'trim',].includes(field) ? [
 			...generate(expr),
 			{ id: 'label-segment', segment: [
 				{ id: 'frame-get-ref', fs: 0, ps: 0 },
@@ -2044,7 +2044,7 @@ generate = ast => {
 	)
 	: id === 'struct' ? (({ kvs }) => [
 		{ id: 'object' },
-		...kvs.reverse().flatMap(({ key, value }) => [...generate(value), { id: 'object-put', key },]),
+		...kvs.toReversed().flatMap(({ key, value }) => [...generate(value), { id: 'object-put', key },]),
 	])
 	: id === 'sub' ?
 		generateBinOp
@@ -2070,7 +2070,7 @@ generate = ast => {
 	})
 	: id === 'tuple' ? (({ values }) => [
 		{ id: 'nil' },
-		...values.reverse().flatMap(value => [...generate(value), { id: 'cons' },]),
+		...values.toReversed().flatMap(value => [...generate(value), { id: 'cons' },]),
 	])
 	: id === 'typeof' ?
 		error('BAD')
