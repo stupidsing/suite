@@ -93,6 +93,8 @@ let newDummy = () => {
 let dump = v => {
 	let dump_;
 	dump_ = (vs, v) => false ? undefined
+		: 8 <= vs.length ?
+			'...'
 		: contains(vs, v) ?
 			'<recurse>'
 		: v.id !== undefined ? function() {
@@ -826,6 +828,8 @@ let typesModule = () => {
 			let vs_ = cons(v, vs);
 			let listv = assumeList(v);
 			return false ? undefined
+			: 8 <= vs.length ?
+				'...'
 			: contains(vs, v) ?
 				'<recurse>'
 			: typeof ref === 'number' ? function() {
