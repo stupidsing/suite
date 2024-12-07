@@ -1690,6 +1690,7 @@ evaluate = vvs => {
 			while (arg[2] === pairTag) (function() {
 				ps.push(arg[0]);
 				arg = arg[1];
+				return undefined;
 			}());
 			ps.push(arg);
 			return eval(lhs)(...ps);
