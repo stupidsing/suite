@@ -884,7 +884,7 @@ let typesModule = () => {
 			&& (lista.length !== undefined
 			? lista.length === listb.length && function() {
 				let tryBindList;
-				tryBindList = index => index === lista.length || tryBind(lista[index], listb[index]) && tryBindList(index + 1);
+				tryBindList = i => i === lista.length || tryBind(lista[i], listb[i]) && tryBindList(i + 1);
 				return tryBindList(0);
 			}()
 			: true
@@ -1656,7 +1656,7 @@ rewriteRenameVar = (scope, vns, ast) => {
 };
 
 let evaluateVvs = Object.entries({
-	JSON: { stringify: v => JSON.stringify(v[0], v[0][1], v[1][1]) },
+	JSON: eval('JSON'),
 	Object: eval('Object'),
 	Promise: eval('Promise'),
 	console: eval('console'),
@@ -1689,7 +1689,7 @@ evaluate = vvs => {
 		: id === 'app' ? (({ lhs, rhs }) => {
 			let arg = eval(rhs);
 			let ps = [];
-			while (assumeAny(arg[2]) === pairTag) (function() {
+			while (arg !== undefined && assumeAny(arg[2]) === pairTag) (function() {
 				ps.push(arg[0]);
 				arg = arg[1];
 				return undefined;
@@ -1903,8 +1903,7 @@ generate = ast => {
 			{ id: 'array-set' },
 			...generate(expr),
 		]
-		:
-		[
+		: [
 			...generate(_ref(bind)),
 			...generate(value),
 			{ id: 'assign-ref' },
@@ -1929,7 +1928,7 @@ generate = ast => {
 		false ? undefined
 		: ['length',].includes(field) ? [
 			...generate(expr),
-			{ id: 'service', f: 1, service: field },
+			{ id: 'service', f: 1, field },
 		]
 		: ['charCodeAt', 'concat', 'endsWith', 'includes', 'indexOf', 'join', 'push', 'startsWith',].includes(field) ? [
 			...generate(expr),
@@ -1939,7 +1938,7 @@ generate = ast => {
 				{ id: 'frame-get-ref', fs: 0, ps: 1 },
 				{ id: 'deref' },
 				{ id: 'pair' },
-				{ id: 'service', m: 2, service: field },
+				{ id: 'service', m: 2, field },
 				{ id: 'return' },
 			] },
 			{ id: 'lambda-capture' },
@@ -1952,7 +1951,7 @@ generate = ast => {
 				{ id: 'frame-get-ref', fs: 0, ps: 1 },
 				{ id: 'deref' },
 				{ id: 'pair' },
-				{ id: 'service', m: 3, service: field },
+				{ id: 'service', m: 3, field },
 				{ id: 'return' },
 			] },
 			{ id: 'lambda-capture' },
@@ -1962,7 +1961,7 @@ generate = ast => {
 			{ id: 'label-segment', segment: [
 				{ id: 'frame-get-ref', fs: 0, ps: 0 },
 				{ id: 'deref' },
-				{ id: 'service', m: 1, service: field },
+				{ id: 'service', m: 1, field },
 				{ id: 'return' },
 			] },
 			{ id: 'lambda-capture' },
@@ -2305,16 +2304,18 @@ let interpret = opcodes => {
 				rpush(a);
 			}()
 			: id === 'service' && opcode.f === 1 ?
-				rpush(rpop().length)
-			: id === 'service' && opcode.m === 1 ?
-				rpush(rpop()[assumeAny(opcode.service)]())
+				rpush(getp(rpop(), opcode.field))
+			: id === 'service' && opcode.m === 1 ? function() {
+				let a = rpop();
+				return rpush(getp(a, opcode.field).bind(a)());
+			}()
 			: id === 'service' && opcode.m === 2 ? function() {
 				let [a, b] = rpop();
-				return rpush(a[assumeAny(opcode.service)](b));
+				return rpush(getp(a, opcode.field).bind(a)(b));
 			}()
 			: id === 'service' && opcode.m === 3 ? function() {
 				let [a, [b, c]] = rpop();
-				return rpush(a[assumeAny(opcode.service)](b, c));
+				return rpush(getp(a, opcode.field).bind(a)(b, c));
 			}()
 			: id === 'service' && opcode.n === 1 ?
 				rpush(eval(opcode.service)(rpop()))
