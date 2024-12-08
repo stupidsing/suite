@@ -1596,7 +1596,7 @@ rewriteIntrinsics = ast => {
 
 	return false ? undefined
 	: id === 'app' && lhs.id === 'dot' && ['filter', 'flatMap', 'map', 'reduce',].includes(lhs.field) ?
-		_app(_var(`$${lhs.field}`), _pair(lhs.expr, rhs))
+		_app(_var(`$${lhs.field}`), _pair(rewriteIntrinsics(lhs.expr), rewriteIntrinsics(rhs)))
 	:
 		rewrite(rewriteIntrinsics, ast);
 };
@@ -2398,6 +2398,7 @@ let processRewrite = program => {
 	let { ast: ast4, type } = parseAst(program);
 
 	let ast5 = [ast4,]
+		.map(rewriteIntrinsics)
 		.map(ast => _let(_var('$filter'), rewriteBind(parser.parse(`
 			(es, pred) => {
 				let i = 0;
@@ -2409,7 +2410,7 @@ let processRewrite = program => {
 				}());
 				return out;
 			}
-		`)), rewriteIntrinsics(ast)))
+		`)), ast))
 		.map(ast => _let(_var('$flatMap'), rewriteBind(parser.parse(`
 			(es, f) => {
 				let i = 0;
@@ -2422,7 +2423,7 @@ let processRewrite = program => {
 				}());
 				return out;
 			}
-		`)), rewriteIntrinsics(ast)))
+		`)), ast))
 		.map(ast => _let(_var('$map'), rewriteBind(parser.parse(`
 			(es, f) => {
 				let i = 0;
@@ -2434,7 +2435,7 @@ let processRewrite = program => {
 				}();
 				return out;
 			}
-		`)), rewriteIntrinsics(ast)))
+		`)), ast))
 		.map(ast => _let(_var('$reduce'), rewriteBind(parser.parse(`
 			(es, acc) => {
 				let i = 0;
@@ -2447,7 +2448,7 @@ let processRewrite = program => {
 				}());
 				return r;
 			}
-		`)), rewriteIntrinsics(ast)))
+		`)), ast))
 		[0];
 
 	let ast6 = rewriteRenameVar(newDummy(), roots.map(v => [v, v]), ast5);
