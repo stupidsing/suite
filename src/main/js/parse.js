@@ -1930,7 +1930,7 @@ generate = ast => {
 			...generate(expr),
 			{ id: 'service', f: 1, field },
 		]
-		: ['charCodeAt', 'concat', 'endsWith', 'includes', 'indexOf', 'join', 'push', 'startsWith',].includes(field) ? [
+		: ['apply', 'charCodeAt', 'concat', 'endsWith', 'includes', 'indexOf', 'join', 'push', 'startsWith',].includes(field) ? [
 			...generate(expr),
 			{ id: 'label-segment', segment: [
 				{ id: 'frame-get-ref', fs: 0, ps: 0 },
