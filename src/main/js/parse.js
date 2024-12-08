@@ -1355,7 +1355,9 @@ rewriteAsync = ast => {
 		reduceBinOp
 	: id === 'app' ?
 		reduceBinOp
-	: id === 'await' ? (({ expr }) => expr)
+	: id === 'await' ? (({ expr }) =>
+		expr
+	)
 	: id === 'coal' ?
 		reduceBinOp
 	: id === 'cons' ?
