@@ -2526,12 +2526,25 @@ return actual === expect
 		let program = require('fs').readFileSync(0, 'utf8');
 		let { ast, type } = processRewrite(program);
 		let opcodes = process.env.GENERATE || process.env.INTERPRET ? processGenerate(ast) : undefined;
-		process.env.AST && console.error(`ast :: ${stringify(ast)}`);
-		process.env.EVALUATE && console.error(`evaluate :: ${stringify(evaluate(evaluateVvs)(parseAst(program).ast))}`);
-		process.env.FORMAT && console.error(`format :: ${format(ast)}`);
-		process.env.GENERATE && console.error(`generate :: ${opcodes.map(opcode => '\n' + JSON.stringify(opcode, undefined, undefined)).join(undefined)}`);
-		process.env.INTERPRET && console.error(`interpret :: ${stringify(interpret(opcodes))}`);
-		process.env.TYPE && console.error(`type :: ${types.dump(type)}`);
+
+		process.env.AST
+			&& console.error(`ast :: ${stringify(ast)}`);
+
+		process.env.EVALUATE
+			&& console.error(`evaluate :: ${stringify(evaluate(evaluateVvs)(parseAst(program).ast))}`);
+
+		process.env.FORMAT
+			&& console.error(`format :: ${format(ast)}`);
+
+		process.env.GENERATE
+			&& console.error(`generate :: ${opcodes.map(opcode => '\n' + JSON.stringify(opcode, undefined, undefined)).join(undefined)}`);
+
+		process.env.INTERPRET
+			&& console.error(`interpret :: ${stringify(interpret(opcodes))}`);
+
+		process.env.TYPE
+			&& console.error(`type :: ${types.dump(type)}`);
+
 		return true;
 	} catch (e) { return console.error(e); }
 }() : error(`
