@@ -963,6 +963,8 @@ let typesModule = () => {
 
 	let inferDot = (ast, ts, field) => {
 		return false ? undefined
+		: field === 'apply' ?
+			tyLambdaOf(newRef(), newRef())
 		: field === 'charCodeAt' ?
 			doBind(ast, ts, tyString) && tyLambdaOf(tyNumber, tyNumber)
 		: field === 'concat' ? function() {
@@ -1687,13 +1689,13 @@ evaluate = vvs => {
 		: id === 'app' ? (({ lhs, rhs }) => {
 			let arg = eval(rhs);
 			let ps = [];
-			while (arg[2] === pairTag) (function() {
+			while (assumeAny(arg[2]) === pairTag) (function() {
 				ps.push(arg[0]);
 				arg = arg[1];
 				return undefined;
 			}());
 			ps.push(arg);
-			return eval(lhs)(...ps);
+			return eval(lhs).apply(undefined, ps);
 		})
 		: id === 'assign' ? (({ bind, value, expr }) => false ? undefined
 			: bind.id === 'deref' ? function() {
@@ -1702,7 +1704,7 @@ evaluate = vvs => {
 				return eval(expr);
 			}()
 			: bind.id === 'dot' ? function() {
-				eval(bind.expr)[bind.field] = eval(value);
+				setp(eval(bind.expr), bind.field, eval(value));
 				return eval(expr);
 			}()
 			: bind.id === 'index' ? function() {
