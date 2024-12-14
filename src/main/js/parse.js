@@ -63,11 +63,30 @@ let contains = (es, e) => {
 	return b;
 };
 
-let foldl;
-foldl = (init, es, op) => isNotEmpty(es) ? foldl(op(init, head(es)), tail(es), op) : init;
+// let foldl; foldl = (init, es, op) => isNotEmpty(es) ? foldl(op(init, head(es)), tail(es), op) : init;
+// let foldr; foldr = (init, es, op) => isNotEmpty(es) ? op(foldr(init, tail(es), op), head(es)) : init;
 
-let foldr;
-foldr = (init, es, op) => isNotEmpty(es) ? op(foldr(init, tail(es), op), head(es)) : init;
+let foldl = (init, es, op) => {
+	let i = 0;
+	let r = init;
+	while (i < es.length) (function() {
+		r = op(r, es[i]);
+		i = i + 1;
+		return undefined;
+	}());
+	return r;
+};
+
+let foldr = (init, es, op) => {
+	let i = es.length - 1;
+	let r = init;
+	while (0 <= i) (function() {
+		r = op(r, es[i]);
+		i = i - 1;
+		return undefined;
+	}());
+	return r;
+};
 
 let findk = (kvs, k) => {
 	let kv = find(kvs, ([k_, v]) => k_ === k);
