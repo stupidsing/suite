@@ -27,18 +27,18 @@ let ascii = s => s.charCodeAt(0);
 let error = message => { throw new Error(message); };
 let stringify = json => JSON.stringify(json, undefined, '  ');
 
+let get0 = tuple => { let [a, b] = tuple; return a; };
+let get1 = tuple => { let [a, b] = tuple; return b; };
+let seti = (m, k, v) => { fake(m)[0 <= k && fake(k)] = v; return v; };
+let getp = (m, k) => fake(m)[k !== '' && fake(k)];
+let setp = (m, k, v) => { fake(m)[k !== '' && fake(k)] = v; return v; };
+
 let cons = (head, tail) => [head, ...tail,];
 let head = list => list[0];
 let isEmpty = list => list.length === 0;
 let isNotEmpty = list => 0 < list.length;
 let nil = [];
 let tail = list => list.slice(1, undefined);
-
-let get0 = tuple => { let [a, b] = tuple; return a; };
-let get1 = tuple => { let [a, b] = tuple; return b; };
-let seti = (m, k, v) => { fake(m)[0 <= k && fake(k)] = v; return v; };
-let getp = (m, k) => fake(m)[k !== '' && fake(k)];
-let setp = (m, k, v) => { fake(m)[k !== '' && fake(k)] = v; return v; };
 
 let find = (es, op) => {
 	let i = 0;
