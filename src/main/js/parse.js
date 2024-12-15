@@ -867,7 +867,7 @@ let typesModule = () => {
 						.filter(([k, v_]) => k !== 't')
 						.map(([k, v_]) => `${k}:${dump_(vs_, v_)}`)
 						.join(' ');
-					return t !== undefined ? `${t}(${join})` : `{${join}}`;
+					return t !== undefined ? (join !== '' ? `${t}(${join})` : t) : `{${join}}`;
 				}()
 			)
 			: typeof v === 'string' ?
