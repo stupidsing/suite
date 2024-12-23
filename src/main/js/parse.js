@@ -40,6 +40,8 @@ let isNotEmpty = list => 0 < list.length;
 let nil = [];
 let tail = list => list.slice(1, undefined);
 
+let len = es => es.length;
+
 let find = (es, op) => {
 	let i = 0;
 	let r = undefined;
@@ -847,7 +849,7 @@ let typesModule = () => {
 			let vs_ = cons(v, vs);
 			let listv = assumeList(v);
 			return false ? undefined
-			: 8 <= vs.length ?
+			: 8 <= len(vs) ?
 				'...'
 			: contains(vs, v) ?
 				'<recurse>'
