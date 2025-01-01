@@ -2063,7 +2063,8 @@ generate = ast => {
 	})
 	: id === 'le_' ?
 		generateBinOp
-	: id === 'let' ? error('BAD')
+	: id === 'let' ?
+		error('BAD')
 	: id === 'lt_' ?
 		generateBinOp
 	: id === 'mod' ?
