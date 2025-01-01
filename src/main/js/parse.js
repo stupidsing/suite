@@ -134,6 +134,10 @@ let ll_len;
 
 ll_len = es => ll_isNotEmpty(es) ? 1 + ll_len(ll_tail(es)) : 0;
 
+let ll_map;
+
+ll_map = (es, op) => ll_isNotEmpty(es) ? ll_cons(op(ll_head(es)), ll_map(ll_tail(es), op)) : ll_nil();
+
 let gen = i => {
 	let array = [];
 	while (0 < i) (function() {
@@ -1689,7 +1693,7 @@ rewriteRenameVar = (scope, vns, ast) => {
 		let vn1 = `${vn}_${scope}`;
 		return _alloc(
 			vn1,
-			rewriteRenameVar(scope, cons([vn, vn1], vns), expr));
+			rewriteRenameVar(scope, ll_cons([vn, vn1], vns), expr));
 	})
 	: id === 'lambda' ? (({ bind, expr }) => {
 		let { vn } = bind;
@@ -1697,7 +1701,7 @@ rewriteRenameVar = (scope, vns, ast) => {
 		let vn1 = `${vn}_${scope1}`;
 		return _lambda(
 			_var(vn1),
-			rewriteRenameVar(scope1, cons([vn, vn1], vns), expr));
+			rewriteRenameVar(scope1, ll_cons([vn, vn1], vns), expr));
 	})
 	: id === 'let' ? (({ bind, value, expr }) => {
 		let { vn } = bind;
@@ -1705,10 +1709,10 @@ rewriteRenameVar = (scope, vns, ast) => {
 		return _let(
 		_var(vn1),
 			rewriteRenameVar(scope, vns, value),
-			rewriteRenameVar(scope, cons([vn, vn1], vns), expr));
+			rewriteRenameVar(scope, ll_cons([vn, vn1], vns), expr));
 	})
 	: id === 'var' ? (({ vn }) =>
-		_var(findk(vns, vn))
+		_var(ll_findk(vns, vn))
 	)
 	: (({}) =>
 		rewrite(ast => rewriteRenameVar(scope, vns, ast), ast)
@@ -2455,7 +2459,15 @@ let parseAst = program => {
 };
 
 let processRewrite = program => {
-	let roots = ['JSON', 'Object', 'Promise', 'console', 'eval', 'process', 'require',];
+	let rootList = ['JSON', 'Object', 'Promise', 'console', 'eval', 'process', 'require',];
+	let roots = ll_nil();
+	let i = 0;
+
+	while (i < rootList.length) (function() {
+		roots = ll_cons(rootList[i], roots);
+		i = i + 1;
+		return undefined;
+	}());
 
 	let { ast: ast4, type } = parseAst(program);
 
@@ -2513,8 +2525,8 @@ let processRewrite = program => {
 		`)), ast))
 		[0];
 
-	let ast6 = rewriteRenameVar(newDummy(), roots.map(v => [v, v]), ast5);
-	let ast7 = rewriteCapture(0, roots.map(v => [v, 0]), ast6);
+	let ast6 = rewriteRenameVar(newDummy(), ll_map(roots, v => [v, v]), ast5);
+	let ast7 = rewriteCapture(0, rootList.map(v => [v, 0]), ast6);
 
 	return { ast: ast7, type };
 };
