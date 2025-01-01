@@ -81,10 +81,6 @@ ll_map = (es, op) => ll_isNotEmpty(es) ? ll_cons(op(ll_head(es)), ll_map(ll_tail
 let v_nil = [];
 
 let v_cons = (head, tail) => [head, ...tail,];
-let v_head = list => list[0];
-let v_isEmpty = list => list.length === 0;
-let v_isNotEmpty = list => 0 < list.length;
-let v_tail = list => list.slice(1, undefined);
 
 let v_contains = (es, e) => {
 	let i = 0;
@@ -130,13 +126,6 @@ let v_foldr = (init, es, op) => {
 	}());
 	return r;
 };
-
-let v_findk = (kvs, k) => {
-	let kv = v_find(kvs, ([k_, v]) => k_ === k);
-	return kv !== undefined ? get1(kv) : error(`variable ${k} not found`);
-};
-
-let v_len = es => es.length;
 
 let gen = i => {
 	let array = [];
