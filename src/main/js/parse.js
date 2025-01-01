@@ -33,11 +33,12 @@ let seti = (m, k, v) => { fake(m)[0 <= k && fake(k)] = v; return v; };
 let getp = (m, k) => fake(m)[k !== '' && fake(k)];
 let setp = (m, k, v) => { fake(m)[k !== '' && fake(k)] = v; return v; };
 
+let nil = [];
+
 let cons = (head, tail) => [head, ...tail,];
 let head = list => list[0];
 let isEmpty = list => list.length === 0;
 let isNotEmpty = list => 0 < list.length;
-let nil = [];
 let tail = list => list.slice(1, undefined);
 
 let len = es => es.length;
@@ -65,9 +66,6 @@ let contains = (es, e) => {
 	return b;
 };
 
-// let foldl; foldl = (init, es, op) => isNotEmpty(es) ? foldl(op(init, head(es)), tail(es), op) : init;
-// let foldr; foldr = (init, es, op) => isNotEmpty(es) ? op(foldr(init, tail(es), op), head(es)) : init;
-
 let foldl = (init, es, op) => {
 	let i = 0;
 	let r = init;
@@ -92,6 +90,47 @@ let foldr = (init, es, op) => {
 
 let findk = (kvs, k) => {
 	let kv = find(kvs, ([k_, v]) => k_ === k);
+	return kv !== undefined ? get1(kv) : error(`variable ${k} not found`);
+};
+
+let ll_nil = undefined;
+
+let ll_cons = (head, tail) => [head, tail];
+let ll_head = get0;
+let ll_isEmpty = list => list === ll_nil;
+let ll_isNotEmpty = list => list !== ll_nil;
+let ll_tail = get1;
+
+let ll_len;
+
+ll_len = es => ll_isNotEmpty(es) ? 1 + ll_len(ll_tail(es)) : 0;
+
+let ll_find;
+
+ll_find = (es, op) => {
+	return ll_isNotEmpty(es) ? function() {
+		let [head, tail] = es;
+		return op(head) ? head : ll_find(tail, op);
+	}() : undefined;
+};
+
+let ll_contains;
+
+ll_contains = (es, e) => {
+	return ll_isNotEmpty(es) ? function() {
+		let [head, tail] = es;
+		return e !== head ? ll_contains(tail, e) : true;
+	}() : false;
+};
+
+let ll_foldl;
+ll_foldl = (init, es, op) => ll_isNotEmpty(es) ? ll_foldl(op(init, ll_head(es)), ll_tail(es), op) : init;
+
+let ll_foldr;
+ll_foldr = (init, es, op) => ll_isNotEmpty(es) ? op(ll_foldr(init, ll_tail(es), op), ll_head(es)) : init;
+
+let ll_findk = (kvs, k) => {
+	let kv = ll_find(kvs, ([k_, v]) => k_ === k);
 	return kv !== undefined ? get1(kv) : error(`variable ${k} not found`);
 };
 
