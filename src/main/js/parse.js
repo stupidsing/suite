@@ -903,7 +903,7 @@ let typesModule = () => {
 			: typeof v === 'object' ? (false ? undefined
 				: ll_isEmpty(listv) ?
 					''
-				: v.t === undefined && ll_isNotEmpty(listv) ?
+				: v.t === undefined && ll_isNotEmpty(listv) && assumeList(listv).length === 2 ?
 					`${dump_(vs_, ll_head(listv))}:${dump_(vs_, assumeObject(ll_tail(listv)))}`
 				: function() {
 					let t = v.t;
@@ -1001,7 +1001,7 @@ let typesModule = () => {
 		: ast.id === 'pair' ? bindTypes(bindTypes(vts, ast.lhs), ast.rhs)
 		: ast.id === 'struct' ? foldl(vts, ast.kvs, (vts_, kv) => bindTypes(vts_, kv.value))
 		: ast.id === 'tuple' ? foldl(vts, ast.values, bindTypes)
-		: ast.id === 'var' ? cons([ast.vn, newRef()], vts)
+		: ast.id === 'var' ? ll_cons([ast.vn, newRef()], vts)
 		: error(`bindTypes(): cannot destructure ${format(ast)}`);
 
 	let tyArrayOf = type => ({ t: 'array', of: type });
@@ -1146,7 +1146,7 @@ let typesModule = () => {
 				&& t;
 		})
 		: id === 'alloc' ? (({ vn, expr }) =>
-			inferType(cons([vn, newRef()], vts), isAsync, expr)
+			inferType(ll_cons([vn, newRef()], vts), isAsync, expr)
 		)
 		: id === 'and' ?
 			inferLogicalOp
@@ -1325,7 +1325,7 @@ let typesModule = () => {
 			newRef()
 		)
 		: id === 'var' ? (({ vn }) => {
-			let t = finalRef(findk(vts, vn));
+			let t = finalRef(ll_findk(vts, vn));
 			return t.generic !== true ? t : cloneRef(t);
 		})
 		: id === 'while' ? (({ cond, loop, expr }) => {
@@ -1365,7 +1365,7 @@ let typesModule = () => {
 			}),
 			require: tyLambdaOf(tyString, newRef()),
 		})
-		.reduce((l, vt) => cons(vt, l), nil);
+		.reduce((l, vt) => ll_cons(vt, l), ll_nil());
 
 	return { dump, infer: ast => inferType(predefinedTypes, false, ast) };
 };
@@ -1613,7 +1613,7 @@ rewriteCaptureVar = (capture, outsidevs, captures, ast) => {
 
 	let f = false ? undefined
 	: id === 'var' ? (({ vn }) => {
-		return !outsidevs.includes(vn) ? ast : function() {
+		return !ll_contains(outsidevs, vn) ? ast : function() {
 			captures.push(vn);
 			return _deref(_dot(_var(capture), vn));
 		}();
@@ -1633,20 +1633,20 @@ rewriteCapture = (fs, vfs, ast) => {
 
 	let f = false ? undefined
 	: id === 'alloc' ? (({ vn, expr }) =>
-		_alloc(vn, rewriteCapture(fs, cons([vn, fs], vfs), expr))
+		_alloc(vn, rewriteCapture(fs, ll_cons([vn, fs], vfs), expr))
 	)
 	: id === 'lambda' ? (({ bind, expr }) => {
-		let vfs1 = cons([bind.vn, fs1], vfs);
+		let vfs1 = ll_cons([bind.vn, fs1], vfs);
 		let bindCapture = newDummy();
 		let captures = [];
-		let expr_ = rewriteCaptureVar(bindCapture, vfs.map(([vn, fs]) => vn), captures, expr);
+		let expr_ = rewriteCaptureVar(bindCapture, ll_map(vfs, ([vn, fs]) => vn), captures, expr);
 		let definitions = _struct(captures.map(vn => ({ key: vn, value: _ref(_var(vn)) })));
 		return _lambdaCapture(definitions, _var(bindCapture), bind, rewriteCapture(fs1, vfs1, expr_));
 	})
 	: id === 'let' ? (({ bind, value, expr }) =>
 		_let(bind,
 			rewriteCapture(fs, vfs, value),
-			rewriteCapture(fs, cons([bind.vn, fs], vfs), expr))
+			rewriteCapture(fs, ll_cons([bind.vn, fs], vfs), expr))
 	)
 	: (({}) =>
 		rewrite(ast => rewriteCapture(fs, vfs, ast), ast)
@@ -2459,15 +2459,8 @@ let parseAst = program => {
 };
 
 let processRewrite = program => {
-	let rootList = ['JSON', 'Object', 'Promise', 'console', 'eval', 'process', 'require',];
-	let roots = ll_nil();
-	let i = 0;
-
-	while (i < rootList.length) (function() {
-		roots = ll_cons(rootList[i], roots);
-		i = i + 1;
-		return undefined;
-	}());
+	let roots = ['JSON', 'Object', 'Promise', 'console', 'eval', 'process', 'require',]
+		.reduce((v, vl) => ll_cons(vl, v), ll_nil());
 
 	let { ast: ast4, type } = parseAst(program);
 
@@ -2526,7 +2519,7 @@ let processRewrite = program => {
 		[0];
 
 	let ast6 = rewriteRenameVar(newDummy(), ll_map(roots, v => [v, v]), ast5);
-	let ast7 = rewriteCapture(0, rootList.map(v => [v, 0]), ast6);
+	let ast7 = rewriteCapture(0, ll_map(roots, v => [v, 0]), ast6);
 
 	return { ast: ast7, type };
 };
