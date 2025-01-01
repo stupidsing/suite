@@ -41,7 +41,16 @@ let isEmpty = list => list.length === 0;
 let isNotEmpty = list => 0 < list.length;
 let tail = list => list.slice(1, undefined);
 
-let len = es => es.length;
+let contains = (es, e) => {
+	let i = 0;
+	let b = false;
+	while (i < es.length) (function() {
+		b = b || es[i] === e;
+		i = i + 1;
+		return undefined;
+	}());
+	return b;
+};
 
 let find = (es, op) => {
 	let i = 0;
@@ -53,17 +62,6 @@ let find = (es, op) => {
 		return undefined;
 	}());
 	return r;
-};
-
-let contains = (es, e) => {
-	let i = 0;
-	let b = false;
-	while (i < es.length) (function() {
-		b = b || es[i] === e;
-		i = i + 1;
-		return undefined;
-	}());
-	return b;
 };
 
 let foldl = (init, es, op) => {
@@ -93,6 +91,8 @@ let findk = (kvs, k) => {
 	return kv !== undefined ? get1(kv) : error(`variable ${k} not found`);
 };
 
+let len = es => es.length;
+
 let ll_nil = undefined;
 
 let ll_cons = (head, tail) => [head, tail];
@@ -101,9 +101,14 @@ let ll_isEmpty = list => list === ll_nil;
 let ll_isNotEmpty = list => list !== ll_nil;
 let ll_tail = get1;
 
-let ll_len;
+let ll_contains;
 
-ll_len = es => ll_isNotEmpty(es) ? 1 + ll_len(ll_tail(es)) : 0;
+ll_contains = (es, e) => {
+	return ll_isNotEmpty(es) ? function() {
+		let [head, tail] = es;
+		return e !== head ? ll_contains(tail, e) : true;
+	}() : false;
+};
 
 let ll_find;
 
@@ -112,15 +117,6 @@ ll_find = (es, op) => {
 		let [head, tail] = es;
 		return op(head) ? head : ll_find(tail, op);
 	}() : undefined;
-};
-
-let ll_contains;
-
-ll_contains = (es, e) => {
-	return ll_isNotEmpty(es) ? function() {
-		let [head, tail] = es;
-		return e !== head ? ll_contains(tail, e) : true;
-	}() : false;
 };
 
 let ll_foldl;
@@ -133,6 +129,10 @@ let ll_findk = (kvs, k) => {
 	let kv = ll_find(kvs, ([k_, v]) => k_ === k);
 	return kv !== undefined ? get1(kv) : error(`variable ${k} not found`);
 };
+
+let ll_len;
+
+ll_len = es => ll_isNotEmpty(es) ? 1 + ll_len(ll_tail(es)) : 0;
 
 let gen = i => {
 	let array = [];
