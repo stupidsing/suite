@@ -1729,7 +1729,7 @@ let evaluateVvs = Object.entries({
 	eval: eval('eval'),
 	process: eval('process'),
 	require: eval('require'),
-});
+}).reduce((v, vl) => ll_cons(vl, v), ll_nil());
 
 let evaluate;
 
@@ -1737,7 +1737,7 @@ evaluate = vvs => {
 	let pairTag = {};
 
 	let assign = (vn, value) => {
-		let vv = find(vvs, ([vn_, value]) => vn_ === vn);
+		let vv = ll_find(vvs, ([vn_, value]) => vn_ === vn);
 		seti(vv, 1, value);
 		return value;
 	};
@@ -1750,7 +1750,7 @@ evaluate = vvs => {
 
 		let f = false ? undefined
 		: id === 'add' ? (({ lhs, rhs }) => assumeAny(eval(lhs) + eval(rhs)))
-		: id === 'alloc' ? (({ vn, expr }) => evaluate(cons([vn, undefined], vvs))(expr))
+		: id === 'alloc' ? (({ vn, expr }) => evaluate(ll_cons([vn, undefined], vvs))(expr))
 		: id === 'and' ? (({ lhs, rhs }) => assumeAny(eval(lhs) && eval(rhs)))
 		: id === 'app' ? (({ lhs, rhs }) => {
 			let arg = eval(rhs);
@@ -1804,13 +1804,13 @@ evaluate = vvs => {
 		: id === 'frame' ? error('BAD')
 		: id === 'if' ? (({ if_, then, else_ }) => eval(if_) ? eval(then) : eval(else_))
 		: id === 'index' ? (({ lhs, rhs }) => eval(lhs)[eval(rhs)])
-		: id === 'lambda' ? (({ bind, expr }) => assumeAny(value => evaluate(cons([bind.vn, value], vvs))(expr)))
+		: id === 'lambda' ? (({ bind, expr }) => assumeAny(value => evaluate(ll_cons([bind.vn, value], vvs))(expr)))
 		: id === 'lambda-async' ? (({ bind, expr }) => error('BAD'))
 		: id === 'lambda-capture' ? (({ capture, bindCapture, bind, expr }) =>
-			assumeAny(value => evaluate(cons([bind.vn, value], cons([bindCapture.vn, eval(capture)], vvs)))(expr))
+			assumeAny(value => evaluate(ll_cons([bind.vn, value], ll_cons([bindCapture.vn, eval(capture)], vvs)))(expr))
 		)
 		: id === 'le_' ? (({ lhs, rhs }) => assumeAny(eval(lhs) <= eval(rhs)))
-		: id === 'let' ? (({ bind, value, expr }) => evaluate(cons([bind.vn, eval(value)], vvs))(expr))
+		: id === 'let' ? (({ bind, value, expr }) => evaluate(ll_cons([bind.vn, eval(value)], vvs))(expr))
 		: id === 'lt_' ? (({ lhs, rhs }) => assumeAny(eval(lhs) < eval(rhs)))
 		: id === 'mod' ? (({ lhs, rhs }) => assumeAny(eval(lhs) % eval(rhs)))
 		: id === 'mul' ? (({ lhs, rhs }) => assumeAny(eval(lhs) * eval(rhs)))
@@ -1829,7 +1829,7 @@ evaluate = vvs => {
 		: id === 'pair' ? (({ lhs, rhs }) => assumeAny([eval(lhs), eval(rhs), pairTag]))
 		: id === 'pos' ? (({ expr }) => assumeAny(+eval(expr)))
 		: id === 'ref' ? (({ expr }) =>
-			expr.id === 'var' ? assumeAny({ vv: find(vvs, ([k_, v]) => k_ === expr.vn) })
+			expr.id === 'var' ? assumeAny({ vv: ll_find(vvs, ([k_, v]) => k_ === expr.vn) })
 			: error('BAD')
 		)
 		: id === 'segment' ? (({ opcodes }) => error('BAD'))
@@ -1849,7 +1849,7 @@ evaluate = vvs => {
 		: id === 'tuple' ? (({ values }) => assumeAny(foldr(nil, values, (tuple, value) => cons(eval(value), tuple))))
 		: id === 'typeof' ? (({ expr }) => assumeAny(typeof (eval(expr))))
 		: id === 'undefined' ? (({}) => undefined)
-		: id === 'var' ? (({ vn }) => findk(vvs, vn))
+		: id === 'var' ? (({ vn }) => ll_findk(vvs, vn))
 		: id === 'while' ? (({ cond, loop, expr }) => {
 			let v;
 			while (eval(cond)) eval(loop);
@@ -1876,12 +1876,12 @@ rewriteVars = (fs, ps, vts, ast) => {
 
 		let f = false ? undefined
 		: id === 'alloc' ? (({ vn, expr }) =>
-			_alloc(vn, rewriteVars(fs, ps1, cons([vn, [fs, ps]], vts), expr))
+			_alloc(vn, rewriteVars(fs, ps1, ll_cons([vn, [fs, ps]], vts), expr))
 		)
 		: id === 'assign' ? (({ bind, value, expr }) => {
 			return false ? undefined
 			: bind.id === 'var' ? function() {
-				let [fs_, ps] = findk(vts, bind.vn);
+				let [fs_, ps] = ll_findk(vts, bind.vn);
 				return _assign(
 					_frame(fs - fs_, ps),
 					rewriteVars_(value),
@@ -1898,21 +1898,21 @@ rewriteVars = (fs, ps, vts, ast) => {
 				rewriteVars_(capture),
 				bindCapture,
 				bind,
-				rewriteVars(fs1, 2, cons([bind.vn, [fs1, 1]], cons([bindCapture.vn, [fs1, 0]], vts)), expr))
+				rewriteVars(fs1, 2, ll_cons([bind.vn, [fs1, 1]], ll_cons([bindCapture.vn, [fs1, 0]], vts)), expr))
 		)
 		: id === 'let' ? (({ bind, value, expr }) =>
 			_alloc(bind.vn, _assign(
 				_frame(0, ps),
 				rewriteVars_(value),
-				rewriteVars(fs, ps1, cons([bind.vn, [fs, ps]], vts), expr)))
+				rewriteVars(fs, ps1, ll_cons([bind.vn, [fs, ps]], vts), expr)))
 		)
 		: id === 'try' ? (({ lhs, rhs }) =>
 			_try(
 				rewriteVars_(lhs),
-				rewriteVars(fs, ps1, cons(['e', [fs, ps]], vts), rhs))
+				rewriteVars(fs, ps1, ll_cons(['e', [fs, ps]], vts), rhs))
 		)
 		: id === 'var' ? (({ vn }) => {
-			let [fs_, ps] = findk(vts, vn);
+			let [fs_, ps] = ll_findk(vts, vn);
 			return _frame(fs - fs_, ps);
 		})
 		: (({}) =>
@@ -2563,7 +2563,7 @@ let processGenerate = ast6 => {
 		.map(ast => addObject(ast, 'require', proxy(1, 'require')))
 		[0];
 
-	let ast8 = rewriteVars(0, 0, [], ast7);
+	let ast8 = rewriteVars(0, 0, ll_nil(), ast7);
 	return expand([...generate(ast8), { id: 'exit' },]);
 };
 
