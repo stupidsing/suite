@@ -93,12 +93,12 @@ let findk = (kvs, k) => {
 
 let len = es => es.length;
 
-let ll_nil = undefined;
+let ll_nil = () => undefined;
 
 let ll_cons = (head, tail) => [head, tail];
 let ll_head = get0;
-let ll_isEmpty = list => list === ll_nil;
-let ll_isNotEmpty = list => list !== ll_nil;
+let ll_isEmpty = list => list === ll_nil();
+let ll_isNotEmpty = list => list !== ll_nil();
 let ll_tail = get1;
 
 let ll_contains;
@@ -167,7 +167,7 @@ let dump = v => {
 		}()
 		:
 			v.toString();
-	return dump_(0, ll_nil, v);
+	return dump_(0, ll_nil(), v);
 };
 
 let _add = (lhs, rhs) => ({ id: 'add', lhs, rhs });
@@ -916,7 +916,7 @@ let typesModule = () => {
 			:
 				JSON.stringify(v, undefined, undefined);
 		};
-		return dump_(ll_nil, v);
+		return dump_(ll_nil(), v);
 	};
 
 	let tryBind;
