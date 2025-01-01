@@ -152,22 +152,22 @@ let newDummy = () => {
 
 let dump = v => {
 	let dump_;
-	dump_ = (vs, v) => false ? undefined
-		: 8 <= vs.length ?
+	dump_ = (n, vs, v) => false ? undefined
+		: 8 <= n ?
 			'...'
-		: contains(vs, v) ?
+		: ll_contains(vs, v) ?
 			'<recurse>'
 		: v.id !== undefined ? function() {
 			let join = Object
 				.entries(v)
 				.filter(([k, v_]) => k !== 'id')
-				.map(([k, v_]) => `${k}:${dump_(cons(v, vs), v_)}`)
+				.map(([k, v_]) => `${k}:${dump_(n + 1, ll_cons(v, vs), v_)}`)
 				.join(' ');
 			return `${v.id}(${join})`;
 		}()
 		:
 			v.toString();
-	return dump_(nil, v);
+	return dump_(0, ll_nil, v);
 };
 
 let _add = (lhs, rhs) => ({ id: 'add', lhs, rhs });
