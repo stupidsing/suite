@@ -35,13 +35,13 @@ let setp = (m, k, v) => { fake(m)[k !== '' && fake(k)] = v; return v; };
 
 let nil = [];
 
-let cons = (head, tail) => [head, ...tail,];
-let head = list => list[0];
-let isEmpty = list => list.length === 0;
-let isNotEmpty = list => 0 < list.length;
-let tail = list => list.slice(1, undefined);
+let v_cons = (head, tail) => [head, ...tail,];
+let v_head = list => list[0];
+let v_isEmpty = list => list.length === 0;
+let v_isNotEmpty = list => 0 < list.length;
+let v_tail = list => list.slice(1, undefined);
 
-let contains = (es, e) => {
+let v_contains = (es, e) => {
 	let i = 0;
 	let b = false;
 	while (i < es.length) (function() {
@@ -52,7 +52,7 @@ let contains = (es, e) => {
 	return b;
 };
 
-let find = (es, op) => {
+let v_find = (es, op) => {
 	let i = 0;
 	let r = undefined;
 	while (r === undefined && i < es.length) (function() {
@@ -64,7 +64,7 @@ let find = (es, op) => {
 	return r;
 };
 
-let foldl = (init, es, op) => {
+let v_foldl = (init, es, op) => {
 	let i = 0;
 	let r = init;
 	while (i < es.length) (function() {
@@ -75,7 +75,7 @@ let foldl = (init, es, op) => {
 	return r;
 };
 
-let foldr = (init, es, op) => {
+let v_foldr = (init, es, op) => {
 	let i = es.length - 1;
 	let r = init;
 	while (0 <= i) (function() {
@@ -86,12 +86,12 @@ let foldr = (init, es, op) => {
 	return r;
 };
 
-let findk = (kvs, k) => {
-	let kv = find(kvs, ([k_, v]) => k_ === k);
+let v_findk = (kvs, k) => {
+	let kv = v_find(kvs, ([k_, v]) => k_ === k);
 	return kv !== undefined ? get1(kv) : error(`variable ${k} not found`);
 };
 
-let len = es => es.length;
+let v_len = es => es.length;
 
 let ll_nil = () => undefined;
 
@@ -305,26 +305,26 @@ let parserModule = () => {
 	let isQuote = ch => ch === ascii("'") || ch === ascii('"') || ch === ascii('`');
 
 	let quoteBracket = (qb, ch) => {
-		let qb0 = head(qb);
+		let qb0 = ll_isNotEmpty(qb) ? ll_head(qb) : undefined;
 
 		return false ? undefined
-		: ch === ascii('{') && qb0 === ascii('`') ? cons(ch, qb)
-		: ch === ascii('}') && qb0 === ascii('`') ? cons(ch, qb)
-		: isQuote(qb0) ? (qb0 === ch ? tail(qb) : qb)
-		: isQuote(ch) ? cons(ch, qb)
-		: ch === ascii('(') ? (qb0 === ascii(')') ? tail(qb) : cons(ch, qb))
-		: ch === ascii(')') ? (qb0 === ascii('(') ? tail(qb) : cons(ch, qb))
-		: ch === ascii('[') ? (qb0 === ascii(']') ? tail(qb) : cons(ch, qb))
-		: ch === ascii(']') ? (qb0 === ascii('[') ? tail(qb) : cons(ch, qb))
-		: ch === ascii('{') ? (qb0 === ascii('}') ? tail(qb) : cons(ch, qb))
-		: ch === ascii('}') ? (qb0 === ascii('{') ? tail(qb) : cons(ch, qb))
+		: ch === ascii('{') && qb0 === ascii('`') ? ll_cons(ch, qb)
+		: ch === ascii('}') && qb0 === ascii('`') ? ll_cons(ch, qb)
+		: isQuote(qb0) ? (qb0 === ch ? ll_tail(qb) : qb)
+		: isQuote(ch) ? ll_cons(ch, qb)
+		: ch === ascii('(') ? (qb0 === ascii(')') ? ll_tail(qb) : ll_cons(ch, qb))
+		: ch === ascii(')') ? (qb0 === ascii('(') ? ll_tail(qb) : ll_cons(ch, qb))
+		: ch === ascii('[') ? (qb0 === ascii(']') ? ll_tail(qb) : ll_cons(ch, qb))
+		: ch === ascii(']') ? (qb0 === ascii('[') ? ll_tail(qb) : ll_cons(ch, qb))
+		: ch === ascii('{') ? (qb0 === ascii('}') ? ll_tail(qb) : ll_cons(ch, qb))
+		: ch === ascii('}') ? (qb0 === ascii('{') ? ll_tail(qb) : ll_cons(ch, qb))
 		: qb;
 	};
 
 	let splitl = (s, sep) => {
 		let i = 0;
 		let j;
-		let qb = nil;
+		let qb = ll_nil();
 		let qb1;
 
 		while (function() {
@@ -332,7 +332,7 @@ let parserModule = () => {
 			return j <= s.length && function() {
 				let ch = s.charCodeAt(i);
 				qb1 = quoteBracket(qb, ch);
-				return isNotEmpty(qb) || s.slice(i, j) !== sep || i === 0;
+				return ll_isNotEmpty(qb) || s.slice(i, j) !== sep || i === 0;
 			}();
 		}()) (function() {
 			i = i + 1;
@@ -345,7 +345,7 @@ let parserModule = () => {
 	let splitr = (s, sep) => {
 		let i;
 		let j = s.length;
-		let qb = nil;
+		let qb = ll_nil();
 		let qb1;
 
 		while (function() {
@@ -353,7 +353,7 @@ let parserModule = () => {
 			return 0 <= i && function() {
 				let ch = s.charCodeAt(j - 1);
 				qb1 = quoteBracket(qb, ch);
-				return isNotEmpty(qb1) || s.slice(i, j) !== sep || i === 0;
+				return ll_isNotEmpty(qb1) || s.slice(i, j) !== sep || i === 0;
 			}();
 		}()) (function() {
 			j = j - 1;
@@ -367,7 +367,7 @@ let parserModule = () => {
 		let keepsplitl_;
 		keepsplitl_ = input => input !== '' ? function() {
 			let [left, right] = splitl(input, sep);
-			return cons(apply(left), keepsplitl_(right));
+			return v_cons(apply(left), keepsplitl_(right));
 		}() : nil;
 		return keepsplitl_(s);
 	};
@@ -999,8 +999,8 @@ let typesModule = () => {
 	bindTypes = (vts, ast) => false ? undefined
 		: ast.id === 'nil' ? vts
 		: ast.id === 'pair' ? bindTypes(bindTypes(vts, ast.lhs), ast.rhs)
-		: ast.id === 'struct' ? foldl(vts, ast.kvs, (vts_, kv) => bindTypes(vts_, kv.value))
-		: ast.id === 'tuple' ? foldl(vts, ast.values, bindTypes)
+		: ast.id === 'struct' ? v_foldl(vts, ast.kvs, (vts_, kv) => bindTypes(vts_, kv.value))
+		: ast.id === 'tuple' ? v_foldl(vts, ast.values, bindTypes)
 		: ast.id === 'var' ? ll_cons([ast.vn, newRef()], vts)
 		: error(`bindTypes(): cannot destructure ${format(ast)}`);
 
@@ -1294,7 +1294,7 @@ let typesModule = () => {
 			tyString
 		)
 		: id === 'struct' ? (({ kvs }) => {
-			return tyStructOf(foldl({}, kvs, (type, kv) => {
+			return tyStructOf(v_foldl({}, kvs, (type, kv) => {
 				let { key, value } = kv;
 				setp(type, key, function() {
 					try {
@@ -1316,7 +1316,7 @@ let typesModule = () => {
 			doBind(ast, infer(rhs), newRef()) && infer(lhs)
 		)
 		: id === 'tuple' ? (({ values }) =>
-			tyTupleOf(foldr(nil, values, (tuple, value) => cons(infer(value), tuple)))
+			tyTupleOf(v_foldr(nil, values, (tuple, value) => v_cons(infer(value), tuple)))
 		)
 		: id === 'typeof' ? (({}) =>
 			tyString
@@ -1347,8 +1347,8 @@ let typesModule = () => {
 			}),
 			Object: tyStructOfCompleted({
 				assign: tyLambdaOf(newRef(), newRef()),
-				entries: tyLambdaOf(tyStructOf({}), tyArrayOf(tyTupleOf(cons(tyString, cons(newRef(), nil))))),
-				fromEntries: tyLambdaOf(tyArrayOf(tyTupleOf(cons(tyString, cons(newRef(), nil)))), tyStructOf({})),
+				entries: tyLambdaOf(tyStructOf({}), tyArrayOf(tyTupleOf(v_cons(tyString, v_cons(newRef(), nil))))),
+				fromEntries: tyLambdaOf(tyArrayOf(tyTupleOf(v_cons(tyString, v_cons(newRef(), nil)))), tyStructOf({})),
 				keys: tyLambdaOf(tyStructOf({}), tyArrayOf(tyString)),
 			}),
 			Promise: tyStructOfCompleted({
@@ -1789,7 +1789,7 @@ evaluate = vvs => {
 			let v = eval(lhs);
 			return v !== undefined ? v : eval(rhs);
 		})
-		: id === 'cons' ? (({ lhs, rhs }) => assumeAny(cons(eval(lhs), eval(rhs))))
+		: id === 'cons' ? (({ lhs, rhs }) => assumeAny(v_cons(eval(lhs), eval(rhs))))
 		: id === 'deref' ? (({ expr }) => {
 			let { vv } = eval(expr);
 			return get1(vv);
@@ -1834,7 +1834,7 @@ evaluate = vvs => {
 		)
 		: id === 'segment' ? (({ opcodes }) => error('BAD'))
 		: id === 'str' ? (({ v }) => v)
-		: id === 'struct' ? (({ kvs }) => assumeAny(foldl({}, kvs, (struct, kv) => {
+		: id === 'struct' ? (({ kvs }) => assumeAny(v_foldl({}, kvs, (struct, kv) => {
 			let { key, value } = kv;
 			setp(struct, key, eval(value));
 			return struct;
@@ -1846,7 +1846,7 @@ evaluate = vvs => {
 				return eval(lhs);
 			} catch (e) { return eval(_app(rhs, e)); }
 		}())
-		: id === 'tuple' ? (({ values }) => assumeAny(foldr(nil, values, (tuple, value) => cons(eval(value), tuple))))
+		: id === 'tuple' ? (({ values }) => assumeAny(v_foldr(nil, values, (tuple, value) => v_cons(eval(value), tuple))))
 		: id === 'typeof' ? (({ expr }) => assumeAny(typeof (eval(expr))))
 		: id === 'undefined' ? (({}) => undefined)
 		: id === 'var' ? (({ vn }) => ll_findk(vvs, vn))
@@ -2283,7 +2283,7 @@ let interpret = opcodes => {
 			: id === 'coal' ?
 				interpretBinOp((a, b) => a ?? b)
 			: id === 'cons' ?
-				interpretBinOp(cons)
+				interpretBinOp(v_cons)
 			: id === 'deref' ? function() {
 				let ref = rpop();
 				rpush(frames[ref.fs][ref.ps]);
