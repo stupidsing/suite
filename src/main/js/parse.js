@@ -33,7 +33,52 @@ let seti = (m, k, v) => { fake(m)[0 <= k && fake(k)] = v; return v; };
 let getp = (m, k) => fake(m)[k !== '' && fake(k)];
 let setp = (m, k, v) => { fake(m)[k !== '' && fake(k)] = v; return v; };
 
-let nil = [];
+let ll_nil = () => undefined;
+
+let ll_cons = (head, tail) => [head, tail];
+let ll_head = get0;
+let ll_isEmpty = list => list === ll_nil();
+let ll_isNotEmpty = list => list !== ll_nil();
+let ll_tail = get1;
+
+let ll_contains;
+
+ll_contains = (es, e) => {
+	return ll_isNotEmpty(es) ? function() {
+		let [head, tail] = es;
+		return e !== head ? ll_contains(tail, e) : true;
+	}() : false;
+};
+
+let ll_find;
+
+ll_find = (es, op) => {
+	return ll_isNotEmpty(es) ? function() {
+		let [head, tail] = es;
+		return op(head) ? head : ll_find(tail, op);
+	}() : undefined;
+};
+
+let ll_foldl;
+ll_foldl = (init, es, op) => ll_isNotEmpty(es) ? ll_foldl(op(init, ll_head(es)), ll_tail(es), op) : init;
+
+let ll_foldr;
+ll_foldr = (init, es, op) => ll_isNotEmpty(es) ? op(ll_foldr(init, ll_tail(es), op), ll_head(es)) : init;
+
+let ll_findk = (kvs, k) => {
+	let kv = ll_find(kvs, ([k_, v]) => k_ === k);
+	return kv !== undefined ? get1(kv) : error(`variable ${k} not found`);
+};
+
+let ll_len;
+
+ll_len = es => ll_isNotEmpty(es) ? 1 + ll_len(ll_tail(es)) : 0;
+
+let ll_map;
+
+ll_map = (es, op) => ll_isNotEmpty(es) ? ll_cons(op(ll_head(es)), ll_map(ll_tail(es), op)) : ll_nil();
+
+let v_nil = [];
 
 let v_cons = (head, tail) => [head, ...tail,];
 let v_head = list => list[0];
@@ -92,51 +137,6 @@ let v_findk = (kvs, k) => {
 };
 
 let v_len = es => es.length;
-
-let ll_nil = () => undefined;
-
-let ll_cons = (head, tail) => [head, tail];
-let ll_head = get0;
-let ll_isEmpty = list => list === ll_nil();
-let ll_isNotEmpty = list => list !== ll_nil();
-let ll_tail = get1;
-
-let ll_contains;
-
-ll_contains = (es, e) => {
-	return ll_isNotEmpty(es) ? function() {
-		let [head, tail] = es;
-		return e !== head ? ll_contains(tail, e) : true;
-	}() : false;
-};
-
-let ll_find;
-
-ll_find = (es, op) => {
-	return ll_isNotEmpty(es) ? function() {
-		let [head, tail] = es;
-		return op(head) ? head : ll_find(tail, op);
-	}() : undefined;
-};
-
-let ll_foldl;
-ll_foldl = (init, es, op) => ll_isNotEmpty(es) ? ll_foldl(op(init, ll_head(es)), ll_tail(es), op) : init;
-
-let ll_foldr;
-ll_foldr = (init, es, op) => ll_isNotEmpty(es) ? op(ll_foldr(init, ll_tail(es), op), ll_head(es)) : init;
-
-let ll_findk = (kvs, k) => {
-	let kv = ll_find(kvs, ([k_, v]) => k_ === k);
-	return kv !== undefined ? get1(kv) : error(`variable ${k} not found`);
-};
-
-let ll_len;
-
-ll_len = es => ll_isNotEmpty(es) ? 1 + ll_len(ll_tail(es)) : 0;
-
-let ll_map;
-
-ll_map = (es, op) => ll_isNotEmpty(es) ? ll_cons(op(ll_head(es)), ll_map(ll_tail(es), op)) : ll_nil();
 
 let gen = i => {
 	let array = [];
@@ -368,7 +368,7 @@ let parserModule = () => {
 		keepsplitl_ = input => input !== '' ? function() {
 			let [left, right] = splitl(input, sep);
 			return v_cons(apply(left), keepsplitl_(right));
-		}() : nil;
+		}() : v_nil;
 		return keepsplitl_(s);
 	};
 
@@ -1316,7 +1316,7 @@ let typesModule = () => {
 			doBind(ast, infer(rhs), newRef()) && infer(lhs)
 		)
 		: id === 'tuple' ? (({ values }) =>
-			tyTupleOf(v_foldr(nil, values, (tuple, value) => v_cons(infer(value), tuple)))
+			tyTupleOf(v_foldr(v_nil, values, (tuple, value) => v_cons(infer(value), tuple)))
 		)
 		: id === 'typeof' ? (({}) =>
 			tyString
@@ -1347,8 +1347,8 @@ let typesModule = () => {
 			}),
 			Object: tyStructOfCompleted({
 				assign: tyLambdaOf(newRef(), newRef()),
-				entries: tyLambdaOf(tyStructOf({}), tyArrayOf(tyTupleOf(v_cons(tyString, v_cons(newRef(), nil))))),
-				fromEntries: tyLambdaOf(tyArrayOf(tyTupleOf(v_cons(tyString, v_cons(newRef(), nil)))), tyStructOf({})),
+				entries: tyLambdaOf(tyStructOf({}), tyArrayOf(tyTupleOf(v_cons(tyString, v_cons(newRef(), v_nil))))),
+				fromEntries: tyLambdaOf(tyArrayOf(tyTupleOf(v_cons(tyString, v_cons(newRef(), v_nil)))), tyStructOf({})),
 				keys: tyLambdaOf(tyStructOf({}), tyArrayOf(tyString)),
 			}),
 			Promise: tyStructOfCompleted({
@@ -1846,7 +1846,7 @@ evaluate = vvs => {
 				return eval(lhs);
 			} catch (e) { return eval(_app(rhs, e)); }
 		}())
-		: id === 'tuple' ? (({ values }) => assumeAny(v_foldr(nil, values, (tuple, value) => v_cons(eval(value), tuple))))
+		: id === 'tuple' ? (({ values }) => assumeAny(v_foldr(v_nil, values, (tuple, value) => v_cons(eval(value), tuple))))
 		: id === 'typeof' ? (({ expr }) => assumeAny(typeof (eval(expr))))
 		: id === 'undefined' ? (({}) => undefined)
 		: id === 'var' ? (({ vn }) => ll_findk(vvs, vn))
