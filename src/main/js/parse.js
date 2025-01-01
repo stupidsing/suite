@@ -482,7 +482,7 @@ let parserModule = () => {
 		return parseArray_(program);
 	};
 
-	let parseTuple = (program, parse) => _tuple((keepsplitl(program + ',', ',', parse)));
+	let parseTuple = (program, parse) => _tuple(keepsplitl(program + ',', ',', parse));
 
 	let parseArrayTuple = (program_, parse) => {
 		let program = program_.slice(1, -1).trim();
