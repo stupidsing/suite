@@ -885,22 +885,22 @@ let typesModule = () => {
 		let dump_;
 		dump_ = (vs, v) => {
 			let { ref } = v;
-			let vs_ = cons(v, vs);
-			let listv = assumeList(v);
+			let vs_ = ll_cons(v, vs);
+			let listv = assumeAny(v);
 			return false ? undefined
-			: 8 <= len(vs) ?
+			: 8 <= ll_len(vs) ?
 				'...'
-			: contains(vs, v) ?
+			: ll_contains(vs, v) ?
 				'<recurse>'
 			: typeof ref === 'number' ? function() {
 				let v_ = refs.get(ref);
 				return v_ !== v ? dump_(vs_, v_) : `_${ref}`;
 			}()
 			: typeof v === 'object' ? (false ? undefined
-				: isEmpty(listv) ?
+				: ll_isEmpty(listv) ?
 					''
-				: isNotEmpty(listv) ?
-					`${dump_(vs_, head(listv))}:${dump_(vs_, assumeObject(tail(listv)))}`
+				: v.t === undefined && ll_isNotEmpty(listv) ?
+					`${dump_(vs_, ll_head(listv))}:${dump_(vs_, assumeObject(ll_tail(listv)))}`
 				: function() {
 					let t = v.t;
 					let join = Object
@@ -916,7 +916,7 @@ let typesModule = () => {
 			:
 				JSON.stringify(v, undefined, undefined);
 		};
-		return dump_(nil, v);
+		return dump_(ll_nil, v);
 	};
 
 	let tryBind;
