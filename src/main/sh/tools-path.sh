@@ -8,7 +8,7 @@ MAVEN_V=3.9.9
 NODE_V=22.13.0
 
 echo '
-AWS_DIST=$(cchs "echo https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" @curl @unzip "@exec ./aws/install -i . -b .")/aws/dist
+AWS_DIST=$(cchs "echo https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" @curl @unzip "@exec aws/install -i . -b .")/aws/dist
 ECLIPSE_HOME=$(cchs "echo http://ftp.jaist.ac.jp/pub/eclipse/technology/epp/downloads/release/'${ECLIPSE_V}'/R/eclipse-java-'${ECLIPSE_V}'-R-linux-gtk-x86_64.tar.gz" @curl @tar-zxf @dir)
 GCLOUD_HOME=$(cchs "echo https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-cli-linux-x86_64.tar.gz" @curl @tar-zxf)/google-cloud-sdk
 GH_HOME=$(cchs "echo https://github.com/cli/cli/releases/download/v'${GH_V}'/gh_'${GH_V}'_linux_amd64.tar.gz" @curl @tar-zxf @dir)
