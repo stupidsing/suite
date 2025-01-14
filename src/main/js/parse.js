@@ -2518,12 +2518,12 @@ let processGenerate = ast6 => {
 	let proxy = (n, service) => _lambdaCapture(_undefined, _var(newDummy()), _var(newDummy()), _segment([
 		{ id: 'frame-get-ref', fs: 0, ps: 1 },
 		{ id: 'deref' },
-		{ id: 'service', n, service: service },
+		{ id: 'service', n, service },
 	]));
 
-	let addObject = (ast, c, v) => _let(_var(c), v, ast);
+	let add = (ast, c, v) => _let(_var(c), v, ast);
 
-	let addObjectOfFunctions = (ast, c, fns) => addObject(
+	let addObjectOfFunctions = (ast, c, fns) => add(
 		ast,
 		c,
 		_struct(fns.map(({ f, n }) => ({ key: f, value: proxy(n, `${c}.${f}`) }))));
@@ -2546,11 +2546,11 @@ let processGenerate = ast6 => {
 			{ f: 'error', n: 1 },
 			{ f: 'log', n: 1 },
 		]))
-		.map(ast => addObject(ast, 'eval', proxy(1, 'eval')))
-		.map(ast => addObject(ast, 'process', _struct([
+		.map(ast => add(ast, 'eval', proxy(1, 'eval')))
+		.map(ast => add(ast, 'process', _struct([
 			{ key: 'env', value: _struct(Object.entries(process.env).map(([key, v]) => ({ key, value: _str(v) }))) },
 		])))
-		.map(ast => addObject(ast, 'require', proxy(1, 'require')))
+		.map(ast => add(ast, 'require', proxy(1, 'require')))
 		[0];
 
 	let ast8 = rewriteVars(0, 0, ll_nil(), ast7);
