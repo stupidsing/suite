@@ -1,0 +1,3 @@
+{
+	readFileSync: (f, encoding) => '',
+}

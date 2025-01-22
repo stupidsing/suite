@@ -1,4 +1,4 @@
-// cat src/main/js/parse.js | node src/main/js/parse.js
+// (cd src/main/js && cat parse.js | node parse.js)
 // parse a javascript subset and inference variable types.
 // able to parse myself.
 
@@ -1644,12 +1644,16 @@ rewriteCapture = (fs, vfs, ast) => {
 	return f(ast);
 };
 
+let parseAst;
+
 let rewriteIntrinsics;
 
 rewriteIntrinsics = ast => {
 	let { id, lhs, rhs } = ast;
 
 	return false ? undefined
+	: id === 'app' && lhs.id === 'var' && ['require',].includes(lhs.vn) && rhs.id === 'str' ?
+		parseAst(require('fs').readFileSync(`${rhs.v}.js`, 'utf8')).ast
 	: id === 'app' && lhs.id === 'dot' && ['filter', 'flatMap', 'map', 'reduce',].includes(lhs.field) ?
 		_app(_var(`$${lhs.field}`), _pair(rewriteIntrinsics(lhs.expr), rewriteIntrinsics(rhs)))
 	:
@@ -2428,7 +2432,7 @@ let interpret = opcodes => {
 let parser = parserModule();
 let types = typesModule();
 
-let parseAst = program => {
+parseAst = program => {
 	let pos0;
 	let posx;
 	while (function() {
