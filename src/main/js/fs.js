@@ -1,3 +1,3 @@
 {
-	readFileSync: (f, encoding) => '',
+	readFileSync: (f, encoding) => fs_readFileSync(f, encoding),
 }

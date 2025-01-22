@@ -1349,6 +1349,7 @@ let typesModule = () => {
 				log: tyLambdaOf(newRef(), tyVoid),
 			}),
 			eval: tyLambdaOf(tyString, newRef()),
+			fs_readFileSync: tyLambdaOf(tyPairOf(tyString, tyString), tyString),
 			process: tyStructOfCompleted({
 				env: tyStructOf({}),
 			}),
@@ -2363,6 +2364,10 @@ let interpret = opcodes => {
 				rpush(b);
 				rpush(a);
 			}()
+			: id === 'service' && opcode.service === 'fs_readFileSync' ? function() {
+				let [a, b] = rpop();
+				return rpush(require('fs').readFileSync(a, b));
+			}()
 			: id === 'service' && opcode.f === 1 ?
 				rpush(getp(rpop(), opcode.field))
 			: id === 'service' && opcode.m === 1 ? function() {
@@ -2453,7 +2458,7 @@ parseAst = program => {
 };
 
 let processRewrite = program => {
-	let roots = ['JSON', 'Object', 'Promise', 'console', 'eval', 'process', 'require',]
+	let roots = ['JSON', 'Object', 'Promise', 'console', 'eval', 'fs_readFileSync', 'process', 'require',]
 		.reduce((v, vl) => ll_cons(vl, v), ll_nil());
 
 	let { ast: ast4, type } = parseAst(program);
@@ -2551,6 +2556,7 @@ let processGenerate = ast6 => {
 			{ f: 'log', n: 1 },
 		]))
 		.map(ast => add(ast, 'eval', proxy(1, 'eval')))
+		.map(ast => add(ast, 'fs_readFileSync', proxy(2, 'fs_readFileSync')))
 		.map(ast => add(ast, 'process', _struct([
 			{ key: 'env', value: _struct(Object.entries(process.env).map(([key, v]) => ({ key, value: _str(v) }))) },
 		])))
