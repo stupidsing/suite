@@ -1715,15 +1715,9 @@ rewriteRenameVar = (scope, vns, ast) => {
 	return f(ast);
 };
 
-let evaluateVvs = Object.entries({
-	JSON: eval('JSON'),
-	Object: eval('Object'),
-	Promise: eval('Promise'),
-	console: eval('console'),
-	eval: eval('eval'),
-	process: eval('process'),
-	require: eval('require'),
-}).reduce((v, vl) => ll_cons(vl, v), ll_nil());
+let evaluateVvs = ['JSON', 'Object', 'Promise', 'console', 'eval', 'process', 'require',]
+	.map(vn => [vn, eval(vn)])
+	.reduce((v, vl) => ll_cons(vl, v), ll_nil());
 
 let evaluate;
 
