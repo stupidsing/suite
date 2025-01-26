@@ -1814,7 +1814,6 @@ evaluate = vvs => {
 			let value = getp(object, field);
 			return false ? undefined
 			: typeof (object.length) === 'number' && field !== 'length' ? assumeAny(unwrap(value.bind(object)))
-			: typeof object === 'string' ? assumeAny(unwrap(value.bind(object)))
 			: typeof value !== 'function' ? value
 			: fake(value).bind(object);
 		})
@@ -2134,8 +2133,9 @@ generate = ast => {
 		generateBinOp
 	: id === 'pos' ?
 		generateOp
-	: id === 'ref' ? (({ expr }) =>
-		expr.id === 'frame' ? [{ id: 'frame-get-ref', fs: expr.fs, ps: expr.ps },]
+	: id === 'ref' ? (({ expr }) => false ? undefined
+		: expr.id === 'deref' ? generate(expr.expr)
+		: expr.id === 'frame' ? [{ id: 'frame-get-ref', fs: expr.fs, ps: expr.ps },]
 		: error('BAD')
 	)
 	: id === 'segment' ? (({ opcodes }) =>
