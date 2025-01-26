@@ -1813,6 +1813,7 @@ evaluate = vvs => {
 			return false ? undefined
 			: typeof (object.length) === 'number' && field !== 'length' ? assumeAny(unwrap(value.bind(object)))
 			: typeof value !== 'function' ? value
+			: ['get', 'has', 'set'].includes(field) ? assumeAny(unwrap(value.bind(object)))
 			: fake(value).bind(object);
 		})
 		: id === 'eq_' ? (({ lhs, rhs }) => assumeAny(eval(lhs) === eval(rhs)))

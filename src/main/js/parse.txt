@@ -1,11 +1,4 @@
 # FAIL
-echo "
-let map = new Map();
-map.set('key', 'value');
-map.get('key')
-" | EVALUATE=1 node src/main/js/parse.js
-
-# FAIL
 (cd src/main/js && cat parse.js | EVALUATE=1 node parse.js)
 
 # FAIL
@@ -22,7 +15,7 @@ echo "
 let map = new Map();
 map.set('key', 'value');
 map.has('key') && map.get('key') === 'value'
-" | INTERPRET=1 node src/main/js/parse.js
+" | EVALUATE=1 INTERPRET=1 node src/main/js/parse.js
 
 # OK
 echo "
