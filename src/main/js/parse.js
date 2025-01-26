@@ -2112,7 +2112,55 @@ generate = ast => {
 			] },
 			{ id: 'lambda-capture' },
 		]
-		: clazz === 'Map' ? error('BAD')
+		: clazz === 'Map' ? [
+			{ id: 'object' },
+			{ id: 'label-segment', segment: [
+				{ id: 'map' },
+				{ id: 'object' },
+				{ id: 'dup', i: 1 },
+				{ id: 'label-segment', segment: [
+					{ id: 'frame-get-ref', fs: 0, ps: 0 },
+					{ id: 'deref' },
+					{ id: 'frame-get-ref', fs: 0, ps: 1 },
+					{ id: 'deref' },
+					{ id: 'map-get' },
+					{ id: 'return' },
+				] },
+				{ id: 'lambda-capture' },
+				{ id: 'object-put', key: 'get' },
+				{ id: 'dup', i: 1 },
+				{ id: 'label-segment', segment: [
+					{ id: 'frame-get-ref', fs: 0, ps: 0 },
+					{ id: 'deref' },
+					{ id: 'frame-get-ref', fs: 0, ps: 1 },
+					{ id: 'deref' },
+					{ id: 'map-has' },
+					{ id: 'return' },
+				] },
+				{ id: 'lambda-capture' },
+				{ id: 'object-put', key: 'has' },
+				{ id: 'dup', i: 1 },
+				{ id: 'label-segment', segment: [
+					{ id: 'frame-get-ref', fs: 0, ps: 0 },
+					{ id: 'deref' },
+					{ id: 'frame-get-ref', fs: 0, ps: 1 },
+					{ id: 'deref' },
+					{ id: 'pair-left' },
+					{ id: 'frame-get-ref', fs: 0, ps: 1 },
+					{ id: 'deref' },
+					{ id: 'pair-right' },
+					{ id: 'map-set' },
+					{ id: 'undefined' },
+					{ id: 'return' },
+				] },
+				{ id: 'lambda-capture' },
+				{ id: 'object-put', key: 'set' },
+				{ id: 'rotate' },
+				{ id: 'discard' },
+				{ id: 'return' },
+			] },
+			{ id: 'lambda-capture' },
+		]
 		: clazz === 'Promise' ? error('BAD')
 		: error(`unknown class ${clazz}`)
 	)
@@ -2309,6 +2357,8 @@ let interpret = opcodes => {
 				rpop()
 			: id === 'div' ?
 				interpretBinOp((a, b) => a / b)
+			: id === 'dup' ?
+				rpush(rstack[rstack.length - 1 - opcode.i])
 			: id === 'eq_' ?
 				interpretBinOp((a, b) => a === b)
 			: id === 'exit' ? function() {
@@ -2342,6 +2392,18 @@ let interpret = opcodes => {
 				interpretBinOp((a, b) => a <= b)
 			: id === 'lt_' ?
 				interpretBinOp((a, b) => a < b)
+			: id === 'map' ?
+				rpush(new Map())
+			: id === 'map-get' ?
+				interpretBinOp((map, key) => map.get(key))
+			: id === 'map-has' ?
+				interpretBinOp((map, key) => map.has(key))
+			: id === 'map-set' ? function() {
+				let value = rpop();
+				let key = rpop();
+				let map = rpop();
+				map.set(key, value);
+			}()
 			: id === 'mod' ?
 				interpretBinOp((a, b) => a % b)
 			: id === 'mul' ?
@@ -2370,6 +2432,10 @@ let interpret = opcodes => {
 				error('BAD')
 			: id === 'pair' ?
 				interpretBinOp((a, b) => [a, b])
+			: id === 'pair-left' ?
+				rpush(rpop()[0])
+			: id === 'pair-right' ?
+				rpush(rpop()[1])
 			: id === 'pos' ?
 				rpush(+rpop())
 			: id === 'return' ? function() {
@@ -2449,7 +2515,9 @@ let interpret = opcodes => {
 				error('BAD');
 	}());
 
-	return rstack.length !== 1 ? error('RSTACK RESIDUE') : frames.length !== 1 && frames[0].length !== 0 ? error('FRAME RESIDUE') : rpop();
+	return rstack.length !== 1 ? error('RSTACK RESIDUE')
+	: frames.length !== 1 && frames[0].length !== 0 ? error('FRAME RESIDUE')
+	: rpop();
 };
 
 let parser = parserModule();
