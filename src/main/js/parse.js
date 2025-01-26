@@ -1774,9 +1774,7 @@ evaluate = vvs => {
 		: id === 'add' ? (({ lhs, rhs }) => assumeAny(eval(lhs) + eval(rhs)))
 		: id === 'alloc' ? (({ vn, expr }) => evaluate(ll_cons([vn, undefined], vvs))(expr))
 		: id === 'and' ? (({ lhs, rhs }) => assumeAny(eval(lhs) && eval(rhs)))
-		: id === 'app' ? (({ lhs, rhs }) =>
-			eval(lhs).call(undefined, eval(rhs))
-		)
+		: id === 'app' ? (({ lhs, rhs }) => eval(lhs).call(undefined, eval(rhs)))
 		: id === 'assign' ? (({ bind, value, expr }) => false ? undefined
 			: bind.id === 'deref' ? function() {
 				let { vv } = eval(bind);
