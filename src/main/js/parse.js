@@ -1715,15 +1715,49 @@ rewriteRenameVar = (scope, vns, ast) => {
 	return f(ast);
 };
 
-let evaluateVvs = ['JSON', 'Object', 'Promise', 'console', 'eval', 'process', 'require',]
-	.map(vn => [vn, eval(vn)])
+let pairTag = {};
+
+let unwrap = f => arg => {
+	let ps = [];
+	while (arg !== undefined && assumeAny(arg[2]) === pairTag) (function() {
+		ps.push(arg[0]);
+		arg = arg[1];
+		return undefined;
+	}());
+	ps.push(arg);
+	return f.apply(undefined, ps);
+};
+
+let evaluateVvs =
+	[
+		['JSON', assumeAny({
+			stringify: unwrap(JSON.stringify),
+		})],
+		['Object', assumeAny({
+			assign: unwrap(Object.assign),
+			entries: unwrap(Object.entries),
+			fromEntries: unwrap(Object.fromEntries),
+			keys: unwrap(Object.keys),
+		})],
+		['Promise', assumeAny({
+			reject: unwrap(Promise.reject),
+			resolve: unwrap(Promise.resolve),
+		})],
+		['console', assumeAny({
+			error: unwrap(console.error),
+			log: unwrap(console.log),
+		})],
+		['eval', assumeAny(unwrap(eval('eval')))],
+		['process', assumeAny(eval('process'))],
+		['require', assumeAny(path => path === 'fs' ? {
+			readFileSync: unwrap(require('fs').readFileSync)
+		} : require(path))],
+	]
 	.reduce((v, vl) => ll_cons(vl, v), ll_nil());
 
 let evaluate;
 
 evaluate = vvs => {
-	let pairTag = {};
-
 	let assign = (vn, value) => {
 		let vv = ll_find(vvs, ([vn_, value]) => vn_ === vn);
 		seti(vv, 1, value);
@@ -1740,17 +1774,9 @@ evaluate = vvs => {
 		: id === 'add' ? (({ lhs, rhs }) => assumeAny(eval(lhs) + eval(rhs)))
 		: id === 'alloc' ? (({ vn, expr }) => evaluate(ll_cons([vn, undefined], vvs))(expr))
 		: id === 'and' ? (({ lhs, rhs }) => assumeAny(eval(lhs) && eval(rhs)))
-		: id === 'app' ? (({ lhs, rhs }) => {
-			let arg = eval(rhs);
-			let ps = [];
-			while (arg !== undefined && assumeAny(arg[2]) === pairTag) (function() {
-				ps.push(arg[0]);
-				arg = arg[1];
-				return undefined;
-			}());
-			ps.push(arg);
-			return eval(lhs).apply(undefined, ps);
-		})
+		: id === 'app' ? (({ lhs, rhs }) =>
+			eval(lhs).call(undefined, eval(rhs))
+		)
 		: id === 'assign' ? (({ bind, value, expr }) => false ? undefined
 			: bind.id === 'deref' ? function() {
 				let { vv } = eval(bind);
@@ -1786,7 +1812,11 @@ evaluate = vvs => {
 		: id === 'dot' ? (({ expr, field }) => {
 			let object = eval(expr);
 			let value = getp(object, field);
-			return typeof value !== 'function' ? value : fake(value).bind(object);
+			return false ? undefined
+			: typeof (object.length) === 'number' && field !== 'length' ? assumeAny(unwrap(value.bind(object)))
+			: typeof object === 'string' ? assumeAny(unwrap(value.bind(object)))
+			: typeof value !== 'function' ? value
+			: fake(value).bind(object);
 		})
 		: id === 'eq_' ? (({ lhs, rhs }) => assumeAny(eval(lhs) === eval(rhs)))
 		: id === 'frame' ? error('BAD')
