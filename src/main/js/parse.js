@@ -2222,7 +2222,7 @@ generate = ast => {
 		...values.toReversed().flatMap(value => [...generate(value), { id: 'cons' },]),
 	])
 	: id === 'typeof' ? (({ expr }) => [
-		[{ id: 'typeof' }]
+		{ id: 'typeof' },
 	])
 	: id === 'undefined' ? (({}) =>
 		[{ id },]
@@ -2512,7 +2512,7 @@ let interpret = opcodes => {
 				return undefined;
 			}()
 			: id === 'typeof' ?
-				rpush(typeof rpop())
+				rpush(typeof (rpop()))
 			: id === 'undefined' ?
 				rpush(undefined)
 			:
