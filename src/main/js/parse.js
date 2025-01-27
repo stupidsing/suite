@@ -1835,7 +1835,7 @@ evaluate = vvs => {
 		: id === 'new' ? (({ clazz }) => false ? undefined
 			: clazz === 'Error' ? assumeAny(e => new Error(e))
 			: clazz === 'Map' ? assumeAny(() => new Map())
-			: clazz === 'Promise' ? assumeAny(f => new Promise(f))
+			: clazz === 'Promise' ? error('BAD') // assumeAny(f => new Promise(f))
 			: error(`unknown class ${clazz}`)
 		)
 		: id === 'nil' ? (({}) => assumeAny([]))
