@@ -150,6 +150,8 @@ let dump = v => {
 			'...'
 		: ll_contains(vs, v) ?
 			'<recurse>'
+		: v.length !== undefined && typeof v !== 'string' ?
+			`[${v.map(v_ => `${dump(n + 1, ll_cons(v, vs), v_)}, `).join('').trim()}]`
 		: v.id !== undefined ? function() {
 			let join = Object
 				.entries(v)
