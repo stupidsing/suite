@@ -2224,7 +2224,7 @@ generate = ast => {
 	})
 	: id === 'tuple' ? (({ values }) => [
 		{ id: 'nil' },
-		...values.toReversed().flatMap(value => [...generate(value), { id: 'cons' },]),
+		...values.toReversed().flatMap(value => [...generate(value), { id: 'rotate' }, { id: 'cons' },]),
 	])
 	: id === 'typeof' ? (({ expr }) => [
 		{ id: 'typeof' },
@@ -2355,7 +2355,7 @@ let interpret = opcodes => {
 			: id === 'coal' ?
 				interpretBinOp((a, b) => a ?? b)
 			: id === 'cons' ?
-				interpretBinOp((a, b) => v_cons(b, a))
+				interpretBinOp(v_cons)
 			: id === 'deref' ? function() {
 				let ref = rpop();
 				rpush(frames[ref.fs][ref.ps]);
