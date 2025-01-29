@@ -58,6 +58,11 @@ console.log(JSON.stringify(process.env, undefined, undefined))
 
 # OK
 echo '
+async a => await Promise.resolve(a + 3)
+' | TYPE=1 node src/main/js/parse.js
+
+# OK
+echo '
 let error = message => { throw new Error(message); };
 error(3)
 ' | EVALUATE=1 node src/main/js/parse.js
