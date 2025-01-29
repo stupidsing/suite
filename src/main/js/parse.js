@@ -2352,7 +2352,7 @@ let interpret = opcodes => {
 			: id === 'coal' ?
 				interpretBinOp((a, b) => a ?? b)
 			: id === 'cons' ?
-				interpretBinOp(v_cons)
+				interpretBinOp((a, b) => v_cons(b, a))
 			: id === 'deref' ? function() {
 				let ref = rpop();
 				rpush(frames[ref.fs][ref.ps]);
