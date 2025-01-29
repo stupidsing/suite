@@ -145,13 +145,15 @@ let newDummy = () => {
 
 let dump = v => {
 	let dump_;
-	dump_ = (n, vs, v) => false ? undefined
+	dump_ = (n, vs, v) => {
+		let vlist = assumeList(v);
+		return false ? undefined
 		: 8 <= n ?
 			'...'
 		: ll_contains(vs, v) ?
 			'<recurse>'
-		: v.length !== undefined && typeof v !== 'string' ?
-			`[${v.map(v_ => `${dump(n + 1, ll_cons(v, vs), v_)}, `).join('').trim()}]`
+		: vlist.length !== undefined && typeof v !== 'string' ?
+			`[${vlist.map(v_ => `${dump_(n + 1, ll_cons(v, vs), v_)}, `).join('').trim()}]`
 		: v.id !== undefined ? function() {
 			let join = Object
 				.entries(v)
@@ -162,6 +164,7 @@ let dump = v => {
 		}()
 		:
 			v.toString();
+	};
 	return dump_(0, ll_nil(), v);
 };
 
