@@ -189,10 +189,12 @@ let _nil = { id: 'nil' };
 let _not = expr => ({ id: 'not', expr });
 let _num = i => ({ id: 'num', i });
 let _pair = (lhs, rhs) => ({ id: 'pair', lhs, rhs });
+let _plr = (expr, i) => ({ id: 'plr', expr, i });
 let _ref = expr => ({ id: 'ref', expr });
 let _segment = opcodes => ({ id: 'segment', opcodes });
 let _str = v => ({ id: 'str', v });
 let _struct = kvs => ({ id: 'struct', kvs });
+let _tget = (expr, i) => ({ id: 'tget', expr, i });
 let _throw = expr => ({ id: 'throw', expr });
 let _try = (lhs, rhs) => ({ id: 'try', lhs, rhs });
 let _tuple = values => ({ id: 'tuple', values });
@@ -706,12 +708,14 @@ let rewrite = (rf, ast) => {
 	: id === 'num' ? (({ i }) => ast)
 	: id === 'or_' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
 	: id === 'pair' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
+	: id === 'plr' ? (({ expr, i }) => ({ id, expr: rf(expr), i }))
 	: id === 'pos' ? (({ expr }) => ({ id, expr: rf(expr) }))
 	: id === 'ref' ? (({ expr }) => ({ id, expr: rf(expr) }))
 	: id === 'segment' ? (({ opcodes }) => ast)
 	: id === 'str' ? (({ v }) => ast)
 	: id === 'struct' ? (({ kvs }) => ({ id, kvs: kvs.map(({ key, value }) => ({ key, value: rf(value) })) }))
 	: id === 'sub' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
+	: id === 'tget' ? (({ expr, i }) => ({ id, expr: rf(expr), i }))
 	: id === 'throw' ? (({ expr }) => ({ id, expr: rf(expr) }))
 	: id === 'try' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
 	: id === 'tuple' ? (({ values }) => ({ id, values: values.map(rf) }))
@@ -834,6 +838,7 @@ format_ = (priority, ast) => {
 	: id === 'num' ? (({ i }) => `${i}`)
 	: id === 'or_' ? (({ lhs, rhs }) => `${fm(lhs)} || ${fmt(rhs)}`)
 	: id === 'pair' ? (({ lhs, rhs }) => `${fm(lhs)}, ${fmt(rhs)}`)
+	: id === 'plr' ? (({ expr, i }) => `${fmt(expr)}[${i}]`)
 	: id === 'pos' ? (({ expr }) => `+ ${fmt(expr)}`)
 	: id === 'ref' ? (({ expr }) => `& ${fmt(expr)}`)
 	: id === 'segment' ? (({ opcodes }) => `<<${stringify(opcodes)}>>`)
@@ -845,6 +850,7 @@ format_ = (priority, ast) => {
 		return `{ ${s} }`;
 	})
 	: id === 'sub' ? (({ lhs, rhs }) => `${fmt(lhs)} - ${fm(rhs)}`)
+	: id === 'tget' ? (({ expr, i }) => `${fmt(expr)}[${i}]`)
 	: id === 'tuple' ? (({ values }) => `[${values.map(fm).join(', ')}]`)
 	: id === 'typeof' ? (({ expr }) => `typeof ${fmt(expr)}`)
 	: id === 'undefined' ? (({}) => `${id}`)
@@ -1275,6 +1281,11 @@ let typesModule = () => {
 		: id === 'pair' ? (({ lhs, rhs }) =>
 			tyPairOf(infer(lhs), infer(rhs))
 		)
+		: id === 'plr' ? (({ expr, i }) => {
+			let tl = newRef();
+			let tr = newRef();
+			return doBind(ast, infer(expr), tyPairOf(tl, tr)) && (i === 0 ? tl : tr);
+		})
 		: id === 'pos' ? (({ expr }) =>
 			doBind(ast, infer(expr), tyNumber) && tyNumber
 		)
@@ -1303,6 +1314,15 @@ let typesModule = () => {
 		})
 		: id === 'sub' ?
 			inferMathOp
+		: id === 'tget' ? (({ expr, i }) => {
+			let ts = v_nil;
+			while (0 < i) (function() {
+				ts = v_cons(newRef(), ts);
+				i = i - 1;
+			}());
+			let ti = newRef();
+			return doBind(ast, infer(expr), tyTupleOf(v_cons(ti, ts)));
+		})
 		: id === 'throw' ? (({}) =>
 			newRef()
 		)
@@ -1542,7 +1562,7 @@ let ifBindId = bindId => {
 			bindConstant
 		: id === 'pair' ? (({ lhs, rhs }) => {
 			return id !== value.id
-				? ifBind(lhs, _index(value, _num(0)), ifBind(rhs, _index(value, _num(1)), then, else_), else_)
+				? ifBind(lhs, _plr(value, 0), ifBind(rhs, _plr(value, 1), then, else_), else_)
 				: ifBind(lhs, value.lhs, ifBind(rhs, value.rhs, then, else_), else_);
 		})
 		: id === 'str' ?
@@ -1556,7 +1576,7 @@ let ifBindId = bindId => {
 		: id === 'tuple' ? (({ values }) => {
 			let indices = gen(values.length);
 			return indices.reduce(
-				(expr, i) => ifBind(values[i], id !== value.id ? _index(value, _num(i)) : value.values[i], expr, else_),
+				(expr, i) => ifBind(values[i], id !== value.id ? _tget(value, i) : value.values[i], expr, else_),
 				then);
 		})
 		: id === 'var' ? (({ vn }) =>
@@ -1580,7 +1600,12 @@ rewriteBind = ast => {
 	let { bind, id } = ast;
 
 	let f = false ? undefined
-	: id === 'assign' && bind.id !== 'dot' && bind.id !== 'index' && bind.id !== 'var' ? (({ bind, value, expr }) =>
+	: id === 'assign'
+		&& bind.id !== 'dot'
+		&& bind.id !== 'index'
+		&& bind.id !== 'plr'
+		&& bind.id !== 'tget'
+		&& bind.id !== 'var' ? (({ bind, value, expr }) =>
 		assignBind(bind, rewriteBind(value), rewriteBind(expr), _error)
 	)
 	: id === 'lambda' && bind.id !== 'var' ? (({ bind, expr }) => {
@@ -1794,6 +1819,14 @@ evaluate = vvs => {
 				eval(bind.lhs)[eval(bind.rhs)] = eval(value);
 				return eval(expr);
 			}()
+			: bind.id === 'plr' ? function() {
+				eval(bind.expr)[bind.i] = eval(value);
+				return eval(expr);
+			}()
+			: bind.id === 'tget' ? function() {
+				eval(bind.expr)[bind.i] = eval(value);
+				return eval(expr);
+			}()
 			: bind.id === 'var' ? function() {
 				assign(bind.vn, eval(value));
 				return eval(expr);
@@ -1817,7 +1850,7 @@ evaluate = vvs => {
 			let value = getp(object, field);
 			return false ? undefined
 			: typeof (object.length) === 'number' && field !== 'length' ? assumeAny(unwrap(value.bind(object)))
-			: typeof value !== 'function' ? value
+			: typeof value !== 'function' ? assumeAny(value)
 			: ['get', 'has', 'set',].includes(field) ? assumeAny(unwrap(value.bind(object)))
 			: fake(value).bind(object);
 		})
@@ -1848,6 +1881,7 @@ evaluate = vvs => {
 		: id === 'num' ? (({ i }) => i)
 		: id === 'or_' ? (({ lhs, rhs }) => assumeAny(eval(lhs) || eval(rhs)))
 		: id === 'pair' ? (({ lhs, rhs }) => assumeAny([eval(lhs), eval(rhs), pairTag]))
+		: id === 'plr' ? (({ expr, i }) => eval(expr)[i])
 		: id === 'pos' ? (({ expr }) => assumeAny(+eval(expr)))
 		: id === 'ref' ? (({ expr }) =>
 			expr.id === 'var' ? assumeAny({ vv: ll_find(vvs, ([k_, v]) => k_ === expr.vn) })
@@ -1861,6 +1895,7 @@ evaluate = vvs => {
 			return struct;
 		})))
 		: id === 'sub' ? (({ lhs, rhs }) => assumeAny(eval(lhs) - eval(rhs)))
+		: id === 'tget' ? (({ expr, i }) => eval(expr)[i])
 		: id === 'throw' ? (({ expr }) => { throw eval(expr); })
 		: id === 'try' ? (({ lhs, rhs }) => function() {
 			try {
@@ -1988,6 +2023,20 @@ generate = ast => {
 			...generate(bind.rhs),
 			...generate(value),
 			{ id: 'array-set' },
+			...generate(expr),
+		]
+		: bind.id === 'plr' ? [
+			...generate(bind.expr),
+			{ id: 'num', i: bind.i },
+			...generate(value),
+			{ id: 'pair-set' },
+			...generate(expr),
+		]
+		: bind.id === 'tget' ? [
+			...generate(bind.expr),
+			{ id: 'num', i: bind.i },
+			...generate(value),
+			{ id: 'tuple-set' },
 			...generate(expr),
 		]
 		: [
@@ -2183,6 +2232,11 @@ generate = ast => {
 	)
 	: id === 'pair' ?
 		generateBinOp
+	: id === 'plr' ? (({ expr, i }) => [
+		...generate(expr),
+		{ id: 'num', i },
+		{ id: 'pair-get' },
+	])
 	: id === 'pos' ?
 		generateOp
 	: id === 'ref' ? (({ expr }) => false ? undefined
@@ -2202,6 +2256,11 @@ generate = ast => {
 	])
 	: id === 'sub' ?
 		generateBinOp
+	: id === 'tget' ? (({ expr, i }) => [
+		...generate(expr),
+		{ id: 'num', i },
+		{ id: 'tuple-get' },
+	])
 	: id === 'throw' ? (({ expr }) => [
 		...generate(expr),
 		{ id },
@@ -2439,10 +2498,21 @@ let interpret = opcodes => {
 				error('BAD')
 			: id === 'pair' ?
 				interpretBinOp((a, b) => [a, b])
+			: id === 'pair-get' ? function() {
+				let i = rpop();
+				let pair = rpop();
+				rpush(pair[i]);
+			}()
 			: id === 'pair-left' ?
 				rpush(rpop()[0])
 			: id === 'pair-right' ?
 				rpush(rpop()[1])
+			: id === 'pair-set' ? function() {
+				let value = rpop();
+				let index = rpop();
+				let pair = rpop();
+				seti(pair, index, value);
+			}()
 			: id === 'pos' ?
 				rpush(+rpop())
 			: id === 'return' ? function() {
@@ -2515,6 +2585,17 @@ let interpret = opcodes => {
 				};
 				rpush(catchHandler0);
 				return undefined;
+			}()
+			: id === 'tuple-get' ? function() {
+				let i = rpop();
+				let tuple = rpop();
+				rpush(tuple[i]);
+			}()
+			: id === 'tuple-set' ? function() {
+				let value = rpop();
+				let index = rpop();
+				let tuple = rpop();
+				seti(tuple, index, value);
 			}()
 			: id === 'typeof' ?
 				rpush(typeof (rpop()))
