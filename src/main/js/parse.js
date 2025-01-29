@@ -2679,9 +2679,9 @@ let processRewrite = program => {
 			}
 		`)), ast))
 		.map(ast => _let(_var('$reduce'), rewriteBind(parser.parse(`
-			(es, acc) => {
-				let i = 1;
-				let r = es[0];
+			(es, acc, init) => {
+				let i = 0;
+				let r = init;
 				while (i < es.length) (function() {
 					let e = es[i];
 					i = i + 1;
