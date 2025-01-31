@@ -1534,145 +1534,165 @@ rewriteAsync = ast => {
 	return f(ast);
 };
 
-let ifBindId = bindId => {
-	let ifBind;
+let rewriteBind = () => {
+	let ifBindId = bindId => {
+		let ifBind;
 
-	ifBind = (bind, value, then, else_) => {
-		let { id } = bind;
+		ifBind = (bind, value, then, else_) => {
+			let { id } = bind;
 
-		let bindConstant = ast => false ? undefined
-			: bind.id !== value.id ? _if(_eq(bind, value), then, else_)
-			: bind.v === value.v ? then
-			: else_;
+			let bindConstant = ast => false ? undefined
+				: bind.id !== value.id ? _if(_eq(bind, value), then, else_)
+				: bind.v === value.v ? then
+				: else_;
 
-		let f = false ? undefined
-		: id === 'bool' ?
-			bindConstant
-		: id === 'cons' ? (({ lhs, rhs }) => {
-			return id !== value.id
-				? ifBind(lhs, _index(value, _num(0)), ifBind(rhs, _app(_dot(value, 'slice'), _num(1)), then, else_), else_)
-				: ifBind(lhs, value.lhs, ifBind(rhs, value.rhs, then, else_), else_);
-		})
-		: id === 'nil' ? (({}) => {
-			return id !== value.id
-				? _if(_eq(_app(_dot(value, 'length'), _void), _num(0)), then, else_)
-				: then;
-		})
-		: id === 'num' ?
-			bindConstant
-		: id === 'pair' ? (({ lhs, rhs }) => {
-			return id !== value.id
-				? ifBind(lhs, _plr(value, 0), ifBind(rhs, _plr(value, 1), then, else_), else_)
-				: ifBind(lhs, value.lhs, ifBind(rhs, value.rhs, then, else_), else_);
-		})
-		: id === 'str' ?
-			bindConstant
-		: id === 'struct' ? (({ kvs }) => {
-			let getValue = k => value.kvs.filter(kv => kv.key === k)[0].value;
-			return kvs.reduce(
-				(expr, kv) => ifBind(kv.value, id !== value.id ? _dot(value, kv.key) : getValue(kv.key), expr, else_),
-				then);
-		})
-		: id === 'tuple' ? (({ values }) => {
-			let indices = gen(values.length);
-			return indices.reduce(
-				(expr, i) => ifBind(values[i], id !== value.id ? _tget(value, i) : value.values[i], expr, else_),
-				then);
-		})
-		: id === 'var' ? (({ vn }) =>
-			({ id: bindId, bind, value, expr: then })
-		)
-		:
-			error(`ifBindId(): cannot destructure ${format(bind)}`);
+			let f = false ? undefined
+			: id === 'bool' ?
+				bindConstant
+			: id === 'cons' ? (({ lhs, rhs }) => {
+				return id !== value.id
+					? ifBind(lhs, _index(value, _num(0)), ifBind(rhs, _app(_dot(value, 'slice'), _num(1)), then, else_), else_)
+					: ifBind(lhs, value.lhs, ifBind(rhs, value.rhs, then, else_), else_);
+			})
+			: id === 'nil' ? (({}) => {
+				return id !== value.id
+					? _if(_eq(_app(_dot(value, 'length'), _void), _num(0)), then, else_)
+					: then;
+			})
+			: id === 'num' ?
+				bindConstant
+			: id === 'pair' ? (({ lhs, rhs }) => {
+				return id !== value.id
+					? ifBind(lhs, _plr(value, 0), ifBind(rhs, _plr(value, 1), then, else_), else_)
+					: ifBind(lhs, value.lhs, ifBind(rhs, value.rhs, then, else_), else_);
+			})
+			: id === 'str' ?
+				bindConstant
+			: id === 'struct' ? (({ kvs }) => {
+				let getValue = k => value.kvs.filter(kv => kv.key === k)[0].value;
+				return kvs.reduce(
+					(expr, kv) => ifBind(kv.value, id !== value.id ? _dot(value, kv.key) : getValue(kv.key), expr, else_),
+					then);
+			})
+			: id === 'tuple' ? (({ values }) => {
+				let indices = gen(values.length);
+				return indices.reduce(
+					(expr, i) => ifBind(values[i], id !== value.id ? _tget(value, i) : value.values[i], expr, else_),
+					then);
+			})
+			: id === 'var' ? (({ vn }) =>
+				({ id: bindId, bind, value, expr: then })
+			)
+			:
+				error(`ifBindId(): cannot destructure ${format(bind)}`);
 
-		return f(bind);
+			return f(bind);
+		};
+
+		return ifBind;
 	};
 
-	return ifBind;
+	let assignBind = ifBindId('assign');
+	let letBind = ifBindId('let');
+
+	let rewriteBind_;
+
+	rewriteBind_ = ast => {
+		let { bind, id } = ast;
+
+		let f = false ? undefined
+		: id === 'assign'
+			&& bind.id !== 'dot'
+			&& bind.id !== 'index'
+			&& bind.id !== 'plr'
+			&& bind.id !== 'tget'
+			&& bind.id !== 'var' ? (({ bind, value, expr }) =>
+			assignBind(bind, rewriteBind_(value), rewriteBind_(expr), _error)
+		)
+		: id === 'lambda' && bind.id !== 'var' ? (({ bind, expr }) => {
+			let arg = _var(newDummy());
+			return _lambda(arg, letBind(bind, arg, rewriteBind_(expr), _error));
+		})
+		: id === 'lambda-async' && bind.id !== 'var' ? (({ bind, expr }) => {
+			let arg = _var(newDummy());
+			return _lambdaAsync(arg, letBind(bind, arg, rewriteBind_(expr), _error));
+		})
+		: id === 'let' && bind.id !== 'var' ? (({ bind, value, expr }) =>
+			letBind(bind, rewriteBind_(value), rewriteBind_(expr), _error)
+		)
+		: (({}) =>
+			rewrite(rewriteBind_, ast)
+		);
+
+		return f(ast);
+	};
+
+	return rewriteBind_;
 };
 
-let assignBind = ifBindId('assign');
-let letBind = ifBindId('let');
+let rewriteCapture = () => {
+	let rewriteCaptureVar;
 
-let rewriteBind;
+	rewriteCaptureVar = (capture, outsidevs, captures, ast) => {
+		let { id } = ast;
 
-rewriteBind = ast => {
-	let { bind, id } = ast;
+		let f = false ? undefined
+		: id === 'var' ? (({ vn }) => {
+			return !ll_contains(outsidevs, vn) ? ast : function() {
+				captures.push(vn);
+				return _deref(_dot(_var(capture), vn));
+			}();
+		})
+		: (({}) =>
+			rewrite(ast => rewriteCaptureVar(capture, outsidevs, captures, ast), ast)
+		);
 
-	let f = false ? undefined
-	: id === 'assign'
-		&& bind.id !== 'dot'
-		&& bind.id !== 'index'
-		&& bind.id !== 'plr'
-		&& bind.id !== 'tget'
-		&& bind.id !== 'var' ? (({ bind, value, expr }) =>
-		assignBind(bind, rewriteBind(value), rewriteBind(expr), _error)
-	)
-	: id === 'lambda' && bind.id !== 'var' ? (({ bind, expr }) => {
-		let arg = _var(newDummy());
-		return _lambda(arg, letBind(bind, arg, rewriteBind(expr), _error));
-	})
-	: id === 'lambda-async' && bind.id !== 'var' ? (({ bind, expr }) => {
-		let arg = _var(newDummy());
-		return _lambdaAsync(arg, letBind(bind, arg, rewriteBind(expr), _error));
-	})
-	: id === 'let' && bind.id !== 'var' ? (({ bind, value, expr }) =>
-		letBind(bind, rewriteBind(value), rewriteBind(expr), _error)
-	)
-	: (({}) =>
-		rewrite(rewriteBind, ast)
-	);
+		return f(ast);
+	};
 
-	return f(ast);
+	let rewriteCapture_;
+
+	rewriteCapture_ = (fs, vfs, ast) => {
+		let fs1 = fs + 1;
+		let { id } = ast;
+
+		let f = false ? undefined
+		: id === 'alloc' ? (({ vn, expr }) =>
+			_alloc(vn, rewriteCapture_(fs, ll_cons([vn, fs], vfs), expr))
+		)
+		: id === 'lambda' ? (({ bind, expr }) => {
+			let vfs1 = ll_cons([bind.vn, fs1], vfs);
+			let bindCapture = newDummy();
+			let captures = [];
+			let expr_ = rewriteCaptureVar(bindCapture, ll_map(vfs, ([vn, fs]) => vn), captures, expr);
+			let definitions = _struct(captures.map(vn => ({ key: vn, value: _ref(_var(vn)) })));
+			return _lambdaCapture(definitions, _var(bindCapture), bind, rewriteCapture_(fs1, vfs1, expr_));
+		})
+		: id === 'let' ? (({ bind, value, expr }) =>
+			_let(bind,
+				rewriteCapture_(fs, vfs, value),
+				rewriteCapture_(fs, ll_cons([bind.vn, fs], vfs), expr))
+		)
+		: (({}) =>
+			rewrite(ast => rewriteCapture_(fs, vfs, ast), ast)
+		);
+
+		return f(ast);
+	};
+
+	return rewriteCapture_;
 };
 
-let rewriteCaptureVar;
+let rewriteFsReadFileSync;
 
-rewriteCaptureVar = (capture, outsidevs, captures, ast) => {
-	let { id } = ast;
+rewriteFsReadFileSync = ast => {
+	let { id, lhs, rhs } = ast;
 
-	let f = false ? undefined
-	: id === 'var' ? (({ vn }) => {
-		return !ll_contains(outsidevs, vn) ? ast : function() {
-			captures.push(vn);
-			return _deref(_dot(_var(capture), vn));
-		}();
-	})
-	: (({}) =>
-		rewrite(ast => rewriteCaptureVar(capture, outsidevs, captures, ast), ast)
-	);
-
-	return f(ast);
-};
-
-let rewriteCapture;
-
-rewriteCapture = (fs, vfs, ast) => {
-	let fs1 = fs + 1;
-	let { id } = ast;
-
-	let f = false ? undefined
-	: id === 'alloc' ? (({ vn, expr }) =>
-		_alloc(vn, rewriteCapture(fs, ll_cons([vn, fs], vfs), expr))
-	)
-	: id === 'lambda' ? (({ bind, expr }) => {
-		let vfs1 = ll_cons([bind.vn, fs1], vfs);
-		let bindCapture = newDummy();
-		let captures = [];
-		let expr_ = rewriteCaptureVar(bindCapture, ll_map(vfs, ([vn, fs]) => vn), captures, expr);
-		let definitions = _struct(captures.map(vn => ({ key: vn, value: _ref(_var(vn)) })));
-		return _lambdaCapture(definitions, _var(bindCapture), bind, rewriteCapture(fs1, vfs1, expr_));
-	})
-	: id === 'let' ? (({ bind, value, expr }) =>
-		_let(bind,
-			rewriteCapture(fs, vfs, value),
-			rewriteCapture(fs, ll_cons([bind.vn, fs], vfs), expr))
-	)
-	: (({}) =>
-		rewrite(ast => rewriteCapture(fs, vfs, ast), ast)
-	);
-
-	return f(ast);
+	return false ? undefined
+	: id === 'app' && lhs.id === 'var' && ['require',].includes(lhs.vn) && rhs.id === 'str' ?
+		parseAst(require('fs').readFileSync(`${rhs.v}.js`, 'utf8')).ast
+	:
+		rewrite(rewriteFsReadFileSync, ast);
 };
 
 let parseAst;
@@ -1691,9 +1711,11 @@ let rewriteIntrinsics = ast => {
 			rewrite(rewriteIntrinsics_, ast);
 	};
 
+	let rewriteBind_ = rewriteBind();
+
 	return [ast,]
 		.map(rewriteIntrinsics_)
-		.map(ast => _let(_var('$filter'), rewriteBind(parser.parse(`
+		.map(ast => _let(_var('$filter'), rewriteBind_(parser.parse(`
 			(es, pred) => {
 				let i = 0;
 				let out = [];
@@ -1705,7 +1727,7 @@ let rewriteIntrinsics = ast => {
 				return out;
 			}
 		`)), ast))
-		.map(ast => _let(_var('$flatMap'), rewriteBind(parser.parse(`
+		.map(ast => _let(_var('$flatMap'), rewriteBind_(parser.parse(`
 			(es, f) => {
 				let i = 0;
 				let out = [];
@@ -1718,7 +1740,7 @@ let rewriteIntrinsics = ast => {
 				return out;
 			}
 		`)), ast))
-		.map(ast => _let(_var('$map'), rewriteBind(parser.parse(`
+		.map(ast => _let(_var('$map'), rewriteBind_(parser.parse(`
 			(es, f) => {
 				let i = 0;
 				let out = [];
@@ -1730,7 +1752,7 @@ let rewriteIntrinsics = ast => {
 				return out;
 			}
 		`)), ast))
-		.map(ast => _let(_var('$reduce'), rewriteBind(parser.parse(`
+		.map(ast => _let(_var('$reduce'), rewriteBind_(parser.parse(`
 			(es, acc, init) => {
 				let i = 0;
 				let r = init;
@@ -2680,7 +2702,7 @@ parseAst = program => {
 
 	let ast0 = parser.parse(program);
 	let ast1 = rewriteNe(ast0);
-	let ast2 = rewriteBind(ast1);
+	let ast2 = rewriteBind()(ast1);
 	let ast3 = rewriteAsync(ast2);
 	let ast4 = unpromisify(ast3);
 
@@ -2693,22 +2715,10 @@ let processRewrite = program => {
 
 	let { ast: ast4, type } = parseAst(program);
 
-	let rewriteFsReadFileSync;
-
-	rewriteFsReadFileSync = ast => {
-		let { id, lhs, rhs } = ast;
-
-		return false ? undefined
-		: id === 'app' && lhs.id === 'var' && ['require',].includes(lhs.vn) && rhs.id === 'str' ?
-			parseAst(require('fs').readFileSync(`${rhs.v}.js`, 'utf8')).ast
-		:
-			rewrite(rewriteFsReadFileSync, ast);
-	};
-
 	let ast5 = rewriteFsReadFileSync(ast4);
 	let ast6 = rewriteIntrinsics(ast5);
 	let ast7 = rewriteRenameVar(newDummy(), ll_map(roots, v => [v, v]), ast6);
-	let ast8 = rewriteCapture(0, ll_map(roots, v => [v, 0]), ast7);
+	let ast8 = rewriteCapture()(0, ll_map(roots, v => [v, 0]), ast7);
 
 	return { ast: ast8, type };
 };
