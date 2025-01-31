@@ -1685,8 +1685,6 @@ let rewriteIntrinsics = ast => {
 		let { id, lhs, rhs } = ast;
 
 		return false ? undefined
-		: id === 'app' && lhs.id === 'var' && ['require',].includes(lhs.vn) && rhs.id === 'str' ?
-			parseAst(require('fs').readFileSync(`${rhs.v}.js`, 'utf8')).ast
 		: id === 'app' && lhs.id === 'dot' && ['filter', 'flatMap', 'map', 'reduce',].includes(lhs.field) ?
 			_app(_var(`$${lhs.field}`), _pair(rewriteIntrinsics_(lhs.expr), rewriteIntrinsics_(rhs)))
 		:
@@ -2695,11 +2693,24 @@ let processRewrite = program => {
 
 	let { ast: ast4, type } = parseAst(program);
 
-	let ast5 = rewriteIntrinsics(ast4);
-	let ast6 = rewriteRenameVar(newDummy(), ll_map(roots, v => [v, v]), ast5);
-	let ast7 = rewriteCapture(0, ll_map(roots, v => [v, 0]), ast6);
+	let rewriteFsReadFileSync;
 
-	return { ast: ast7, type };
+	rewriteFsReadFileSync = ast => {
+		let { id, lhs, rhs } = ast;
+
+		return false ? undefined
+		: id === 'app' && lhs.id === 'var' && ['require',].includes(lhs.vn) && rhs.id === 'str' ?
+			parseAst(require('fs').readFileSync(`${rhs.v}.js`, 'utf8')).ast
+		:
+			rewrite(rewriteFsReadFileSync, ast);
+	};
+
+	let ast5 = rewriteFsReadFileSync(ast4);
+	let ast6 = rewriteIntrinsics(ast5);
+	let ast7 = rewriteRenameVar(newDummy(), ll_map(roots, v => [v, v]), ast6);
+	let ast8 = rewriteCapture(0, ll_map(roots, v => [v, 0]), ast7);
+
+	return { ast: ast8, type };
 };
 
 let processGenerate = ast6 => {
@@ -2779,7 +2790,7 @@ return actual === expect
 			&& console.error(`ast :: ${stringify(ast)}`);
 
 		process.env.EVALUATE
-			&& console.error(`evaluate :: ${stringify(evaluate(evaluateVvs)(parseAst(program).ast))}`);
+			&& console.error(`evaluate :: ${stringify(evaluate(evaluateVvs)(rewriteIntrinsics(parseAst(program).ast)))}`);
 
 		process.env.FORMAT
 			&& console.error(`format :: ${format(ast)}`);
