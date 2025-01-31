@@ -1676,19 +1676,76 @@ rewriteCapture = (fs, vfs, ast) => {
 };
 
 let parseAst;
+let parser = parserModule();
 
-let rewriteIntrinsics;
+let rewriteIntrinsics = ast => {
+	let rewriteIntrinsics_;
 
-rewriteIntrinsics = ast => {
-	let { id, lhs, rhs } = ast;
+	rewriteIntrinsics_ = ast => {
+		let { id, lhs, rhs } = ast;
 
-	return false ? undefined
-	: id === 'app' && lhs.id === 'var' && ['require',].includes(lhs.vn) && rhs.id === 'str' ?
-		parseAst(require('fs').readFileSync(`${rhs.v}.js`, 'utf8')).ast
-	: id === 'app' && lhs.id === 'dot' && ['filter', 'flatMap', 'map', 'reduce',].includes(lhs.field) ?
-		_app(_var(`$${lhs.field}`), _pair(rewriteIntrinsics(lhs.expr), rewriteIntrinsics(rhs)))
-	:
-		rewrite(rewriteIntrinsics, ast);
+		return false ? undefined
+		: id === 'app' && lhs.id === 'var' && ['require',].includes(lhs.vn) && rhs.id === 'str' ?
+			parseAst(require('fs').readFileSync(`${rhs.v}.js`, 'utf8')).ast
+		: id === 'app' && lhs.id === 'dot' && ['filter', 'flatMap', 'map', 'reduce',].includes(lhs.field) ?
+			_app(_var(`$${lhs.field}`), _pair(rewriteIntrinsics_(lhs.expr), rewriteIntrinsics_(rhs)))
+		:
+			rewrite(rewriteIntrinsics_, ast);
+	};
+
+	return [ast,]
+		.map(rewriteIntrinsics_)
+		.map(ast => _let(_var('$filter'), rewriteBind(parser.parse(`
+			(es, pred) => {
+				let i = 0;
+				let out = [];
+				while (i < es.length) (function() {
+					let e = es[i];
+					i = i + 1;
+					pred(e) && out.push(e);
+				}());
+				return out;
+			}
+		`)), ast))
+		.map(ast => _let(_var('$flatMap'), rewriteBind(parser.parse(`
+			(es, f) => {
+				let i = 0;
+				let out = [];
+				while (i < es.length) (function() {
+					let list = f(es[i]);
+					i = i + 1;
+					let j = 0;
+					while (j < list.length) out.push(j);
+				}());
+				return out;
+			}
+		`)), ast))
+		.map(ast => _let(_var('$map'), rewriteBind(parser.parse(`
+			(es, f) => {
+				let i = 0;
+				let out = [];
+				while (i < es.length) function() {
+					let e = es[i];
+					i = i + 1;
+					out.push(f(e));
+				}();
+				return out;
+			}
+		`)), ast))
+		.map(ast => _let(_var('$reduce'), rewriteBind(parser.parse(`
+			(es, acc, init) => {
+				let i = 0;
+				let r = init;
+				while (i < es.length) (function() {
+					let e = es[i];
+					i = i + 1;
+					r = acc(r, e);
+					return undefined;
+				}());
+				return r;
+			}
+		`)), ast))
+		[0];
 };
 
 let rewriteNe;
@@ -2610,7 +2667,6 @@ let interpret = opcodes => {
 	: rpop();
 };
 
-let parser = parserModule();
 let types = typesModule();
 
 parseAst = program => {
@@ -2639,60 +2695,7 @@ let processRewrite = program => {
 
 	let { ast: ast4, type } = parseAst(program);
 
-	let ast5 = [ast4,]
-		.map(rewriteIntrinsics)
-		.map(ast => _let(_var('$filter'), rewriteBind(parser.parse(`
-			(es, pred) => {
-				let i = 0;
-				let out = [];
-				while (i < es.length) (function() {
-					let e = es[i];
-					i = i + 1;
-					pred(e) && out.push(e);
-				}());
-				return out;
-			}
-		`)), ast))
-		.map(ast => _let(_var('$flatMap'), rewriteBind(parser.parse(`
-			(es, f) => {
-				let i = 0;
-				let out = [];
-				while (i < es.length) (function() {
-					let list = f(es[i]);
-					i = i + 1;
-					let j = 0;
-					while (j < list.length) out.push(j);
-				}());
-				return out;
-			}
-		`)), ast))
-		.map(ast => _let(_var('$map'), rewriteBind(parser.parse(`
-			(es, f) => {
-				let i = 0;
-				let out = [];
-				while (i < es.length) function() {
-					let e = es[i];
-					i = i + 1;
-					out.push(f(e));
-				}();
-				return out;
-			}
-		`)), ast))
-		.map(ast => _let(_var('$reduce'), rewriteBind(parser.parse(`
-			(es, acc, init) => {
-				let i = 0;
-				let r = init;
-				while (i < es.length) (function() {
-					let e = es[i];
-					i = i + 1;
-					r = acc(r, e);
-					return undefined;
-				}());
-				return r;
-			}
-		`)), ast))
-		[0];
-
+	let ast5 = rewriteIntrinsics(ast4);
 	let ast6 = rewriteRenameVar(newDummy(), ll_map(roots, v => [v, v]), ast5);
 	let ast7 = rewriteCapture(0, ll_map(roots, v => [v, 0]), ast6);
 
