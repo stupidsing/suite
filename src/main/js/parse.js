@@ -1393,6 +1393,9 @@ let unpromisify = ast => {
 	return id === 'app' && lhs === promiseResolve ? rhs : undefined;
 };
 
+let parseAst;
+let parser = parserModule();
+
 let rewriteAsync;
 
 rewriteAsync = ast => {
@@ -1694,9 +1697,6 @@ rewriteFsReadFileSync = ast => {
 	:
 		rewrite(rewriteFsReadFileSync, ast);
 };
-
-let parseAst;
-let parser = parserModule();
 
 let rewriteIntrinsics = ast => {
 	let rewriteIntrinsics_;
