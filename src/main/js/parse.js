@@ -266,15 +266,15 @@ let lexerModule = () => {
 			tokenss.push(tokens);
 
 			let t = false ? undefined
-				: ch === 9 || ch === 10 || ch === 13 || ch === 32 ? ' '
-				: ascii("'") === ch ? "'"
-				: ascii('"') === ch ? '"'
-				: ascii('`') === ch ? '`'
-				: ascii('0') <= ch && ch <= ascii('9') ? 'N'
-				: ascii('A') <= ch && ch <= ascii('Z') ? 'A'
-				: ch === ascii('_') ? 'A'
-				: ascii('a') <= ch && ch <= ascii('z') ? 'A'
-				: '$';
+			: ch === 9 || ch === 10 || ch === 13 || ch === 32 ? ' '
+			: ascii("'") === ch ? "'"
+			: ascii('"') === ch ? '"'
+			: ascii('`') === ch ? '`'
+			: ascii('0') <= ch && ch <= ascii('9') ? 'N'
+			: ascii('A') <= ch && ch <= ascii('Z') ? 'A'
+			: ch === ascii('_') ? 'A'
+			: ascii('a') <= ch && ch <= ascii('z') ? 'A'
+			: '$';
 		}());
 
 		return tokenss.flatMap(tokens => tokens);
