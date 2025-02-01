@@ -230,36 +230,36 @@ let lexerModule = () => {
 			};
 
 			let tokens = false ? undefined
-				: ch === 9 || ch === 10 || ch === 13 || ch === 32 ?
-					[]
-				: ch === ascii("'") || ch === ascii('"') || ch === ascii('`') ? function() {
-					skip(c => c !== ch);
-					return [{ lex: 'str', s: s.slice(i + 1, j - 1) },];
-				}()
-				: isAlphabet(ch) ? function() {
-					skip(isId);
-					return [{ lex: 'id', s: s.slice(i, j) },];
-				}()
-				: isNum(ch) ? function() {
-					skip(isNum);
-					return [{ lex: 'num', s: s.slice(i, j) },];
-				}()
-				: op2 === '//' ? function() {
-					skip(c => c !== 10);
-					return [];
-				}()
-				: op2s.includes(op2) ? function() {
-					j = i + op2.length;
-					return [{ lex: 'sym', s: op2 },];
-				}()
-				: op3s.includes(op3) ? function() {
-					j = i + op3.length;
-					return [{ lex: 'sym', s: op3 },];
-				}()
-				: function() {
-					let sym = s.slice(i, j);
-					return [{ lex: 'sym', s: sym },];
-				}();
+			: ch === 9 || ch === 10 || ch === 13 || ch === 32 ?
+				[]
+			: ch === ascii("'") || ch === ascii('"') || ch === ascii('`') ? function() {
+				skip(c => c !== ch);
+				return [{ lex: 'str', s: s.slice(i + 1, j - 1) },];
+			}()
+			: isAlphabet(ch) ? function() {
+				skip(isId);
+				return [{ lex: 'id', s: s.slice(i, j) },];
+			}()
+			: isNum(ch) ? function() {
+				skip(isNum);
+				return [{ lex: 'num', s: s.slice(i, j) },];
+			}()
+			: op2 === '//' ? function() {
+				skip(c => c !== 10);
+				return [];
+			}()
+			: op2s.includes(op2) ? function() {
+				j = i + op2.length;
+				return [{ lex: 'sym', s: op2 },];
+			}()
+			: op3s.includes(op3) ? function() {
+				j = i + op3.length;
+				return [{ lex: 'sym', s: op3 },];
+			}()
+			: function() {
+				let sym = s.slice(i, j);
+				return [{ lex: 'sym', s: sym },];
+			}();
 
 			i = j;
 
@@ -2455,231 +2455,231 @@ let interpret = opcodes => {
 		ip = ip + 1;
 
 		let f = false ? undefined
-			: id === ':' ?
-				undefined
-			: id === 'add' ?
-				interpretBinOp((a, b) => a + b)
-			: id === 'and' ?
-				error('BAD')
-			: id === 'app' ? function() {
-				let parameter = rpop();
-				let lambda = rpop();
-				rpush(ip);
-				ip = lambda.label;
-				fcreate();
-				fpush(lambda.capture);
-				fpush(parameter);
-			}()
-			: id === 'array-get' ? function() {
-				let i = rpop();
-				let array = rpop();
-				rpush(array[i]);
-			}()
-			: id === 'array-set' ? function() {
-				let value = rpop();
-				let index = rpop();
-				let array = rpop();
-				seti(array, index, value);
-			}()
-			: id === 'assign-ref' ? function() {
-				let value = rpop();
-				let ref = rpop();
-				frames[ref.fs][ref.ps] = value;
-			}()
-			: id === 'bool' ?
-				rpush(opcode.v)
-			: id === 'coal' ?
-				interpretBinOp((a, b) => a ?? b)
-			: id === 'cons' ?
-				interpretBinOp(v_cons)
-			: id === 'deref' ? function() {
-				let ref = rpop();
-				rpush(frames[ref.fs][ref.ps]);
-			}()
-			: id === 'discard' ?
-				rpop()
-			: id === 'div' ?
-				interpretBinOp((a, b) => a / b)
-			: id === 'dup' ?
-				rpush(rstack[rstack.length - 1 - opcode.i])
-			: id === 'eq_' ?
-				interpretBinOp((a, b) => a === b)
-			: id === 'exit' ? function() {
-				ip = 1 / 0;
+		: id === ':' ?
+			undefined
+		: id === 'add' ?
+			interpretBinOp((a, b) => a + b)
+		: id === 'and' ?
+			error('BAD')
+		: id === 'app' ? function() {
+			let parameter = rpop();
+			let lambda = rpop();
+			rpush(ip);
+			ip = lambda.label;
+			fcreate();
+			fpush(lambda.capture);
+			fpush(parameter);
+		}()
+		: id === 'array-get' ? function() {
+			let i = rpop();
+			let array = rpop();
+			rpush(array[i]);
+		}()
+		: id === 'array-set' ? function() {
+			let value = rpop();
+			let index = rpop();
+			let array = rpop();
+			seti(array, index, value);
+		}()
+		: id === 'assign-ref' ? function() {
+			let value = rpop();
+			let ref = rpop();
+			frames[ref.fs][ref.ps] = value;
+		}()
+		: id === 'bool' ?
+			rpush(opcode.v)
+		: id === 'coal' ?
+			interpretBinOp((a, b) => a ?? b)
+		: id === 'cons' ?
+			interpretBinOp(v_cons)
+		: id === 'deref' ? function() {
+			let ref = rpop();
+			rpush(frames[ref.fs][ref.ps]);
+		}()
+		: id === 'discard' ?
+			rpop()
+		: id === 'div' ?
+			interpretBinOp((a, b) => a / b)
+		: id === 'dup' ?
+			rpush(rstack[rstack.length - 1 - opcode.i])
+		: id === 'eq_' ?
+			interpretBinOp((a, b) => a === b)
+		: id === 'exit' ? function() {
+			ip = 1 / 0;
+			return undefined;
+		}()
+		: id === 'frame-alloc' ?
+			fpush(undefined)
+		: id === 'frame-dealloc' ?
+			fpop()
+		: id === 'frame-get-ref' ?
+			rpush({ fs: frames.length - 1 - opcode.fs, ps: opcode.ps })
+		: id === 'frame-push' ?
+			fpush(rpop())
+		: id === 'jump' ? function() {
+			ip = getp(indexByLabel, opcode.label);
+			return undefined;
+		}()
+		: id === 'jump-false' ? function() {
+			ip = rpop() ? ip : getp(indexByLabel, opcode.label);
+			return undefined;
+		}()
+		: id === 'label' ?
+			rpush(getp(indexByLabel, opcode.label))
+		: id === 'lambda-capture' ? function() {
+			let label = rpop();
+			let capture = rpop();
+			rpush({ capture, label });
+		}()
+		: id === 'le_' ?
+			interpretBinOp((a, b) => a <= b)
+		: id === 'lt_' ?
+			interpretBinOp((a, b) => a < b)
+		: id === 'map' ?
+			rpush(new Map())
+		: id === 'map-get' ?
+			interpretBinOp((map, key) => map.get(key))
+		: id === 'map-has' ?
+			interpretBinOp((map, key) => map.has(key))
+		: id === 'map-set' ? function() {
+			let value = rpop();
+			let key = rpop();
+			let map = rpop();
+			map.set(key, value);
+		}()
+		: id === 'mod' ?
+			interpretBinOp((a, b) => a % b)
+		: id === 'mul' ?
+			interpretBinOp((a, b) => a * b)
+		: id === 'ne_' ?
+			interpretBinOp((a, b) => a !== b)
+		: id === 'neg' ?
+			rpush(-rpop())
+		: id === 'nil' ?
+			rpush([])
+		: id === 'not' ?
+			rpush(!rpop())
+		: id === 'num' ?
+			rpush(opcode.i)
+		: id === 'object' ?
+			rpush({})
+		: id === 'object-get' ?
+			rpush(getp(rpop(), opcode.key))
+		: id === 'object-put' ? function() {
+			let value = rpop();
+			let object = rpop();
+			setp(object, opcode.key, value);
+			rpush(object);
+		}()
+		: id === 'or_' ?
+			error('BAD')
+		: id === 'pair' ?
+			interpretBinOp((a, b) => [a, b])
+		: id === 'pair-get' ? function() {
+			let i = rpop();
+			let pair = rpop();
+			rpush(pair[i]);
+		}()
+		: id === 'pair-left' ?
+			rpush(rpop()[0])
+		: id === 'pair-right' ?
+			rpush(rpop()[1])
+		: id === 'pair-set' ? function() {
+			let value = rpop();
+			let index = rpop();
+			let pair = rpop();
+			seti(pair, index, value);
+		}()
+		: id === 'pos' ?
+			rpush(+rpop())
+		: id === 'return' ? function() {
+			let rc = rpop();
+			fpop();
+			fpop();
+			fremove();
+			ip = rpop();
+			rpush(rc);
+		}()
+		: id === 'rotate' ? function() {
+			let b = rpop();
+			let a = rpop();
+			rpush(b);
+			rpush(a);
+		}()
+		: id === 'service' && opcode.f === 1 ?
+			rpush(getp(rpop(), opcode.field))
+		: id === 'service' && opcode.m === 1 ? function() {
+			let a = rpop();
+			return rpush(getp(a, opcode.field).bind(a)());
+		}()
+		: id === 'service' && opcode.m === 2 ? function() {
+			let [a, b] = rpop();
+			return rpush(getp(a, opcode.field).bind(a)(b));
+		}()
+		: id === 'service' && opcode.m === 3 ? function() {
+			let [a, [b, c]] = rpop();
+			return rpush(getp(a, opcode.field).bind(a)(b, c));
+		}()
+		: id === 'service' && opcode.n === 1 ?
+			rpush(eval(opcode.service)(rpop()))
+		: id === 'service' && opcode.n === 2 ? function() {
+			let [a, b] = rpop();
+			rpush(eval(opcode.service)(a, b));
+		}()
+		: id === 'service' && opcode.n === 3 ? function() {
+			let [a, [b, c]] = rpop();
+			rpush(eval(opcode.service)(a, b, c));
+		}()
+		: id === 'str' ?
+			rpush(opcode.v)
+		: id === 'sub' ?
+			interpretBinOp((a, b) => a - b)
+		: id === 'throw' ? function() {
+			let thrown = rpop();
+			return catchHandler !== undefined ? function() {
+				let { label, fl, fsl, rsl } = catchHandler;
+				ip = label ?? error(`THROWN ${rpop()}`);
+				while (fsl < frames.length) fremove();
+				while (fl < frames[frames.length - 1].length) fpop();
+				while (rsl < rstack.length) rpop();
+				rpush(thrown);
 				return undefined;
 			}()
-			: id === 'frame-alloc' ?
-				fpush(undefined)
-			: id === 'frame-dealloc' ?
-				fpop()
-			: id === 'frame-get-ref' ?
-				rpush({ fs: frames.length - 1 - opcode.fs, ps: opcode.ps })
-			: id === 'frame-push' ?
-				fpush(rpop())
-			: id === 'jump' ? function() {
-				ip = getp(indexByLabel, opcode.label);
-				return undefined;
-			}()
-			: id === 'jump-false' ? function() {
-				ip = rpop() ? ip : getp(indexByLabel, opcode.label);
-				return undefined;
-			}()
-			: id === 'label' ?
-				rpush(getp(indexByLabel, opcode.label))
-			: id === 'lambda-capture' ? function() {
-				let label = rpop();
-				let capture = rpop();
-				rpush({ capture, label });
-			}()
-			: id === 'le_' ?
-				interpretBinOp((a, b) => a <= b)
-			: id === 'lt_' ?
-				interpretBinOp((a, b) => a < b)
-			: id === 'map' ?
-				rpush(new Map())
-			: id === 'map-get' ?
-				interpretBinOp((map, key) => map.get(key))
-			: id === 'map-has' ?
-				interpretBinOp((map, key) => map.has(key))
-			: id === 'map-set' ? function() {
-				let value = rpop();
-				let key = rpop();
-				let map = rpop();
-				map.set(key, value);
-			}()
-			: id === 'mod' ?
-				interpretBinOp((a, b) => a % b)
-			: id === 'mul' ?
-				interpretBinOp((a, b) => a * b)
-			: id === 'ne_' ?
-				interpretBinOp((a, b) => a !== b)
-			: id === 'neg' ?
-				rpush(-rpop())
-			: id === 'nil' ?
-				rpush([])
-			: id === 'not' ?
-				rpush(!rpop())
-			: id === 'num' ?
-				rpush(opcode.i)
-			: id === 'object' ?
-				rpush({})
-			: id === 'object-get' ?
-				rpush(getp(rpop(), opcode.key))
-			: id === 'object-put' ? function() {
-				let value = rpop();
-				let object = rpop();
-				setp(object, opcode.key, value);
-				rpush(object);
-			}()
-			: id === 'or_' ?
-				error('BAD')
-			: id === 'pair' ?
-				interpretBinOp((a, b) => [a, b])
-			: id === 'pair-get' ? function() {
-				let i = rpop();
-				let pair = rpop();
-				rpush(pair[i]);
-			}()
-			: id === 'pair-left' ?
-				rpush(rpop()[0])
-			: id === 'pair-right' ?
-				rpush(rpop()[1])
-			: id === 'pair-set' ? function() {
-				let value = rpop();
-				let index = rpop();
-				let pair = rpop();
-				seti(pair, index, value);
-			}()
-			: id === 'pos' ?
-				rpush(+rpop())
-			: id === 'return' ? function() {
-				let rc = rpop();
-				fpop();
-				fpop();
-				fremove();
-				ip = rpop();
-				rpush(rc);
-			}()
-			: id === 'rotate' ? function() {
-				let b = rpop();
-				let a = rpop();
-				rpush(b);
-				rpush(a);
-			}()
-			: id === 'service' && opcode.f === 1 ?
-				rpush(getp(rpop(), opcode.field))
-			: id === 'service' && opcode.m === 1 ? function() {
-				let a = rpop();
-				return rpush(getp(a, opcode.field).bind(a)());
-			}()
-			: id === 'service' && opcode.m === 2 ? function() {
-				let [a, b] = rpop();
-				return rpush(getp(a, opcode.field).bind(a)(b));
-			}()
-			: id === 'service' && opcode.m === 3 ? function() {
-				let [a, [b, c]] = rpop();
-				return rpush(getp(a, opcode.field).bind(a)(b, c));
-			}()
-			: id === 'service' && opcode.n === 1 ?
-				rpush(eval(opcode.service)(rpop()))
-			: id === 'service' && opcode.n === 2 ? function() {
-				let [a, b] = rpop();
-				rpush(eval(opcode.service)(a, b));
-			}()
-			: id === 'service' && opcode.n === 3 ? function() {
-				let [a, [b, c]] = rpop();
-				rpush(eval(opcode.service)(a, b, c));
-			}()
-			: id === 'str' ?
-				rpush(opcode.v)
-			: id === 'sub' ?
-				interpretBinOp((a, b) => a - b)
-			: id === 'throw' ? function() {
-				let thrown = rpop();
-				return catchHandler !== undefined ? function() {
-					let { label, fl, fsl, rsl } = catchHandler;
-					ip = label ?? error(`THROWN ${rpop()}`);
-					while (fsl < frames.length) fremove();
-					while (fl < frames[frames.length - 1].length) fpop();
-					while (rsl < rstack.length) rpop();
-					rpush(thrown);
-					return undefined;
-				}()
-				: error(thrown);
-			}()
-			: id === 'try-pop' ? function() {
-				let { label } = rpop();
-				catchHandler = label;
-				return undefined;
-			}()
-			: id === 'try-push' ? function() {
-				let catchHandler0 = catchHandler;
-				catchHandler = {
-					label: rpop(),
-					fl: frames[frames.length - 1].length,
-					fsl: frames.length,
-					rsl: rstack.length,
-				};
-				rpush(catchHandler0);
-				return undefined;
-			}()
-			: id === 'tuple-get' ? function() {
-				let i = rpop();
-				let tuple = rpop();
-				rpush(tuple[i]);
-			}()
-			: id === 'tuple-set' ? function() {
-				let value = rpop();
-				let index = rpop();
-				let tuple = rpop();
-				seti(tuple, index, value);
-			}()
-			: id === 'typeof' ?
-				rpush(typeof (rpop()))
-			: id === 'undefined' ?
-				rpush(undefined)
-			:
-				error('BAD');
+			: error(thrown);
+		}()
+		: id === 'try-pop' ? function() {
+			let { label } = rpop();
+			catchHandler = label;
+			return undefined;
+		}()
+		: id === 'try-push' ? function() {
+			let catchHandler0 = catchHandler;
+			catchHandler = {
+				label: rpop(),
+				fl: frames[frames.length - 1].length,
+				fsl: frames.length,
+				rsl: rstack.length,
+			};
+			rpush(catchHandler0);
+			return undefined;
+		}()
+		: id === 'tuple-get' ? function() {
+			let i = rpop();
+			let tuple = rpop();
+			rpush(tuple[i]);
+		}()
+		: id === 'tuple-set' ? function() {
+			let value = rpop();
+			let index = rpop();
+			let tuple = rpop();
+			seti(tuple, index, value);
+		}()
+		: id === 'typeof' ?
+			rpush(typeof (rpop()))
+		: id === 'undefined' ?
+			rpush(undefined)
+		:
+			error('BAD');
 	}());
 
 	return rstack.length !== 1 ? error('RSTACK RESIDUE')
