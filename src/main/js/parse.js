@@ -1664,12 +1664,12 @@ let rewriteCapture = () => {
 			_alloc(vn, rewriteCapture_(fs, ll_cons([vn, fs], vfs), expr))
 		)
 		: id === 'lambda' ? (({ bind, expr }) => {
-			let vfs1 = ll_cons([bind.vn, fs1], vfs);
-			let bindCapture = newDummy();
+			let capture = newDummy();
+			let vfs1 = ll_cons([bind.vn, fs1], ll_cons([capture, fs1], vfs));
 			let captures = [];
-			let expr_ = rewriteCaptureVar(bindCapture, ll_map(vfs, ([vn, fs]) => vn), captures, expr);
+			let expr_ = rewriteCaptureVar(capture, ll_map(vfs, ([vn, fs]) => vn), captures, expr);
 			let definitions = _struct(captures.map(vn => ({ key: vn, value: _ref(_var(vn)) })));
-			return _lambdaCapture(definitions, _var(bindCapture), bind, rewriteCapture_(fs1, vfs1, expr_));
+			return _lambdaCapture(definitions, _var(capture), bind, rewriteCapture_(fs1, vfs1, expr_));
 		})
 		: id === 'let' ? (({ bind, value, expr }) =>
 			_let(bind,
