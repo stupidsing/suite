@@ -178,7 +178,7 @@ let _deref = expr => ({ id: 'deref', expr });
 let _dot = (expr, field) => ({ id: 'dot', expr, field });
 let _eq = (lhs, rhs) => ({ id: 'eq_', lhs, rhs });
 let _error = { id: 'new', clazz: 'Error' };
-let _frame = (fs, ps) => ({ id: 'frame', fs, ps });
+let _frame = (fs, ps, vn) => ({ id: 'frame', fs, ps, vn });
 let _if = (if_, then, else_) => ({ id: 'if', if_, then, else_ });
 let _index = (lhs, rhs) => ({ id: 'index', lhs, rhs });
 let _lambda = (bind, expr) => ({ id: 'lambda', bind, expr });
@@ -687,7 +687,7 @@ let rewrite = (rf, ast) => {
 	: id === 'div' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
 	: id === 'dot' ? (({ expr, field }) => ({ id, expr: rf(expr), field }))
 	: id === 'eq_' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
-	: id === 'frame' ? (({ fs, ps }) => ast)
+	: id === 'frame' ? (({ fs, ps, vn }) => ast)
 	: id === 'if' ? (({ if_, then, else_ }) => ({ id, if_: rf(if_), then: rf(then), else_: rf(else_) }))
 	: id === 'index' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
 	: id === 'lambda' ? (({ bind, expr }) => ({ id, bind: rf(bind), expr: rf(expr) }))
@@ -816,7 +816,7 @@ format_ = (priority, ast) => {
 	: id === 'div' ? (({ lhs, rhs }) => `${fmt(lhs)} / ${fm(rhs)}`)
 	: id === 'dot' ? (({ expr, field }) => `${fmt(expr)}.${field}`)
 	: id === 'eq_' ? (({ lhs, rhs }) => `${fmt(lhs)} === ${fmt(rhs)}`)
-	: id === 'frame' ? (({ fs, ps }) => `frame[${fs}][${ps}]`)
+	: id === 'frame' ? (({ fs, ps, vn }) => `frame[${fs}][${ps}]`)
 	: id === 'if' ? (({ if_, then, else_ }) => `${fm(if_)} ? ${fmt(then)} : ${fmt(else_)}`)
 	: id === 'index' ? (({ lhs, rhs }) => `${fmt(lhs)}[${format(rhs)}]`)
 	: id === 'lambda' ? (({ bind, expr }) => `${fmt(bind)} => ${fmt(expr)}`)
@@ -2015,7 +2015,7 @@ rewriteVars = (fs, ps, vts, ast) => {
 			: bind.id === 'var' ? function() {
 				let [fs_, ps] = ll_findk(vts, bind.vn);
 				return _assign(
-					_frame(fs - fs_, ps),
+					_frame(fs - fs_, ps, bind.vn),
 					rewriteVars_(value),
 					rewriteVars_(expr));
 			}()
@@ -2034,7 +2034,7 @@ rewriteVars = (fs, ps, vts, ast) => {
 		)
 		: id === 'let' ? (({ bind, value, expr }) =>
 			_alloc(bind.vn, _assign(
-				_frame(0, ps),
+				_frame(0, ps, bind.vn),
 				rewriteVars_(value),
 				rewriteVars(fs, ps1, ll_cons([bind.vn, [fs, ps]], vts), expr)))
 		)
@@ -2045,7 +2045,7 @@ rewriteVars = (fs, ps, vts, ast) => {
 		)
 		: id === 'var' ? (({ vn }) => {
 			let [fs_, ps] = ll_findk(vts, vn);
-			return _frame(fs - fs_, ps);
+			return _frame(fs - fs_, ps, vn);
 		})
 		: (({}) =>
 			rewrite(rewriteVars_, ast)
@@ -2185,8 +2185,8 @@ generate = ast => {
 	)
 	: id === 'eq_' ?
 		generateBinOp
-	: id === 'frame' ? (({ fs, ps }) => [
-		{ id: 'frame-get-ref', fs, ps },
+	: id === 'frame' ? (({ fs, ps, vn }) => [
+		{ id: 'frame-get-ref', fs, ps, vn },
 		{ id: 'deref' },
 	])
 	: id === 'if' ? (({ if_, then, else_ }) => {
@@ -2320,7 +2320,7 @@ generate = ast => {
 		generateOp
 	: id === 'ref' ? (({ expr }) => false ? undefined
 		: expr.id === 'deref' ? generate(expr.expr)
-		: expr.id === 'frame' ? [{ id: 'frame-get-ref', fs: expr.fs, ps: expr.ps },]
+		: expr.id === 'frame' ? [{ id: 'frame-get-ref', fs: expr.fs, ps: expr.ps, vn: expr.vn },]
 		: error('BAD')
 	)
 	: id === 'segment' ? (({ opcodes }) =>
