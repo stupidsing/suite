@@ -2458,7 +2458,7 @@ let interpret = opcodes => {
 			console.error(`----------`);
 			console.error(`FRAMES = ${JSON.stringify(frames, undefined, undefined)}`);
 			console.error(`RSTACK = ${JSON.stringify(rstack, undefined, undefined)}`);
-			console.error(`IP = ${ip} ${JSON.stringify(opcode, undefined, undefined)}`);
+			console.error(`IP = ${ip} ${Object.values(opcode).join(' ')}`);
 		}();
 
 		ip = ip + 1;
