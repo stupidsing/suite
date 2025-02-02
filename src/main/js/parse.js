@@ -2398,18 +2398,18 @@ let expand = opcodes => {
 	let i = 0;
 
 	while (i < opcodes.length) (function() {
-		let { id, segment } = opcodes[i];
+		let { id, name, segment } = opcodes[i];
 		let isSegment = id === 'label-segment';
 		isSegment && function() {
 			let label = newDummy();
 			opcodes = [
 				...opcodes,
 				{ id: ':', label },
-				{ id: 'comment', comment: `START ${segment.name}` },
+				{ id: 'comment', comment: `START ${name}` },
 				...segment,
-				{ id: 'comment', comment: `END ${segment.name}` },
+				{ id: 'comment', comment: `END ${name}` },
 			];
-			setp(opcodes[i], 'name', segment.name);
+			setp(opcodes[i], 'name', name);
 			setp(opcodes[i], 'id', 'label');
 			setp(opcodes[i], 'label', label);
 			setp(opcodes[i], 'segment', undefined);
