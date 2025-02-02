@@ -812,7 +812,7 @@ format_ = (priority, ast) => {
 		}());
 		return r.id !== 'nil' ? `[${s}, ...${fmt(r)}]` : `[${s},]`;
 	})
-	: id === 'deref' ? (({ expr }) => `* ${fmt(expr)}`)
+	: id === 'deref' ? (({ expr }) => `*${fmt(expr)}`)
 	: id === 'div' ? (({ lhs, rhs }) => `${fmt(lhs)} / ${fm(rhs)}`)
 	: id === 'dot' ? (({ expr, field }) => `${fmt(expr)}.${field}`)
 	: id === 'eq_' ? (({ lhs, rhs }) => `${fmt(lhs)} === ${fmt(rhs)}`)
@@ -840,7 +840,7 @@ format_ = (priority, ast) => {
 	: id === 'pair' ? (({ lhs, rhs }) => `${fm(lhs)}, ${fmt(rhs)}`)
 	: id === 'plr' ? (({ expr, i }) => `${fmt(expr)}[${i}]`)
 	: id === 'pos' ? (({ expr }) => `+ ${fmt(expr)}`)
-	: id === 'ref' ? (({ expr }) => `& ${fmt(expr)}`)
+	: id === 'ref' ? (({ expr }) => `&${fmt(expr)}`)
 	: id === 'segment' ? (({ opcodes }) => `<<${stringify(opcodes)}>>`)
 	: id === 'str' ? (({ v }) => `'${v}'`)
 	: id === 'struct' ? (({ kvs }) => {
