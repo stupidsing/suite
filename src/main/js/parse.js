@@ -1655,29 +1655,28 @@ let rewriteCapture = () => {
 
 	let rewriteCapture_;
 
-	rewriteCapture_ = (fs, vfs, ast) => {
-		let fs1 = fs + 1;
+	rewriteCapture_ = (vns, ast) => {
 		let { id } = ast;
 
 		let f = false ? undefined
 		: id === 'alloc' ? (({ vn, expr }) =>
-			_alloc(vn, rewriteCapture_(fs, ll_cons([vn, fs], vfs), expr))
+			_alloc(vn, rewriteCapture_(ll_cons(vn, vns), expr))
 		)
 		: id === 'lambda' ? (({ bind, expr }) => {
 			let capture = newDummy();
-			let vfs1 = ll_cons([bind.vn, fs1], ll_cons([capture, fs1], vfs));
+			let vns1 = ll_cons(bind.vn, ll_cons(capture, vns));
 			let captures = [];
-			let expr_ = rewriteCaptureVar(capture, ll_map(vfs, ([vn, fs]) => vn), captures, expr);
+			let expr_ = rewriteCaptureVar(capture, vns, captures, expr);
 			let definitions = _struct(captures.map(vn => ({ key: vn, value: _ref(_var(vn)) })));
-			return _lambdaCapture(definitions, _var(capture), bind, rewriteCapture_(fs1, vfs1, expr_));
+			return _lambdaCapture(definitions, _var(capture), bind, rewriteCapture_(vns1, expr_));
 		})
 		: id === 'let' ? (({ bind, value, expr }) =>
 			_let(bind,
-				rewriteCapture_(fs, vfs, value),
-				rewriteCapture_(fs, ll_cons([bind.vn, fs], vfs), expr))
+				rewriteCapture_(vns, value),
+				rewriteCapture_(ll_cons(bind.vn, vns), expr))
 		)
 		: (({}) =>
-			rewrite(ast => rewriteCapture_(fs, vfs, ast), ast)
+			rewrite(ast => rewriteCapture_(vns, ast), ast)
 		);
 
 		return f(ast);
@@ -2730,7 +2729,7 @@ let processRewrite = program => {
 	let ast5 = rewriteFsReadFileSync(ast4);
 	let ast6 = rewriteIntrinsics(ast5);
 	let ast7 = rewriteRenameVar(newDummy(), ll_map(roots, v => [v, v]), ast6);
-	let ast8 = rewriteCapture()(0, ll_map(roots, v => [v, 0]), ast7);
+	let ast8 = rewriteCapture()(roots, ast7);
 
 	return { ast: ast8, type };
 };
