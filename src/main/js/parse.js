@@ -2215,7 +2215,7 @@ generate = ast => {
 	: id === 'lambda-capture' ? (({ capture, bindCapture, bind, expr }) => {
 		return [
 			...generate(capture),
-			{ id: 'label-segment', name: `lambda ${JSON.stringify(capture)}`, segment: [
+			{ id: 'label-segment', name: `lambda ${format(capture)}`, segment: [
 				...generate(expr),
 				{ id: 'return' },
 			] },
