@@ -661,8 +661,8 @@ let parserModule = () => {
 				let [lhs, rhs] = splitl(statement, '=');
 
 				return rhs !== undefined
-				? _assign(parseLvalue(lhs), parse(rhs), parseExpr)
-				: _let(_var(newDummy()), parse(lhs), parseExpr);
+					? _assign(parseLvalue(lhs), parse(rhs), parseExpr)
+					: _let(_var(newDummy()), parse(lhs), parseExpr);
 			}();
 		}();
 	};
