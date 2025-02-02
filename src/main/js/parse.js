@@ -2821,8 +2821,7 @@ return actual === expect
 			let instructions = [];
 			let i = 0;
 			while (i < opcodes.length) (function() {
-				let opcode = opcodes[i];
-				instructions.push(`\n${i} ${Object.values(opcode).join(' ')}`);
+				instructions.push(`\n${i} ${Object.values(opcodes[i]).join(' ')}`);
 				i = i + 1;
 				return true;
 			}());
