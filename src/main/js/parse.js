@@ -2145,7 +2145,7 @@ generate = ast => {
 		]
 		: ['apply', 'charCodeAt', 'concat', 'endsWith', 'includes', 'indexOf', 'join', 'push', 'startsWith',].includes(field) ? [
 			...generate(expr),
-			{ id: 'label-segment', segment: [
+			{ id: 'label-segment', name: field, segment: [
 				{ id: 'frame-get-ref', fs: 0, ps: 0 },
 				{ id: 'deref' },
 				{ id: 'frame-get-ref', fs: 0, ps: 1 },
@@ -2158,7 +2158,7 @@ generate = ast => {
 		]
 		: ['slice',].includes(field) ? [
 			...generate(expr),
-			{ id: 'label-segment', segment: [
+			{ id: 'label-segment', name: field, segment: [
 				{ id: 'frame-get-ref', fs: 0, ps: 0 },
 				{ id: 'deref' },
 				{ id: 'frame-get-ref', fs: 0, ps: 1 },
@@ -2171,7 +2171,7 @@ generate = ast => {
 		]
 		: ['pop', 'toReversed', 'toString', 'trim',].includes(field) ? [
 			...generate(expr),
-			{ id: 'label-segment', segment: [
+			{ id: 'label-segment', name: field, segment: [
 				{ id: 'frame-get-ref', fs: 0, ps: 0 },
 				{ id: 'deref' },
 				{ id: 'service', m: 1, field },
@@ -2215,7 +2215,10 @@ generate = ast => {
 	: id === 'lambda-capture' ? (({ capture, bindCapture, bind, expr }) => {
 		return [
 			...generate(capture),
-			{ id: 'label-segment', segment: [...generate(expr), { id: 'return' },] },
+			{ id: 'label-segment', name: `lambda ${JSON.stringify(capture)}`, segment: [
+				...generate(expr),
+				{ id: 'return' },
+			] },
 			{ id },
 		];
 	})
@@ -2237,7 +2240,7 @@ generate = ast => {
 		false ? undefined
 		: clazz === 'Error' ? [
 			{ id: 'object' },
-			{ id: 'label-segment', segment: [
+			{ id: 'label-segment', name: `new ${clazz}`, segment: [
 				{ id: 'frame-get-ref', fs: 0, ps: 1 },
 				{ id: 'deref' },
 				{ id: 'return' },
@@ -2246,11 +2249,11 @@ generate = ast => {
 		]
 		: clazz === 'Map' ? [
 			{ id: 'object' },
-			{ id: 'label-segment', segment: [
+			{ id: 'label-segment', name: `new ${clazz}`, segment: [
 				{ id: 'map' },
 				{ id: 'object' },
 				{ id: 'dup', i: 1 },
-				{ id: 'label-segment', segment: [
+				{ id: 'label-segment', name: `Map.get`, segment: [
 					{ id: 'frame-get-ref', fs: 0, ps: 0 },
 					{ id: 'deref' },
 					{ id: 'frame-get-ref', fs: 0, ps: 1 },
@@ -2261,7 +2264,7 @@ generate = ast => {
 				{ id: 'lambda-capture' },
 				{ id: 'object-put', key: 'get' },
 				{ id: 'dup', i: 1 },
-				{ id: 'label-segment', segment: [
+				{ id: 'label-segment', name: `Map.has`, segment: [
 					{ id: 'frame-get-ref', fs: 0, ps: 0 },
 					{ id: 'deref' },
 					{ id: 'frame-get-ref', fs: 0, ps: 1 },
@@ -2272,7 +2275,7 @@ generate = ast => {
 				{ id: 'lambda-capture' },
 				{ id: 'object-put', key: 'has' },
 				{ id: 'dup', i: 1 },
-				{ id: 'label-segment', segment: [
+				{ id: 'label-segment', name: `Map.set`, segment: [
 					{ id: 'frame-get-ref', fs: 0, ps: 0 },
 					{ id: 'deref' },
 					{ id: 'frame-get-ref', fs: 0, ps: 1 },
@@ -2345,7 +2348,7 @@ generate = ast => {
 	: id === 'try' ? (({ lhs, rhs }) => {
 		let finallyLabel = newDummy();
 		return [
-			{ id: 'label-segment', segment: [
+			{ id: 'label-segment', name: `catch`, segment: [
 				{ id: 'frame-push' },
 				...generate(rhs),
 				{ id: 'frame-dealloc' },
@@ -2399,7 +2402,14 @@ let expand = opcodes => {
 		let isSegment = id === 'label-segment';
 		isSegment && function() {
 			let label = newDummy();
-			opcodes = [...opcodes, { id: ':', label }, ...segment,];
+			opcodes = [
+				...opcodes,
+				{ id: ':', label },
+				{ id: 'comment', comment: `START ${segment.name}` },
+				...segment,
+				{ id: 'comment', comment: `END ${segment.name}` },
+			];
+			setp(opcodes[i], 'name', segment.name);
 			setp(opcodes[i], 'id', 'label');
 			setp(opcodes[i], 'label', label);
 			setp(opcodes[i], 'segment', undefined);
@@ -2490,6 +2500,8 @@ let interpret = opcodes => {
 			rpush(opcode.v)
 		: id === 'coal' ?
 			interpretBinOp((a, b) => a ?? b)
+		: id === 'comment' ?
+			undefined
 		: id === 'cons' ?
 			interpretBinOp(v_cons)
 		: id === 'deref' ? function() {
