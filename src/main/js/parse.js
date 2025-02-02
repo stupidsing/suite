@@ -847,7 +847,7 @@ format_ = (priority, ast) => {
 		let s = kvs
 			.map(({ key, value }) => value.id === 'var' && value.vn === key ? key : `${key}: ${fmt(value)}`)
 			.join(', ');
-		return `{ ${s} }`;
+		return s !== '' ? `{ ${s} }` : '{}';
 	})
 	: id === 'sub' ? (({ lhs, rhs }) => `${fmt(lhs)} - ${fm(rhs)}`)
 	: id === 'tget' ? (({ expr, i }) => `${fmt(expr)}[${i}]`)
