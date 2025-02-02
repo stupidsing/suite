@@ -2817,8 +2817,17 @@ return actual === expect
 		process.env.FORMAT
 			&& console.error(`format :: ${format(ast)}`);
 
-		process.env.GENERATE
-			&& console.error(`generate :: ${opcodes.map(opcode => '\n' + JSON.stringify(opcode, undefined, undefined)).join(undefined)}`);
+		process.env.GENERATE && function() {
+			let instructions = [];
+			let i = 0;
+			while (i < opcodes.length) (function() {
+				let opcode = opcodes[i];
+				instructions.push(`\n${i} ${Object.values(opcode).join(' ')}`);
+				i = i + 1;
+				return true;
+			}());
+			console.error(`generate :: ${instructions.join('')}`);
+		}();
 
 		process.env.INTERPRET
 			&& console.error(`interpret :: ${stringify(interpret(opcodes))}`);
