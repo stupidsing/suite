@@ -189,7 +189,7 @@ let _nil = { id: 'nil' };
 let _not = expr => ({ id: 'not', expr });
 let _num = i => ({ id: 'num', i });
 let _pair = (lhs, rhs) => ({ id: 'pair', lhs, rhs });
-let _plr = (expr, i) => ({ id: 'plr', expr, i });
+let _pget = (expr, i) => ({ id: 'pget', expr, i });
 let _ref = expr => ({ id: 'ref', expr });
 let _segment = opcodes => ({ id: 'segment', opcodes });
 let _str = v => ({ id: 'str', v });
@@ -708,7 +708,7 @@ let rewrite = (rf, ast) => {
 	: id === 'num' ? (({ i }) => ast)
 	: id === 'or_' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
 	: id === 'pair' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
-	: id === 'plr' ? (({ expr, i }) => ({ id, expr: rf(expr), i }))
+	: id === 'pget' ? (({ expr, i }) => ({ id, expr: rf(expr), i }))
 	: id === 'pos' ? (({ expr }) => ({ id, expr: rf(expr) }))
 	: id === 'ref' ? (({ expr }) => ({ id, expr: rf(expr) }))
 	: id === 'segment' ? (({ opcodes }) => ast)
@@ -838,7 +838,7 @@ format_ = (priority, ast) => {
 	: id === 'num' ? (({ i }) => `${i}`)
 	: id === 'or_' ? (({ lhs, rhs }) => `${fm(lhs)} || ${fmt(rhs)}`)
 	: id === 'pair' ? (({ lhs, rhs }) => `${fm(lhs)}, ${fmt(rhs)}`)
-	: id === 'plr' ? (({ expr, i }) => `${fmt(expr)}[${i}]`)
+	: id === 'pget' ? (({ expr, i }) => `${fmt(expr)}[${i}]`)
 	: id === 'pos' ? (({ expr }) => `+ ${fmt(expr)}`)
 	: id === 'ref' ? (({ expr }) => `&${fmt(expr)}`)
 	: id === 'segment' ? (({ opcodes }) => `<<${stringify(opcodes)}>>`)
@@ -1281,7 +1281,7 @@ let typesModule = () => {
 		: id === 'pair' ? (({ lhs, rhs }) =>
 			tyPairOf(infer(lhs), infer(rhs))
 		)
-		: id === 'plr' ? (({ expr, i }) => {
+		: id === 'pget' ? (({ expr, i }) => {
 			let tl = newRef();
 			let tr = newRef();
 			return doBind(ast, infer(expr), tyPairOf(tl, tr)) && (i === 0 ? tl : tr);
@@ -1566,7 +1566,7 @@ let rewriteBind = () => {
 				bindConstant
 			: id === 'pair' ? (({ lhs, rhs }) => {
 				return id !== value.id
-					? ifBind(lhs, _plr(value, 0), ifBind(rhs, _plr(value, 1), then, else_), else_)
+					? ifBind(lhs, _pget(value, 0), ifBind(rhs, _pget(value, 1), then, else_), else_)
 					: ifBind(lhs, value.lhs, ifBind(rhs, value.rhs, then, else_), else_);
 			})
 			: id === 'str' ?
@@ -1607,7 +1607,7 @@ let rewriteBind = () => {
 		: id === 'assign'
 			&& bind.id !== 'dot'
 			&& bind.id !== 'index'
-			&& bind.id !== 'plr'
+			&& bind.id !== 'pget'
 			&& bind.id !== 'tget'
 			&& bind.id !== 'var' ? (({ bind, value, expr }) =>
 			assignBind(bind, rewriteBind_(value), rewriteBind_(expr), _error)
@@ -1895,7 +1895,7 @@ evaluate = vvs => {
 				eval(bind.lhs)[eval(bind.rhs)] = eval(value);
 				return eval(expr);
 			}()
-			: bind.id === 'plr' ? function() {
+			: bind.id === 'pget' ? function() {
 				eval(bind.expr)[bind.i] = eval(value);
 				return eval(expr);
 			}()
@@ -1957,7 +1957,7 @@ evaluate = vvs => {
 		: id === 'num' ? (({ i }) => i)
 		: id === 'or_' ? (({ lhs, rhs }) => assumeAny(eval(lhs) || eval(rhs)))
 		: id === 'pair' ? (({ lhs, rhs }) => assumeAny([eval(lhs), eval(rhs), pairTag]))
-		: id === 'plr' ? (({ expr, i }) => eval(expr)[i])
+		: id === 'pget' ? (({ expr, i }) => eval(expr)[i])
 		: id === 'pos' ? (({ expr }) => assumeAny(+eval(expr)))
 		: id === 'ref' ? (({ expr }) =>
 			expr.id === 'var' ? assumeAny({ vv: ll_find(vvs, ([k_, v]) => k_ === expr.vn) })
@@ -2101,7 +2101,7 @@ generate = ast => {
 			{ id: 'array-set' },
 			...generate(expr),
 		]
-		: bind.id === 'plr' ? [
+		: bind.id === 'pget' ? [
 			...generate(bind.expr),
 			{ id: 'num', i: bind.i },
 			...generate(value),
@@ -2311,7 +2311,7 @@ generate = ast => {
 	)
 	: id === 'pair' ?
 		generateBinOp
-	: id === 'plr' ? (({ expr, i }) => [
+	: id === 'pget' ? (({ expr, i }) => [
 		...generate(expr),
 		{ id: 'num', i },
 		{ id: 'pair-get' },
