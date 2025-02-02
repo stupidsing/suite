@@ -2493,7 +2493,7 @@ let interpret = opcodes => {
 		: id === 'assign-ref' ? function() {
 			let value = rpop();
 			let ref = rpop();
-			frames[ref.fs][ref.ps] = value;
+			ref.frame[ref.ps] = value;
 		}()
 		: id === 'bool' ?
 			rpush(opcode.v)
@@ -2505,7 +2505,7 @@ let interpret = opcodes => {
 			interpretBinOp(v_cons)
 		: id === 'deref' ? function() {
 			let ref = rpop();
-			rpush(frames[ref.fs][ref.ps]);
+			rpush(ref.frame[ref.ps]);
 		}()
 		: id === 'discard' ?
 			rpop()
@@ -2524,7 +2524,7 @@ let interpret = opcodes => {
 		: id === 'frame-dealloc' ?
 			fpop()
 		: id === 'frame-get-ref' ?
-			rpush({ fs: frames.length - 1 - opcode.fs, ps: opcode.ps })
+			rpush({ frame: frames[frames.length - 1 - opcode.fs], ps: opcode.ps })
 		: id === 'frame-push' ?
 			fpush(rpop())
 		: id === 'jump' ? function() {
