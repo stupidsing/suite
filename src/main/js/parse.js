@@ -452,12 +452,12 @@ let parserModule = () => {
 		: program.startsWith("'") && program.endsWith("'") ? _str(program.slice(1, -1))
 		: program.startsWith('"') && program.endsWith('"') ? _str(program.slice(1, -1))
 		: program.startsWith('`') && program.endsWith('`') ? parseBackquote(program.slice(1, -1))
-		: program === 'false' ? _bool(program)
+		: program === 'false' ? _bool(false)
 		: program === 'new Error' ? { id: 'new', clazz: 'Error' }
 		: program === 'new Map' ? { id: 'new', clazz: 'Map' }
 		: program === 'new Promise' ? { id: 'new', clazz: 'Promise' }
 		: program === 'nil' ? _nil
-		: program === 'true' ? _bool(program)
+		: program === 'true' ? _bool(true)
 		: program === 'undefined' ? _undefined
 		: isIdentifier(program) ? _var(program)
 		: error(`cannot parse "${program}"`);
