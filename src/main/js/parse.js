@@ -1925,8 +1925,9 @@ evaluate = vvs => {
 			let object = eval(expr);
 			let value = getp(object, field);
 			return false ? undefined
-			: typeof (object.length) === 'number' && field !== 'length' ? assumeAny(unwrap(value.bind(object)))
+			: value === undefined ? assumeAny(value)
 			: typeof value !== 'function' ? assumeAny(value)
+			: typeof (object.length) === 'number' && field !== 'length' ? assumeAny(unwrap(value.bind(object)))
 			: ['get', 'has', 'set',].includes(field) ? assumeAny(unwrap(value.bind(object)))
 			: fake(value).bind(object);
 		})
