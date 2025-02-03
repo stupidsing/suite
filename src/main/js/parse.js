@@ -728,137 +728,143 @@ let rewrite = (rf, ast) => {
 	return f(ast);
 };
 
-let precs = function() {
-	let precOrder = [
-		['bool', 'nil', 'num', 'str', 'struct', 'tuple', 'undefined', 'var',],
-		['new',],
-		['cons', 'struct', 'tuple',],
-		['typeof',],
-		['app',],
-		['await',],
-		['mod',],
-		['div',],
-		['mul',],
-		['neg',],
-		['sub',],
-		['pos',],
-		['add',],
-		['lt_',],
-		['le_',],
-		['not',],
-		['ne_',],
-		['eq_',],
-		['and',],
-		['or',],
-		['coal',],
-		['app',],
-		['if',],
-		['lambda', 'lambda-async', 'lambda-capture',],
-		['pair',],
-		['let',],
-		['throw',],
-		['while',],
-		['assign',],
-	];
+let formatModule = () => {
+	let precs = function() {
+		let precOrder = [
+			['bool', 'nil', 'num', 'str', 'struct', 'tuple', 'undefined', 'var',],
+			['new',],
+			['cons', 'struct', 'tuple',],
+			['typeof',],
+			['app',],
+			['await',],
+			['mod',],
+			['div',],
+			['mul',],
+			['neg',],
+			['sub',],
+			['pos',],
+			['add',],
+			['lt_',],
+			['le_',],
+			['not',],
+			['ne_',],
+			['eq_',],
+			['and',],
+			['or',],
+			['coal',],
+			['app',],
+			['if',],
+			['lambda', 'lambda-async', 'lambda-capture',],
+			['pair',],
+			['let',],
+			['throw',],
+			['while',],
+			['assign',],
+		];
 
-	let precs = {};
-	let i = 0;
-	while (i < precOrder.length) (function() {
-		precOrder[i].map(id => setp(precs, id, i));
-		i = i + 1;
-	}());
-	return precs;
-}();
-
-let formatBlock;
-let format_;
-let format = ast => format_(9999, ast);
-
-formatBlock = ast => {
-	let { id } = ast;
-
-	let f = false ? undefined
-	: id === 'alloc' ? (({ vn, expr }) => `let ${vn}; ${formatBlock(expr)}`)
-	: id === 'assign' ? (({ bind, value, expr }) => `${format(bind)} = ${format(value)}; ${formatBlock(expr)}`)
-	: id === 'let' ? (({ bind, value, expr }) => `let ${format(bind)} = ${format(value)}; ${formatBlock(expr)}`)
-	: id === 'throw' ? (({ expr }) => `throw ${format(expr)}`)
-	: id === 'try' ? (({ lhs, rhs }) => `try { ${formatBlock(lhs)}; } catch (e) { ${formatBlock(rhs)}; }`)
-	: id === 'while' ? (({ cond, loop, expr }) => `while (${format(cond)}) { ${formatBlock(loop)}; } ${formatBlock(expr)}`)
-	: (({}) => `return ${format(ast)}`);
-
-	return f(ast);
-};
-
-format_ = (priority, ast) => {
-	let { id } = ast;
-	let priority_ = getp(precs, id) ?? 0;
-
-	let fm = ast => format_(priority_ - 1, ast);
-	let fmt = ast => format_(priority_, ast);
-
-	let f = false ? undefined
-	: id === 'add' ? (({ lhs, rhs }) => `${fm(lhs)} + ${fmt(rhs)}`)
-	: id === 'and' ? (({ lhs, rhs }) => `${fm(lhs)} && ${fmt(rhs)}`)
-	: id === 'app' ? (({ lhs, rhs }) => `${fmt(lhs)}(${format(rhs)})`)
-	: id === 'await' ? (({ expr }) => `await ${fmt(expr)}`)
-	: id === 'bool' ? (({ b }) => b)
-	: id === 'coal' ? (({ lhs, rhs }) => `${fm(lhs)} ?? ${fmt(rhs)}`)
-	: id === 'cons' ? (({ lhs, rhs }) => {
-		let s = fmt(lhs);
-		let r = rhs;
-		while (r.id === 'cons') (function() {
-			s = s + `, ${fmt(r.lhs)}`;
-			r = r.rhs;
+		let precs = {};
+		let i = 0;
+		while (i < precOrder.length) (function() {
+			precOrder[i].map(id => setp(precs, id, i));
+			i = i + 1;
 		}());
-		return r.id !== 'nil' ? `[${s}, ...${fmt(r)}]` : `[${s},]`;
-	})
-	: id === 'deref' ? (({ expr }) => `*${fmt(expr)}`)
-	: id === 'div' ? (({ lhs, rhs }) => `${fmt(lhs)} / ${fm(rhs)}`)
-	: id === 'dot' ? (({ expr, field }) => `${fmt(expr)}.${field}`)
-	: id === 'eq_' ? (({ lhs, rhs }) => `${fmt(lhs)} === ${fmt(rhs)}`)
-	: id === 'frame' ? (({ fs, ps, vn }) => `frame[${fs}][${ps}]`)
-	: id === 'if' ? (({ if_, then, else_ }) => `${fm(if_)} ? ${fmt(then)} : ${fmt(else_)}`)
-	: id === 'index' ? (({ lhs, rhs }) => `${fmt(lhs)}[${format(rhs)}]`)
-	: id === 'lambda' ? (({ bind, expr }) => `${fmt(bind)} => ${fmt(expr)}`)
-	: id === 'lambda-async' ? (({ bind, expr }) => `async ${fmt(bind)} => ${fmt(expr)}`)
-	: id === 'lambda-capture' ? (({ capture, bindCapture, bind, expr }) =>
-		capture !== undefined && 0 < Object.keys(capture.kvs).length
-			? `|${fmt(capture)}| ${fmt(bind)} => |${fmt(bindCapture)}| ${fmt(expr)}`
-			: `${fmt(bind)} => ${fmt(expr)}`
-	)
-	: id === 'le_' ? (({ lhs, rhs }) => `${fm(lhs)} <= ${fmt(rhs)}`)
-	: id === 'lt_' ? (({ lhs, rhs }) => `${fm(lhs)} < ${fmt(rhs)}`)
-	: id === 'mod' ? (({ lhs, rhs }) => `${fmt(lhs)} % ${fm(rhs)}`)
-	: id === 'mul' ? (({ lhs, rhs }) => `${fm(lhs)} * ${fmt(rhs)}`)
-	: id === 'ne_' ? (({ lhs, rhs }) => `${fm(lhs)} !== ${fmt(rhs)}`)
-	: id === 'neg' ? (({ expr }) => `- ${fmt(expr)}`)
-	: id === 'new' ? (({ clazz }) => `new ${clazz}`)
-	: id === 'nil' ? (({}) => '[]')
-	: id === 'not' ? (({ expr }) => `! ${fmt(expr)}`)
-	: id === 'num' ? (({ i }) => `${i}`)
-	: id === 'or_' ? (({ lhs, rhs }) => `${fm(lhs)} || ${fmt(rhs)}`)
-	: id === 'pair' ? (({ lhs, rhs }) => `${fm(lhs)}, ${fmt(rhs)}`)
-	: id === 'pget' ? (({ expr, i }) => `${fmt(expr)}[${i}]`)
-	: id === 'pos' ? (({ expr }) => `+ ${fmt(expr)}`)
-	: id === 'ref' ? (({ expr }) => `&${fmt(expr)}`)
-	: id === 'segment' ? (({ opcodes }) => `<<${stringify(opcodes)}>>`)
-	: id === 'str' ? (({ v }) => `'${v}'`)
-	: id === 'struct' ? (({ kvs }) => {
-		let s = kvs
-			.map(({ key, value }) => value.id === 'var' && value.vn === key ? key : `${key}: ${fmt(value)}`)
-			.join(', ');
-		return s !== '' ? `{ ${s} }` : '{}';
-	})
-	: id === 'sub' ? (({ lhs, rhs }) => `${fmt(lhs)} - ${fm(rhs)}`)
-	: id === 'tget' ? (({ expr, i }) => `${fmt(expr)}[${i}]`)
-	: id === 'tuple' ? (({ values }) => `[${values.map(fm).join(', ')}]`)
-	: id === 'typeof' ? (({ expr }) => `typeof ${fmt(expr)}`)
-	: id === 'undefined' ? (({}) => `${id}`)
-	: id === 'var' ? (({ vn }) => vn)
-	: (({}) => `function() { ${formatBlock(ast)}; }()`);
+		return precs;
+	}();
 
-	return priority_ <= priority ? f(ast) : `(${f(ast)})`;
+	let formatBlock;
+	let format_;
+	let format = ast => format_(9999, ast);
+
+	formatBlock = ast => {
+		let { id } = ast;
+
+		let f = false ? undefined
+		: id === 'alloc' ? (({ vn, expr }) => `let ${vn}; ${formatBlock(expr)}`)
+		: id === 'assign' ? (({ bind, value, expr }) => `${format(bind)} = ${format(value)}; ${formatBlock(expr)}`)
+		: id === 'let' ? (({ bind, value, expr }) => `let ${format(bind)} = ${format(value)}; ${formatBlock(expr)}`)
+		: id === 'throw' ? (({ expr }) => `throw ${format(expr)}`)
+		: id === 'try' ? (({ lhs, rhs }) => `try { ${formatBlock(lhs)}; } catch (e) { ${formatBlock(rhs)}; }`)
+		: id === 'while' ? (({ cond, loop, expr }) => `while (${format(cond)}) { ${formatBlock(loop)}; } ${formatBlock(expr)}`)
+		: (({}) => `return ${format(ast)}`);
+
+		return f(ast);
+	};
+
+	format_ = (priority, ast) => {
+		let { id } = ast;
+		let priority_ = getp(precs, id) ?? 0;
+
+		let fm = ast => format_(priority_ - 1, ast);
+		let fmt = ast => format_(priority_, ast);
+
+		let f = false ? undefined
+		: id === 'add' ? (({ lhs, rhs }) => `${fm(lhs)} + ${fmt(rhs)}`)
+		: id === 'and' ? (({ lhs, rhs }) => `${fm(lhs)} && ${fmt(rhs)}`)
+		: id === 'app' ? (({ lhs, rhs }) => `${fmt(lhs)}(${format(rhs)})`)
+		: id === 'await' ? (({ expr }) => `await ${fmt(expr)}`)
+		: id === 'bool' ? (({ b }) => b)
+		: id === 'coal' ? (({ lhs, rhs }) => `${fm(lhs)} ?? ${fmt(rhs)}`)
+		: id === 'cons' ? (({ lhs, rhs }) => {
+			let s = fmt(lhs);
+			let r = rhs;
+			while (r.id === 'cons') (function() {
+				s = s + `, ${fmt(r.lhs)}`;
+				r = r.rhs;
+			}());
+			return r.id !== 'nil' ? `[${s}, ...${fmt(r)}]` : `[${s},]`;
+		})
+		: id === 'deref' ? (({ expr }) => `*${fmt(expr)}`)
+		: id === 'div' ? (({ lhs, rhs }) => `${fmt(lhs)} / ${fm(rhs)}`)
+		: id === 'dot' ? (({ expr, field }) => `${fmt(expr)}.${field}`)
+		: id === 'eq_' ? (({ lhs, rhs }) => `${fmt(lhs)} === ${fmt(rhs)}`)
+		: id === 'frame' ? (({ fs, ps, vn }) => `frame[${fs}][${ps}]`)
+		: id === 'if' ? (({ if_, then, else_ }) => `${fm(if_)} ? ${fmt(then)} : ${fmt(else_)}`)
+		: id === 'index' ? (({ lhs, rhs }) => `${fmt(lhs)}[${format(rhs)}]`)
+		: id === 'lambda' ? (({ bind, expr }) => `${fmt(bind)} => ${fmt(expr)}`)
+		: id === 'lambda-async' ? (({ bind, expr }) => `async ${fmt(bind)} => ${fmt(expr)}`)
+		: id === 'lambda-capture' ? (({ capture, bindCapture, bind, expr }) =>
+			capture !== undefined && 0 < Object.keys(capture.kvs).length
+				? `|${fmt(capture)}| ${fmt(bind)} => |${fmt(bindCapture)}| ${fmt(expr)}`
+				: `${fmt(bind)} => ${fmt(expr)}`
+		)
+		: id === 'le_' ? (({ lhs, rhs }) => `${fm(lhs)} <= ${fmt(rhs)}`)
+		: id === 'lt_' ? (({ lhs, rhs }) => `${fm(lhs)} < ${fmt(rhs)}`)
+		: id === 'mod' ? (({ lhs, rhs }) => `${fmt(lhs)} % ${fm(rhs)}`)
+		: id === 'mul' ? (({ lhs, rhs }) => `${fm(lhs)} * ${fmt(rhs)}`)
+		: id === 'ne_' ? (({ lhs, rhs }) => `${fm(lhs)} !== ${fmt(rhs)}`)
+		: id === 'neg' ? (({ expr }) => `- ${fmt(expr)}`)
+		: id === 'new' ? (({ clazz }) => `new ${clazz}`)
+		: id === 'nil' ? (({}) => '[]')
+		: id === 'not' ? (({ expr }) => `! ${fmt(expr)}`)
+		: id === 'num' ? (({ i }) => `${i}`)
+		: id === 'or_' ? (({ lhs, rhs }) => `${fm(lhs)} || ${fmt(rhs)}`)
+		: id === 'pair' ? (({ lhs, rhs }) => `${fm(lhs)}, ${fmt(rhs)}`)
+		: id === 'pget' ? (({ expr, i }) => `${fmt(expr)}[${i}]`)
+		: id === 'pos' ? (({ expr }) => `+ ${fmt(expr)}`)
+		: id === 'ref' ? (({ expr }) => `&${fmt(expr)}`)
+		: id === 'segment' ? (({ opcodes }) => `<<${stringify(opcodes)}>>`)
+		: id === 'str' ? (({ v }) => `'${v}'`)
+		: id === 'struct' ? (({ kvs }) => {
+			let s = kvs
+				.map(({ key, value }) => value.id === 'var' && value.vn === key ? key : `${key}: ${fmt(value)}`)
+				.join(', ');
+			return s !== '' ? `{ ${s} }` : '{}';
+		})
+		: id === 'sub' ? (({ lhs, rhs }) => `${fmt(lhs)} - ${fm(rhs)}`)
+		: id === 'tget' ? (({ expr, i }) => `${fmt(expr)}[${i}]`)
+		: id === 'tuple' ? (({ values }) => `[${values.map(fm).join(', ')}]`)
+		: id === 'typeof' ? (({ expr }) => `typeof ${fmt(expr)}`)
+		: id === 'undefined' ? (({}) => `${id}`)
+		: id === 'var' ? (({ vn }) => vn)
+		: (({}) => `function() { ${formatBlock(ast)}; }()`);
+
+		return priority_ <= priority ? f(ast) : `(${f(ast)})`;
+	};
+
+	return { format };
 };
+
+let format = formatModule().format;
 
 let typesModule = () => {
 	let refs = new Map();
