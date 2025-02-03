@@ -2045,7 +2045,7 @@ evaluate = vvs => {
 		: id === 'try' ? (({ lhs, rhs }) => function() {
 			try {
 				return eval(lhs);
-			} catch (e) { return eval(_app(rhs, e)); }
+			} catch (e) { return eval(rhs)(e); }
 		}())
 		: id === 'tuple' ? (({ values }) => assumeAny(v_foldr(v_nil, values, (tuple, value) => v_cons(eval(value), tuple))))
 		: id === 'typeof' ? (({ expr }) => assumeAny(typeof (eval(expr))))
