@@ -1821,6 +1821,68 @@ rewriteRenameVar = (scope, vns, ast) => {
 	return f(ast);
 };
 
+let rewriteVars;
+
+rewriteVars = (fs, ps, vts, ast) => {
+	let fs1 = fs + 1;
+	let ps1 = ps + 1;
+
+	let rewriteVars_;
+
+	rewriteVars_ = ast => {
+		let { id } = ast;
+
+		let f = false ? undefined
+		: id === 'alloc' ? (({ vn, expr }) =>
+			_alloc(vn, rewriteVars(fs, ps1, ll_cons([vn, [fs, ps]], vts), expr))
+		)
+		: id === 'assign' ? (({ bind, value, expr }) => {
+			return false ? undefined
+			: bind.id === 'var' ? function() {
+				let [fs_, ps] = ll_findk(vts, bind.vn);
+				return _assign(
+					_frame(fs - fs_, ps, bind.vn),
+					rewriteVars_(value),
+					rewriteVars_(expr));
+			}()
+			:
+				_assign(
+					rewriteVars_(bind),
+					rewriteVars_(value),
+					rewriteVars_(expr));
+		})
+		: id === 'lambda-capture' ? (({ capture, bindCapture, bind, expr }) =>
+			_lambdaCapture(
+				rewriteVars_(capture),
+				bindCapture,
+				bind,
+				rewriteVars(fs1, 2, ll_cons([bind.vn, [fs1, 1]], ll_cons([bindCapture.vn, [fs1, 0]], vts)), expr))
+		)
+		: id === 'let' ? (({ bind, value, expr }) =>
+			_alloc(bind.vn, _assign(
+				_frame(0, ps, bind.vn),
+				rewriteVars_(value),
+				rewriteVars(fs, ps1, ll_cons([bind.vn, [fs, ps]], vts), expr)))
+		)
+		: id === 'try' ? (({ lhs, rhs }) =>
+			_try(
+				rewriteVars_(lhs),
+				rewriteVars(fs, ps1, ll_cons(['e', [fs, ps]], vts), rhs))
+		)
+		: id === 'var' ? (({ vn }) => {
+			let [fs_, ps] = ll_findk(vts, vn);
+			return _frame(fs - fs_, ps, vn);
+		})
+		: (({}) =>
+			rewrite(rewriteVars_, ast)
+		);
+
+		return f(ast);
+	};
+
+	return rewriteVars_(ast);
+};
+
 let pairTag = {};
 
 let unwrap = f => arg => {
@@ -1994,68 +2056,6 @@ evaluate = vvs => {
 	};
 
 	return evaluate_;
-};
-
-let rewriteVars;
-
-rewriteVars = (fs, ps, vts, ast) => {
-	let fs1 = fs + 1;
-	let ps1 = ps + 1;
-
-	let rewriteVars_;
-
-	rewriteVars_ = ast => {
-		let { id } = ast;
-
-		let f = false ? undefined
-		: id === 'alloc' ? (({ vn, expr }) =>
-			_alloc(vn, rewriteVars(fs, ps1, ll_cons([vn, [fs, ps]], vts), expr))
-		)
-		: id === 'assign' ? (({ bind, value, expr }) => {
-			return false ? undefined
-			: bind.id === 'var' ? function() {
-				let [fs_, ps] = ll_findk(vts, bind.vn);
-				return _assign(
-					_frame(fs - fs_, ps, bind.vn),
-					rewriteVars_(value),
-					rewriteVars_(expr));
-			}()
-			:
-				_assign(
-					rewriteVars_(bind),
-					rewriteVars_(value),
-					rewriteVars_(expr));
-		})
-		: id === 'lambda-capture' ? (({ capture, bindCapture, bind, expr }) =>
-			_lambdaCapture(
-				rewriteVars_(capture),
-				bindCapture,
-				bind,
-				rewriteVars(fs1, 2, ll_cons([bind.vn, [fs1, 1]], ll_cons([bindCapture.vn, [fs1, 0]], vts)), expr))
-		)
-		: id === 'let' ? (({ bind, value, expr }) =>
-			_alloc(bind.vn, _assign(
-				_frame(0, ps, bind.vn),
-				rewriteVars_(value),
-				rewriteVars(fs, ps1, ll_cons([bind.vn, [fs, ps]], vts), expr)))
-		)
-		: id === 'try' ? (({ lhs, rhs }) =>
-			_try(
-				rewriteVars_(lhs),
-				rewriteVars(fs, ps1, ll_cons(['e', [fs, ps]], vts), rhs))
-		)
-		: id === 'var' ? (({ vn }) => {
-			let [fs_, ps] = ll_findk(vts, vn);
-			return _frame(fs - fs_, ps, vn);
-		})
-		: (({}) =>
-			rewrite(rewriteVars_, ast)
-		);
-
-		return f(ast);
-	};
-
-	return rewriteVars_(ast);
 };
 
 let generate;
