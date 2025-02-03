@@ -172,7 +172,7 @@ let _add = (lhs, rhs) => ({ id: 'add', lhs, rhs });
 let _alloc = (vn, expr) => ({ id: 'alloc', vn, expr });
 let _app = (lhs, rhs) => ({ id: 'app', lhs, rhs });
 let _assign = (bind, value, expr) => ({ id: 'assign', bind, value, expr });
-let _bool = v => ({ id: 'bool', v });
+let _bool = b => ({ id: 'bool', b });
 let _cons = (lhs, rhs) => ({ id: 'cons', lhs, rhs });
 let _deref = expr => ({ id: 'deref', expr });
 let _dot = (expr, field) => ({ id: 'dot', expr, field });
@@ -680,7 +680,7 @@ let rewrite = (rf, ast) => {
 	: id === 'app' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
 	: id === 'assign' ? (({ bind, value, expr }) => ({ id, bind: rf(bind), value: rf(value), expr: rf(expr) }))
 	: id === 'await' ? (({ expr }) => ({ id, expr: rf(expr) }))
-	: id === 'bool' ? (({ v }) => ast)
+	: id === 'bool' ? (({ b }) => ast)
 	: id === 'coal' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
 	: id === 'cons' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
 	: id === 'deref' ? (({ expr }) => ({ id, expr: rf(expr) }))
@@ -801,7 +801,7 @@ format_ = (priority, ast) => {
 	: id === 'and' ? (({ lhs, rhs }) => `${fm(lhs)} && ${fmt(rhs)}`)
 	: id === 'app' ? (({ lhs, rhs }) => `${fmt(lhs)}(${format(rhs)})`)
 	: id === 'await' ? (({ expr }) => `await ${fmt(expr)}`)
-	: id === 'bool' ? (({ v }) => v)
+	: id === 'bool' ? (({ b }) => b)
 	: id === 'coal' ? (({ lhs, rhs }) => `${fm(lhs)} ?? ${fmt(rhs)}`)
 	: id === 'cons' ? (({ lhs, rhs }) => {
 		let s = fmt(lhs);
@@ -1544,14 +1544,14 @@ let rewriteBind = () => {
 		ifBind = (bind, value, then, else_) => {
 			let { id } = bind;
 
-			let bindConstant = ast => false ? undefined
+			let bindConstant = v => ast => false ? undefined
 				: bind.id !== value.id ? _if(_eq(bind, value), then, else_)
-				: bind.v === value.v ? then
+				: v === value.v ? then
 				: else_;
 
 			let f = false ? undefined
 			: id === 'bool' ?
-				bindConstant
+				bindConstant(bind.b)
 			: id === 'cons' ? (({ lhs, rhs }) => {
 				return id !== value.id
 					? ifBind(lhs, _index(value, _num(0)), ifBind(rhs, _app(_dot(value, 'slice'), _num(1)), then, else_), else_)
@@ -1563,14 +1563,14 @@ let rewriteBind = () => {
 					: then;
 			})
 			: id === 'num' ?
-				bindConstant
+				bindConstant(bind.v)
 			: id === 'pair' ? (({ lhs, rhs }) => {
 				return id !== value.id
 					? ifBind(lhs, _pget(value, 0), ifBind(rhs, _pget(value, 1), then, else_), else_)
 					: ifBind(lhs, value.lhs, ifBind(rhs, value.rhs, then, else_), else_);
 			})
 			: id === 'str' ?
-				bindConstant
+				bindConstant(bind.v)
 			: id === 'struct' ? (({ kvs }) => {
 				let getValue = k => value.kvs.filter(kv => kv.key === k)[0].value;
 				return kvs.reduce(
@@ -1910,7 +1910,7 @@ evaluate = vvs => {
 			: error('BAD')
 		)
 		: id === 'await' ? (({ expr }) => error('BAD'))
-		: id === 'bool' ? (({ v }) => v)
+		: id === 'bool' ? (({ b }) => b)
 		: id === 'coal' ? (({ lhs, rhs }) => {
 			let v = eval(lhs);
 			return v !== undefined ? v : eval(rhs);
@@ -2496,7 +2496,7 @@ let interpret = opcodes => {
 			ref.frame[ref.ps] = value;
 		}()
 		: id === 'bool' ?
-			rpush(opcode.v)
+			rpush(opcode.b)
 		: id === 'coal' ?
 			interpretBinOp((a, b) => a ?? b)
 		: id === 'comment' ?
