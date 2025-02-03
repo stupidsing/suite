@@ -494,9 +494,12 @@ let parserModule = () => {
 
 		return _struct(keepsplitl(appendTrailingComma(program), ',', kv => {
 			let [key_, value_] = splitl(kv, ':');
-			let key = parseConstant(key_.trim()).vn;
-			let value = value_ !== undefined ? parse(value_) : _var(key);
-			return { key, value };
+			let keyc = parseConstant(key_.trim());
+			return keyc.id === 'var' ? function() {
+				let key = keyc.vn;
+				let value = value_ !== undefined ? parse(value_) : _var(key);
+				return { key, value };
+			}() : error(`cannot parse ${kv} in struct`);
 		}));
 	};
 
