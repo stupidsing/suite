@@ -78,11 +78,11 @@ let ll_map;
 
 ll_map = (es, op) => ll_isNotEmpty(es) ? ll_cons(op(ll_head(es)), ll_map(ll_tail(es), op)) : ll_nil();
 
-let v_nil = [];
+let vec_nil = [];
 
-let v_cons = (head, tail) => [head, ...tail,];
+let vec_cons = (head, tail) => [head, ...tail,];
 
-let v_contains = (es, e) => {
+let vec_contains = (es, e) => {
 	let i = 0;
 	let b = false;
 	while (i < es.length) (function() {
@@ -93,7 +93,7 @@ let v_contains = (es, e) => {
 	return b;
 };
 
-let v_find = (es, op) => {
+let vec_find = (es, op) => {
 	let i = 0;
 	let r = undefined;
 	while (r === undefined && i < es.length) (function() {
@@ -105,7 +105,7 @@ let v_find = (es, op) => {
 	return r;
 };
 
-let v_foldl = (init, es, op) => {
+let vec_foldl = (init, es, op) => {
 	let i = 0;
 	let r = init;
 	while (i < es.length) (function() {
@@ -116,7 +116,7 @@ let v_foldl = (init, es, op) => {
 	return r;
 };
 
-let v_foldr = (init, es, op) => {
+let vec_foldr = (init, es, op) => {
 	let i = es.length - 1;
 	let r = init;
 	while (0 <= i) (function() {
@@ -363,8 +363,8 @@ let parserModule = () => {
 		let keepsplitl_;
 		keepsplitl_ = input => input !== '' ? function() {
 			let [left, right] = splitl(input, sep);
-			return v_cons(apply(left), keepsplitl_(right));
-		}() : v_nil;
+			return vec_cons(apply(left), keepsplitl_(right));
+		}() : vec_nil;
 		return keepsplitl_(s);
 	};
 
@@ -1008,8 +1008,8 @@ let typesModule = () => {
 	bindTypes = (vts, ast) => false ? undefined
 		: ast.id === 'nil' ? vts
 		: ast.id === 'pair' ? bindTypes(bindTypes(vts, ast.lhs), ast.rhs)
-		: ast.id === 'struct' ? v_foldl(vts, ast.kvs, (vts_, kv) => bindTypes(vts_, kv.value))
-		: ast.id === 'tuple' ? v_foldl(vts, ast.values, bindTypes)
+		: ast.id === 'struct' ? vec_foldl(vts, ast.kvs, (vts_, kv) => bindTypes(vts_, kv.value))
+		: ast.id === 'tuple' ? vec_foldl(vts, ast.values, bindTypes)
 		: ast.id === 'var' ? ll_cons([ast.vn, newRef()], vts)
 		: error(`bindTypes(): cannot destructure ${format(ast)}`);
 
@@ -1308,7 +1308,7 @@ let typesModule = () => {
 			tyString
 		)
 		: id === 'struct' ? (({ kvs }) => {
-			return tyStructOf(v_foldl({}, kvs, (type, kv) => {
+			return tyStructOf(vec_foldl({}, kvs, (type, kv) => {
 				let { key, value } = kv;
 				setp(type, key, function() {
 					try {
@@ -1324,13 +1324,13 @@ let typesModule = () => {
 		: id === 'sub' ?
 			inferMathOp
 		: id === 'tget' ? (({ expr, i }) => {
-			let ts = v_nil;
+			let ts = vec_nil;
 			while (0 < i) (function() {
-				ts = v_cons(newRef(), ts);
+				ts = vec_cons(newRef(), ts);
 				i = i - 1;
 			}());
 			let ti = newRef();
-			return doBind(ast, infer(expr), tyTupleOf(v_cons(ti, ts)));
+			return doBind(ast, infer(expr), tyTupleOf(vec_cons(ti, ts)));
 		})
 		: id === 'throw' ? (({}) =>
 			newRef()
@@ -1339,7 +1339,7 @@ let typesModule = () => {
 			doBind(ast, infer(rhs), newRef()) && infer(lhs)
 		)
 		: id === 'tuple' ? (({ values }) =>
-			tyTupleOf(v_foldr(v_nil, values, (tuple, value) => v_cons(infer(value), tuple)))
+			tyTupleOf(vec_foldr(vec_nil, values, (tuple, value) => vec_cons(infer(value), tuple)))
 		)
 		: id === 'typeof' ? (({}) =>
 			tyString
@@ -1370,8 +1370,8 @@ let typesModule = () => {
 			}),
 			Object: tyStructOfCompleted({
 				assign: tyLambdaOf(newRef(), newRef()),
-				entries: tyLambdaOf(tyStructOf({}), tyArrayOf(tyTupleOf(v_cons(tyString, v_cons(newRef(), v_nil))))),
-				fromEntries: tyLambdaOf(tyArrayOf(tyTupleOf(v_cons(tyString, v_cons(newRef(), v_nil)))), tyStructOf({})),
+				entries: tyLambdaOf(tyStructOf({}), tyArrayOf(tyTupleOf(vec_cons(tyString, vec_cons(newRef(), vec_nil))))),
+				fromEntries: tyLambdaOf(tyArrayOf(tyTupleOf(vec_cons(tyString, vec_cons(newRef(), vec_nil)))), tyStructOf({})),
 				keys: tyLambdaOf(tyStructOf({}), tyArrayOf(tyString)),
 			}),
 			Promise: tyStructOfCompleted({
@@ -1986,7 +1986,7 @@ evaluate = vvs => {
 			let v = eval(lhs);
 			return v !== undefined ? v : eval(rhs);
 		})
-		: id === 'cons' ? (({ lhs, rhs }) => assumeAny(v_cons(eval(lhs), eval(rhs))))
+		: id === 'cons' ? (({ lhs, rhs }) => assumeAny(vec_cons(eval(lhs), eval(rhs))))
 		: id === 'deref' ? (({ expr }) => {
 			let { vv } = eval(expr);
 			return get1(vv);
@@ -2037,7 +2037,7 @@ evaluate = vvs => {
 		)
 		: id === 'segment' ? (({ opcodes }) => error('BAD'))
 		: id === 'str' ? (({ v }) => v)
-		: id === 'struct' ? (({ kvs }) => assumeAny(v_foldl({}, kvs, (struct, kv) => {
+		: id === 'struct' ? (({ kvs }) => assumeAny(vec_foldl({}, kvs, (struct, kv) => {
 			let { key, value } = kv;
 			setp(struct, key, eval(value));
 			return struct;
@@ -2050,7 +2050,7 @@ evaluate = vvs => {
 				return eval(lhs);
 			} catch (e) { return eval(rhs)(e); }
 		}())
-		: id === 'tuple' ? (({ values }) => assumeAny(v_foldr(v_nil, values, (tuple, value) => v_cons(eval(value), tuple))))
+		: id === 'tuple' ? (({ values }) => assumeAny(vec_foldr(vec_nil, values, (tuple, value) => vec_cons(eval(value), tuple))))
 		: id === 'typeof' ? (({ expr }) => assumeAny(typeof (eval(expr))))
 		: id === 'undefined' ? (({}) => undefined)
 		: id === 'var' ? (({ vn }) => ll_findk(vvs, vn))
@@ -2512,7 +2512,7 @@ let interpret = opcodes => {
 		: id === 'comment' ?
 			undefined
 		: id === 'cons' ?
-			interpretBinOp(v_cons)
+			interpretBinOp(vec_cons)
 		: id === 'deref' ? function() {
 			let ref = rpop();
 			rpush(ref.frame[ref.ps]);
