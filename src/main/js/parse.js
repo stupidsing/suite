@@ -33,99 +33,106 @@ let seti = (m, k, v) => { fake(m)[0 <= k && fake(k)] = v; return v; };
 let getp = (m, k) => fake(m)[k !== '' && fake(k)];
 let setp = (m, k, v) => { fake(m)[k !== '' && fake(k)] = v; return v; };
 
-let ll_nil = () => undefined;
+let ll = function() {
+	let empty = () => undefined;
 
-let ll_cons = (head, tail) => [head, tail];
-let ll_head = get0;
-let ll_isEmpty = list => list === ll_nil();
-let ll_isNotEmpty = list => list !== ll_nil();
-let ll_tail = get1;
+	let cons = (head, tail) => [head, tail];
+	let head = get0;
+	let isEmpty = list => list === empty();
+	let isNotEmpty = list => list !== empty();
+	let tail = get1;
 
-let ll_contains;
+	let contains;
+	contains = (es, e) => {
+		return isNotEmpty(es) ? function() {
+			let [head, tail] = es;
+			return e !== head ? contains(tail, e) : true;
+		}() : false;
+	};
 
-ll_contains = (es, e) => {
-	return ll_isNotEmpty(es) ? function() {
-		let [head, tail] = es;
-		return e !== head ? ll_contains(tail, e) : true;
-	}() : false;
-};
+	let find;
+	find = (es, op) => {
+		return isNotEmpty(es) ? function() {
+			let [head, tail] = es;
+			return op(head) ? head : find(tail, op);
+		}() : undefined;
+	};
 
-let ll_find;
+	let foldl;
+	foldl = (init, es, op) => isNotEmpty(es) ? foldl(op(init, head(es)), tail(es), op) : init;
 
-ll_find = (es, op) => {
-	return ll_isNotEmpty(es) ? function() {
-		let [head, tail] = es;
-		return op(head) ? head : ll_find(tail, op);
-	}() : undefined;
-};
+	let foldr;
+	foldr = (init, es, op) => isNotEmpty(es) ? op(foldr(init, tail(es), op), head(es)) : init;
 
-let ll_foldl;
-ll_foldl = (init, es, op) => ll_isNotEmpty(es) ? ll_foldl(op(init, ll_head(es)), ll_tail(es), op) : init;
+	let findk = (kvs, k) => {
+		let kv = find(kvs, ([k_, v]) => k_ === k);
+		return kv !== undefined ? get1(kv) : error(`variable ${k} not found`);
+	};
 
-let ll_foldr;
-ll_foldr = (init, es, op) => ll_isNotEmpty(es) ? op(ll_foldr(init, ll_tail(es), op), ll_head(es)) : init;
+	let len;
+	len = es => isNotEmpty(es) ? 1 + len(tail(es)) : 0;
 
-let ll_findk = (kvs, k) => {
-	let kv = ll_find(kvs, ([k_, v]) => k_ === k);
-	return kv !== undefined ? get1(kv) : error(`variable ${k} not found`);
-};
+	let map;
+	map = (es, op) => isNotEmpty(es) ? cons(op(head(es)), map(tail(es), op)) : empty();
 
-let ll_len;
+	return { cons, contains, empty, find, findk, foldl, foldr, head, isEmpty, isNotEmpty, len, map, tail, };
+}();
 
-ll_len = es => ll_isNotEmpty(es) ? 1 + ll_len(ll_tail(es)) : 0;
+let ll_map; 
+ll_map = (es, op) => ll.isNotEmpty(es) ? ll.cons(op(ll.head(es)), ll_map(ll.tail(es), op)) : ll.empty();
 
-let ll_map;
+let vec = function() {
+	let empty = [];
 
-ll_map = (es, op) => ll_isNotEmpty(es) ? ll_cons(op(ll_head(es)), ll_map(ll_tail(es), op)) : ll_nil();
+	let cons = (head, tail) => [head, ...tail,];
 
-let vec_nil = [];
+	let contains = (es, e) => {
+		let i = 0;
+		let b = false;
+		while (i < es.length) (function() {
+			b = b || es[i] === e;
+			i = i + 1;
+			return undefined;
+		}());
+		return b;
+	};
 
-let vec_cons = (head, tail) => [head, ...tail,];
+	let find = (es, op) => {
+		let i = 0;
+		let r = undefined;
+		while (r === undefined && i < es.length) (function() {
+			let e = es[i];
+			r = op(e) ? e : undefined;
+			i = i + 1;
+			return undefined;
+		}());
+		return r;
+	};
 
-let vec_contains = (es, e) => {
-	let i = 0;
-	let b = false;
-	while (i < es.length) (function() {
-		b = b || es[i] === e;
-		i = i + 1;
-		return undefined;
-	}());
-	return b;
-};
+	let foldl = (init, es, op) => {
+		let i = 0;
+		let r = init;
+		while (i < es.length) (function() {
+			r = op(r, es[i]);
+			i = i + 1;
+			return undefined;
+		}());
+		return r;
+	};
 
-let vec_find = (es, op) => {
-	let i = 0;
-	let r = undefined;
-	while (r === undefined && i < es.length) (function() {
-		let e = es[i];
-		r = op(e) ? e : undefined;
-		i = i + 1;
-		return undefined;
-	}());
-	return r;
-};
+	let foldr = (init, es, op) => {
+		let i = es.length - 1;
+		let r = init;
+		while (0 <= i) (function() {
+			r = op(r, es[i]);
+			i = i - 1;
+			return undefined;
+		}());
+		return r;
+	};
 
-let vec_foldl = (init, es, op) => {
-	let i = 0;
-	let r = init;
-	while (i < es.length) (function() {
-		r = op(r, es[i]);
-		i = i + 1;
-		return undefined;
-	}());
-	return r;
-};
-
-let vec_foldr = (init, es, op) => {
-	let i = es.length - 1;
-	let r = init;
-	while (0 <= i) (function() {
-		r = op(r, es[i]);
-		i = i - 1;
-		return undefined;
-	}());
-	return r;
-};
+	return { cons, contains, empty, find, foldl, foldr, };
+}();
 
 let gen = i => {
 	let array = [];
@@ -150,22 +157,22 @@ let dump = v => {
 		return false ? undefined
 		: 8 <= n ?
 			'...'
-		: ll_contains(vs, v) ?
+		: ll.contains(vs, v) ?
 			'<recurse>'
 		: vlist.length !== undefined && typeof v !== 'string' ?
-			`[${vlist.map(v_ => `${dump_(n + 1, ll_cons(v, vs), v_)}, `).join('').trim()}]`
+			`[${vlist.map(v_ => `${dump_(n + 1, ll.cons(v, vs), v_)}, `).join('').trim()}]`
 		: v.id !== undefined ? function() {
 			let join = Object
 				.entries(v)
 				.filter(([k, v_]) => k !== 'id')
-				.map(([k, v_]) => `${k}:${dump_(n + 1, ll_cons(v, vs), v_)}`)
+				.map(([k, v_]) => `${k}:${dump_(n + 1, ll.cons(v, vs), v_)}`)
 				.join(' ');
 			return `${v.id}(${join})`;
 		}()
 		:
 			v.toString();
 	};
-	return dump_(0, ll_nil(), v);
+	return dump_(0, ll.empty(), v);
 };
 
 let _add = (lhs, rhs) => ({ id: 'add', lhs, rhs });
@@ -301,26 +308,26 @@ let parserModule = () => {
 	let isQuote = ch => ch === ascii("'") || ch === ascii('"') || ch === ascii('`');
 
 	let quoteBracket = (qb, ch) => {
-		let qb0 = ll_isNotEmpty(qb) ? ll_head(qb) : undefined;
+		let qb0 = ll.isNotEmpty(qb) ? ll.head(qb) : undefined;
 
 		return false ? undefined
-		: ch === ascii('{') && qb0 === ascii('`') ? ll_cons(ch, qb)
-		: ch === ascii('}') && qb0 === ascii('`') ? ll_cons(ch, qb)
-		: isQuote(qb0) ? (qb0 === ch ? ll_tail(qb) : qb)
-		: isQuote(ch) ? ll_cons(ch, qb)
-		: ch === ascii('(') ? (qb0 === ascii(')') ? ll_tail(qb) : ll_cons(ch, qb))
-		: ch === ascii(')') ? (qb0 === ascii('(') ? ll_tail(qb) : ll_cons(ch, qb))
-		: ch === ascii('[') ? (qb0 === ascii(']') ? ll_tail(qb) : ll_cons(ch, qb))
-		: ch === ascii(']') ? (qb0 === ascii('[') ? ll_tail(qb) : ll_cons(ch, qb))
-		: ch === ascii('{') ? (qb0 === ascii('}') ? ll_tail(qb) : ll_cons(ch, qb))
-		: ch === ascii('}') ? (qb0 === ascii('{') ? ll_tail(qb) : ll_cons(ch, qb))
+		: ch === ascii('{') && qb0 === ascii('`') ? ll.cons(ch, qb)
+		: ch === ascii('}') && qb0 === ascii('`') ? ll.cons(ch, qb)
+		: isQuote(qb0) ? (qb0 === ch ? ll.tail(qb) : qb)
+		: isQuote(ch) ? ll.cons(ch, qb)
+		: ch === ascii('(') ? (qb0 === ascii(')') ? ll.tail(qb) : ll.cons(ch, qb))
+		: ch === ascii(')') ? (qb0 === ascii('(') ? ll.tail(qb) : ll.cons(ch, qb))
+		: ch === ascii('[') ? (qb0 === ascii(']') ? ll.tail(qb) : ll.cons(ch, qb))
+		: ch === ascii(']') ? (qb0 === ascii('[') ? ll.tail(qb) : ll.cons(ch, qb))
+		: ch === ascii('{') ? (qb0 === ascii('}') ? ll.tail(qb) : ll.cons(ch, qb))
+		: ch === ascii('}') ? (qb0 === ascii('{') ? ll.tail(qb) : ll.cons(ch, qb))
 		: qb;
 	};
 
 	let splitl = (s, sep) => {
 		let i = 0;
 		let j;
-		let qb = ll_nil();
+		let qb = ll.empty();
 		let qb1;
 
 		while (function() {
@@ -328,7 +335,7 @@ let parserModule = () => {
 			return j <= s.length && function() {
 				let ch = s.charCodeAt(i);
 				qb1 = quoteBracket(qb, ch);
-				return ll_isNotEmpty(qb) || s.slice(i, j) !== sep || i === 0;
+				return ll.isNotEmpty(qb) || s.slice(i, j) !== sep || i === 0;
 			}();
 		}()) (function() {
 			i = i + 1;
@@ -341,7 +348,7 @@ let parserModule = () => {
 	let splitr = (s, sep) => {
 		let i;
 		let j = s.length;
-		let qb = ll_nil();
+		let qb = ll.empty();
 		let qb1;
 
 		while (function() {
@@ -349,7 +356,7 @@ let parserModule = () => {
 			return 0 <= i && function() {
 				let ch = s.charCodeAt(j - 1);
 				qb1 = quoteBracket(qb, ch);
-				return ll_isNotEmpty(qb1) || s.slice(i, j) !== sep || i === 0;
+				return ll.isNotEmpty(qb1) || s.slice(i, j) !== sep || i === 0;
 			}();
 		}()) (function() {
 			j = j - 1;
@@ -363,8 +370,8 @@ let parserModule = () => {
 		let keepsplitl_;
 		keepsplitl_ = input => input !== '' ? function() {
 			let [left, right] = splitl(input, sep);
-			return vec_cons(apply(left), keepsplitl_(right));
-		}() : vec_nil;
+			return vec.cons(apply(left), keepsplitl_(right));
+		}() : vec.empty;
 		return keepsplitl_(s);
 	};
 
@@ -499,7 +506,7 @@ let parserModule = () => {
 				let key = keyc.vn;
 				let value = value_ !== undefined ? parse(value_) : _var(key);
 				return { key, value };
-			}() : error(`cannot parse ${kv} in struct`);
+			}() : error(`cannot parse struct member ${kv}`);
 		}));
 	};
 
@@ -898,22 +905,22 @@ let typesModule = () => {
 		let dump_;
 		dump_ = (vs, v) => {
 			let { ref } = v;
-			let vs_ = ll_cons(v, vs);
+			let vs_ = ll.cons(v, vs);
 			let listv = assumeAny(v);
 			return false ? undefined
-			: 8 <= ll_len(vs) ?
+			: 8 <= ll.len(vs) ?
 				'...'
-			: ll_contains(vs, v) ?
+			: ll.contains(vs, v) ?
 				'<recurse>'
 			: typeof ref === 'number' ? function() {
 				let v_ = refs.get(ref);
 				return v_ !== v ? dump_(vs_, v_) : `_${ref}`;
 			}()
 			: typeof v === 'object' ? (false ? undefined
-				: ll_isEmpty(listv) ?
+				: ll.isEmpty(listv) ?
 					''
-				: v.t === undefined && ll_isNotEmpty(listv) && assumeList(listv).length === 2 ?
-					`${dump_(vs_, ll_head(listv))}:${dump_(vs_, assumeObject(ll_tail(listv)))}`
+				: v.t === undefined && ll.isNotEmpty(listv) && assumeList(listv).length === 2 ?
+					`${dump_(vs_, ll.head(listv))}:${dump_(vs_, assumeObject(ll.tail(listv)))}`
 				: function() {
 					let t = v.t;
 					let join = Object
@@ -929,7 +936,7 @@ let typesModule = () => {
 			:
 				JSON.stringify(v, undefined, undefined);
 		};
-		return dump_(ll_nil(), v);
+		return dump_(ll.empty(), v);
 	};
 
 	let tryBind;
@@ -1008,9 +1015,9 @@ let typesModule = () => {
 	bindTypes = (vts, ast) => false ? undefined
 		: ast.id === 'nil' ? vts
 		: ast.id === 'pair' ? bindTypes(bindTypes(vts, ast.lhs), ast.rhs)
-		: ast.id === 'struct' ? vec_foldl(vts, ast.kvs, (vts_, kv) => bindTypes(vts_, kv.value))
-		: ast.id === 'tuple' ? vec_foldl(vts, ast.values, bindTypes)
-		: ast.id === 'var' ? ll_cons([ast.vn, newRef()], vts)
+		: ast.id === 'struct' ? vec.foldl(vts, ast.kvs, (vts_, kv) => bindTypes(vts_, kv.value))
+		: ast.id === 'tuple' ? vec.foldl(vts, ast.values, bindTypes)
+		: ast.id === 'var' ? ll.cons([ast.vn, newRef()], vts)
 		: error(`bindTypes(): cannot destructure ${format(ast)}`);
 
 	let tyArrayOf = type => ({ t: 'array', of: type });
@@ -1155,7 +1162,7 @@ let typesModule = () => {
 				&& t;
 		})
 		: id === 'alloc' ? (({ vn, expr }) =>
-			inferType(ll_cons([vn, newRef()], vts), isAsync, expr)
+			inferType(ll.cons([vn, newRef()], vts), isAsync, expr)
 		)
 		: id === 'and' ?
 			inferLogicalOp
@@ -1308,7 +1315,7 @@ let typesModule = () => {
 			tyString
 		)
 		: id === 'struct' ? (({ kvs }) => {
-			return tyStructOf(vec_foldl({}, kvs, (type, kv) => {
+			return tyStructOf(vec.foldl({}, kvs, (type, kv) => {
 				let { key, value } = kv;
 				setp(type, key, function() {
 					try {
@@ -1324,13 +1331,13 @@ let typesModule = () => {
 		: id === 'sub' ?
 			inferMathOp
 		: id === 'tget' ? (({ expr, i }) => {
-			let ts = vec_nil;
+			let ts = vec.empty;
 			while (0 < i) (function() {
-				ts = vec_cons(newRef(), ts);
+				ts = vec.cons(newRef(), ts);
 				i = i - 1;
 			}());
 			let ti = newRef();
-			return doBind(ast, infer(expr), tyTupleOf(vec_cons(ti, ts)));
+			return doBind(ast, infer(expr), tyTupleOf(vec.cons(ti, ts)));
 		})
 		: id === 'throw' ? (({}) =>
 			newRef()
@@ -1339,7 +1346,7 @@ let typesModule = () => {
 			doBind(ast, infer(rhs), newRef()) && infer(lhs)
 		)
 		: id === 'tuple' ? (({ values }) =>
-			tyTupleOf(vec_foldr(vec_nil, values, (tuple, value) => vec_cons(infer(value), tuple)))
+			tyTupleOf(vec.foldr(vec.empty, values, (tuple, value) => vec.cons(infer(value), tuple)))
 		)
 		: id === 'typeof' ? (({}) =>
 			tyString
@@ -1348,7 +1355,7 @@ let typesModule = () => {
 			newRef()
 		)
 		: id === 'var' ? (({ vn }) => {
-			let t = finalRef(ll_findk(vts, vn));
+			let t = finalRef(ll.findk(vts, vn));
 			return t.generic !== true ? t : cloneRef(t);
 		})
 		: id === 'while' ? (({ cond, loop, expr }) => {
@@ -1370,8 +1377,8 @@ let typesModule = () => {
 			}),
 			Object: tyStructOfCompleted({
 				assign: tyLambdaOf(newRef(), newRef()),
-				entries: tyLambdaOf(tyStructOf({}), tyArrayOf(tyTupleOf(vec_cons(tyString, vec_cons(newRef(), vec_nil))))),
-				fromEntries: tyLambdaOf(tyArrayOf(tyTupleOf(vec_cons(tyString, vec_cons(newRef(), vec_nil)))), tyStructOf({})),
+				entries: tyLambdaOf(tyStructOf({}), tyArrayOf(tyTupleOf(vec.cons(tyString, vec.cons(newRef(), vec.empty))))),
+				fromEntries: tyLambdaOf(tyArrayOf(tyTupleOf(vec.cons(tyString, vec.cons(newRef(), vec.empty)))), tyStructOf({})),
 				keys: tyLambdaOf(tyStructOf({}), tyArrayOf(tyString)),
 			}),
 			Promise: tyStructOfCompleted({
@@ -1389,7 +1396,7 @@ let typesModule = () => {
 			}),
 			require: tyLambdaOf(tyString, newRef()),
 		})
-		.reduce((l, vt) => ll_cons(vt, l), ll_nil());
+		.reduce((l, vt) => ll.cons(vt, l), ll.empty());
 
 	return { dump, infer: ast => inferType(predefinedTypes, false, ast) };
 };
@@ -1650,7 +1657,7 @@ let rewriteCapture = () => {
 
 		let f = false ? undefined
 		: id === 'var' ? (({ vn }) => {
-			return !ll_contains(outsidevs, vn) ? ast : function() {
+			return !ll.contains(outsidevs, vn) ? ast : function() {
 				captures.push(vn);
 				return _deref(_dot(_var(capture), vn));
 			}();
@@ -1669,11 +1676,11 @@ let rewriteCapture = () => {
 
 		let f = false ? undefined
 		: id === 'alloc' ? (({ vn, expr }) =>
-			_alloc(vn, rewriteCapture_(ll_cons(vn, vns), expr))
+			_alloc(vn, rewriteCapture_(ll.cons(vn, vns), expr))
 		)
 		: id === 'lambda' ? (({ bind, expr }) => {
 			let capture = newDummy();
-			let vns1 = ll_cons(bind.vn, ll_cons(capture, vns));
+			let vns1 = ll.cons(bind.vn, ll.cons(capture, vns));
 			let captures = [];
 			let expr_ = rewriteCaptureVar(capture, vns, captures, expr);
 			let definitions = _struct(captures.map(vn => ({ key: vn, value: _ref(_var(vn)) })));
@@ -1682,7 +1689,7 @@ let rewriteCapture = () => {
 		: id === 'let' ? (({ bind, value, expr }) =>
 			_let(bind,
 				rewriteCapture_(vns, value),
-				rewriteCapture_(ll_cons(bind.vn, vns), expr))
+				rewriteCapture_(ll.cons(bind.vn, vns), expr))
 		)
 		: (({}) =>
 			rewrite(ast => rewriteCapture_(vns, ast), ast)
@@ -1802,7 +1809,7 @@ rewriteRenameVar = (scope, vns, ast) => {
 		let vn1 = `${vn}_${scope}`;
 		return _alloc(
 			vn1,
-			rewriteRenameVar(scope, ll_cons([vn, vn1], vns), expr));
+			rewriteRenameVar(scope, ll.cons([vn, vn1], vns), expr));
 	})
 	: id === 'lambda' ? (({ bind, expr }) => {
 		let { vn } = bind;
@@ -1810,7 +1817,7 @@ rewriteRenameVar = (scope, vns, ast) => {
 		let vn1 = `${vn}_${scope1}`;
 		return _lambda(
 			_var(vn1),
-			rewriteRenameVar(scope1, ll_cons([vn, vn1], vns), expr));
+			rewriteRenameVar(scope1, ll.cons([vn, vn1], vns), expr));
 	})
 	: id === 'let' ? (({ bind, value, expr }) => {
 		let { vn } = bind;
@@ -1818,10 +1825,10 @@ rewriteRenameVar = (scope, vns, ast) => {
 		return _let(
 		_var(vn1),
 			rewriteRenameVar(scope, vns, value),
-			rewriteRenameVar(scope, ll_cons([vn, vn1], vns), expr));
+			rewriteRenameVar(scope, ll.cons([vn, vn1], vns), expr));
 	})
 	: id === 'var' ? (({ vn }) =>
-		_var(ll_findk(vns, vn))
+		_var(ll.findk(vns, vn))
 	)
 	: (({}) =>
 		rewrite(ast => rewriteRenameVar(scope, vns, ast), ast)
@@ -1843,12 +1850,12 @@ rewriteVars = (fs, ps, vts, ast) => {
 
 		let f = false ? undefined
 		: id === 'alloc' ? (({ vn, expr }) =>
-			_alloc(vn, rewriteVars(fs, ps1, ll_cons([vn, [fs, ps]], vts), expr))
+			_alloc(vn, rewriteVars(fs, ps1, ll.cons([vn, [fs, ps]], vts), expr))
 		)
 		: id === 'assign' ? (({ bind, value, expr }) => {
 			return false ? undefined
 			: bind.id === 'var' ? function() {
-				let [fs_, ps] = ll_findk(vts, bind.vn);
+				let [fs_, ps] = ll.findk(vts, bind.vn);
 				return _assign(
 					_frame(fs - fs_, ps, bind.vn),
 					rewriteVars_(value),
@@ -1865,21 +1872,21 @@ rewriteVars = (fs, ps, vts, ast) => {
 				rewriteVars_(capture),
 				bindCapture,
 				bind,
-				rewriteVars(fs1, 2, ll_cons([bind.vn, [fs1, 1]], ll_cons([bindCapture.vn, [fs1, 0]], vts)), expr))
+				rewriteVars(fs1, 2, ll.cons([bind.vn, [fs1, 1]], ll.cons([bindCapture.vn, [fs1, 0]], vts)), expr))
 		)
 		: id === 'let' ? (({ bind, value, expr }) =>
 			_alloc(bind.vn, _assign(
 				_frame(0, ps, bind.vn),
 				rewriteVars_(value),
-				rewriteVars(fs, ps1, ll_cons([bind.vn, [fs, ps]], vts), expr)))
+				rewriteVars(fs, ps1, ll.cons([bind.vn, [fs, ps]], vts), expr)))
 		)
 		: id === 'try' ? (({ lhs, rhs }) =>
 			_try(
 				rewriteVars_(lhs),
-				rewriteVars(fs, ps1, ll_cons(['e', [fs, ps]], vts), rhs))
+				rewriteVars(fs, ps1, ll.cons(['e', [fs, ps]], vts), rhs))
 		)
 		: id === 'var' ? (({ vn }) => {
-			let [fs_, ps] = ll_findk(vts, vn);
+			let [fs_, ps] = ll.findk(vts, vn);
 			return _frame(fs - fs_, ps, vn);
 		})
 		: (({}) =>
@@ -1930,13 +1937,13 @@ let evaluateVvs =
 			readFileSync: unwrap(require('fs').readFileSync)
 		} : require(path))],
 	]
-	.reduce((v, vl) => ll_cons(vl, v), ll_nil());
+	.reduce((v, vl) => ll.cons(vl, v), ll.empty());
 
 let evaluate;
 
 evaluate = vvs => {
 	let assign = (vn, value) => {
-		let vv = ll_find(vvs, ([vn_, value]) => vn_ === vn);
+		let vv = ll.find(vvs, ([vn_, value]) => vn_ === vn);
 		seti(vv, 1, value);
 		return value;
 	};
@@ -1949,7 +1956,7 @@ evaluate = vvs => {
 
 		let f = false ? undefined
 		: id === 'add' ? (({ lhs, rhs }) => assumeAny(eval(lhs) + eval(rhs)))
-		: id === 'alloc' ? (({ vn, expr }) => evaluate(ll_cons([vn, undefined], vvs))(expr))
+		: id === 'alloc' ? (({ vn, expr }) => evaluate(ll.cons([vn, undefined], vvs))(expr))
 		: id === 'and' ? (({ lhs, rhs }) => assumeAny(eval(lhs) && eval(rhs)))
 		: id === 'app' ? (({ lhs, rhs }) => eval(lhs).call(undefined, eval(rhs)))
 		: id === 'assign' ? (({ bind, value, expr }) => false ? undefined
@@ -1986,7 +1993,7 @@ evaluate = vvs => {
 			let v = eval(lhs);
 			return v !== undefined ? v : eval(rhs);
 		})
-		: id === 'cons' ? (({ lhs, rhs }) => assumeAny(vec_cons(eval(lhs), eval(rhs))))
+		: id === 'cons' ? (({ lhs, rhs }) => assumeAny(vec.cons(eval(lhs), eval(rhs))))
 		: id === 'deref' ? (({ expr }) => {
 			let { vv } = eval(expr);
 			return get1(vv);
@@ -2006,13 +2013,13 @@ evaluate = vvs => {
 		: id === 'frame' ? error('BAD')
 		: id === 'if' ? (({ if_, then, else_ }) => eval(if_) ? eval(then) : eval(else_))
 		: id === 'index' ? (({ lhs, rhs }) => eval(lhs)[eval(rhs)])
-		: id === 'lambda' ? (({ bind, expr }) => assumeAny(value => evaluate(ll_cons([bind.vn, value], vvs))(expr)))
+		: id === 'lambda' ? (({ bind, expr }) => assumeAny(value => evaluate(ll.cons([bind.vn, value], vvs))(expr)))
 		: id === 'lambda-async' ? (({ bind, expr }) => error('BAD'))
 		: id === 'lambda-capture' ? (({ capture, bindCapture, bind, expr }) =>
-			assumeAny(value => evaluate(ll_cons([bind.vn, value], ll_cons([bindCapture.vn, eval(capture)], vvs)))(expr))
+			assumeAny(value => evaluate(ll.cons([bind.vn, value], ll.cons([bindCapture.vn, eval(capture)], vvs)))(expr))
 		)
 		: id === 'le_' ? (({ lhs, rhs }) => assumeAny(eval(lhs) <= eval(rhs)))
-		: id === 'let' ? (({ bind, value, expr }) => evaluate(ll_cons([bind.vn, eval(value)], vvs))(expr))
+		: id === 'let' ? (({ bind, value, expr }) => evaluate(ll.cons([bind.vn, eval(value)], vvs))(expr))
 		: id === 'lt_' ? (({ lhs, rhs }) => assumeAny(eval(lhs) < eval(rhs)))
 		: id === 'mod' ? (({ lhs, rhs }) => assumeAny(eval(lhs) % eval(rhs)))
 		: id === 'mul' ? (({ lhs, rhs }) => assumeAny(eval(lhs) * eval(rhs)))
@@ -2032,12 +2039,12 @@ evaluate = vvs => {
 		: id === 'pget' ? (({ expr, i }) => eval(expr)[i])
 		: id === 'pos' ? (({ expr }) => assumeAny(+eval(expr)))
 		: id === 'ref' ? (({ expr }) =>
-			expr.id === 'var' ? assumeAny({ vv: ll_find(vvs, ([k_, v]) => k_ === expr.vn) })
+			expr.id === 'var' ? assumeAny({ vv: ll.find(vvs, ([k_, v]) => k_ === expr.vn) })
 			: error('BAD')
 		)
 		: id === 'segment' ? (({ opcodes }) => error('BAD'))
 		: id === 'str' ? (({ v }) => v)
-		: id === 'struct' ? (({ kvs }) => assumeAny(vec_foldl({}, kvs, (struct, kv) => {
+		: id === 'struct' ? (({ kvs }) => assumeAny(vec.foldl({}, kvs, (struct, kv) => {
 			let { key, value } = kv;
 			setp(struct, key, eval(value));
 			return struct;
@@ -2050,10 +2057,10 @@ evaluate = vvs => {
 				return eval(lhs);
 			} catch (e) { return eval(rhs)(e); }
 		}())
-		: id === 'tuple' ? (({ values }) => assumeAny(vec_foldr(vec_nil, values, (tuple, value) => vec_cons(eval(value), tuple))))
+		: id === 'tuple' ? (({ values }) => assumeAny(vec.foldr(vec.empty, values, (tuple, value) => vec.cons(eval(value), tuple))))
 		: id === 'typeof' ? (({ expr }) => assumeAny(typeof (eval(expr))))
 		: id === 'undefined' ? (({}) => undefined)
-		: id === 'var' ? (({ vn }) => ll_findk(vvs, vn))
+		: id === 'var' ? (({ vn }) => ll.findk(vvs, vn))
 		: id === 'while' ? (({ cond, loop, expr }) => {
 			let v;
 			while (eval(cond)) eval(loop);
@@ -2512,7 +2519,7 @@ let interpret = opcodes => {
 		: id === 'comment' ?
 			undefined
 		: id === 'cons' ?
-			interpretBinOp(vec_cons)
+			interpretBinOp(vec.cons)
 		: id === 'deref' ? function() {
 			let ref = rpop();
 			rpush(ref.frame[ref.ps]);
@@ -2732,7 +2739,7 @@ parseAst = program => {
 
 let processRewrite = program => {
 	let roots = ['JSON', 'Object', 'Promise', 'console', 'eval', 'fs_readFileSync', 'process', 'require',]
-		.reduce((v, vl) => ll_cons(vl, v), ll_nil());
+		.reduce((v, vl) => ll.cons(vl, v), ll.empty());
 
 	let { ast: ast4, type } = parseAst(program);
 
@@ -2784,7 +2791,7 @@ let processGenerate = ast8 => {
 		.map(ast => add(ast, 'require', proxy(1, 'require')))
 		[0];
 
-	let ast10 = rewriteVars(0, 0, ll_nil(), ast9);
+	let ast10 = rewriteVars(0, 0, ll.empty(), ast9);
 	return expand([...generate(ast10), { id: 'exit' },]);
 };
 
