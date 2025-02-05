@@ -1396,7 +1396,7 @@ let typesModule = () => {
 				env: tyStructOf({}),
 			}),
 			require: tyLambdaOf(tyString, newRef()),
-			util_inspect: tyLambdaOf(newRef(), tyString),
+			util_inspect: tyLambdaOf(tyPairOf(newRef(), tyStructOf({})), tyString),
 		})
 		.reduce((l, vt) => ll.cons(vt, l), ll.empty());
 
@@ -2480,8 +2480,8 @@ let interpret = opcodes => {
 
 		process.env.LOG && function() {
 			console.error(`----------`);
-			console.error(`FRAMES = ${JSON.stringify(frames, undefined, undefined)}`);
-			console.error(`RSTACK = ${JSON.stringify(rstack, undefined, undefined)}`);
+			console.error(`FRAMES = ${require('util').inspect(frames, { depth: 9 })}`);
+			console.error(`RSTACK = ${require('util').inspect(rstack, { depth: 9 })}`);
 			console.error(`IP = ${ip} ${Object.values(opcode).join(' ')}`);
 		}();
 
@@ -2795,7 +2795,7 @@ let processGenerate = ast8 => {
 			{ key: 'env', value: _struct(Object.entries(process.env).map(([key, v]) => ({ key, value: _str(v) }))) },
 		])))
 		.map(ast => add(ast, 'require', proxy(1, 'require')))
-		.map(ast => add(ast, 'util_inspect', proxy(1, 'require("util").inspect')))
+		.map(ast => add(ast, 'util_inspect', proxy(2, 'require("util").inspect')))
 		[0];
 
 	let ast10 = rewriteVars(0, 0, ll.empty(), ast9);

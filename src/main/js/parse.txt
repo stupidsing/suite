@@ -5,16 +5,10 @@
 (cd src/main/js && cat parse.js | INTERPRET=1 node parse.js)
 
 # OK
-(cd src/main/js && echo "require('fs').readFileSync('fs.js', 'utf8')" | EVALUATE=1 node parse.js)
+(cd src/main/js && echo "require('fs').readFileSync('fs.js', 'utf8')" | EVALUATE=1 INTERPRET=1 node parse.js)
 
 # OK
-(cd src/main/js && echo "require('fs').readFileSync('fs.js', 'utf8')" | INTERPRET=1 node parse.js)
-
-# OK
-(cd src/main/js && echo "require('util').inspect({ a: [1], b: 'x' })" | EVALUATE=1 node parse.js)
-
-# OK
-(cd src/main/js && echo "require('util').inspect({ a: [1], b: 'x' })" | INTERPRET=1 node parse.js)
+(cd src/main/js && echo "require('util').inspect({ a: [1], b: 'x' }, { depth: 9 })" | EVALUATE=1 INTERPRET=1 node parse.js)
 
 # OK
 echo "
