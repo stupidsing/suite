@@ -1396,6 +1396,7 @@ let typesModule = () => {
 				env: tyStructOf({}),
 			}),
 			require: tyLambdaOf(tyString, newRef()),
+			util_inspect: tyLambdaOf(newRef(), tyString),
 		})
 		.reduce((l, vt) => ll.cons(vt, l), ll.empty());
 
@@ -1937,9 +1938,11 @@ let evaluateVvs =
 			argv: process.argv.slice(1, undefined),
 			env: process.env,
 		})],
-		['require', assumeAny(path => path === 'fs' ? {
-			readFileSync: unwrap(require('fs').readFileSync)
-		} : require(path))],
+		['require', assumeAny(path => false ? undefined
+			: path === 'fs' ? { readFileSync: unwrap(require('fs').readFileSync) }
+			: path === 'util' ? { inspect: unwrap(require('util').inspect) }
+			: require(path))
+		],
 	]
 	.reduce((v, vl) => ll.cons(vl, v), ll.empty());
 
@@ -2740,7 +2743,7 @@ parseAstType = program => {
 };
 
 let processRewrite = program => {
-	let roots = ['JSON', 'Object', 'Promise', 'console', 'eval', 'fs_readFileSync', 'process', 'require',]
+	let roots = ['JSON', 'Object', 'Promise', 'console', 'eval', 'fs_readFileSync', 'process', 'require', 'util_inspect',]
 		.reduce((v, vl) => ll.cons(vl, v), ll.empty());
 
 	let { ast: ast4, type } = parseAstType(program);
@@ -2792,6 +2795,7 @@ let processGenerate = ast8 => {
 			{ key: 'env', value: _struct(Object.entries(process.env).map(([key, v]) => ({ key, value: _str(v) }))) },
 		])))
 		.map(ast => add(ast, 'require', proxy(1, 'require')))
+		.map(ast => add(ast, 'util_inspect', proxy(1, 'require("util").inspect')))
 		[0];
 
 	let ast10 = rewriteVars(0, 0, ll.empty(), ast9);

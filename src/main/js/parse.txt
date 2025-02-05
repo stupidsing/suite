@@ -11,6 +11,12 @@
 (cd src/main/js && echo "require('fs').readFileSync('fs.js', 'utf8')" | INTERPRET=1 node parse.js)
 
 # OK
+(cd src/main/js && echo "require('util').inspect({ a: [1], b: 'x' })" | EVALUATE=1 node parse.js)
+
+# OK
+(cd src/main/js && echo "require('util').inspect({ a: [1], b: 'x' })" | INTERPRET=1 node parse.js)
+
+# OK
 echo "
 let map = new Map();
 map.set('key', 'value');
