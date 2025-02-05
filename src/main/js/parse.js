@@ -1998,7 +1998,7 @@ evaluate = vvs => {
 		: id === 'bool' ? (({ b }) => b)
 		: id === 'coal' ? (({ lhs, rhs }) => {
 			let v = eval(lhs);
-			return v !== undefined ? v : eval(rhs);
+			return v ?? eval(rhs);
 		})
 		: id === 'cons' ? (({ lhs, rhs }) => assumeAny(vec.cons(eval(lhs), eval(rhs))))
 		: id === 'deref' ? (({ expr }) => {
