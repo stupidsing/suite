@@ -2823,7 +2823,13 @@ let expect = stringify(
 return actual === expect
 ? function() {
 	try {
-		let program = require('fs').readFileSync(0, 'utf8');
+		let { argv } = process;
+		let arg = 2 < argv.length ? argv[2] : undefined;
+
+		let program = arg === undefined || arg === '-'
+			? require('fs').readFileSync(0, 'utf8')
+			: require('fs').readFileSync(arg, 'utf8');
+
 		let { ast, type } = processRewrite(program);
 		let opcodes = process.env.GENERATE || process.env.INTERPRET ? processGenerate(ast) : undefined;
 
