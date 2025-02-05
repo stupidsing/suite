@@ -1410,7 +1410,7 @@ let unpromisify = ast => {
 	return id === 'app' && lhs === promiseResolve ? rhs : undefined;
 };
 
-let parseAst;
+let parseAstType;
 let parser = parserModule();
 
 let rewriteAsync;
@@ -1709,7 +1709,7 @@ rewriteFsReadFileSync = ast => {
 
 	return false ? undefined
 	: id === 'app' && lhs.id === 'var' && ['require',].includes(lhs.vn) && rhs.id === 'str' ?
-		parseAst(require('fs').readFileSync(`${rhs.v}.js`, 'utf8')).ast
+		parseAstType(require('fs').readFileSync(`${rhs.v}.js`, 'utf8')).ast
 	:
 		rewrite(rewriteFsReadFileSync, ast);
 };
@@ -2719,7 +2719,7 @@ let interpret = opcodes => {
 
 let types = typesModule();
 
-parseAst = program => {
+parseAstType = program => {
 	let pos0;
 	let posx;
 	while (function() {
@@ -2743,7 +2743,7 @@ let processRewrite = program => {
 	let roots = ['JSON', 'Object', 'Promise', 'console', 'eval', 'fs_readFileSync', 'process', 'require',]
 		.reduce((v, vl) => ll.cons(vl, v), ll.empty());
 
-	let { ast: ast4, type } = parseAst(program);
+	let { ast: ast4, type } = parseAstType(program);
 
 	let ast5 = rewriteFsReadFileSync(ast4);
 	let ast6 = rewriteIntrinsics(ast5);
@@ -2798,7 +2798,7 @@ let processGenerate = ast8 => {
 	return expand([...generate(ast10), { id: 'exit' },]);
 };
 
-let actual = stringify(parseAst(`
+let actual = stringify(parseAstType(`
 	let parse = ast => ast;
 	console.log(parse(require('fs').readFileSync(0, 'utf8')))
 `).ast);
@@ -2837,7 +2837,7 @@ return actual === expect
 			&& console.error(`ast :: ${stringify(ast)}`);
 
 		process.env.EVALUATE
-			&& console.error(`evaluate :: ${stringify(evaluate(evaluateVvs)(rewriteIntrinsics(parseAst(program).ast)))}`);
+			&& console.error(`evaluate :: ${stringify(evaluate(evaluateVvs)(rewriteIntrinsics(parseAstType(program).ast)))}`);
 
 		process.env.FORMAT
 			&& console.error(`format :: ${format(ast)}`);
