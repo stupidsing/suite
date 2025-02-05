@@ -1392,6 +1392,7 @@ let typesModule = () => {
 			eval: tyLambdaOf(tyString, newRef()),
 			fs_readFileSync: tyLambdaOf(tyPairOf(tyString, tyString), tyString),
 			process: tyStructOfCompleted({
+				argv: tyArrayOf(tyString),
 				env: tyStructOf({}),
 			}),
 			require: tyLambdaOf(tyString, newRef()),
@@ -1932,7 +1933,10 @@ let evaluateVvs =
 			log: unwrap(console.log),
 		})],
 		['eval', assumeAny(unwrap(eval('eval')))],
-		['process', assumeAny(eval('process'))],
+		['process', assumeAny({
+			argv: process.argv.slice(1, undefined),
+			env: process.env,
+		})],
 		['require', assumeAny(path => path === 'fs' ? {
 			readFileSync: unwrap(require('fs').readFileSync)
 		} : require(path))],
@@ -2348,7 +2352,7 @@ generate = ast => {
 	)
 	: id === 'struct' ? (({ kvs }) => [
 		{ id: 'object' },
-		...kvs.toReversed().flatMap(({ key, value }) => [...generate(value), { id: 'object-put', key },]),
+		...kvs.flatMap(({ key, value }) => [...generate(value), { id: 'object-put', key },]),
 	])
 	: id === 'sub' ?
 		generateBinOp
@@ -2784,6 +2788,7 @@ let processGenerate = ast8 => {
 		.map(ast => add(ast, 'eval', proxy(1, 'eval')))
 		.map(ast => add(ast, 'fs_readFileSync', proxy(2, 'require("fs").readFileSync')))
 		.map(ast => add(ast, 'process', _struct([
+			{ key: 'argv', value: process.argv.slice(1, undefined).toReversed().reduce((vl, arg) => _cons(_str(arg), vl), _nil) },
 			{ key: 'env', value: _struct(Object.entries(process.env).map(([key, v]) => ({ key, value: _str(v) }))) },
 		])))
 		.map(ast => add(ast, 'require', proxy(1, 'require')))
