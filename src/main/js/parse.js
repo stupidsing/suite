@@ -2493,8 +2493,8 @@ let interpret = opcodes => {
 			rpush(ip);
 			ip = lambda.label;
 			fcreate();
-			fpush(lambda.capture);
-			fpush(parameter);
+			fpush([lambda.capture]);
+			fpush([parameter]);
 		}()
 		: id === 'array-get' ? function() {
 			let i = rpop();
@@ -2510,7 +2510,7 @@ let interpret = opcodes => {
 		: id === 'assign-ref' ? function() {
 			let value = rpop();
 			let ref = rpop();
-			ref.frame[ref.ps] = value;
+			ref[0] = value;
 		}()
 		: id === 'bool' ?
 			rpush(opcode.b)
@@ -2520,10 +2520,8 @@ let interpret = opcodes => {
 			undefined
 		: id === 'cons' ?
 			interpretBinOp(vec.cons)
-		: id === 'deref' ? function() {
-			let ref = rpop();
-			rpush(ref.frame[ref.ps]);
-		}()
+		: id === 'deref' ?
+			rpush(rpop()[0])
 		: id === 'discard' ?
 			rpop()
 		: id === 'div' ?
@@ -2537,13 +2535,13 @@ let interpret = opcodes => {
 			return undefined;
 		}()
 		: id === 'frame-alloc' ?
-			fpush(undefined)
+			fpush([undefined])
 		: id === 'frame-dealloc' ?
 			fpop()
 		: id === 'frame-get-ref' ?
-			rpush({ frame: frames[frames.length - 1 - opcode.fs], ps: opcode.ps })
+			rpush(frames[frames.length - 1 - opcode.fs][opcode.ps])
 		: id === 'frame-push' ?
-			fpush(rpop())
+			fpush([rpop()])
 		: id === 'jump' ? function() {
 			ip = getp(indexByLabel, opcode.label);
 			return undefined;
