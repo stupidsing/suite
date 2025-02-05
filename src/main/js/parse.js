@@ -2479,9 +2479,10 @@ let interpret = opcodes => {
 		let { id } = opcode;
 
 		process.env.LOG && function() {
+			let opts = { breakLength: 9999, compact: true, depth: 9 };
 			console.error(`----------`);
-			console.error(`FRAMES = ${require('util').inspect(frames, { depth: 9 })}`);
-			console.error(`RSTACK = ${require('util').inspect(rstack, { depth: 9 })}`);
+			console.error(`FRAMES = ${require('util').inspect(frames, opts)}`);
+			console.error(`RSTACK = ${require('util').inspect(rstack, opts)}`);
 			console.error(`IP = ${ip} ${Object.values(opcode).join(' ')}`);
 		}();
 
