@@ -2824,7 +2824,7 @@ return actual === expect
 ? function() {
 	try {
 		let { argv } = process;
-		let arg = 2 < argv.length ? argv[2] : undefined;
+		let arg = argv[2];
 
 		let program = arg === undefined || arg === '-'
 			? require('fs').readFileSync(0, 'utf8')
