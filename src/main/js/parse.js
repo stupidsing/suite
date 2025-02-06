@@ -2369,9 +2369,9 @@ generate = ast => {
 		let finallyLabel = newDummy();
 		return [
 			{ id: 'label-segment', name: `catch`, segment: [
-				{ id: 'frame-push' },
 				...generate(rhs),
-				{ id: 'frame-dealloc' },
+				{ id: 'rotate' },
+				{ id: 'app' },
 				{ id: 'jump', label: finallyLabel },
 			] },
 			{ id: 'try-push' },
