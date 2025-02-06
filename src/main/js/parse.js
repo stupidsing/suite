@@ -1879,7 +1879,7 @@ rewriteVars = (fs, ps, vts, ast) => {
 		: id === 'let' ? (({ bind, value, expr }) =>
 			_alloc(bind.vn, _assign(
 				_frame(0, ps, bind.vn),
-				rewriteVars_(value),
+				rewriteVars(fs, ps1, vts, value),
 				rewriteVars(fs, ps1, ll.cons([bind.vn, [fs, ps]], vts), expr)))
 		)
 		: id === 'try' ? (({ lhs, rhs }) =>
