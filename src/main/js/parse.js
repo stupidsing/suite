@@ -2127,9 +2127,8 @@ generate = ast => {
 		]
 		: bind.id === 'pget' ? [
 			...generate(bind.expr),
-			{ id: 'num', i: bind.i },
 			...generate(value),
-			{ id: 'pair-set' },
+			{ id: 'pair-set', i: bind.i },
 			...generate(expr),
 		]
 		: bind.id === 'tget' ? [
@@ -2510,7 +2509,7 @@ let interpret = opcodes => {
 			let value = rpop();
 			let index = rpop();
 			let array = rpop();
-			seti(array, index, value);
+			fake(array)[fake(index)] = value;
 		}()
 		: id === 'assign-ref' ? function() {
 			let value = rpop();
@@ -2617,9 +2616,8 @@ let interpret = opcodes => {
 			rpush(rpop()[1])
 		: id === 'pair-set' ? function() {
 			let value = rpop();
-			let index = rpop();
 			let pair = rpop();
-			seti(pair, index, value);
+			seti(pair, opcode.i, value);
 		}()
 		: id === 'pos' ?
 			rpush(+rpop())
