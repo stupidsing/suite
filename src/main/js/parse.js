@@ -479,7 +479,7 @@ let parserModule = () => {
 				let [head, tail_] = splitl(program, ',');
 				return head.startsWith('...')
 					? function() {
-						let head_ = parseArray_(head.slice(3, 0));
+						let head_ = parse(head.slice(3, head.length));
 						return tail_ !== '' ? _app(_dot(head_, 'concat'), parseArray_(tail_)) : head_;
 					}()
 					: _cons(parse(head), parseArray_(tail_));
