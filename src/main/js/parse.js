@@ -2364,10 +2364,8 @@ generate = ast => {
 		{ id: 'num', i },
 		{ id: 'tuple-get' },
 	])
-	: id === 'throw' ? (({ expr }) => [
-		...generate(expr),
-		{ id },
-	])
+	: id === 'throw' ?
+		generateOp
 	: id === 'try' ? (({ lhs, rhs }) => {
 		let finallyLabel = newDummy();
 		return [
@@ -2388,9 +2386,8 @@ generate = ast => {
 		{ id: 'nil' },
 		...values.toReversed().flatMap(value => [...generate(value), { id: 'rotate' }, { id: 'cons' },]),
 	])
-	: id === 'typeof' ? (({ expr }) => [
-		{ id: 'typeof' },
-	])
+	: id === 'typeof' ?
+		generateOp
 	: id === 'undefined' ? (({}) =>
 		[{ id },]
 	)
