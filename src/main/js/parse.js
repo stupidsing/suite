@@ -2676,25 +2676,25 @@ let interpret = opcodes => {
 				while (fsl < frames.length) fremove();
 				while (fl < frames[frames.length - 1].length) fpop();
 				while (rsl < rstack.length) rpop();
+				catchHandler = rpop();
 				rpush(thrown);
 				return undefined;
 			}()
 			: error(thrown);
 		}()
 		: id === 'try-pop' ? function() {
-			let { label } = rpop();
-			catchHandler = label;
+			catchHandler = rpop();
 			return undefined;
 		}()
 		: id === 'try-push' ? function() {
-			let catchHandler0 = catchHandler;
+			let label = rpop();
+			rpush(catchHandler);
 			catchHandler = {
-				label: rpop(),
+				label,
 				fl: frames[frames.length - 1].length,
 				fsl: frames.length,
 				rsl: rstack.length,
 			};
-			rpush(catchHandler0);
 			return undefined;
 		}()
 		: id === 'tuple-get' ? function() {
