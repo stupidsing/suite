@@ -2238,7 +2238,7 @@ generate = ast => {
 	: id === 'lambda-capture' ? (({ capture, bindCapture, bind, expr }) => {
 		return [
 			...generate(capture),
-			{ id: 'label-segment', name: `lambda ${format(capture)}`, segment: [
+			{ id: 'label-segment', name: `${format(bind)} => ...`, segment: [
 				...generate(expr),
 				{ id: 'return' },
 			] },
