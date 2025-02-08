@@ -952,7 +952,7 @@ let typesModule = () => {
 			let finalb = finalRef(b);
 			setRef(refa, finalb);
 			let r = tryBind(olda, finalb);
-			r === undefined || setRef(refa, olda);
+			let dummy = r === undefined || setRef(refa, olda);
 			return r;
 		}()
 		: typeof refb === 'number' ? function() {
@@ -960,7 +960,7 @@ let typesModule = () => {
 			let finala = finalRef(a);
 			setRef(refb, finala);
 			let r = tryBind(finala, oldb);
-			r === undefined || setRef(refb, oldb);
+			let dummy = r === undefined || setRef(refb, oldb);
 			return r;
 		}()
 		: typeof a === 'object' && typeof b === 'object'
