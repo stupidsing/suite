@@ -889,10 +889,7 @@ let typesModule = () => {
 		return ref !== undefined && refs.get(ref) !== v ? finalRef(refs.get(ref)) : v;
 	};
 
-	let setRef = (ref, target) => {
-		refs.set(ref, target);
-		return true;
-	};
+	let setRef = (ref, target) => refs.set(ref, target);
 
 	let newRef = () => {
 		refCount = refCount + 1;
@@ -949,39 +946,51 @@ let typesModule = () => {
 
 		return false ? undefined
 		: a === b ?
-			true
+			undefined
 		: typeof refa === 'number' ? function() {
 			let olda = refs.get(refa);
 			let finalb = finalRef(b);
-			return setRef(refa, finalb) && tryBind(olda, finalb) || !setRef(refa, olda);
+			setRef(refa, finalb);
+			let r = tryBind(olda, finalb);
+			r === undefined || setRef(refa, olda);
+			return r;
 		}()
 		: typeof refb === 'number' ? function() {
 			let oldb = refs.get(refb);
 			let finala = finalRef(a);
-			return setRef(refb, finala) && tryBind(finala, oldb) || !setRef(refb, oldb);
+			setRef(refb, finala);
+			let r = tryBind(finala, oldb);
+			r === undefined || setRef(refb, oldb);
+			return r;
 		}()
 		: typeof a === 'object' && typeof b === 'object'
 			&& (lista.length !== undefined
 			? lista.length === listb.length && function() {
 				let tryBindList;
-				tryBindList = i => i === lista.length || tryBind(lista[i], listb[i]) && tryBindList(i + 1);
+				tryBindList = i => i < lista.length ? function() {
+					let r = tryBind(lista[i], listb[i]);
+					return r === undefined ? tryBindList(i + 1) : r;
+				}() : undefined;
 				return tryBindList(0);
 			}()
-			: true
-				&& Object.keys(a).reduce((r, k) => {
+			: function() {
+				let p = Object.keys(a).reduce((r, k) => {
 					let b_k = getp(b, k);
 					let s = b_k !== undefined || b.completed !== true && function() { b_k = newRef(); setp(b, k, b_k); return true; }();
-					return r && s && tryBind(getp(a, k), b_k);
-				}, true)
-				&& Object.keys(b).reduce((r, k) => {
+					return r === undefined ? s ? tryBind(getp(a, k), b_k) : 'fail' : r;
+				}, undefined);
+
+				let q = Object.keys(b).reduce((r, k) => {
 					let a_k = getp(a, k);
 					let s = a_k !== undefined || a.completed !== true && function() { a_k = newRef(); setp(a, k, a_k); return true; }();
-					return r && s && tryBind(a_k, getp(b, k));
-				}, true)
-			);
+					return r === undefined ? s ? tryBind(a_k, getp(b, k)) : 'fail' : r;
+				}, undefined);
+
+				return p === undefined ? q : p;
+			}());
 	};
 
-	let doBind_ = (msg, a, b) => tryBind(a, b) || error(`in ${msg()}:\ncannot bind types between\nfr: ${dump(a)}\nto: ${dump(b)}`);
+	let doBind_ = (msg, a, b) => tryBind(a, b) === undefined || error(`in ${msg()}:\ncannot bind types between\nfr: ${dump(a)}\nto: ${dump(b)}`);
 	let doBind = (ast, a, b) => doBind_(() => format(ast), a, b);
 
 	let cloneRef = v => {
@@ -1135,7 +1144,7 @@ let typesModule = () => {
 			return true
 				&& doBind(ast, infer(lhs), t)
 				&& doBind(ast, infer(rhs), t)
-				&& (tryBind(t, tyNumber) || tryBind(t, tyString) || error(`cannot compare values with type ${t}`))
+				&& (tryBind(t, tyNumber) === undefined || tryBind(t, tyString) === undefined || error(`cannot compare values with type ${t}`))
 				&& tyBoolean;
 		};
 
@@ -1158,7 +1167,7 @@ let typesModule = () => {
 			return true
 				&& doBind(ast, infer(lhs), t)
 				&& doBind(ast, infer(rhs), t)
-				&& (tryBind(t, tyNumber) || tryBind(t, tyString) || error(`cannot add values with type ${dump(t)}`))
+				&& (tryBind(t, tyNumber) === undefined || tryBind(t, tyString) === undefined || error(`cannot add values with type ${dump(t)}`))
 				&& t;
 		})
 		: id === 'alloc' ? (({ vn, expr }) =>
