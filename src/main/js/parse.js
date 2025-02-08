@@ -1001,7 +1001,7 @@ let typesModule = () => {
 	let doBind_ = (msg, a, b) => {
 		let r = tryBind('', a, b);
 		let dummy = r === undefined || error(`in ${msg()}:\ncannot bind types between\nfr: ${dump(a)}\nto: ${dump(b)}\nerror: ${r}`);
-		return undefined;
+		return true;
 	};
 
 	let doBind = (ast, a, b) => doBind_(() => format(ast), a, b);
