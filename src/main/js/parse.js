@@ -952,7 +952,7 @@ let typesModule = () => {
 			let finalb = finalRef(b);
 			setRef(refa, finalb);
 			let r = tryBind(olda, finalb);
-			let dummy = r === undefined || setRef(refa, olda);
+			let dummy = r ?? setRef(refa, olda);
 			return r;
 		}()
 		: typeof refb === 'number' ? function() {
@@ -960,7 +960,7 @@ let typesModule = () => {
 			let finala = finalRef(a);
 			setRef(refb, finala);
 			let r = tryBind(finala, oldb);
-			let dummy = r === undefined || setRef(refb, oldb);
+			let dummy = r ?? setRef(refb, oldb);
 			return r;
 		}()
 		: typeof a === 'object' && typeof b === 'object'
@@ -969,7 +969,7 @@ let typesModule = () => {
 				let tryBindList;
 				tryBindList = i => i < lista.length ? function() {
 					let r = tryBind(lista[i], listb[i]);
-					return r === undefined ? tryBindList(i + 1) : r;
+					return r ?? tryBindList(i + 1);
 				}() : undefined;
 				return tryBindList(0);
 			}()
@@ -977,13 +977,13 @@ let typesModule = () => {
 				let p = Object.keys(a).reduce((r, k) => {
 					let b_k = getp(b, k);
 					let s = b_k !== undefined || b.completed !== true && function() { b_k = newRef(); setp(b, k, b_k); return true; }();
-					return r === undefined ? s ? tryBind(getp(a, k), b_k) : 'fail' : r;
+					return r ?? (s ? tryBind(getp(a, k), b_k) : 'fail');
 				}, undefined);
 
 				let q = Object.keys(b).reduce((r, k) => {
 					let a_k = getp(a, k);
 					let s = a_k !== undefined || a.completed !== true && function() { a_k = newRef(); setp(a, k, a_k); return true; }();
-					return r === undefined ? s ? tryBind(a_k, getp(b, k)) : 'fail' : r;
+					return r ?? (s ? tryBind(a_k, getp(b, k)) : 'fail');
 				}, undefined);
 
 				return p === undefined ? q : p;
