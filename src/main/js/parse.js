@@ -974,25 +974,25 @@ let typesModule = () => {
 				return tryBindList(0);
 			}()
 			: function() {
-				let tba = Object.keys(a).reduce((r, k) => {
+				let tba = Object.keys(a).reduce((r, k) => r ?? function() {
 					let b_k = getp(b, k);
 					let s = b_k !== undefined || b.completed !== true && function() {
 						b_k = newRef();
 						setp(b, k, b_k);
 						return true;
-					}();
-					return r ?? (s ? tryBind(`${p}.${k}`, getp(a, k), b_k) : 'fail');
-				}, undefined);
+					}() ? undefined : 'fail';
+					return s ?? tryBind(`${p}.${k}`, getp(a, k), b_k);
+				}(), undefined);
 
-				let tbb = Object.keys(b).reduce((r, k) => {
+				let tbb = Object.keys(b).reduce((r, k) => r ?? function() {
 					let a_k = getp(a, k);
 					let s = a_k !== undefined || a.completed !== true && function() {
 						a_k = newRef();
 						setp(a, k, a_k);
 						return true;
-					}();
-					return r ?? (s ? tryBind(`${p}.${k}`, a_k, getp(b, k)) : 'fail');
-				}, undefined);
+					}() ? undefined : 'fail';
+					return s ?? tryBind(`${p}.${k}`, a_k, getp(b, k));
+				}(), undefined);
 
 				return tba ?? tbb;
 			}());
