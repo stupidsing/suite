@@ -2854,11 +2854,11 @@ return actual === expect
 
 		let { ast, type } = processRewrite(program);
 
-		let opcodes_;
+		let generatedOpcodes;
 
-		let getOpcodes = () => {
-			opcodes_ = opcodes_ ?? processGenerate(ast);
-			return opcodes_;
+		let opcodes = () => {
+			generatedOpcodes = generatedOpcodes ?? processGenerate(ast);
+			return generatedOpcodes;
 		};
 
 		process.env.AST
@@ -2870,15 +2870,15 @@ return actual === expect
 		process.env.FORMAT
 			&& console.error(`format :: ${format(ast)}`);
 
-		process.env.GEN
-			&& console.log(`generate :: ${JSON.stringify(getOpcodes())}`);
+		process.env.GENERATE0
+			&& console.log(JSON.stringify(opcodes()));
 
-		process.env.GENERATE && function() {
-			let opcodes = getOpcodes();
+		process.env.GENERATE1 && function() {
+			let opcodes_ = opcodes();
 			let instructions = [];
 			let i = 0;
-			while (i < opcodes.length) (function() {
-				instructions.push(`\n${i} ${Object.values(opcodes[i]).join(' ')}`);
+			while (i < opcodes_.length) (function() {
+				instructions.push(`\n${i} ${Object.values(opcodes_[i]).join(' ')}`);
 				i = i + 1;
 				return true;
 			}());
@@ -2886,7 +2886,7 @@ return actual === expect
 		}();
 
 		process.env.INTERPRET
-			&& console.error(`interpret :: ${stringify(interpret(getOpcodes()))}`);
+			&& console.error(`interpret :: ${stringify(interpret(opcodes()))}`);
 
 		process.env.TYPE
 			&& console.error(`type :: ${types.dump(type)}`);
