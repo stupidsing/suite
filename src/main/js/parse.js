@@ -2851,24 +2851,23 @@ return actual === expect
 			? require('fs').readFileSync(0, 'utf8')
 			: require('fs').readFileSync(arg, 'utf8');
 
-		let { ast: ast0, type } = parseAstType(program);
-		let { ast: ast1 } = processRewrite(ast0);
+		let pp;
+		let pr;
+		let pg;
 
-		let generatedOpcodes;
-
-		let opcodes = () => {
-			generatedOpcodes = generatedOpcodes ?? processGenerate(ast1);
-			return generatedOpcodes;
-		};
+		let ast0 = () => { pp = pp ?? parseAstType(program); return pp.ast; };
+		let ast1 = () => { pr = pr ?? processRewrite(ast0()); return pr.ast; };
+		let opcodes = () => { pg = pg ?? processGenerate(ast1()); return pg; };
+		let type = () => { pp = pp ?? parseAstType(program); return pp.type; };
 
 		process.env.AST
-			&& console.error(`ast :: ${stringify(ast1)}`);
+			&& console.error(`ast :: ${stringify(ast1())}`);
 
 		process.env.EVALUATE
-			&& console.error(`evaluate :: ${stringify(evaluate(evaluateVvs)(rewriteIntrinsics(ast0)))}`);
+			&& console.error(`evaluate :: ${stringify(evaluate(evaluateVvs)(rewriteIntrinsics(ast0())))}`);
 
 		process.env.FORMAT
-			&& console.error(`format :: ${format(ast1)}`);
+			&& console.error(`format :: ${format(ast1())}`);
 
 		process.env.GENERATE0
 			&& console.log(JSON.stringify(opcodes()));
@@ -2889,7 +2888,7 @@ return actual === expect
 			&& console.error(`interpret :: ${stringify(interpret(opcodes()))}`);
 
 		process.env.TYPE
-			&& console.error(`type :: ${types.dump(type)}`);
+			&& console.error(`type :: ${types.dump(type())}`);
 
 		return true;
 	} catch (e) { return console.error(e); }
