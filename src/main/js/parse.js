@@ -2852,7 +2852,7 @@ return actual === expect
 			: require('fs').readFileSync(arg, 'utf8');
 
 		let { ast: ast0, type } = parseAstType(program);
-		let { ast: ast1 } = processRewrite(ast0, type);
+		let { ast: ast1 } = processRewrite(ast0);
 
 		let generatedOpcodes;
 
