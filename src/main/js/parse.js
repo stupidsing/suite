@@ -1069,41 +1069,57 @@ let typesModule = () => {
 		return false ? undefined
 		: field === 'apply' ?
 			tyLambdaOf(newRef(), newRef())
-		: field === 'charCodeAt' ?
-			doBind(ast, ts, tyString) && tyLambdaOf(tyNumber, tyNumber)
+		: field === 'charCodeAt' ? function() {
+			doBind(ast, ts, tyString);
+			return tyLambdaOf(tyNumber, tyNumber);
+		}()
 		: field === 'concat' ? function() {
 			let ta = tyArrayOf(newRef());
-			return doBind(ast, ts, ta) && tyLambdaOf(ta, ta);
+			doBind(ast, ts, ta);
+			return tyLambdaOf(ta, ta);
 		}()
-		: field === 'endsWith' ?
-			doBind(ast, ts, tyString) && tyLambdaOf(tyString, tyBoolean)
+		: field === 'endsWith' ? function() {
+			doBind(ast, ts, tyString);
+			return tyLambdaOf(tyString, tyBoolean);
+		}()
 		: field === 'filter' ? function() {
 			let ti = newRef();
-			return doBind(ast, ts, tyArrayOf(ti)) && tyLambdaOf(tyLambdaOf(ti, tyBoolean), tyArrayOf(ti));
+			doBind(ast, ts, tyArrayOf(ti));
+			return tyLambdaOf(tyLambdaOf(ti, tyBoolean), tyArrayOf(ti));
 		}()
 		: field === 'flatMap' ? function() {
 			let ti = newRef();
 			let to = newRef();
-			return doBind(ast, ts, tyArrayOf(ti)) && tyLambdaOf(tyLambdaOf(ti, tyArrayOf(to)), tyArrayOf(to));
+			doBind(ast, ts, tyArrayOf(ti));
+			return tyLambdaOf(tyLambdaOf(ti, tyArrayOf(to)), tyArrayOf(to));
 		}()
 		: field === 'includes' ? function() {
 			let te = newRef();
-			return doBind(ast, ts, tyArrayOf(te)) && tyLambdaOf(te, tyBoolean);
+			doBind(ast, ts, tyArrayOf(te));
+			return tyLambdaOf(te, tyBoolean);
 		}()
-		: field === 'indexOf' ?
-			doBind(ast, ts, tyString) && tyLambdaOf(tyPairOf(tyString, tyNumber), tyNumber)
-		: field === 'join' ?
-			doBind(ast, ts, tyArrayOf(tyString)) && tyLambdaOf(tyString, tyString)
-		: field === 'length' ?
-			doBind(ast, ts, tyArrayOf(newRef())) && tyNumber
+		: field === 'indexOf' ? function() {
+			doBind(ast, ts, tyString);
+			return tyLambdaOf(tyPairOf(tyString, tyNumber), tyNumber);
+		}()
+		: field === 'join' ? function() {
+			doBind(ast, ts, tyArrayOf(tyString));
+			return tyLambdaOf(tyString, tyString);
+		}()
+		: field === 'length' ? function() {
+			doBind(ast, ts, tyArrayOf(newRef()));
+			return tyNumber;
+		}()
 		: field === 'map' ? function() {
 			let ti = newRef();
 			let to = newRef();
-			return doBind(ast, ts, tyArrayOf(ti)) && tyLambdaOf(tyLambdaOf(ti, to), tyArrayOf(to));
+			doBind(ast, ts, tyArrayOf(ti));
+			return tyLambdaOf(tyLambdaOf(ti, to), tyArrayOf(to));
 		}()
 		: field === 'pop' ? function() {
 			let te = newRef();
-			return doBind(ast, ts, tyArrayOf(te)) && tyLambdaOf(tyVoid, te);
+			doBind(ast, ts, tyArrayOf(te));
+			return tyLambdaOf(tyVoid, te);
 		}()
 		: field === 'push' ? function() {
 			let te = newRef();
@@ -1113,33 +1129,44 @@ let typesModule = () => {
 			let te = newRef();
 			let tr = newRef();
 			let treducer = tyLambdaOf(tyPairOf(tr, te), tr);
-			return doBind(ast, ts, tyArrayOf(te)) && tyLambdaOf(tyPairOf(treducer, tr), tr);
+			doBind(ast, ts, tyArrayOf(te));
+			return tyLambdaOf(tyPairOf(treducer, tr), tr);
 		}()
 		: field === 'slice' ? function() {
 			let te = newRef();
 			let tl = tyArrayOf(te);
-			return doBind(ast, ts, tl) && tyLambdaOf(tyPairOf(tyNumber, tyNumber), tl);
+			doBind(ast, ts, tl);
+			return tyLambdaOf(tyPairOf(tyNumber, tyNumber), tl);
 		}()
-		: field === 'startsWith' ?
-			doBind(ast, ts, tyString) && tyLambdaOf(tyString, tyBoolean)
+		: field === 'startsWith' ? function() {
+			doBind(ast, ts, tyString);
+			return tyLambdaOf(tyString, tyBoolean);
+		}()
 		: field === 'then' ? function() {
 			let ti = newRef();
 			let to = newRef();
-			return doBind(ast, ts, tyPromiseOf(ti)) && tyLambdaOf(ti, tyPromiseOf(to));
+			doBind(ast, ts, tyPromiseOf(ti));
+			return tyLambdaOf(ti, tyPromiseOf(to));
 		}()
 		: field === 'toReversed' ? function() {
 			let tl = tyArrayOf(newRef());
-			return doBind(ast, ts, tl) && tyLambdaOf(tyVoid, tl);
+			doBind(ast, ts, tl);
+			return tyLambdaOf(tyVoid, tl);
 		}()
-		: field === 'toString' ?
-			doBind(ast, ts, newRef()) && tyLambdaOf(tyVoid, tyString)
-		: field === 'trim' ?
-			doBind(ast, ts, tyString) && tyLambdaOf(tyVoid, tyString)
+		: field === 'toString' ? function() {
+			doBind(ast, ts, newRef());
+			return tyLambdaOf(tyVoid, tyString);
+		}()
+		: field === 'trim' ? function() {
+			doBind(ast, ts, tyString);
+			return tyLambdaOf(tyVoid, tyString);
+		}()
 		: function() {
 			let kvs = {};
 			let tr = setp(kvs, field, newRef());
 			let to = tyStructOf(kvs);
-			return doBind(ast, ts, to) && function() {
+			doBind(ast, ts, to);
+			return function() {
 				let t = finalRef(tr);
 				return t.generic !== true ? t : cloneRef(t);
 			}();
