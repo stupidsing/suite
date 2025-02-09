@@ -965,14 +965,16 @@ let typesModule = () => {
 		}()
 		: typeof a !== 'object' ? p
 		: typeof b !== 'object' ? p
-		: lista.length !== undefined ? lista.length === listb.length ? function() {
-			let tryBindList;
-			tryBindList = i => i < lista.length ? function() {
-				let r = tryBind(`${p}[${i}]`, lista[i], listb[i]);
-				return r ?? tryBindList(i + 1);
-			}() : undefined;
-			return tryBindList(0);
-		}() : p
+		: lista.length !== undefined ? (
+			lista.length === listb.length ? function() {
+				let tryBindList;
+				tryBindList = i => i < lista.length ? function() {
+					let r = tryBind(`${p}[${i}]`, lista[i], listb[i]);
+					return r ?? tryBindList(i + 1);
+				}() : undefined;
+				return tryBindList(0);
+			}() : p
+		)
 		: function() {
 			let tba = Object.keys(a).reduce((r, k) => r ?? function() {
 				let b_k = getp(b, k);
