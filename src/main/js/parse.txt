@@ -11,6 +11,12 @@ echo 1 | (cd src/main/js && EVALUATE=1 node parse.js parse.js)
 (cd src/main/js && echo "require('util').inspect({ a: [1], b: 'x' }, { depth: 9 })" | EVALUATE=1 INTERPRET=1 node parse.js)
 
 # OK
+(cd src/main/js && echo "1 ?? 2" | EVALUATE=1 INTERPRET=1 node parse.js)
+
+# OK
+(cd src/main/js && echo "undefined ?? 2" | EVALUATE=1 INTERPRET=1 node parse.js)
+
+# OK
 echo "
 let map = new Map();
 map.set('key', 'value');

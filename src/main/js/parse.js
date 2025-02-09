@@ -2173,8 +2173,19 @@ generate = ast => {
 	: id === 'bool' ? (({}) =>
 		[ast,]
 	)
-	: id === 'coal' ?
-		generateBinOp
+	: id === 'coal' ? (({ lhs, rhs }) => {
+		let label = newDummy();
+		return [
+			...generate(lhs),
+			{ id: 'dup', i: 0 },
+			{ id: 'undefined' },
+			{ id: 'eq_' },
+			{ id: 'jump-false', label },
+			{ id: 'discard' },
+			...generate(rhs),
+			{ id: ':', label },
+		];
+	})
 	: id === 'cons' ?
 		generateBinOp
 	: id === 'deref' ?
@@ -2541,7 +2552,7 @@ let interpret = opcodes => {
 		: id === 'bool' ?
 			rpush(opcode.b)
 		: id === 'coal' ?
-			interpretBinOp((a, b) => a ?? b)
+			error('BAD')
 		: id === 'comment' ?
 			undefined
 		: id === 'cons' ?
