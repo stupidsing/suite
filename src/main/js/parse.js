@@ -963,39 +963,39 @@ let typesModule = () => {
 			let dummy = r === undefined || setRef(refb, oldb);
 			return r;
 		}()
-		: typeof a === 'object' && typeof b === 'object'
-			&& (lista.length !== undefined
-			? lista.length === listb.length && function() {
-				let tryBindList;
-				tryBindList = i => i < lista.length ? function() {
-					let r = tryBind(`${p}[${i}]`, lista[i], listb[i]);
-					return r ?? tryBindList(i + 1);
-				}() : undefined;
-				return tryBindList(0);
-			}()
-			: function() {
-				let tba = Object.keys(a).reduce((r, k) => r ?? function() {
-					let b_k = getp(b, k);
-					let s = b_k !== undefined || b.completed !== true && function() {
-						b_k = newRef();
-						setp(b, k, b_k);
-						return true;
-					}() ? undefined : p;
-					return s ? tryBind(`${p}.${k}`, getp(a, k), b_k) : p;
-				}(), undefined);
+		: typeof a !== 'object' ? p
+		: typeof b !== 'object' ? p
+		: lista.length !== undefined ? lista.length === listb.length ? function() {
+			let tryBindList;
+			tryBindList = i => i < lista.length ? function() {
+				let r = tryBind(`${p}[${i}]`, lista[i], listb[i]);
+				return r ?? tryBindList(i + 1);
+			}() : undefined;
+			return tryBindList(0);
+		}() : p
+		: function() {
+			let tba = Object.keys(a).reduce((r, k) => r ?? function() {
+				let b_k = getp(b, k);
+				let s = b_k !== undefined || b.completed !== true && function() {
+					b_k = newRef();
+					setp(b, k, b_k);
+					return true;
+				}() ? undefined : p;
+				return s ?? tryBind(`${p}.${k}`, getp(a, k), b_k);
+			}(), undefined);
 
-				let tbb = Object.keys(b).reduce((r, k) => r ?? function() {
-					let a_k = getp(a, k);
-					let s = a_k !== undefined || a.completed !== true && function() {
-						a_k = newRef();
-						setp(a, k, a_k);
-						return true;
-					}() ? undefined : p;
-					return s ? tryBind(`${p}.${k}`, a_k, getp(b, k)) : p;
-				}(), undefined);
+			let tbb = Object.keys(b).reduce((r, k) => r ?? function() {
+				let a_k = getp(a, k);
+				let s = a_k !== undefined || a.completed !== true && function() {
+					a_k = newRef();
+					setp(a, k, a_k);
+					return true;
+				}() ? undefined : p;
+				return s ?? tryBind(`${p}.${k}`, a_k, getp(b, k));
+			}(), undefined);
 
-				return tba ?? tbb;
-			}());
+			return tba ?? tbb;
+		}();
 	};
 
 	let doBind_ = (msg, a, b) => {
