@@ -2853,7 +2853,13 @@ return actual === expect
 			: require('fs').readFileSync(arg, 'utf8');
 
 		let { ast, type } = processRewrite(program);
-		let opcodes = process.env.GENERATE || process.env.INTERPRET ? processGenerate(ast) : undefined;
+
+		let opcodes_;
+
+		let getOpcodes = () => {
+			opcodes_ = opcodes_ ?? processGenerate(ast);
+			return opcodes_;
+		};
 
 		process.env.AST
 			&& console.error(`ast :: ${stringify(ast)}`);
@@ -2864,7 +2870,11 @@ return actual === expect
 		process.env.FORMAT
 			&& console.error(`format :: ${format(ast)}`);
 
+		process.env.GEN
+			&& console.log(`generate :: ${JSON.stringify(getOpcodes())}`);
+
 		process.env.GENERATE && function() {
+			let opcodes = getOpcodes();
 			let instructions = [];
 			let i = 0;
 			while (i < opcodes.length) (function() {
@@ -2876,7 +2886,7 @@ return actual === expect
 		}();
 
 		process.env.INTERPRET
-			&& console.error(`interpret :: ${stringify(interpret(opcodes))}`);
+			&& console.error(`interpret :: ${stringify(interpret(getOpcodes()))}`);
 
 		process.env.TYPE
 			&& console.error(`type :: ${types.dump(type)}`);
