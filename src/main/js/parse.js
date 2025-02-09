@@ -980,8 +980,8 @@ let typesModule = () => {
 						b_k = newRef();
 						setp(b, k, b_k);
 						return true;
-					}() ? undefined : 'fail';
-					return s ?? tryBind(`${p}.${k}`, getp(a, k), b_k);
+					}() ? undefined : p;
+					return s ? tryBind(`${p}.${k}`, getp(a, k), b_k) : p;
 				}(), undefined);
 
 				let tbb = Object.keys(b).reduce((r, k) => r ?? function() {
@@ -990,8 +990,8 @@ let typesModule = () => {
 						a_k = newRef();
 						setp(a, k, a_k);
 						return true;
-					}() ? undefined : 'fail';
-					return s ?? tryBind(`${p}.${k}`, a_k, getp(b, k));
+					}() ? undefined : p;
+					return s ? tryBind(`${p}.${k}`, a_k, getp(b, k)) : p;
 				}(), undefined);
 
 				return tba ?? tbb;

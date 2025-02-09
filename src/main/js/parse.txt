@@ -87,4 +87,4 @@ l(5)
 ' | EVALUATE=1 INTERPRET=1 node src/main/js/parse.js
 
 # OK
-(cd src/main/js && cat parse.js | node parse.js)
+(cd src/main/js && cat parse.js | TYPE=1 node parse.js)
