@@ -2760,18 +2760,17 @@ parseAstType = program => {
 	return { ast: ast4, type: types.infer(ast0) };
 };
 
-let processRewrite = program => {
+let processRewrite = ast => {
 	let roots = ['JSON', 'Object', 'Promise', 'console', 'eval', 'fs_readFileSync', 'process', 'require', 'util_inspect',]
 		.reduce((v, vl) => ll.cons(vl, v), ll.empty());
 
-	let { ast: ast4, type } = parseAstType(program);
-
+	let ast4 = ast;
 	let ast5 = rewriteFsReadFileSync(ast4);
 	let ast6 = rewriteIntrinsics(ast5);
 	let ast7 = rewriteRenameVar(newDummy(), ll_map(roots, v => [v, v]), ast6);
 	let ast8 = rewriteCapture()(roots, ast7);
 
-	return { ast: ast8, type };
+	return { ast: ast8 };
 };
 
 let processGenerate = ast8 => {
@@ -2852,23 +2851,24 @@ return actual === expect
 			? require('fs').readFileSync(0, 'utf8')
 			: require('fs').readFileSync(arg, 'utf8');
 
-		let { ast, type } = processRewrite(program);
+		let { ast: ast0, type } = parseAstType(program);
+		let { ast: ast1 } = processRewrite(ast0, type);
 
 		let generatedOpcodes;
 
 		let opcodes = () => {
-			generatedOpcodes = generatedOpcodes ?? processGenerate(ast);
+			generatedOpcodes = generatedOpcodes ?? processGenerate(ast1);
 			return generatedOpcodes;
 		};
 
 		process.env.AST
-			&& console.error(`ast :: ${stringify(ast)}`);
+			&& console.error(`ast :: ${stringify(ast1)}`);
 
 		process.env.EVALUATE
-			&& console.error(`evaluate :: ${stringify(evaluate(evaluateVvs)(rewriteIntrinsics(parseAstType(program).ast)))}`);
+			&& console.error(`evaluate :: ${stringify(evaluate(evaluateVvs)(rewriteIntrinsics(ast0)))}`);
 
 		process.env.FORMAT
-			&& console.error(`format :: ${format(ast)}`);
+			&& console.error(`format :: ${format(ast1)}`);
 
 		process.env.GENERATE0
 			&& console.log(JSON.stringify(opcodes()));
