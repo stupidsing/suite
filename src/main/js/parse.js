@@ -2134,9 +2134,11 @@ evaluate = vvs => {
 		: id === 'tget' ? (({ expr, i }) => eval(expr)[i])
 		: id === 'throw' ? (({ expr }) => { throw eval(expr); })
 		: id === 'try' ? (({ lhs, rhs }) => {
+			let result;
 			try {
-				return eval(lhs);
-			} catch (e) { return eval(rhs)(e); }
+				result = eval(lhs);
+			} catch (e) { return eval(rhs)(e); };
+			return result;
 		})
 		: id === 'tuple' ? (({ values }) => assumeAny(vec.foldr(vec.empty, values, (tuple, value) => vec.cons(eval(value), tuple))))
 		: id === 'typeof' ? (({ expr }) => assumeAny(typeof (eval(expr))))
