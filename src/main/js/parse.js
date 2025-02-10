@@ -1123,7 +1123,8 @@ let typesModule = () => {
 		}()
 		: field === 'push' ? function() {
 			let te = newRef();
-			return doBind(ast, ts, tyArrayOf(te)) && tyLambdaOf(te, tyVoid);
+			doBind(ast, ts, tyArrayOf(te));
+			return tyLambdaOf(te, tyVoid);
 		}()
 		: field === 'reduce' ? function() {
 			let te = newRef();
@@ -1182,34 +1183,41 @@ let typesModule = () => {
 
 		let inferCmpOp = ({ lhs, rhs }) => {
 			let t = newRef();
-			return true
-				&& doBind(ast, infer(lhs), t)
-				&& doBind(ast, infer(rhs), t)
-				&& (tryBind('', t, tyNumber) === undefined || tryBind('', t, tyString) === undefined || error(`cannot compare values with type ${t}`))
-				&& tyBoolean;
+			doBind(ast, infer(lhs), t);
+			doBind(ast, infer(rhs), t);
+			let dummy = false
+				|| tryBind('', t, tyNumber) === undefined
+				|| tryBind('', t, tyString) === undefined
+				|| error(`cannot compare values with type ${t}`);
+			return tyBoolean;
 		};
 
-		let inferEqOp = ({ lhs, rhs }) => true
-			&& doBind(ast, infer(lhs), infer(rhs))
-			&& tyBoolean;
+		let inferEqOp = ({ lhs, rhs }) => {
+			doBind(ast, infer(lhs), infer(rhs));
+			return tyBoolean;
+		};
 
-		let inferLogicalOp = ({ lhs, rhs }) => true
-			&& doBind(ast, infer(lhs), tyBoolean)
-			&& infer(rhs);
+		let inferLogicalOp = ({ lhs, rhs }) => {
+			doBind(ast, infer(lhs), tyBoolean);
+			return infer(rhs);
+		};
 
-		let inferMathOp = ({ lhs, rhs }) => true
-			&& doBind(ast, infer(lhs), tyNumber)
-			&& doBind(ast, infer(rhs), tyNumber)
-			&& tyNumber;
+		let inferMathOp = ({ lhs, rhs }) => {
+			doBind(ast, infer(lhs), tyNumber);
+			doBind(ast, infer(rhs), tyNumber);
+			return tyNumber;
+		};
 
 		let f = false ? undefined
 		: id === 'add' ? (({ lhs, rhs }) => {
 			let t = newRef();
-			return true
-				&& doBind(ast, infer(lhs), t)
-				&& doBind(ast, infer(rhs), t)
-				&& (tryBind('', t, tyNumber) === undefined || tryBind('', t, tyString) === undefined || error(`cannot add values with type ${dump(t)}`))
-				&& t;
+			doBind(ast, infer(lhs), t);
+			doBind(ast, infer(rhs), t);
+			let dummy = false
+				|| tryBind('', t, tyNumber) === undefined
+				|| tryBind('', t, tyString) === undefined
+				|| error(`cannot add values with type ${dump(t)}`);
+			return t;
 		})
 		: id === 'alloc' ? (({ vn, expr }) =>
 			inferType(ll.cons([vn, newRef()], vts), isAsync, expr)
@@ -1220,13 +1228,15 @@ let typesModule = () => {
 			let te = infer(lhs);
 			let tp = infer(rhs);
 			let tr = newRef();
-			return doBind(ast, te, tyLambdaOf(tp, tr)) && tr;
+			doBind(ast, te, tyLambdaOf(tp, tr));
+			return tr;
 		})
 		: id === 'assign' ? (({ bind, value, expr }) => function() {
 			try {
 				let tbind = infer(bind);
 				let tvalue = infer(value);
-				return doBind(_assign(bind, value, _undefined), tbind, tvalue);
+				doBind(_assign(bind, value, _undefined), tbind, tvalue);
+				return tyVoid;
 			} catch (e) {
 				e.message = `in assignment clause of ${format(bind)}\n${e.message}`;
 				throw e;
@@ -1234,7 +1244,10 @@ let typesModule = () => {
 		}() && infer(expr))
 		: id === 'await' ? (({ expr }) => {
 			let t = newRef();
-			return isAsync ? doBind(ast, infer(expr), tyPromiseOf(t)) && t : error(`await not inside async`);
+			return isAsync ? function() {
+				doBind(ast, infer(expr), tyPromiseOf(t));
+				return t;
+			}() : error(`await not inside async`);
 		})
 		: id === 'bool' ? (({}) =>
 			tyBoolean
@@ -1242,15 +1255,18 @@ let typesModule = () => {
 		: id === 'coal' ? (({ lhs, rhs }) => {
 			let tl = infer(lhs);
 			let tr = infer(rhs);
-			return doBind(ast, tl, tr) && tr;
+			doBind(ast, tl, tr);
+			return tr;
 		})
 		: id === 'cons' ? (({ lhs, rhs }) => {
 			let tl = tyArrayOf(infer(lhs));
-			return doBind(ast, infer(rhs), tl) && tl;
+			doBind(ast, infer(rhs), tl);
+			return tl;
 		})
 		: id === 'deref' ?(({ expr }) => {
 			let t = newRef();
-			return doBind(ast, infer(expr), tyRefOf(t)) && t;
+			doBind(ast, infer(expr), tyRefOf(t));
+			return t;
 		})
 		: id === 'div' ?
 			inferMathOp
@@ -1272,14 +1288,15 @@ let typesModule = () => {
 			}();
 
 			let te = infer(else_);
-			return doBind(ast, infer(if_), tyBoolean) && doBind(ast, tt, te) && tt;
+			doBind(ast, infer(if_), tyBoolean);
+			doBind(ast, tt, te);
+			return tt;
 		})
 		: id === 'index' ? (({ lhs, rhs }) => {
 			let t = newRef();
-			return true
-				&& doBind(ast, infer(rhs), tyNumber)
-				&& doBind(ast, infer(lhs), tyArrayOf(t))
-				&& t;
+			doBind(ast, infer(rhs), tyNumber);
+			doBind(ast, infer(lhs), tyArrayOf(t));
+			return t;
 		})
 		: id === 'lambda' ? (({ bind, expr }) => {
 			let vts1 = bindTypes(vts, bind);
@@ -1303,7 +1320,8 @@ let typesModule = () => {
 					let tv = bind.id !== 'var' || !bind.vn.startsWith('__')
 						? infer(value)
 						: tyLambdaOf(newRef(), newRef());
-					return doBind(_let(bind, value, undefined), tb, tv);
+					doBind(_let(bind, value, undefined), tb, tv);
+					return tyVoid;
 				} catch (e) {
 					e.message = `in value clause of ${format(bind)}\n${e.message}`;
 					throw e;
@@ -1318,9 +1336,10 @@ let typesModule = () => {
 			inferMathOp
 		: id === 'ne_' ?
 			inferEqOp
-		: id === 'neg' ? (({ expr }) =>
-			doBind(ast, infer(expr), tyNumber) && tyNumber
-		)
+		: id === 'neg' ? (({ expr }) => {
+			doBind(ast, infer(expr), tyNumber);
+			return tyNumber;
+		})
 		: id === 'new' ? (({ clazz }) =>
 			false ? undefined
 			: clazz === 'Error' ? tyLambdaOf(tyString, tyError)
@@ -1336,9 +1355,10 @@ let typesModule = () => {
 		: id === 'nil' ? (({}) =>
 			tyArrayOf(newRef())
 		)
-		: id === 'not' ? (({ expr }) =>
-			doBind(ast, infer(expr), tyBoolean) && tyBoolean
-		)
+		: id === 'not' ? (({ expr }) => {
+			doBind(ast, infer(expr), tyBoolean);
+			return tyBoolean;
+		})
 		: id === 'num' ? (({}) =>
 			tyNumber
 		)
@@ -1350,11 +1370,13 @@ let typesModule = () => {
 		: id === 'pget' ? (({ expr, i }) => {
 			let tl = newRef();
 			let tr = newRef();
-			return doBind(ast, infer(expr), tyPairOf(tl, tr)) && (i === 0 ? tl : tr);
+			doBind(ast, infer(expr), tyPairOf(tl, tr));
+			return i === 0 ? tl : tr;
 		})
-		: id === 'pos' ? (({ expr }) =>
-			doBind(ast, infer(expr), tyNumber) && tyNumber
-		)
+		: id === 'pos' ? (({ expr }) => {
+			doBind(ast, infer(expr), tyNumber);
+			return tyNumber;
+		})
 		: id === 'ref' ? (({ expr }) =>
 			tyRefOf(infer(expr))
 		)
@@ -1387,14 +1409,16 @@ let typesModule = () => {
 				i = i - 1;
 			}());
 			let ti = newRef();
-			return doBind(ast, infer(expr), tyTupleOf(vec.cons(ti, ts))) && ti;
+			doBind(ast, infer(expr), tyTupleOf(vec.cons(ti, ts)));
+			return ti;
 		})
 		: id === 'throw' ? (({}) =>
 			newRef()
 		)
-		: id === 'try' ? (({ lhs, rhs }) =>
-			doBind(ast, infer(rhs), newRef()) && infer(lhs)
-		)
+		: id === 'try' ? (({ lhs, rhs }) => {
+			doBind(ast, infer(rhs), newRef());
+			return infer(lhs);
+		})
 		: id === 'tuple' ? (({ values }) =>
 			tyTupleOf(vec.foldr(vec.empty, values, (tuple, value) => vec.cons(infer(value), tuple)))
 		)
@@ -2109,11 +2133,11 @@ evaluate = vvs => {
 		: id === 'sub' ? (({ lhs, rhs }) => assumeAny(eval(lhs) - eval(rhs)))
 		: id === 'tget' ? (({ expr, i }) => eval(expr)[i])
 		: id === 'throw' ? (({ expr }) => { throw eval(expr); })
-		: id === 'try' ? (({ lhs, rhs }) => function() {
+		: id === 'try' ? (({ lhs, rhs }) => {
 			try {
 				return eval(lhs);
 			} catch (e) { return eval(rhs)(e); }
-		}())
+		})
 		: id === 'tuple' ? (({ values }) => assumeAny(vec.foldr(vec.empty, values, (tuple, value) => vec.cons(eval(value), tuple))))
 		: id === 'typeof' ? (({ expr }) => assumeAny(typeof (eval(expr))))
 		: id === 'undefined' ? (({}) => undefined)
