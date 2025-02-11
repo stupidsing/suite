@@ -1236,12 +1236,12 @@ let typesModule = () => {
 				let tbind = infer(bind);
 				let tvalue = infer(value);
 				doBind(_assign(bind, value, _undefined), tbind, tvalue);
-				return tyVoid;
+				return infer(expr);
 			} catch (e) {
 				e.message = `in assignment clause of ${format(bind)}\n${e.message}`;
 				throw e;
 			}
-		}() && infer(expr))
+		}())
 		: id === 'await' ? (({ expr }) => {
 			let t = newRef();
 			return isAsync ? function() {
@@ -1321,12 +1321,12 @@ let typesModule = () => {
 						? infer(value)
 						: tyLambdaOf(newRef(), newRef());
 					doBind(_let(bind, value, undefined), tb, tv);
-					return tyVoid;
+					return inferType(vts1, isAsync, expr);
 				} catch (e) {
 					e.message = `in value clause of ${format(bind)}\n${e.message}`;
 					throw e;
 				}
-			}() && inferType(vts1, isAsync, expr);
+			}();
 		})
 		: id === 'lt_' ?
 			inferCmpOp
