@@ -952,7 +952,7 @@ let typesModule = () => {
 			let finalb = finalRef(b);
 			setRef(refa, finalb);
 			let r = tryBind(p, olda, finalb);
-			let dummy = r === undefined || setRef(refa, olda);
+			(r === undefined || setRef(refa, olda));
 			return r;
 		}()
 		: typeof refb === 'number' ? function() {
@@ -960,7 +960,7 @@ let typesModule = () => {
 			let finala = finalRef(a);
 			setRef(refb, finala);
 			let r = tryBind(p, finala, oldb);
-			let dummy = r === undefined || setRef(refb, oldb);
+			(r === undefined || setRef(refb, oldb));
 			return r;
 		}()
 		: typeof a !== 'object' ? p
@@ -1002,7 +1002,7 @@ let typesModule = () => {
 
 	let doBind_ = (msg, a, b) => {
 		let r = tryBind('', a, b);
-		let dummy = r === undefined || error(`in ${msg()}:\ncannot bind types between\nfr: ${dump(a)}\nto: ${dump(b)}\nerror: ${r}`);
+		(r === undefined || error(`in ${msg()}:\ncannot bind types between\nfr: ${dump(a)}\nto: ${dump(b)}\nerror: ${r}`));
 		return true;
 	};
 
@@ -1185,10 +1185,10 @@ let typesModule = () => {
 			let t = newRef();
 			doBind(ast, infer(lhs), t);
 			doBind(ast, infer(rhs), t);
-			let dummy = false
+			(false
 				|| tryBind('', t, tyNumber) === undefined
 				|| tryBind('', t, tyString) === undefined
-				|| error(`cannot compare values with type ${t}`);
+				|| error(`cannot compare values with type ${t}`));
 			return tyBoolean;
 		};
 
@@ -1213,10 +1213,10 @@ let typesModule = () => {
 			let t = newRef();
 			doBind(ast, infer(lhs), t);
 			doBind(ast, infer(rhs), t);
-			let dummy = false
+			(false
 				|| tryBind('', t, tyNumber) === undefined
 				|| tryBind('', t, tyString) === undefined
-				|| error(`cannot add values with type ${dump(t)}`);
+				|| error(`cannot add values with type ${dump(t)}`));
 			return t;
 		})
 		: id === 'alloc' ? (({ vn, expr }) =>
@@ -1232,15 +1232,16 @@ let typesModule = () => {
 			return tr;
 		})
 		: id === 'assign' ? (({ bind, value, expr }) => function() {
+			let tbind = infer(bind);
+			let tvalue;
 			try {
-				let tbind = infer(bind);
-				let tvalue = infer(value);
-				doBind(_assign(bind, value, _undefined), tbind, tvalue);
-				return infer(expr);
+				tvalue = infer(value);
 			} catch (e) {
 				e.message = `in assignment clause of ${format(bind)}\n${e.message}`;
 				throw e;
-			}
+			};
+			doBind(_assign(bind, value, _undefined), tbind, tvalue);
+			return infer(expr);
 		}())
 		: id === 'await' ? (({ expr }) => {
 			let t = newRef();
@@ -1315,17 +1316,18 @@ let typesModule = () => {
 		: id === 'let' ? (({ bind, value, expr }) => {
 			let vts1 = bindTypes(vts, bind);
 			return function() {
+				let tb = inferType(vts1, false, bind);
+				let tv;
 				try {
-					let tb = inferType(vts1, false, bind);
-					let tv = bind.id !== 'var' || !bind.vn.startsWith('__')
+					tv = bind.id !== 'var' || !bind.vn.startsWith('__')
 						? infer(value)
 						: tyLambdaOf(newRef(), newRef());
-					doBind(_let(bind, value, undefined), tb, tv);
-					return inferType(vts1, isAsync, expr);
 				} catch (e) {
 					e.message = `in value clause of ${format(bind)}\n${e.message}`;
 					throw e;
-				}
+				};
+				doBind(_let(bind, value, undefined), tb, tv);
+				return inferType(vts1, isAsync, expr);
 			}();
 		})
 		: id === 'lt_' ?
@@ -1638,7 +1640,7 @@ let rewriteBind = () => {
 
 			let bindConstant = v => ast => false ? undefined
 				: bind.id !== value.id ? _if(_eq(bind, value), then, else_)
-				: v === value.v ? then
+				: assumeAny(v) === value.v ? then
 				: else_;
 
 			let f = false ? undefined
