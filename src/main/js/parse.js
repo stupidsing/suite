@@ -2917,18 +2917,22 @@ return actual === expect
 		let { argv } = process;
 		let arg = argv[2];
 
-		let program = arg === undefined || arg === '-'
-			? require('fs').readFileSync(0, 'utf8')
-			: require('fs').readFileSync(arg, 'utf8');
-
+		let prog;
 		let pp;
 		let pr;
 		let pg;
 
-		let ast0 = () => { pp = pp ?? parseAstType(program); return pp.ast; };
+		let program = () => {
+			prog = prog ?? (arg === undefined || arg === '-'
+				? require('fs').readFileSync(0, 'utf8')
+				: require('fs').readFileSync(arg, 'utf8'));
+			return prog;
+		};
+
+		let ast0 = () => { pp = pp ?? parseAstType(program()); return pp.ast; };
 		let ast1 = () => { pr = pr ?? processRewrite(ast0()); return pr.ast; };
 		let opcodes = () => { pg = pg ?? processGenerate(ast1()); return pg; };
-		let type = () => { pp = pp ?? parseAstType(program); return pp.type; };
+		let type = () => { pp = pp ?? parseAstType(program()); return pp.type; };
 
 		process.env.AST
 			&& console.error(`ast :: ${stringify(ast1())}`);
