@@ -2937,7 +2937,7 @@ return actual === expect
 			&& console.error(`format :: ${format(ast1())}`);
 
 		process.env.GENERATE0
-			&& console.log(JSON.stringify(opcodes()));
+			&& console.log(stringify(opcodes()));
 
 		process.env.GENERATE1 && function() {
 			let opcodes_ = opcodes();
