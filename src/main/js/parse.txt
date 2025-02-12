@@ -25,6 +25,11 @@ map.has('key') && map.get('key') === 'value'
 
 # OK
 echo "
+JSON.parse(JSON.stringify({ a: 1, b: [3, 4] }, undefined, undefined))
+" | EVALUATE=1 INTERPRET=1 node src/main/js/parse.js
+
+# OK
+echo "
 Object.fromEntries(Object.entries({ a: 1, b: 2, c: 3, }))
 " | EVALUATE=1 INTERPRET=1 node src/main/js/parse.js
 

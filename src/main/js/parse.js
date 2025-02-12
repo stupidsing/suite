@@ -1449,6 +1449,7 @@ let typesModule = () => {
 	let predefinedTypes = Object
 		.entries({
 			JSON: tyStructOfCompleted({
+				parse: tyLambdaOf(tyString, newRef()),
 				stringify: tyLambdaOf(tyPairOf(newRef(), tyPairOf(newRef(), newRef())), tyString),
 			}),
 			Object: tyStructOfCompleted({
@@ -1993,6 +1994,7 @@ let unwrap = f => arg => {
 let evaluateVvs =
 	[
 		['JSON', assumeAny({
+			parse: unwrap(JSON.parse),
 			stringify: unwrap(JSON.stringify),
 		})],
 		['Object', assumeAny({
@@ -2856,6 +2858,7 @@ let processGenerate = ast8 => {
 
 	let ast9 = [ast8,]
 		.map(ast => addObjectOfFunctions(ast, 'JSON', [
+			{ f: 'parse', n: 1 },
 			{ f: 'stringify', n: 3 },
 		]))
 		.map(ast => addObjectOfFunctions(ast, 'Object', [
@@ -2950,6 +2953,9 @@ return actual === expect
 			}());
 			console.error(`generate :: ${instructions.join('')}`);
 		}();
+
+		process.env.INTERPRET0
+			&& console.error(`interpret :: ${stringify(interpret(JSON.parse(require('fs').readFileSync(0, 'utf8'))))}`);
 
 		process.env.INTERPRET
 			&& console.error(`interpret :: ${stringify(interpret(opcodes()))}`);
