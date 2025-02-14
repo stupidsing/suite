@@ -2914,8 +2914,16 @@ let expect = stringify(
 return actual === expect
 ? function() {
 	try {
-		let { argv } = process;
-		let arg = argv[2];
+		let argv = process.argv.slice(2, undefined);
+		let env = JSON.parse(JSON.stringify(process.env, undefined, undefined));
+
+		while (argv[0] !== undefined && argv[0].startsWith('--')) (function() {
+			setp(env, argv[0].slice(2, undefined), 'Y');
+			argv = argv.slice(1, undefined);
+			return true;
+		}());
+
+		let arg = argv[0];
 
 		let prog;
 		let pp;
@@ -2934,19 +2942,19 @@ return actual === expect
 		let opcodes = () => { pg = pg ?? processGenerate(ast1()); return pg; };
 		let type = () => { pp = pp ?? parseAstType(program()); return pp.type; };
 
-		process.env.AST
+		env.AST
 			&& console.error(`ast :: ${stringify(ast1())}`);
 
-		process.env.EVALUATE
+		env.EVALUATE
 			&& console.error(`evaluate :: ${stringify(evaluate(evaluateVvs)(rewriteIntrinsics(ast0())))}`);
 
-		process.env.FORMAT
+		env.FORMAT
 			&& console.error(`format :: ${format(ast1())}`);
 
-		process.env.GENERATE0
+		env.GENERATE0
 			&& console.log(JSON.stringify(opcodes(), undefined, undefined));
 
-		process.env.GENERATE1 && function() {
+		env.GENERATE1 && function() {
 			let opcodes_ = opcodes();
 			let instructions = [];
 			let i = 0;
@@ -2958,13 +2966,13 @@ return actual === expect
 			console.error(`generate :: ${instructions.join('')}`);
 		}();
 
-		process.env.INTERPRET0
+		env.INTERPRET0
 			&& console.error(`interpret :: ${stringify(interpret(JSON.parse(require('fs').readFileSync(0, 'utf8'))))}`);
 
-		process.env.INTERPRET
+		env.INTERPRET
 			&& console.error(`interpret :: ${stringify(interpret(opcodes()))}`);
 
-		process.env.TYPE
+		env.TYPE
 			&& console.error(`type :: ${types.dump(type())}`);
 
 		return true;
