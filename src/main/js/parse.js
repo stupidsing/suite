@@ -2022,7 +2022,7 @@ let evaluateVvs =
 		})],
 		['eval', assumeAny(unwrap(eval('eval')))],
 		['process', assumeAny({
-			argv: process.argv.slice(1, undefined),
+			argv: ['parse.js', ...argv,],
 			env: process.env,
 		})],
 		['require', assumeAny(path => false ? undefined
@@ -2887,7 +2887,7 @@ let processGenerate = ast8 => {
 		.map(ast => add(ast, 'eval', proxy(1, 'eval')))
 		.map(ast => add(ast, 'fs_readFileSync', proxy(2, 'require("fs").readFileSync')))
 		.map(ast => add(ast, 'process', _struct([
-			{ key: 'argv', value: process.argv.slice(1, undefined).toReversed().reduce((vl, arg) => _cons(_str(arg), vl), _nil) },
+			{ key: 'argv', value: ['parse.js', ...argv,].toReversed().reduce((vl, arg) => _cons(_str(arg), vl), _nil) },
 			{ key: 'env', value: _struct(Object.entries(process.env).map(([key, v]) => ({ key, value: _str(v) }))) },
 		])))
 		.map(ast => add(ast, 'require', proxy(1, 'require')))
