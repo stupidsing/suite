@@ -134,6 +134,15 @@ let vec = function() {
 	return { cons, contains, empty, find, foldl, foldr, };
 }();
 
+let argv = process.argv.slice(2, undefined);
+let env = JSON.parse(JSON.stringify(process.env, undefined, undefined));
+
+while (argv[0] !== undefined && argv[0].startsWith('--')) (function() {
+	setp(env, argv[0].slice(2, undefined), 'Y');
+	argv = argv.slice(1, undefined);
+	return true;
+}());
+
 let gen = i => {
 	let array = [];
 	while (0 < i) (function() {
@@ -2565,7 +2574,7 @@ let interpret = opcodes => {
 		let opcode = opcodes[ip];
 		let { id } = opcode;
 
-		process.env.LOG && function() {
+		env.LOG && function() {
 			let opts = { breakLength: 9999, compact: true, depth: 9 };
 			console.error(`----------`);
 			console.error(`FRAMES = ${require('util').inspect(frames, opts)}`);
@@ -2914,15 +2923,6 @@ let expect = stringify(
 return actual === expect
 ? function() {
 	try {
-		let argv = process.argv.slice(2, undefined);
-		let env = JSON.parse(JSON.stringify(process.env, undefined, undefined));
-
-		while (argv[0] !== undefined && argv[0].startsWith('--')) (function() {
-			setp(env, argv[0].slice(2, undefined), 'Y');
-			argv = argv.slice(1, undefined);
-			return true;
-		}());
-
 		let arg = argv[0];
 
 		let prog;
