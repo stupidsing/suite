@@ -1,8 +1,8 @@
 # FAIL
-echo 1 | (cd src/main/js && INTERPRET=1 node parse.js parse.js)
+echo 1 | (cd src/main/js && node parse.js --INTERPRET parse.js --INTERPRET -)
 
 # OK
-echo 1 | (cd src/main/js && EVALUATE=1 node parse.js parse.js)
+echo 1 | (cd src/main/js && node parse.js --EVALUATE parse.js --EVALUATE -)
 
 # OK
 (cd src/main/js && echo "require('fs').readFileSync('fs.js', 'utf8')" | EVALUATE=1 INTERPRET=1 node parse.js)
