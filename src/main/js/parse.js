@@ -1838,7 +1838,11 @@ let rewriteIntrinsics = ast => {
 					let list = f(es[i]);
 					i = i + 1;
 					let j = 0;
-					while (j < list.length) out.push(j);
+					while (j < list.length) (function() {
+						out.push(list[j]);
+						j = j + 1;
+						return undefined;
+					}());
 				}());
 				return out;
 			}
