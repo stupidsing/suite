@@ -2925,10 +2925,12 @@ return actual === expect
 		let pr;
 		let pg;
 
+		let input = () => arg === undefined || arg === '-'
+			? require('fs').readFileSync(0, 'utf8')
+			: require('fs').readFileSync(arg, 'utf8');
+
 		let program = () => {
-			prog = prog ?? (arg === undefined || arg === '-'
-				? require('fs').readFileSync(0, 'utf8')
-				: require('fs').readFileSync(arg, 'utf8'));
+			prog = prog ?? input();
 			return prog;
 		};
 
@@ -2961,7 +2963,7 @@ return actual === expect
 		}();
 
 		env.INTERPRET0
-			&& console.error(`interpret :: ${stringify(interpret(JSON.parse(require('fs').readFileSync(0, 'utf8'))))}`);
+			&& console.error(`interpret :: ${stringify(interpret(JSON.parse(input())))}`);
 
 		env.INTERPRET
 			&& console.error(`interpret :: ${stringify(interpret(opcodes()))}`);
