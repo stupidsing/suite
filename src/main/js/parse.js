@@ -89,45 +89,41 @@ let vec = function() {
 	let contains = (es, e) => {
 		let i = 0;
 		let b = false;
-		while (i < es.length) (function() {
+		while (i < es.length) {
 			b = b || es[i] === e;
 			i = i + 1;
-			return undefined;
-		}());
+		};
 		return b;
 	};
 
 	let find = (es, op) => {
 		let i = 0;
 		let r = undefined;
-		while (r === undefined && i < es.length) (function() {
+		while (r === undefined && i < es.length) {
 			let e = es[i];
 			r = op(e) ? e : undefined;
 			i = i + 1;
-			return undefined;
-		}());
+		};
 		return r;
 	};
 
 	let foldl = (init, es, op) => {
 		let i = 0;
 		let r = init;
-		while (i < es.length) (function() {
+		while (i < es.length) {
 			r = op(r, es[i]);
 			i = i + 1;
-			return undefined;
-		}());
+		};
 		return r;
 	};
 
 	let foldr = (init, es, op) => {
 		let i = es.length - 1;
 		let r = init;
-		while (0 <= i) (function() {
+		while (0 <= i) {
 			r = op(r, es[i]);
 			i = i - 1;
-			return undefined;
-		}());
+		};
 		return r;
 	};
 
@@ -137,18 +133,17 @@ let vec = function() {
 let argv = process.argv.slice(2, undefined);
 let env = JSON.parse(JSON.stringify(process.env, undefined, undefined));
 
-while (argv[0] !== undefined && argv[0].startsWith('--')) (function() {
+while (argv[0] !== undefined && argv[0].startsWith('--')) {
 	setp(env, argv[0].slice(2, undefined), 'Y');
 	argv = argv.slice(1, undefined);
-	return true;
-}());
+};
 
 let gen = i => {
 	let array = [];
-	while (0 < i) (function() {
+	while (0 < i) {
 		i = i - 1;
 		array.push(i);
-	}());
+	};
 	return array;
 };
 
@@ -232,7 +227,7 @@ let lexerModule = () => {
 		let i = pos;
 		let tokenss = [];
 
-		while (i < s.length) (function() {
+		while (i < s.length) {
 			let ch = s.charCodeAt(i);
 			let op2 = s.slice(i, i + 2);
 			let op3 = s.slice(i, i + 3);
@@ -240,9 +235,9 @@ let lexerModule = () => {
 			let j = i + 1;
 
 			let skip = f => {
-				while (j < s.length && f(s.charCodeAt(j))) (function() {
+				while (j < s.length && f(s.charCodeAt(j))) {
 					j = j + 1;
-				}());
+				};
 			};
 
 			let tokens = false ? undefined
@@ -291,7 +286,7 @@ let lexerModule = () => {
 			: ch === ascii('_') ? 'A'
 			: ascii('a') <= ch && ch <= ascii('z') ? 'A'
 			: '$';
-		}());
+		};
 
 		return tokenss.flatMap(tokens => tokens);
 	};
@@ -346,10 +341,10 @@ let parserModule = () => {
 				qb1 = quoteBracket(qb, ch);
 				return ll.isNotEmpty(qb) || s.slice(i, j) !== sep || i === 0;
 			}();
-		}()) (function() {
+		}()) {
 			i = i + 1;
 			qb = qb1;
-		}());
+		};
 
 		return j <= s.length ? [s.slice(0, i), s.slice(j, undefined)] : [s, undefined];
 	};
@@ -367,10 +362,10 @@ let parserModule = () => {
 				qb1 = quoteBracket(qb, ch);
 				return ll.isNotEmpty(qb1) || s.slice(i, j) !== sep || i === 0;
 			}();
-		}()) (function() {
+		}()) {
 			j = j - 1;
 			qb = qb1;
-		}());
+		};
 
 		return 0 <= i ? [s.slice(0, i), s.slice(j, undefined)] : [undefined, s];
 	};
@@ -672,8 +667,8 @@ let parserModule = () => {
 				parse(statement.slice(7, undefined))
 			: statement.startsWith('throw ') && expr === '' ?
 				_throw(parse(statement.slice(6, undefined)))
-			: statement.startsWith('while ') ? function() {
-				let [cond, loop] = splitl(statement.slice(6, undefined), ' ');
+			: statement.startsWith('while (') && statement.endsWith('}') ? function() {
+				let [cond, loop] = splitl(statement.slice(7, statement.length - 1), ') {');
 				return _while(parse(cond), parse(loop), parseExpr);
 			}()
 			: function() {
@@ -783,10 +778,10 @@ let formatModule = () => {
 
 		let precs = {};
 		let i = 0;
-		while (i < precOrder.length) (function() {
+		while (i < precOrder.length) {
 			precOrder[i].map(id => setp(precs, id, i));
 			i = i + 1;
-		}());
+		};
 		return precs;
 	}();
 
@@ -826,10 +821,10 @@ let formatModule = () => {
 		: id === 'cons' ? (({ lhs, rhs }) => {
 			let s = fmt(lhs);
 			let r = rhs;
-			while (r.id === 'cons') (function() {
+			while (r.id === 'cons') {
 				s = s + `, ${fmt(r.lhs)}`;
 				r = r.rhs;
-			}());
+			};
 			return r.id !== 'nil' ? `[${s}, ...${fmt(r)}]` : `[${s},]`;
 		})
 		: id === 'deref' ? (({ expr }) => `*${fmt(expr)}`)
@@ -1415,10 +1410,10 @@ let typesModule = () => {
 			inferMathOp
 		: id === 'tget' ? (({ expr, i }) => {
 			let ts = vec.empty;
-			while (0 < i) (function() {
+			while (0 < i) {
 				ts = vec.cons(newRef(), ts);
 				i = i - 1;
-			}());
+			};
 			let ti = newRef();
 			doBind(ast, infer(expr), tyTupleOf(vec.cons(ti, ts)));
 			return ti;
@@ -1822,11 +1817,11 @@ let rewriteIntrinsics = ast => {
 			(es, pred) => {
 				let i = 0;
 				let out = [];
-				while (i < es.length) (function() {
+				while (i < es.length) {
 					let e = es[i];
 					i = i + 1;
 					pred(e) && out.push(e);
-				}());
+				};
 				return out;
 			}
 		`)), ast))
@@ -1834,16 +1829,15 @@ let rewriteIntrinsics = ast => {
 			(es, f) => {
 				let i = 0;
 				let out = [];
-				while (i < es.length) (function() {
+				while (i < es.length) {
 					let list = f(es[i]);
 					i = i + 1;
 					let j = 0;
-					while (j < list.length) (function() {
+					while (j < list.length) {
 						out.push(list[j]);
 						j = j + 1;
-						return undefined;
-					}());
-				}());
+					};
+				};
 				return out;
 			}
 		`)), ast))
@@ -1851,11 +1845,11 @@ let rewriteIntrinsics = ast => {
 			(es, f) => {
 				let i = 0;
 				let out = [];
-				while (i < es.length) function() {
+				while (i < es.length) {
 					let e = es[i];
 					i = i + 1;
 					out.push(f(e));
-				}();
+				};
 				return out;
 			}
 		`)), ast))
@@ -1863,12 +1857,11 @@ let rewriteIntrinsics = ast => {
 			(es, acc, init) => {
 				let i = 0;
 				let r = init;
-				while (i < es.length) (function() {
+				while (i < es.length) {
 					let e = es[i];
 					i = i + 1;
 					r = acc(r, e);
-					return undefined;
-				}());
+				};
 				return r;
 			}
 		`)), ast))
@@ -1995,11 +1988,10 @@ let pairTag = {};
 
 let unwrap = f => arg => {
 	let ps = [];
-	while (arg !== undefined && assumeAny(arg[2]) === pairTag) (function() {
+	while (arg !== undefined && assumeAny(arg[2]) === pairTag) {
 		ps.push(arg[0]);
 		arg = arg[1];
-		return undefined;
-	}());
+	};
 	ps.push(arg);
 	return f.apply(undefined, ps);
 };
@@ -2163,7 +2155,7 @@ evaluate = vvs => {
 		: id === 'var' ? (({ vn }) => ll.findk(vvs, vn))
 		: id === 'while' ? (({ cond, loop, expr }) => {
 			let v;
-			while (eval(cond)) eval(loop);
+			while (eval(cond)) { eval(loop); };
 			return eval(expr);
 		})
 		: error(`cannot evaluate ${id}`);
@@ -2520,7 +2512,7 @@ generate = ast => {
 let expand = opcodes => {
 	let i = 0;
 
-	while (i < opcodes.length) (function() {
+	while (i < opcodes.length) {
 		let { id, name, segment } = opcodes[i];
 		let isSegment = id === 'label-segment';
 		isSegment && function() {
@@ -2538,7 +2530,7 @@ let expand = opcodes => {
 			setp(opcodes[i], 'segment', undefined);
 		}();
 		i = i + 1;
-	}());
+	};
 
 	return opcodes;
 };
@@ -2547,13 +2539,12 @@ let interpret = opcodes => {
 	let indexByLabel = {};
 	let i = 0;
 
-	while (i < opcodes.length) (function() {
+	while (i < opcodes.length) {
 		let { id, label } = opcodes[i];
 		let isLabel = id === ':';
 		isLabel && setp(indexByLabel, label, i);
 		i = i + 1;
-		return true;
-	}());
+	};
 
 	let catchHandler = undefined;
 
@@ -2574,7 +2565,7 @@ let interpret = opcodes => {
 		rpush(f(a, b));
 	};
 
-	while (ip < opcodes.length) (function() {
+	while (ip < opcodes.length) {
 		let opcode = opcodes[ip];
 		let { id } = opcode;
 
@@ -2772,9 +2763,9 @@ let interpret = opcodes => {
 			return catchHandler !== undefined ? function() {
 				let { label, fl, fsl, rsl } = catchHandler;
 				ip = label ?? error(`THROWN ${rpop()}`);
-				while (fsl < frames.length) fremove();
-				while (fl < frames[frames.length - 1].length) fpop();
-				while (rsl < rstack.length) rpop();
+				while (fsl < frames.length) { fremove(); };
+				while (fl < frames[frames.length - 1].length) { fpop(); };
+				while (rsl < rstack.length) { rpop(); };
 				catchHandler = rpop();
 				rpush(thrown);
 				return undefined;
@@ -2813,7 +2804,7 @@ let interpret = opcodes => {
 			rpush(undefined)
 		:
 			error('BAD');
-	}());
+	};
 
 	return rstack.length !== 1 ? error('RSTACK RESIDUE')
 	: frames.length !== 1 && frames[0].length !== 0 ? error('FRAME RESIDUE')
@@ -2829,9 +2820,9 @@ parseAstType = program => {
 		pos0 = program.indexOf('\/\/ ', 0);
 		posx = 0 <= pos0 ? program.indexOf('\n', pos0) : -1;
 		return 0 <= posx;
-	}()) (function() {
+	}()) {
 		program = program.slice(0, pos0) + program.slice(posx, undefined);
-	}());
+	};
 
 	let ast0 = parser.parse(program);
 	let ast1 = rewriteNe(ast0);
@@ -2962,11 +2953,10 @@ return actual === expect
 			let opcodes_ = opcodes();
 			let instructions = [];
 			let i = 0;
-			while (i < opcodes_.length) (function() {
+			while (i < opcodes_.length) {
 				instructions.push(`\n${i} ${Object.values(opcodes_[i]).join(' ')}`);
 				i = i + 1;
-				return true;
-			}());
+			};
 			console.error(`generate :: ${instructions.join('')}`);
 		}();
 
