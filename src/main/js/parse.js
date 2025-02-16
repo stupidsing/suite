@@ -24,9 +24,9 @@ let assumeObject = v => {
 let fake = __id;
 
 let ascii = s => s.charCodeAt(0);
-let error = message => { throw new Error(message); };
 let stringify = json => JSON.stringify(json, undefined, '  ');
 
+let error = message => { throw new Error(message); };
 let get0 = tuple => { let [a, b] = tuple; return a; };
 let get1 = tuple => { let [a, b] = tuple; return b; };
 let seti = (m, k, v) => { fake(m)[0 <= k && fake(k)] = v; return v; };
@@ -68,14 +68,11 @@ let ll = function() {
 	let len;
 	len = es => isNotEmpty(es) ? 1 + len(tail(es)) : 0;
 
-	let map;
-	map = (es, op) => isNotEmpty(es) ? cons(op(head(es)), map(tail(es), op)) : empty();
+	let map_;
+	map_ = (es, op) => isNotEmpty(es) ? cons(op(head(es)), map_(tail(es), op)) : empty();
 
-	return { cons, contains, empty, find, findk, foldl, foldr, head, isEmpty, isNotEmpty, len, map, tail, };
+	return { cons, contains, empty, find, findk, foldl, foldr, head, isEmpty, isNotEmpty, len, map_, tail, };
 }();
-
-let ll_map; 
-ll_map = (es, op) => ll.isNotEmpty(es) ? ll.cons(op(ll.head(es)), ll_map(ll.tail(es), op)) : ll.empty();
 
 let vec = function() {
 	let empty = [];
@@ -2839,7 +2836,7 @@ let processRewrite = ast => {
 	let ast4 = ast;
 	let ast5 = rewriteFsReadFileSync(ast4);
 	let ast6 = rewriteIntrinsics(ast5);
-	let ast7 = rewriteRenameVar(newDummy(), ll_map(roots, v => [v, v]), ast6);
+	let ast7 = rewriteRenameVar(newDummy(), ll.map_(roots, v => [v, v]), ast6);
 	let ast8 = rewriteCapture()(roots, ast7);
 
 	return { ast: ast8 };
