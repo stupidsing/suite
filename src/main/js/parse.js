@@ -127,7 +127,6 @@ let vec = function() {
 }();
 
 let argv = process.argv.slice(2, undefined);
-let arg = argv[0];
 
 let env = JSON.parse(JSON.stringify(process.env, undefined, undefined));
 
@@ -135,6 +134,8 @@ while (argv[0] !== undefined && argv[0].startsWith('--')) {
 	setp(env, argv[0].slice(2, undefined), 'Y');
 	argv = argv.slice(1, undefined);
 };
+
+let arg = argv[0];
 
 let gen = i => {
 	let array = [];
