@@ -127,6 +127,8 @@ let vec = function() {
 }();
 
 let argv = process.argv.slice(2, undefined);
+let arg = argv[0];
+
 let env = JSON.parse(JSON.stringify(process.env, undefined, undefined));
 
 while (argv[0] !== undefined && argv[0].startsWith('--')) {
@@ -2914,8 +2916,6 @@ let expect = stringify(
 return actual === expect
 ? function() {
 	try {
-		let arg = argv[0];
-
 		let prog;
 		let pp;
 		let pr;
