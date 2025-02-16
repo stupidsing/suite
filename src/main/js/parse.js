@@ -43,20 +43,16 @@ let ll = function() {
 	let tail = get1;
 
 	let contains;
-	contains = (es, e) => {
-		return isNotEmpty(es) ? function() {
-			let [head, tail] = es;
-			return e !== head ? contains(tail, e) : true;
-		}() : false;
-	};
+	contains = (es, e) => isNotEmpty(es) ? function() {
+		let [head, tail] = es;
+		return e !== head ? contains(tail, e) : true;
+	}() : false;
 
 	let find;
-	find = (es, op) => {
-		return isNotEmpty(es) ? function() {
-			let [head, tail] = es;
-			return op(head) ? head : find(tail, op);
-		}() : undefined;
-	};
+	find = (es, op) => isNotEmpty(es) ? function() {
+		let [head, tail] = es;
+		return op(head) ? head : find(tail, op);
+	}() : undefined;
 
 	let foldl;
 	foldl = (init, es, op) => isNotEmpty(es) ? foldl(op(init, head(es)), tail(es), op) : init;
