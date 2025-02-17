@@ -2607,6 +2607,8 @@ let interpret = opcodes => {
 			let ref = rpop();
 			ref[0] = value;
 		}()
+		: id === 'argv' ?
+			rpush(['parse.js', ...argv,])
 		: id === 'bool' ?
 			rpush(opcode.b)
 		: id === 'coal' ?
@@ -2878,7 +2880,7 @@ let processGenerate = ast8 => {
 		.map(ast => add(ast, 'eval', proxy(1, 'eval')))
 		.map(ast => add(ast, 'fs_readFileSync', proxy(2, 'require("fs").readFileSync')))
 		.map(ast => add(ast, 'process', _struct([
-			{ key: 'argv', value: ['parse.js', ...argv,].toReversed().reduce((vl, arg) => _cons(_str(arg), vl), _nil) },
+			{ key: 'argv', value: _segment([{ id: 'argv' },]) },
 			{ key: 'env', value: _struct(Object.entries(process.env).map(([key, v]) => ({ key, value: _str(v) }))) },
 		])))
 		.map(ast => add(ast, 'require', proxy(1, 'require')))
