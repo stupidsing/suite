@@ -2965,6 +2965,11 @@ return actual === expect
 		env.TYPE
 			&& console.error(`type :: ${types.dump(type())}`);
 
+		env.VERBOSE && function() {
+			console.error(`argv :: ${stringify(process.argv)}`);
+			console.error(`env :: ${stringify(process.env)}`);
+		}();
+
 		return true;
 	} catch (e) { return console.error(e); }
 }() : error(`
