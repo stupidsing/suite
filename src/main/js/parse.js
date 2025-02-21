@@ -293,7 +293,7 @@ let lexerModule = () => {
 let parserModule = () => {
 	let isAll = pred => s => {
 		let isAll_;
-		isAll_ = i => i < s.length ? pred(s.charCodeAt(i)) && isAll_(i + 1) : true;
+		isAll_ = i => i === s.length || pred(s.charCodeAt(i)) && isAll_(i + 1);
 		return isAll_(0);
 	};
 
