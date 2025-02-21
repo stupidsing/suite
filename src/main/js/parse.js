@@ -29,9 +29,9 @@ let stringify = json => JSON.stringify(json, undefined, '  ');
 let error = message => { throw new Error(message); };
 let get0 = tuple => { let [a, b] = tuple; return a; };
 let get1 = tuple => { let [a, b] = tuple; return b; };
-let seti = (m, k, v) => { fake(m)[0 <= k && fake(k)] = v; return v; };
-let getp = (m, k) => fake(m)[k !== '' && fake(k)];
-let setp = (m, k, v) => { fake(m)[k !== '' && fake(k)] = v; return v; };
+let seti = (m, k, v) => { (0 <= k); fake(m)[fake(k)] = v; return v; };
+let getp = (m, k) => { (k !== ''); return fake(m)[fake(k)]; };
+let setp = (m, k, v) => { (k !== ''); fake(m)[fake(k)] = v; return v; };
 
 let ll = function() {
 	let empty = () => undefined;
@@ -1020,7 +1020,8 @@ let typesModule = () => {
 				? (fromTos.has(ref) ? fromTos.get(ref) : function() {
 					let v1 = newRef();
 					fromTos.set(ref, v1);
-					return doBind_(() => 'clone reference', v1, cloneRef_(refs.get(ref))) && v1;
+					doBind_(() => 'clone reference', v1, cloneRef_(refs.get(ref)));
+					return v1;
 				}())
 			: typeof v === 'object'
 				? (vlist.length !== undefined
@@ -1816,7 +1817,7 @@ let rewriteIntrinsics = ast => {
 				while (i < es.length) {
 					let e = es[i];
 					i = i + 1;
-					pred(e) && out.push(e);
+					pred(e) ? out.push(e) : undefined;
 				};
 				return out;
 			}
@@ -2524,6 +2525,7 @@ let expand = opcodes => {
 			setp(opcodes[i], 'id', 'label');
 			setp(opcodes[i], 'label', label);
 			setp(opcodes[i], 'segment', undefined);
+			return true;
 		}();
 		i = i + 1;
 	};
@@ -2537,8 +2539,7 @@ let interpret = opcodes => {
 
 	while (i < opcodes.length) {
 		let { id, label } = opcodes[i];
-		let isLabel = id === ':';
-		isLabel && setp(indexByLabel, label, i);
+		(id === ':' ? setp(indexByLabel, label, i) : undefined);
 		i = i + 1;
 	};
 
@@ -2571,6 +2572,7 @@ let interpret = opcodes => {
 			console.error(`FRAMES = ${require('util').inspect(frames, opts)}`);
 			console.error(`RSTACK = ${require('util').inspect(rstack, opts)}`);
 			console.error(`IP = ${ip} ${Object.values(opcode).join(' ')}`);
+			return true;
 		}();
 
 		ip = ip + 1;
@@ -2936,16 +2938,20 @@ return actual === expect
 		let type = () => { pp = pp ?? parseAstType(program()); return pp.type; };
 
 		env.AST
-			&& console.error(`ast :: ${stringify(ast1())}`);
+			? console.error(`ast :: ${stringify(ast1())}`)
+			: undefined;
 
 		env.EVALUATE
-			&& console.error(`evaluate :: ${stringify(evaluate(evaluateVvs)(rewriteIntrinsics(ast0())))}`);
+			? console.error(`evaluate :: ${stringify(evaluate(evaluateVvs)(rewriteIntrinsics(ast0())))}`)
+			: undefined;
 
 		env.FORMAT
-			&& console.error(`format :: ${format(ast1())}`);
+			? console.error(`format :: ${format(ast1())}`)
+			: undefined;
 
 		env.GENERATE0
-			&& console.log(JSON.stringify(opcodes(), undefined, undefined));
+			? console.log(JSON.stringify(opcodes(), undefined, undefined))
+			: undefined;
 
 		env.GENERATE1 && function() {
 			let opcodes_ = opcodes();
@@ -2956,20 +2962,25 @@ return actual === expect
 				i = i + 1;
 			};
 			console.error(`generate :: ${instructions.join('')}`);
+			return true;
 		}();
 
 		env.INTERPRET0
-			&& console.error(`interpret :: ${stringify(interpret(JSON.parse(input())))}`);
+			? console.error(`interpret :: ${stringify(interpret(JSON.parse(input())))}`)
+			: undefined;
 
 		env.INTERPRET
-			&& console.error(`interpret :: ${stringify(interpret(opcodes()))}`);
+			? console.error(`interpret :: ${stringify(interpret(opcodes()))}`)
+			: undefined;
 
 		env.TYPE
-			&& console.error(`type :: ${types.dump(type())}`);
+			? console.error(`type :: ${types.dump(type())}`)
+			: undefined;
 
 		env.VERBOSE && function() {
 			console.error(`argv :: ${stringify(process.argv)}`);
 			console.error(`env :: ${stringify(process.env)}`);
+			return true;
 		}();
 
 		return true;
