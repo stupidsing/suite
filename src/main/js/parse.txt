@@ -45,7 +45,7 @@ echo "
 
 # OK
 echo "
-[1, 2,].includes(2) && [1.toString(),].concat([2.toString(),]).length === 2 && [1, 2, 3, 4,].slice(1, 3)
+[1, 2,].includes(2) && [1.toString(),].concat([2.toString(),]).length === 2 ? [1, 2, 3, 4,].slice(1, 3) : undefined
 " | EVALUATE=1 INTERPRET=1 node src/main/js/parse.js
 
 # OK

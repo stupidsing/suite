@@ -952,7 +952,7 @@ let typesModule = () => {
 			let finalb = finalRef(b);
 			setRef(refa, finalb);
 			let r = tryBind(p, olda, finalb);
-			(r === undefined || setRef(refa, olda));
+			(r === undefined ? undefined : setRef(refa, olda));
 			return r;
 		}()
 		: typeof refb === 'number' ? function() {
@@ -960,7 +960,7 @@ let typesModule = () => {
 			let finala = finalRef(a);
 			setRef(refb, finala);
 			let r = tryBind(p, finala, oldb);
-			(r === undefined || setRef(refb, oldb));
+			(r === undefined ? undefined : setRef(refb, oldb));
 			return r;
 		}()
 		: typeof a !== 'object' ? p
@@ -1200,7 +1200,8 @@ let typesModule = () => {
 
 		let inferLogicalOp = ({ lhs, rhs }) => {
 			doBind(ast, infer(lhs), tyBoolean);
-			return infer(rhs);
+			doBind(ast, infer(rhs), tyBoolean);
+			return tyBoolean;
 		};
 
 		let inferMathOp = ({ lhs, rhs }) => {
