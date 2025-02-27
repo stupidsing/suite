@@ -650,6 +650,12 @@ let parserModule = () => {
 			let parseExpr = expr !== '' ? parse(expr) : _undefined;
 
 			return false ? undefined
+			: statement.startsWith('for (') && statement.endsWith('}') ? function() {
+				let [conds, loop] = splitl(statement.slice(5, statement.length - 1), ') {');
+				let [init, conds1] = splitl(conds, ';');
+				let [cond, inc] = splitl(conds1, ';');
+				return parse(`${init}; while (${cond.trim()}) { ${loop} ${inc}; };`);
+			}()
 			: statement.startsWith('let ') ? function() {
 				let [vn, value] = splitl(statement.slice(4, undefined), '=');
 				let v = vn.trim();
@@ -2957,10 +2963,8 @@ return actual === expect
 		env.GENERATE1 && function() {
 			let opcodes_ = opcodes();
 			let instructions = [];
-			let i = 0;
-			while (i < opcodes_.length) {
+			for (let i = 0; i < opcodes_.length; i = i + 1) {
 				instructions.push(`\n${i} ${Object.values(opcodes_[i]).join(' ')}`);
-				i = i + 1;
 			};
 			console.error(`generate :: ${instructions.join('')}`);
 			return true;
