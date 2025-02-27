@@ -1809,11 +1809,9 @@ let rewriteIntrinsics = ast => {
 		.map(rewriteIntrinsics_)
 		.map(ast => _let(_var('$filter'), rewriteBind_(parser.parse(`
 			(es, pred) => {
-				let i = 0;
 				let out = [];
-				while (i < es.length) {
+				for (let i = 0; i < es.length; i = i + 1) {
 					let e = es[i];
-					i = i + 1;
 					pred(e) ? out.push(e) : undefined;
 				};
 				return out;
