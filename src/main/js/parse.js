@@ -80,22 +80,18 @@ let vec = function() {
 	let cons = (head, tail) => [head, ...tail,];
 
 	let contains = (es, e) => {
-		let i = 0;
 		let b = false;
-		while (i < es.length) {
+		for (let i = 0; i < es.length; i = i + 1) {
 			b = b || es[i] === e;
-			i = i + 1;
 		};
 		return b;
 	};
 
 	let find = (es, op) => {
-		let i = 0;
 		let r = undefined;
-		while (r === undefined && i < es.length) {
+		for (let i = 0; r === undefined && i < es.length; i = i + 1) {
 			let e = es[i];
 			r = op(e) ? e : undefined;
-			i = i + 1;
 		};
 		return r;
 	};
