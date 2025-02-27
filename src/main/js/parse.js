@@ -646,7 +646,7 @@ let parserModule = () => {
 				let [conds, loop] = splitl(statement.slice(5, statement.length - 1), ') {');
 				let [init, conds1] = splitl(conds, ';');
 				let [cond, inc] = splitl(conds1, ';');
-				return parse(`${init}; while (${cond.trim()}) { ${loop} ${inc}; };`);
+				return parse(`${init}; while (${cond}) { ${loop} ${inc}; };`);
 			}()
 			: statement.startsWith('let ') ? function() {
 				let [vn, value] = splitl(statement.slice(4, undefined), '=');
