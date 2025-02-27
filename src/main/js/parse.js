@@ -814,10 +814,8 @@ let formatModule = () => {
 		: id === 'coal' ? (({ lhs, rhs }) => `${fm(lhs)} ?? ${fmt(rhs)}`)
 		: id === 'cons' ? (({ lhs, rhs }) => {
 			let s = fmt(lhs);
-			let r = rhs;
-			while (r.id === 'cons') {
+			for (let r = rhs; r.id === 'cons'; r = r.rhs) {
 				s = s + `, ${fmt(r.lhs)}`;
-				r = r.rhs;
 			};
 			return r.id !== 'nil' ? `[${s}, ...${fmt(r)}]` : `[${s},]`;
 		})
