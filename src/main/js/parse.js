@@ -101,21 +101,17 @@ let vec = function() {
 	};
 
 	let foldl = (init, es, op) => {
-		let i = 0;
 		let r = init;
-		while (i < es.length) {
+		for (let i = 0; i < es.length; i = i + 1) {
 			r = op(r, es[i]);
-			i = i + 1;
 		};
 		return r;
 	};
 
 	let foldr = (init, es, op) => {
-		let i = es.length - 1;
 		let r = init;
-		while (0 <= i) {
+		for (let i = es.length - 1; 0 <= i; i = i - 1) {
 			r = op(r, es[i]);
-			i = i - 1;
 		};
 		return r;
 	};
