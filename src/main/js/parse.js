@@ -646,7 +646,7 @@ let parserModule = () => {
 				let [conds, loop] = splitl(statement.slice(5, statement.length - 1), ') {');
 				let [init, conds1] = splitl(conds, ';');
 				let [cond, inc] = splitl(conds1, ';');
-				return parse(`${init}; while (${cond}) { ${loop} ${inc}; };`);
+				return parse(`${init}; while (${cond}) { ${loop} ${inc}; }; ${expr}`);
 			}()
 			: statement.startsWith('let ') ? function() {
 				let [vn, value] = splitl(statement.slice(4, undefined), '=');
@@ -771,10 +771,8 @@ let formatModule = () => {
 		];
 
 		let precs = {};
-		let i = 0;
-		while (i < precOrder.length) {
+		for (let i = 0; i < precOrder.length; i = i + 1) {
 			precOrder[i].map(id => setp(precs, id, i));
-			i = i + 1;
 		};
 		return precs;
 	}();
@@ -1819,15 +1817,11 @@ let rewriteIntrinsics = ast => {
 		`)), ast))
 		.map(ast => _let(_var('$flatMap'), rewriteBind_(parser.parse(`
 			(es, f) => {
-				let i = 0;
 				let out = [];
-				while (i < es.length) {
+				for (let i = 0; i < es.length; i = i + 1) {
 					let list = f(es[i]);
-					i = i + 1;
-					let j = 0;
-					while (j < list.length) {
+					for (let j = 0; j < list.length; j = j + 1) {
 						out.push(list[j]);
-						j = j + 1;
 					};
 				};
 				return out;
@@ -1835,11 +1829,9 @@ let rewriteIntrinsics = ast => {
 		`)), ast))
 		.map(ast => _let(_var('$map'), rewriteBind_(parser.parse(`
 			(es, f) => {
-				let i = 0;
 				let out = [];
-				while (i < es.length) {
+				for (let i = 0; i < es.length; i = i + 1) {
 					let e = es[i];
-					i = i + 1;
 					out.push(f(e));
 				};
 				return out;
@@ -1847,11 +1839,9 @@ let rewriteIntrinsics = ast => {
 		`)), ast))
 		.map(ast => _let(_var('$reduce'), rewriteBind_(parser.parse(`
 			(es, acc, init) => {
-				let i = 0;
 				let r = init;
-				while (i < es.length) {
+				for (let i = 0; i < es.length; i = i + 1) {
 					let e = es[i];
-					i = i + 1;
 					r = acc(r, e);
 				};
 				return r;
@@ -2502,9 +2492,7 @@ generate = ast => {
 };
 
 let expand = opcodes => {
-	let i = 0;
-
-	while (i < opcodes.length) {
+	for (let i = 0; i < opcodes.length; i = i + 1) {
 		let { id, name, segment } = opcodes[i];
 		let isSegment = id === 'label-segment';
 		isSegment && function() {
@@ -2522,7 +2510,6 @@ let expand = opcodes => {
 			setp(opcodes[i], 'segment', undefined);
 			return true;
 		}();
-		i = i + 1;
 	};
 
 	return opcodes;
@@ -2530,12 +2517,10 @@ let expand = opcodes => {
 
 let interpret = opcodes => {
 	let indexByLabel = {};
-	let i = 0;
 
-	while (i < opcodes.length) {
+	for (let i = 0; i < opcodes.length; i = i + 1) {
 		let { id, label } = opcodes[i];
 		(id === ':' ? setp(indexByLabel, label, i) : undefined);
-		i = i + 1;
 	};
 
 	let catchHandler = undefined;
