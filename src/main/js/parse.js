@@ -142,31 +142,6 @@ let newDummy = () => {
 	return `d${dummyCount}`;
 };
 
-let dump = v => {
-	let dump_;
-	dump_ = (n, vs, v) => {
-		let vlist = assumeList(v);
-		return false ? undefined
-		: 8 <= n ?
-			'...'
-		: ll.contains(vs, v) ?
-			'<recurse>'
-		: vlist.length !== undefined && typeof v !== 'string' ?
-			`[${vlist.map(v_ => `${dump_(n + 1, ll.cons(v, vs), v_)}, `).join('').trim()}]`
-		: v.id !== undefined ? function() {
-			let join = Object
-				.entries(v)
-				.filter(([k, v_]) => k !== 'id')
-				.map(([k, v_]) => `${k}:${dump_(n + 1, ll.cons(v, vs), v_)}`)
-				.join(' ');
-			return `${v.id}(${join})`;
-		}()
-		:
-			v.toString();
-	};
-	return dump_(0, ll.empty(), v);
-};
-
 let _add = (lhs, rhs) => ({ id: 'add', lhs, rhs });
 let _alloc = (vn, expr) => ({ id: 'alloc', vn, expr });
 let _app = (lhs, rhs) => ({ id: 'app', lhs, rhs });
@@ -202,85 +177,6 @@ let _undefined = { id: 'undefined' };
 let _var = vn => ({ id: 'var', vn });
 let _void = { id: 'struct', completed: true, kvs: [] };
 let _while = (cond, loop, expr) => ({ id: 'while', cond, loop, expr });
-
-let lexerModule = () => {
-	let isAlphabet = ch => ascii('A') <= ch && ch <= ascii('Z') || ascii('a') <= ch && ch <= ascii('z');
-	let isNum = ch => ascii('0') <= ch && ch <= ascii('9');
-	let isId = ch => isAlphabet(ch) || isNum(ch) || ch === ascii('_');
-
-	let lex = (s, pos) => {
-		let op2s = ['<=', '&&', '||', '??', '|>',];
-		let op3s = ['!==', '===',];
-
-		let i = pos;
-		let tokenss = [];
-
-		while (i < s.length) {
-			let ch = s.charCodeAt(i);
-			let op2 = s.slice(i, i + 2);
-			let op3 = s.slice(i, i + 3);
-
-			let j = i + 1;
-
-			let skip = f => {
-				while (j < s.length && f(s.charCodeAt(j))) {
-					j = j + 1;
-				};
-			};
-
-			let tokens = false ? undefined
-			: ch === 9 || ch === 10 || ch === 13 || ch === 32 ?
-				[]
-			: ch === ascii("'") || ch === ascii('"') || ch === ascii('`') ? function() {
-				skip(c => c !== ch);
-				return [{ lex: 'str', s: s.slice(i + 1, j - 1) },];
-			}()
-			: isAlphabet(ch) ? function() {
-				skip(isId);
-				return [{ lex: 'id', s: s.slice(i, j) },];
-			}()
-			: isNum(ch) ? function() {
-				skip(isNum);
-				return [{ lex: 'num', s: s.slice(i, j) },];
-			}()
-			: op2 === '//' ? function() {
-				skip(c => c !== 10);
-				return [];
-			}()
-			: op2s.includes(op2) ? function() {
-				j = i + op2.length;
-				return [{ lex: 'sym', s: op2 },];
-			}()
-			: op3s.includes(op3) ? function() {
-				j = i + op3.length;
-				return [{ lex: 'sym', s: op3 },];
-			}()
-			: function() {
-				let sym = s.slice(i, j);
-				return [{ lex: 'sym', s: sym },];
-			}();
-
-			i = j;
-
-			tokenss.push(tokens);
-
-			let t = false ? undefined
-			: ch === 9 || ch === 10 || ch === 13 || ch === 32 ? ' '
-			: ascii("'") === ch ? "'"
-			: ascii('"') === ch ? '"'
-			: ascii('`') === ch ? '`'
-			: ascii('0') <= ch && ch <= ascii('9') ? 'N'
-			: ascii('A') <= ch && ch <= ascii('Z') ? 'A'
-			: ch === ascii('_') ? 'A'
-			: ascii('a') <= ch && ch <= ascii('z') ? 'A'
-			: '$';
-		};
-
-		return tokenss.flatMap(tokens => tokens);
-	};
-
-	return { lex };
-};
 
 let parserModule = () => {
 	let isAll = pred => s => {
