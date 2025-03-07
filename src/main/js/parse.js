@@ -152,6 +152,7 @@ let _deref = expr => ({ id: 'deref', expr });
 let _dot = (expr, field) => ({ id: 'dot', expr, field });
 let _eq = (lhs, rhs) => ({ id: 'eq_', lhs, rhs });
 let _error = { id: 'new', clazz: 'Error' };
+let _fmt = expr => ({ id: 'fmt', expr });
 let _frame = (fs, ps, vn) => ({ id: 'frame', fs, ps, vn });
 let _if = (if_, then, else_) => ({ id: 'if', if_, then, else_ });
 let _index = (lhs, rhs) => ({ id: 'index', lhs, rhs });
@@ -329,13 +330,9 @@ let parserModule = () => {
 			let remains = program.slice(index + 2, undefined);
 			let [expr_, right] = splitl(remains, '}');
 
-			let exprToString = _app(
-				_dot(parseApplyBlockFieldIndex(expr_), 'toString'),
-				_undefined);
-
 			return _add(
 				_str(program.slice(0, index)),
-				_add(exprToString, parseBackquote(right)));
+				_add(_fmt(parseApplyBlockFieldIndex(expr_)), parseBackquote(right)));
 		}() : _str(program);
 	};
 
@@ -591,6 +588,7 @@ let rewrite = (rf, ast) => {
 	: id === 'div' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
 	: id === 'dot' ? (({ expr, field }) => ({ id, expr: rf(expr), field }))
 	: id === 'eq_' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
+	: id === 'fmt' ? (({ expr }) => ({ id, expr: rf(expr) }))
 	: id === 'frame' ? (({ fs, ps, vn }) => ast)
 	: id === 'if' ? (({ if_, then, else_ }) => ({ id, if_: rf(if_), then: rf(then), else_: rf(else_) }))
 	: id === 'index' ? (({ lhs, rhs }) => ({ id, lhs: rf(lhs), rhs: rf(rhs) }))
@@ -639,6 +637,7 @@ let formatModule = () => {
 			['new',],
 			['cons', 'struct', 'tuple',],
 			['typeof',],
+			['fmt',],
 			['app',],
 			['await',],
 			['mod',],
@@ -717,6 +716,7 @@ let formatModule = () => {
 		: id === 'div' ? (({ lhs, rhs }) => `${fmt(lhs)} / ${fm(rhs)}`)
 		: id === 'dot' ? (({ expr, field }) => `${fmt(expr)}.${field}`)
 		: id === 'eq_' ? (({ lhs, rhs }) => `${fmt(lhs)} === ${fmt(rhs)}`)
+		: id === 'fmt' ? (({ expr }) => `fmt(${fmt(expr)})`)
 		: id === 'frame' ? (({ fs, ps, vn }) => `frame[${fs}][${ps}]`)
 		: id === 'if' ? (({ if_, then, else_ }) => `${fm(if_)} ? ${fmt(then)} : ${fmt(else_)}`)
 		: id === 'index' ? (({ lhs, rhs }) => `${fmt(lhs)}[${format(rhs)}]`)
@@ -1168,6 +1168,9 @@ let typesModule = () => {
 		)
 		: id === 'eq_' ?
 			inferEqOp
+		: id === 'fmt' ? (() =>
+			tyString
+		)
 		: id === 'frame' ?
 			error('BAD')
 		: id === 'if' ? (({ if_, then, else_ }) => {
@@ -1444,6 +1447,8 @@ rewriteAsync = ast => {
 	})
 	: id === 'eq_' ?
 		reduceBinOp
+	: id === 'fmt' ?
+		reduceOp
 	: id === 'if' ? (({ if_, then, else_ }) => {
 		let pi = rewriteAsync(if_);
 		let i = unpromisify(pi);
@@ -1981,6 +1986,7 @@ evaluate = vvs => {
 			: fake(value).bind(object);
 		})
 		: id === 'eq_' ? (({ lhs, rhs }) => assumeAny(eval(lhs) === eval(rhs)))
+		: id === 'fmt' ? (({ expr }) => assumeAny(`${eval(expr)}`))
 		: id === 'frame' ? error('BAD')
 		: id === 'if' ? (({ if_, then, else_ }) => eval(if_) ? eval(then) : eval(else_))
 		: id === 'index' ? (({ lhs, rhs }) => eval(lhs)[eval(rhs)])
@@ -2185,6 +2191,8 @@ generate = ast => {
 	)
 	: id === 'eq_' ?
 		generateBinOp
+	: id === 'fmt' ?
+		generateOp
 	: id === 'frame' ? (({ fs, ps, vn }) => [
 		{ id: 'frame-get-ref', fs, ps, vn },
 		{ id: 'deref' },
@@ -2508,6 +2516,8 @@ let interpret = opcodes => {
 			rpush(rstack[rstack.length - 1 - opcode.i])
 		: id === 'eq_' ?
 			interpretBinOp((a, b) => a === b)
+		: id === 'fmt' ?
+			rpush(`${rpop()}`)
 		: id === 'exit' ? function() {
 			ip = 1 / 0;
 			return undefined;
