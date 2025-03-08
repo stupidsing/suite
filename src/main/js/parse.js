@@ -1696,7 +1696,7 @@ let rewriteIntrinsics = ast => {
 		let { id, lhs, rhs } = ast;
 
 		return false ? undefined
-		: id === 'app' && lhs.id === 'dot' && ['call', 'filter', 'flatMap', 'map', 'reduce',].includes(lhs.field) ?
+		: id === 'app' && lhs.id === 'dot' && ['apply', 'bind', 'call', 'filter', 'flatMap', 'map', 'reduce',].includes(lhs.field) ?
 			_app(_var(`$${lhs.field}`), _pair(rewriteIntrinsics_(lhs.expr), rewriteIntrinsics_(rhs)))
 		:
 			rewrite(rewriteIntrinsics_, ast);
@@ -1706,8 +1706,14 @@ let rewriteIntrinsics = ast => {
 
 	return [ast,]
 		.map(rewriteIntrinsics_)
+		.map(ast => _let(_var('$apply'), rewriteBind_(parser.parse(`
+			(f, u, p) => f(p[0])
+		`)), ast))
+		.map(ast => _let(_var('$bind'), rewriteBind_(parser.parse(`
+			(o, b) => o
+		`)), ast))
 		.map(ast => _let(_var('$call'), rewriteBind_(parser.parse(`
-			(f, p) => f(p)
+			(f, o, p) => f(p)
 		`)), ast))
 		.map(ast => _let(_var('$filter'), rewriteBind_(parser.parse(`
 			(es, pred) => {
