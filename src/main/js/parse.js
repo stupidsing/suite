@@ -2786,7 +2786,7 @@ let processGenerate = ast => {
 		])))
 		.map(ast => add(ast, 'require', proxy(1, 'require')))
 		.map(ast => add(ast, 'util_inspect', proxy(2, 'require("util").inspect')))
-		.map(ast => rewriteVars(0, 0, ll.empty(), ast_))
+		.map(ast => rewriteVars(0, 0, ll.empty(), ast))
 		[0];
 
 	return expand([...generate(ast_), { id: 'exit' },]);
