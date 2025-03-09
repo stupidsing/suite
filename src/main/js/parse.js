@@ -2464,7 +2464,7 @@ let interpret = opcodes => {
 			console.error(`----------`);
 			console.error(`FRAMES = ${require('util').inspect(frames, opts)}`);
 			console.error(`RSTACK = ${require('util').inspect(rstack, opts)}`);
-			console.error(`IP = ${ip} ${Object.values(opcode).join(' ')}`);
+			console.error(`IP = ${ip} ${Object.keys(opcode).map(k => opcode[k]).join(' ')}`);
 			return true;
 		}();
 
@@ -2852,7 +2852,8 @@ return actual === expect
 			let opcodes_ = opcodes();
 			let instructions = [];
 			for (let i = 0; i < opcodes_.length; i = i + 1) {
-				instructions.push(`\n${i} ${Object.values(opcodes_[i]).join(' ')}`);
+				let opcode = opcodes_[i];
+				instructions.push(`\n${i} ${Object.keys(opcode).map(k => opcode[k]).join(' ')}`);
 			};
 			console.error(`generate :: ${instructions.join('')}`);
 			return true;
