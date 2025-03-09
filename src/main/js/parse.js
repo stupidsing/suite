@@ -2719,26 +2719,30 @@ parseAstType = program => {
 		program = program.slice(0, pos0) + program.slice(posx, undefined);
 	};
 
-	let ast0 = parser.parse(program);
-	let ast1 = rewriteNe(ast0);
-	let ast2 = rewriteBind()(ast1);
-	let ast3 = rewriteAsync(ast2);
-	let ast4 = unpromisify(ast3);
+	let ast = parser.parse(program);
 
-	return { ast: ast4, type: types.infer(ast0) };
+	let ast_ = [ast,]
+		.map(ast => rewriteNe(ast))
+		.map(ast => rewriteBind()(ast))
+		.map(ast => rewriteAsync(ast))
+		.map(ast => unpromisify(ast))
+		[0];
+
+	return { ast: ast_, type: types.infer(ast) };
 };
 
 let processRewrite = ast => {
 	let roots = ['JSON', 'Object', 'Promise', 'console', 'eval', 'fs_readFileSync', 'process', 'require', 'util_inspect',]
 		.reduce((v, vl) => ll.cons(vl, v), ll.empty());
 
-	let ast4 = ast;
-	let ast5 = rewriteFsReadFileSync(ast4);
-	let ast6 = rewriteIntrinsics(ast5);
-	let ast7 = rewriteRenameVar(newDummy(), ll.map_(roots, v => [v, v]), ast6);
-	let ast8 = rewriteCapture()(roots, ast7);
+	let ast_ = [ast,]
+		.map(ast => rewriteFsReadFileSync(ast))
+		.map(ast => rewriteIntrinsics(ast))
+		.map(ast => rewriteRenameVar(newDummy(), ll.map_(roots, v => [v, v]), ast))
+		.map(ast => rewriteCapture()(roots, ast))
+		[0];
 
-	return { ast: ast8 };
+	return { ast: ast_ };
 };
 
 let processGenerate = ast8 => {
