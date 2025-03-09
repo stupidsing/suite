@@ -2623,19 +2623,51 @@ let interpret = opcodes => {
 			rpush(b);
 			rpush(a);
 		}()
-		: id === 'service' && opcode.f === 1 ?
-			rpush(getp(rpop(), opcode.field))
-		: id === 'service' && opcode.m === 1 ? function() {
-			let a = rpop();
-			return rpush(getp(a, opcode.field).bind(a)());
-		}()
-		: id === 'service' && opcode.m === 2 ? function() {
+		: id === 'service' && opcode.f === 1 && opcode.field === 'length' ?
+			rpush(rpop().length)
+		: id === 'service' && opcode.m === 1 && opcode.field === 'pop' ?
+			rpush(rpop().pop())
+		: id === 'service' && opcode.m === 1 && opcode.field === 'toReversed' ?
+			rpush(rpop().toReversed())
+		: id === 'service' && opcode.m === 1 && opcode.field === 'toString' ?
+			rpush(rpop().toString())
+		: id === 'service' && opcode.m === 1 && opcode.field === 'trim' ?
+			rpush(rpop().trim())
+		: id === 'service' && opcode.m === 2 && opcode.field === 'charCodeAt' ? function() {
 			let [a, b] = rpop();
-			return rpush(getp(a, opcode.field).bind(a)(b));
+			return rpush(a.charCodeAt(b));
 		}()
-		: id === 'service' && opcode.m === 3 ? function() {
+		: id === 'service' && opcode.m === 2 && opcode.field === 'concat' ? function() {
+			let [a, b] = rpop();
+			return rpush(a.concat(b));
+		}()
+		: id === 'service' && opcode.m === 2 && opcode.field === 'endsWith' ? function() {
+			let [a, b] = rpop();
+			return rpush(a.endsWith(b));
+		}()
+		: id === 'service' && opcode.m === 2 && opcode.field === 'includes' ? function() {
+			let [a, b] = rpop();
+			return rpush(a.includes(b));
+		}()
+		: id === 'service' && opcode.m === 2 && opcode.field === 'indexOf' ? function() {
+			let [a, b] = rpop();
+			return rpush(a.indexOf(b));
+		}()
+		: id === 'service' && opcode.m === 2 && opcode.field === 'join' ? function() {
+			let [a, b] = rpop();
+			return rpush(a.join(b));
+		}()
+		: id === 'service' && opcode.m === 2 && opcode.field === 'push' ? function() {
+			let [a, b] = rpop();
+			return rpush(a.push(b));
+		}()
+		: id === 'service' && opcode.m === 2 && opcode.field === 'startsWith' ? function() {
+			let [a, b] = rpop();
+			return rpush(a.startsWith(b));
+		}()
+		: id === 'service' && opcode.m === 3 && opcode.field === 'slice' ? function() {
 			let [a, [b, c]] = rpop();
-			return rpush(getp(a, opcode.field).bind(a)(b, c));
+			return rpush(a.slice(b, c));
 		}()
 		: id === 'service' && opcode.n === 1 && opcode.service === 'JSON.parse' ?
 			rpush(JSON.parse(rpop()))
