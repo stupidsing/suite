@@ -958,8 +958,6 @@ let typesModule = () => {
 
 	let inferDot = (ast, ts, field) => {
 		return false ? undefined
-		: field === 'apply' ?
-			tyLambdaOf(newRef(), newRef())
 		: field === 'charCodeAt' ? function() {
 			doBind(ast, ts, tyString);
 			return tyLambdaOf(tyNumber, tyNumber);
@@ -1348,7 +1346,6 @@ let typesModule = () => {
 				stringify: tyLambdaOf(tyPairOf(newRef(), tyPairOf(newRef(), newRef())), tyString),
 			}),
 			Object: tyStructOfCompleted({
-				assign: tyLambdaOf(newRef(), newRef()),
 				entries: tyLambdaOf(tyStructOf({}), tyArrayOf(tyTupleOf(vec.cons(tyString, vec.cons(newRef(), vec.empty))))),
 				fromEntries: tyLambdaOf(tyArrayOf(tyTupleOf(vec.cons(tyString, vec.cons(newRef(), vec.empty)))), tyStructOf({})),
 				keys: tyLambdaOf(tyStructOf({}), tyArrayOf(tyString)),
@@ -1699,7 +1696,7 @@ let rewriteIntrinsics = ast => {
 		let { id, lhs, rhs } = ast;
 
 		return false ? undefined
-		: id === 'app' && lhs.id === 'dot' && ['apply', 'bind', 'call', 'filter', 'flatMap', 'map', 'reduce',].includes(lhs.field) ?
+		: id === 'app' && lhs.id === 'dot' && ['filter', 'flatMap', 'map', 'reduce',].includes(lhs.field) ?
 			_app(_var(`$${lhs.field}`), _pair(rewriteIntrinsics_(lhs.expr), rewriteIntrinsics_(rhs)))
 		:
 			rewrite(rewriteIntrinsics_, ast);
@@ -1709,15 +1706,6 @@ let rewriteIntrinsics = ast => {
 
 	return [ast,]
 	.map(rewriteIntrinsics_)
-	.map(ast => _let(_var('$apply'), rewriteBind_(parser.parse(`
-		(f, u, p) => f(p[0])
-	`)), ast))
-	.map(ast => _let(_var('$bind'), rewriteBind_(parser.parse(`
-		(o, b) => o
-	`)), ast))
-	.map(ast => _let(_var('$call'), rewriteBind_(parser.parse(`
-		(f, o, p) => f(p)
-	`)), ast))
 	.map(ast => _let(_var('$filter'), rewriteBind_(parser.parse(`
 		(es, pred) => {
 			let out = [];
@@ -1881,43 +1869,38 @@ rewriteVars = (fs, ps, vts, ast) => {
 
 let pairTag = {};
 
-let unwrap = f => arg => {
-	let ps = [];
-	while (arg !== undefined && assumeAny(arg[2]) === pairTag) {
-		ps.push(arg[0]);
-		arg = arg[1];
-	};
-	ps.push(arg);
-	return f.apply(undefined, ps);
-};
+let unwrap1 = f => arg => f(arg);
+
+let unwrap2 = f => ([a, b]) => f(a, b);
+
+let unwrap3 = f => ([a, [b, c]]) => f(a, b, c);
 
 let evaluateVvs =
 	[
 		['JSON', assumeAny({
-			parse: unwrap(JSON.parse),
-			stringify: unwrap(JSON.stringify),
+			parse: unwrap1(JSON.parse),
+			stringify: unwrap3(JSON.stringify),
 		})],
 		['Object', assumeAny({
-			assign: unwrap(Object.assign),
-			entries: unwrap(Object.entries),
-			fromEntries: unwrap(Object.fromEntries),
-			keys: unwrap(Object.keys),
+			entries: unwrap1(Object.entries),
+			fromEntries: unwrap1(Object.fromEntries),
+			keys: unwrap1(Object.keys),
 		})],
 		['Promise', assumeAny({
-			reject: unwrap(Promise.reject),
-			resolve: unwrap(Promise.resolve),
+			reject: unwrap1(Promise.reject),
+			resolve: unwrap1(Promise.resolve),
 		})],
 		['console', assumeAny({
-			error: unwrap(console.error),
-			log: unwrap(console.log),
+			error: unwrap1(console.error),
+			log: unwrap1(console.log),
 		})],
 		['process', assumeAny({
 			argv: ['parse.js', ...argv,],
 			env: process.env,
 		})],
 		['require', assumeAny(path => false ? undefined
-			: path === 'fs' ? { readFileSync: unwrap(require('fs').readFileSync) }
-			: path === 'util' ? { inspect: unwrap(require('util').inspect) }
+			: path === 'fs' ? { readFileSync: unwrap2(require('fs').readFileSync) }
+			: path === 'util' ? { inspect: unwrap2(require('util').inspect) }
 			: require(path))
 		],
 	]
@@ -2171,7 +2154,7 @@ generate = ast => {
 			...generate(expr),
 			{ id: 'service', f: 1, field },
 		]
-		: ['apply', 'charCodeAt', 'concat', 'endsWith', 'includes', 'indexOf', 'join', 'push', 'startsWith',].includes(field) ? [
+		: ['charCodeAt', 'concat', 'endsWith', 'includes', 'indexOf', 'join', 'push', 'startsWith',].includes(field) ? [
 			...generate(expr),
 			{ id: 'label-segment', name: field, segment: [
 				{ id: 'frame-get-ref', fs: 0, ps: 0 },
@@ -2690,8 +2673,6 @@ let interpret = opcodes => {
 		}()
 		: id === 'service' && opcode.n === 1 && opcode.service === 'JSON.parse' ?
 			rpush(JSON.parse(rpop()))
-		: id === 'service' && opcode.n === 1 && opcode.service === 'Object.assign' ?
-			rpush(Object.assign(rpop()))
 		: id === 'service' && opcode.n === 1 && opcode.service === 'Object.entries' ?
 			rpush(Object.entries(rpop()))
 		: id === 'service' && opcode.n === 1 && opcode.service === 'Object.fromEntries' ?
