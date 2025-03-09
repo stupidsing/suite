@@ -2745,7 +2745,7 @@ let processRewrite = ast => {
 	return { ast: ast_ };
 };
 
-let processGenerate = ast8 => {
+let processGenerate = ast => {
 	let proxy = (n, service) => _lambdaCapture(_undefined, _var(newDummy()), _var(newDummy()), _segment([
 		{ id: 'frame-get-ref', fs: 0, ps: 1 },
 		{ id: 'deref' },
@@ -2759,7 +2759,7 @@ let processGenerate = ast8 => {
 		c,
 		_struct(fns.map(({ f, n }) => ({ key: f, value: proxy(n, `${c}.${f}`) }))));
 
-	let ast9 = [ast8,]
+	let ast_ = [ast,]
 		.map(ast => addObjectOfFunctions(ast, 'JSON', [
 			{ f: 'parse', n: 1 },
 			{ f: 'stringify', n: 3 },
@@ -2786,10 +2786,10 @@ let processGenerate = ast8 => {
 		])))
 		.map(ast => add(ast, 'require', proxy(1, 'require')))
 		.map(ast => add(ast, 'util_inspect', proxy(2, 'require("util").inspect')))
+		.map(ast => rewriteVars(0, 0, ll.empty(), ast_))
 		[0];
 
-	let ast10 = rewriteVars(0, 0, ll.empty(), ast9);
-	return expand([...generate(ast10), { id: 'exit' },]);
+	return expand([...generate(ast_), { id: 'exit' },]);
 };
 
 let actual = stringify(parseAstType(`
