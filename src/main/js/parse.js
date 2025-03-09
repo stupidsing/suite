@@ -1987,9 +1987,21 @@ evaluate = vvs => {
 			let object = ev_(expr);
 			let value = getp(object, field);
 			return false ? undefined
+			: field === 'charCodeAt' ? assumeAny(p => assumeAny(object).charCodeAt(p))
+			: field === 'concat' ? assumeAny(p => assumeAny(object).concat(p))
+			: field === 'endsWith' ? assumeAny(p => assumeAny(object).endsWith(p))
+			: field === 'includes' ? assumeAny(p => assumeAny(object).includes(p))
+			: field === 'indexOf' ? assumeAny(p => assumeAny(object).indexOf(p))
+			: field === 'join' ? assumeAny(p => assumeAny(object).join(p))
+			: field === 'pop' ? assumeAny(() => assumeAny(object).pop())
+			: field === 'push' ? assumeAny(p => assumeAny(object).push(p))
+			: field === 'slice' ? assumeAny(([a, b]) => assumeAny(object).slice(a, b))
+			: field === 'startsWith' ? assumeAny(p => assumeAny(object).startsWith(p))
+			: field === 'toReversed' ? assumeAny(() => assumeAny(object).toReversed())
+			: field === 'toString' ? assumeAny(() => assumeAny(object).toString())
+			: field === 'trim' ? assumeAny(() => assumeAny(object).trim())
 			: value === undefined ? assumeAny(value)
 			: typeof value !== 'function' ? assumeAny(value)
-			: typeof (object.length) === 'number' && field !== 'length' ? assumeAny(unwrap(value.bind(object)))
 			: ['get', 'has', 'set',].includes(field) ? assumeAny(unwrap(value.bind(object)))
 			: fake(value).bind(object);
 		})
