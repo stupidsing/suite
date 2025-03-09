@@ -1544,9 +1544,10 @@ let rewriteBind = () => {
 			: id === 'bool' ?
 				bindConstant(bind.b)
 			: id === 'cons' ? (({ lhs, rhs }) => {
-				return id !== value.id
-					? ifBind(lhs, _index(value, _num(0)), ifBind(rhs, _app(_dot(value, 'slice'), _num(1)), then, else_), else_)
-					: ifBind(lhs, value.lhs, ifBind(rhs, value.rhs, then, else_), else_);
+				let v = _var(newDummy());
+				return _let(v, value, id !== value.id
+					? ifBind(lhs, _index(v, _num(0)), ifBind(rhs, _app(_dot(v, 'slice'), _num(1)), then, else_), else_)
+					: ifBind(lhs, value.lhs, ifBind(rhs, value.rhs, then, else_), else_));
 			})
 			: id === 'nil' ? (({}) => {
 				return id !== value.id
@@ -1556,23 +1557,26 @@ let rewriteBind = () => {
 			: id === 'num' ?
 				bindConstant(bind.v)
 			: id === 'pair' ? (({ lhs, rhs }) => {
-				return id !== value.id
-					? ifBind(lhs, _pget(value, 0), ifBind(rhs, _pget(value, 1), then, else_), else_)
-					: ifBind(lhs, value.lhs, ifBind(rhs, value.rhs, then, else_), else_);
+				let v = _var(newDummy());
+				return _let(v, value, id !== value.id
+					? ifBind(lhs, _pget(v, 0), ifBind(rhs, _pget(v, 1), then, else_), else_)
+					: ifBind(lhs, value.lhs, ifBind(rhs, value.rhs, then, else_), else_));
 			})
 			: id === 'str' ?
 				bindConstant(bind.v)
 			: id === 'struct' ? (({ kvs }) => {
+				let v = _var(newDummy());
 				let getValue = k => value.kvs.filter(kv => kv.key === k)[0].value;
-				return kvs.reduce(
-					(expr, kv) => ifBind(kv.value, id !== value.id ? _dot(value, kv.key) : getValue(kv.key), expr, else_),
-					then);
+				return _let(v, value, kvs.reduce(
+					(expr, kv) => ifBind(kv.value, id !== value.id ? _dot(v, kv.key) : getValue(kv.key), expr, else_),
+					then));
 			})
 			: id === 'tuple' ? (({ values }) => {
+				let v = _var(newDummy());
 				let indices = gen(values.length);
-				return indices.reduce(
-					(expr, i) => ifBind(values[i], id !== value.id ? _tget(value, i) : value.values[i], expr, else_),
-					then);
+				return _let(v, value, indices.reduce(
+					(expr, i) => ifBind(values[i], id !== value.id ? _tget(v, i) : value.values[i], expr, else_),
+					then));
 			})
 			: id === 'var' ? (({ vn }) =>
 				({ id: bindId, bind, value, expr: then })
