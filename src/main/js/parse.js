@@ -1928,9 +1928,10 @@ evaluate = vvs => {
 		return value;
 	};
 
-	let ev_;
+	let evaluate_;
 
-	ev_ = ast => {
+	evaluate_ = ast => {
+		let ev_ = ast => evaluate_(ast);
 		let { id } = ast;
 
 		let f = false ? undefined
@@ -2053,7 +2054,7 @@ evaluate = vvs => {
 		return f(ast);
 	};
 
-	return ev_;
+	return evaluate_;
 };
 
 let generate;
@@ -2656,12 +2657,18 @@ let interpret = opcodes => {
 			rpush(console.log(rpop()))
 		: id === 'service' && opcode.n === 1 && opcode.service === 'require' ?
 			rpush(require(rpop()))
-		: id === 'service' && opcode.n === 1 && opcode.service === 'require("util").inspect' ?
-			rpush(require('util').inspect(rpop())
-		: id === 'service' && opcode.n === 2 ? opcode.service === 'require("fs").readFileSync' ?
-			rpush(require('fs').readFileSync(rpop()))
-		: id === 'service' && opcode.n === 3 && opcode.service === 'JSON.stringify' ?
-			rpush(JSON.stringify(rpop()))
+		: id === 'service' && opcode.n === 2 && opcode.service === 'require("fs").readFileSync' ? function() {
+			let [a, b] = rpop();
+			rpush(require('fs').readFileSync(a, b));
+		}()
+		: id === 'service' && opcode.n === 2 && opcode.service === 'require("util").inspect' ? function() {
+			let [a, b] = rpop();
+			rpush(require('util').inspect(a, b));
+		}()
+		: id === 'service' && opcode.n === 3 && opcode.service === 'JSON.stringify' ? function() {
+			let [a, [b, c]] = rpop();
+			rpush(JSON.stringify(a, b, c));
+		}()
 		: id === 'str' ?
 			rpush(opcode.v)
 		: id === 'sub' ?
