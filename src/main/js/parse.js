@@ -456,36 +456,36 @@ let parserModule = () => {
 	};
 
 	let parseIf = [parseApplyBlockFieldIndex,]
-		.map(p => parsePrefix('await', 'await ', p))
-		.map(p => parseAssocLeft_('mod', '%', p))
-		.map(p => parseAssocLeft_('div', '/', p))
-		.map(p => parseAssocRight('mul', '*', p))
-		.map(p => parsePrefix('neg', '-', p))
-		.map(p => parseAssocLeft_('sub', '-', p))
-		.map(p => parsePrefix('pos', '+', p))
-		.map(p => parseAssocRight('add', '+', p))
-		.map(p => parseAssocRight('lt_', '<', p))
-		.map(p => parseAssocRight('le_', '<=', p))
-		.map(p => parsePrefix('not', '!', p))
-		.map(p => parseAssocRight('ne_', '!==', p))
-		.map(p => parseAssocRight('eq_', '===', p))
-		.map(p => parseAssocRight('and', '&&', p))
-		.map(p => parseAssocRight('or_', '||', p))
-		.map(p => parseAssocRight('coal', '??', p))
-		.map(p => parseAssocLeftReverse('app', '|>', p))
-		.map(p => program => {
-			let [if_, thenElse] = splitl(program, '?');
+	.map(p => parsePrefix('await', 'await ', p))
+	.map(p => parseAssocLeft_('mod', '%', p))
+	.map(p => parseAssocLeft_('div', '/', p))
+	.map(p => parseAssocRight('mul', '*', p))
+	.map(p => parsePrefix('neg', '-', p))
+	.map(p => parseAssocLeft_('sub', '-', p))
+	.map(p => parsePrefix('pos', '+', p))
+	.map(p => parseAssocRight('add', '+', p))
+	.map(p => parseAssocRight('lt_', '<', p))
+	.map(p => parseAssocRight('le_', '<=', p))
+	.map(p => parsePrefix('not', '!', p))
+	.map(p => parseAssocRight('ne_', '!==', p))
+	.map(p => parseAssocRight('eq_', '===', p))
+	.map(p => parseAssocRight('and', '&&', p))
+	.map(p => parseAssocRight('or_', '||', p))
+	.map(p => parseAssocRight('coal', '??', p))
+	.map(p => parseAssocLeftReverse('app', '|>', p))
+	.map(p => program => {
+		let [if_, thenElse] = splitl(program, '?');
 
-			return false ? undefined
-			: thenElse === undefined ? p(if_)
-			: thenElse.startsWith('?') ? p(program)
-			: function() {
-				let [then, else_] = splitl(thenElse, ':');
+		return false ? undefined
+		: thenElse === undefined ? p(if_)
+		: thenElse.startsWith('?') ? p(program)
+		: function() {
+			let [then, else_] = splitl(thenElse, ':');
 
-				return _if(parse(if_), parse(then), parse(else_));
-			}();
-		})
-		[0];
+			return _if(parse(if_), parse(then), parse(else_));
+		}();
+	})
+	[0];
 
 	let parsePair = (program, parse) => {
 		let parsePair_;
@@ -1704,59 +1704,59 @@ let rewriteIntrinsics = ast => {
 	let rewriteBind_ = rewriteBind();
 
 	return [ast,]
-		.map(rewriteIntrinsics_)
-		.map(ast => _let(_var('$apply'), rewriteBind_(parser.parse(`
-			(f, u, p) => f(p[0])
-		`)), ast))
-		.map(ast => _let(_var('$bind'), rewriteBind_(parser.parse(`
-			(o, b) => o
-		`)), ast))
-		.map(ast => _let(_var('$call'), rewriteBind_(parser.parse(`
-			(f, o, p) => f(p)
-		`)), ast))
-		.map(ast => _let(_var('$filter'), rewriteBind_(parser.parse(`
-			(es, pred) => {
-				let out = [];
-				for (let i = 0; i < es.length; i = i + 1) {
-					let e = es[i];
-					pred(e) ? out.push(e) : undefined;
+	.map(rewriteIntrinsics_)
+	.map(ast => _let(_var('$apply'), rewriteBind_(parser.parse(`
+		(f, u, p) => f(p[0])
+	`)), ast))
+	.map(ast => _let(_var('$bind'), rewriteBind_(parser.parse(`
+		(o, b) => o
+	`)), ast))
+	.map(ast => _let(_var('$call'), rewriteBind_(parser.parse(`
+		(f, o, p) => f(p)
+	`)), ast))
+	.map(ast => _let(_var('$filter'), rewriteBind_(parser.parse(`
+		(es, pred) => {
+			let out = [];
+			for (let i = 0; i < es.length; i = i + 1) {
+				let e = es[i];
+				pred(e) ? out.push(e) : undefined;
+			};
+			return out;
+		}
+	`)), ast))
+	.map(ast => _let(_var('$flatMap'), rewriteBind_(parser.parse(`
+		(es, f) => {
+			let out = [];
+			for (let i = 0; i < es.length; i = i + 1) {
+				let list = f(es[i]);
+				for (let j = 0; j < list.length; j = j + 1) {
+					out.push(list[j]);
 				};
-				return out;
-			}
-		`)), ast))
-		.map(ast => _let(_var('$flatMap'), rewriteBind_(parser.parse(`
-			(es, f) => {
-				let out = [];
-				for (let i = 0; i < es.length; i = i + 1) {
-					let list = f(es[i]);
-					for (let j = 0; j < list.length; j = j + 1) {
-						out.push(list[j]);
-					};
-				};
-				return out;
-			}
-		`)), ast))
-		.map(ast => _let(_var('$map'), rewriteBind_(parser.parse(`
-			(es, f) => {
-				let out = [];
-				for (let i = 0; i < es.length; i = i + 1) {
-					let e = es[i];
-					out.push(f(e));
-				};
-				return out;
-			}
-		`)), ast))
-		.map(ast => _let(_var('$reduce'), rewriteBind_(parser.parse(`
-			(es, acc, init) => {
-				let r = init;
-				for (let i = 0; i < es.length; i = i + 1) {
-					let e = es[i];
-					r = acc(r, e);
-				};
-				return r;
-			}
-		`)), ast))
-		[0];
+			};
+			return out;
+		}
+	`)), ast))
+	.map(ast => _let(_var('$map'), rewriteBind_(parser.parse(`
+		(es, f) => {
+			let out = [];
+			for (let i = 0; i < es.length; i = i + 1) {
+				let e = es[i];
+				out.push(f(e));
+			};
+			return out;
+		}
+	`)), ast))
+	.map(ast => _let(_var('$reduce'), rewriteBind_(parser.parse(`
+		(es, acc, init) => {
+			let r = init;
+			for (let i = 0; i < es.length; i = i + 1) {
+				let e = es[i];
+				r = acc(r, e);
+			};
+			return r;
+		}
+	`)), ast))
+	[0];
 };
 
 let rewriteNe;
@@ -2774,11 +2774,11 @@ parseAstType = program => {
 	let ast = parser.parse(program);
 
 	let ast_ = [ast,]
-		.map(ast => rewriteNe(ast))
-		.map(ast => rewriteBind()(ast))
-		.map(ast => rewriteAsync(ast))
-		.map(ast => unpromisify(ast))
-		[0];
+	.map(ast => rewriteNe(ast))
+	.map(ast => rewriteBind()(ast))
+	.map(ast => rewriteAsync(ast))
+	.map(ast => unpromisify(ast))
+	[0];
 
 	return { ast: ast_, type: types.infer(ast) };
 };
@@ -2788,11 +2788,11 @@ let processRewrite = ast => {
 		.reduce((v, vl) => ll.cons(vl, v), ll.empty());
 
 	let ast_ = [ast,]
-		.map(ast => rewriteFsReadFileSync(ast))
-		.map(ast => rewriteIntrinsics(ast))
-		.map(ast => rewriteRenameVar(newDummy(), ll.map_(roots, v => [v, v]), ast))
-		.map(ast => rewriteCapture()(roots, ast))
-		[0];
+	.map(ast => rewriteFsReadFileSync(ast))
+	.map(ast => rewriteIntrinsics(ast))
+	.map(ast => rewriteRenameVar(newDummy(), ll.map_(roots, v => [v, v]), ast))
+	.map(ast => rewriteCapture()(roots, ast))
+	[0];
 
 	return { ast: ast_ };
 };
@@ -2812,33 +2812,33 @@ let processGenerate = ast => {
 		_struct(fns.map(({ f, n }) => ({ key: f, value: proxy(n, `${c}.${f}`) }))));
 
 	let ast_ = [ast,]
-		.map(ast => addObjectOfFunctions(ast, 'JSON', [
-			{ f: 'parse', n: 1 },
-			{ f: 'stringify', n: 3 },
-		]))
-		.map(ast => addObjectOfFunctions(ast, 'Object', [
-			{ f: 'assign', n: 1 },
-			{ f: 'entries', n: 1 },
-			{ f: 'fromEntries', n: 1 },
-			{ f: 'keys', n: 1 },
-		]))
-		.map(ast => addObjectOfFunctions(ast, 'Promise', [
-			{ f: 'reject', n: 1 },
-			{ f: 'resolve', n: 1 },
-		]))
-		.map(ast => addObjectOfFunctions(ast, 'console', [
-			{ f: 'error', n: 1 },
-			{ f: 'log', n: 1 },
-		]))
-		.map(ast => add(ast, 'fs_readFileSync', proxy(2, 'require("fs").readFileSync')))
-		.map(ast => add(ast, 'process', _struct([
-			{ key: 'argv', value: _segment([{ id: 'argv' },]) },
-			{ key: 'env', value: _struct(Object.entries(process.env).map(([key, v]) => ({ key, value: _str(v) }))) },
-		])))
-		.map(ast => add(ast, 'require', proxy(1, 'require')))
-		.map(ast => add(ast, 'util_inspect', proxy(2, 'require("util").inspect')))
-		.map(ast => rewriteVars(0, 0, ll.empty(), ast))
-		[0];
+	.map(ast => addObjectOfFunctions(ast, 'JSON', [
+		{ f: 'parse', n: 1 },
+		{ f: 'stringify', n: 3 },
+	]))
+	.map(ast => addObjectOfFunctions(ast, 'Object', [
+		{ f: 'assign', n: 1 },
+		{ f: 'entries', n: 1 },
+		{ f: 'fromEntries', n: 1 },
+		{ f: 'keys', n: 1 },
+	]))
+	.map(ast => addObjectOfFunctions(ast, 'Promise', [
+		{ f: 'reject', n: 1 },
+		{ f: 'resolve', n: 1 },
+	]))
+	.map(ast => addObjectOfFunctions(ast, 'console', [
+		{ f: 'error', n: 1 },
+		{ f: 'log', n: 1 },
+	]))
+	.map(ast => add(ast, 'fs_readFileSync', proxy(2, 'require("fs").readFileSync')))
+	.map(ast => add(ast, 'process', _struct([
+		{ key: 'argv', value: _segment([{ id: 'argv' },]) },
+		{ key: 'env', value: _struct(Object.entries(process.env).map(([key, v]) => ({ key, value: _str(v) }))) },
+	])))
+	.map(ast => add(ast, 'require', proxy(1, 'require')))
+	.map(ast => add(ast, 'util_inspect', proxy(2, 'require("util").inspect')))
+	.map(ast => rewriteVars(0, 0, ll.empty(), ast))
+	[0];
 
 	return expand([...generate(ast_), { id: 'exit' },]);
 };
