@@ -1942,7 +1942,7 @@ evaluate = vvs => {
 		: id === 'add' ? (({ lhs, rhs }) => assumeAny(ev_(lhs) + ev_(rhs)))
 		: id === 'alloc' ? (({ vn, expr }) => evaluate(ll.cons([vn, undefined], vvs))(expr))
 		: id === 'and' ? (({ lhs, rhs }) => assumeAny(ev_(lhs) && ev_(rhs)))
-		: id === 'app' ? (({ lhs, rhs }) => ev_(lhs).call(undefined, ev_(rhs)))
+		: id === 'app' ? (({ lhs, rhs }) => ev_(lhs)(ev_(rhs)))
 		: id === 'assign' ? (({ bind, value, expr }) => false ? undefined
 			: bind.id === 'deref' ? function() {
 				let { vv } = ev_(bind);
@@ -1985,7 +1985,6 @@ evaluate = vvs => {
 		: id === 'div' ? (({ lhs, rhs }) => assumeAny(ev_(lhs) / ev_(rhs)))
 		: id === 'dot' ? (({ expr, field }) => {
 			let object = ev_(expr);
-			let value = getp(object, field);
 			return false ? undefined
 			: field === 'charCodeAt' ? assumeAny(p => assumeAny(object).charCodeAt(p))
 			: field === 'concat' ? assumeAny(p => assumeAny(object).concat(p))
@@ -2000,10 +1999,7 @@ evaluate = vvs => {
 			: field === 'toReversed' ? assumeAny(() => assumeAny(object).toReversed())
 			: field === 'toString' ? assumeAny(() => assumeAny(object).toString())
 			: field === 'trim' ? assumeAny(() => assumeAny(object).trim())
-			: value === undefined ? assumeAny(value)
-			: typeof value !== 'function' ? assumeAny(value)
-			: ['get', 'has', 'set',].includes(field) ? assumeAny(unwrap(value.bind(object)))
-			: fake(value).bind(object);
+			: assumeAny(getp(object, field));
 		})
 		: id === 'eq_' ? (({ lhs, rhs }) => assumeAny(ev_(lhs) === ev_(rhs)))
 		: id === 'fmt' ? (({ expr }) => assumeAny(`${ev_(expr)}`))
@@ -2024,7 +2020,14 @@ evaluate = vvs => {
 		: id === 'neg' ? (({ expr }) => assumeAny(-ev_(expr)))
 		: id === 'new' ? (({ clazz }) => false ? undefined
 			: clazz === 'Error' ? assumeAny(e => new Error(e))
-			: clazz === 'Map' ? assumeAny(() => new Map())
+			: clazz === 'Map' ? assumeAny(() => {
+				let map = new Map();
+				return {
+					get: k => map.get(k),
+					has: k => map.has(k),
+					set: ([k, v]) => map.set(k, v),
+				};
+			})
 			: clazz === 'Promise' ? error('BAD') // assumeAny(f => new Promise(f))
 			: error(`unknown class ${clazz}`)
 		)
