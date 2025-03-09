@@ -2522,12 +2522,12 @@ let interpret = opcodes => {
 			rpush(rstack[rstack.length - 1 - opcode.i])
 		: id === 'eq_' ?
 			interpretBinOp((a, b) => a === b)
-		: id === 'fmt' ?
-			rpush(`${rpop()}`)
 		: id === 'exit' ? function() {
 			ip = 1 / 0;
 			return undefined;
 		}()
+		: id === 'fmt' ?
+			rpush(`${rpop()}`)
 		: id === 'frame-alloc' ?
 			fpush([undefined])
 		: id === 'frame-dealloc' ?
