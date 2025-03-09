@@ -1361,7 +1361,6 @@ let typesModule = () => {
 				error: tyLambdaOf(newRef(), tyVoid),
 				log: tyLambdaOf(newRef(), tyVoid),
 			}),
-			eval: tyLambdaOf(tyString, newRef()),
 			fs_readFileSync: tyLambdaOf(tyPairOf(tyString, tyString), tyString),
 			process: tyStructOfCompleted({
 				argv: tyArrayOf(tyString),
@@ -1908,7 +1907,6 @@ let evaluateVvs =
 			error: unwrap(console.error),
 			log: unwrap(console.log),
 		})],
-		['eval', assumeAny(unwrap(eval('eval')))],
 		['process', assumeAny({
 			argv: ['parse.js', ...argv,],
 			env: process.env,
@@ -2638,16 +2636,32 @@ let interpret = opcodes => {
 			let [a, [b, c]] = rpop();
 			return rpush(getp(a, opcode.field).bind(a)(b, c));
 		}()
-		: id === 'service' && opcode.n === 1 ?
-			rpush(eval(opcode.service)(rpop()))
-		: id === 'service' && opcode.n === 2 ? function() {
-			let [a, b] = rpop();
-			rpush(eval(opcode.service)(a, b));
-		}()
-		: id === 'service' && opcode.n === 3 ? function() {
-			let [a, [b, c]] = rpop();
-			rpush(eval(opcode.service)(a, b, c));
-		}()
+		: id === 'service' && opcode.n === 1 && opcode.service === 'JSON.parse' ?
+			rpush(JSON.parse(rpop()))
+		: id === 'service' && opcode.n === 1 && opcode.service === 'Object.assign' ?
+			rpush(Object.assign(rpop()))
+		: id === 'service' && opcode.n === 1 && opcode.service === 'Object.entries' ?
+			rpush(Object.entries(rpop()))
+		: id === 'service' && opcode.n === 1 && opcode.service === 'Object.fromEntries' ?
+			rpush(Object.fromEntries(rpop()))
+		: id === 'service' && opcode.n === 1 && opcode.service === 'Object.keys' ?
+			rpush(Object.keys(rpop()))
+		: id === 'service' && opcode.n === 1 && opcode.service === 'Promise.reject' ?
+			rpush(Promise.reject(rpop()))
+		: id === 'service' && opcode.n === 1 && opcode.service === 'Promise.resolve' ?
+			rpush(Promise.resolve(rpop()))
+		: id === 'service' && opcode.n === 1 && opcode.service === 'console.error' ?
+			rpush(console.error(rpop()))
+		: id === 'service' && opcode.n === 1 && opcode.service === 'console.log' ?
+			rpush(console.log(rpop()))
+		: id === 'service' && opcode.n === 1 && opcode.service === 'require' ?
+			rpush(require(rpop()))
+		: id === 'service' && opcode.n === 1 && opcode.service === 'require("util").inspect' ?
+			rpush(require('util').inspect(rpop())
+		: id === 'service' && opcode.n === 2 ? opcode.service === 'require("fs").readFileSync' ?
+			rpush(require('fs').readFileSync(rpop()))
+		: id === 'service' && opcode.n === 3 && opcode.service === 'JSON.stringify' ?
+			rpush(JSON.stringify(rpop()))
 		: id === 'str' ?
 			rpush(opcode.v)
 		: id === 'sub' ?
@@ -2731,7 +2745,7 @@ parseAstType = program => {
 };
 
 let processRewrite = ast => {
-	let roots = ['JSON', 'Object', 'Promise', 'console', 'eval', 'fs_readFileSync', 'process', 'require', 'util_inspect',]
+	let roots = ['JSON', 'Object', 'Promise', 'console', 'fs_readFileSync', 'process', 'require', 'util_inspect',]
 		.reduce((v, vl) => ll.cons(vl, v), ll.empty());
 
 	let ast_ = [ast,]
@@ -2777,7 +2791,6 @@ let processGenerate = ast => {
 			{ f: 'error', n: 1 },
 			{ f: 'log', n: 1 },
 		]))
-		.map(ast => add(ast, 'eval', proxy(1, 'eval')))
 		.map(ast => add(ast, 'fs_readFileSync', proxy(2, 'require("fs").readFileSync')))
 		.map(ast => add(ast, 'process', _struct([
 			{ key: 'argv', value: _segment([{ id: 'argv' },]) },
