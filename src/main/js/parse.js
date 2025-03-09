@@ -1930,59 +1930,58 @@ evaluate = vvs => {
 		return value;
 	};
 
-	let evaluate_;
+	let ev_;
 
-	evaluate_ = ast => {
-		let eval = ast => evaluate_(ast);
+	ev_ = ast => {
 		let { id } = ast;
 
 		let f = false ? undefined
-		: id === 'add' ? (({ lhs, rhs }) => assumeAny(eval(lhs) + eval(rhs)))
+		: id === 'add' ? (({ lhs, rhs }) => assumeAny(ev_(lhs) + ev_(rhs)))
 		: id === 'alloc' ? (({ vn, expr }) => evaluate(ll.cons([vn, undefined], vvs))(expr))
-		: id === 'and' ? (({ lhs, rhs }) => assumeAny(eval(lhs) && eval(rhs)))
-		: id === 'app' ? (({ lhs, rhs }) => eval(lhs).call(undefined, eval(rhs)))
+		: id === 'and' ? (({ lhs, rhs }) => assumeAny(ev_(lhs) && ev_(rhs)))
+		: id === 'app' ? (({ lhs, rhs }) => ev_(lhs).call(undefined, ev_(rhs)))
 		: id === 'assign' ? (({ bind, value, expr }) => false ? undefined
 			: bind.id === 'deref' ? function() {
-				let { vv } = eval(bind);
-				vv[1] = eval(value);
-				return eval(expr);
+				let { vv } = ev_(bind);
+				vv[1] = ev_(value);
+				return ev_(expr);
 			}()
 			: bind.id === 'dot' ? function() {
-				setp(eval(bind.expr), bind.field, eval(value));
-				return eval(expr);
+				setp(ev_(bind.expr), bind.field, ev_(value));
+				return ev_(expr);
 			}()
 			: bind.id === 'index' ? function() {
-				eval(bind.lhs)[eval(bind.rhs)] = eval(value);
-				return eval(expr);
+				ev_(bind.lhs)[ev_(bind.rhs)] = ev_(value);
+				return ev_(expr);
 			}()
 			: bind.id === 'pget' ? function() {
-				eval(bind.expr)[bind.i] = eval(value);
-				return eval(expr);
+				ev_(bind.expr)[bind.i] = ev_(value);
+				return ev_(expr);
 			}()
 			: bind.id === 'tget' ? function() {
-				eval(bind.expr)[bind.i] = eval(value);
-				return eval(expr);
+				ev_(bind.expr)[bind.i] = ev_(value);
+				return ev_(expr);
 			}()
 			: bind.id === 'var' ? function() {
-				assign(bind.vn, eval(value));
-				return eval(expr);
+				assign(bind.vn, ev_(value));
+				return ev_(expr);
 			}()
 			: error('BAD')
 		)
 		: id === 'await' ? (({ expr }) => error('BAD'))
 		: id === 'bool' ? (({ b }) => b)
 		: id === 'coal' ? (({ lhs, rhs }) => {
-			let v = eval(lhs);
-			return v ?? eval(rhs);
+			let v = ev_(lhs);
+			return v ?? ev_(rhs);
 		})
-		: id === 'cons' ? (({ lhs, rhs }) => assumeAny(vec.cons(eval(lhs), eval(rhs))))
+		: id === 'cons' ? (({ lhs, rhs }) => assumeAny(vec.cons(ev_(lhs), ev_(rhs))))
 		: id === 'deref' ? (({ expr }) => {
-			let { vv } = eval(expr);
+			let { vv } = ev_(expr);
 			return get1(vv);
 		})
-		: id === 'div' ? (({ lhs, rhs }) => assumeAny(eval(lhs) / eval(rhs)))
+		: id === 'div' ? (({ lhs, rhs }) => assumeAny(ev_(lhs) / ev_(rhs)))
 		: id === 'dot' ? (({ expr, field }) => {
-			let object = eval(expr);
+			let object = ev_(expr);
 			let value = getp(object, field);
 			return false ? undefined
 			: value === undefined ? assumeAny(value)
@@ -1991,23 +1990,23 @@ evaluate = vvs => {
 			: ['get', 'has', 'set',].includes(field) ? assumeAny(unwrap(value.bind(object)))
 			: fake(value).bind(object);
 		})
-		: id === 'eq_' ? (({ lhs, rhs }) => assumeAny(eval(lhs) === eval(rhs)))
-		: id === 'fmt' ? (({ expr }) => assumeAny(`${eval(expr)}`))
+		: id === 'eq_' ? (({ lhs, rhs }) => assumeAny(ev_(lhs) === ev_(rhs)))
+		: id === 'fmt' ? (({ expr }) => assumeAny(`${ev_(expr)}`))
 		: id === 'frame' ? error('BAD')
-		: id === 'if' ? (({ if_, then, else_ }) => eval(if_) ? eval(then) : eval(else_))
-		: id === 'index' ? (({ lhs, rhs }) => eval(lhs)[eval(rhs)])
+		: id === 'if' ? (({ if_, then, else_ }) => ev_(if_) ? ev_(then) : ev_(else_))
+		: id === 'index' ? (({ lhs, rhs }) => ev_(lhs)[ev_(rhs)])
 		: id === 'lambda' ? (({ bind, expr }) => assumeAny(value => evaluate(ll.cons([bind.vn, value], vvs))(expr)))
 		: id === 'lambda-async' ? (({ bind, expr }) => error('BAD'))
 		: id === 'lambda-capture' ? (({ capture, bindCapture, bind, expr }) =>
-			assumeAny(value => evaluate(ll.cons([bind.vn, value], ll.cons([bindCapture.vn, eval(capture)], vvs)))(expr))
+			assumeAny(value => evaluate(ll.cons([bind.vn, value], ll.cons([bindCapture.vn, ev_(capture)], vvs)))(expr))
 		)
-		: id === 'le_' ? (({ lhs, rhs }) => assumeAny(eval(lhs) <= eval(rhs)))
-		: id === 'let' ? (({ bind, value, expr }) => evaluate(ll.cons([bind.vn, eval(value)], vvs))(expr))
-		: id === 'lt_' ? (({ lhs, rhs }) => assumeAny(eval(lhs) < eval(rhs)))
-		: id === 'mod' ? (({ lhs, rhs }) => assumeAny(eval(lhs) % eval(rhs)))
-		: id === 'mul' ? (({ lhs, rhs }) => assumeAny(eval(lhs) * eval(rhs)))
-		: id === 'ne_' ? (({ lhs, rhs }) => assumeAny(eval(lhs) !== eval(rhs)))
-		: id === 'neg' ? (({ expr }) => assumeAny(-eval(expr)))
+		: id === 'le_' ? (({ lhs, rhs }) => assumeAny(ev_(lhs) <= ev_(rhs)))
+		: id === 'let' ? (({ bind, value, expr }) => evaluate(ll.cons([bind.vn, ev_(value)], vvs))(expr))
+		: id === 'lt_' ? (({ lhs, rhs }) => assumeAny(ev_(lhs) < ev_(rhs)))
+		: id === 'mod' ? (({ lhs, rhs }) => assumeAny(ev_(lhs) % ev_(rhs)))
+		: id === 'mul' ? (({ lhs, rhs }) => assumeAny(ev_(lhs) * ev_(rhs)))
+		: id === 'ne_' ? (({ lhs, rhs }) => assumeAny(ev_(lhs) !== ev_(rhs)))
+		: id === 'neg' ? (({ expr }) => assumeAny(-ev_(expr)))
 		: id === 'new' ? (({ clazz }) => false ? undefined
 			: clazz === 'Error' ? assumeAny(e => new Error(e))
 			: clazz === 'Map' ? assumeAny(() => new Map())
@@ -2015,12 +2014,12 @@ evaluate = vvs => {
 			: error(`unknown class ${clazz}`)
 		)
 		: id === 'nil' ? (({}) => assumeAny([]))
-		: id === 'not' ? (({ expr }) => assumeAny(!eval(expr)))
+		: id === 'not' ? (({ expr }) => assumeAny(!ev_(expr)))
 		: id === 'num' ? (({ i }) => i)
-		: id === 'or_' ? (({ lhs, rhs }) => assumeAny(eval(lhs) || eval(rhs)))
-		: id === 'pair' ? (({ lhs, rhs }) => assumeAny([eval(lhs), eval(rhs), pairTag]))
-		: id === 'pget' ? (({ expr, i }) => eval(expr)[i])
-		: id === 'pos' ? (({ expr }) => assumeAny(+eval(expr)))
+		: id === 'or_' ? (({ lhs, rhs }) => assumeAny(ev_(lhs) || ev_(rhs)))
+		: id === 'pair' ? (({ lhs, rhs }) => assumeAny([ev_(lhs), ev_(rhs), pairTag]))
+		: id === 'pget' ? (({ expr, i }) => ev_(expr)[i])
+		: id === 'pos' ? (({ expr }) => assumeAny(+ev_(expr)))
 		: id === 'ref' ? (({ expr }) =>
 			expr.id === 'var' ? assumeAny({ vv: ll.find(vvs, ([k_, v]) => k_ === expr.vn) })
 			: error('BAD')
@@ -2029,34 +2028,34 @@ evaluate = vvs => {
 		: id === 'str' ? (({ v }) => v)
 		: id === 'struct' ? (({ kvs }) => assumeAny(vec.foldl({}, kvs, (struct, kv) => {
 			let { key, value } = kv;
-			setp(struct, key, eval(value));
+			setp(struct, key, ev_(value));
 			return struct;
 		})))
-		: id === 'sub' ? (({ lhs, rhs }) => assumeAny(eval(lhs) - eval(rhs)))
-		: id === 'tget' ? (({ expr, i }) => eval(expr)[i])
-		: id === 'throw' ? (({ expr }) => { throw eval(expr); })
+		: id === 'sub' ? (({ lhs, rhs }) => assumeAny(ev_(lhs) - ev_(rhs)))
+		: id === 'tget' ? (({ expr, i }) => ev_(expr)[i])
+		: id === 'throw' ? (({ expr }) => { throw ev_(expr); })
 		: id === 'try' ? (({ lhs, rhs }) => {
 			let result;
 			try {
-				result = eval(lhs);
-			} catch (e) { return eval(rhs)(e); };
+				result = ev_(lhs);
+			} catch (e) { return ev_(rhs)(e); };
 			return result;
 		})
-		: id === 'tuple' ? (({ values }) => assumeAny(vec.foldr(vec.empty, values, (tuple, value) => vec.cons(eval(value), tuple))))
-		: id === 'typeof' ? (({ expr }) => assumeAny(typeof (eval(expr))))
+		: id === 'tuple' ? (({ values }) => assumeAny(vec.foldr(vec.empty, values, (tuple, value) => vec.cons(ev_(value), tuple))))
+		: id === 'typeof' ? (({ expr }) => assumeAny(typeof (ev_(expr))))
 		: id === 'undefined' ? (({}) => undefined)
 		: id === 'var' ? (({ vn }) => ll.findk(vvs, vn))
 		: id === 'while' ? (({ cond, loop, expr }) => {
 			let v;
-			while (eval(cond)) { eval(loop); };
-			return eval(expr);
+			while (ev_(cond)) { ev_(loop); };
+			return ev_(expr);
 		})
 		: error(`cannot evaluate ${id}`);
 
 		return f(ast);
 	};
 
-	return evaluate_;
+	return ev_;
 };
 
 let generate;
