@@ -1542,9 +1542,9 @@ let rewriteBind = () => {
 				bindConstant(bind.b)
 			: id === 'cons' ? (({ lhs, rhs }) => {
 				let v = _var(newDummy());
-				return _let(v, value, id !== value.id
-					? ifBind(lhs, _index(v, _num(0)), ifBind(rhs, _app(_dot(v, 'slice'), _num(1)), then, else_), else_)
-					: ifBind(lhs, value.lhs, ifBind(rhs, value.rhs, then, else_), else_));
+				return id !== value.id
+					?  _let(v, value, ifBind(lhs, _index(v, _num(0)), ifBind(rhs, _app(_dot(v, 'slice'), _num(1)), then, else_), else_))
+					: ifBind(lhs, value.lhs, ifBind(rhs, value.rhs, then, else_), else_);
 			})
 			: id === 'nil' ? (({}) => {
 				return id !== value.id
@@ -1555,9 +1555,9 @@ let rewriteBind = () => {
 				bindConstant(bind.v)
 			: id === 'pair' ? (({ lhs, rhs }) => {
 				let v = _var(newDummy());
-				return _let(v, value, id !== value.id
-					? ifBind(lhs, _pget(v, 0), ifBind(rhs, _pget(v, 1), then, else_), else_)
-					: ifBind(lhs, value.lhs, ifBind(rhs, value.rhs, then, else_), else_));
+				return id !== value.id
+					? _let(v, value, ifBind(lhs, _pget(v, 0), ifBind(rhs, _pget(v, 1), then, else_), else_))
+					: ifBind(lhs, value.lhs, ifBind(rhs, value.rhs, then, else_), else_);
 			})
 			: id === 'str' ?
 				bindConstant(bind.v)
