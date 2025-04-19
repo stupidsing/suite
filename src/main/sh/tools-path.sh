@@ -161,6 +161,10 @@ tp_jdk11() {
 	cchs "echo https://download.java.net/java/GA/jdk11/9/GPL/openjdk-11.0.2_linux-x64_bin.tar.gz" @curl @tar-zxf @dir
 }
 
+tp_jdk22() {
+	cchs "curl -sL https://jdk.java.net/22/" "grep https://download.java.net/ | grep -v sha256 | grep linux-x64 | grep \\.tar\\.gz" "cut -d\\\" -f2" @curl @tar-zxf @dir
+}
+
 tp_kubectl() {
 	local VER=$(cchs "curl -sL https://storage.googleapis.com/kubernetes-release/release/stable.txt")
 	$(cchs "echo https://storage.googleapis.com/kubernetes-release/release/${VER}/bin/linux/amd64/kubectl" @curl "@do-chmod +x") $@
