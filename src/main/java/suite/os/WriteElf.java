@@ -94,13 +94,16 @@ public class WriteElf {
 	}
 
 	private Bytes header64(Bytes code, SerOutput do_) throws IOException {
+		var em_arm = 0x28;
+		var em_x86_64 = 0x3E;
+
 		return new Write_() //
 				.db(0x7F) // e_ident
 				.append("ELF".getBytes(Utf8.charset)) //
 				.append(new byte[] { 2, 1, 1, 0, }) //
 				.append(new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, }) //
 				.dw(2) // e_type
-				.dw(0x3E) // e_machine
+				.dw(em_x86_64) // e_machine
 				.dd(1) // e_version
 				.dq(org + elfHeaderSize) // e_entry
 				.dq(fileHeaderSize) // e_phoff
