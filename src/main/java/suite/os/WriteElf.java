@@ -94,7 +94,7 @@ public class WriteElf {
 	}
 
 	private Bytes header64(Bytes code, SerOutput do_) throws IOException {
-		var em_arm = 0x28;
+		var em_aarch64 = 0xB7;
 		var em_x86_64 = 0x3E;
 
 		return new Write_() //
