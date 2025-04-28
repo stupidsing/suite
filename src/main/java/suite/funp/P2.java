@@ -290,19 +290,19 @@ public class P2 {
 		}
 	}
 
-	public static class FunpLambdaCapture implements Funp, P2.End {
+	public static class FunpLambdaCapSingle implements Funp, P2.End {
 		public FunpVariable fpIn;
 		public FunpVariable frameVar;
-		public Funp struct;
+		public Funp frameValue;
 		public String vn;
 		public Funp expr;
 		public Fct fct;
 
-		public static FunpLambdaCapture of(FunpVariable fpIn, FunpVariable frameVar, Funp struct, String vn, Funp expr, Fct fct) {
-			var f = new FunpLambdaCapture();
+		public static FunpLambdaCapSingle of(FunpVariable fpIn, FunpVariable frameVar, Funp frameValue, String vn, Funp expr, Fct fct) {
+			var f = new FunpLambdaCapSingle();
 			f.fpIn = fpIn;
 			f.frameVar = frameVar;
-			f.struct = struct;
+			f.frameValue = frameValue;
 			f.vn = vn;
 			f.expr = expr;
 			f.fct = fct;
@@ -310,7 +310,31 @@ public class P2 {
 		}
 
 		public <R> R apply(FixieFun6<FunpVariable, FunpVariable, Funp, String, Funp, Fct, R> fun) {
-			return fun.apply(fpIn, frameVar, struct, vn, expr, fct);
+			return fun.apply(fpIn, frameVar, frameValue, vn, expr, fct);
+		}
+	}
+
+	public static class FunpLambdaCapture implements Funp, P2.End {
+		public FunpVariable fpIn;
+		public FunpVariable frameVar;
+		public Funp frameValue;
+		public String vn;
+		public Funp expr;
+		public Fct fct;
+
+		public static FunpLambdaCapture of(FunpVariable fpIn, FunpVariable frameVar, Funp frameValue, String vn, Funp expr, Fct fct) {
+			var f = new FunpLambdaCapture();
+			f.fpIn = fpIn;
+			f.frameVar = frameVar;
+			f.frameValue = frameValue;
+			f.vn = vn;
+			f.expr = expr;
+			f.fct = fct;
+			return f;
+		}
+
+		public <R> R apply(FixieFun6<FunpVariable, FunpVariable, Funp, String, Funp, Fct, R> fun) {
+			return fun.apply(fpIn, frameVar, frameValue, vn, expr, fct);
 		}
 	}
 
