@@ -2059,6 +2059,9 @@ evaluate = vvs => {
 	return evaluate_;
 };
 
+let getParam0 = [{ id: 'frame-get-ref', fs: 0, ps: 0 }, { id: 'deref' },];
+let getParam1 = [{ id: 'frame-get-ref', fs: 0, ps: 1 }, { id: 'deref' },];
+
 let generate;
 
 generate = ast => {
@@ -2157,10 +2160,8 @@ generate = ast => {
 		: ['charCodeAt', 'concat', 'endsWith', 'includes', 'indexOf', 'join', 'push', 'startsWith',].includes(field) ? [
 			...generate(expr),
 			{ id: 'label-segment', name: field, segment: [
-				{ id: 'frame-get-ref', fs: 0, ps: 0 },
-				{ id: 'deref' },
-				{ id: 'frame-get-ref', fs: 0, ps: 1 },
-				{ id: 'deref' },
+				...getParam0,
+				...getParam1,
 				{ id: 'pair' },
 				{ id: 'service', m: 2, field },
 				{ id: 'return' },
@@ -2170,10 +2171,8 @@ generate = ast => {
 		: ['slice',].includes(field) ? [
 			...generate(expr),
 			{ id: 'label-segment', name: field, segment: [
-				{ id: 'frame-get-ref', fs: 0, ps: 0 },
-				{ id: 'deref' },
-				{ id: 'frame-get-ref', fs: 0, ps: 1 },
-				{ id: 'deref' },
+				...getParam0,
+				...getParam1,
 				{ id: 'pair' },
 				{ id: 'service', m: 3, field },
 				{ id: 'return' },
@@ -2183,8 +2182,7 @@ generate = ast => {
 		: ['pop', 'toReversed', 'toString', 'trim',].includes(field) ? [
 			...generate(expr),
 			{ id: 'label-segment', name: field, segment: [
-				{ id: 'frame-get-ref', fs: 0, ps: 0 },
-				{ id: 'deref' },
+				...getParam0,
 				{ id: 'service', m: 1, field },
 				{ id: 'return' },
 			] },
@@ -2254,8 +2252,7 @@ generate = ast => {
 		: clazz === 'Error' ? [
 			{ id: 'object' },
 			{ id: 'label-segment', name: `new ${clazz}`, segment: [
-				{ id: 'frame-get-ref', fs: 0, ps: 1 },
-				{ id: 'deref' },
+				...getParam1,
 				{ id: 'return' },
 			] },
 			{ id: 'lambda-capture' },
@@ -2267,10 +2264,8 @@ generate = ast => {
 				{ id: 'object' },
 				{ id: 'dup', i: 1 },
 				{ id: 'label-segment', name: `Map.get`, segment: [
-					{ id: 'frame-get-ref', fs: 0, ps: 0 },
-					{ id: 'deref' },
-					{ id: 'frame-get-ref', fs: 0, ps: 1 },
-					{ id: 'deref' },
+					...getParam0,
+					...getParam1,
 					{ id: 'map-get' },
 					{ id: 'return' },
 				] },
@@ -2278,10 +2273,8 @@ generate = ast => {
 				{ id: 'object-put', key: 'get' },
 				{ id: 'dup', i: 1 },
 				{ id: 'label-segment', name: `Map.has`, segment: [
-					{ id: 'frame-get-ref', fs: 0, ps: 0 },
-					{ id: 'deref' },
-					{ id: 'frame-get-ref', fs: 0, ps: 1 },
-					{ id: 'deref' },
+					...getParam0,
+					...getParam1,
 					{ id: 'map-has' },
 					{ id: 'return' },
 				] },
@@ -2289,13 +2282,10 @@ generate = ast => {
 				{ id: 'object-put', key: 'has' },
 				{ id: 'dup', i: 1 },
 				{ id: 'label-segment', name: `Map.set`, segment: [
-					{ id: 'frame-get-ref', fs: 0, ps: 0 },
-					{ id: 'deref' },
-					{ id: 'frame-get-ref', fs: 0, ps: 1 },
-					{ id: 'deref' },
+					...getParam0,
+					...getParam1,
 					{ id: 'pair-left' },
-					{ id: 'frame-get-ref', fs: 0, ps: 1 },
-					{ id: 'deref' },
+					...getParam1,
 					{ id: 'pair-right' },
 					{ id: 'map-set' },
 					{ id: 'undefined' },
@@ -2799,8 +2789,7 @@ let processRewrite = ast => {
 
 let processGenerate = ast => {
 	let proxy = (n, service) => _lambdaCapture(_undefined, _var(newDummy()), _var(newDummy()), _segment([
-		{ id: 'frame-get-ref', fs: 0, ps: 1 },
-		{ id: 'deref' },
+		...getParam1,
 		{ id: 'service', n, service },
 	]));
 
