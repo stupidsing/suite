@@ -1791,9 +1791,9 @@ rewriteRenameVar = (scope, vns, ast) => {
 		let { vn } = bind;
 		let vn1 = `${vn}_${scope}`;
 		return _let(
-		_var(vn1),
-			rewriteRenameVar(scope, vns, value),
-			rewriteRenameVar(scope, ll.cons([vn, vn1], vns), expr));
+			_var(vn1),
+				rewriteRenameVar(scope, vns, value),
+				rewriteRenameVar(scope, ll.cons([vn, vn1], vns), expr));
 	})
 	: id === 'var' ? (({ vn }) =>
 		_var(ll.findk(vns, vn))
