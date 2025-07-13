@@ -19,6 +19,9 @@ echo "'abc'.slice(1, 2)" | (cd src/main/js && node parse.js --INTERPRET parse.js
 (cd src/main/js && echo "undefined ?? 2" | EVALUATE=1 INTERPRET=1 node parse.js)
 
 # OK
+(cd src/main/js && echo '`a${`c${1}d`}b`' | EVALUATE=1 INTERPRET=1 node parse.js)
+
+# OK
 echo "
 let map = new Map();
 map.set('key', 'value');
