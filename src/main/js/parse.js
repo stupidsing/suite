@@ -319,8 +319,7 @@ let parserModule = () => {
 		return parseNumber_(program.length - 1);
 	};
 
-	let parseApplyBlockFieldIndex;
-
+	let parse;
 	let parseBackquote;
 
 	parseBackquote = program => {
@@ -332,7 +331,7 @@ let parserModule = () => {
 
 			return _add(
 				_str(program.slice(0, index)),
-				_add(_fmt(parseApplyBlockFieldIndex(expr_)), parseBackquote(right)));
+				_add(_fmt(parse(expr_)), parseBackquote(right)));
 		}() : _str(program);
 	};
 
@@ -397,8 +396,6 @@ let parserModule = () => {
 
 	let parseStruct = (program, parse) => parseStructInner(program.slice(1, -1).trim(), parse);
 
-	let parse;
-
 	let parseValue;
 
 	parseValue = program_ => {
@@ -420,6 +417,8 @@ let parserModule = () => {
 		:
 			parseConstant(program);
 	};
+
+	let parseApplyBlockFieldIndex;
 
 	let parseLvalue = program_ => {
 		let program = program_.trim();
