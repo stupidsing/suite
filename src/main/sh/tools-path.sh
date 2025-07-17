@@ -81,7 +81,7 @@ tp_cordova() {
 }
 
 tp_dot_plantuml() {
-	local V=1.2021.16
+	local V=1.2025.4
 	local PLANTUML=$(cchs "echo https://github.com/plantuml/plantuml/releases/download/v${V}/plantuml-${V}.jar" @curl)
 	tp_apt_i graphviz &&
 	/usr/bin/dot java -jar ${PLANTUML} -pipe
