@@ -24,10 +24,14 @@ file:///home/ywsing/suite/src/main/html/calc.html
 				}
 			};
 
-			let isCtrlB = e => e.ctrlKey && e.key.toUpperCase() === 'B';
-			let isCtrlI = e => e.ctrlKey && e.key.toUpperCase() === 'I';
-			let isCtrlS = e => e.ctrlKey && e.key.toUpperCase() === 'S';
-			let isCtrlU = e => e.ctrlKey && e.key.toUpperCase() === 'U';
+			let isCtrlB = e => e.ctrlKey && !e.shiftKey && e.key.toUpperCase() === 'B';
+			let isCtrlI = e => e.ctrlKey && !e.shiftKey && e.key.toUpperCase() === 'I';
+			let isCtrlS = e => e.ctrlKey && !e.shiftKey && e.key.toUpperCase() === 'S';
+			let isCtrlU = e => e.ctrlKey && !e.shiftKey && e.key.toUpperCase() === 'U';
+			let isDown = e => !e.ctrlKey && !e.shiftKey && e.key === 40;
+			let isLeft = e => !e.ctrlKey && !e.shiftKey && e.key === 37;
+			let isRight = e => !e.ctrlKey && !e.shiftKey && e.key === 39;
+			let isUp = e => !e.ctrlKey && !e.shiftKey && e.key === 38;
 
 			document.onkeydown = e => {
 				if (isCtrlB(e)) {
@@ -47,7 +51,7 @@ file:///home/ywsing/suite/src/main/html/calc.html
 				} else if (isCtrlI(e)) {
 					formatDocument('italic');
 				} else if (isCtrlS(e)) {
-					console.log(window.getSelection().toString());
+					console.log('selection', window.getSelection().toString());
 				} else if (isCtrlU(e)) {
 					formatDocument('underline');
 				}
@@ -140,10 +144,10 @@ file:///home/ywsing/suite/src/main/html/calc.html
 			<img class='toolbarButton' title='Paste' onclick='formatDocument("paste");' src='data:image/gif;base64,R0lGODlhFgAWAIQUAD04KTRLY2tXQF9vj414WZWIbXmOrpqbmpGjudClFaezxsa0cb/I1+3YitHa7PrkIPHvbuPs+/fvrvv8/f///////////////////////////////////////////////yH5BAEAAB8ALAAAAAAWABYAAAWN4CeOZGmeaKqubGsusPvBSyFJjVDs6nJLB0khR4AkBCmfsCGBQAoCwjF5gwquVykSFbwZE+AwIBV0GhFog2EwIDchjwRiQo9E2Fx4XD5R+B0DDAEnBXBhBhN2DgwDAQFjJYVhCQYRfgoIDGiQJAWTCQMRiwwMfgicnVcAAAMOaK+bLAOrtLUyt7i5uiUhADs=' />
 		</div>
 		<div style='display: grid; grid-template-columns: repeat(2, min-content);'>
-			<div class='textbox' autofocus contenteditable='true' spellcheck='false' oninput='console.log(event);'></div>
-			<div class='textbox' autofocus contenteditable='true' spellcheck='false' oninput='console.log(event);'></div>
-			<div class='textbox' autofocus contenteditable='true' spellcheck='false' oninput='console.log(event);'></div>
-			<div class='textbox' autofocus contenteditable='true' spellcheck='false' oninput='console.log(event);'></div>
+			<div class='textbox' autofocus contenteditable='true' spellcheck='false' oninput='console.log("event", event);'></div>
+			<div class='textbox' autofocus contenteditable='true' spellcheck='false' oninput='console.log("event", event);'></div>
+			<div class='textbox' autofocus contenteditable='true' spellcheck='false' oninput='console.log("event", event);'></div>
+			<div class='textbox' autofocus contenteditable='true' spellcheck='false' oninput='console.log("event", event);'></div>
 		</div>
 	</body>
 </html>

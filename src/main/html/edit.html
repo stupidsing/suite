@@ -100,10 +100,15 @@ file:///home/ywsing/suite/src/main/html/edit.html
 				}
 			};
 
-			let isCtrlB = e => e.ctrlKey && e.key.toUpperCase() === 'B';
-			let isCtrlI = e => e.ctrlKey && e.key.toUpperCase() === 'I';
-			let isCtrlS = e => e.ctrlKey && e.key.toUpperCase() === 'S';
-			let isCtrlU = e => e.ctrlKey && e.key.toUpperCase() === 'U';
+			let isCtrlB = e => e.ctrlKey && !e.shiftKey && e.key.toUpperCase() === 'B';
+			let isCtrlI = e => e.ctrlKey && !e.shiftKey && e.key.toUpperCase() === 'I';
+			let isCtrlS = e => e.ctrlKey && !e.shiftKey && e.key.toUpperCase() === 'S';
+			let isCtrlShiftI = e => e.ctrlKey && e.shiftKey && e.key.toUpperCase() === 'I';
+			let isCtrlU = e => e.ctrlKey && !e.shiftKey && e.key.toUpperCase() === 'U';
+			let isDown = e => !e.ctrlKey && !e.shiftKey && e.key === 40;
+			let isLeft = e => !e.ctrlKey && !e.shiftKey && e.key === 37;
+			let isRight = e => !e.ctrlKey && !e.shiftKey && e.key === 39;
+			let isUp = e => !e.ctrlKey && !e.shiftKey && e.key === 38;
 
 			document.onkeydown = e => {
 				if (isCtrlB(e)) {
@@ -111,6 +116,8 @@ file:///home/ywsing/suite/src/main/html/edit.html
 				} else if (isCtrlI(e)) {
 					e.preventDefault();
 				} else if (isCtrlS(e)) {
+					e.preventDefault();
+				} else if (isCtrlShiftI(e)) {
 					e.preventDefault();
 				} else if (isCtrlU(e)) {
 					e.preventDefault();
@@ -123,7 +130,10 @@ file:///home/ywsing/suite/src/main/html/edit.html
 				} else if (isCtrlI(e)) {
 					formatDocument('italic');
 				} else if (isCtrlS(e)) {
-					console.log(window.getSelection().toString());
+					console.log('selection', window.getSelection().toString());
+				} else if (isCtrlShiftI(e)) {
+					let selection = window.getSelection();
+					console.log('selection', selection);
 				} else if (isCtrlU(e)) {
 					formatDocument('underline');
 				}
@@ -213,7 +223,7 @@ file:///home/ywsing/suite/src/main/html/edit.html
 			<img class='toolbarButton' title='Copy' onclick='formatDocument("copy");' src='data:image/gif;base64,R0lGODlhFgAWAIQcAB1ChBFNsTRLYyJYwjljwl9vj1iE31iGzF6MnHWX9HOdz5GjuYCl2YKl8ZOt4qezxqK63aK/9KPD+7DI3b/I17LM/MrL1MLY9NHa7OPs++bx/Pv8/f///////////////yH5BAEAAB8ALAAAAAAWABYAAAWG4CeOZGmeaKqubOum1SQ/kPVOW749BeVSus2CgrCxHptLBbOQxCSNCCaF1GUqwQbBd0JGJAyGJJiobE+LnCaDcXAaEoxhQACgNw0FQx9kP+wmaRgYFBQNeAoGihCAJQsCkJAKOhgXEw8BLQYciooHf5o7EA+kC40qBKkAAAGrpy+wsbKzIiEAOw==' />
 			<img class='toolbarButton' title='Paste' onclick='formatDocument("paste");' src='data:image/gif;base64,R0lGODlhFgAWAIQUAD04KTRLY2tXQF9vj414WZWIbXmOrpqbmpGjudClFaezxsa0cb/I1+3YitHa7PrkIPHvbuPs+/fvrvv8/f///////////////////////////////////////////////yH5BAEAAB8ALAAAAAAWABYAAAWN4CeOZGmeaKqubGsusPvBSyFJjVDs6nJLB0khR4AkBCmfsCGBQAoCwjF5gwquVykSFbwZE+AwIBV0GhFog2EwIDchjwRiQo9E2Fx4XD5R+B0DDAEnBXBhBhN2DgwDAQFjJYVhCQYRfgoIDGiQJAWTCQMRiwwMfgicnVcAAAMOaK+bLAOrtLUyt7i5uiUhADs=' />
 		</div>
-		<div id='textbox' class='textbox' autofocus contenteditable='true' spellcheck='false' oninput='console.log(event);'></div>
+		<div id='textbox' class='textbox' autofocus contenteditable='true' spellcheck='false' oninput='console.log("event", event);'></div>
 		<p id='editMode'><input type='checkbox' name='switchMode' id='switchBox' onchange='setIsViewSource(this.checked);' /><label for='switchBox'>Show HTML</label></p>
 	</body>
 </html>
