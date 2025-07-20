@@ -115,9 +115,56 @@ file:///home/ywsing/suite/src/main/html/edit.html
 				'Ctrl-I': () => formatDocument('italic'),
 				'Ctrl-S': () => console.log('selection', window.getSelection().toString()),
 				'Ctrl-U': () => formatDocument('underline'),
-				'Ctrl-Shift-I': () => {
+				'Ctrl-Shift-C': () => { // insert column
 					let selection = window.getSelection();
-					console.log('selection', selection);
+					let node = selection.focusNode;
+					while (node.nodeName.toLowerCase() !== 'td' && node.parentNode) node = node.parentNode;
+					let td = node;
+					while (node.nodeName.toLowerCase() !== 'tr' && node.parentNode) node = node.parentNode;
+					let tr = node;
+
+					let col = 0;
+					let n = td;
+					while (n.previousSibling) {
+						col++;
+						n = n.previousSibling;
+					}
+
+					tr.parentNode?.childNodes.forEach(tr => {
+						if (tr.nodeName.toLowerCase() === 'tr') {
+							let td_ = td.cloneNode(false);
+							td_.appendChild(document.createTextNode('?'));
+							if (tr.childNodes.length <= col) {
+								tr.appendChild(td_);
+							} else {
+								tr.insertBefore(td_, tr.childNodes.item(col + 1));
+							}
+						}
+					});
+				},
+				'Ctrl-Shift-R': () => { // insert row
+					let selection = window.getSelection();
+					let node = selection.focusNode;
+					while (node.nodeName.toLowerCase() !== 'td' && node.parentNode) node = node.parentNode;
+					let td = node;
+					while (node.nodeName.toLowerCase() !== 'tr' && node.parentNode) node = node.parentNode;
+					let tr = node;
+
+					if (tr.parentNode) {
+						let tr_ = tr.cloneNode(false);
+						tr.childNodes.forEach(td => {
+							if (td.nodeName.toLowerCase() !== '#text') {
+								let td_ = td.cloneNode(false);
+								td_.appendChild(document.createTextNode('?'));
+								tr_.appendChild(td_);
+							}
+						});
+						if (tr.nextSibling) {
+							tr.parentNode.insertBefore(tr_, tr.nextSibling);
+						} else {
+							tr.parentNode.appendChild(tr_);
+						}
+					}
 				},
 			};
 
