@@ -28,10 +28,11 @@ file:///home/ywsing/suite/src/main/html/calc.html
 				+ (e.altKey ? 'Alt-' : '')
 				+ (e.ctrlKey ? 'Ctrl-' : '')
 				+ (e.shiftKey ? 'Shift-' : '')
-				+ (e.key === 37 ? 'left'
-					: e.key === 38 ? 'up'
-					: e.key === 39 ? 'right'
-					: e.key === 40 ? 'down'
+				+ (e.key === 9 ? 'Tab'
+					: e.key === 37 ? 'Left'
+					: e.key === 38 ? 'Up'
+					: e.key === 39 ? 'Right'
+					: e.key === 40 ? 'Down'
 					: e.key.toUpperCase());
 
 			let keyHandlers = {
