@@ -14,13 +14,32 @@ file:///home/ywsing/suite/src/main/html/calc.html
 				doc_.focus();
 			};
 
+			let isCtrlB = e => e.ctrlKey && e.key.toUpperCase() === 'B';
+			let isCtrlI = e => e.ctrlKey && e.key.toUpperCase() === 'I';
+			let isCtrlS = e => e.ctrlKey && e.key.toUpperCase() === 'S';
+			let isCtrlU = e => e.ctrlKey && e.key.toUpperCase() === 'U';
+
+			document.onkeydown = e => {
+				if (isCtrlB(e)) {
+					e.preventDefault();
+				} else if (isCtrlI(e)) {
+					e.preventDefault();
+				} else if (isCtrlS(e)) {
+					e.preventDefault();
+				} else if (isCtrlU(e)) {
+					e.preventDefault();
+				}
+			};
+
 			document.onkeyup = e => {
-				if (e.ctrlKey && e.shiftKey && e.key.toUpperCase() === 'B') {
+				if (isCtrlB(e)) {
 					formatDocument('bold');
-					e.preventDefault = true;
-				} else if (e.ctrlKey && e.shiftKey && e.key.toUpperCase() === 'S') {
+				} else if (isCtrlI(e)) {
+					formatDocument('italic');
+				} else if (isCtrlS(e)) {
 					console.log(window.getSelection().toString());
-					e.preventDefault = true;
+				} else if (isCtrlU(e)) {
+					formatDocument('underline');
 				}
 			};
 		</script>
