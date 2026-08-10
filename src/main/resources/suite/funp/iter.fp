@@ -50,7 +50,8 @@ define-global list-iter! list := do
 	type list = type-list ~
 	let { elems ~ size ~ } := list ~
 	let i := new! 0 ~
-	let has-next := () => capture (i* < size) ~
+	let cap := new! { elems, i, size, } ~
+	let has.next := () => capture (i* < size) ~
 	let next! := () => capture do
 		let i_ := i* ~
 		assign! i* := i_ + 1 ~
@@ -60,6 +61,7 @@ define-global list-iter! list := do
 		free! := () => capture1 do
 			uncapture has-next ~
 			uncapture next! ~
+			delete! cap ~
 			delete! i ~
 			()
 		~
