@@ -1347,6 +1347,7 @@ let typesModule = () => {
 			Object: tyStructOfCompleted({
 				entries: tyLambdaOf(tyStructOf({}), tyArrayOf(tyTupleOf(vec.cons(tyString, vec.cons(newRef(), vec.empty))))),
 				fromEntries: tyLambdaOf(tyArrayOf(tyTupleOf(vec.cons(tyString, vec.cons(newRef(), vec.empty)))), tyStructOf({})),
+				groupBy: function() { let t = newRef(); return tyLambdaOf(tyPairOf(tyArrayOf(t), tyLambdaOf(t, tyString)), tyStructOf({})); }(),
 				keys: tyLambdaOf(tyStructOf({}), tyArrayOf(tyString)),
 			}),
 			Promise: tyStructOfCompleted({
@@ -1697,6 +1698,8 @@ let rewriteIntrinsics = ast => {
 		return false ? undefined
 		: id === 'app' && lhs.id === 'dot' && ['filter', 'flatMap', 'map', 'reduce',].includes(lhs.field) ?
 			_app(_var(`$${lhs.field}`), _pair(rewriteIntrinsics_(lhs.expr), rewriteIntrinsics_(rhs)))
+		: id === 'app' && lhs.id === 'dot' && lhs.expr.id === 'var' && lhs.expr.vn === 'Object' && ['groupBy',].includes(lhs.field) ?
+			_app(_var(`$${lhs.field}`), rewriteIntrinsics(rhs))
 		:
 			rewrite(rewriteIntrinsics_, ast);
 	};
@@ -1723,6 +1726,19 @@ let rewriteIntrinsics = ast => {
 				for (let j = 0; j < list.length; j = j + 1) {
 					out.push(list[j]);
 				};
+			};
+			return out;
+		}
+	`)), ast))
+	.map(ast => _let(_var('$groupBy'), rewriteBind_(parser.parse(`
+		(es, f) => {
+			let out = {};
+			for (let i = 0; i < es.length; i = i + 1) {
+				let e = es[i];
+				let k = f(e);
+				let list = out[k] ?? [];
+				list.push(e);
+				out[k] = list;
 			};
 			return out;
 		}
@@ -1883,6 +1899,7 @@ let evaluateVvs =
 		['Object', assumeAny({
 			entries: unwrap1(Object.entries),
 			fromEntries: unwrap1(Object.fromEntries),
+			groupBy: unwrap2(Object.groupBy),
 			keys: unwrap1(Object.keys),
 		})],
 		['Promise', assumeAny({
@@ -2678,6 +2695,10 @@ let interpret = opcodes => {
 			rpush(console.log(rpop()))
 		: id === 'service' && opcode.n === 1 && opcode.service === 'require' ?
 			rpush(require(rpop()))
+		: id === 'service' && opcode.n === 2 && opcode.service === 'Object.groupBy' ? function() {
+			let [a, b] = rpop();
+			rpush(Object.groupBy(a, b));
+		}()
 		: id === 'service' && opcode.n === 2 && opcode.service === 'require("fs").readFileSync' ? function() {
 			let [a, b] = rpop();
 			rpush(require('fs').readFileSync(a, b));
@@ -2808,6 +2829,7 @@ let processGenerate = ast => {
 		{ f: 'assign', n: 1 },
 		{ f: 'entries', n: 1 },
 		{ f: 'fromEntries', n: 1 },
+		{ f: 'groupBy', n: 2 },
 		{ f: 'keys', n: 1 },
 	]))
 	.map(ast => addObjectOfFunctions(ast, 'Promise', [

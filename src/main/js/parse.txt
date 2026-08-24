@@ -40,6 +40,11 @@ Object.fromEntries(Object.entries({ a: 1, b: 2, c: 3, }))
 
 # OK
 echo "
+Object.groupBy([{ name: 'asparagus', type: 'vegetables', quantity: 9 },], ({ quantity }) => quantity < 6 ? 'restock' : 'sufficient')
+" | EVALUATE=1 INTERPRET=1 node src/main/js/parse.js
+
+# OK
+echo "
 [0,].flatMap(d => [1, 2, 3, 4,]).map(e => e + 1).slice(1, 3)
 " | EVALUATE=1 INTERPRET=1 node src/main/js/parse.js
 
